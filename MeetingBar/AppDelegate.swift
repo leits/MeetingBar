@@ -26,7 +26,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var updateEventsActivity: NSBackgroundActivityScheduler?
     var reloadStatusBarTitleActivity: NSBackgroundActivityScheduler?
 
-
     private let eventStore = EKEventStore()
     private var calendar: EKCalendar?
 
@@ -40,22 +39,22 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 } else {
                     NSLog("Access to Calendar is denied")
                     NSApplication.shared.terminate(self)
-
                 }
             case .failure(let error):
                 print(error)
                 NSApplication.shared.terminate(self)
             }
         }
-
     }
 
-    func eventStoreAccessCheck(completion: @escaping (AuthResult) -> ()) {
+    func eventStoreAccessCheck(completion: @escaping (AuthResult) -> Void) {
         switch EKEventStore.authorizationStatus(for: .event) {
         case .authorized:
             completion(.success(true))
         case .denied, .notDetermined:
-            eventStore.requestAccess(to: .event, completion:
+            eventStore.requestAccess(
+                to: .event,
+                completion:
                         { (granted: Bool, error: Error?) -> Void in
                         if error != nil {
                             completion(.failure(error!))
@@ -64,7 +63,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                         }
                 })
         default:
-            completion(.failure(NSError(domain:"Unknown authorization status", code: 0)))
+            completion(.failure(NSError(domain: "Unknown authorization status", code: 0)))
         }
     }
 
@@ -87,7 +86,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             self.scheduleUpdateStatusBarTitle()
         }
     }
-
 
     private func scheduleUpdateStatusBarTitle() {
         let activity = NSBackgroundActivityScheduler(identifier: "leits.meeter.updatestatusbartitle")
@@ -123,7 +121,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func loadTodayEventsFromCalendar() -> [EKEvent] {
-        if self.calendar == nil {
+        if calendar == nil {
             NSLog("No loaded calendar")
             return []
         }
@@ -131,40 +129,45 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let todayMidnight = Calendar.current.startOfDay(for: now)
         let tomorrowMidnight = Calendar.current.date(byAdding: .day, value: 1, to: todayMidnight)!
 
-        let predicate = eventStore.predicateForEvents(withStart: todayMidnight, end: tomorrowMidnight, calendars: [self.calendar!])
+        let predicate = eventStore.predicateForEvents(withStart: todayMidnight, end: tomorrowMidnight, calendars: [calendar!])
         let calendarEvents = eventStore.events(matching: predicate)
 
-        NSLog("Calendar \(self.calendar!.title) loaded")
+        NSLog("Calendar \(calendar!.title) loaded")
         return calendarEvents
     }
 
     func updateStatusBarTitle() {
-        var title = "🏁"
+        var title = "🗓️"
 
-        let nextEvent = getNextEvent()
-
-        if nextEvent != nil {
-            let now = Date()
-            let eventTitle = String((nextEvent?.title)!)
-            var msg = ""
-            if (nextEvent?.startDate)! < now, (nextEvent?.endDate)! > now {
-                let eventEndTime = (nextEvent?.endDate.timeIntervalSinceNow)!
-                let minutes = String(Int(eventEndTime) / 60)
-                msg = " now (\(minutes) min left)"
-            } else {
-                let eventStartTime = (nextEvent?.startDate.timeIntervalSinceNow)!
-                let minutes = Int(eventStartTime) / 60
-                if minutes < 60 {
-                    msg = " in \(minutes) min"
-                } else if minutes < 120 {
-                    msg = " in 1 hour"
+        if calendar != nil {
+            let nextEvent = getNextEvent(eventStore: eventStore, calendar: calendar!)
+            if nextEvent != nil {
+                let now = Date()
+                let eventTitle = String((nextEvent?.title)!)
+                var msg = ""
+                if (nextEvent?.startDate)! < now, (nextEvent?.endDate)! > now {
+                    let eventEndTime = (nextEvent?.endDate.timeIntervalSinceNow)!
+                    let minutes = String(Int(eventEndTime) / 60)
+                    msg = " now (\(minutes) min left)"
                 } else {
-                    let hours = minutes / 60
-                    msg = " in \(hours) hours"
+                    let eventStartTime = (nextEvent?.startDate.timeIntervalSinceNow)!
+                    let minutes = Int(eventStartTime) / 60
+                    if minutes < 60 {
+                        msg = " in \(minutes) min"
+                    } else if minutes < 120 {
+                        msg = " in 1 hour"
+                    } else {
+                        let hours = minutes / 60
+                        msg = " in \(hours) hours"
+                    }
                 }
+                // TODO: Make title length customizable
+                title = "\(eventTitle)\(msg)"
+            } else {
+                title = "🏁"
             }
-            // TODO: Make title length customizable
-            title = "\(eventTitle)\(msg)"
+        } else {
+            NSLog("No loaded calendar")
         }
         DispatchQueue.main.async {
             self.statusBarItem.button?.title = "\(title)"
@@ -172,10 +175,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func updateStatusBarMenu() {
-        let events: [EKEvent] = loadTodayEventsFromCalendar()
-
-        let now = Date()
-
         let statusBarMenu = statusBarItem.menu!
         statusBarMenu.removeAllItems()
 
@@ -184,18 +183,67 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             withTitle: "Join next meeting",
             action: #selector(AppDelegate.joinNextMeeting),
             keyEquivalent: "j")
-        let nextEvent = getNextEvent()
-        if nextEvent == nil {
-            joinItem.isEnabled = false
+        if calendar != nil {
+            let nextEvent = getNextEvent(eventStore: eventStore, calendar: calendar!)
+            if nextEvent == nil {
+                joinItem.isEnabled = false
+            }
+            statusBarMenu.addItem(NSMenuItem.separator())
+
+            createTodaySection(menu: statusBarMenu)
+            statusBarMenu.addItem(NSMenuItem.separator())
         }
+
+        createPerferencesSection(menu: statusBarMenu)
         statusBarMenu.addItem(NSMenuItem.separator())
+
+        statusBarMenu.addItem(
+            withTitle: "Quit",
+            action: #selector(AppDelegate.quit),
+            keyEquivalent: "")
+    }
+
+    func createPerferencesSection(menu: NSMenu) {
+        let preferencesMenu = NSMenu(title: "Preferences")
+
+        let preferencesItem = menu.addItem(
+            withTitle: "Preferences",
+            action: nil,
+            keyEquivalent: "")
+
+        preferencesItem.submenu = preferencesMenu
+
+        let calendarItem = preferencesMenu.addItem(
+            withTitle: "Calendar",
+            action: nil,
+            keyEquivalent: "")
+
+        let calendarMenu = NSMenu(title: "Calendar selector")
+        calendarItem.submenu = calendarMenu
+
+        let defaultCalendarTitle = UserDefaults.standard.string(forKey: "calendarTitle")
+        let calendars = eventStore.calendars(for: .event)
+        for calendar in calendars {
+            let calendarItem = calendarMenu.addItem(
+                withTitle: "\(calendar.title)",
+                action: #selector(AppDelegate.selectCalendar),
+                keyEquivalent: "")
+            if defaultCalendarTitle != nil, defaultCalendarTitle == calendar.title {
+                calendarItem.state = NSControl.StateValue.on
+            }
+        }
+    }
+
+    func createTodaySection(menu: NSMenu) {
+        let events: [EKEvent] = loadTodayEventsFromCalendar()
+        let now = Date()
 
         let todayFormatter = DateFormatter()
         todayFormatter.dateFormat = "E, d MMM"
         let todayDate = todayFormatter.string(from: now)
         let todayTitle = "Today meetings (\(todayDate)):"
 
-        let titleItem = statusBarMenu.addItem(
+        let titleItem = menu.addItem(
             withTitle: todayTitle,
             action: nil,
             keyEquivalent: "")
@@ -215,12 +263,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             let eventOrganizer = (event.organizer?.name)!
 
             let itemTitle = "\(eventStartTime) - \(eventTitle)"
-            let eventItem = statusBarMenu.addItem(
+            let eventItem = menu.addItem(
                 withTitle: itemTitle,
                 action: #selector(AppDelegate.clickItem),
                 keyEquivalent: "")
             eventItem.representedObject = event
-
 
             if event.endDate < now {
                 eventItem.state = NSControl.StateValue.on
@@ -240,18 +287,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
             var status: String
             switch event.status {
-            case.canceled:
+            case .canceled:
                 status = " 👎 Canceled"
-            case.confirmed:
+            case .confirmed:
                 status = " 👍 Confirmed"
-            case.tentative:
+            case .tentative:
                 status = " ☝️ Tentative"
             default:
                 status = " ❔ None"
             }
             eventMenu.addItem(withTitle: "Status: \(status)", action: nil, keyEquivalent: "")
             eventMenu.addItem(NSMenuItem.separator())
-
 
             if event.location != nil {
                 eventMenu.addItem(withTitle: "Location:", action: nil, keyEquivalent: "")
@@ -310,39 +356,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 item.attributedTitle = NSAttributedString(string: itemTitle, attributes: attributes)
             }
         }
-        statusBarMenu.addItem(NSMenuItem.separator())
-
-        let calendarSelector = statusBarMenu.addItem(
-            withTitle: "Calendar",
-            action: nil,
-            keyEquivalent: "")
-
-        let calendarMenu = NSMenu(title: "Calendar selector")
-        calendarSelector.submenu = calendarMenu
-
-        let defaultCalendarTitle = UserDefaults.standard.string(forKey: "calendarTitle")
-        let calendars = eventStore.calendars(for: .event)
-        for calendar in calendars {
-            let calendarItem = calendarMenu.addItem(
-                withTitle: "\(calendar.title)",
-                action: #selector(AppDelegate.selectCalendar),
-                keyEquivalent: ""
-            )
-            if defaultCalendarTitle != nil && defaultCalendarTitle == calendar.title {
-                calendarItem.state = NSControl.StateValue.on
-            }
-        }
-        statusBarMenu.addItem(NSMenuItem.separator())
-
-
-        statusBarMenu.addItem(
-            withTitle: "Quit",
-            action: #selector(AppDelegate.quit),
-            keyEquivalent: ""
-        )
-
     }
-    @objc func quit(sender: NSStatusBarButton) {
+
+    @objc func quit(sender _: NSStatusBarButton) {
         NSLog("User click Quit")
         NSApplication.shared.terminate(self)
     }
@@ -357,7 +373,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc func joinNextMeeting(_: NSStatusBarButton) {
         NSLog("Click on join next event!")
-        let nextEvent = getNextEvent()
+
+        if calendar == nil {
+            NSLog("No loaded calendar")
+            return
+        }
+        let nextEvent = getNextEvent(eventStore: eventStore, calendar: calendar!)
         if nextEvent == nil {
             NSLog("No next event")
             return
@@ -371,22 +392,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let event: EKEvent = item.representedObject as! EKEvent
         openEvent(event: event)
     }
+}
 
-    func getNextEvent() -> EKEvent? {
-        if self.calendar == nil {
-            NSLog("No loaded calendar")
-            return nil
-        }
-        let now = Date()
-        let nextMinute = Calendar.current.date(byAdding: .minute, value: 1, to: now)!
-        let todayMidnight = Calendar.current.startOfDay(for: now)
-        let tomorrowMidnight = Calendar.current.date(byAdding: .day, value: 1, to: todayMidnight)!
+func getNextEvent(eventStore: EKEventStore, calendar: EKCalendar) -> EKEvent? {
+    let now = Date()
+    let nextMinute = Calendar.current.date(byAdding: .minute, value: 1, to: now)!
+    let todayMidnight = Calendar.current.startOfDay(for: now)
+    let tomorrowMidnight = Calendar.current.date(byAdding: .day, value: 1, to: todayMidnight)!
 
-        let predicate = eventStore.predicateForEvents(withStart: nextMinute, end: tomorrowMidnight, calendars: [self.calendar!])
-        let nextEvent = eventStore.events(matching: predicate).first
-        return nextEvent
-    }
-
+    let predicate = eventStore.predicateForEvents(withStart: nextMinute, end: tomorrowMidnight, calendars: [calendar])
+    let nextEvent = eventStore.events(matching: predicate).first
+    return nextEvent
 }
 
 func openEvent(event: EKEvent) {
@@ -397,7 +413,12 @@ func openEvent(event: EKEvent) {
     }
     var eventLink = getMatch(text: (event.notes)!, regex: LinksRegex.meet)
     if eventLink != nil {
-        openLinkInChrome(link: eventLink!)
+        if #available(OSX 10.15, *) {
+            openLinkInChrome(link: eventLink!)
+        } else {
+            openLinkInDefaultBrowser(link: eventLink!)
+        }
+
     } else {
         NSLog("No meet link for event (\(eventTitle))")
         eventLink = getMatch(text: (event.notes)!, regex: LinksRegex.zoom)
@@ -428,6 +449,7 @@ func getMatch(text: String, regex: NSRegularExpression) -> String? {
     return nil
 }
 
+@available(OSX 10.15, *)
 func openLinkInChrome(link: String) {
     let url = URL(string: link)!
     let configuration = NSWorkspace.OpenConfiguration()
