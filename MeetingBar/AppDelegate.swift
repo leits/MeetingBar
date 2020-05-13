@@ -10,6 +10,9 @@ import Cocoa
 import EventKit
 import SwiftUI
 
+import HotKey
+import Defaults
+
 struct LinksRegex {
     static let meet = try! NSRegularExpression(pattern: #"https://meet.google.com/.*"#)
     static let zoom = try! NSRegularExpression(pattern: #"https://zoom.us/j/.*"#)
@@ -19,9 +22,15 @@ enum AuthResult {
     case success(Bool), failure(Error)
 }
 
-enum meetLinksBrowser: Int {
+enum meetLinksBrowser: Int, Codable {
     case DefaultBrowser = 0
     case Chrome = 1
+}
+
+
+extension Defaults.Keys {
+    static let calendarTitle = Key<String>("calendarTitle", default: "")
+    static let browserForMeetLinks = Key<meetLinksBrowser>("browserForMeetLinks", default: .DefaultBrowser)
 }
 
 @NSApplicationMain
@@ -30,6 +39,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     private let eventStore = EKEventStore()
     private var calendar: EKCalendar?
+    private let hotKey = HotKey(key: .j, modifiers: [.command])
 
     func applicationDidFinishLaunching(_: Notification) {
         eventStoreAccessCheck(eventStore: eventStore, completion: { result in
@@ -51,8 +61,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func setup() {
         DispatchQueue.main.async {
-            let calendarTitle = (UserDefaults.standard.string(forKey: "calendarTitle") ?? "")
-            self.calendar = getCalendar(title: calendarTitle, eventStore: self.eventStore)
+            self.calendar = getCalendar(title: Defaults[.calendarTitle], eventStore: self.eventStore)
 
             let statusBar = NSStatusBar.system
             self.statusBarItem = statusBar.statusItem(
@@ -63,6 +72,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
             self.updateStatusBarMenu()
             self.updateStatusBarTitle()
+            
+            self.hotKey.keyDownHandler = {
+                self.joinNextMeeting()
+            }
 
             self.scheduleUpdateEvents()
             self.scheduleUpdateStatusBarTitle()
@@ -177,7 +190,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     func createJoinNextSection(menu: NSMenu){
-        // TODO: Make shortcut global
         menu.addItem(
             withTitle: "Join next meeting",
             action: #selector(AppDelegate.joinNextMeeting),
@@ -204,7 +216,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let calendarMenu = NSMenu(title: "Calendar selector")
         calendarItem.submenu = calendarMenu
 
-        let defaultCalendarTitle = UserDefaults.standard.string(forKey: "calendarTitle")
         let calendars = eventStore.calendars(for: .event)
         for calendar in calendars {
             let calendarItem = calendarMenu.addItem(
@@ -212,7 +223,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 action: #selector(AppDelegate.selectCalendar(sender:)),
                 keyEquivalent: "")
             calendarItem.representedObject = calendar
-            if defaultCalendarTitle != nil, defaultCalendarTitle == calendar.title {
+            if calendar.title == Defaults[.calendarTitle] {
                 calendarItem.state = .on
             }
         }
@@ -240,21 +251,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             keyEquivalent: "")
         chrome.tag = meetLinksBrowser.Chrome.rawValue
         
-        let browserForMeetLinks = meetLinksBrowser(rawValue: UserDefaults.standard.integer(forKey: "browserForMeetLinks"))
-        switch browserForMeetLinks{
+        switch Defaults[.browserForMeetLinks]{
         case .DefaultBrowser:
             defaultBrowser.state = .on
         case .Chrome:
             chrome.state = .on
-        default:
-            break
         }
 
     }
     
     @objc func selectMeetBrowser(sender: NSMenuItem){
         let selectedBrowser = meetLinksBrowser(rawValue: sender.tag)!
-        UserDefaults.standard.set(selectedBrowser.rawValue, forKey: "browserForMeetLinks")
+        Defaults[.browserForMeetLinks] = selectedBrowser
         sender.state = .on
         for item in sender.menu!.items{
             if item != sender {
@@ -410,15 +418,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc func selectCalendar(sender: NSMenuItem) {
-        UserDefaults.standard.set(sender.title, forKey: "calendarTitle")
+        Defaults[.calendarTitle] = sender.title
         calendar = sender.representedObject as? EKCalendar
         NSLog("Set \(sender.title) as default calendar")
         updateStatusBarMenu()
         updateStatusBarTitle()
     }
 
-    @objc func joinNextMeeting(_: NSStatusBarButton) {
-        NSLog("Click on join next event!")
+    @objc func joinNextMeeting(_: NSStatusBarButton? = nil) {
+        NSLog("Jjoin next event!")
         let nextEvent = getNextEvent(eventStore: eventStore, calendar: calendar!)
         if nextEvent == nil {
             NSLog("No next event")
@@ -474,11 +482,11 @@ func openEvent(_ event: EKEvent) {
     }
     let meetLink = getMatch(text: (event.notes)!, regex: LinksRegex.meet)
     if let link = meetLink {
-        let browserForMeetLinks = meetLinksBrowser(rawValue: UserDefaults.standard.integer(forKey: "browserForMeetLinks"))
-        if browserForMeetLinks == .Chrome {
-            openLinkInChrome(link)
-        } else {
+        switch Defaults[.browserForMeetLinks]{
+        case .DefaultBrowser:
             openLinkInDefaultBrowser(link)
+        case .Chrome:
+            openLinkInChrome(link)
         }
     } else {
         NSLog("No meet link for event (\(eventTitle))")
