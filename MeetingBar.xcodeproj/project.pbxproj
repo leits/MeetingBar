@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 50;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -11,7 +11,6 @@
 		144C01812462D0C5000C9FFC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 144C01802462D0C5000C9FFC /* Assets.xcassets */; };
 		144C01842462D0C5000C9FFC /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 144C01832462D0C5000C9FFC /* Preview Assets.xcassets */; };
 		144C01872462D0C5000C9FFC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 144C01852462D0C5000C9FFC /* Main.storyboard */; };
-		147AC33A246432780039FD93 /* Preferences in Frameworks */ = {isa = PBXBuildFile; productRef = 147AC339246432780039FD93 /* Preferences */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,7 +28,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				147AC33A246432780039FD93 /* Preferences in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -90,7 +88,6 @@
 			);
 			name = MeetingBar;
 			packageProductDependencies = (
-				147AC339246432780039FD93 /* Preferences */,
 			);
 			productName = MeetingBar;
 			productReference = 144C01792462D0C3000C9FFC /* MeetingBar.app */;
@@ -121,7 +118,6 @@
 			);
 			mainGroup = 144C01702462D0C3000C9FFC;
 			packageReferences = (
-				147AC338246432780039FD93 /* XCRemoteSwiftPackageReference "Preferences" */,
 			);
 			productRefGroup = 144C017A2462D0C3000C9FFC /* Products */;
 			projectDirPath = "";
@@ -218,7 +214,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -272,10 +268,10 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
-				ONLY_ACTIVE_ARCH = NO;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
@@ -290,6 +286,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"MeetingBar/Preview Content\"";
 				DEVELOPMENT_TEAM = KGH289N6T8;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -299,7 +296,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				PRODUCT_BUNDLE_IDENTIFIER = leits.MeetingBar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -314,6 +311,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"MeetingBar/Preview Content\"";
 				DEVELOPMENT_TEAM = KGH289N6T8;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -323,7 +321,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				PRODUCT_BUNDLE_IDENTIFIER = leits.MeetingBar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -352,25 +350,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		147AC338246432780039FD93 /* XCRemoteSwiftPackageReference "Preferences" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/sindresorhus/Preferences.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.1;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		147AC339246432780039FD93 /* Preferences */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 147AC338246432780039FD93 /* XCRemoteSwiftPackageReference "Preferences" */;
-			productName = Preferences;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 144C01712462D0C3000C9FFC /* Project object */;
 }

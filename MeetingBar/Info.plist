@@ -19,9 +19,15 @@
 	<key>CFBundleShortVersionString</key>
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.productivity</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
+	<key>LSUIElement</key>
+	<true/>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Get events to show on status bar</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>Copyright © 2020 Andrii Leitsius. All rights reserved.</string>
 	<key>NSMainStoryboardFile</key>
@@ -30,11 +36,7 @@
 	<string>NSApplication</string>
 	<key>NSSupportsAutomaticTermination</key>
 	<true/>
-	<key>NSCalendarsUsageDescription</key>
-	<string>Get events to show on status bar</string>
 	<key>NSSupportsSuddenTermination</key>
-	<true/>
-	<key>LSUIElement</key>
 	<true/>
 </dict>
 </plist>
