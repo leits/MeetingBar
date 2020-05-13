@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		14158D3B246C65AD0006436C /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 14158D3A246C65AD0006436C /* README.md */; };
 		144C017D2462D0C3000C9FFC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 144C017C2462D0C3000C9FFC /* AppDelegate.swift */; };
 		144C01812462D0C5000C9FFC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 144C01802462D0C5000C9FFC /* Assets.xcassets */; };
 		144C01842462D0C5000C9FFC /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 144C01832462D0C5000C9FFC /* Preview Assets.xcassets */; };
@@ -14,6 +15,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		14158D3A246C65AD0006436C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		144C01792462D0C3000C9FFC /* MeetingBar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MeetingBar.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		144C017C2462D0C3000C9FFC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		144C01802462D0C5000C9FFC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -37,6 +39,7 @@
 		144C01702462D0C3000C9FFC = {
 			isa = PBXGroup;
 			children = (
+				14158D3A246C65AD0006436C /* README.md */,
 				144C017B2462D0C3000C9FFC /* MeetingBar */,
 				144C017A2462D0C3000C9FFC /* Products */,
 			);
@@ -135,6 +138,7 @@
 			files = (
 				144C01872462D0C5000C9FFC /* Main.storyboard in Resources */,
 				144C01842462D0C5000C9FFC /* Preview Assets.xcassets in Resources */,
+				14158D3B246C65AD0006436C /* README.md in Resources */,
 				144C01812462D0C5000C9FFC /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -286,7 +290,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_ASSET_PATHS = "\"MeetingBar/Preview Content\"";
 				DEVELOPMENT_TEAM = KGH289N6T8;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -297,6 +301,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = leits.MeetingBar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -311,7 +316,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_ASSET_PATHS = "\"MeetingBar/Preview Content\"";
 				DEVELOPMENT_TEAM = KGH289N6T8;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -322,6 +327,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = leits.MeetingBar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
