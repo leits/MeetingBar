@@ -67,7 +67,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             self.statusBarItem = statusBar.statusItem(
                 withLength: NSStatusItem.variableLength)
 
-            let statusBarMenu = NSMenu(title: "Meeter in Status Bar Menu")
+            let statusBarMenu = NSMenu(title: "MeetingBar in Status Bar Menu")
             self.statusBarItem.menu = statusBarMenu
 
             self.updateStatusBarMenu()
@@ -111,17 +111,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             self.updateStatusBarMenu()
             completion(NSBackgroundActivityScheduler.Result.finished)
         }
-    }
-
-    func loadTodayEventsFromCalendar(_ calendar: EKCalendar) -> [EKEvent] {
-        let todayMidnight = Calendar.current.startOfDay(for: Date())
-        let tomorrowMidnight = Calendar.current.date(byAdding: .day, value: 1, to: todayMidnight)!
-
-        let predicate = eventStore.predicateForEvents(withStart: todayMidnight, end: tomorrowMidnight, calendars: [calendar])
-        let calendarEvents = eventStore.events(matching: predicate)
-
-        NSLog("Calendar \(calendar.title) loaded")
-        return calendarEvents
     }
 
     func updateStatusBarTitle() {
@@ -196,83 +185,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             keyEquivalent: "j")
     }
 
-    func createPreferencesSection(menu: NSMenu) {
-        // Main preferences menu
-        let preferencesMenu = NSMenu(title: "Preferences")
-
-        let preferencesItem = menu.addItem(
-            withTitle: "Preferences",
-            action: nil,
-            keyEquivalent: "")
-
-        preferencesItem.submenu = preferencesMenu
-        
-        // Calendar submenu
-        let calendarItem = preferencesMenu.addItem(
-            withTitle: "Calendar",
-            action: nil,
-            keyEquivalent: "")
-
-        let calendarMenu = NSMenu(title: "Calendar selector")
-        calendarItem.submenu = calendarMenu
-
-        let calendars = eventStore.calendars(for: .event)
-        for calendar in calendars {
-            let calendarItem = calendarMenu.addItem(
-                withTitle: "\(calendar.title)",
-                action: #selector(AppDelegate.selectCalendar(sender:)),
-                keyEquivalent: "")
-            calendarItem.representedObject = calendar
-            if calendar.title == Defaults[.calendarTitle] {
-                calendarItem.state = .on
-            }
-        }
-        
-        // Browser for meet links submenu
-        let meetBrowserItem = preferencesMenu.addItem(
-            withTitle: "Browser for meet links",
-            action: nil,
-            keyEquivalent: "")
-
-        let meetBroswerMenu = NSMenu(title: "Meet browser selector")
-        meetBrowserItem.submenu = meetBroswerMenu
-        
-        // Default Browser
-        let defaultBrowser = meetBroswerMenu.addItem(
-            withTitle: "Default Browser",
-            action: #selector(AppDelegate.selectMeetBrowser(sender:)),
-            keyEquivalent: "")
-        defaultBrowser.tag = meetLinksBrowser.DefaultBrowser.rawValue
-        
-        // Chrome
-        let chrome = meetBroswerMenu.addItem(
-            withTitle: "Chrome",
-            action: #selector(AppDelegate.selectMeetBrowser(sender:)),
-            keyEquivalent: "")
-        chrome.tag = meetLinksBrowser.Chrome.rawValue
-        
-        switch Defaults[.browserForMeetLinks]{
-        case .DefaultBrowser:
-            defaultBrowser.state = .on
-        case .Chrome:
-            chrome.state = .on
-        }
-
-    }
-    
-    @objc func selectMeetBrowser(sender: NSMenuItem){
-        let selectedBrowser = meetLinksBrowser(rawValue: sender.tag)!
-        Defaults[.browserForMeetLinks] = selectedBrowser
-        sender.state = .on
-        for item in sender.menu!.items{
-            if item != sender {
-                item.state = .off
-            }
-        }
-    }
-
     func createTodaySection(menu: NSMenu) {
-        let events: [EKEvent] = loadTodayEventsFromCalendar(calendar!)
+        let events: [EKEvent] = loadTodayEventsFromCalendar(eventStore: eventStore, calendar: calendar!)
         let now = Date()
 
         // Today header
@@ -406,25 +320,70 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
     
-    @objc func about(_: NSStatusBarButton) {
-        NSLog("User click About")
-        let projectLink = "https://github.com/leits/MeetingBar"
-        openLinkInDefaultBrowser(projectLink)
-    }
+    func createPreferencesSection(menu: NSMenu) {
+        // Main preferences menu
+        let preferencesMenu = NSMenu(title: "Preferences")
 
-    @objc func quit(_: NSStatusBarButton) {
-        NSLog("User click Quit")
-        NSApplication.shared.terminate(self)
-    }
+        let preferencesItem = menu.addItem(
+            withTitle: "Preferences",
+            action: nil,
+            keyEquivalent: "")
 
-    @objc func selectCalendar(sender: NSMenuItem) {
-        Defaults[.calendarTitle] = sender.title
-        calendar = sender.representedObject as? EKCalendar
-        NSLog("Set \(sender.title) as default calendar")
-        updateStatusBarMenu()
-        updateStatusBarTitle()
-    }
+        preferencesItem.submenu = preferencesMenu
+        
+        // Calendar submenu
+        let calendarItem = preferencesMenu.addItem(
+            withTitle: "Calendar",
+            action: nil,
+            keyEquivalent: "")
 
+        let calendarMenu = NSMenu(title: "Calendar selector")
+        calendarItem.submenu = calendarMenu
+
+        let calendars = eventStore.calendars(for: .event)
+        for calendar in calendars {
+            let calendarItem = calendarMenu.addItem(
+                withTitle: "\(calendar.title)",
+                action: #selector(AppDelegate.selectCalendar(sender:)),
+                keyEquivalent: "")
+            calendarItem.representedObject = calendar
+            if calendar.title == Defaults[.calendarTitle] {
+                calendarItem.state = .on
+            }
+        }
+        
+        // Browser for meet links submenu
+        let meetBrowserItem = preferencesMenu.addItem(
+            withTitle: "Browser for meet links",
+            action: nil,
+            keyEquivalent: "")
+
+        let meetBroswerMenu = NSMenu(title: "Meet browser selector")
+        meetBrowserItem.submenu = meetBroswerMenu
+        
+        // Default Browser
+        let defaultBrowser = meetBroswerMenu.addItem(
+            withTitle: "Default Browser",
+            action: #selector(AppDelegate.selectMeetBrowser(sender:)),
+            keyEquivalent: "")
+        defaultBrowser.tag = meetLinksBrowser.DefaultBrowser.rawValue
+        
+        // Chrome
+        let chrome = meetBroswerMenu.addItem(
+            withTitle: "Chrome",
+            action: #selector(AppDelegate.selectMeetBrowser(sender:)),
+            keyEquivalent: "")
+        chrome.tag = meetLinksBrowser.Chrome.rawValue
+        
+        switch Defaults[.browserForMeetLinks]{
+        case .DefaultBrowser:
+            defaultBrowser.state = .on
+        case .Chrome:
+            chrome.state = .on
+        }
+
+    }
+    
     @objc func joinNextMeeting(_: NSStatusBarButton? = nil) {
         NSLog("Jjoin next event!")
         let nextEvent = getNextEvent(eventStore: eventStore, calendar: calendar!)
@@ -440,6 +399,58 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let event: EKEvent = sender.representedObject as! EKEvent
         openEvent(event)
     }
+    
+    @objc func selectCalendar(sender: NSMenuItem) {
+        Defaults[.calendarTitle] = sender.title
+        calendar = sender.representedObject as? EKCalendar
+        NSLog("Set \(sender.title) as default calendar")
+        updateStatusBarMenu()
+        updateStatusBarTitle()
+    }
+    
+    @objc func selectMeetBrowser(sender: NSMenuItem){
+        let selectedBrowser = meetLinksBrowser(rawValue: sender.tag)!
+        Defaults[.browserForMeetLinks] = selectedBrowser
+        sender.state = .on
+        for item in sender.menu!.items{
+            if item != sender {
+                item.state = .off
+            }
+        }
+    }
+    
+    @objc func about(_: NSStatusBarButton) {
+        NSLog("User click About")
+        let projectLink = "https://github.com/leits/MeetingBar"
+        openLinkInDefaultBrowser(projectLink)
+    }
+
+    @objc func quit(_: NSStatusBarButton) {
+        NSLog("User click Quit")
+        NSApplication.shared.terminate(self)
+    }
+}
+
+
+func getCalendar(title: String, eventStore: EKEventStore) -> EKCalendar? {
+    let calendars = eventStore.calendars(for: .event)
+    for calendar in calendars {
+        if calendar.title == title {
+            return calendar
+        }
+    }
+    return nil
+}
+
+func loadTodayEventsFromCalendar(eventStore: EKEventStore, calendar: EKCalendar) -> [EKEvent] {
+    let todayMidnight = Calendar.current.startOfDay(for: Date())
+    let tomorrowMidnight = Calendar.current.date(byAdding: .day, value: 1, to: todayMidnight)!
+
+    let predicate = eventStore.predicateForEvents(withStart: todayMidnight, end: tomorrowMidnight, calendars: [calendar])
+    let calendarEvents = eventStore.events(matching: predicate)
+
+    NSLog("Calendar \(calendar.title) loaded")
+    return calendarEvents
 }
 
 func getNextEvent(eventStore: EKEventStore, calendar: EKCalendar) -> EKEvent? {
@@ -496,16 +507,6 @@ func openEvent(_ event: EKEvent) {
         }
         NSLog("No zoom link for event (\(eventTitle))")
     }
-}
-
-func getCalendar(title: String, eventStore: EKEventStore) -> EKCalendar? {
-    let calendars = eventStore.calendars(for: .event)
-    for calendar in calendars {
-        if calendar.title == title {
-            return calendar
-        }
-    }
-    return nil
 }
 
 func getMatch(text: String, regex: NSRegularExpression) -> String? {
