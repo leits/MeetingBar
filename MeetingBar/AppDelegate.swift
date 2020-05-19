@@ -10,8 +10,8 @@ import Cocoa
 import EventKit
 import SwiftUI
 
-import HotKey
 import Defaults
+import HotKey
 
 struct LinksRegex {
     static let meet = try! NSRegularExpression(pattern: #"https://meet.google.com/.*"#)
@@ -28,20 +28,18 @@ extension Defaults.Keys {
     static let launchAtLogin = Key<Bool>("launchAtLogin", default: false)
 }
 
-
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
     var preferencesWindow: NSWindow!
-    
+
     var statusBarItem: NSStatusItem!
 
     private let eventStore = EKEventStore()
     private var calendar: EKCalendar?
     private let hotKey = HotKey(key: .j, modifiers: [.command])
-    
+
     var calendarTitleObserver: DefaultsObservation?
     var launchAtLoginObserver: DefaultsObservation?
-
 
     func applicationDidFinishLaunching(_: Notification) {
         eventStoreAccessCheck(eventStore: eventStore, completion: { result in
@@ -74,23 +72,24 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
             self.updateStatusBarMenu()
             self.updateStatusBarTitle()
-            
+
             self.hotKey.keyDownHandler = {
                 self.joinNextMeeting()
             }
 
-            self.scheduleUpdateEvents()
             self.scheduleUpdateStatusBarTitle()
-            
+
+            NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.eventStoreChanged), name: .EKEventStoreChanged, object: self.eventStore)
+
             self.calendarTitleObserver = Defaults.observe(.calendarTitle) { change in
-                   NSLog("Change calendarTitle from \(change.oldValue) to \(change.newValue)")
+                NSLog("Change calendarTitle from \(change.oldValue) to \(change.newValue)")
                 self.calendar = getCalendar(title: change.newValue, eventStore: self.eventStore)
                 self.updateStatusBarMenu()
                 self.updateStatusBarTitle()
-               }
-            
+            }
+
             self.launchAtLoginObserver = Defaults.observe(.launchAtLogin) { change in
-                NSLog("Change calendarTitle from \(change.oldValue) to \(change.newValue)")
+                NSLog("Change launchAtLogin from \(change.oldValue) to \(change.newValue)")
                 if change.newValue {
                     NSApp.enableRelaunchOnLogin()
                 } else {
@@ -100,33 +99,21 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
+    @objc func eventStoreChanged(notification _: NSNotification) {
+        NSLog("Store changed. Update status bar menu!")
+        updateStatusBarMenu()
+    }
+
     private func scheduleUpdateStatusBarTitle() {
         let activity = NSBackgroundActivityScheduler(identifier: "leits.MeetingBar.updatestatusbartitle")
 
         activity.repeats = true
-        activity.interval = 10
+        activity.interval = 60
         activity.qualityOfService = QualityOfService.userInitiated
 
         activity.schedule { (completion: @escaping NSBackgroundActivityScheduler.CompletionHandler) in
             NSLog("Firing reccuring reloadStatusBarTitle")
             self.updateStatusBarTitle()
-            completion(NSBackgroundActivityScheduler.Result.finished)
-        }
-    }
-
-    private func scheduleUpdateEvents() {
-        // TODO: Subscribe to update evenets notification instead of force reload all events
-        // https://developer.apple.com/documentation/eventkit/updating_with_notifications
-
-        let activity = NSBackgroundActivityScheduler(identifier: "leits.MeetingBar.updateevents")
-
-        activity.repeats = true
-        activity.interval = 60 * 5
-        activity.qualityOfService = QualityOfService.utility
-
-        activity.schedule { (completion: @escaping NSBackgroundActivityScheduler.CompletionHandler) in
-            NSLog("Firing reccuring updateEvents")
-            self.updateStatusBarMenu()
             completion(NSBackgroundActivityScheduler.Result.finished)
         }
     }
@@ -156,7 +143,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                         msg = " in \(hours) hours"
                     }
                 }
-                // TODO: Make title length customizable
                 title = "\(eventTitle)\(msg)"
             } else {
                 title = "🏁"
@@ -195,8 +181,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             action: #selector(AppDelegate.quit),
             keyEquivalent: "")
     }
-    
-    func createJoinNextSection(menu: NSMenu){
+
+    func createJoinNextSection(menu: NSMenu) {
         menu.addItem(
             withTitle: "Join next meeting",
             action: #selector(AppDelegate.joinNextMeeting),
@@ -220,131 +206,160 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         let sortedEvents = events.sorted(by: { $0.startDate < $1.startDate })
         for event in sortedEvents {
-            let eventTitle = String(event.title)
+            createEventItem(event: event, menu: menu)
+        }
+    }
 
-            let eventTimeFormatter = DateFormatter()
-            eventTimeFormatter.dateFormat = "HH:mm"
-            let eventStartTime = eventTimeFormatter.string(from: event.startDate)
-            let eventEndTime = eventTimeFormatter.string(from: event.endDate)
-            let eventDurationMinutes = String(event.endDate.timeIntervalSince(event.startDate) / 60)
-            
-            // Event Item
-            let itemTitle = "\(eventStartTime) - \(eventTitle)"
-            let eventItem = menu.addItem(
-                withTitle: itemTitle,
-                action: #selector(AppDelegate.clickOnEvent(sender:)),
-                keyEquivalent: "")
-            if event.endDate < now {
-                eventItem.state = .on
-            } else if event.startDate < now, event.endDate > now {
-                eventItem.state = .mixed
-            } else {
-                eventItem.state = .off
+    func createEventItem(event: EKEvent, menu: NSMenu) {
+        let now = Date()
+
+        let eventTitle = String(event.title)
+
+        let eventTimeFormatter = DateFormatter()
+        eventTimeFormatter.dateFormat = "HH:mm"
+        let eventStartTime = eventTimeFormatter.string(from: event.startDate)
+        let eventEndTime = eventTimeFormatter.string(from: event.endDate)
+        let eventDurationMinutes = String(event.endDate.timeIntervalSince(event.startDate) / 60)
+
+        // Event Item
+        let itemTitle = "\(eventStartTime) - \(eventTitle)"
+        let eventItem = menu.addItem(
+            withTitle: itemTitle,
+            action: #selector(AppDelegate.clickOnEvent(sender:)),
+            keyEquivalent: "")
+        let eventStatus = getEventStatus(event)
+        if eventStatus != nil {
+            if eventStatus == .declined {
+                eventItem.attributedTitle = NSAttributedString(
+                    string: itemTitle,
+                    attributes: [NSAttributedString.Key.strikethroughStyle: NSUnderlineStyle.thick.rawValue]
+                )
             }
-            eventItem.representedObject = event
+        }
+        if event.endDate < now {
+            eventItem.state = .on
+        } else if event.startDate < now, event.endDate > now {
+            eventItem.state = .mixed
+        } else {
+            eventItem.state = .off
+        }
+        eventItem.representedObject = event
 
-            let eventMenu = NSMenu(title: "Item \(eventTitle) menu")
-            eventItem.submenu = eventMenu
-            
-            // Title
-            let titleItem = eventMenu.addItem(withTitle: eventTitle, action: nil, keyEquivalent: "")
-            titleItem.attributedTitle = NSAttributedString(string: eventTitle, attributes: [NSAttributedString.Key.font: NSFont.boldSystemFont(ofSize: 15)])
-            eventMenu.addItem(NSMenuItem.separator())
+        let eventMenu = NSMenu(title: "Item \(eventTitle) menu")
+        eventItem.submenu = eventMenu
 
-            // Duration
-            let durationTitle = "\(eventStartTime) - \(eventEndTime) (\(eventDurationMinutes) minutes)"
-            eventMenu.addItem(withTitle: durationTitle, action: nil, keyEquivalent: "")
-            eventMenu.addItem(NSMenuItem.separator())
+        // Title
+        let titleItem = eventMenu.addItem(withTitle: eventTitle, action: nil, keyEquivalent: "")
+        titleItem.attributedTitle = NSAttributedString(string: eventTitle, attributes: [NSAttributedString.Key.font: NSFont.boldSystemFont(ofSize: 15)])
+        eventMenu.addItem(NSMenuItem.separator())
 
-            // Status
+        // Duration
+        let durationTitle = "\(eventStartTime) - \(eventEndTime) (\(eventDurationMinutes) minutes)"
+        eventMenu.addItem(withTitle: durationTitle, action: nil, keyEquivalent: "")
+        eventMenu.addItem(NSMenuItem.separator())
+
+        // Status
+        if eventStatus != nil {
             var status: String
-            switch event.status {
-            case .canceled:
+            switch eventStatus {
+            case .accepted:
+                status = " 👍 Accepted"
+            case .declined:
                 status = " 👎 Canceled"
-            case .confirmed:
-                status = " 👍 Confirmed"
             case .tentative:
                 status = " ☝️ Tentative"
             default:
-                status = " ❔ None"
+                status = " ❔ (\(String(describing: eventStatus))))"
             }
             eventMenu.addItem(withTitle: "Status: \(status)", action: nil, keyEquivalent: "")
             eventMenu.addItem(NSMenuItem.separator())
+        }
 
-            // Location
-            if event.location != nil {
-                eventMenu.addItem(withTitle: "Location:", action: nil, keyEquivalent: "")
-                eventMenu.addItem(withTitle: "\(event.location!)", action: nil, keyEquivalent: "")
+        // Location
+        if event.location != nil {
+            eventMenu.addItem(withTitle: "Location:", action: nil, keyEquivalent: "")
+            eventMenu.addItem(withTitle: "\(event.location!)", action: nil, keyEquivalent: "")
+            eventMenu.addItem(NSMenuItem.separator())
+        }
+
+        // Organizer
+        if let eventOrganizer = event.organizer {
+            eventMenu.addItem(withTitle: "Organizer:", action: nil, keyEquivalent: "")
+            let organizerName = eventOrganizer.name ?? ""
+            eventMenu.addItem(withTitle: "\(organizerName)", action: nil, keyEquivalent: "")
+            eventMenu.addItem(NSMenuItem.separator())
+        }
+
+        // Notes
+        if event.hasNotes {
+            let notes = cleanUpNotes(event.notes!)
+            if notes.count > 0 {
+                eventMenu.addItem(withTitle: "Notes:", action: nil, keyEquivalent: "")
+                let item = eventMenu.addItem(withTitle: "", action: nil, keyEquivalent: "")
+                item.attributedTitle = NSAttributedString(string: notes)
                 eventMenu.addItem(NSMenuItem.separator())
             }
+        }
 
-            // Organizer
-            if let eventOrganizer = event.organizer {
-                eventMenu.addItem(withTitle: "Organizer:", action: nil, keyEquivalent: "")
-                let organizerName = eventOrganizer.name ?? ""
-                eventMenu.addItem(withTitle: "\(organizerName)", action: nil, keyEquivalent: "")
-                eventMenu.addItem(NSMenuItem.separator())
-            }
-            
-            // Notes
-            if event.hasNotes {
-                let notes = cleanUpNotes(event.notes!)
-                if notes.count > 0 {
-                    eventMenu.addItem(withTitle: "Notes:", action: nil, keyEquivalent: "")
-                    let item = eventMenu.addItem(withTitle: "", action: nil, keyEquivalent: "")
-                    item.attributedTitle = NSAttributedString(string: notes)
-                    eventMenu.addItem(NSMenuItem.separator())
+        // Attendees
+        if event.hasAttendees {
+            let attendees: [EKParticipant] = event.attendees!
+            let count = attendees.filter { $0.participantType == .person }.count
+            let sortedAttendees = attendees.sorted {
+                if $0.participantRole.rawValue != $1.participantRole.rawValue {
+                    return $0.participantRole.rawValue < $1.participantRole.rawValue
+                } else {
+                    return $0.participantStatus.rawValue < $1.participantStatus.rawValue
                 }
             }
-
-            // Attendees
-            if event.hasAttendees {
-                let attendees: [EKParticipant] = event.attendees!
-                let count = attendees.filter{ $0.participantType == .person }.count
-                eventMenu.addItem(withTitle: "Attendees (\(count)):", action: nil, keyEquivalent: "")
-                for attendee in attendees {
-                    if attendee.isCurrentUser || attendee.participantType != .person {
-                        continue
-                    }
-                    var attributes: [NSAttributedString.Key: Any] = [:]
-
-                    var roleMark: String
-                    switch attendee.participantRole {
-                    case .optional:
-                        roleMark = "*"
-                    default:
-                        roleMark = ""
-                    }
-                    
-                    var status: String
-                    switch attendee.participantStatus {
-                    case .declined:
-                        status = ""
-                        attributes[NSAttributedString.Key.strikethroughStyle] = NSUnderlineStyle.single.rawValue
-                        attributes[NSAttributedString.Key.strikethroughColor] = NSColor.gray
-                    case .tentative:
-                        status = " [tentative]"
-                    case .pending:
-                        status = " [?]"
-                    default:
-                        status = ""
-                    }
-
-                    let itemTitle = "- \(attendee.name!)\(roleMark) \(status)"
-                    let item = eventMenu.addItem(withTitle: itemTitle, action: nil, keyEquivalent: "")
-                    item.attributedTitle = NSAttributedString(string: itemTitle, attributes: attributes)
+            eventMenu.addItem(withTitle: "Attendees (\(count)):", action: nil, keyEquivalent: "")
+            for attendee in sortedAttendees {
+                if attendee.participantType != .person {
+                    continue
                 }
+                var attributes: [NSAttributedString.Key: Any] = [:]
+
+                var name = attendee.name!
+
+                if attendee.isCurrentUser {
+                    name = "\(name) (you)"
+                }
+
+                var roleMark: String
+                switch attendee.participantRole {
+                case .optional:
+                    roleMark = "*"
+                default:
+                    roleMark = ""
+                }
+
+                var status: String
+                switch attendee.participantStatus {
+                case .declined:
+                    status = ""
+                    attributes[NSAttributedString.Key.strikethroughStyle] = NSUnderlineStyle.thick.rawValue
+                case .tentative:
+                    status = " [tentative]"
+                case .pending:
+                    status = " [?]"
+                default:
+                    status = ""
+                }
+
+                let itemTitle = "- \(name)\(roleMark) \(status)"
+                let item = eventMenu.addItem(withTitle: itemTitle, action: nil, keyEquivalent: "")
+                item.attributedTitle = NSAttributedString(string: itemTitle, attributes: attributes)
             }
         }
     }
-    
+
     func createPreferencesSection(menu: NSMenu) {
         menu.addItem(
             withTitle: "Preferences",
             action: #selector(AppDelegate.openPrefecencesWindow),
             keyEquivalent: "")
     }
-    
+
     @objc func joinNextMeeting(_: NSStatusBarButton? = nil) {
         NSLog("Join next event!")
         let nextEvent = getNextEvent(eventStore: eventStore, calendar: calendar!)
@@ -360,12 +375,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let event: EKEvent = sender.representedObject as! EKEvent
         openEvent(event)
     }
-    
+
     @objc func openPrefecencesWindow(_: NSStatusBarButton) {
         NSLog("Open preferences window")
         let calendars = eventStore.calendars(for: .event)
         let contentView = ContentView(calendars: calendars)
-        preferencesWindow = NSWindow(contentRect: NSMakeRect(0, 0, 512, 512),
+        preferencesWindow = NSWindow(
+            contentRect: NSMakeRect(0, 0, 512, 512),
             styleMask: [.closable, .titled],
             backing: .buffered,
             defer: false)
@@ -374,11 +390,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let controller = NSWindowController(window: preferencesWindow)
 
         controller.showWindow(self)
-        
+
         preferencesWindow.center()
         preferencesWindow.orderFrontRegardless()
     }
-    
+
     @objc func about(_: NSStatusBarButton) {
         NSLog("User click About")
         let projectLink = "https://github.com/leits/MeetingBar"
@@ -390,7 +406,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         NSApplication.shared.terminate(self)
     }
 }
-
 
 func getCalendar(title: String, eventStore: EKEventStore) -> EKCalendar? {
     let calendars = eventStore.calendars(for: .event)
@@ -427,6 +442,10 @@ func getNextEvent(eventStore: EKEventStore, calendar: EKCalendar) -> EKEvent? {
     // but the next event is closer than 10 minutes later
     // then show the next event
     for event in nextEvents {
+        // Skip event if declined
+        if let status = getEventStatus(event) {
+            if status == .declined { continue }
+        }
         if event.status == .canceled {
             continue
         } else {
@@ -453,7 +472,7 @@ func openEvent(_ event: EKEvent) {
     }
     let meetLink = getMatch(text: (event.notes)!, regex: LinksRegex.meet)
     if let link = meetLink {
-        if Defaults[.useChromeForMeetLinks]{
+        if Defaults[.useChromeForMeetLinks] {
             openLinkInChrome(link)
         } else {
             openLinkInDefaultBrowser(link)
@@ -466,6 +485,15 @@ func openEvent(_ event: EKEvent) {
         }
         NSLog("No zoom link for event (\(eventTitle))")
     }
+}
+
+func getEventStatus(_ event: EKEvent) -> EKParticipantStatus? {
+    if event.hasAttendees {
+        if let currentUser = event.attendees!.first(where: { $0.isCurrentUser }) {
+            return currentUser.participantStatus
+        }
+    }
+    return nil
 }
 
 func getMatch(text: String, regex: NSRegularExpression) -> String? {
