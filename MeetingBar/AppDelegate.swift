@@ -181,6 +181,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func updateStatusBarMenu() {
         let statusBarMenu = statusBarItem.menu!
+        statusBarMenu.autoenablesItems = false
         statusBarMenu.removeAllItems()
 
         if calendar != nil {
@@ -194,10 +195,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func createJoinNextSection(menu: NSMenu) {
-        menu.addItem(
+        let item = menu.addItem(
             withTitle: "Join next meeting",
             action: #selector(AppDelegate.joinNextMeeting),
             keyEquivalent: "j")
+        let nextEvent = getNextEvent(eventStore: eventStore, calendar: calendar!)
+        item.isEnabled = (nextEvent != nil)
     }
 
     func createTodaySection(menu: NSMenu) {
@@ -214,6 +217,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             action: nil,
             keyEquivalent: "")
         titleItem.attributedTitle = NSAttributedString(string: todayTitle, attributes: [NSAttributedString.Key.font: NSFont.boldSystemFont(ofSize: 13)])
+        titleItem.isEnabled = false
 
         let sortedEvents = events.sorted(by: { $0.startDate < $1.startDate })
         for event in sortedEvents {
