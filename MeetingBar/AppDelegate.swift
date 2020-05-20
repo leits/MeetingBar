@@ -18,6 +18,11 @@ struct LinksRegex {
     static let zoom = try! NSRegularExpression(pattern: #"https://zoom.us/j/.*"#)
 }
 
+enum MeetingServices: String, Codable, CaseIterable {
+    case meet = "Google Meet"
+    case zoom = "Zoom"
+}
+
 enum AuthResult {
     case success(Bool), failure(Error)
 }
@@ -27,6 +32,7 @@ extension Defaults.Keys {
     static let useChromeForMeetLinks = Key<Bool>("useChromeForMeetLinks", default: false)
     static let launchAtLogin = Key<Bool>("launchAtLogin", default: false)
     static let showEventDetails = Key<Bool>("showEventDetails", default: true)
+    static let createMeetingService = Key<MeetingServices>("createMeetingService", default: .meet)
 }
 
 @NSApplicationMain
@@ -37,7 +43,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     private let eventStore = EKEventStore()
     private var calendar: EKCalendar?
-    private let hotKey = HotKey(key: .j, modifiers: [.command])
+    private let jHotKey = HotKey(key: .j, modifiers: [.command])
+    private let kHotKey = HotKey(key: .k, modifiers: [.command])
 
     var calendarTitleObserver: DefaultsObservation?
     var launchAtLoginObserver: DefaultsObservation?
@@ -75,8 +82,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             self.updateStatusBarMenu()
             self.updateStatusBarTitle()
 
-            self.hotKey.keyDownHandler = {
+            self.jHotKey.keyDownHandler = {
                 self.joinNextMeeting()
+            }
+            
+            self.kHotKey.keyDownHandler = {
+                self.createMeeting()
             }
 
             self.scheduleUpdateStatusBarTitle()
@@ -185,22 +196,28 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         statusBarMenu.removeAllItems()
 
         if calendar != nil {
-            createJoinNextSection(menu: statusBarMenu)
-            statusBarMenu.addItem(NSMenuItem.separator())
-
             createTodaySection(menu: statusBarMenu)
             statusBarMenu.addItem(NSMenuItem.separator())
         }
+        createJoinSection(menu: statusBarMenu)
+        statusBarMenu.addItem(NSMenuItem.separator())
+        
         createPreferencesSection(menu: statusBarMenu)
     }
 
-    func createJoinNextSection(menu: NSMenu) {
-        let item = menu.addItem(
-            withTitle: "Join next meeting",
-            action: #selector(AppDelegate.joinNextMeeting),
-            keyEquivalent: "j")
-        let nextEvent = getNextEvent(eventStore: eventStore, calendar: calendar!)
-        item.isEnabled = (nextEvent != nil)
+    func createJoinSection(menu: NSMenu) {
+        if calendar != nil {
+            let item = menu.addItem(
+                withTitle: "Join next event",
+                action: #selector(AppDelegate.joinNextMeeting),
+                keyEquivalent: "j")
+            let nextEvent = getNextEvent(eventStore: eventStore, calendar: calendar!)
+            item.isEnabled = (nextEvent != nil)
+        }
+        menu.addItem(
+            withTitle: "Create meeting",
+            action: #selector(AppDelegate.createMeeting),
+            keyEquivalent: "k")
     }
 
     func createTodaySection(menu: NSMenu) {
@@ -391,6 +408,22 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             return
         }
         openEvent(nextEvent!)
+    }
+
+    @objc func createMeeting(_: NSStatusBarButton? = nil) {
+        NSLog("Create meeting in \(Defaults[.createMeetingService].rawValue)")
+        switch Defaults[.createMeetingService] {
+        case .meet:
+            let meetLink = "https://meet.google.com/new"
+            if Defaults[.useChromeForMeetLinks] {
+                openLinkInChrome(meetLink)
+            } else {
+                openLinkInDefaultBrowser(meetLink)
+            }
+        case .zoom:
+            openLinkInDefaultBrowser("https://zoom.us/start/videomeeting")
+
+        }
     }
 
     @objc func clickOnEvent(sender: NSMenuItem) {

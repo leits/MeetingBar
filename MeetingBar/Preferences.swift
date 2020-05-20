@@ -14,6 +14,7 @@ struct ContentView: View {
     @Default(.useChromeForMeetLinks) var useChromeForMeetLinks
     @Default(.launchAtLogin) var launchAtLogin
     @Default(.showEventDetails) var showEventDetails
+    @Default(.createMeetingService) var createMeetingService
 
     let calendars: [EKCalendar]
 
@@ -24,6 +25,11 @@ struct ContentView: View {
                     Text(self.calendars[index].title)
                         .foregroundColor(Color(self.calendars[index].color))
                         .tag(self.calendars[index].title)
+                }
+            }
+            Picker(selection: $createMeetingService, label: Text("Create meetings in ")) {
+                ForEach(MeetingServices.allCases, id: \.self) {
+                    Text($0.rawValue).tag($0)
                 }
             }
             Toggle(isOn: $useChromeForMeetLinks) {
