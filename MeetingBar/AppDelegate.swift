@@ -85,7 +85,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             self.jHotKey.keyDownHandler = {
                 self.joinNextMeeting()
             }
-            
+
             self.kHotKey.keyDownHandler = {
                 self.createMeeting()
             }
@@ -101,7 +101,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 self.updateStatusBarMenu()
                 self.updateStatusBarTitle()
             }
-            
+
             self.showEventDetailsObserver = Defaults.observe(.showEventDetails) { change in
                 NSLog("Change showEventDetails from \(change.oldValue) to \(change.newValue)")
                 self.updateStatusBarMenu()
@@ -136,12 +136,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             completion(NSBackgroundActivityScheduler.Result.finished)
         }
     }
-    
+
     private func scheduleUpdateEvents() {
         let activity = NSBackgroundActivityScheduler(identifier: "leits.MeetingBar.updateevents")
 
         activity.repeats = true
-        activity.interval = 60*5
+        activity.interval = 60 * 5
         activity.qualityOfService = QualityOfService.userInitiated
 
         activity.schedule { (completion: @escaping NSBackgroundActivityScheduler.CompletionHandler) in
@@ -201,18 +201,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         createJoinSection(menu: statusBarMenu)
         statusBarMenu.addItem(NSMenuItem.separator())
-        
+
         createPreferencesSection(menu: statusBarMenu)
     }
 
     func createJoinSection(menu: NSMenu) {
         if calendar != nil {
-            let item = menu.addItem(
-                withTitle: "Join next event",
-                action: #selector(AppDelegate.joinNextMeeting),
-                keyEquivalent: "j")
             let nextEvent = getNextEvent(eventStore: eventStore, calendar: calendar!)
-            item.isEnabled = (nextEvent != nil)
+            if nextEvent != nil {
+                menu.addItem(
+                    withTitle: "Join next event",
+                    action: #selector(AppDelegate.joinNextMeeting),
+                    keyEquivalent: "j")
+            }
         }
         menu.addItem(
             withTitle: "Create meeting",
@@ -237,6 +238,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         titleItem.isEnabled = false
 
         let sortedEvents = events.sorted(by: { $0.startDate < $1.startDate })
+
+        if sortedEvents.count == 0 {
+            let item = menu.addItem(
+                withTitle: "Nothing for today",
+                action: nil,
+                keyEquivalent: "")
+            item.isEnabled = false
+        }
+
         for event in sortedEvents {
             createEventItem(event: event, menu: menu)
         }
@@ -276,7 +286,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             eventItem.state = .off
         }
         eventItem.representedObject = event
-        
+
         if Defaults[.showEventDetails] {
 
             let eventMenu = NSMenu(title: "Item \(eventTitle) menu")
