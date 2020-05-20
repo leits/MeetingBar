@@ -26,6 +26,7 @@ extension Defaults.Keys {
     static let calendarTitle = Key<String>("calendarTitle", default: "")
     static let useChromeForMeetLinks = Key<Bool>("useChromeForMeetLinks", default: false)
     static let launchAtLogin = Key<Bool>("launchAtLogin", default: false)
+    static let showEventDetails = Key<Bool>("showEventDetails", default: true)
 }
 
 @NSApplicationMain
@@ -40,6 +41,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     var calendarTitleObserver: DefaultsObservation?
     var launchAtLoginObserver: DefaultsObservation?
+    var showEventDetailsObserver: DefaultsObservation?
 
     func applicationDidFinishLaunching(_: Notification) {
         eventStoreAccessCheck(eventStore: eventStore, completion: { result in
@@ -78,6 +80,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
 
             self.scheduleUpdateStatusBarTitle()
+            self.scheduleUpdateEvents()
 
             NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.eventStoreChanged), name: .EKEventStoreChanged, object: self.eventStore)
 
@@ -86,6 +89,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 self.calendar = getCalendar(title: change.newValue, eventStore: self.eventStore)
                 self.updateStatusBarMenu()
                 self.updateStatusBarTitle()
+            }
+            
+            self.showEventDetailsObserver = Defaults.observe(.showEventDetails) { change in
+                NSLog("Change showEventDetails from \(change.oldValue) to \(change.newValue)")
+                self.updateStatusBarMenu()
             }
 
             self.launchAtLoginObserver = Defaults.observe(.launchAtLogin) { change in
@@ -112,8 +120,22 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         activity.qualityOfService = QualityOfService.userInitiated
 
         activity.schedule { (completion: @escaping NSBackgroundActivityScheduler.CompletionHandler) in
-            NSLog("Firing reccuring reloadStatusBarTitle")
+            NSLog("Firing reccuring updateStatusBarTitle")
             self.updateStatusBarTitle()
+            completion(NSBackgroundActivityScheduler.Result.finished)
+        }
+    }
+    
+    private func scheduleUpdateEvents() {
+        let activity = NSBackgroundActivityScheduler(identifier: "leits.MeetingBar.updateevents")
+
+        activity.repeats = true
+        activity.interval = 60*5
+        activity.qualityOfService = QualityOfService.userInitiated
+
+        activity.schedule { (completion: @escaping NSBackgroundActivityScheduler.CompletionHandler) in
+            NSLog("Firing reccuring updateStatusBarMenu")
+            self.updateStatusBarMenu()
             completion(NSBackgroundActivityScheduler.Result.finished)
         }
     }
@@ -168,18 +190,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             createTodaySection(menu: statusBarMenu)
             statusBarMenu.addItem(NSMenuItem.separator())
         }
-
         createPreferencesSection(menu: statusBarMenu)
-        statusBarMenu.addItem(
-            withTitle: "About",
-            action: #selector(AppDelegate.about),
-            keyEquivalent: "")
-        statusBarMenu.addItem(NSMenuItem.separator())
-
-        statusBarMenu.addItem(
-            withTitle: "Quit",
-            action: #selector(AppDelegate.quit),
-            keyEquivalent: "")
     }
 
     func createJoinNextSection(menu: NSMenu) {
@@ -244,120 +255,128 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             eventItem.state = .off
         }
         eventItem.representedObject = event
+        
+        if Defaults[.showEventDetails] {
 
-        let eventMenu = NSMenu(title: "Item \(eventTitle) menu")
-        eventItem.submenu = eventMenu
+            let eventMenu = NSMenu(title: "Item \(eventTitle) menu")
+            eventItem.submenu = eventMenu
 
-        // Title
-        let titleItem = eventMenu.addItem(withTitle: eventTitle, action: nil, keyEquivalent: "")
-        titleItem.attributedTitle = NSAttributedString(string: eventTitle, attributes: [NSAttributedString.Key.font: NSFont.boldSystemFont(ofSize: 15)])
-        eventMenu.addItem(NSMenuItem.separator())
-
-        // Duration
-        let durationTitle = "\(eventStartTime) - \(eventEndTime) (\(eventDurationMinutes) minutes)"
-        eventMenu.addItem(withTitle: durationTitle, action: nil, keyEquivalent: "")
-        eventMenu.addItem(NSMenuItem.separator())
-
-        // Status
-        if eventStatus != nil {
-            var status: String
-            switch eventStatus {
-            case .accepted:
-                status = " 👍 Accepted"
-            case .declined:
-                status = " 👎 Canceled"
-            case .tentative:
-                status = " ☝️ Tentative"
-            default:
-                status = " ❔ (\(String(describing: eventStatus))))"
-            }
-            eventMenu.addItem(withTitle: "Status: \(status)", action: nil, keyEquivalent: "")
+            // Title
+            let titleItem = eventMenu.addItem(withTitle: eventTitle, action: nil, keyEquivalent: "")
+            titleItem.attributedTitle = NSAttributedString(string: eventTitle, attributes: [NSAttributedString.Key.font: NSFont.boldSystemFont(ofSize: 15)])
             eventMenu.addItem(NSMenuItem.separator())
-        }
 
-        // Location
-        if event.location != nil {
-            eventMenu.addItem(withTitle: "Location:", action: nil, keyEquivalent: "")
-            eventMenu.addItem(withTitle: "\(event.location!)", action: nil, keyEquivalent: "")
+            // Duration
+            let durationTitle = "\(eventStartTime) - \(eventEndTime) (\(eventDurationMinutes) minutes)"
+            eventMenu.addItem(withTitle: durationTitle, action: nil, keyEquivalent: "")
             eventMenu.addItem(NSMenuItem.separator())
-        }
 
-        // Organizer
-        if let eventOrganizer = event.organizer {
-            eventMenu.addItem(withTitle: "Organizer:", action: nil, keyEquivalent: "")
-            let organizerName = eventOrganizer.name ?? ""
-            eventMenu.addItem(withTitle: "\(organizerName)", action: nil, keyEquivalent: "")
-            eventMenu.addItem(NSMenuItem.separator())
-        }
-
-        // Notes
-        if event.hasNotes {
-            let notes = cleanUpNotes(event.notes!)
-            if notes.count > 0 {
-                eventMenu.addItem(withTitle: "Notes:", action: nil, keyEquivalent: "")
-                let item = eventMenu.addItem(withTitle: "", action: nil, keyEquivalent: "")
-                item.attributedTitle = NSAttributedString(string: notes)
+            // Status
+            if eventStatus != nil {
+                var status: String
+                switch eventStatus {
+                case .accepted:
+                    status = " 👍 Accepted"
+                case .declined:
+                    status = " 👎 Canceled"
+                case .tentative:
+                    status = " ☝️ Tentative"
+                default:
+                    status = " ❔ (\(String(describing: eventStatus))))"
+                }
+                eventMenu.addItem(withTitle: "Status: \(status)", action: nil, keyEquivalent: "")
                 eventMenu.addItem(NSMenuItem.separator())
             }
-        }
 
-        // Attendees
-        if event.hasAttendees {
-            let attendees: [EKParticipant] = event.attendees!
-            let count = attendees.filter { $0.participantType == .person }.count
-            let sortedAttendees = attendees.sorted {
-                if $0.participantRole.rawValue != $1.participantRole.rawValue {
-                    return $0.participantRole.rawValue < $1.participantRole.rawValue
-                } else {
-                    return $0.participantStatus.rawValue < $1.participantStatus.rawValue
+            // Location
+            if event.location != nil {
+                eventMenu.addItem(withTitle: "Location:", action: nil, keyEquivalent: "")
+                eventMenu.addItem(withTitle: "\(event.location!)", action: nil, keyEquivalent: "")
+                eventMenu.addItem(NSMenuItem.separator())
+            }
+
+            // Organizer
+            if let eventOrganizer = event.organizer {
+                eventMenu.addItem(withTitle: "Organizer:", action: nil, keyEquivalent: "")
+                let organizerName = eventOrganizer.name ?? ""
+                eventMenu.addItem(withTitle: "\(organizerName)", action: nil, keyEquivalent: "")
+                eventMenu.addItem(NSMenuItem.separator())
+            }
+
+            // Notes
+            if event.hasNotes {
+                let notes = cleanUpNotes(event.notes!)
+                if notes.count > 0 {
+                    eventMenu.addItem(withTitle: "Notes:", action: nil, keyEquivalent: "")
+                    let item = eventMenu.addItem(withTitle: "", action: nil, keyEquivalent: "")
+                    let paragraphStyle = NSMutableParagraphStyle()
+                    paragraphStyle.lineBreakMode = NSLineBreakMode.byWordWrapping
+                    item.attributedTitle = NSAttributedString(string: notes, attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
+                    eventMenu.addItem(NSMenuItem.separator())
                 }
             }
-            eventMenu.addItem(withTitle: "Attendees (\(count)):", action: nil, keyEquivalent: "")
-            for attendee in sortedAttendees {
-                if attendee.participantType != .person {
-                    continue
+
+            // Attendees
+            if event.hasAttendees {
+                let attendees: [EKParticipant] = event.attendees!
+                let count = attendees.filter { $0.participantType == .person }.count
+                let sortedAttendees = attendees.sorted {
+                    if $0.participantRole.rawValue != $1.participantRole.rawValue {
+                        return $0.participantRole.rawValue < $1.participantRole.rawValue
+                    } else {
+                        return $0.participantStatus.rawValue < $1.participantStatus.rawValue
+                    }
                 }
-                var attributes: [NSAttributedString.Key: Any] = [:]
+                eventMenu.addItem(withTitle: "Attendees (\(count)):", action: nil, keyEquivalent: "")
+                for attendee in sortedAttendees {
+                    if attendee.participantType != .person {
+                        continue
+                    }
+                    var attributes: [NSAttributedString.Key: Any] = [:]
 
-                var name = attendee.name!
+                    var name = attendee.name!
 
-                if attendee.isCurrentUser {
-                    name = "\(name) (you)"
+                    if attendee.isCurrentUser {
+                        name = "\(name) (you)"
+                    }
+
+                    var roleMark: String
+                    switch attendee.participantRole {
+                    case .optional:
+                        roleMark = "*"
+                    default:
+                        roleMark = ""
+                    }
+
+                    var status: String
+                    switch attendee.participantStatus {
+                    case .declined:
+                        status = ""
+                        attributes[NSAttributedString.Key.strikethroughStyle] = NSUnderlineStyle.thick.rawValue
+                    case .tentative:
+                        status = " [tentative]"
+                    case .pending:
+                        status = " [?]"
+                    default:
+                        status = ""
+                    }
+
+                    let itemTitle = "- \(name)\(roleMark) \(status)"
+                    let item = eventMenu.addItem(withTitle: itemTitle, action: nil, keyEquivalent: "")
+                    item.attributedTitle = NSAttributedString(string: itemTitle, attributes: attributes)
                 }
-
-                var roleMark: String
-                switch attendee.participantRole {
-                case .optional:
-                    roleMark = "*"
-                default:
-                    roleMark = ""
-                }
-
-                var status: String
-                switch attendee.participantStatus {
-                case .declined:
-                    status = ""
-                    attributes[NSAttributedString.Key.strikethroughStyle] = NSUnderlineStyle.thick.rawValue
-                case .tentative:
-                    status = " [tentative]"
-                case .pending:
-                    status = " [?]"
-                default:
-                    status = ""
-                }
-
-                let itemTitle = "- \(name)\(roleMark) \(status)"
-                let item = eventMenu.addItem(withTitle: itemTitle, action: nil, keyEquivalent: "")
-                item.attributedTitle = NSAttributedString(string: itemTitle, attributes: attributes)
             }
         }
     }
 
     func createPreferencesSection(menu: NSMenu) {
-        menu.addItem(
-            withTitle: "Preferences",
+        let title = "Preferences"
+        let item = menu.addItem(
+            withTitle: title,
             action: #selector(AppDelegate.openPrefecencesWindow),
             keyEquivalent: "")
+        item.attributedTitle = NSAttributedString(string: title, attributes: [NSAttributedString.Key.font: NSFont.toolTipsFont(ofSize: NSFont.systemFontSize)])
+
     }
 
     @objc func joinNextMeeting(_: NSStatusBarButton? = nil) {
@@ -385,7 +404,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             styleMask: [.closable, .titled],
             backing: .buffered,
             defer: false)
-        preferencesWindow.title = "Preferences"
+        preferencesWindow.title = "MeetingBar preferences"
         preferencesWindow.contentView = NSHostingView(rootView: contentView)
         let controller = NSWindowController(window: preferencesWindow)
 
@@ -393,17 +412,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         preferencesWindow.center()
         preferencesWindow.orderFrontRegardless()
-    }
-
-    @objc func about(_: NSStatusBarButton) {
-        NSLog("User click About")
-        let projectLink = "https://github.com/leits/MeetingBar"
-        openLinkInDefaultBrowser(projectLink)
-    }
-
-    @objc func quit(_: NSStatusBarButton) {
-        NSLog("User click Quit")
-        NSApplication.shared.terminate(self)
     }
 }
 
