@@ -43,6 +43,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     private let eventStore = EKEventStore()
     private var calendar: EKCalendar?
+    // TODO: calendars instead of calendar
     private let jHotKey = HotKey(key: .j, modifiers: [.command])
     private let kHotKey = HotKey(key: .k, modifiers: [.command])
 
@@ -152,7 +153,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func updateStatusBarTitle() {
-        var title = "🗓️"
+        var title = "Choose your calendar"
 
         if calendar != nil {
             let nextEvent = getNextEvent(eventStore: eventStore, calendar: calendar!)
@@ -191,18 +192,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func updateStatusBarMenu() {
-        let statusBarMenu = statusBarItem.menu!
-        statusBarMenu.autoenablesItems = false
-        statusBarMenu.removeAllItems()
+        if let statusBarMenu = statusBarItem.menu {
+            statusBarMenu.autoenablesItems = false
+            statusBarMenu.removeAllItems()
 
-        if calendar != nil {
-            createTodaySection(menu: statusBarMenu)
+            if calendar != nil {
+                createTodaySection(menu: statusBarMenu)
+                statusBarMenu.addItem(NSMenuItem.separator())
+            }
+            createJoinSection(menu: statusBarMenu)
             statusBarMenu.addItem(NSMenuItem.separator())
-        }
-        createJoinSection(menu: statusBarMenu)
-        statusBarMenu.addItem(NSMenuItem.separator())
 
-        createPreferencesSection(menu: statusBarMenu)
+            createPreferencesSection(menu: statusBarMenu)
+        }
     }
 
     func createJoinSection(menu: NSMenu) {
@@ -280,6 +282,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         if event.endDate < now {
             eventItem.state = .on
+            if !Defaults[.showEventDetails] {
+                eventItem.isEnabled = false
+            }
         } else if event.startDate < now, event.endDate > now {
             eventItem.state = .mixed
         } else {
@@ -401,13 +406,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func createPreferencesSection(menu: NSMenu) {
-        let title = "Preferences"
-        let item = menu.addItem(
-            withTitle: title,
+        menu.addItem(
+            withTitle: "Preferences",
             action: #selector(AppDelegate.openPrefecencesWindow),
             keyEquivalent: "")
-        item.attributedTitle = NSAttributedString(string: title, attributes: [NSAttributedString.Key.font: NSFont.toolTipsFont(ofSize: NSFont.systemFontSize)])
-
+        menu.addItem(
+            withTitle: "Quit",
+            action: #selector(AppDelegate.quit),
+            keyEquivalent: "")
     }
 
     @objc func joinNextMeeting(_: NSStatusBarButton? = nil) {
@@ -424,14 +430,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         NSLog("Create meeting in \(Defaults[.createMeetingService].rawValue)")
         switch Defaults[.createMeetingService] {
         case .meet:
-            let meetLink = "https://meet.google.com/new"
+            let meetLink = URL(string: "https://meet.google.com/new")!
             if Defaults[.useChromeForMeetLinks] {
                 openLinkInChrome(meetLink)
             } else {
                 openLinkInDefaultBrowser(meetLink)
             }
         case .zoom:
-            openLinkInDefaultBrowser("https://zoom.us/start/videomeeting")
+            openLinkInDefaultBrowser(URL(string: "https://zoom.us/start/videomeeting")!)
 
         }
     }
@@ -459,6 +465,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         preferencesWindow.center()
         preferencesWindow.orderFrontRegardless()
+    }
+    
+    @objc func quit(_: NSStatusBarButton) {
+        NSLog("User click Quit")
+        NSApplication.shared.terminate(self)
     }
 }
 
@@ -527,16 +538,18 @@ func openEvent(_ event: EKEvent) {
     }
     let meetLink = getMatch(text: (event.notes)!, regex: LinksRegex.meet)
     if let link = meetLink {
+        let meetURL = URL(string: link)!
         if Defaults[.useChromeForMeetLinks] {
-            openLinkInChrome(link)
+            openLinkInChrome(meetURL)
         } else {
-            openLinkInDefaultBrowser(link)
+            openLinkInDefaultBrowser(meetURL)
         }
     } else {
         NSLog("No meet link for event (\(eventTitle))")
         let zoomLink = getMatch(text: (event.notes)!, regex: LinksRegex.zoom)
         if let link = zoomLink {
-            openLinkInDefaultBrowser(link)
+            let zoomURL = URL(string: link)!
+            openLinkInDefaultBrowser(zoomURL)
         }
         NSLog("No zoom link for event (\(eventTitle))")
     }
@@ -561,20 +574,18 @@ func getMatch(text: String, regex: NSRegularExpression) -> String? {
     return nil
 }
 
-func openLinkInChrome(_ link: String) {
-    let url = URL(string: link)!
+func openLinkInChrome(_ link: URL) {
     let configuration = NSWorkspace.OpenConfiguration()
     let chromeUrl = URL(fileURLWithPath: "/Applications/Google Chrome.app")
-    NSWorkspace.shared.open([url], withApplicationAt: chromeUrl, configuration: configuration, completionHandler: {
+    NSWorkspace.shared.open([link], withApplicationAt: chromeUrl, configuration: configuration, completionHandler: {
             _, _ in
-            NSLog("Open \(url) in Chrome")
+            NSLog("Open \(link) in Chrome")
         })
 }
 
-func openLinkInDefaultBrowser(_ link: String) {
-    let url = URL(string: link)!
-    NSWorkspace.shared.open(url)
-    NSLog("Open \(url) in default browser")
+func openLinkInDefaultBrowser(_ link: URL) {
+    NSWorkspace.shared.open(link)
+    NSLog("Open \(link) in default browser")
 }
 
 func cleanUpNotes(_ notes: String) -> String {

@@ -12,6 +12,8 @@ MeetingBar also uses these resources:
 - [HotKey](https://github.com/soffes/HotKey) for managing global keyboard shortcuts
 - [Defaults](https://github.com/sindresorhus/Defaults) for managing user settings
 
+Icon made by [Chanut](https://www.flaticon.com/authors/chanut) from [flaticon](www.flaticon.com)
+
 If you encounter any bugs or have a feature request, [add an issue](https://github.com/leits/MeetingBar/issues/new).
 
 Thanks! :wave:
