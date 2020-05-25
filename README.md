@@ -16,6 +16,7 @@ MeetingBar is in **active development** by [leits](https://github.com/leits). Wr
 MeetingBar also uses these resources:
 - [HotKey](https://github.com/soffes/HotKey) for managing global keyboard shortcuts
 - [Defaults](https://github.com/sindresorhus/Defaults) for managing user settings
+- [LaunchAtLogin](https://github.com/sindresorhus/LaunchAtLogin) - For start app at login
 
 Icon made by [Chanut](https://www.flaticon.com/authors/chanut) from [flaticon](www.flaticon.com)
 
