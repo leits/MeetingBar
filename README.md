@@ -2,7 +2,12 @@
 
 See your day at a glance. Integrated with Google Meet and Zoom so you can quickly join meetings. **MeetingBar** is a menu bar app for macOS 10.15+.
 
+Donwload the [latest version](https://github.com/leits/MeetingBar/releases/latest/download/MeetingBar.dmg)
+
+
 ![MeetingBar Screenshot](https://github.com/leits/MeetingBar/blob/master/screenshot.png)
+
+
 
 ## Credits
 
