@@ -18,7 +18,7 @@ See your day at a glance. Integrated with Google Meet and Zoom so you can quickl
 
 * Service for ad-hoc meetings (default: Meet)
 * Use Chrome for Meet meetings (default: No)
-* Show event details in event submenu (default: No)
+* Show event details in event submenu (default: Yes)
 
 ## Credits
 
