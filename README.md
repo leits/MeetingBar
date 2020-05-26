@@ -1,4 +1,4 @@
-## MeetingBar
+## MeetingBar ![logo](https://github.com/leits/MeetingBar/blob/master/MeetingBar/Assets.xcassets/AppIcon.appiconset/icon32.png) 
 
 See your day at a glance. Integrated with Google Meet and Zoom so you can quickly join meetings. **MeetingBar** is a menu bar app for macOS 10.15+.
 
