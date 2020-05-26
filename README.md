@@ -8,6 +8,19 @@ Download the [latest version](https://github.com/leits/MeetingBar/releases/lates
 ![MeetingBar Screenshot](https://github.com/leits/MeetingBar/blob/master/screenshot.png)
 
 
+## Setup
+
+1. Install the [latest version](https://github.com/leits/MeetingBar/releases/latest/download/MeetingBar.dmg).
+2. Make sure your calendar synchronized to macOS calendar
+3. Run app and go to the Prefrences
+4. Select your calendar
+5. ta-da :tada:
+
+## Preferences
+
+* Service for ad-hoc meetings (default: Meet)
+* Use Chrome for Meet meetings (default: No)
+* Show event details in event submenu (default: No)
 
 ## Credits
 
