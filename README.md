@@ -1,10 +1,9 @@
 ## MeetingBar ![logo](https://github.com/leits/MeetingBar/blob/master/MeetingBar/Assets.xcassets/AppIcon.appiconset/icon32.png) 
 
-[Latest version](https://github.com/leits/MeetingBar/releases/latest/download/MeetingBar.dmg) :new:
-
 Your meetings in the right place. In the top right. :heavy_check_mark:
 
 **MeetingBar** is a menu bar app for your calendar meetings (macOS 10.15+).
+[Latest version](https://github.com/leits/MeetingBar/releases/latest/download/MeetingBar.dmg) :new:
 
 Integrated with Google Meet and Zoom so you can quickly join meetings from event or create ad hoc meeting. 
 
