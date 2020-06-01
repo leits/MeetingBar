@@ -265,9 +265,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         let eventTimeFormatter = DateFormatter()
         eventTimeFormatter.dateFormat = "HH:mm"
-        let eventStartTime = eventTimeFormatter.string(from: event.startDate)
-        let eventEndTime = eventTimeFormatter.string(from: event.endDate)
-        let eventDurationMinutes = String(event.endDate.timeIntervalSince(event.startDate) / 60)
+        
+        var eventStartTime = ""
+        if event.isAllDay {
+            eventStartTime = "All day"
+        } else {
+            eventStartTime = eventTimeFormatter.string(from: event.startDate)
+        }
 
         // Event Item
         let itemTitle = "\(eventStartTime) - \(eventTitle)"
@@ -307,9 +311,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             eventMenu.addItem(NSMenuItem.separator())
 
             // Duration
-            let durationTitle = "\(eventStartTime) - \(eventEndTime) (\(eventDurationMinutes) minutes)"
-            eventMenu.addItem(withTitle: durationTitle, action: nil, keyEquivalent: "")
-            eventMenu.addItem(NSMenuItem.separator())
+            if !event.isAllDay {
+                let eventEndTime = eventTimeFormatter.string(from: event.endDate)
+                let eventDurationMinutes = String(event.endDate.timeIntervalSince(event.startDate) / 60)
+                let durationTitle = "\(eventStartTime) - \(eventEndTime) (\(eventDurationMinutes) minutes)"
+                eventMenu.addItem(withTitle: durationTitle, action: nil, keyEquivalent: "")
+                eventMenu.addItem(NSMenuItem.separator())
+            }
 
             // Status
             if eventStatus != nil {
@@ -513,6 +521,7 @@ func getNextEvent(eventStore: EKEventStore, calendar: EKCalendar) -> EKEvent? {
     // then show the next event
     for event in nextEvents {
         // Skip event if declined
+        if event.isAllDay { continue }
         if let status = getEventStatus(event) {
             if status == .declined { continue }
         }

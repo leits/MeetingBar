@@ -51,8 +51,9 @@ struct ContentView: View {
             }
             Divider()
             HStack(alignment: .center) {
-                Spacer()
                 Button("About this app", action: about)
+                Spacer()
+                Button("Support the creator", action: support)
             }
         }.padding()
     }
@@ -62,5 +63,11 @@ struct ContentView: View {
 func about() {
     NSLog("User click About")
     let projectLink = URL(string: "https://github.com/leits/MeetingBar")!
+    openLinkInDefaultBrowser(projectLink)
+}
+
+func support() {
+    NSLog("User click Support")
+    let projectLink = URL(string: "https://www.patreon.com/meetingbar")!
     openLinkInDefaultBrowser(projectLink)
 }
