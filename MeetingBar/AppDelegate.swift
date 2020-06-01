@@ -158,26 +158,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if calendar != nil {
             let nextEvent = getNextEvent(eventStore: eventStore, calendar: calendar!)
             if let nextEvent = nextEvent {
-                let nextMinute = Date().addingTimeInterval(60)
-                let eventTitle = String((nextEvent.title)!)
-                var msg = ""
-                if (nextEvent.startDate)! < nextMinute, (nextEvent.endDate)! > nextMinute {
-                    let eventEndTime = nextEvent.endDate.timeIntervalSinceNow
-                    let minutes = String(Int(eventEndTime) / 60)
-                    msg = " now (\(minutes) min left)"
-                } else {
-                    let eventStartTime = nextEvent.startDate.timeIntervalSinceNow
-                    let minutes = Int(eventStartTime) / 60
-                    if minutes < 60 {
-                        msg = " in \(minutes) min"
-                    } else if minutes < 120 {
-                        msg = " in 1 hour"
-                    } else {
-                        let hours = minutes / 60
-                        msg = " in \(hours) hours"
-                    }
-                }
-                title = "\(eventTitle)\(msg)"
+                title = createEventStatusString(nextEvent)
             } else {
                 title = "🏁"
             }
@@ -231,7 +212,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let todayFormatter = DateFormatter()
         todayFormatter.dateFormat = "E, d MMM"
         let todayDate = todayFormatter.string(from: now)
-        let todayTitle = "Today meetings (\(todayDate)):"
+        let todayTitle = "Today events (\(todayDate)):"
         let titleItem = menu.addItem(
             withTitle: todayTitle,
             action: nil,
@@ -529,6 +510,29 @@ func getNextEvent(eventStore: EKEventStore, calendar: EKCalendar) -> EKEvent? {
         }
     }
     return nextEvent
+}
+
+func createEventStatusString(_ event: EKEvent) -> String {
+    let nextMinute = Date().addingTimeInterval(60)
+    let eventTitle = String((event.title)!)
+    var msg = ""
+    if (event.startDate)! < nextMinute, (event.endDate)! > nextMinute {
+        let eventEndTime = event.endDate.timeIntervalSinceNow
+        let minutes = String(Int(eventEndTime) / 60)
+        msg = " now (\(minutes) min left)"
+    } else {
+        let eventStartTime = event.startDate.timeIntervalSinceNow
+        let minutes = Int(eventStartTime) / 60
+        if minutes < 60 {
+            msg = " in \(minutes) min"
+        } else if minutes < 120 {
+            msg = " in 1 hour"
+        } else {
+            let hours = minutes / 60
+            msg = " in \(hours) hours"
+        }
+    }
+    return "\(eventTitle)\(msg)"
 }
 
 func openEvent(_ event: EKEvent) {

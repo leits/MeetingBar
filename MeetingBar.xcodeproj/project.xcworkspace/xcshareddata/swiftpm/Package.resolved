@@ -1,0 +1,25 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "Defaults",
+        "repositoryURL": "https://github.com/sindresorhus/Defaults",
+        "state": {
+          "branch": null,
+          "revision": "11c4b968ef490dd3eb2e214906a8a124b7655a1f",
+          "version": "4.0.0"
+        }
+      },
+      {
+        "package": "HotKey",
+        "repositoryURL": "https://github.com/soffes/HotKey.git",
+        "state": {
+          "branch": null,
+          "revision": "c13662730cb5bc28de4a799854bbb018a90649bf",
+          "version": "0.1.3"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
