@@ -22,6 +22,7 @@ Integrated with Google Meet and Zoom so you can quickly join meetings from event
 * Service for ad-hoc meetings (*default: Google Meet*)
 * Use Chrome for Meet meetings (*default: No*)
 * Show event details in event submenu (*default: Yes*)
+* Enable global shortcuts (*default: No*)
 
 ## Credits
 
