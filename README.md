@@ -25,6 +25,8 @@ Integrated with Google Meet and Zoom so you can quickly join meetings from event
 
 ## Credits
 
+❤️ Love this project? Support @leits's FOSS on [Patreon](https://www.patreon.com/meetingbar) 🦄
+
 MeetingBar is in **active development** by [leits](https://github.com/leits). Written in Swift 5.0.
 
 MeetingBar also uses these resources:
