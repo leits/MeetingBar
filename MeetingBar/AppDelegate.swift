@@ -33,6 +33,7 @@ extension Defaults.Keys {
     static let launchAtLogin = Key<Bool>("launchAtLogin", default: false)
     static let showEventDetails = Key<Bool>("showEventDetails", default: true)
     static let createMeetingService = Key<MeetingServices>("createMeetingService", default: .meet)
+    static let enableShortcuts = Key<Bool>("enableShortcuts", default: true)
 }
 
 @NSApplicationMain
@@ -44,12 +45,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private let eventStore = EKEventStore()
     private var calendar: EKCalendar?
     // TODO: calendars instead of calendar
-    private let jHotKey = HotKey(key: .j, modifiers: [.command])
-    private let kHotKey = HotKey(key: .k, modifiers: [.command])
+    private var jHotKey: HotKey? = HotKey(key: .j, modifiers: [.command])
+    private var kHotKey: HotKey? = HotKey(key: .k, modifiers: [.command])
 
     var calendarTitleObserver: DefaultsObservation?
     var launchAtLoginObserver: DefaultsObservation?
     var showEventDetailsObserver: DefaultsObservation?
+    var enableShortcutsObserver: DefaultsObservation?
 
     func applicationDidFinishLaunching(_: Notification) {
         eventStoreAccessCheck(eventStore: eventStore, completion: { result in
@@ -82,13 +84,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
             self.updateStatusBarMenu()
             self.updateStatusBarTitle()
-
-            self.jHotKey.keyDownHandler = {
-                self.joinNextMeeting()
+            
+            if let hotkey = self.jHotKey {
+                hotkey.keyDownHandler = {
+                    self.joinNextMeeting()
+                }
             }
-
-            self.kHotKey.keyDownHandler = {
-                self.createMeeting()
+            
+            if let hotkey = self.kHotKey {
+                hotkey.keyDownHandler = {
+                    self.createMeeting()
+                }
             }
 
             self.scheduleUpdateStatusBarTitle()
@@ -114,6 +120,23 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     NSApp.enableRelaunchOnLogin()
                 } else {
                     NSApp.disableRelaunchOnLogin()
+                }
+            }
+            
+            self.enableShortcutsObserver = Defaults.observe(.enableShortcuts) { change in
+                NSLog("Change enableShortcuts from \(change.oldValue) to \(change.newValue)")
+                if change.newValue {
+                    self.jHotKey = HotKey(key: .j, modifiers: [.command])
+                    self.jHotKey!.keyDownHandler = {
+                        self.joinNextMeeting()
+                    }
+                    self.kHotKey = HotKey(key: .k, modifiers: [.command])
+                    self.kHotKey!.keyDownHandler = {
+                        self.createMeeting()
+                    }
+                } else {
+                    self.jHotKey = nil
+                    self.kHotKey = nil
                 }
             }
         }

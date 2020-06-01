@@ -15,6 +15,7 @@ struct ContentView: View {
     @Default(.launchAtLogin) var launchAtLogin
     @Default(.showEventDetails) var showEventDetails
     @Default(.createMeetingService) var createMeetingService
+    @Default(.enableShortcuts) var enableShortcuts
 
     let calendars: [EKCalendar]
 
@@ -41,6 +42,9 @@ struct ContentView: View {
                 }
 
                 Divider()
+                Toggle(isOn: $enableShortcuts) {
+                    Text("Shortcuts")
+                }
                 Toggle(isOn: $launchAtLogin) {
                     Text("Launch at login")
                 }
