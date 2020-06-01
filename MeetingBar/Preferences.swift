@@ -43,7 +43,7 @@ struct ContentView: View {
 
                 Divider()
                 Toggle(isOn: $enableShortcuts) {
-                    Text("Shortcuts")
+                    Text("Enable global shortcuts")
                 }
 //                Toggle(isOn: $launchAtLogin) {
 //                    Text("Launch at login")

@@ -33,7 +33,7 @@ extension Defaults.Keys {
     static let launchAtLogin = Key<Bool>("launchAtLogin", default: false)
     static let showEventDetails = Key<Bool>("showEventDetails", default: true)
     static let createMeetingService = Key<MeetingServices>("createMeetingService", default: .meet)
-    static let enableShortcuts = Key<Bool>("enableShortcuts", default: true)
+    static let enableShortcuts = Key<Bool>("enableShortcuts", default: false)
 }
 
 @NSApplicationMain
