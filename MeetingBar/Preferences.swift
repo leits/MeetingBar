@@ -12,7 +12,7 @@ import SwiftUI
 struct ContentView: View {
     @Default(.calendarTitle) var calendarTitle
     @Default(.useChromeForMeetLinks) var useChromeForMeetLinks
-    @Default(.launchAtLogin) var launchAtLogin
+//    @Default(.launchAtLogin) var launchAtLogin
     @Default(.showEventDetails) var showEventDetails
     @Default(.createMeetingService) var createMeetingService
     @Default(.enableShortcuts) var enableShortcuts
@@ -45,9 +45,9 @@ struct ContentView: View {
                 Toggle(isOn: $enableShortcuts) {
                     Text("Shortcuts")
                 }
-                Toggle(isOn: $launchAtLogin) {
-                    Text("Launch at login")
-                }
+//                Toggle(isOn: $launchAtLogin) {
+//                    Text("Launch at login")
+//                }
             }
             Divider()
             HStack(alignment: .center) {

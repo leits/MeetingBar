@@ -49,7 +49,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private var kHotKey: HotKey? = HotKey(key: .k, modifiers: [.command])
 
     var calendarTitleObserver: DefaultsObservation?
-    var launchAtLoginObserver: DefaultsObservation?
+//    var launchAtLoginObserver: DefaultsObservation?
     var showEventDetailsObserver: DefaultsObservation?
     var enableShortcutsObserver: DefaultsObservation?
 
@@ -114,14 +114,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 self.updateStatusBarMenu()
             }
 
-            self.launchAtLoginObserver = Defaults.observe(.launchAtLogin) { change in
-                NSLog("Change launchAtLogin from \(change.oldValue) to \(change.newValue)")
-                if change.newValue {
-                    NSApp.enableRelaunchOnLogin()
-                } else {
-                    NSApp.disableRelaunchOnLogin()
-                }
-            }
+//            self.launchAtLoginObserver = Defaults.observe(.launchAtLogin) { change in
+//                NSLog("Change launchAtLogin from \(change.oldValue) to \(change.newValue)")
+//                if change.newValue {
+//                    NSApp.enableRelaunchOnLogin()
+//                } else {
+//                    NSApp.disableRelaunchOnLogin()
+//                }
+//            }
             
             self.enableShortcutsObserver = Defaults.observe(.enableShortcuts) { change in
                 NSLog("Change enableShortcuts from \(change.oldValue) to \(change.newValue)")
