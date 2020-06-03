@@ -15,7 +15,8 @@ struct ContentView: View {
 //    @Default(.launchAtLogin) var launchAtLogin
     @Default(.showEventDetails) var showEventDetails
     @Default(.createMeetingService) var createMeetingService
-    @Default(.enableShortcuts) var enableShortcuts
+    @Default(.enableCreateShortcuts) var enableCreateShortcuts
+    @Default(.enableJoinShortcuts) var enableJoinShortcuts
 
     let calendars: [EKCalendar]
 
@@ -34,6 +35,8 @@ struct ContentView: View {
                         Text($0.rawValue).tag($0)
                     }
                 }
+                Divider()
+
                 Toggle(isOn: $useChromeForMeetLinks) {
                     Text("Use Chrome for Google Meet links")
                 }
@@ -42,9 +45,10 @@ struct ContentView: View {
                 }
 
                 Divider()
-                Toggle(isOn: $enableShortcuts) {
-                    Text("Enable global shortcuts")
-                }
+                Text("Shortcuts")
+                Toggle("⌘+j to join next event", isOn: $enableJoinShortcuts)
+                Toggle("⌘+k to create meeting", isOn: $enableCreateShortcuts)
+
 //                Toggle(isOn: $launchAtLogin) {
 //                    Text("Launch at login")
 //                }
