@@ -14,8 +14,8 @@ import Defaults
 import HotKey
 
 struct LinksRegex {
-    static let meet = try! NSRegularExpression(pattern: #"https://meet.google.com/.*"#)
-    static let zoom = try! NSRegularExpression(pattern: #"https://zoom.us/j/.*"#)
+    static let meet = try! NSRegularExpression(pattern: #"https://meet.google.com/[a-z-]+"#)
+    static let zoom = try! NSRegularExpression(pattern: #"https://([a-z0-9.]+)?zoom.us/j/[a-zA-Z0-9?&=]+"#)
 }
 
 enum MeetingServices: String, Codable, CaseIterable {
@@ -583,18 +583,20 @@ func openEvent(_ event: EKEvent) {
     }
     let meetLink = getMatch(text: (event.notes)!, regex: LinksRegex.meet)
     if let link = meetLink {
-        let meetURL = URL(string: link)!
-        if Defaults[.useChromeForMeetLinks] {
-            openLinkInChrome(meetURL)
-        } else {
-            openLinkInDefaultBrowser(meetURL)
+        if let meetURL = URL(string: link) {
+            if Defaults[.useChromeForMeetLinks] {
+                openLinkInChrome(meetURL)
+            } else {
+                openLinkInDefaultBrowser(meetURL)
+            }
         }
     } else {
         NSLog("No meet link for event (\(eventTitle))")
         let zoomLink = getMatch(text: (event.notes)!, regex: LinksRegex.zoom)
         if let link = zoomLink {
-            let zoomURL = URL(string: link)!
-            openLinkInDefaultBrowser(zoomURL)
+            if let zoomURL = URL(string: link) {
+                openLinkInDefaultBrowser(zoomURL)
+            }
         }
         NSLog("No zoom link for event (\(eventTitle))")
     }
