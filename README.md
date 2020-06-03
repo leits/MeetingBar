@@ -17,9 +17,7 @@ Integrated with Google Meet and Zoom so you can quickly join meetings from event
 4. Select your calendar
 5. ta-da :tada:
 
-If you see a warning message and can’t install an app use this apple guide:
-https://support.apple.com/en-us/HT202491
-
+If you have some installation problems or some other questions please check the [FAQ](../../wiki/FAQ) or [add an issue](https://github.com/leits/MeetingBar/issues/new).
 
 ## Preferences
 
