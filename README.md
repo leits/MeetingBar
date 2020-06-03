@@ -28,9 +28,11 @@ https://support.apple.com/en-us/HT202491
 * Show event details in event submenu (*default: Yes*)
 * Enable global shortcuts (*default: No*)
 
-## Credits
+## Support the creator
 
-❤️ Love this project? Support @leits's FOSS on [Patreon](https://www.patreon.com/meetingbar) 🦄
+❤️ Love this project? Support @leits's FOSS on [Patreon](https://www.patreon.com/meetingbar)
+
+## Credits
 
 MeetingBar is in **active development** by [leits](https://github.com/leits). Written in Swift 5.0.
 
