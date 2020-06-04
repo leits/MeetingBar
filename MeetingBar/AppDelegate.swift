@@ -11,7 +11,7 @@ import EventKit
 import SwiftUI
 
 import Defaults
-import HotKey
+import KeyboardShortcuts
 
 struct LinksRegex {
     static let meet = try! NSRegularExpression(pattern: #"https://meet.google.com/[a-z-]+"#)
@@ -33,9 +33,6 @@ extension Defaults.Keys {
     static let launchAtLogin = Key<Bool>("launchAtLogin", default: false)
     static let showEventDetails = Key<Bool>("showEventDetails", default: true)
     static let createMeetingService = Key<MeetingServices>("createMeetingService", default: .meet)
-    static let enableCreateShortcuts = Key<Bool>("enableCreateShortcuts", default: false)
-    static let enableJoinShortcuts = Key<Bool>("enableJoinShortcuts", default: false)
-
 }
 
 @NSApplicationMain
@@ -47,14 +44,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private let eventStore = EKEventStore()
     private var calendar: EKCalendar?
     // TODO: calendars instead of calendar
-    private var jHotKey: HotKey? = HotKey(key: .j, modifiers: [.command])
-    private var kHotKey: HotKey? = HotKey(key: .k, modifiers: [.command])
 
     var calendarTitleObserver: DefaultsObservation?
 //    var launchAtLoginObserver: DefaultsObservation?
     var showEventDetailsObserver: DefaultsObservation?
-    var enableCreateShortcutsObserver: DefaultsObservation?
-    var enableJoinShortcutsObserver: DefaultsObservation?
 
     func applicationDidFinishLaunching(_: Notification) {
         eventStoreAccessCheck(eventStore: eventStore, completion: { result in
@@ -88,16 +81,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             self.updateStatusBarMenu()
             self.updateStatusBarTitle()
             
-            if let hotkey = self.jHotKey {
-                hotkey.keyDownHandler = {
-                    self.joinNextMeeting()
-                }
+            KeyboardShortcuts.onKeyUp(for: .createMeetingShortcut) {
+                self.createMeeting()
             }
             
-            if let hotkey = self.kHotKey {
-                hotkey.keyDownHandler = {
-                    self.createMeeting()
-                }
+            KeyboardShortcuts.onKeyUp(for: .joinEventShortcut) {
+                self.joinNextMeeting()
             }
 
             self.scheduleUpdateStatusBarTitle()
@@ -125,29 +114,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 //                    NSApp.disableRelaunchOnLogin()
 //                }
 //            }
-            
-            self.enableCreateShortcutsObserver = Defaults.observe(.enableCreateShortcuts) { change in
-                NSLog("Change enableCreateShortcuts from \(change.oldValue) to \(change.newValue)")
-                if change.newValue {
-                    self.kHotKey = HotKey(key: .k, modifiers: [.command])
-                    self.kHotKey!.keyDownHandler = {
-                        self.createMeeting()
-                    }
-                } else {
-                    self.kHotKey = nil
-                }
-            }
-            self.enableJoinShortcutsObserver = Defaults.observe(.enableJoinShortcuts) { change in
-                NSLog("Change enableJoinShortcuts from \(change.oldValue) to \(change.newValue)")
-                if change.newValue {
-                    self.jHotKey = HotKey(key: .j, modifiers: [.command])
-                    self.jHotKey!.keyDownHandler = {
-                        self.joinNextMeeting()
-                    }
-                } else {
-                    self.jHotKey = nil
-                }
-            }
         }
     }
 
@@ -224,16 +190,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if calendar != nil {
             let nextEvent = getNextEvent(eventStore: eventStore, calendar: calendar!)
             if nextEvent != nil {
-                menu.addItem(
+                let joinItem = menu.addItem(
                     withTitle: "Join next event",
                     action: #selector(AppDelegate.joinNextMeeting),
-                    keyEquivalent: "j")
+                    keyEquivalent: "")
+                joinItem.setShortcut(for: .joinEventShortcut)
             }
         }
-        menu.addItem(
+        let createItem = menu.addItem(
             withTitle: "Create meeting",
             action: #selector(AppDelegate.createMeeting),
-            keyEquivalent: "k")
+            keyEquivalent: "")
+        createItem.setShortcut(for: .createMeetingShortcut)
     }
 
     func createTodaySection(menu: NSMenu) {
@@ -473,6 +441,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         NSLog("Open preferences window")
         let calendars = eventStore.calendars(for: .event)
         let contentView = ContentView(calendars: calendars)
+        if preferencesWindow != nil {
+            preferencesWindow.close()
+        }
         preferencesWindow = NSWindow(
             contentRect: NSMakeRect(0, 0, 512, 512),
             styleMask: [.closable, .titled],
@@ -481,7 +452,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         preferencesWindow.title = "MeetingBar preferences"
         preferencesWindow.contentView = NSHostingView(rootView: contentView)
         let controller = NSWindowController(window: preferencesWindow)
-
         controller.showWindow(self)
 
         preferencesWindow.center()

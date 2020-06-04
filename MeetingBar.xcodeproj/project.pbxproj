@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		140D842824880CA30055E1CE /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = 140D842724880CA30055E1CE /* KeyboardShortcuts */; };
 		14158D3B246C65AD0006436C /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 14158D3A246C65AD0006436C /* README.md */; };
 		14158D41246C6D270006436C /* Defaults in Frameworks */ = {isa = PBXBuildFile; productRef = 14158D40246C6D270006436C /* Defaults */; };
 		144C017D2462D0C3000C9FFC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 144C017C2462D0C3000C9FFC /* AppDelegate.swift */; };
 		144C01812462D0C5000C9FFC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 144C01802462D0C5000C9FFC /* Assets.xcassets */; };
 		144C01842462D0C5000C9FFC /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 144C01832462D0C5000C9FFC /* Preview Assets.xcassets */; };
 		144C01872462D0C5000C9FFC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 144C01852462D0C5000C9FFC /* Main.storyboard */; };
-		146BBF06247D90B90097F23B /* HotKey in Frameworks */ = {isa = PBXBuildFile; productRef = 146BBF05247D90B90097F23B /* HotKey */; };
 		14E4110E246F2F9200F73ACF /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14E4110D246F2F9200F73ACF /* Preferences.swift */; };
 /* End PBXBuildFile section */
 
@@ -34,8 +34,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				146BBF06247D90B90097F23B /* HotKey in Frameworks */,
 				14158D41246C6D270006436C /* Defaults in Frameworks */,
+				140D842824880CA30055E1CE /* KeyboardShortcuts in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -99,7 +99,7 @@
 			name = MeetingBar;
 			packageProductDependencies = (
 				14158D40246C6D270006436C /* Defaults */,
-				146BBF05247D90B90097F23B /* HotKey */,
+				140D842724880CA30055E1CE /* KeyboardShortcuts */,
 			);
 			productName = MeetingBar;
 			productReference = 144C01792462D0C3000C9FFC /* MeetingBar.app */;
@@ -131,7 +131,7 @@
 			mainGroup = 144C01702462D0C3000C9FFC;
 			packageReferences = (
 				14158D3F246C6D270006436C /* XCRemoteSwiftPackageReference "Defaults" */,
-				146BBF04247D90B80097F23B /* XCRemoteSwiftPackageReference "HotKey" */,
+				140D842624880CA30055E1CE /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */,
 			);
 			productRefGroup = 144C017A2462D0C3000C9FFC /* Products */;
 			projectDirPath = "";
@@ -316,6 +316,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = leits.MeetingBar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
@@ -342,6 +343,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = leits.MeetingBar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
@@ -370,6 +372,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		140D842624880CA30055E1CE /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sindresorhus/KeyboardShortcuts";
+			requirement = {
+				branch = "fix-crash";
+				kind = branch;
+			};
+		};
 		14158D3F246C6D270006436C /* XCRemoteSwiftPackageReference "Defaults" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/sindresorhus/Defaults";
@@ -378,26 +388,18 @@
 				minimumVersion = 4.0.0;
 			};
 		};
-		146BBF04247D90B80097F23B /* XCRemoteSwiftPackageReference "HotKey" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/soffes/HotKey.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.1.3;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		140D842724880CA30055E1CE /* KeyboardShortcuts */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 140D842624880CA30055E1CE /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */;
+			productName = KeyboardShortcuts;
+		};
 		14158D40246C6D270006436C /* Defaults */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 14158D3F246C6D270006436C /* XCRemoteSwiftPackageReference "Defaults" */;
 			productName = Defaults;
-		};
-		146BBF05247D90B90097F23B /* HotKey */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 146BBF04247D90B80097F23B /* XCRemoteSwiftPackageReference "HotKey" */;
-			productName = HotKey;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
