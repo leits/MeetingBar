@@ -13,6 +13,11 @@ import SwiftUI
 import Defaults
 import KeyboardShortcuts
 
+struct TitleLengthLimits {
+    static let min = 0.0
+    static let max = 55.0
+}
+
 struct LinksRegex {
     static let meet = try! NSRegularExpression(pattern: #"https://meet.google.com/[a-z-]+"#)
     static let zoom = try! NSRegularExpression(pattern: #"https://([a-z0-9.]+)?zoom.us/j/[a-zA-Z0-9?&=]+"#)
@@ -33,6 +38,9 @@ extension Defaults.Keys {
     static let launchAtLogin = Key<Bool>("launchAtLogin", default: false)
     static let showEventDetails = Key<Bool>("showEventDetails", default: true)
     static let createMeetingService = Key<MeetingServices>("createMeetingService", default: .meet)
+    static let selectedCalendars = Key<Array<String>>("selectedCalendars", default: [])
+    static let showEventTitleInStatusBar = Key<Bool>("showEventTitleInStatusBar", default: true)
+    static let titleLength = Key<Double>("titleLength", default: TitleLengthLimits.max)
 }
 
 @NSApplicationMain
@@ -42,13 +50,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var statusBarItem: NSStatusItem!
 
     private let eventStore = EKEventStore()
-    private var calendar: EKCalendar?
-    // TODO: calendars instead of calendar
+    private var calendars: [EKCalendar] = []
 
-    var calendarTitleObserver: DefaultsObservation?
-//    var launchAtLoginObserver: DefaultsObservation?
+    var selectedCalendarsObserver: DefaultsObservation?
     var showEventDetailsObserver: DefaultsObservation?
+    var showEventTitleInStatusBarObserver: DefaultsObservation?
+    var titleLengthObserver: DefaultsObservation?
 
+    
     func applicationDidFinishLaunching(_: Notification) {
         eventStoreAccessCheck(eventStore: eventStore, completion: { result in
             switch result {
@@ -69,7 +78,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func setup() {
         DispatchQueue.main.async {
-            self.calendar = getCalendar(title: Defaults[.calendarTitle], eventStore: self.eventStore)
+            if Defaults[.calendarTitle] != "" {
+                Defaults[.selectedCalendars].append(Defaults[.calendarTitle])
+                Defaults[.calendarTitle] = ""
+            }
+            
+            self.calendars = getCalendars(titles: Defaults[.selectedCalendars], eventStore: self.eventStore)
 
             let statusBar = NSStatusBar.system
             self.statusBarItem = statusBar.statusItem(
@@ -93,32 +107,29 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             self.scheduleUpdateEvents()
 
             NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.eventStoreChanged), name: .EKEventStoreChanged, object: self.eventStore)
-
-            self.calendarTitleObserver = Defaults.observe(.calendarTitle) { change in
-                NSLog("Change calendarTitle from \(change.oldValue) to \(change.newValue)")
-                self.calendar = getCalendar(title: change.newValue, eventStore: self.eventStore)
+            self.selectedCalendarsObserver = Defaults.observe(.selectedCalendars) { change in
+                NSLog("Changed selectedCalendars from \(change.oldValue) to \(change.newValue)")
+                self.calendars = getCalendars(titles: change.newValue, eventStore: self.eventStore)
                 self.updateStatusBarMenu()
                 self.updateStatusBarTitle()
             }
-
             self.showEventDetailsObserver = Defaults.observe(.showEventDetails) { change in
                 NSLog("Change showEventDetails from \(change.oldValue) to \(change.newValue)")
                 self.updateStatusBarMenu()
             }
-
-//            self.launchAtLoginObserver = Defaults.observe(.launchAtLogin) { change in
-//                NSLog("Change launchAtLogin from \(change.oldValue) to \(change.newValue)")
-//                if change.newValue {
-//                    NSApp.enableRelaunchOnLogin()
-//                } else {
-//                    NSApp.disableRelaunchOnLogin()
-//                }
-//            }
+            self.showEventTitleInStatusBarObserver = Defaults.observe(.showEventTitleInStatusBar) { change in
+                NSLog("Changed showEventTitleInStatusBar from \(change.oldValue) to \(change.newValue)")
+                self.updateStatusBarTitle()
+            }
+            self.titleLengthObserver = Defaults.observe(.titleLength) { change in
+                NSLog("Changed titleLength from \(change.oldValue) to \(change.newValue)")
+                self.updateStatusBarTitle()
+            }
         }
     }
 
     @objc func eventStoreChanged(notification _: NSNotification) {
-        NSLog("Store changed. Update status bar menu!")
+        NSLog("Store changed. Update status bar menu.")
         updateStatusBarMenu()
     }
 
@@ -126,7 +137,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let activity = NSBackgroundActivityScheduler(identifier: "leits.MeetingBar.updatestatusbartitle")
 
         activity.repeats = true
-        activity.interval = 60
+        activity.interval = 30
         activity.qualityOfService = QualityOfService.userInitiated
 
         activity.schedule { (completion: @escaping NSBackgroundActivityScheduler.CompletionHandler) in
@@ -151,17 +162,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func updateStatusBarTitle() {
-        var title = "Choose your calendar"
+        var title = "Choose your calendars"
 
-        if calendar != nil {
-            let nextEvent = getNextEvent(eventStore: eventStore, calendar: calendar!)
+        if !calendars.isEmpty {
+            let nextEvent = getNextEvent(eventStore: eventStore, calendars: calendars)
             if let nextEvent = nextEvent {
                 title = createEventStatusString(nextEvent)
             } else {
                 title = "🏁"
             }
         } else {
-            NSLog("No loaded calendar")
+            NSLog("No loaded calendars")
         }
         DispatchQueue.main.async {
             if let button = self.statusBarItem.button {
@@ -175,7 +186,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             statusBarMenu.autoenablesItems = false
             statusBarMenu.removeAllItems()
 
-            if calendar != nil {
+            if !calendars.isEmpty {
                 createTodaySection(menu: statusBarMenu)
                 statusBarMenu.addItem(NSMenuItem.separator())
             }
@@ -187,8 +198,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func createJoinSection(menu: NSMenu) {
-        if calendar != nil {
-            let nextEvent = getNextEvent(eventStore: eventStore, calendar: calendar!)
+        if !calendars.isEmpty {
+            let nextEvent = getNextEvent(eventStore: eventStore, calendars: calendars)
             if nextEvent != nil {
                 let joinItem = menu.addItem(
                     withTitle: "Join next event",
@@ -205,7 +216,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func createTodaySection(menu: NSMenu) {
-        let events: [EKEvent] = loadTodayEventsFromCalendar(eventStore: eventStore, calendar: calendar!)
+        let events: [EKEvent] = loadTodayEventsFromCalendars(eventStore: eventStore, calendars: calendars)
         let now = Date()
 
         // Today header
@@ -286,6 +297,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             let titleItem = eventMenu.addItem(withTitle: eventTitle, action: nil, keyEquivalent: "")
             titleItem.attributedTitle = NSAttributedString(string: eventTitle, attributes: [NSAttributedString.Key.font: NSFont.boldSystemFont(ofSize: 15)])
             eventMenu.addItem(NSMenuItem.separator())
+            
+            // Calendar
+            if Defaults[.selectedCalendars].count > 1 {
+                eventMenu.addItem(withTitle: "Calendar:", action: nil, keyEquivalent: "")
+                eventMenu.addItem(withTitle: event.calendar.title, action: nil, keyEquivalent: "")
+                eventMenu.addItem(NSMenuItem.separator())
+            }
 
             // Duration
             if !event.isAllDay {
@@ -407,7 +425,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc func joinNextMeeting(_: NSStatusBarButton? = nil) {
         NSLog("Join next event!")
-        let nextEvent = getNextEvent(eventStore: eventStore, calendar: calendar!)
+        let nextEvent = getNextEvent(eventStore: eventStore, calendars: calendars)
         if nextEvent == nil {
             NSLog("No next event")
             return
@@ -437,7 +455,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         openEvent(event)
     }
 
-    @objc func openPrefecencesWindow(_: NSStatusBarButton) {
+    @objc func openPrefecencesWindow(_: NSStatusBarButton?) {
         NSLog("Open preferences window")
         let calendars = eventStore.calendars(for: .event)
         let contentView = ContentView(calendars: calendars)
@@ -445,7 +463,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             preferencesWindow.close()
         }
         preferencesWindow = NSWindow(
-            contentRect: NSMakeRect(0, 0, 512, 512),
+            contentRect: NSMakeRect(0, 0, 500, 430),
             styleMask: [.closable, .titled],
             backing: .buffered,
             defer: false)
@@ -464,28 +482,30 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 }
 
-func getCalendar(title: String, eventStore: EKEventStore) -> EKCalendar? {
-    let calendars = eventStore.calendars(for: .event)
-    for calendar in calendars {
-        if calendar.title == title {
-            return calendar
+func getCalendars(titles: [String], eventStore: EKEventStore) -> [EKCalendar] {
+    var selectedCalendars: [EKCalendar] = []
+
+    let allCalendars = eventStore.calendars(for: .event)
+    for calendar in allCalendars {
+        if titles.contains(calendar.title)  {
+            selectedCalendars.append(calendar)
         }
     }
-    return nil
+    return selectedCalendars
 }
 
-func loadTodayEventsFromCalendar(eventStore: EKEventStore, calendar: EKCalendar) -> [EKEvent] {
+func loadTodayEventsFromCalendars(eventStore: EKEventStore, calendars: [EKCalendar]) -> [EKEvent] {
     let todayMidnight = Calendar.current.startOfDay(for: Date())
     let tomorrowMidnight = Calendar.current.date(byAdding: .day, value: 1, to: todayMidnight)!
 
-    let predicate = eventStore.predicateForEvents(withStart: todayMidnight, end: tomorrowMidnight, calendars: [calendar])
+    let predicate = eventStore.predicateForEvents(withStart: todayMidnight, end: tomorrowMidnight, calendars: calendars)
     let calendarEvents = eventStore.events(matching: predicate)
 
-    NSLog("Calendar \(calendar.title) loaded")
+    NSLog("Calendars \(calendars.map({ $0.title })) loaded")
     return calendarEvents
 }
 
-func getNextEvent(eventStore: EKEventStore, calendar: EKCalendar) -> EKEvent? {
+func getNextEvent(eventStore: EKEventStore, calendars: [EKCalendar]) -> EKEvent? {
     var nextEvent: EKEvent?
 
     let now = Date()
@@ -493,7 +513,7 @@ func getNextEvent(eventStore: EKEventStore, calendar: EKCalendar) -> EKEvent? {
     let todayMidnight = Calendar.current.startOfDay(for: now)
     let tomorrowMidnight = Calendar.current.date(byAdding: .day, value: 1, to: todayMidnight)!
 
-    let predicate = eventStore.predicateForEvents(withStart: nextMinute, end: tomorrowMidnight, calendars: [calendar])
+    let predicate = eventStore.predicateForEvents(withStart: nextMinute, end: tomorrowMidnight, calendars: calendars)
     let nextEvents = eventStore.events(matching: predicate)
     // If the current event is still going on,
     // but the next event is closer than 10 minutes later
@@ -525,7 +545,15 @@ func getNextEvent(eventStore: EKEventStore, calendar: EKCalendar) -> EKEvent? {
 
 func createEventStatusString(_ event: EKEvent) -> String {
     let nextMinute = Date().addingTimeInterval(60)
-    let eventTitle = String((event.title)!)
+    var eventTitle = "Meeting"
+    if Defaults[.showEventTitleInStatusBar] {
+        eventTitle = String(event.title ?? "No title")
+        if (Defaults[.titleLength] != TitleLengthLimits.max && eventTitle.count > Int(Defaults[.titleLength])) {
+            let index = eventTitle.index(eventTitle.startIndex, offsetBy: Int(Defaults[.titleLength]))
+            eventTitle = String(eventTitle[...index])
+            eventTitle += "..."
+        }
+    }
     var msg = ""
     if (event.startDate)! < nextMinute, (event.endDate)! > nextMinute {
         let eventEndTime = event.endDate.timeIntervalSinceNow
@@ -537,7 +565,8 @@ func createEventStatusString(_ event: EKEvent) -> String {
         if minutes < 60 {
             msg = " in \(minutes) min"
         } else if minutes < 120 {
-            msg = " in 1 hour"
+            let remainder = minutes % 60
+            msg = " in 1 hour \(remainder) min"
         } else {
             let hours = minutes / 60
             msg = " in \(hours) hours"
@@ -547,28 +576,29 @@ func createEventStatusString(_ event: EKEvent) -> String {
 }
 
 func openEvent(_ event: EKEvent) {
-    let eventTitle = event.title!
-    if !event.hasNotes {
-        NSLog("No notes for event (\(eventTitle))")
-    }
-    let meetLink = getMatch(text: (event.notes)!, regex: LinksRegex.meet)
-    if let link = meetLink {
-        if let meetURL = URL(string: link) {
-            if Defaults[.useChromeForMeetLinks] {
-                openLinkInChrome(meetURL)
-            } else {
-                openLinkInDefaultBrowser(meetURL)
+    let eventTitle = event.title ?? "No title"
+    if let notes = event.notes {
+        let meetLink = getMatch(text: notes, regex: LinksRegex.meet)
+        if let link = meetLink {
+            if let meetURL = URL(string: link) {
+                if Defaults[.useChromeForMeetLinks] {
+                    openLinkInChrome(meetURL)
+                } else {
+                    openLinkInDefaultBrowser(meetURL)
+                }
             }
+        } else {
+            NSLog("No meet link for event (\(eventTitle))")
+            let zoomLink = getMatch(text: notes, regex: LinksRegex.zoom)
+            if let link = zoomLink {
+                if let zoomURL = URL(string: link) {
+                    openLinkInDefaultBrowser(zoomURL)
+                }
+            }
+            NSLog("No zoom link for event (\(eventTitle))")
         }
     } else {
-        NSLog("No meet link for event (\(eventTitle))")
-        let zoomLink = getMatch(text: (event.notes)!, regex: LinksRegex.zoom)
-        if let link = zoomLink {
-            if let zoomURL = URL(string: link) {
-                openLinkInDefaultBrowser(zoomURL)
-            }
-        }
-        NSLog("No zoom link for event (\(eventTitle))")
+        NSLog("No notes for event (\(eventTitle))")
     }
 }
 

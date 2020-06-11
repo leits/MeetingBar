@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		140D842824880CA30055E1CE /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = 140D842724880CA30055E1CE /* KeyboardShortcuts */; };
+		140D842E248AB2960055E1CE /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = 140D842D248AB2960055E1CE /* KeyboardShortcuts */; };
 		14158D3B246C65AD0006436C /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 14158D3A246C65AD0006436C /* README.md */; };
 		14158D41246C6D270006436C /* Defaults in Frameworks */ = {isa = PBXBuildFile; productRef = 14158D40246C6D270006436C /* Defaults */; };
 		144C017D2462D0C3000C9FFC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 144C017C2462D0C3000C9FFC /* AppDelegate.swift */; };
@@ -35,7 +35,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				14158D41246C6D270006436C /* Defaults in Frameworks */,
-				140D842824880CA30055E1CE /* KeyboardShortcuts in Frameworks */,
+				140D842E248AB2960055E1CE /* KeyboardShortcuts in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -99,7 +99,7 @@
 			name = MeetingBar;
 			packageProductDependencies = (
 				14158D40246C6D270006436C /* Defaults */,
-				140D842724880CA30055E1CE /* KeyboardShortcuts */,
+				140D842D248AB2960055E1CE /* KeyboardShortcuts */,
 			);
 			productName = MeetingBar;
 			productReference = 144C01792462D0C3000C9FFC /* MeetingBar.app */;
@@ -131,7 +131,7 @@
 			mainGroup = 144C01702462D0C3000C9FFC;
 			packageReferences = (
 				14158D3F246C6D270006436C /* XCRemoteSwiftPackageReference "Defaults" */,
-				140D842624880CA30055E1CE /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */,
+				140D842C248AB2960055E1CE /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */,
 			);
 			productRefGroup = 144C017A2462D0C3000C9FFC /* Products */;
 			projectDirPath = "";
@@ -214,6 +214,8 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_ASSET_PATHS = "";
+				EMBED_ASSET_PACKS_IN_PRODUCT_BUNDLE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -274,6 +276,8 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_ASSET_PATHS = "";
+				EMBED_ASSET_PACKS_IN_PRODUCT_BUNDLE = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -372,12 +376,12 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		140D842624880CA30055E1CE /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */ = {
+		140D842C248AB2960055E1CE /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/sindresorhus/KeyboardShortcuts";
 			requirement = {
-				branch = "fix-crash";
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.2.2;
 			};
 		};
 		14158D3F246C6D270006436C /* XCRemoteSwiftPackageReference "Defaults" */ = {
@@ -391,9 +395,9 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		140D842724880CA30055E1CE /* KeyboardShortcuts */ = {
+		140D842D248AB2960055E1CE /* KeyboardShortcuts */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 140D842624880CA30055E1CE /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */;
+			package = 140D842C248AB2960055E1CE /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */;
 			productName = KeyboardShortcuts;
 		};
 		14158D40246C6D270006436C /* Defaults */ = {
