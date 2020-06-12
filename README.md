@@ -14,7 +14,7 @@ Integrated with Google Meet and Zoom so you can quickly join meetings from event
 1. Install the [latest version](https://github.com/leits/MeetingBar/releases/latest/download/MeetingBar.dmg).
 2. Make sure your calendar synchronized to macOS calendar
 3. Run app and go to the Prefrences
-4. Select your calendar
+4. Select your calendars
 5. ta-da :tada:
 
 If you see a warning message and can’t install an app use this apple guide:
@@ -23,19 +23,24 @@ https://support.apple.com/en-us/HT202491
 
 ## Preferences
 
+* Show event title in status bar  (*default: Yes*)
+* Limit title length (*default: unlimited*)
 * Service for ad-hoc meetings (*default: Google Meet*)
 * Use Chrome for Meet meetings (*default: No*)
-* Show event details in event submenu (*default: Yes*)
-* Enable global shortcuts (*default: No*)
+* Show event details as event submenu (*default: Yes*)
+* Shortcut for join next event (*default: disabled*)
+* Shortcut for create meeting (*default: disabled*)
+
+## Support
+
+❤️ Love this project? Support development on [Patreon](https://www.patreon.com/meetingbar)
 
 ## Credits
-
-❤️ Love this project? Support @leits's FOSS on [Patreon](https://www.patreon.com/meetingbar) 🦄
 
 MeetingBar is in **active development** by [leits](https://github.com/leits). Written in Swift 5.0.
 
 MeetingBar also uses these resources:
-- [HotKey](https://github.com/soffes/HotKey) for managing global keyboard shortcuts
+- [KeyboardShortcuts](https://github.com/sindresorhus/KeyboardShortcuts) for managing global keyboard shortcuts
 - [Defaults](https://github.com/sindresorhus/Defaults) for managing user settings
 
 Icon made by [Chanut](https://www.flaticon.com/authors/chanut) from [flaticon](www.flaticon.com)
