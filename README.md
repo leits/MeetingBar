@@ -16,17 +16,20 @@ brew cask install meetingbar
 ```
 2. Make sure your calendar synchronized to macOS calendar
 3. Open the app, and if you see a warning, allow app to open from System Preferences [Security & Privacy > General > Open Anyway button].
-4. Go to the app Preferences and select your calendar
+4. Go to the app Preferences and select your calendars
 5. Never miss your next meeting again :tada:
 
 If you have some installation problems or some other questions please check the [FAQ](../../wiki/FAQ) or [add an issue](https://github.com/leits/MeetingBar/issues/new).
 
 ## Preferences
 
+* Show event title in status bar  (*default: Yes*)
+* Limit title length (*default: unlimited*)
 * Service for ad-hoc meetings (*default: Google Meet*)
 * Use Chrome for Meet meetings (*default: No*)
-* Show event details in event submenu (*default: Yes*)
-* Enable global shortcuts (*default: No*)
+* Show event details as event submenu (*default: Yes*)
+* Shortcut for join next event (*default: disabled*)
+* Shortcut for create meeting (*default: disabled*)
 
 ## Support the creator
 
@@ -37,7 +40,7 @@ If you have some installation problems or some other questions please check the 
 MeetingBar is in **active development** by [leits](https://github.com/leits). Written in Swift 5.0.
 
 MeetingBar also uses these resources:
-- [HotKey](https://github.com/soffes/HotKey) for managing global keyboard shortcuts
+- [KeyboardShortcuts](https://github.com/sindresorhus/KeyboardShortcuts) for managing global keyboard shortcuts
 - [Defaults](https://github.com/sindresorhus/Defaults) for managing user settings
 
 Icon made by [Chanut](https://www.flaticon.com/authors/chanut) from [flaticon](https://www.flaticon.com)
