@@ -21,6 +21,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var showEventDetailsObserver: DefaultsObservation?
     var showEventTitleInStatusBarObserver: DefaultsObservation?
     var titleLengthObserver: DefaultsObservation?
+    var timeFormatObserver: DefaultsObservation?
 
     var preferencesWindow: NSWindow!
 
@@ -74,6 +75,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
             self.showEventDetailsObserver = Defaults.observe(.showEventDetails) { change in
                 NSLog("Change showEventDetails from \(change.oldValue) to \(change.newValue)")
+                self.statusBarItem.updateMenu()
+            }
+            self.timeFormatObserver = Defaults.observe(.timeFormat) { change in
+                NSLog("Change timeFormat from \(change.oldValue) to \(change.newValue)")
                 self.statusBarItem.updateMenu()
             }
             self.showEventTitleInStatusBarObserver = Defaults.observe(.showEventTitleInStatusBar) { change in
@@ -152,7 +157,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             preferencesWindow.close()
         }
         preferencesWindow = NSWindow(
-            contentRect: NSMakeRect(0, 0, 500, 430),
+            contentRect: NSMakeRect(0, 0, 550, 430),
             styleMask: [.closable, .titled],
             backing: .buffered,
             defer: false)

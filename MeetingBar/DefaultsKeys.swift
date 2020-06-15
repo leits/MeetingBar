@@ -17,4 +17,5 @@ extension Defaults.Keys {
     static let selectedCalendars = Key<[String]>("selectedCalendars", default: [])
     static let showEventTitleInStatusBar = Key<Bool>("showEventTitleInStatusBar", default: true)
     static let titleLength = Key<Double>("titleLength", default: TitleLengthLimits.max)
+    static let timeFormat = Key<TimeFormat>("timeFormat", default: .military)
 }

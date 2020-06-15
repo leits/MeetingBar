@@ -117,7 +117,13 @@ class StatusBarItemControler {
         let eventTitle = String(event.title)
 
         let eventTimeFormatter = DateFormatter()
-        eventTimeFormatter.dateFormat = "HH:mm"
+        
+        switch Defaults[.timeFormat] {
+        case .am_pm:
+            eventTimeFormatter.dateFormat = "h:mm a"
+        case .military:
+            eventTimeFormatter.dateFormat = "HH:mm"
+        }
 
         var eventStartTime = ""
         if event.isAllDay {

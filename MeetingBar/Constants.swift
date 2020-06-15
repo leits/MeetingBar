@@ -30,6 +30,11 @@ enum MeetingServices: String, Codable, CaseIterable {
     case zoom = "Zoom"
 }
 
+enum TimeFormat: String, Codable, CaseIterable {
+    case am_pm = "12-hour"
+    case military = "24-hour"
+}
+
 enum AuthResult {
     case success(Bool), failure(Error)
 }

@@ -35,6 +35,7 @@ struct ContentView: View {
     @Default(.selectedCalendars) var selectedCalendars
     @Default(.showEventTitleInStatusBar) var showEventTitleInStatusBar
     @Default(.titleLength) var titleLength
+    @Default(.timeFormat) var timeFormat
 
     let calendars: [EKCalendar]
 
@@ -43,38 +44,41 @@ struct ContentView: View {
             TabView {
                 VStack(alignment: .leading, spacing: 15) {
                     Section {
-                        Section {
-                            Toggle("Show event title in status bar", isOn: $showEventTitleInStatusBar)
-                            HStack {
-                                Text(generateTitleSample(showEventTitleInStatusBar, Int(titleLength)))
-                                Spacer()
-                            }.padding(.all, 10)
-                                .border(Color.gray, width: 3)
-                            HStack {
-                                Text("5")
-                                Slider(value: $titleLength, in: TitleLengthLimits.min...TitleLengthLimits.max, step: 1)
-                                Text("∞")
-                            }.disabled(!showEventTitleInStatusBar)
-                            Divider()
+                        Toggle("Show event title in status bar", isOn: $showEventTitleInStatusBar)
+                        HStack {
+                            Text(generateTitleSample(showEventTitleInStatusBar, Int(titleLength)))
+                            Spacer()
+                        }.padding(.all, 10)
+                            .border(Color.gray, width: 3)
+                        HStack {
+                            Text("5")
+                            Slider(value: $titleLength, in: TitleLengthLimits.min...TitleLengthLimits.max, step: 1)
+                            Text("∞")
+                        }.disabled(!showEventTitleInStatusBar)
+                        Divider()
+                    }
+                    Section {
+                        Toggle("Show event details as submenu", isOn: $showEventDetails)
+                        HStack {
+                            Picker("Time format:", selection: $timeFormat) {
+                                Text("12-hour (AM/PM)").tag(TimeFormat.am_pm)
+                                Text("24-hour").tag(TimeFormat.military)
+                            }
                         }
-                        Section {
-                            Toggle("Show event details as submenu", isOn: $showEventDetails)
-                            Divider()
-                            Picker(selection: $createMeetingService, label: Text("Create meetings in ")) {
-                                ForEach(MeetingServices.allCases, id: \.self) {
-                                    Text($0.rawValue).tag($0)
-                                }
+                        Divider()
+                        Picker(selection: $createMeetingService, label: Text("Create meetings in ")) {
+                            ForEach(MeetingServices.allCases, id: \.self) {
+                                Text($0.rawValue).tag($0)
                             }
-                            Toggle("Use Chrome for Google Meet links", isOn: $useChromeForMeetLinks)
-                            Divider()
-                            HStack {
-                                Text("Create meeting:")
-                                KeyboardShortcuts.Recorder(for: .createMeetingShortcut)
-                            }
-                            HStack {
-                                Text("Join next event:")
-                                KeyboardShortcuts.Recorder(for: .joinEventShortcut)
-                            }
+                        }
+                        Toggle("Use Chrome for Google Meet links", isOn: $useChromeForMeetLinks)
+                        Divider()
+                        HStack {
+                            Text("Create meeting:")
+                            KeyboardShortcuts.Recorder(for: .createMeetingShortcut)
+                            Spacer()
+                            Text("Join next event:")
+                            KeyboardShortcuts.Recorder(for: .joinEventShortcut)
                         }
                     }
                 }.padding().tabItem { Text("General") }
