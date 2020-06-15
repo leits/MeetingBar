@@ -23,15 +23,7 @@ class StatusBarItemControler {
         )
         let statusBarMenu = NSMenu(title: "MeetingBar in Status Bar Menu")
         self.item.menu = statusBarMenu
-
         self.calendars = self.eventStore.getCalendars(Defaults[.selectedCalendars])
-
-        KeyboardShortcuts.onKeyUp(for: .createMeetingShortcut) {
-            self.createMeeting()
-        }
-        KeyboardShortcuts.onKeyUp(for: .joinEventShortcut) {
-            self.joinNextMeeting()
-        }
     }
 
     func updateTitle() {
@@ -76,14 +68,14 @@ class StatusBarItemControler {
             if nextEvent != nil {
                 let joinItem = self.item.menu!.addItem(
                     withTitle: "Join next event",
-                    action: #selector(StatusBarItemControler.joinNextMeeting),
+                    action: #selector(AppDelegate.joinNextMeeting),
                     keyEquivalent: "")
                 joinItem.setShortcut(for: .joinEventShortcut)
             }
         }
         let createItem = self.item.menu!.addItem(
             withTitle: "Create meeting",
-            action: #selector(StatusBarItemControler.createMeeting),
+            action: #selector(AppDelegate.createMeeting),
             keyEquivalent: "")
         createItem.setShortcut(for: .createMeetingShortcut)
     }
@@ -294,34 +286,10 @@ class StatusBarItemControler {
             keyEquivalent: "")
     }
 
-    @objc func createMeeting(_: NSStatusBarButton? = nil) {
-        NSLog("Create meeting in \(Defaults[.createMeetingService].rawValue)")
-        switch Defaults[.createMeetingService] {
-        case .meet:
-            if Defaults[.useChromeForMeetLinks] {
-                openLinkInChrome(Links.newMeetMeeting)
-            } else {
-                openLinkInDefaultBrowser(Links.newMeetMeeting)
-            }
-        case .zoom:
-            openLinkInDefaultBrowser(Links.newZoomMeeting)
-        }
-    }
-
     @objc func clickOnEvent(sender: NSMenuItem) {
         NSLog("Click on event (\(sender.title))!")
         let event: EKEvent = sender.representedObject as! EKEvent
         openEvent(event)
-    }
-
-    @objc func joinNextMeeting(_: NSStatusBarButton? = nil) {
-        if let nextEvent = self.eventStore.getNextEvent(calendars: self.calendars) {
-            NSLog("Join next event")
-            openEvent(nextEvent)
-        } else {
-            NSLog("No next event")
-            return
-        }
     }
 }
 

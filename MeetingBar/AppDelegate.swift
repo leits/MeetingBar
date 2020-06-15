@@ -11,6 +11,7 @@ import EventKit
 import SwiftUI
 
 import Defaults
+import KeyboardShortcuts
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
@@ -55,6 +56,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
             self.scheduleUpdateStatusBarTitle()
             self.scheduleUpdateEvents()
+
+            KeyboardShortcuts.onKeyUp(for: .createMeetingShortcut) {
+                self.createMeeting()
+            }
+            KeyboardShortcuts.onKeyUp(for: .joinEventShortcut) {
+                self.joinNextMeeting()
+            }
 
             NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.eventStoreChanged), name: .EKEventStoreChanged, object: self.statusBarItem.eventStore)
 
@@ -109,6 +117,30 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             NSLog("Firing reccuring updateStatusBarMenu")
             self.statusBarItem.updateMenu()
             completion(NSBackgroundActivityScheduler.Result.finished)
+        }
+    }
+
+    @objc func createMeeting(_: Any? = nil) {
+        NSLog("Create meeting in \(Defaults[.createMeetingService].rawValue)")
+        switch Defaults[.createMeetingService] {
+        case .meet:
+            if Defaults[.useChromeForMeetLinks] {
+                openLinkInChrome(Links.newMeetMeeting)
+            } else {
+                openLinkInDefaultBrowser(Links.newMeetMeeting)
+            }
+        case .zoom:
+            openLinkInDefaultBrowser(Links.newZoomMeeting)
+        }
+    }
+
+    @objc func joinNextMeeting(_: NSStatusBarButton? = nil) {
+        if let nextEvent = statusBarItem.eventStore.getNextEvent(calendars: statusBarItem.calendars) {
+            NSLog("Join next event")
+            openEvent(nextEvent)
+        } else {
+            NSLog("No next event")
+            return
         }
     }
 
