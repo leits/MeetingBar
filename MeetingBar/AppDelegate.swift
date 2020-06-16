@@ -148,6 +148,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             return
         }
     }
+    
+    
+    @objc func clickOnEvent(sender: NSMenuItem) {
+        NSLog("Click on event (\(sender.title))!")
+        let event: EKEvent = sender.representedObject as! EKEvent
+        openEvent(event)
+    }
 
     @objc func openPrefecencesWindow(_: NSStatusBarButton?) {
         NSLog("Open preferences window")

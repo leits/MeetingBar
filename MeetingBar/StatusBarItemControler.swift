@@ -136,7 +136,7 @@ class StatusBarItemControler {
         let itemTitle = "\(eventStartTime) - \(eventTitle)"
         let eventItem = self.item.menu!.addItem(
             withTitle: itemTitle,
-            action: #selector(StatusBarItemControler.clickOnEvent(sender:)),
+            action: #selector(AppDelegate.clickOnEvent(sender:)),
             keyEquivalent: "")
         let eventStatus = getEventStatus(event)
         if eventStatus != nil {
@@ -290,12 +290,6 @@ class StatusBarItemControler {
             withTitle: "Quit",
             action: #selector(AppDelegate.quit),
             keyEquivalent: "")
-    }
-
-    @objc func clickOnEvent(sender: NSMenuItem) {
-        NSLog("Click on event (\(sender.title))!")
-        let event: EKEvent = sender.representedObject as! EKEvent
-        openEvent(event)
     }
 }
 
