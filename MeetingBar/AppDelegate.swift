@@ -17,7 +17,7 @@ import KeyboardShortcuts
 class AppDelegate: NSObject, NSApplicationDelegate {
     var statusBarItem: StatusBarItemControler!
 
-    var selectedCalendarsObserver: DefaultsObservation?
+    var selectedCalendarIDsObserver: DefaultsObservation?
     var showEventDetailsObserver: DefaultsObservation?
     var showEventTitleInStatusBarObserver: DefaultsObservation?
     var titleLengthObserver: DefaultsObservation?
@@ -47,13 +47,25 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func setup() {
         DispatchQueue.main.async {
+            
+             // Backward compatibility
+            var calendarTitles: [String] = []
             if Defaults[.calendarTitle] != "" {
-                Defaults[.selectedCalendars].append(Defaults[.calendarTitle])
+                calendarTitles.append(Defaults[.calendarTitle])
                 Defaults[.calendarTitle] = ""
             }
-
-            self.statusBarItem.updateTitle()
-            self.statusBarItem.updateMenu()
+            if !Defaults[.selectedCalendars].isEmpty {
+                calendarTitles.append(contentsOf: Defaults[.selectedCalendars])
+                Defaults[.selectedCalendars] = []
+            }
+            if !calendarTitles.isEmpty {
+                let matchCalendars = self.statusBarItem.eventStore.getCalendars(titles: calendarTitles)
+                for calendar in matchCalendars {
+                    Defaults[.selectedCalendarIDs].append(calendar.calendarIdentifier)
+                }
+                
+            }
+            self.statusBarItem.loadCalendars()
 
             self.scheduleUpdateStatusBarTitle()
             self.scheduleUpdateEvents()
@@ -67,11 +79,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
             NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.eventStoreChanged), name: .EKEventStoreChanged, object: self.statusBarItem.eventStore)
 
-            self.selectedCalendarsObserver = Defaults.observe(.selectedCalendars) { change in
-                NSLog("Changed selectedCalendars from \(change.oldValue) to \(change.newValue)")
-                self.statusBarItem.calendars = self.statusBarItem.eventStore.getCalendars(change.newValue)
-                self.statusBarItem.updateMenu()
-                self.statusBarItem.updateTitle()
+            self.selectedCalendarIDsObserver = Defaults.observe(.selectedCalendarIDs) { change in
+                NSLog("Changed selectedCalendarIDs from \(change.oldValue) to \(change.newValue)")
+                self.statusBarItem.loadCalendars()
             }
             self.showEventDetailsObserver = Defaults.observe(.showEventDetails) { change in
                 NSLog("Change showEventDetails from \(change.oldValue) to \(change.newValue)")

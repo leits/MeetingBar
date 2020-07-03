@@ -9,12 +9,13 @@
 import Defaults
 
 extension Defaults.Keys {
-    static let calendarTitle = Key<String>("calendarTitle", default: "")
+    static let calendarTitle = Key<String>("calendarTitle", default: "") // Backward compatibility
+    static let selectedCalendars = Key<[String]>("selectedCalendars", default: []) // Backward compatibility
+    static let selectedCalendarIDs = Key<[String]>("selectedCalendarIDs", default: [])
     static let useChromeForMeetLinks = Key<Bool>("useChromeForMeetLinks", default: false)
     static let launchAtLogin = Key<Bool>("launchAtLogin", default: false)
     static let showEventDetails = Key<Bool>("showEventDetails", default: true)
     static let createMeetingService = Key<MeetingServices>("createMeetingService", default: .meet)
-    static let selectedCalendars = Key<[String]>("selectedCalendars", default: [])
     static let showEventTitleInStatusBar = Key<Bool>("showEventTitleInStatusBar", default: true)
     static let titleLength = Key<Double>("titleLength", default: TitleLengthLimits.max)
     static let timeFormat = Key<TimeFormat>("timeFormat", default: .military)

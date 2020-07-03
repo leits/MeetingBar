@@ -23,7 +23,12 @@ class StatusBarItemControler {
         )
         let statusBarMenu = NSMenu(title: "MeetingBar in Status Bar Menu")
         self.item.menu = statusBarMenu
-        self.calendars = self.eventStore.getCalendars(Defaults[.selectedCalendars])
+    }
+    
+    func loadCalendars() {
+        self.calendars = self.eventStore.getCalendars(ids: Defaults[.selectedCalendarIDs])
+        self.updateTitle()
+        self.updateMenu()
     }
 
     func updateTitle() {
@@ -168,7 +173,7 @@ class StatusBarItemControler {
             eventMenu.addItem(NSMenuItem.separator())
 
             // Calendar
-            if Defaults[.selectedCalendars].count > 1 {
+            if Defaults[.selectedCalendarIDs].count > 1 {
                 eventMenu.addItem(withTitle: "Calendar:", action: nil, keyEquivalent: "")
                 eventMenu.addItem(withTitle: event.calendar.title, action: nil, keyEquivalent: "")
                 eventMenu.addItem(NSMenuItem.separator())
@@ -201,9 +206,9 @@ class StatusBarItemControler {
             }
 
             // Location
-            if event.location != nil {
+            if let location = event.location {
                 eventMenu.addItem(withTitle: "Location:", action: nil, keyEquivalent: "")
-                eventMenu.addItem(withTitle: "\(event.location!)", action: nil, keyEquivalent: "")
+                eventMenu.addItem(withTitle: "\(location)", action: nil, keyEquivalent: "")
                 eventMenu.addItem(NSMenuItem.separator())
             }
 
@@ -217,7 +222,7 @@ class StatusBarItemControler {
 
             // Notes
             if event.hasNotes {
-                let notes = cleanUpNotes(event.notes!)
+                let notes = cleanUpNotes(event.notes ?? "")
                 if notes.count > 0 {
                     eventMenu.addItem(withTitle: "Notes:", action: nil, keyEquivalent: "")
                     let item = eventMenu.addItem(withTitle: "", action: nil, keyEquivalent: "")
@@ -230,7 +235,7 @@ class StatusBarItemControler {
 
             // Attendees
             if event.hasAttendees {
-                let attendees: [EKParticipant] = event.attendees!
+                let attendees: [EKParticipant] = event.attendees ?? []
                 let count = attendees.filter { $0.participantType == .person }.count
                 let sortedAttendees = attendees.sorted {
                     if $0.participantRole.rawValue != $1.participantRole.rawValue {
@@ -246,7 +251,7 @@ class StatusBarItemControler {
                     }
                     var attributes: [NSAttributedString.Key: Any] = [:]
 
-                    var name = attendee.name!
+                    var name = attendee.name ?? "No name attendee"
 
                     if attendee.isCurrentUser {
                         name = "\(name) (you)"
@@ -354,8 +359,10 @@ func openEvent(_ event: EKEvent) {
 
 func getEventStatus(_ event: EKEvent) -> EKParticipantStatus? {
     if event.hasAttendees {
-        if let currentUser = event.attendees!.first(where: { $0.isCurrentUser }) {
-            return currentUser.participantStatus
+        if let attendees = event.attendees {
+            if let currentUser = attendees.first(where: { $0.isCurrentUser }) {
+                return currentUser.participantStatus
+            }
         }
     }
     return nil

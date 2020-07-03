@@ -30,16 +30,17 @@ extension EKEventStore {
         }
     }
 
-    func getCalendars(_ titles: [String]) -> [EKCalendar] {
-        var selectedCalendars: [EKCalendar] = []
+    func getCalendars(titles: [String] = [], ids: [String] = []) -> [EKCalendar] {
+        var matchedCalendars: [EKCalendar] = []
 
         let allCalendars = self.calendars(for: .event)
         for calendar in allCalendars {
-            if titles.contains(calendar.title) {
-                selectedCalendars.append(calendar)
+            if titles.contains(calendar.title) || ids.contains(calendar.calendarIdentifier) {
+                print("\(calendar.title): \(calendar.calendarIdentifier)")
+                matchedCalendars.append(calendar)
             }
         }
-        return selectedCalendars
+        return matchedCalendars
     }
 
     func loadTodayEvents(calendars: [EKCalendar]) -> [EKEvent] {

@@ -32,7 +32,7 @@ struct ContentView: View {
     @Default(.useChromeForMeetLinks) var useChromeForMeetLinks
     @Default(.showEventDetails) var showEventDetails
     @Default(.createMeetingService) var createMeetingService
-    @Default(.selectedCalendars) var selectedCalendars
+    @Default(.selectedCalendarIDs) var selectedCalendarIDs
     @Default(.showEventTitleInStatusBar) var showEventTitleInStatusBar
     @Default(.titleLength) var titleLength
     @Default(.timeFormat) var timeFormat
@@ -88,11 +88,11 @@ struct ContentView: View {
                         Form {
                             Text("Select your calendars:")
                             List(calendars, id: \.calendarIdentifier) { calendar in
-                                MultipleSelectionRow(title: calendar.title, isSelected: self.selectedCalendars.contains(calendar.title), color: Color(calendar.color)) {
-                                    if self.selectedCalendars.contains(calendar.title) {
-                                        self.selectedCalendars.removeAll(where: { $0 == calendar.title })
+                                MultipleSelectionRow(title: calendar.title, isSelected: self.selectedCalendarIDs.contains(calendar.calendarIdentifier), color: Color(calendar.color)) {
+                                    if self.selectedCalendarIDs.contains(calendar.calendarIdentifier) {
+                                        self.selectedCalendarIDs.removeAll(where: { $0 == calendar.calendarIdentifier })
                                     } else {
-                                        self.selectedCalendars.append(calendar.title)
+                                        self.selectedCalendarIDs.append(calendar.calendarIdentifier)
                                     }
                                 }
                             }
