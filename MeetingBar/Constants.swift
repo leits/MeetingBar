@@ -20,7 +20,7 @@ struct LinksRegex {
 
 struct Links {
     static var newMeetMeeting = URL(string: "https://meet.google.com/new")!
-    static var newZoomMeeting = URL(string: "https://meet.google.com/new")!
+    static var newZoomMeeting = URL(string: "https://zoom.us/start/videomeeting")!
     static var supportTheCreator = URL(string: "https://www.patreon.com/meetingbar")!
     static var aboutThisApp = URL(string: "https://github.com/leits/MeetingBar")!
 }
