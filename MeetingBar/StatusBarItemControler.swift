@@ -182,7 +182,7 @@ class StatusBarItemControler {
             // Duration
             if !event.isAllDay {
                 let eventEndTime = eventTimeFormatter.string(from: event.endDate)
-                let eventDurationMinutes = String(event.endDate.timeIntervalSince(event.startDate) / 60)
+                let eventDurationMinutes = String(Int(event.endDate.timeIntervalSince(event.startDate) / 60))
                 let durationTitle = "\(eventStartTime) - \(eventEndTime) (\(eventDurationMinutes) minutes)"
                 eventMenu.addItem(withTitle: durationTitle, action: nil, keyEquivalent: "")
                 eventMenu.addItem(NSMenuItem.separator())
