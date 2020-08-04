@@ -112,7 +112,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         activity.repeats = true
         activity.interval = 30
-        activity.qualityOfService = QualityOfService.userInitiated
+        activity.qualityOfService = QualityOfService.userInteractive
 
         activity.schedule { (completion: @escaping NSBackgroundActivityScheduler.CompletionHandler) in
             NSLog("Firing reccuring updateStatusBarTitle")
@@ -126,7 +126,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         activity.repeats = true
         activity.interval = 60 * 5
-        activity.qualityOfService = QualityOfService.userInitiated
+        activity.qualityOfService = QualityOfService.userInteractive
 
         activity.schedule { (completion: @escaping NSBackgroundActivityScheduler.CompletionHandler) in
             NSLog("Firing reccuring updateStatusBarMenu")
