@@ -290,11 +290,11 @@ class StatusBarItemControler {
         self.item.menu!.addItem(
             withTitle: "Preferences",
             action: #selector(AppDelegate.openPrefecencesWindow),
-            keyEquivalent: "")
+            keyEquivalent: ",")
         self.item.menu!.addItem(
             withTitle: "Quit",
             action: #selector(AppDelegate.quit),
-            keyEquivalent: "")
+            keyEquivalent: "q")
     }
 }
 
