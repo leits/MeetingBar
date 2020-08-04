@@ -302,7 +302,7 @@ func createEventStatusString(_ event: EKEvent) -> String {
     let nextMinute = Date().addingTimeInterval(60)
     var eventTitle = "Meeting"
     if Defaults[.showEventTitleInStatusBar] {
-        eventTitle = String(event.title ?? "No title")
+        eventTitle = String(event.title ?? "No title").trimmingCharacters(in: .whitespaces)
         if Defaults[.titleLength] != TitleLengthLimits.max, eventTitle.count > Int(Defaults[.titleLength]) {
             let index = eventTitle.index(eventTitle.startIndex, offsetBy: Int(Defaults[.titleLength]))
             eventTitle = String(eventTitle[...index])
