@@ -4,7 +4,7 @@
 
 **MeetingBar** is a menu bar app for your calendar meetings (macOS 10.15+).
 
-Integrated with Google Meet and Zoom so you can quickly join meetings from event or create ad hoc meeting.
+Integrated with Google Meet, Microsoft Teams, and Zoom so you can quickly join meetings from event or create ad hoc meeting.
 
 <img src="https://github.com/leits/MeetingBar/blob/master/screenshot.png" width="700">
 

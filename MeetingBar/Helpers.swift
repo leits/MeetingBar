@@ -33,8 +33,9 @@ func openLinkInDefaultBrowser(_ link: URL) {
 
 func cleanUpNotes(_ notes: String) -> String {
     let zoomSeparator = "\n──────────"
+    let teamsSeparator = "\n──────────"
     let meetSeparator = "-::~:~::~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~::~:~::-"
-    let cleanNotes = notes.components(separatedBy: zoomSeparator)[0].components(separatedBy: meetSeparator)[0]
+    let cleanNotes = notes.components(separatedBy: zoomSeparator)[0].components(separatedBy: teamsSeparator)[0].components(separatedBy: meetSeparator)[0]
     return cleanNotes
 }
 

@@ -14,6 +14,7 @@ struct TitleLengthLimits {
 }
 
 struct LinksRegex {
+    static let teams = try! NSRegularExpression(pattern: #"https://teams.microsoft.com/l/meetup-join/[a-zA-Z0-9_%\/=\-\+\.?]+"#)
     static let meet = try! NSRegularExpression(pattern: #"https://meet.google.com/[a-z-]+"#)
     static let zoom = try! NSRegularExpression(pattern: #"https://([a-z0-9.]+)?zoom.us/j/[a-zA-Z0-9?&=]+"#)
 }
@@ -21,6 +22,7 @@ struct LinksRegex {
 struct Links {
     static var newMeetMeeting = URL(string: "https://meet.google.com/new")!
     static var newZoomMeeting = URL(string: "https://zoom.us/start/videomeeting")!
+    static var newTeamsMeeting = URL(string: "https://aka.ms/mstfw")! // cannot seem to find a way to do this via url
     static var supportTheCreator = URL(string: "https://www.patreon.com/meetingbar")!
     static var aboutThisApp = URL(string: "https://github.com/leits/MeetingBar")!
 }
@@ -28,6 +30,7 @@ struct Links {
 enum MeetingServices: String, Codable, CaseIterable {
     case meet = "Google Meet"
     case zoom = "Zoom"
+    case teams = "Microsoft Teams"
 }
 
 enum TimeFormat: String, Codable, CaseIterable {

@@ -333,24 +333,33 @@ func createEventStatusString(_ event: EKEvent) -> String {
 func openEvent(_ event: EKEvent) {
     let eventTitle = event.title ?? "No title"
     if let notes = event.notes {
-        let meetLink = getMatch(text: notes, regex: LinksRegex.meet)
-        if let link = meetLink {
-            if let meetURL = URL(string: link) {
-                if Defaults[.useChromeForMeetLinks] {
-                    openLinkInChrome(meetURL)
-                } else {
-                    openLinkInDefaultBrowser(meetURL)
-                }
+        
+        let teamsLink = getMatch(text: notes, regex: LinksRegex.teams)
+        if let link = teamsLink {
+            if let teamsURL = URL(string: link) {
+                openLinkInDefaultBrowser(teamsURL)
             }
         } else {
-            NSLog("No meet link for event (\(eventTitle))")
-            let zoomLink = getMatch(text: notes, regex: LinksRegex.zoom)
-            if let link = zoomLink {
-                if let zoomURL = URL(string: link) {
-                    openLinkInDefaultBrowser(zoomURL)
+            NSLog("No teams link for event (\(eventTitle))")
+            let meetLink = getMatch(text: notes, regex: LinksRegex.meet)
+            if let link = meetLink {
+                if let meetURL = URL(string: link) {
+                    if Defaults[.useChromeForMeetLinks] {
+                        openLinkInChrome(meetURL)
+                    } else {
+                        openLinkInDefaultBrowser(meetURL)
+                    }
                 }
+            } else {
+                NSLog("No meet link for event (\(eventTitle))")
+                let zoomLink = getMatch(text: notes, regex: LinksRegex.zoom)
+                if let link = zoomLink {
+                    if let zoomURL = URL(string: link) {
+                        openLinkInDefaultBrowser(zoomURL)
+                    }
+                }
+                NSLog("No zoom link for event (\(eventTitle))")
             }
-            NSLog("No zoom link for event (\(eventTitle))")
         }
     } else {
         NSLog("No notes for event (\(eventTitle))")

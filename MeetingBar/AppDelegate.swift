@@ -144,6 +144,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             } else {
                 openLinkInDefaultBrowser(Links.newMeetMeeting)
             }
+        case .teams:
+            openLinkInDefaultBrowser(Links.newTeamsMeeting)
         case .zoom:
             openLinkInDefaultBrowser(Links.newZoomMeeting)
         }
