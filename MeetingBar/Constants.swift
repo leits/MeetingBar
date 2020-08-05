@@ -22,7 +22,7 @@ struct LinksRegex {
 struct Links {
     static var newMeetMeeting = URL(string: "https://meet.google.com/new")!
     static var newZoomMeeting = URL(string: "https://zoom.us/start/videomeeting")!
-    static var newTeamsMeeting = URL(string: "https://aka.ms/mstfw")! // cannot seem to find a way to do this via url
+    static var newTeamsMeeting = URL(string: "msteams://teams.microsoft.com/l/meeting/new?subject=")! // see https://docs.microsoft.com/en-us/microsoftteams/platform/concepts/build-and-test/deep-links
     static var supportTheCreator = URL(string: "https://www.patreon.com/meetingbar")!
     static var aboutThisApp = URL(string: "https://github.com/leits/MeetingBar")!
 }
