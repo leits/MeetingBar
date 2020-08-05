@@ -334,10 +334,15 @@ func openEvent(_ event: EKEvent) {
     let eventTitle = event.title ?? "No title"
     if let notes = event.notes {
         
+        var appDeepLink = URLComponents()
+        
+        // msteams:// deeplink-goes-here
         let teamsLink = getMatch(text: notes, regex: LinksRegex.teams)
         if let link = teamsLink {
             if let teamsURL = URL(string: link) {
-                openLinkInDefaultBrowser(teamsURL)
+                appDeepLink = URLComponents(url: teamsURL, resolvingAgainstBaseURL: false)!
+                appDeepLink.scheme = "msteams"
+                openLinkInDefaultBrowser(appDeepLink.url!)
             }
         } else {
             NSLog("No teams link for event (\(eventTitle))")
