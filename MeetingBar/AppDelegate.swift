@@ -19,9 +19,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     var selectedCalendarIDsObserver: DefaultsObservation?
     var showEventDetailsObserver: DefaultsObservation?
-    var showEventTitleInStatusBarObserver: DefaultsObservation?
     var titleLengthObserver: DefaultsObservation?
     var timeFormatObserver: DefaultsObservation?
+    var eventTitleFormatObserver: DefaultsObservation?
+    var etaFormatObserver: DefaultsObservation?
 
     var preferencesWindow: NSWindow!
 
@@ -48,7 +49,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func setup() {
         DispatchQueue.main.async {
             
-             // Backward compatibility
+            // Backward compatibility
+            if let oldEventTitleOption = Defaults[.showEventTitleInStatusBar] {
+                Defaults[.eventTitleFormat] = oldEventTitleOption ? EventTitleFormat.show : EventTitleFormat.hide
+                Defaults[.showEventTitleInStatusBar] = nil
+            }
+
             var calendarTitles: [String] = []
             if Defaults[.calendarTitle] != "" {
                 calendarTitles.append(Defaults[.calendarTitle])
@@ -63,8 +69,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 for calendar in matchCalendars {
                     Defaults[.selectedCalendarIDs].append(calendar.calendarIdentifier)
                 }
-                
             }
+            //
+
             self.statusBarItem.loadCalendars()
 
             self.scheduleUpdateStatusBarTitle()
@@ -91,8 +98,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 NSLog("Change timeFormat from \(change.oldValue) to \(change.newValue)")
                 self.statusBarItem.updateMenu()
             }
-            self.showEventTitleInStatusBarObserver = Defaults.observe(.showEventTitleInStatusBar) { change in
-                NSLog("Changed showEventTitleInStatusBar from \(change.oldValue) to \(change.newValue)")
+            self.eventTitleFormatObserver = Defaults.observe(.eventTitleFormat) { change in
+                NSLog("Changed eventTitleFormat from \(String(describing: change.oldValue)) to \(String(describing: change.newValue))")
+                self.statusBarItem.updateTitle()
+            }
+            self.etaFormatObserver = Defaults.observe(.etaFormat) { change in
+                NSLog("Changed etaFormat from \(String(describing: change.oldValue)) to \(String(describing: change.newValue))")
                 self.statusBarItem.updateTitle()
             }
             self.titleLengthObserver = Defaults.observe(.titleLength) { change in

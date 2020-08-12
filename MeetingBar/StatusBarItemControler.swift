@@ -299,35 +299,54 @@ class StatusBarItemControler {
 }
 
 func createEventStatusString(_ event: EKEvent) -> String {
-    let nextMinute = Date().addingTimeInterval(60)
-    var eventTitle = "Meeting"
-    if Defaults[.showEventTitleInStatusBar] {
+    var eventStatus: String
+
+    var eventTitle: String
+    switch Defaults[.eventTitleFormat] {
+    case .show:
         eventTitle = String(event.title ?? "No title").trimmingCharacters(in: .whitespaces)
         if Defaults[.titleLength] != TitleLengthLimits.max, eventTitle.count > Int(Defaults[.titleLength]) {
             let index = eventTitle.index(eventTitle.startIndex, offsetBy: Int(Defaults[.titleLength]))
             eventTitle = String(eventTitle[...index])
             eventTitle += "..."
         }
+    case .hide:
+        eventTitle = "Meeting"
+    case .dot:
+        eventTitle = "•"
     }
-    var msg = ""
+
+    var isActiveEvent: Bool
+    
+    let formatter = DateComponentsFormatter()
+    switch Defaults[.etaFormat] {
+    case .full:
+        formatter.unitsStyle = .full
+    case .short:
+        formatter.unitsStyle = .short
+    case .abbreviated:
+        formatter.unitsStyle = .abbreviated
+    }
+    formatter.allowedUnits = [.minute, .hour, .day]
+    
+    var eventDate: Date
+    let now = Date()
+    let nextMinute = Date().addingTimeInterval(60)
     if (event.startDate)! < nextMinute, (event.endDate)! > nextMinute {
-        let eventEndTime = event.endDate.timeIntervalSinceNow
-        let minutes = String(Int(eventEndTime) / 60)
-        msg = " now (\(minutes) min left)"
+        isActiveEvent = true
+        eventDate = event.endDate
     } else {
-        let eventStartTime = event.startDate.timeIntervalSinceNow
-        let minutes = Int(eventStartTime) / 60
-        if minutes < 60 {
-            msg = " in \(minutes) min"
-        } else if minutes < 120 {
-            let remainder = minutes % 60
-            msg = " in 1 hour \(remainder) min"
-        } else {
-            let hours = minutes / 60
-            msg = " in \(hours) hours"
-        }
+        isActiveEvent = false
+        eventDate = event.startDate
     }
-    return "\(eventTitle)\(msg)"
+    let formattedTimeLeft = formatter.string(from: now, to: eventDate)!
+
+    if isActiveEvent {
+        eventStatus = "\(eventTitle) now (\(formattedTimeLeft) left)"
+    } else {
+        eventStatus = "\(eventTitle) in \(formattedTimeLeft)"
+    }
+    return eventStatus
 }
 
 func openEvent(_ event: EKEvent) {

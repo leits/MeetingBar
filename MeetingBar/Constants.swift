@@ -38,3 +38,15 @@ enum TimeFormat: String, Codable, CaseIterable {
 enum AuthResult {
     case success(Bool), failure(Error)
 }
+
+enum ETAFormat: String, Codable, CaseIterable {
+    case short = "short"
+    case full = "full"
+    case abbreviated = "abbreviated"
+}
+
+enum EventTitleFormat: String, Codable, CaseIterable {
+    case show = "show"
+    case hide = "hide"
+    case dot = "dot"
+}
