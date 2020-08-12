@@ -115,6 +115,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc func eventStoreChanged(notification _: NSNotification) {
         NSLog("Store changed. Update status bar menu.")
+        statusBarItem.updateTitle()
         statusBarItem.updateMenu()
     }
 
