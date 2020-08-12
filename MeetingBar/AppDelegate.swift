@@ -186,7 +186,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             preferencesWindow.close()
         }
         preferencesWindow = NSWindow(
-            contentRect: NSMakeRect(0, 0, 550, 430),
+            contentRect: NSMakeRect(0, 0, 570, 400),
             styleMask: [.closable, .titled],
             backing: .buffered,
             defer: false)

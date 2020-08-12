@@ -50,3 +50,8 @@ enum EventTitleFormat: String, Codable, CaseIterable {
     case hide = "hide"
     case dot = "dot"
 }
+
+enum DeclinedEventsAppereance: String, Codable, CaseIterable {
+    case strikethrough = "strikethrough"
+    case hide = "hide"
+}

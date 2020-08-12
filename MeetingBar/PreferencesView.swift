@@ -33,9 +33,12 @@ struct ContentView: View {
     @Default(.showEventDetails) var showEventDetails
     @Default(.createMeetingService) var createMeetingService
     @Default(.selectedCalendarIDs) var selectedCalendarIDs
-    @Default(.showEventTitleInStatusBar) var showEventTitleInStatusBar
     @Default(.titleLength) var titleLength
     @Default(.timeFormat) var timeFormat
+    @Default(.etaFormat) var etaFormat
+    @Default(.eventTitleFormat) var eventTitleFormat
+    @Default(.declinedEventsAppereance) var declinedEventsAppereance
+    @Default(.disablePastEvents) var disablePastEvents
 
     let calendars: [EKCalendar]
 
@@ -43,46 +46,90 @@ struct ContentView: View {
         VStack {
             TabView {
                 VStack(alignment: .leading, spacing: 15) {
+                    Text("Status Bar").font(.headline).bold()
                     Section {
-                        Toggle("Show event title in status bar", isOn: $showEventTitleInStatusBar)
-                        HStack {
-                            Text(generateTitleSample(showEventTitleInStatusBar, Int(titleLength)))
-                            Spacer()
-                        }.padding(.all, 10)
-                            .border(Color.gray, width: 3)
-                        HStack {
-                            Text("5")
-                            Slider(value: $titleLength, in: TitleLengthLimits.min...TitleLengthLimits.max, step: 1)
-                            Text("∞")
-                        }.disabled(!showEventTitleInStatusBar)
-                        Divider()
+                        Section{
+                            HStack {
+                                Picker("title", selection: $eventTitleFormat) {
+                                    Text("Show event title").tag(EventTitleFormat.show)
+                                    Text("Show \"Meeting\"").tag(EventTitleFormat.hide)
+                                    Text("Show dot (•)").tag(EventTitleFormat.dot)
+                                }.labelsHidden()
+                                Text("with")
+                                Picker("eta", selection: $etaFormat) {
+                                    Text("full").tag(ETAFormat.full)
+                                    Text("short").tag(ETAFormat.short)
+                                    Text("abbreviated").tag(ETAFormat.abbreviated)
+                                }.labelsHidden()
+                                Text("eta")
+                            }
+                            HStack {
+                                Text(generateTitleSample(eventTitleFormat, etaFormat, Int(titleLength)))
+                                Spacer()
+                            }.padding(.all, 10)
+                                .border(Color.gray, width: 3)
+                            HStack {
+                                Text("5")
+                                Slider(value: $titleLength, in: TitleLengthLimits.min...TitleLengthLimits.max, step: 1)
+                                Text("∞")
+                            }.disabled(eventTitleFormat != EventTitleFormat.show)
+                        }.padding(.horizontal, 10)
                     }
+                    Divider()
+                    Text("Menu").font(.headline).bold()
                     Section {
-                        Toggle("Show event details as submenu", isOn: $showEventDetails)
+                        HStack {
+                            Toggle("Disable past events", isOn: $disablePastEvents)
+                            Spacer()
+                            Toggle("Show event details as submenu", isOn: $showEventDetails)
+                        }
+                        HStack {
+                            Picker("Declined events:", selection: $declinedEventsAppereance) {
+                                    Text("show with strikethrough").tag(DeclinedEventsAppereance.strikethrough)
+                                    Text("hide").tag(DeclinedEventsAppereance.hide)
+                            }
+                        }
                         HStack {
                             Picker("Time format:", selection: $timeFormat) {
                                 Text("12-hour (AM/PM)").tag(TimeFormat.am_pm)
                                 Text("24-hour").tag(TimeFormat.military)
                             }
                         }
-                        Divider()
-                        Picker(selection: $createMeetingService, label: Text("Create meetings in ")) {
-                            ForEach(MeetingServices.allCases, id: \.self) {
-                                Text($0.rawValue).tag($0)
+                    }.padding(.horizontal, 10)
+                    Spacer()
+                }.padding().tabItem { Text("Appearance") }
+                VStack(alignment: .leading, spacing: 15) {
+                    Section {
+                        Text("Services").font(.headline).bold()
+                        Section {
+                            Picker(selection: $createMeetingService, label: Text("Create meetings in ")) {
+                                ForEach(MeetingServices.allCases, id: \.self) {
+                                    Text($0.rawValue).tag($0)
+                                }
                             }
-                        }
-                        Toggle("Use Chrome for Google Meet links", isOn: $useChromeForMeetLinks)
-                        Divider()
-                        HStack {
-                            Text("Create meeting:")
-                            KeyboardShortcuts.Recorder(for: .createMeetingShortcut)
-                            Spacer()
-                            Text("Join next event:")
-                            KeyboardShortcuts.Recorder(for: .joinEventShortcut)
-                        }
-                    }
-                }.padding().tabItem { Text("General") }
+    //                        Toggle("Use Chrome for Google Meet links", isOn: $useChromeForMeetLinks)
 
+                            Picker("Open Google Meet links in", selection: $useChromeForMeetLinks) {
+                                Text("Default Browser").tag(false)
+                                Text("Chrome").tag(true)
+                            }
+                            Spacer()
+                        }.padding(.horizontal, 10)
+                        Divider()
+                        Text("Global shortcuts").font(.headline).bold()
+                        Section {
+                            HStack {
+                                Text("Create meeting:")
+                                KeyboardShortcuts.Recorder(for: .createMeetingShortcut)
+                            }
+                             HStack {
+                                Text("Join next event:")
+                                KeyboardShortcuts.Recorder(for: .joinEventShortcut)
+                            }
+                        }.padding(.horizontal, 10)
+                    }
+                    Spacer()
+                }.padding().tabItem { Text("Integrations") }
                 VStack(alignment: .leading, spacing: 15) {
                     Section {
                         Form {
