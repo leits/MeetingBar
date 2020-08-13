@@ -23,6 +23,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var timeFormatObserver: DefaultsObservation?
     var eventTitleFormatObserver: DefaultsObservation?
     var etaFormatObserver: DefaultsObservation?
+    var disablePastEventObserver: DefaultsObservation?
+    var declinedEventsAppereanceObserver: DefaultsObservation?
 
     var preferencesWindow: NSWindow!
 
@@ -110,6 +112,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 NSLog("Changed titleLength from \(change.oldValue) to \(change.newValue)")
                 self.statusBarItem.updateTitle()
             }
+            self.disablePastEventObserver = Defaults.observe(.disablePastEvents) { change in
+                NSLog("Changed disablePastEvents from \(change.oldValue) to \(change.newValue)")
+                self.statusBarItem.updateMenu()
+            }
+            self.declinedEventsAppereanceObserver = Defaults.observe(.declinedEventsAppereance) { change in
+                NSLog("Changed declinedEventsAppereance from \(change.oldValue) to \(change.newValue)")
+                self.statusBarItem.updateMenu()
+            }
+
         }
     }
 

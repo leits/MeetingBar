@@ -24,7 +24,7 @@ class StatusBarItemControler {
         let statusBarMenu = NSMenu(title: "MeetingBar in Status Bar Menu")
         self.item.menu = statusBarMenu
     }
-    
+
     func loadCalendars() {
         self.calendars = self.eventStore.getCalendars(ids: Defaults[.selectedCalendarIDs])
         self.updateTitle()
@@ -117,12 +117,18 @@ class StatusBarItemControler {
     }
 
     func createEventItem(event: EKEvent) {
+        let eventStatus = getEventStatus(event)
+
+        if eventStatus == .declined, Defaults[.declinedEventsAppereance] == .hide {
+            return
+        }
+
         let now = Date()
 
         let eventTitle = String(event.title)
 
         let eventTimeFormatter = DateFormatter()
-        
+
         switch Defaults[.timeFormat] {
         case .am_pm:
             eventTimeFormatter.dateFormat = "h:mm a"
@@ -143,17 +149,15 @@ class StatusBarItemControler {
             withTitle: itemTitle,
             action: #selector(AppDelegate.clickOnEvent(sender:)),
             keyEquivalent: "")
-        let eventStatus = getEventStatus(event)
-        if eventStatus != nil {
-            if eventStatus == .declined {
-                eventItem.attributedTitle = NSAttributedString(
-                    string: itemTitle,
-                    attributes: [NSAttributedString.Key.strikethroughStyle: NSUnderlineStyle.thick.rawValue])
-            }
+
+        if eventStatus == .declined {
+            eventItem.attributedTitle = NSAttributedString(
+                string: itemTitle,
+                attributes: [NSAttributedString.Key.strikethroughStyle: NSUnderlineStyle.thick.rawValue])
         }
         if event.endDate < now {
             eventItem.state = .on
-            if !Defaults[.showEventDetails] {
+            if Defaults[.disablePastEvents], !Defaults[.showEventDetails] {
                 eventItem.isEnabled = false
             }
         } else if event.startDate < now, event.endDate > now {
@@ -317,7 +321,7 @@ func createEventStatusString(_ event: EKEvent) -> String {
     }
 
     var isActiveEvent: Bool
-    
+
     let formatter = DateComponentsFormatter()
     switch Defaults[.etaFormat] {
     case .full:
@@ -328,7 +332,7 @@ func createEventStatusString(_ event: EKEvent) -> String {
         formatter.unitsStyle = .abbreviated
     }
     formatter.allowedUnits = [.minute, .hour, .day]
-    
+
     var eventDate: Date
     let now = Date()
     let nextMinute = Date().addingTimeInterval(60)
@@ -384,5 +388,5 @@ func getEventStatus(_ event: EKEvent) -> EKParticipantStatus? {
             }
         }
     }
-    return nil
+    return EKParticipantStatus.unknown
 }
