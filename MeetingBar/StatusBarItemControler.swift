@@ -364,6 +364,8 @@ func openEvent(_ event: EKEvent) {
     let eventTitle = event.title ?? "No title"
     if let notes = event.notes {
         let meetLink = getMatch(text: notes, regex: LinksRegex.meet)
+        let zoomLink = getMatch(text: notes, regex: LinksRegex.zoom)
+        let hangoutsLink = getMatch(text: notes, regex: LinksRegex.hangouts)
         if let link = meetLink {
             if let meetURL = URL(string: link) {
                 if Defaults[.useChromeForMeetLinks] {
@@ -374,17 +376,22 @@ func openEvent(_ event: EKEvent) {
                     return
                 }
             }
-        } else {
+        } else if let link = zoomLink {
             NSLog("No meet link for event (\(eventTitle))")
-            let zoomLink = getMatch(text: notes, regex: LinksRegex.zoom)
-            if let link = zoomLink {
-                if let zoomURL = URL(string: link) {
-                    openLinkInDefaultBrowser(zoomURL)
-                }
+            if let zoomURL = URL(string: link) {
+//                "zoommtg://zoom.us/join?confno=123456789&pwd=xxxx"
+//                "https://zoom.us/j/800827496?pwd=THVUdlRpWnd2L1luSk1mVHorbUdYQT09"
+                openLinkInDefaultBrowser(zoomURL)
+                return
             }
+        } else if let link = hangoutsLink {
             NSLog("No zoom link for event (\(eventTitle))")
+            if let hangoutsURL = URL(string: link) {
+                openLinkInDefaultBrowser(hangoutsURL)
+                return
+            }
         }
-    } else {
+        NSLog("No zoom link for event (\(eventTitle))")
         NSLog("No notes for event (\(eventTitle))")
     }
     sendNotification("Can't join \(eventTitle)", "Meeting link not found")
