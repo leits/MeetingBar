@@ -29,17 +29,23 @@ struct MultipleSelectionRow: View {
 }
 
 struct ContentView: View {
-    @Default(.useChromeForMeetLinks) var useChromeForMeetLinks
-    @Default(.showEventDetails) var showEventDetails
-    @Default(.createMeetingService) var createMeetingService
-    @Default(.selectedCalendarIDs) var selectedCalendarIDs
-    @Default(.titleLength) var titleLength
-    @Default(.timeFormat) var timeFormat
-    @Default(.etaFormat) var etaFormat
+    // Appearance
     @Default(.eventTitleFormat) var eventTitleFormat
+    @Default(.titleLength) var titleLength
+    @Default(.etaFormat) var etaFormat
+
+    @Default(.timeFormat) var timeFormat
+    @Default(.showEventDetails) var showEventDetails
     @Default(.declinedEventsAppereance) var declinedEventsAppereance
     @Default(.disablePastEvents) var disablePastEvents
+
+    // Integrations
+    @Default(.useChromeForMeetLinks) var useChromeForMeetLinks
+    @Default(.createMeetingService) var createMeetingService
     @Default(.joinEventNotification) var joinEventNotification
+
+    // Calendars
+    @Default(.selectedCalendarIDs) var selectedCalendarIDs
 
     let calendars: [EKCalendar]
 
@@ -49,7 +55,7 @@ struct ContentView: View {
                 VStack(alignment: .leading, spacing: 15) {
                     Text("Status Bar").font(.headline).bold()
                     Section {
-                        Section{
+                        Section {
                             HStack {
                                 Picker("title", selection: $eventTitleFormat) {
                                     Text("Show event title").tag(EventTitleFormat.show)
@@ -86,8 +92,8 @@ struct ContentView: View {
                         }
                         HStack {
                             Picker("Declined events:", selection: $declinedEventsAppereance) {
-                                    Text("show with strikethrough").tag(DeclinedEventsAppereance.strikethrough)
-                                    Text("hide").tag(DeclinedEventsAppereance.hide)
+                                Text("show with strikethrough").tag(DeclinedEventsAppereance.strikethrough)
+                                Text("hide").tag(DeclinedEventsAppereance.hide)
                             }
                         }
                         HStack {
@@ -125,7 +131,7 @@ struct ContentView: View {
                                 Text("Create meeting:")
                                 KeyboardShortcuts.Recorder(for: .createMeetingShortcut)
                             }
-                             HStack {
+                            HStack {
                                 Text("Join next event:")
                                 KeyboardShortcuts.Recorder(for: .joinEventShortcut)
                             }
