@@ -9,12 +9,13 @@
 import Cocoa
 import EventKit
 import SwiftUI
+import UserNotifications
 
 import Defaults
 import KeyboardShortcuts
 
 @NSApplicationMain
-class AppDelegate: NSObject, NSApplicationDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDelegate {
     var statusBarItem: StatusBarItemControler!
 
     var selectedCalendarIDsObserver: DefaultsObservation?
@@ -50,6 +51,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func setup() {
         DispatchQueue.main.async {
+            requestNotificationAuthorization()
+            registerNotificationCategories()
+            UNUserNotificationCenter.current().delegate = self
             
             // Backward compatibility
             if let oldEventTitleOption = Defaults[.showEventTitleInStatusBar] {
@@ -157,6 +161,21 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             completion(NSBackgroundActivityScheduler.Result.finished)
         }
     }
+    
+    internal func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                didReceive response: UNNotificationResponse,
+                                withCompletionHandler completionHandler: @escaping () -> Void) {
+        switch response.actionIdentifier {
+        case "JOIN_ACTION":
+            NSLog("JOIN ACTION!")
+            self.joinNextMeeting()
+            break
+        default:
+            break
+        }
+
+        completionHandler()
+    }
 
     @objc func createMeeting(_: Any? = nil) {
         NSLog("Create meeting in \(Defaults[.createMeetingService].rawValue)")
@@ -178,6 +197,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             openEvent(nextEvent)
         } else {
             NSLog("No next event")
+            sendNotification("No next event", "There are no more meetings today")
             return
         }
     }

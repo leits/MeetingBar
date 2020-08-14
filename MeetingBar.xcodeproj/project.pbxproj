@@ -20,6 +20,7 @@
 		144C01812462D0C5000C9FFC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 144C01802462D0C5000C9FFC /* Assets.xcassets */; };
 		144C01842462D0C5000C9FFC /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 144C01832462D0C5000C9FFC /* Preview Assets.xcassets */; };
 		144C01872462D0C5000C9FFC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 144C01852462D0C5000C9FFC /* Main.storyboard */; };
+		14879B2B24E6889C00DB0A7E /* Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14879B2A24E6889C00DB0A7E /* Notifications.swift */; };
 		14E4110E246F2F9200F73ACF /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14E4110D246F2F9200F73ACF /* PreferencesView.swift */; };
 /* End PBXBuildFile section */
 
@@ -38,6 +39,7 @@
 		144C01862462D0C5000C9FFC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		144C01882462D0C5000C9FFC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		144C01892462D0C5000C9FFC /* MeetingBar.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MeetingBar.entitlements; sourceTree = "<group>"; };
+		14879B2A24E6889C00DB0A7E /* Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = "<group>"; };
 		14E4110D246F2F9200F73ACF /* PreferencesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -94,6 +96,7 @@
 				140D84332493A4180055E1CE /* Constants.swift */,
 				144C01892462D0C5000C9FFC /* MeetingBar.entitlements */,
 				140D84392493A6240055E1CE /* Helpers.swift */,
+				14879B2A24E6889C00DB0A7E /* Notifications.swift */,
 				144C01822462D0C5000C9FFC /* Preview Content */,
 			);
 			path = MeetingBar;
@@ -190,6 +193,7 @@
 				140D843F2493B7CB0055E1CE /* DefaultsKeys.swift in Sources */,
 				140D843A2493A6240055E1CE /* Helpers.swift in Sources */,
 				144C017D2462D0C3000C9FFC /* AppDelegate.swift in Sources */,
+				14879B2B24E6889C00DB0A7E /* Notifications.swift in Sources */,
 				140D84412493B8030055E1CE /* KeyboardShortcutsNames.swift in Sources */,
 				140D843D2493B7BF0055E1CE /* EventStore.swift in Sources */,
 				14E4110E246F2F9200F73ACF /* PreferencesView.swift in Sources */,

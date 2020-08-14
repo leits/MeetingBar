@@ -38,6 +38,13 @@ class StatusBarItemControler {
             let nextEvent = self.eventStore.getNextEvent(calendars: self.calendars)
             if let nextEvent = nextEvent {
                 title = createEventStatusString(nextEvent)
+                if Defaults[.joinEventNotification] {
+                    let now = Date()
+                    let differenceInSeconds = nextEvent.startDate.timeIntervalSince(now)
+                    if nextEvent.startDate > now, differenceInSeconds < 60 {
+                        scheduleEventNotification(nextEvent, "Event starts soon")
+                    }
+                }
             } else {
                 title = "🏁"
             }
@@ -361,8 +368,10 @@ func openEvent(_ event: EKEvent) {
             if let meetURL = URL(string: link) {
                 if Defaults[.useChromeForMeetLinks] {
                     openLinkInChrome(meetURL)
+                    return
                 } else {
                     openLinkInDefaultBrowser(meetURL)
+                    return
                 }
             }
         } else {
@@ -378,6 +387,7 @@ func openEvent(_ event: EKEvent) {
     } else {
         NSLog("No notes for event (\(eventTitle))")
     }
+    sendNotification("Can't join \(eventTitle)", "Meeting link not found")
 }
 
 func getEventStatus(_ event: EKEvent) -> EKParticipantStatus? {

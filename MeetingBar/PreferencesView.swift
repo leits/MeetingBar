@@ -39,6 +39,7 @@ struct ContentView: View {
     @Default(.eventTitleFormat) var eventTitleFormat
     @Default(.declinedEventsAppereance) var declinedEventsAppereance
     @Default(.disablePastEvents) var disablePastEvents
+    @Default(.joinEventNotification) var joinEventNotification
 
     let calendars: [EKCalendar]
 
@@ -107,12 +108,14 @@ struct ContentView: View {
                                     Text($0.rawValue).tag($0)
                                 }
                             }
-    //                        Toggle("Use Chrome for Google Meet links", isOn: $useChromeForMeetLinks)
-
-                            Picker("Open Google Meet links in", selection: $useChromeForMeetLinks) {
+                            Picker("Open Meet links in", selection: $useChromeForMeetLinks) {
                                 Text("Default Browser").tag(false)
                                 Text("Chrome").tag(true)
                             }
+//                            Picker("Open Zoom links in", selection: $useChromeForMeetLinks) {
+//                                Text("Default Browser").tag(false)
+//                                Text("Zoom app").tag(true)
+//                            }
                             Spacer()
                         }.padding(.horizontal, 10)
                         Divider()
@@ -126,6 +129,10 @@ struct ContentView: View {
                                 Text("Join next event:")
                                 KeyboardShortcuts.Recorder(for: .joinEventShortcut)
                             }
+                        }.padding(.horizontal, 10)
+                        Divider()
+                        Section {
+                            Toggle("Send notification when event starting", isOn: $joinEventNotification)
                         }.padding(.horizontal, 10)
                     }
                     Spacer()

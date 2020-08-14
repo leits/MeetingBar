@@ -23,4 +23,5 @@ extension Defaults.Keys {
     static let eventTitleFormat = Key<EventTitleFormat>("eventTitleFormat", default: .show)
     static let declinedEventsAppereance = Key<DeclinedEventsAppereance>("declinedEventsAppereance", default: .strikethrough)
     static let disablePastEvents = Key<Bool>("disablePastEvents", default: true)
+    static let joinEventNotification = Key<Bool>("joinEventNotification", default: true)
 }
