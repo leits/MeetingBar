@@ -188,6 +188,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             openLinkInDefaultBrowser(Links.newZoomMeeting)
         case .hangouts:
             openLinkInDefaultBrowser(Links.newHangoutsMeeting)
+        case .teams:
+            openLinkInDefaultBrowser(Links.newTeamsMeeting)
         }
     }
 
