@@ -24,7 +24,7 @@ class StatusBarItemControler {
         let statusBarMenu = NSMenu(title: "MeetingBar in Status Bar Menu")
         self.item.menu = statusBarMenu
     }
-    
+
     func loadCalendars() {
         self.calendars = self.eventStore.getCalendars(ids: Defaults[.selectedCalendarIDs])
         self.updateTitle()
@@ -38,6 +38,13 @@ class StatusBarItemControler {
             let nextEvent = self.eventStore.getNextEvent(calendars: self.calendars)
             if let nextEvent = nextEvent {
                 title = createEventStatusString(nextEvent)
+                if Defaults[.joinEventNotification] {
+                    let now = Date()
+                    let differenceInSeconds = nextEvent.startDate.timeIntervalSince(now)
+                    if nextEvent.startDate > now, differenceInSeconds < 60 {
+                        scheduleEventNotification(nextEvent, "Event starts soon")
+                    }
+                }
             } else {
                 title = "🏁"
             }
@@ -117,12 +124,18 @@ class StatusBarItemControler {
     }
 
     func createEventItem(event: EKEvent) {
+        let eventStatus = getEventStatus(event)
+
+        if eventStatus == .declined, Defaults[.declinedEventsAppereance] == .hide {
+            return
+        }
+
         let now = Date()
 
         let eventTitle = String(event.title)
 
         let eventTimeFormatter = DateFormatter()
-        
+
         switch Defaults[.timeFormat] {
         case .am_pm:
             eventTimeFormatter.dateFormat = "h:mm a"
@@ -143,17 +156,15 @@ class StatusBarItemControler {
             withTitle: itemTitle,
             action: #selector(AppDelegate.clickOnEvent(sender:)),
             keyEquivalent: "")
-        let eventStatus = getEventStatus(event)
-        if eventStatus != nil {
-            if eventStatus == .declined {
-                eventItem.attributedTitle = NSAttributedString(
-                    string: itemTitle,
-                    attributes: [NSAttributedString.Key.strikethroughStyle: NSUnderlineStyle.thick.rawValue])
-            }
+
+        if eventStatus == .declined {
+            eventItem.attributedTitle = NSAttributedString(
+                string: itemTitle,
+                attributes: [NSAttributedString.Key.strikethroughStyle: NSUnderlineStyle.thick.rawValue])
         }
         if event.endDate < now {
             eventItem.state = .on
-            if !Defaults[.showEventDetails] {
+            if Defaults[.disablePastEvents], !Defaults[.showEventDetails] {
                 eventItem.isEnabled = false
             }
         } else if event.startDate < now, event.endDate > now {
@@ -182,7 +193,7 @@ class StatusBarItemControler {
             // Duration
             if !event.isAllDay {
                 let eventEndTime = eventTimeFormatter.string(from: event.endDate)
-                let eventDurationMinutes = String(event.endDate.timeIntervalSince(event.startDate) / 60)
+                let eventDurationMinutes = String(Int(event.endDate.timeIntervalSince(event.startDate) / 60))
                 let durationTitle = "\(eventStartTime) - \(eventEndTime) (\(eventDurationMinutes) minutes)"
                 eventMenu.addItem(withTitle: durationTitle, action: nil, keyEquivalent: "")
                 eventMenu.addItem(NSMenuItem.separator())
@@ -290,85 +301,84 @@ class StatusBarItemControler {
         self.item.menu!.addItem(
             withTitle: "Preferences",
             action: #selector(AppDelegate.openPrefecencesWindow),
-            keyEquivalent: "")
+            keyEquivalent: ",")
         self.item.menu!.addItem(
             withTitle: "Quit",
             action: #selector(AppDelegate.quit),
-            keyEquivalent: "")
+            keyEquivalent: "q")
     }
 }
 
 func createEventStatusString(_ event: EKEvent) -> String {
-    let nextMinute = Date().addingTimeInterval(60)
-    var eventTitle = "Meeting"
-    if Defaults[.showEventTitleInStatusBar] {
-        eventTitle = String(event.title ?? "No title")
+    var eventStatus: String
+
+    var eventTitle: String
+    switch Defaults[.eventTitleFormat] {
+    case .show:
+        eventTitle = String(event.title ?? "No title").trimmingCharacters(in: .whitespaces)
         if Defaults[.titleLength] != TitleLengthLimits.max, eventTitle.count > Int(Defaults[.titleLength]) {
             let index = eventTitle.index(eventTitle.startIndex, offsetBy: Int(Defaults[.titleLength]))
             eventTitle = String(eventTitle[...index])
             eventTitle += "..."
         }
+    case .hide:
+        eventTitle = "Meeting"
+    case .dot:
+        eventTitle = "•"
     }
-    var msg = ""
+
+    var isActiveEvent: Bool
+
+    let formatter = DateComponentsFormatter()
+    switch Defaults[.etaFormat] {
+    case .full:
+        formatter.unitsStyle = .full
+    case .short:
+        formatter.unitsStyle = .short
+    case .abbreviated:
+        formatter.unitsStyle = .abbreviated
+    }
+    formatter.allowedUnits = [.minute, .hour, .day]
+
+    var eventDate: Date
+    let now = Date()
+    let nextMinute = Date().addingTimeInterval(60)
     if (event.startDate)! < nextMinute, (event.endDate)! > nextMinute {
-        let eventEndTime = event.endDate.timeIntervalSinceNow
-        let minutes = String(Int(eventEndTime) / 60)
-        msg = " now (\(minutes) min left)"
+        isActiveEvent = true
+        eventDate = event.endDate
     } else {
-        let eventStartTime = event.startDate.timeIntervalSinceNow
-        let minutes = Int(eventStartTime) / 60
-        if minutes < 60 {
-            msg = " in \(minutes) min"
-        } else if minutes < 120 {
-            let remainder = minutes % 60
-            msg = " in 1 hour \(remainder) min"
-        } else {
-            let hours = minutes / 60
-            msg = " in \(hours) hours"
-        }
+        isActiveEvent = false
+        eventDate = event.startDate
     }
-    return "\(eventTitle)\(msg)"
+    let formattedTimeLeft = formatter.string(from: now, to: eventDate)!
+
+    if isActiveEvent {
+        eventStatus = "\(eventTitle) now (\(formattedTimeLeft) left)"
+    } else {
+        eventStatus = "\(eventTitle) in \(formattedTimeLeft)"
+    }
+    return eventStatus
 }
 
 func openEvent(_ event: EKEvent) {
     let eventTitle = event.title ?? "No title"
-    if let notes = event.notes {
-        
-        var appDeepLink = URLComponents()
-        
-        // msteams:// deeplink-goes-here
-        let teamsLink = getMatch(text: notes, regex: LinksRegex.teams)
-        if let link = teamsLink {
-            if let teamsURL = URL(string: link) {
-                appDeepLink = URLComponents(url: teamsURL, resolvingAgainstBaseURL: false)!
-                appDeepLink.scheme = "msteams"
-                openLinkInDefaultBrowser(appDeepLink.url!)
-            }
-        } else {
-            NSLog("No teams link for event (\(eventTitle))")
-            let meetLink = getMatch(text: notes, regex: LinksRegex.meet)
-            if let link = meetLink {
-                if let meetURL = URL(string: link) {
-                    if Defaults[.useChromeForMeetLinks] {
-                        openLinkInChrome(meetURL)
-                    } else {
-                        openLinkInDefaultBrowser(meetURL)
-                    }
-                }
+
+    if let (service, url) = getMeetingLink(event) {
+        switch service {
+        case .meet:
+            if Defaults[.useChromeForMeetLinks] {
+                openLinkInChrome(url)
+                return
             } else {
-                NSLog("No meet link for event (\(eventTitle))")
-                let zoomLink = getMatch(text: notes, regex: LinksRegex.zoom)
-                if let link = zoomLink {
-                    if let zoomURL = URL(string: link) {
-                        openLinkInDefaultBrowser(zoomURL)
-                    }
-                }
-                NSLog("No zoom link for event (\(eventTitle))")
+                openLinkInDefaultBrowser(url)
+                return
             }
+        default:
+            openLinkInDefaultBrowser(url)
+            return
         }
-    } else {
-        NSLog("No notes for event (\(eventTitle))")
     }
+    sendNotification("Can't join \(eventTitle)", "Meeting link not found")
 }
 
 func getEventStatus(_ event: EKEvent) -> EKParticipantStatus? {
@@ -376,6 +386,39 @@ func getEventStatus(_ event: EKEvent) -> EKParticipantStatus? {
         if let attendees = event.attendees {
             if let currentUser = attendees.first(where: { $0.isCurrentUser }) {
                 return currentUser.participantStatus
+            }
+        }
+    }
+    return EKParticipantStatus.unknown
+}
+
+func getMeetingLink(_ event: EKEvent) -> (service: MeetingServices, url: URL)? {
+    var linkFields: [String] = []
+    if let location = event.location {
+        linkFields.append(location)
+    }
+    if let notes = event.notes {
+        linkFields.append(notes)
+    }
+
+    for field in linkFields {
+        for service in MeetingServices.allCases {
+            let regex: NSRegularExpression
+            switch service {
+            case .meet:
+                regex = LinksRegex.meet
+            case .zoom:
+                regex = LinksRegex.zoom
+            case .teams:
+                regex = LinksRegex.teams
+            case .hangouts:
+                regex = LinksRegex.hangouts
+
+            }
+            if let link = getMatch(text: field, regex: regex) {
+                if let url = URL(string: link) {
+                    return (service, url)
+                }
             }
         }
     }

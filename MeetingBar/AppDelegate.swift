@@ -9,19 +9,23 @@
 import Cocoa
 import EventKit
 import SwiftUI
+import UserNotifications
 
 import Defaults
 import KeyboardShortcuts
 
 @NSApplicationMain
-class AppDelegate: NSObject, NSApplicationDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDelegate {
     var statusBarItem: StatusBarItemControler!
 
     var selectedCalendarIDsObserver: DefaultsObservation?
     var showEventDetailsObserver: DefaultsObservation?
-    var showEventTitleInStatusBarObserver: DefaultsObservation?
     var titleLengthObserver: DefaultsObservation?
     var timeFormatObserver: DefaultsObservation?
+    var eventTitleFormatObserver: DefaultsObservation?
+    var etaFormatObserver: DefaultsObservation?
+    var disablePastEventObserver: DefaultsObservation?
+    var declinedEventsAppereanceObserver: DefaultsObservation?
 
     var preferencesWindow: NSWindow!
 
@@ -47,8 +51,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func setup() {
         DispatchQueue.main.async {
-            
-             // Backward compatibility
+            requestNotificationAuthorization()
+            registerNotificationCategories()
+            UNUserNotificationCenter.current().delegate = self
+
+            // Backward compatibility
+            if let oldEventTitleOption = Defaults[.showEventTitleInStatusBar] {
+                Defaults[.eventTitleFormat] = oldEventTitleOption ? EventTitleFormat.show : EventTitleFormat.hide
+                Defaults[.showEventTitleInStatusBar] = nil
+            }
+
             var calendarTitles: [String] = []
             if Defaults[.calendarTitle] != "" {
                 calendarTitles.append(Defaults[.calendarTitle])
@@ -63,8 +75,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 for calendar in matchCalendars {
                     Defaults[.selectedCalendarIDs].append(calendar.calendarIdentifier)
                 }
-                
             }
+            //
+
             self.statusBarItem.loadCalendars()
 
             self.scheduleUpdateStatusBarTitle()
@@ -91,19 +104,32 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 NSLog("Change timeFormat from \(change.oldValue) to \(change.newValue)")
                 self.statusBarItem.updateMenu()
             }
-            self.showEventTitleInStatusBarObserver = Defaults.observe(.showEventTitleInStatusBar) { change in
-                NSLog("Changed showEventTitleInStatusBar from \(change.oldValue) to \(change.newValue)")
+            self.eventTitleFormatObserver = Defaults.observe(.eventTitleFormat) { change in
+                NSLog("Changed eventTitleFormat from \(String(describing: change.oldValue)) to \(String(describing: change.newValue))")
+                self.statusBarItem.updateTitle()
+            }
+            self.etaFormatObserver = Defaults.observe(.etaFormat) { change in
+                NSLog("Changed etaFormat from \(String(describing: change.oldValue)) to \(String(describing: change.newValue))")
                 self.statusBarItem.updateTitle()
             }
             self.titleLengthObserver = Defaults.observe(.titleLength) { change in
                 NSLog("Changed titleLength from \(change.oldValue) to \(change.newValue)")
                 self.statusBarItem.updateTitle()
             }
+            self.disablePastEventObserver = Defaults.observe(.disablePastEvents) { change in
+                NSLog("Changed disablePastEvents from \(change.oldValue) to \(change.newValue)")
+                self.statusBarItem.updateMenu()
+            }
+            self.declinedEventsAppereanceObserver = Defaults.observe(.declinedEventsAppereance) { change in
+                NSLog("Changed declinedEventsAppereance from \(change.oldValue) to \(change.newValue)")
+                self.statusBarItem.updateMenu()
+            }
         }
     }
 
     @objc func eventStoreChanged(notification _: NSNotification) {
         NSLog("Store changed. Update status bar menu.")
+        statusBarItem.updateTitle()
         statusBarItem.updateMenu()
     }
 
@@ -112,7 +138,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         activity.repeats = true
         activity.interval = 30
-        activity.qualityOfService = QualityOfService.userInitiated
+        activity.qualityOfService = QualityOfService.userInteractive
 
         activity.schedule { (completion: @escaping NSBackgroundActivityScheduler.CompletionHandler) in
             NSLog("Firing reccuring updateStatusBarTitle")
@@ -126,13 +152,27 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         activity.repeats = true
         activity.interval = 60 * 5
-        activity.qualityOfService = QualityOfService.userInitiated
+        activity.qualityOfService = QualityOfService.userInteractive
 
         activity.schedule { (completion: @escaping NSBackgroundActivityScheduler.CompletionHandler) in
             NSLog("Firing reccuring updateStatusBarMenu")
             self.statusBarItem.updateMenu()
             completion(NSBackgroundActivityScheduler.Result.finished)
         }
+    }
+
+    internal func userNotificationCenter(_: UNUserNotificationCenter,
+                                         didReceive response: UNNotificationResponse,
+                                         withCompletionHandler completionHandler: @escaping () -> Void) {
+        switch response.actionIdentifier {
+        case "JOIN_ACTION":
+            NSLog("JOIN ACTION!")
+            joinNextMeeting()
+        default:
+            break
+        }
+
+        completionHandler()
     }
 
     @objc func createMeeting(_: Any? = nil) {
@@ -148,6 +188,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             openLinkInDefaultBrowser(Links.newTeamsMeeting)
         case .zoom:
             openLinkInDefaultBrowser(Links.newZoomMeeting)
+        case .hangouts:
+            openLinkInDefaultBrowser(Links.newHangoutsMeeting)
+        case .teams:
+            openLinkInDefaultBrowser(Links.newTeamsMeeting)
         }
     }
 
@@ -157,11 +201,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             openEvent(nextEvent)
         } else {
             NSLog("No next event")
+            sendNotification("No next event", "There are no more meetings today")
             return
         }
     }
-    
-    
+
     @objc func clickOnEvent(sender: NSMenuItem) {
         NSLog("Click on event (\(sender.title))!")
         let event: EKEvent = sender.representedObject as! EKEvent
@@ -176,7 +220,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             preferencesWindow.close()
         }
         preferencesWindow = NSWindow(
-            contentRect: NSMakeRect(0, 0, 550, 430),
+            contentRect: NSMakeRect(0, 0, 570, 400),
             styleMask: [.closable, .titled],
             backing: .buffered,
             defer: false)
