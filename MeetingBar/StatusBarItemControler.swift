@@ -362,37 +362,21 @@ func createEventStatusString(_ event: EKEvent) -> String {
 
 func openEvent(_ event: EKEvent) {
     let eventTitle = event.title ?? "No title"
-    if let notes = event.notes {
-        let meetLink = getMatch(text: notes, regex: LinksRegex.meet)
-        let zoomLink = getMatch(text: notes, regex: LinksRegex.zoom)
-        let hangoutsLink = getMatch(text: notes, regex: LinksRegex.hangouts)
-        if let link = meetLink {
-            if let meetURL = URL(string: link) {
-                if Defaults[.useChromeForMeetLinks] {
-                    openLinkInChrome(meetURL)
-                    return
-                } else {
-                    openLinkInDefaultBrowser(meetURL)
-                    return
-                }
-            }
-        } else if let link = zoomLink {
-            NSLog("No meet link for event (\(eventTitle))")
-            if let zoomURL = URL(string: link) {
-//                "zoommtg://zoom.us/join?confno=123456789&pwd=xxxx"
-//                "https://zoom.us/j/800827496?pwd=THVUdlRpWnd2L1luSk1mVHorbUdYQT09"
-                openLinkInDefaultBrowser(zoomURL)
+
+    if let (service, url) = getMeetingLink(event) {
+        switch service {
+        case .meet:
+            if Defaults[.useChromeForMeetLinks] {
+                openLinkInChrome(url)
+                return
+            } else {
+                openLinkInDefaultBrowser(url)
                 return
             }
-        } else if let link = hangoutsLink {
-            NSLog("No zoom link for event (\(eventTitle))")
-            if let hangoutsURL = URL(string: link) {
-                openLinkInDefaultBrowser(hangoutsURL)
-                return
-            }
+        default:
+            openLinkInDefaultBrowser(url)
+            return
         }
-        NSLog("No zoom link for event (\(eventTitle))")
-        NSLog("No notes for event (\(eventTitle))")
     }
     sendNotification("Can't join \(eventTitle)", "Meeting link not found")
 }
@@ -406,4 +390,31 @@ func getEventStatus(_ event: EKEvent) -> EKParticipantStatus? {
         }
     }
     return EKParticipantStatus.unknown
+}
+
+func getMeetingLink(_ event: EKEvent) -> (service: MeetingServices, url: URL)? {
+    let services: [MeetingServices: NSRegularExpression] = [
+        MeetingServices.meet: LinksRegex.meet,
+        MeetingServices.zoom: LinksRegex.zoom,
+        MeetingServices.hangouts: LinksRegex.hangouts
+    ]
+
+    var linkFields: [String] = []
+    if let location = event.location {
+        linkFields.append(location)
+    }
+    if let notes = event.notes {
+        linkFields.append(notes)
+    }
+
+    for field in linkFields {
+        for (service, regex) in services {
+            if let link = getMatch(text: field, regex: regex) {
+                if let url = URL(string: link) {
+                    return (service, url)
+                }
+            }
+        }
+    }
+    return nil
 }

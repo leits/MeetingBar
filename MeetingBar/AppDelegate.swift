@@ -54,7 +54,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             requestNotificationAuthorization()
             registerNotificationCategories()
             UNUserNotificationCenter.current().delegate = self
-            
+
             // Backward compatibility
             if let oldEventTitleOption = Defaults[.showEventTitleInStatusBar] {
                 Defaults[.eventTitleFormat] = oldEventTitleOption ? EventTitleFormat.show : EventTitleFormat.hide
@@ -124,7 +124,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                 NSLog("Changed declinedEventsAppereance from \(change.oldValue) to \(change.newValue)")
                 self.statusBarItem.updateMenu()
             }
-
         }
     }
 
@@ -161,15 +160,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             completion(NSBackgroundActivityScheduler.Result.finished)
         }
     }
-    
-    internal func userNotificationCenter(_ center: UNUserNotificationCenter,
-                                didReceive response: UNNotificationResponse,
-                                withCompletionHandler completionHandler: @escaping () -> Void) {
+
+    internal func userNotificationCenter(_: UNUserNotificationCenter,
+                                         didReceive response: UNNotificationResponse,
+                                         withCompletionHandler completionHandler: @escaping () -> Void) {
         switch response.actionIdentifier {
         case "JOIN_ACTION":
             NSLog("JOIN ACTION!")
-            self.joinNextMeeting()
-            break
+            joinNextMeeting()
         default:
             break
         }
@@ -203,8 +201,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             return
         }
     }
-    
-    
+
     @objc func clickOnEvent(sender: NSMenuItem) {
         NSLog("Click on event (\(sender.title))!")
         let event: EKEvent = sender.representedObject as! EKEvent
