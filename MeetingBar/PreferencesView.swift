@@ -40,8 +40,12 @@ struct ContentView: View {
     @Default(.disablePastEvents) var disablePastEvents
 
     // Integrations
-    @Default(.useChromeForMeetLinks) var useChromeForMeetLinks
     @Default(.createMeetingService) var createMeetingService
+    @Default(.useChromeForMeetLinks) var useChromeForMeetLinks
+    @Default(.useChromeForHangoutsLinks) var useChromeForHangoutsLinks
+    @Default(.useAppForZoomLinks) var useAppForZoomLinks
+    @Default(.useAppForTeamsLinks) var useAppForTeamsLinks
+
     @Default(.joinEventNotification) var joinEventNotification
 
     // Calendars
@@ -52,6 +56,28 @@ struct ContentView: View {
     var body: some View {
         VStack {
             TabView {
+                VStack(alignment: .leading, spacing: 15) {
+                    Picker("Show events for ", selection: $eventTitleFormat) {
+                        Text("today").tag(EventTitleFormat.show)
+                        Text("today&tomorrow").tag(EventTitleFormat.hide)
+                    }
+                    Section {
+                        Toggle("Send notification when event starting", isOn: $joinEventNotification)
+                    }.padding(.horizontal, 10)
+                    Divider()
+                    Text("Global shortcuts").font(.headline).bold()
+                    Section {
+                        HStack {
+                            Text("Create meeting:")
+                            KeyboardShortcuts.Recorder(for: .createMeetingShortcut)
+                        }
+                        HStack {
+                            Text("Join next event:")
+                            KeyboardShortcuts.Recorder(for: .joinEventShortcut)
+                        }
+                    }.padding(.horizontal, 10)
+                    Spacer()
+                }.padding().tabItem { Text("General") }
                 VStack(alignment: .leading, spacing: 15) {
                     Text("Status Bar").font(.headline).bold()
                     Section {
@@ -106,42 +132,34 @@ struct ContentView: View {
                     Spacer()
                 }.padding().tabItem { Text("Appearance") }
                 VStack(alignment: .leading, spacing: 15) {
+                    Text("Services").font(.headline).bold()
                     Section {
-                        Text("Services").font(.headline).bold()
-                        Section {
-                            Picker(selection: $createMeetingService, label: Text("Create meetings in ")) {
-                                ForEach(MeetingServices.allCases, id: \.self) {
-                                    Text($0.rawValue).tag($0)
-                                }
+                        Picker(selection: $createMeetingService, label: Text("Create meetings in ")) {
+                            ForEach(MeetingServices.allCases.filter({ return $0 != .webex}), id: \.self) {
+                                Text($0.rawValue).tag($0)
                             }
-                            Picker("Open Meet links in", selection: $useChromeForMeetLinks) {
-                                Text("Default Browser").tag(false)
-                                Text("Chrome").tag(true)
-                            }
-//                            Picker("Open Zoom links in", selection: $useChromeForMeetLinks) {
-//                                Text("Default Browser").tag(false)
-//                                Text("Zoom app").tag(true)
-//                            }
-                            Spacer()
-                        }.padding(.horizontal, 10)
-                        Divider()
-                        Text("Global shortcuts").font(.headline).bold()
-                        Section {
-                            HStack {
-                                Text("Create meeting:")
-                                KeyboardShortcuts.Recorder(for: .createMeetingShortcut)
-                            }
-                            HStack {
-                                Text("Join next event:")
-                                KeyboardShortcuts.Recorder(for: .joinEventShortcut)
-                            }
-                        }.padding(.horizontal, 10)
-                        Divider()
-                        Section {
-                            Toggle("Send notification when event starting", isOn: $joinEventNotification)
-                        }.padding(.horizontal, 10)
-                    }
-                    Spacer()
+                        }
+                    }.padding(.horizontal, 10)
+                    Divider()
+                    Section {
+                        Picker("Open Meet links in", selection: $useChromeForMeetLinks) {
+                            Text("Default Browser").tag(false)
+                            Text("Chrome").tag(true)
+                        }
+                        Picker("Open Hangouts links in", selection: $useChromeForHangoutsLinks) {
+                            Text("Default Browser").tag(false)
+                            Text("Chrome").tag(true)
+                        }
+                        Picker("Open Zoom links in", selection: $useAppForZoomLinks) {
+                            Text("Default Browser").tag(false)
+                            Text("Zoom app").tag(true)
+                        }
+                        Picker("Open Teams links in", selection: $useAppForTeamsLinks) {
+                            Text("Default Browser").tag(false)
+                            Text("Teams app").tag(true)
+                        }
+                        Spacer()
+                    }.pickerStyle(SegmentedPickerStyle()).padding(.horizontal, 10)
                 }.padding().tabItem { Text("Integrations") }
                 VStack(alignment: .leading, spacing: 15) {
                     Section {
@@ -186,10 +204,10 @@ struct ContentView: View {
 
 func openAboutThisApp() {
     NSLog("Open AboutThisApp")
-    openLinkInDefaultBrowser(Links.aboutThisApp)
+    _ = openLinkInDefaultBrowser(Links.aboutThisApp)
 }
 
 func openSupportTheCreator() {
     NSLog("Open SupportTheCreator")
-    openLinkInDefaultBrowser(Links.supportTheCreator)
+    _ = openLinkInDefaultBrowser(Links.supportTheCreator)
 }

@@ -179,17 +179,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         NSLog("Create meeting in \(Defaults[.createMeetingService].rawValue)")
         switch Defaults[.createMeetingService] {
         case .meet:
-            if Defaults[.useChromeForMeetLinks] {
-                openLinkInChrome(Links.newMeetMeeting)
-            } else {
-                openLinkInDefaultBrowser(Links.newMeetMeeting)
-            }
+            openMeetingURL(MeetingServices.meet, Links.newMeetMeeting)
         case .zoom:
-            openLinkInDefaultBrowser(Links.newZoomMeeting)
+            openMeetingURL(MeetingServices.zoom, Links.newZoomMeeting)
         case .hangouts:
-            openLinkInDefaultBrowser(Links.newHangoutsMeeting)
+            openMeetingURL(MeetingServices.hangouts, Links.newHangoutsMeeting)
         case .teams:
-            openLinkInDefaultBrowser(Links.newTeamsMeeting)
+            openMeetingURL(MeetingServices.teams, Links.newTeamsMeeting)
+        default:
+            break
         }
     }
 

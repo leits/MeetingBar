@@ -21,14 +21,25 @@ func openLinkInChrome(_ link: URL) {
     let configuration = NSWorkspace.OpenConfiguration()
     let chromeUrl = URL(fileURLWithPath: "/Applications/Google Chrome.app")
     NSWorkspace.shared.open([link], withApplicationAt: chromeUrl, configuration: configuration, completionHandler: {
-        _, _ in
-        NSLog("Open \(link) in Chrome")
+        app, error in
+        if app != nil {
+            NSLog("Open \(link) in Chrome")
+        } else {
+            NSLog("Can't open \(link) in Chrome: \(String(describing: error?.localizedDescription))")
+            sendNotification("Can't open link in Chrome", "Check browser or change settings")
+            _ = openLinkInDefaultBrowser(link)
+        }
         })
 }
 
-func openLinkInDefaultBrowser(_ link: URL) {
-    NSWorkspace.shared.open(link)
-    NSLog("Open \(link) in default browser")
+func openLinkInDefaultBrowser(_ link: URL) -> Bool {
+    let result = NSWorkspace.shared.open(link)
+    if result {
+        NSLog("Open \(link) in default browser")
+    } else {
+        NSLog("Can't open \(link) in default browser")
+    }
+    return result
 }
 
 func cleanUpNotes(_ notes: String) -> String {

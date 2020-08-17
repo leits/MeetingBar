@@ -364,21 +364,10 @@ func openEvent(_ event: EKEvent) {
     let eventTitle = event.title ?? "No title"
 
     if let (service, url) = getMeetingLink(event) {
-        switch service {
-        case .meet:
-            if Defaults[.useChromeForMeetLinks] {
-                openLinkInChrome(url)
-                return
-            } else {
-                openLinkInDefaultBrowser(url)
-                return
-            }
-        default:
-            openLinkInDefaultBrowser(url)
-            return
-        }
+        openMeetingURL(service, url)
+    } else {
+        sendNotification("Can't join \(eventTitle)", "Meeting link not found")
     }
-    sendNotification("Can't join \(eventTitle)", "Meeting link not found")
 }
 
 func getEventStatus(_ event: EKEvent) -> EKParticipantStatus? {
@@ -413,7 +402,8 @@ func getMeetingLink(_ event: EKEvent) -> (service: MeetingServices, url: URL)? {
                 regex = LinksRegex.teams
             case .hangouts:
                 regex = LinksRegex.hangouts
-
+            case .webex:
+                regex = LinksRegex.webex
             }
             if let link = getMatch(text: field, regex: regex) {
                 if let url = URL(string: link) {
@@ -423,4 +413,39 @@ func getMeetingLink(_ event: EKEvent) -> (service: MeetingServices, url: URL)? {
         }
     }
     return nil
+}
+
+func openMeetingURL(_ service: MeetingServices, _ url: URL) {
+    switch service {
+    case .meet:
+        if Defaults[.useChromeForMeetLinks] {
+            openLinkInChrome(url)
+        } else {
+            _ = openLinkInDefaultBrowser(url)
+        }
+    case .hangouts:
+        if Defaults[.useChromeForHangoutsLinks] {
+            openLinkInChrome(url)
+        } else {
+            _ = openLinkInDefaultBrowser(url)
+        }
+    case .teams:
+        var teamsAppURL = URLComponents(url: url, resolvingAgainstBaseURL: false)!
+        teamsAppURL.scheme = "msteams"
+        let result = openLinkInDefaultBrowser(teamsAppURL.url!)
+        if !result {
+            sendNotification("Can't open link in Teams app", "Check Teams app or change preferences")
+            _ = openLinkInDefaultBrowser(url)
+        }
+    case .zoom:
+        var teamsAppURL = URLComponents(url: url, resolvingAgainstBaseURL: false)!
+        teamsAppURL.scheme = "zoommtg"
+        let result = openLinkInDefaultBrowser(teamsAppURL.url!)
+        if !result {
+            sendNotification("Can't open link in Zoom app", "Check Zoom app or change preferences")
+            _ = openLinkInDefaultBrowser(url)
+        }
+    default:
+        _ = openLinkInDefaultBrowser(url)
+    }
 }
