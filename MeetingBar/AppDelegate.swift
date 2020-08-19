@@ -26,6 +26,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     var etaFormatObserver: DefaultsObservation?
     var disablePastEventObserver: DefaultsObservation?
     var declinedEventsAppereanceObserver: DefaultsObservation?
+    var showEventsForPeriodObserver: DefaultsObservation?
 
     var preferencesWindow: NSWindow!
 
@@ -124,6 +125,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                 NSLog("Changed declinedEventsAppereance from \(change.oldValue) to \(change.newValue)")
                 self.statusBarItem.updateMenu()
             }
+            self.showEventsForPeriodObserver = Defaults.observe(.showEventsForPeriod) { change in
+                NSLog("Changed showEventsForPeriod from \(change.oldValue) to \(change.newValue)")
+                self.statusBarItem.updateMenu()
+            }
+
         }
     }
 
@@ -212,7 +218,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         NSLog("Open preferences window")
         let calendars = statusBarItem.eventStore.calendars(for: .event)
         let calendarsBySource = Dictionary(grouping: calendars, by: { $0.source.title })
-        print(calendarsBySource)
 
         let contentView = ContentView(calendarsBySource: calendarsBySource)
         if preferencesWindow != nil {

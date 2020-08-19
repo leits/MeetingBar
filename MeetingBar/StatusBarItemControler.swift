@@ -64,7 +64,16 @@ class StatusBarItemControler {
             statusBarMenu.removeAllItems()
 
             if !self.calendars.isEmpty {
-                self.createTodaySection()
+                let today = Date()
+                switch Defaults[.showEventsForPeriod] {
+                case .today:
+                    createDateSection(date: today, title: "Today")
+                case .today_n_tomorrow:
+                    let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today)!
+                    createDateSection(date: today, title: "Today")
+                    statusBarMenu.addItem(NSMenuItem.separator())
+                    createDateSection(date: tomorrow, title: "Tomorrow")
+                }
                 statusBarMenu.addItem(NSMenuItem.separator())
             }
             self.createJoinSection()
@@ -92,32 +101,32 @@ class StatusBarItemControler {
         createItem.setShortcut(for: .createMeetingShortcut)
     }
 
-    func createTodaySection() {
-        let events: [EKEvent] = self.eventStore.loadTodayEvents(calendars: self.calendars)
-        let now = Date()
+    func createDateSection(date: Date, title: String) {
+//        let date = Date()
+//        let title = "Today"
+        let events: [EKEvent] = self.eventStore.loadEventsForDate(calendars: self.calendars, date: date)
 
-        // Today header
-        let todayFormatter = DateFormatter()
-        todayFormatter.dateFormat = "E, d MMM"
-        let todayDate = todayFormatter.string(from: now)
-        let todayTitle = "Today events (\(todayDate)):"
+        // Header
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "E, d MMM"
+        let dateString = dateFormatter.string(from: date)
+        let dateTitle = "\(title) events (\(dateString)):"
         let titleItem = self.item.menu!.addItem(
-            withTitle: todayTitle,
+            withTitle: dateTitle,
             action: nil,
             keyEquivalent: "")
-        titleItem.attributedTitle = NSAttributedString(string: todayTitle, attributes: [NSAttributedString.Key.font: NSFont.boldSystemFont(ofSize: 13)])
+        titleItem.attributedTitle = NSAttributedString(string: dateTitle, attributes: [NSAttributedString.Key.font: NSFont.boldSystemFont(ofSize: 13)])
         titleItem.isEnabled = false
 
+        // Events
         let sortedEvents = events.sorted(by: { $0.startDate < $1.startDate })
-
         if sortedEvents.count == 0 {
             let item = self.item.menu!.addItem(
-                withTitle: "Nothing for today",
+                withTitle: "Nothing for \(title.lowercased())",
                 action: nil,
                 keyEquivalent: "")
             item.isEnabled = false
         }
-
         for event in sortedEvents {
             self.createEventItem(event: event)
         }

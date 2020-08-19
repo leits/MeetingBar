@@ -58,6 +58,7 @@ func scheduleEventNotification(_ event: EKEvent, _ text: String){
     content.title = event.title
     content.body = text
     content.categoryIdentifier = "EVENT"
+    content.sound = UNNotificationSound.default
 
     let now = Date()
     var timeInterval = event.startDate.timeIntervalSince(now) - 5 // send notification 5 second before event

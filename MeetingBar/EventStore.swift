@@ -6,6 +6,7 @@
 //  Copyright © 2020 Andrii Leitsius. All rights reserved.
 //
 import EventKit
+import Defaults
 
 extension EKEventStore {
     func accessCheck(_ completion: @escaping (AuthResult) -> Void) {
@@ -43,14 +44,17 @@ extension EKEventStore {
         return matchedCalendars
     }
 
-    func loadTodayEvents(calendars: [EKCalendar]) -> [EKEvent] {
-        let todayMidnight = Calendar.current.startOfDay(for: Date())
-        let tomorrowMidnight = Calendar.current.date(byAdding: .day, value: 1, to: todayMidnight)!
+    func loadEventsForDate(calendars: [EKCalendar], date: Date) -> [EKEvent] {
+        let dayMidnight = Calendar.current.startOfDay(for: date)
+        let nextDayMidnight = Calendar.current.date(byAdding: .day, value: 1, to: dayMidnight)!
 
-        let predicate = self.predicateForEvents(withStart: todayMidnight, end: tomorrowMidnight, calendars: calendars)
+        let predicate = self.predicateForEvents(withStart: dayMidnight, end: nextDayMidnight, calendars: calendars)
         let calendarEvents = self.events(matching: predicate)
 
-        NSLog("Calendars \(calendars.map { $0.title }) loaded")
+        let df = DateFormatter()
+        df.dateFormat = "yyyy-MM-dd"
+        let dateString = df.string(from: date)
+        NSLog("Loaded events for date \(dateString) from calendars \(calendars.map { $0.title })")
         return calendarEvents
     }
 
@@ -58,11 +62,18 @@ extension EKEventStore {
         var nextEvent: EKEvent?
 
         let now = Date()
-        let nextMinute = Calendar.current.date(byAdding: .minute, value: 1, to: now)!
-        let todayMidnight = Calendar.current.startOfDay(for: now)
-        let tomorrowMidnight = Calendar.current.date(byAdding: .day, value: 1, to: todayMidnight)!
+        let startPeriod = Calendar.current.date(byAdding: .minute, value: 1, to: now)!
+        var endPeriod: Date
 
-        let predicate = self.predicateForEvents(withStart: nextMinute, end: tomorrowMidnight, calendars: calendars)
+        let todayMidnight = Calendar.current.startOfDay(for: now)
+        switch Defaults[.showEventsForPeriod] {
+        case .today:
+            endPeriod = Calendar.current.date(byAdding: .day, value: 1, to: todayMidnight)!
+        case .today_n_tomorrow:
+            endPeriod = Calendar.current.date(byAdding: .day, value: 2, to: todayMidnight)!
+        }
+
+        let predicate = self.predicateForEvents(withStart: startPeriod, end: endPeriod, calendars: calendars)
         let nextEvents = self.events(matching: predicate)
         // If the current event is still going on,
         // but the next event is closer than 10 minutes later

@@ -29,6 +29,10 @@ struct MultipleSelectionRow: View {
 }
 
 struct ContentView: View {
+    // General
+    @Default(.showEventsForPeriod) var showEventsForPeriod
+    @Default(.joinEventNotification) var joinEventNotification
+
     // Appearance
     @Default(.eventTitleFormat) var eventTitleFormat
     @Default(.titleLength) var titleLength
@@ -46,8 +50,6 @@ struct ContentView: View {
     @Default(.useAppForZoomLinks) var useAppForZoomLinks
     @Default(.useAppForTeamsLinks) var useAppForTeamsLinks
 
-    @Default(.joinEventNotification) var joinEventNotification
-
     // Calendars
     @Default(.selectedCalendarIDs) var selectedCalendarIDs
 
@@ -57,13 +59,14 @@ struct ContentView: View {
         VStack {
             TabView {
                 VStack(alignment: .leading, spacing: 15) {
-                    Picker("Show events for ", selection: $eventTitleFormat) {
-                        Text("today").tag(EventTitleFormat.show)
-                        Text("today&tomorrow").tag(EventTitleFormat.hide)
-                    }
                     Section {
+                        Picker("Show events for", selection: $showEventsForPeriod) {
+                            Text("today").tag(ShowEventsForPeriod.today)
+                            Text("today&tomorrow").tag(ShowEventsForPeriod.today_n_tomorrow)
+                        }
                         Toggle("Send notification when event starting", isOn: $joinEventNotification)
-                    }.padding(.horizontal, 10)
+                    }
+                    Spacer()
                     Divider()
                     Text("Global shortcuts").font(.headline).bold()
                     Section {
@@ -134,32 +137,32 @@ struct ContentView: View {
                 VStack(alignment: .leading, spacing: 15) {
                     Text("Services").font(.headline).bold()
                     Section {
-                        Picker(selection: $createMeetingService, label: Text("Create meetings in ")) {
-                            ForEach(MeetingServices.allCases.filter({ return $0 != .webex}), id: \.self) {
-                                Text($0.rawValue).tag($0)
-                            }
-                        }
-                    }.padding(.horizontal, 10)
-                    Divider()
-                    Section {
-                        Picker("Open Meet links in", selection: $useChromeForMeetLinks) {
+                        Picker(selection: $useChromeForMeetLinks, label: Text("Open Meet links in").frame(width: 150, alignment: .leading)) {
                             Text("Default Browser").tag(false)
                             Text("Chrome").tag(true)
                         }
-                        Picker("Open Hangouts links in", selection: $useChromeForHangoutsLinks) {
+                        Picker(selection: $useChromeForHangoutsLinks, label: Text("Open Hangouts links in").frame(width: 150, alignment: .leading)) {
                             Text("Default Browser").tag(false)
                             Text("Chrome").tag(true)
                         }
-                        Picker("Open Zoom links in", selection: $useAppForZoomLinks) {
+                        Picker(selection: $useAppForZoomLinks, label: Text("Open Zoom links in").frame(width: 150, alignment: .leading)) {
                             Text("Default Browser").tag(false)
                             Text("Zoom app").tag(true)
                         }
-                        Picker("Open Teams links in", selection: $useAppForTeamsLinks) {
+                        Picker(selection: $useAppForTeamsLinks, label: Text("Open Teams links in").frame(width: 150, alignment: .leading)) {
                             Text("Default Browser").tag(false)
                             Text("Teams app").tag(true)
                         }
                         Spacer()
-                    }.pickerStyle(SegmentedPickerStyle()).padding(.horizontal, 10)
+                    }.padding(.horizontal, 10)
+                    Divider()
+                    Section {
+                        Picker(selection: $createMeetingService, label: Text("Create meetings in ")) {
+                            ForEach(MeetingServices.allCases.filter { $0 != .webex }, id: \.self) {
+                                Text($0.rawValue).tag($0)
+                            }
+                        }
+                    }.padding(.horizontal, 10)
                 }.padding().tabItem { Text("Integrations") }
                 VStack(alignment: .leading, spacing: 15) {
                     Form {

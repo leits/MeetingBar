@@ -64,3 +64,8 @@ enum DeclinedEventsAppereance: String, Codable, CaseIterable {
     case strikethrough
     case hide
 }
+
+enum ShowEventsForPeriod: String, Codable, CaseIterable {
+    case today
+    case today_n_tomorrow
+}
