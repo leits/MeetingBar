@@ -162,19 +162,17 @@ struct ContentView: View {
                     }.pickerStyle(SegmentedPickerStyle()).padding(.horizontal, 10)
                 }.padding().tabItem { Text("Integrations") }
                 VStack(alignment: .leading, spacing: 15) {
-                    Section {
-                        Form {
-                            Section(header: Text("Select your calendars:")) {
-                                List {
-                                    ForEach(Array(calendarsBySource.keys), id: \.self) { source in
-                                        Section(header: Text(source)) {
-                                            ForEach(self.calendarsBySource[source]!, id: \.self) { calendar in
-                                                MultipleSelectionRow(title: calendar.title, isSelected: self.selectedCalendarIDs.contains(calendar.calendarIdentifier), color: Color(calendar.color)) {
-                                                    if self.selectedCalendarIDs.contains(calendar.calendarIdentifier) {
-                                                        self.selectedCalendarIDs.removeAll(where: { $0 == calendar.calendarIdentifier })
-                                                    } else {
-                                                        self.selectedCalendarIDs.append(calendar.calendarIdentifier)
-                                                    }
+                    Form {
+                        Section(header: Text("Select your calendars:")) {
+                            List {
+                                ForEach(Array(calendarsBySource.keys), id: \.self) { source in
+                                    Section(header: Text(source)) {
+                                        ForEach(self.calendarsBySource[source]!, id: \.self) { calendar in
+                                            MultipleSelectionRow(title: calendar.title, isSelected: self.selectedCalendarIDs.contains(calendar.calendarIdentifier), color: Color(calendar.color)) {
+                                                if self.selectedCalendarIDs.contains(calendar.calendarIdentifier) {
+                                                    self.selectedCalendarIDs.removeAll(where: { $0 == calendar.calendarIdentifier })
+                                                } else {
+                                                    self.selectedCalendarIDs.append(calendar.calendarIdentifier)
                                                 }
                                             }
                                         }
