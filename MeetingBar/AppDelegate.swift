@@ -211,7 +211,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     @objc func openPrefecencesWindow(_: NSStatusBarButton?) {
         NSLog("Open preferences window")
         let calendars = statusBarItem.eventStore.calendars(for: .event)
-        let contentView = ContentView(calendars: calendars)
+        let calendarsBySource = Dictionary(grouping: calendars, by: { $0.source.title })
+        print(calendarsBySource)
+
+        let contentView = ContentView(calendarsBySource: calendarsBySource)
         if preferencesWindow != nil {
             preferencesWindow.close()
         }

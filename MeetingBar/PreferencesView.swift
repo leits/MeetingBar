@@ -51,7 +51,7 @@ struct ContentView: View {
     // Calendars
     @Default(.selectedCalendarIDs) var selectedCalendarIDs
 
-    let calendars: [EKCalendar]
+    let calendarsBySource: [String: [EKCalendar]]
 
     var body: some View {
         VStack {
@@ -164,13 +164,20 @@ struct ContentView: View {
                 VStack(alignment: .leading, spacing: 15) {
                     Section {
                         Form {
-                            Text("Select your calendars:")
-                            List(calendars, id: \.calendarIdentifier) { calendar in
-                                MultipleSelectionRow(title: calendar.title, isSelected: self.selectedCalendarIDs.contains(calendar.calendarIdentifier), color: Color(calendar.color)) {
-                                    if self.selectedCalendarIDs.contains(calendar.calendarIdentifier) {
-                                        self.selectedCalendarIDs.removeAll(where: { $0 == calendar.calendarIdentifier })
-                                    } else {
-                                        self.selectedCalendarIDs.append(calendar.calendarIdentifier)
+                            Section(header: Text("Select your calendars:")) {
+                                List {
+                                    ForEach(Array(calendarsBySource.keys), id: \.self) { source in
+                                        Section(header: Text(source)) {
+                                            ForEach(self.calendarsBySource[source]!, id: \.self) { calendar in
+                                                MultipleSelectionRow(title: calendar.title, isSelected: self.selectedCalendarIDs.contains(calendar.calendarIdentifier), color: Color(calendar.color)) {
+                                                    if self.selectedCalendarIDs.contains(calendar.calendarIdentifier) {
+                                                        self.selectedCalendarIDs.removeAll(where: { $0 == calendar.calendarIdentifier })
+                                                    } else {
+                                                        self.selectedCalendarIDs.append(calendar.calendarIdentifier)
+                                                    }
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
