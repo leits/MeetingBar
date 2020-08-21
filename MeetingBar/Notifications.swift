@@ -64,6 +64,6 @@ func scheduleEventNotification(_ event: EKEvent, _ text: String){
     var timeInterval = event.startDate.timeIntervalSince(now) - 5 // send notification 5 second before event
     timeInterval = timeInterval > 0.1 ? timeInterval : 0.1
     let trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeInterval, repeats: false)
-    let request = UNNotificationRequest(identifier: event.eventIdentifier, content: content, trigger: trigger)
+    let request = UNNotificationRequest(identifier: "next_event", content: content, trigger: trigger)
     center.add(request)
 }
