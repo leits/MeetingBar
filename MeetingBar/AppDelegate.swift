@@ -224,7 +224,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             preferencesWindow.close()
         }
         preferencesWindow = NSWindow(
-            contentRect: NSMakeRect(0, 0, 570, 400),
+            contentRect: NSMakeRect(0, 0, 570, 450),
             styleMask: [.closable, .titled],
             backing: .buffered,
             defer: false)
