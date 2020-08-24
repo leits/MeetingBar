@@ -50,7 +50,6 @@ enum AuthResult {
 
 enum EventTitleFormat: String, Codable, CaseIterable {
     case show
-    case hide
     case dot
 }
 

@@ -52,8 +52,6 @@ func cleanUpNotes(_ notes: String) -> String {
 func generateTitleSample(_ titleFormat: EventTitleFormat, _ offset: Int) -> String {
     var title: String
     switch titleFormat {
-    case .hide:
-        title = "Meeting"
     case .show:
         title = "Long title which may not be displayed in your status bar"
         let index = title.index(title.startIndex, offsetBy: offset, limitedBy: title.endIndex)

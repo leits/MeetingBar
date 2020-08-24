@@ -330,8 +330,6 @@ func createEventStatusString(_ event: EKEvent) -> String {
             eventTitle = String(eventTitle[...index])
             eventTitle += "..."
         }
-    case .hide:
-        eventTitle = "Meeting"
     case .dot:
         eventTitle = "•"
     }

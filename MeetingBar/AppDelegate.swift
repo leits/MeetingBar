@@ -57,7 +57,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
             // Backward compatibility
             if let oldEventTitleOption = Defaults[.showEventTitleInStatusBar] {
-                Defaults[.eventTitleFormat] = oldEventTitleOption ? EventTitleFormat.show : EventTitleFormat.hide
+                Defaults[.eventTitleFormat] = oldEventTitleOption ? EventTitleFormat.show : EventTitleFormat.dot
                 Defaults[.showEventTitleInStatusBar] = nil
             }
 
