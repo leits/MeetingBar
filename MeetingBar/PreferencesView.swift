@@ -36,7 +36,6 @@ struct ContentView: View {
     // Appearance
     @Default(.eventTitleFormat) var eventTitleFormat
     @Default(.titleLength) var titleLength
-    @Default(.etaFormat) var etaFormat
 
     @Default(.timeFormat) var timeFormat
     @Default(.showEventDetails) var showEventDetails
@@ -109,21 +108,13 @@ struct ContentView: View {
                         Section {
                             Section {
                                 HStack {
-                                    Picker("title", selection: $eventTitleFormat) {
-                                        Text("Show event title").tag(EventTitleFormat.show)
-                                        Text("Show \"Meeting\"").tag(EventTitleFormat.hide)
-                                        Text("Show dot (•)").tag(EventTitleFormat.dot)
-                                    }.labelsHidden()
-                                    Text("with")
-                                    Picker("eta", selection: $etaFormat) {
-                                        Text("full").tag(ETAFormat.full)
-                                        Text("short").tag(ETAFormat.short)
-                                        Text("abbreviated").tag(ETAFormat.abbreviated)
-                                    }.labelsHidden()
-                                    Text("eta")
+                                    Picker("Use", selection: $eventTitleFormat) {
+                                        Text("event title").tag(EventTitleFormat.show)
+                                        Text("dot (•)").tag(EventTitleFormat.dot)
+                                    }.pickerStyle(SegmentedPickerStyle())
                                 }
                                 HStack {
-                                    Text(generateTitleSample(eventTitleFormat, etaFormat, Int(titleLength)))
+                                    Text(generateTitleSample(eventTitleFormat, Int(titleLength)))
                                     Spacer()
                                 }.padding(.all, 10)
                                     .border(Color.gray, width: 3)

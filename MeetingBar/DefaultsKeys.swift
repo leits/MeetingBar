@@ -22,7 +22,6 @@ extension Defaults.Keys {
     static let showEventTitleInStatusBar = Key<Bool?>("showEventTitleInStatusBar", default: true) // Backward compatibility
     static let eventTitleFormat = Key<EventTitleFormat>("eventTitleFormat", default: .show)
     static let titleLength = Key<Double>("titleLength", default: TitleLengthLimits.max)
-    static let etaFormat = Key<ETAFormat>("etaFormat", default: .short)
 
     // Menu Appearance
     static let showEventDetails = Key<Bool>("showEventDetails", default: true)

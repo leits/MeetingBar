@@ -23,7 +23,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     var titleLengthObserver: DefaultsObservation?
     var timeFormatObserver: DefaultsObservation?
     var eventTitleFormatObserver: DefaultsObservation?
-    var etaFormatObserver: DefaultsObservation?
     var disablePastEventObserver: DefaultsObservation?
     var declinedEventsAppereanceObserver: DefaultsObservation?
     var showEventsForPeriodObserver: DefaultsObservation?
@@ -107,10 +106,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             }
             self.eventTitleFormatObserver = Defaults.observe(.eventTitleFormat) { change in
                 NSLog("Changed eventTitleFormat from \(String(describing: change.oldValue)) to \(String(describing: change.newValue))")
-                self.statusBarItem.updateTitle()
-            }
-            self.etaFormatObserver = Defaults.observe(.etaFormat) { change in
-                NSLog("Changed etaFormat from \(String(describing: change.oldValue)) to \(String(describing: change.newValue))")
                 self.statusBarItem.updateTitle()
             }
             self.titleLengthObserver = Defaults.observe(.titleLength) { change in

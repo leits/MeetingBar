@@ -339,14 +339,7 @@ func createEventStatusString(_ event: EKEvent) -> String {
     var isActiveEvent: Bool
 
     let formatter = DateComponentsFormatter()
-    switch Defaults[.etaFormat] {
-    case .full:
-        formatter.unitsStyle = .full
-    case .short:
-        formatter.unitsStyle = .short
-    case .abbreviated:
-        formatter.unitsStyle = .abbreviated
-    }
+    formatter.unitsStyle = .abbreviated
     formatter.allowedUnits = [.minute, .hour, .day]
 
     var eventDate: Date

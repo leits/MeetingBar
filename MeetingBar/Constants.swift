@@ -48,12 +48,6 @@ enum AuthResult {
     case success(Bool), failure(Error)
 }
 
-enum ETAFormat: String, Codable, CaseIterable {
-    case short
-    case full
-    case abbreviated
-}
-
 enum EventTitleFormat: String, Codable, CaseIterable {
     case show
     case hide

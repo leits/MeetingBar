@@ -49,7 +49,7 @@ func cleanUpNotes(_ notes: String) -> String {
     return cleanNotes
 }
 
-func generateTitleSample(_ titleFormat: EventTitleFormat, _ etaFormat: ETAFormat, _ offset: Int) -> String {
+func generateTitleSample(_ titleFormat: EventTitleFormat, _ offset: Int) -> String {
     var title: String
     switch titleFormat {
     case .hide:
@@ -64,16 +64,5 @@ func generateTitleSample(_ titleFormat: EventTitleFormat, _ etaFormat: ETAFormat
     case .dot:
         title = "•"
     }
-    
-    var eta: String
-    switch etaFormat {
-    case .full:
-        eta = "1 hour 25 minutes"
-    case .short:
-        eta = "1 hr 25 min"
-    case .abbreviated:
-        eta = "1h 25m"
-    }
-
-    return "\(title) in \(eta)"
+    return "\(title) in 1h 25m"
 }
