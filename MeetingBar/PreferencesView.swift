@@ -187,7 +187,7 @@ struct ContentView: View {
                             }
                         }.padding(.horizontal, 10)
                     }.padding().tabItem { Text("Integrations") }
-                }.tabItem { Text("Advanced") }.padding(5)
+                }.tabItem { Text("Configuration") }.padding(5)
                 VStack(alignment: .leading, spacing: 15) {
                     Section {
                         VStack(alignment: .center) {
