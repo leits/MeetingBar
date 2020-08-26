@@ -28,7 +28,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     var declinedEventsAppereanceObserver: DefaultsObservation?
     var showEventsForPeriodObserver: DefaultsObservation?
     var ignoredCalendarItemIDsObserver: DefaultsObservation?
-    var ignoredEventIDsObserver: DefaultsObservation?
 
     var preferencesWindow: NSWindow!
 
@@ -133,11 +132,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             }
             self.ignoredCalendarItemIDsObserver = Defaults.observe(.ignoredCalendarItemIDs) { change in
                 NSLog("Changed ignoredCalendarItemIDs from \(change.oldValue) to \(change.newValue)")
-                self.statusBarItem.updateMenu()
-                self.statusBarItem.updateTitle()
-            }
-            self.ignoredEventIDsObserver = Defaults.observe(.ignoredCalendarItemIDs) { change in
-                NSLog("Changed ignoredEventIDs from \(change.oldValue) to \(change.newValue)")
                 self.statusBarItem.updateMenu()
                 self.statusBarItem.updateTitle()
             }
