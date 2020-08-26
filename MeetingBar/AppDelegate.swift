@@ -166,9 +166,19 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                                          didReceive response: UNNotificationResponse,
                                          withCompletionHandler completionHandler: @escaping () -> Void) {
         switch response.actionIdentifier {
-        case "JOIN_ACTION":
-            NSLog("JOIN ACTION!")
-            joinNextMeeting()
+        case "JOIN_ACTION", UNNotificationDefaultActionIdentifier:
+            if response.notification.request.content.categoryIdentifier == "EVENT" {
+                if let eventID = response.notification.request.content.userInfo["eventID"] {
+                    // built-in method EKEventStore.event(withIdentifier:) is broken
+                    // temporary allow to open only the last event
+                    if let nextEvent = statusBarItem.eventStore.getNextEvent(calendars: statusBarItem.calendars) {
+                        if nextEvent.eventIdentifier == (eventID as! String) {
+                            NSLog("Join \(nextEvent.title ?? "No title") event from notication")
+                            openEvent(nextEvent)
+                        }
+                    }
+                }
+            }
         default:
             break
         }
