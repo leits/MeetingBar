@@ -64,3 +64,15 @@ func generateTitleSample(_ titleFormat: EventTitleFormat, _ offset: Int) -> Stri
     }
     return "\(title) in 1h 25m"
 }
+
+func getRegexForService(_ service: MeetingServices) -> NSRegularExpression? {
+    let regexes = LinksRegex()
+    let mirror = Mirror(reflecting: regexes)
+
+    for child in mirror.children {
+        if child.label == String(describing: service) {
+            return (child.value as! NSRegularExpression)
+        }
+    }
+    return nil
+}

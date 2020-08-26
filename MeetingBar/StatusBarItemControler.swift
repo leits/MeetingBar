@@ -392,22 +392,11 @@ func getMeetingLink(_ event: EKEvent) -> (service: MeetingServices, url: URL)? {
 
     for field in linkFields {
         for service in MeetingServices.allCases {
-            let regex: NSRegularExpression
-            switch service {
-            case .meet:
-                regex = LinksRegex.meet
-            case .zoom:
-                regex = LinksRegex.zoom
-            case .teams:
-                regex = LinksRegex.teams
-            case .hangouts:
-                regex = LinksRegex.hangouts
-            case .webex:
-                regex = LinksRegex.webex
-            }
-            if let link = getMatch(text: field, regex: regex) {
-                if let url = URL(string: link) {
-                    return (service, url)
+            if let regex = getRegexForService(service) {
+                if let link = getMatch(text: field, regex: regex) {
+                    if let url = URL(string: link) {
+                        return (service, url)
+                    }
                 }
             }
         }

@@ -180,13 +180,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         NSLog("Create meeting in \(Defaults[.createMeetingService].rawValue)")
         switch Defaults[.createMeetingService] {
         case .meet:
-            openMeetingURL(MeetingServices.meet, Links.newMeetMeeting)
+            openMeetingURL(MeetingServices.meet, CreateMeetingLinks.meet)
         case .zoom:
-            openMeetingURL(MeetingServices.zoom, Links.newZoomMeeting)
+            openMeetingURL(MeetingServices.zoom, CreateMeetingLinks.zoom)
         case .hangouts:
-            openMeetingURL(MeetingServices.hangouts, Links.newHangoutsMeeting)
+            openMeetingURL(MeetingServices.hangouts, CreateMeetingLinks.hangouts)
         case .teams:
-            openMeetingURL(MeetingServices.teams, Links.newTeamsMeeting)
+            openMeetingURL(MeetingServices.teams, CreateMeetingLinks.teams)
         default:
             break
         }

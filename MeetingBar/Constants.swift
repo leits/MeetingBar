@@ -9,24 +9,45 @@
 import Cocoa
 
 struct TitleLengthLimits {
-    static let min = 0.0
+    static let min = 5.0
     static let max = 55.0
 }
 
 struct LinksRegex {
-    static let meet = try! NSRegularExpression(pattern: #"https://meet.google.com/[a-z-]+"#)
-    static let hangouts = try! NSRegularExpression(pattern: #"https://hangouts.google.com.*"#)
-    static let zoom = try! NSRegularExpression(pattern: #"https://([a-z0-9.]+)?zoom.us/j/[a-zA-Z0-9?&=]+"#)
-    static let teams = try! NSRegularExpression(pattern: #"https://teams.microsoft.com/l/meetup-join/[a-zA-Z0-9_%\/=\-\+\.?]+"#)
-    static let webex = try! NSRegularExpression(pattern: #"https://([a-z0-9.]+)?webex.com.*"#)
+    let meet = try! NSRegularExpression(pattern: #"https://meet.google.com/[a-z-]+"#)
+    let hangouts = try! NSRegularExpression(pattern: #"https://hangouts.google.com/.*"#)
+    let zoom = try! NSRegularExpression(pattern: #"https://([a-z0-9.]+)?zoom.(us|com.cn)/j/[a-zA-Z0-9?&=]+"#)
+    let teams = try! NSRegularExpression(pattern: #"https://teams.microsoft.com/l/meetup-join/[a-zA-Z0-9_%\/=\-\+\.?]+"#)
+    let webex = try! NSRegularExpression(pattern: #"https://([a-z0-9.]+)?webex.com/.*"#)
+    let jitsi = try! NSRegularExpression(pattern: #"https://meet.jit.si/.*"#)
+    let chime = try! NSRegularExpression(pattern: #"https://app.chime.aws/.*"#)
+    let ringcentral = try! NSRegularExpression(pattern: #"https://meetings.ringcentral.com/.*"#)
+    let gotomeeting = try! NSRegularExpression(pattern: #"https://([a-z0-9.]+)?gotomeeting.com/.*"#)
+    let gotowebinar = try! NSRegularExpression(pattern: #"https://([a-z0-9.]+)?gotowebinar.com/.*"#)
+    let bluejeans = try! NSRegularExpression(pattern: #"https://([a-z0-9.]+)?bluejeans.com/.*"#)
+    let eight_x_eight = try! NSRegularExpression(pattern: #"https://8x8.vc/.*"#)
+    let demio = try! NSRegularExpression(pattern: #"https://event.demio.com/.*"#)
+    let join_me = try! NSRegularExpression(pattern: #"https://join.me/.*"#)
+    let zoomgov = try! NSRegularExpression(pattern: #"https://([a-z0-9.]+)?zoomgov.com/j/[a-zA-Z0-9?&=]+"#)
+    let whereby = try! NSRegularExpression(pattern: #"https://whereby.com/.*"#)
+    let uberconference = try! NSRegularExpression(pattern: #"https://uberconference.com/.*"#)
+    let blizz = try! NSRegularExpression(pattern: #"https://go.blizz.com/.*"#)
+    let vsee = try! NSRegularExpression(pattern: #"https://vsee.com/.*"#)
+    let starleaf = try! NSRegularExpression(pattern: #"https://meet.starleaf.com/.*"#)
+    let duo = try! NSRegularExpression(pattern: #"https://duo.app.goo.gl/.*"#)
+    let voov = try! NSRegularExpression(pattern: #"https://voovmeeting.com/.*"#)
+    let skype = try! NSRegularExpression(pattern: #"https://join.skype.com/.*"#)
+    let skype4biz = try! NSRegularExpression(pattern: #"https://meet.lync.com/.*"#)
+}
+
+struct CreateMeetingLinks {
+    static var meet = URL(string: "https://meet.google.com/new")!
+    static var hangouts = URL(string: "https://hangouts.google.com/call")!
+    static var zoom = URL(string: "https://zoom.us/start?confno=123456789&zc=0")!
+    static var teams = URL(string: "https://teams.microsoft.com/l/meeting/new?subject=")!
 }
 
 struct Links {
-    static var newMeetMeeting = URL(string: "https://meet.google.com/new")!
-    static var newHangoutsMeeting = URL(string: "https://hangouts.google.com/call")!
-    static var newZoomMeeting = URL(string: "https://zoom.us/start?confno=123456789&zc=0")!
-    static var newTeamsMeeting = URL(string: "https://teams.microsoft.com/l/meeting/new?subject=")!
-
     static var supportTheCreator = URL(string: "https://www.patreon.com/meetingbar")!
     static var aboutThisApp = URL(string: "https://meetingbar.onrender.com")!
 }
@@ -37,6 +58,23 @@ enum MeetingServices: String, Codable, CaseIterable {
     case teams = "Microsoft Teams"
     case hangouts = "Google Hangouts"
     case webex = "Cisco Webex"
+    case ringcentral = "Ring Central"
+    case gotomeeting = "GoToMeeting"
+    case gotowebinar = "GoToWebinar"
+    case bluejeans = "BlueJeans"
+    case eight_x_eight = "8x8"
+    case demio = "Demio"
+    case join_me = "Join.me"
+    case zoomgov = "ZoomGov"
+    case whereby = "Whereby"
+    case uberconference = "Uber Conference"
+    case blizz = "Blizz"
+    case vsee = "VSee"
+    case starleaf = "StarLeaf"
+    case duo = "Google Duo"
+    case voov = "Tencent VooV"
+    case skype = "Skype"
+    case skype4biz = "Skype For Bussines"
 }
 
 enum TimeFormat: String, Codable, CaseIterable {

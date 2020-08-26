@@ -172,9 +172,10 @@ struct ContentView: View {
                         Divider()
                         Section {
                             Picker(selection: $createMeetingService, label: Text("Create meetings in ")) {
-                                ForEach(MeetingServices.allCases.filter { $0 != .webex }, id: \.self) {
-                                    Text($0.rawValue).tag($0)
-                                }
+                                Text(MeetingServices.meet.rawValue).tag(MeetingServices.meet)
+                                Text(MeetingServices.zoom.rawValue).tag(MeetingServices.zoom)
+                                Text(MeetingServices.teams.rawValue).tag(MeetingServices.teams)
+                                Text(MeetingServices.hangouts.rawValue).tag(MeetingServices.hangouts)
                             }
                         }.padding(.horizontal, 10)
                     }.padding().tabItem { Text("Integrations") }
