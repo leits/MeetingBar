@@ -121,7 +121,7 @@ struct PreferencesView: View {
                                 HStack {
                                     Text("5")
                                     Slider(value: $titleLength, in: TitleLengthLimits.min...TitleLengthLimits.max, step: 1)
-                                    Text("∞")
+                                    Text("55")
                                 }.disabled(eventTitleFormat != EventTitleFormat.show)
                             }.padding(.horizontal, 10)
                         }

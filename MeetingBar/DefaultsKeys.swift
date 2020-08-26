@@ -23,7 +23,7 @@ extension Defaults.Keys {
     static let titleLength = Key<Double>("titleLength", default: TitleLengthLimits.max)
 
     // Menu Appearance
-    static let showEventDetails = Key<Bool>("showEventDetails", default: true)
+    static let showEventDetails = Key<Bool>("showEventDetails", default: false)
     static let declinedEventsAppereance = Key<DeclinedEventsAppereance>("declinedEventsAppereance", default: .strikethrough)
     static let disablePastEvents = Key<Bool>("disablePastEvents", default: true)
     static let timeFormat = Key<TimeFormat>("timeFormat", default: .military)

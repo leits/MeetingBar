@@ -325,7 +325,7 @@ func createEventStatusString(_ event: EKEvent) -> String {
     switch Defaults[.eventTitleFormat] {
     case .show:
         eventTitle = String(event.title ?? "No title").trimmingCharacters(in: .whitespaces)
-        if Defaults[.titleLength] != TitleLengthLimits.max, eventTitle.count > Int(Defaults[.titleLength]) {
+        if eventTitle.count > Int(Defaults[.titleLength]) {
             let index = eventTitle.index(eventTitle.startIndex, offsetBy: Int(Defaults[.titleLength]))
             eventTitle = String(eventTitle[...index])
             eventTitle += "..."
