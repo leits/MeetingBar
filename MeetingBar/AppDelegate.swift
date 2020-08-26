@@ -27,7 +27,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     var disablePastEventObserver: DefaultsObservation?
     var declinedEventsAppereanceObserver: DefaultsObservation?
     var showEventsForPeriodObserver: DefaultsObservation?
-    var ignoredCalendarItemIDsObserver: DefaultsObservation?
+    var ignoredEventIDsObserver: DefaultsObservation?
 
     var preferencesWindow: NSWindow!
 
@@ -84,6 +84,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
             self.scheduleUpdateStatusBarTitle()
             self.scheduleUpdateEvents()
+            self.scheduleCleanupIgnoredEvents()
 
             KeyboardShortcuts.onKeyUp(for: .createMeetingShortcut) {
                 self.createMeeting()
@@ -130,8 +131,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                 NSLog("Changed showEventsForPeriod from \(change.oldValue) to \(change.newValue)")
                 self.statusBarItem.updateMenu()
             }
-            self.ignoredCalendarItemIDsObserver = Defaults.observe(.ignoredCalendarItemIDs) { change in
-                NSLog("Changed ignoredCalendarItemIDs from \(change.oldValue) to \(change.newValue)")
+            self.ignoredEventIDsObserver = Defaults.observe(.ignoredEventIDs) { change in
+                NSLog("Changed ignoredEventIDs from \(change.oldValue) to \(change.newValue)")
                 self.statusBarItem.updateMenu()
                 self.statusBarItem.updateTitle()
             }
@@ -168,6 +169,20 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         activity.schedule { (completion: @escaping NSBackgroundActivityScheduler.CompletionHandler) in
             NSLog("Firing reccuring updateStatusBarMenu")
             self.statusBarItem.updateMenu()
+            completion(NSBackgroundActivityScheduler.Result.finished)
+        }
+    }
+
+    private func scheduleCleanupIgnoredEvents() {
+        let activity = NSBackgroundActivityScheduler(identifier: "leits.MeetingBar.cleanupignoredevents")
+
+        activity.repeats = true
+        activity.interval = 5
+        activity.qualityOfService = QualityOfService.userInteractive
+
+        activity.schedule { (completion: @escaping NSBackgroundActivityScheduler.CompletionHandler) in
+            NSLog("Firing reccuring cleanupIgnoredEvents")
+            self.statusBarItem.eventStore.cleanupIgnoredEvents()
             completion(NSBackgroundActivityScheduler.Result.finished)
         }
     }
@@ -242,16 +257,16 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         preferencesWindow.orderFrontRegardless()
     }
 
-    @objc func clickIgnoreCalendarItemID(sender: NSMenuItem) {
+    @objc func clickIgnoreEventID(sender: NSMenuItem) {
         let event: EKEvent = sender.representedObject as! EKEvent
         NSLog("Click on ignore event (\(String(describing: event.title)))!")
-        Defaults[.ignoredCalendarItemIDs].insert(event.calendarItemIdentifier)
+        Defaults[.ignoredEventIDs].insert(event.eventIdentifier)
     }
 
-    @objc func clickUnignoreCalendarItemID(sender: NSMenuItem) {
+    @objc func clickUnignoreEventID(sender: NSMenuItem) {
         let event: EKEvent = sender.representedObject as! EKEvent
         NSLog("Click on unignore event (\(String(describing: event.title)))!")
-        Defaults[.ignoredCalendarItemIDs].remove(event.calendarItemIdentifier)
+        Defaults[.ignoredEventIDs].remove(event.eventIdentifier)
     }
 
     @objc func quit(_: NSStatusBarButton) {

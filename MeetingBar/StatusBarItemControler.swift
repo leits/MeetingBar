@@ -309,12 +309,12 @@ class StatusBarItemControler {
             if event.hasRecurrenceRules {
                 // (un)Ignore this event
                 eventMenu.addItem(NSMenuItem.separator())
-                if Defaults[.ignoredCalendarItemIDs].contains(event.calendarItemIdentifier) {
-                    let unignoreMenuItem = NSMenuItem(title: "Unignore this event", action: #selector(AppDelegate.clickUnignoreCalendarItemID(sender:)), keyEquivalent: "")
+                if Defaults[.ignoredEventIDs].contains(event.eventIdentifier) {
+                    let unignoreMenuItem = NSMenuItem(title: "Unignore this event", action: #selector(AppDelegate.clickUnignoreEventID(sender:)), keyEquivalent: "")
                     unignoreMenuItem.representedObject = event
                     eventMenu.addItem(unignoreMenuItem)
                 } else {
-                    let ignoreMenuItem = NSMenuItem(title: "Ignore this event", action: #selector(AppDelegate.clickIgnoreCalendarItemID(sender:)), keyEquivalent: "")
+                    let ignoreMenuItem = NSMenuItem(title: "Ignore this event", action: #selector(AppDelegate.clickIgnoreEventID(sender:)), keyEquivalent: "")
                     ignoreMenuItem.representedObject = event
                     eventMenu.addItem(ignoreMenuItem)
                 }

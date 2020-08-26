@@ -81,7 +81,7 @@ extension EKEventStore {
         for event in nextEvents {
             // Skip event if declined
             if event.isAllDay { continue }
-            if Defaults[.ignoredCalendarItemIDs].contains(event.calendarItemIdentifier) { continue }
+            if Defaults[.ignoredEventIDs].contains(event.eventIdentifier) { continue }
             if let status = getEventStatus(event) {
                 if status == .declined { continue }
             }
@@ -102,5 +102,12 @@ extension EKEventStore {
             }
         }
         return nextEvent
+    }
+
+    func cleanupIgnoredEvents() {
+        let old = Defaults[.ignoredEventIDs]
+        let filtered = old.filter {event(withIdentifier: $0) != nil}
+        NSLog("Changing ignored event IDs from \(old) to \(filtered)")
+        Defaults[.ignoredEventIDs] = filtered
     }
 }
