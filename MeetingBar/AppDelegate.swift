@@ -224,7 +224,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         let calendars = statusBarItem.eventStore.calendars(for: .event)
         let calendarsBySource = Dictionary(grouping: calendars, by: { $0.source.title })
 
-        let contentView = ContentView(calendarsBySource: calendarsBySource)
+        let contentView = PreferencesView(calendarsBySource: calendarsBySource)
         if preferencesWindow != nil {
             preferencesWindow.close()
         }

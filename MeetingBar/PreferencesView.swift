@@ -28,7 +28,7 @@ struct MultipleSelectionRow: View {
     }
 }
 
-struct ContentView: View {
+struct PreferencesView: View {
     // General
     @Default(.showEventsForPeriod) var showEventsForPeriod
     @Default(.joinEventNotification) var joinEventNotification
@@ -97,7 +97,7 @@ struct ContentView: View {
                                 KeyboardShortcuts.Recorder(for: .createMeetingShortcut)
                             }
                             HStack {
-                                Text("Join next event:")
+                                Text("Join next event meeting:")
                                 KeyboardShortcuts.Recorder(for: .joinEventShortcut)
                             }
                         }.padding(.horizontal, 10)
@@ -129,7 +129,7 @@ struct ContentView: View {
                         Text("Menu").font(.headline).bold()
                         Section {
                             HStack {
-                                Toggle("Disable past events", isOn: $disablePastEvents)
+                                Toggle("Allow to join past events", isOn: $disablePastEvents)
                                 Spacer()
                                 Toggle("Show event details as submenu", isOn: $showEventDetails)
                             }

@@ -88,7 +88,7 @@ class StatusBarItemControler {
             let nextEvent = self.eventStore.getNextEvent(calendars: self.calendars)
             if nextEvent != nil {
                 let joinItem = self.item.menu!.addItem(
-                    withTitle: "Join next event",
+                    withTitle: "Join next event meeting",
                     action: #selector(AppDelegate.joinNextMeeting),
                     keyEquivalent: "")
                 joinItem.setShortcut(for: .joinEventShortcut)
