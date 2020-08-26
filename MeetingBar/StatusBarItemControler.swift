@@ -218,6 +218,8 @@ class StatusBarItemControler {
                     status = " 👎 Canceled"
                 case .tentative:
                     status = " ☝️ Tentative"
+                case .unknown:
+                    status = " ❔ Unknown"
                 default:
                     status = " ❔ (\(String(describing: eventStatus))))"
                 }
@@ -394,14 +396,13 @@ func openEvent(_ event: EKEvent) {
 }
 
 func getEventStatus(_ event: EKEvent) -> EKParticipantStatus? {
-    if event.hasAttendees {
-        if let attendees = event.attendees {
-            if let currentUser = attendees.first(where: { $0.isCurrentUser }) {
-                return currentUser.participantStatus
-            }
-        }
+    guard event.hasAttendees else {
+        return nil
     }
-    return EKParticipantStatus.unknown
+    if let currentUser = event.attendees?.first(where: { $0.isCurrentUser }) {
+        return currentUser.participantStatus
+    }
+    return .unknown
 }
 
 func getMeetingLink(_ event: EKEvent) -> (service: MeetingServices, url: URL)? {
