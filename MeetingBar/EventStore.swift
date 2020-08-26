@@ -81,6 +81,7 @@ extension EKEventStore {
         for event in nextEvents {
             // Skip event if declined
             if event.isAllDay { continue }
+            if Defaults[.ignoredCalendarItemIDs].contains(event.calendarItemIdentifier) { continue }
             if let status = getEventStatus(event) {
                 if status == .declined { continue }
             }

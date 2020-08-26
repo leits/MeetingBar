@@ -27,6 +27,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     var disablePastEventObserver: DefaultsObservation?
     var declinedEventsAppereanceObserver: DefaultsObservation?
     var showEventsForPeriodObserver: DefaultsObservation?
+    var ignoredCalendarItemIDsObserver: DefaultsObservation?
+    var ignoredEventIDsObserver: DefaultsObservation?
 
     var preferencesWindow: NSWindow!
 
@@ -129,7 +131,16 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                 NSLog("Changed showEventsForPeriod from \(change.oldValue) to \(change.newValue)")
                 self.statusBarItem.updateMenu()
             }
-
+            self.ignoredCalendarItemIDsObserver = Defaults.observe(.ignoredCalendarItemIDs) { change in
+                NSLog("Changed ignoredCalendarItemIDs from \(change.oldValue) to \(change.newValue)")
+                self.statusBarItem.updateMenu()
+                self.statusBarItem.updateTitle()
+            }
+            self.ignoredEventIDsObserver = Defaults.observe(.ignoredCalendarItemIDs) { change in
+                NSLog("Changed ignoredEventIDs from \(change.oldValue) to \(change.newValue)")
+                self.statusBarItem.updateMenu()
+                self.statusBarItem.updateTitle()
+            }
         }
     }
 
@@ -235,6 +246,18 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
         preferencesWindow.center()
         preferencesWindow.orderFrontRegardless()
+    }
+
+    @objc func clickIgnoreCalendarItemID(sender: NSMenuItem) {
+        let event: EKEvent = sender.representedObject as! EKEvent
+        NSLog("Click on ignore event (\(String(describing: event.title)))!")
+        Defaults[.ignoredCalendarItemIDs].insert(event.calendarItemIdentifier)
+    }
+
+    @objc func clickUnignoreCalendarItemID(sender: NSMenuItem) {
+        let event: EKEvent = sender.representedObject as! EKEvent
+        NSLog("Click on unignore event (\(String(describing: event.title)))!")
+        Defaults[.ignoredCalendarItemIDs].remove(event.calendarItemIdentifier)
     }
 
     @objc func quit(_: NSStatusBarButton) {
