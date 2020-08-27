@@ -26,6 +26,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     var disablePastEventObserver: DefaultsObservation?
     var declinedEventsAppereanceObserver: DefaultsObservation?
     var showEventsForPeriodObserver: DefaultsObservation?
+    var joinEventNotificationObserver: DefaultsObservation?
 
     var preferencesWindow: NSWindow!
 
@@ -51,7 +52,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
     func setup() {
         DispatchQueue.main.async {
-            requestNotificationAuthorization()
             registerNotificationCategories()
             UNUserNotificationCenter.current().delegate = self
 
@@ -123,6 +123,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             self.showEventsForPeriodObserver = Defaults.observe(.showEventsForPeriod) { change in
                 NSLog("Changed showEventsForPeriod from \(change.oldValue) to \(change.newValue)")
                 self.statusBarItem.updateMenu()
+            }
+            self.joinEventNotificationObserver = Defaults.observe(.joinEventNotification) { change in
+                NSLog("Changed joinEventNotification from \(change.oldValue) to \(change.newValue)")
+                requestNotificationAuthorization()
             }
 
         }

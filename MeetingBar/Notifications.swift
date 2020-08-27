@@ -38,6 +38,8 @@ func registerNotificationCategories() {
 }
 
 func sendNotification(_ title: String, _ text: String){
+    requestNotificationAuthorization() // By the apple best practices
+
     NSLog("Send notification: \(title) - \(text)")
     let center = UNUserNotificationCenter.current()
 
@@ -51,6 +53,8 @@ func sendNotification(_ title: String, _ text: String){
 }
 
 func scheduleEventNotification(_ event: EKEvent, _ text: String){
+    requestNotificationAuthorization() // By the apple best practices
+
     NSLog("Send join notification: \(String(describing: event.title)) - \(text)")
     let center = UNUserNotificationCenter.current()
 
