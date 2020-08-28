@@ -26,13 +26,13 @@ class StatusBarItemControler {
     }
 
     func loadCalendars() {
-        self.calendars = self.eventStore.getCalendars(ids: Defaults[.selectedCalendarIDs])
+        self.calendars = self.eventStore.getMatchedCalendars(ids: Defaults[.selectedCalendarIDs])
         self.updateTitle()
         self.updateMenu()
     }
 
     func updateTitle() {
-        var title = "Choose your calendars"
+        var title = "MeetingBar"
 
         if !self.calendars.isEmpty {
             let nextEvent = self.eventStore.getNextEvent(calendars: self.calendars)
@@ -67,15 +67,22 @@ class StatusBarItemControler {
                 let today = Date()
                 switch Defaults[.showEventsForPeriod] {
                 case .today:
-                    createDateSection(date: today, title: "Today")
+                    self.createDateSection(date: today, title: "Today")
                 case .today_n_tomorrow:
                     let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today)!
-                    createDateSection(date: today, title: "Today")
+                    self.createDateSection(date: today, title: "Today")
                     statusBarMenu.addItem(NSMenuItem.separator())
-                    createDateSection(date: tomorrow, title: "Tomorrow")
+                    self.createDateSection(date: tomorrow, title: "Tomorrow")
                 }
-                statusBarMenu.addItem(NSMenuItem.separator())
+            } else {
+                let text = "Select calendars in preferences\nto see your meetings"
+                let item = self.item.menu!.addItem(withTitle: "", action: nil, keyEquivalent: "")
+                let paragraphStyle = NSMutableParagraphStyle()
+                paragraphStyle.lineBreakMode = NSLineBreakMode.byWordWrapping
+                item.attributedTitle = NSAttributedString(string: text, attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
+                item.isEnabled = false
             }
+            statusBarMenu.addItem(NSMenuItem.separator())
             self.createJoinSection()
             statusBarMenu.addItem(NSMenuItem.separator())
 
@@ -102,8 +109,6 @@ class StatusBarItemControler {
     }
 
     func createDateSection(date: Date, title: String) {
-//        let date = Date()
-//        let title = "Today"
         let events: [EKEvent] = self.eventStore.loadEventsForDate(calendars: self.calendars, date: date)
 
         // Header

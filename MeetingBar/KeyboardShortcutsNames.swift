@@ -9,6 +9,6 @@
 import KeyboardShortcuts
 
 extension KeyboardShortcuts.Name {
-    static let createMeetingShortcut = Name("createMeetingShortcut")
-    static let joinEventShortcut = Name("joinEventShortcut")
+    static let createMeetingShortcut = Self("createMeetingShortcut")
+    static let joinEventShortcut = Self("joinEventShortcut")
 }

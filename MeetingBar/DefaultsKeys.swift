@@ -14,6 +14,8 @@ extension Defaults.Keys {
     static let selectedCalendars = Key<[String]>("selectedCalendars", default: []) // Backward compatibility
     static let selectedCalendarIDs = Key<[String]>("selectedCalendarIDs", default: [])
 
+    static let onboardingCompleted = Key<Bool>("onboardingCompleted", default: false)
+
     static let showEventsForPeriod = Key<ShowEventsForPeriod>("showEventsForPeriod", default: .today)
     static let joinEventNotification = Key<Bool>("joinEventNotification", default: true)
 

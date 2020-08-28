@@ -38,6 +38,7 @@ struct LinksRegex {
     let voov = try! NSRegularExpression(pattern: #"https://voovmeeting.com/.*"#)
     let skype = try! NSRegularExpression(pattern: #"https://join.skype.com/.*"#)
     let skype4biz = try! NSRegularExpression(pattern: #"https://meet.lync.com/.*"#)
+    let skype4biz_selfhosted = try! NSRegularExpression(pattern: #"https://meet\..*"#)
 }
 
 struct CreateMeetingLinks {
@@ -74,7 +75,8 @@ enum MeetingServices: String, Codable, CaseIterable {
     case duo = "Google Duo"
     case voov = "Tencent VooV"
     case skype = "Skype"
-    case skype4biz = "Skype For Bussines"
+    case skype4biz = "Skype For Business"
+    case skype4biz_selfhosted = "Skype For Business Self-Hosted"
 }
 
 enum TimeFormat: String, Codable, CaseIterable {

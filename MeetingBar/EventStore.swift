@@ -1,4 +1,5 @@
 //
+import Defaults
 //  EventStore.swift
 //  MeetingBar
 //
@@ -6,42 +7,23 @@
 //  Copyright © 2020 Andrii Leitsius. All rights reserved.
 //
 import EventKit
-import Defaults
 
 extension EKEventStore {
-    func accessCheck(_ completion: @escaping (AuthResult) -> Void) {
-        switch EKEventStore.authorizationStatus(for: .event) {
-        case .authorized:
-            NSLog("EventStore: already authorized")
-            completion(.success(true))
-        case .denied, .notDetermined:
-            NSLog("EventStore: request access")
-            self.requestAccess(
-                to: .event,
-                completion:
-                { (granted: Bool, error: Error?) -> Void in
-                    if error != nil {
-                        completion(.failure(error!))
-                    } else {
-                        completion(.success(granted))
-                    }
-                })
-        default:
-            completion(.failure(NSError(domain: "Unknown authorization status", code: 0)))
-        }
-    }
-
-    func getCalendars(titles: [String] = [], ids: [String] = []) -> [EKCalendar] {
+    func getMatchedCalendars(titles: [String] = [], ids: [String] = []) -> [EKCalendar] {
         var matchedCalendars: [EKCalendar] = []
 
         let allCalendars = self.calendars(for: .event)
         for calendar in allCalendars {
             if titles.contains(calendar.title) || ids.contains(calendar.calendarIdentifier) {
-                print("\(calendar.title): \(calendar.calendarIdentifier)")
                 matchedCalendars.append(calendar)
             }
         }
         return matchedCalendars
+    }
+
+    func getAllCalendars() -> [String: [EKCalendar]] {
+        let calendars = self.calendars(for: .event)
+        return Dictionary(grouping: calendars, by: { $0.source.title })
     }
 
     func loadEventsForDate(calendars: [EKCalendar], date: Date) -> [EKEvent] {

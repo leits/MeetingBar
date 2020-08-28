@@ -53,7 +53,7 @@ func generateTitleSample(_ titleFormat: EventTitleFormat, _ offset: Int) -> Stri
     var title: String
     switch titleFormat {
     case .show:
-        title = "Long title which may not be displayed in your status bar"
+        title = "Event with long title may not be displayed in your status bar"
         let index = title.index(title.startIndex, offsetBy: offset, limitedBy: title.endIndex)
         title = String(title[...(index ?? title.endIndex)])
         if offset < Int(TitleLengthLimits.max) {

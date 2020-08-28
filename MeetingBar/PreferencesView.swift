@@ -11,7 +11,133 @@ import SwiftUI
 import Defaults
 import KeyboardShortcuts
 
-struct MultipleSelectionRow: View {
+struct PreferencesView: View {
+    var body: some View {
+        VStack {
+            TabView {
+                General().tabItem { Text("General") }
+                Appearance().tabItem { Text("Appearance") }
+                Configuration().tabItem { Text("Services") }
+                Calendars().padding().tabItem { Text("Calendars") }
+            }
+        }.padding()
+    }
+}
+
+struct AboutApp: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 15) {
+            VStack(alignment: .center) {
+                Spacer()
+                Text("MeetingBar").font(.system(size: 20)).bold()
+                if Bundle.main.infoDictionary != nil {
+                    Text("Version \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "unknown")").foregroundColor(.gray)
+                }
+                Spacer()
+                Spacer()
+                HStack {
+                    Button("About this app", action: openAboutThisApp)
+                    Spacer()
+                    Button("Support the creator", action: openSupportTheCreator)
+                }
+            }
+        }
+    }
+
+    func openAboutThisApp() {
+        NSLog("Open AboutThisApp")
+        _ = openLinkInDefaultBrowser(Links.aboutThisApp)
+    }
+
+    func openSupportTheCreator() {
+        NSLog("Open SupportTheCreator")
+        _ = openLinkInDefaultBrowser(Links.supportTheCreator)
+    }
+}
+
+struct Calendars: View {
+    @State var calendarsBySource: [String: [EKCalendar]] = [:]
+    @State var showingAddAcountModal = false
+
+    @Default(.selectedCalendarIDs) var selectedCalendarIDs
+
+    var body: some View {
+        VStack {
+            HStack {
+                Text("Select calendars to show events in status bar")
+                Spacer()
+                Button(action: self.loadCalendarList) {
+                    Image(nsImage: NSImage(named: NSImage.refreshTemplateName)!)
+                }
+            }
+            VStack(alignment: .leading, spacing: 15) {
+                Form {
+                    Section {
+                        List {
+                            ForEach(Array(calendarsBySource.keys), id: \.self) { source in
+                                Section(header: Text(source)) {
+                                    ForEach(self.calendarsBySource[source]!, id: \.self) { calendar in
+                                        CalendarRow(title: calendar.title, isSelected: self.selectedCalendarIDs.contains(calendar.calendarIdentifier), color: Color(calendar.color)) {
+                                            if self.selectedCalendarIDs.contains(calendar.calendarIdentifier) {
+                                                self.selectedCalendarIDs.removeAll(where: { $0 == calendar.calendarIdentifier })
+                                            } else {
+                                                self.selectedCalendarIDs.append(calendar.calendarIdentifier)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }.listStyle(SidebarListStyle())
+                    }
+                }
+            }.border(Color.gray)
+            HStack {
+                Text("Don't see the calendar you need?")
+                Button("Add account", action: { self.showingAddAcountModal.toggle() })
+                    .sheet(isPresented: $showingAddAcountModal) {
+                        AddAccountModal()
+                    }
+                Spacer()
+            }
+        }.onAppear { self.loadCalendarList() }
+    }
+
+    func loadCalendarList() {
+        if let app = NSApplication.shared.delegate as! AppDelegate? {
+            self.calendarsBySource = app.statusBarItem.eventStore.getAllCalendars()
+        }
+    }
+}
+
+struct AddAccountModal: View {
+    @Environment(\.presentationMode) var presentationMode
+
+    var body: some View {
+        VStack {
+            Spacer()
+            VStack(alignment: .leading) {
+                Text(
+                    """
+                    To add external Calendars follow these steps:
+                    1. Open the default Calendar App
+                    2. Click 'Add Account' in the menu
+                    3. Choose and connect your account
+                    """
+                )
+            }
+            Spacer()
+            HStack {
+                Button(action: {
+                    self.presentationMode.wrappedValue.dismiss()
+                }) {
+                    Text("Close")
+                }
+            }
+        }.padding().frame(width: 400, height: 200)
+    }
+}
+
+struct CalendarRow: View {
     var title: String
     var isSelected: Bool
     var color: Color
@@ -20,20 +146,51 @@ struct MultipleSelectionRow: View {
     var body: some View {
         HStack {
             Button(action: self.action) {
-                Text(self.isSelected ? "✔️" : "➕")
+                Section {
+                    if self.isSelected {
+                        Image(nsImage: NSImage(named: NSImage.menuOnStateTemplateName)!)
+                    } else {
+                        Image(nsImage: NSImage(named: NSImage.addTemplateName)!)
+                    }
+                }.frame(width: 20, height: 17)
             }
-            .background(self.color)
+            Circle().fill(self.color).frame(width: 8, height: 8)
             Text(self.title)
         }.frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity, alignment: .topLeading)
     }
 }
 
-struct PreferencesView: View {
-    // General
+struct General: View {
     @Default(.showEventsForPeriod) var showEventsForPeriod
     @Default(.joinEventNotification) var joinEventNotification
 
-    // Appearance
+    var body: some View {
+        VStack(alignment: .leading, spacing: 15) {
+            Spacer()
+            Section {
+                Picker("Show events for", selection: $showEventsForPeriod) {
+                    Text("today").tag(ShowEventsForPeriod.today)
+                    Text("today and tomorrow").tag(ShowEventsForPeriod.today_n_tomorrow)
+                }.frame(width: 270, alignment: .leading)
+                Toggle("Send notification when event starts", isOn: $joinEventNotification)
+            }
+            Section {
+                HStack {
+                    Text("Create meeting:")
+                    KeyboardShortcuts.Recorder(for: .createMeetingShortcut)
+                    Spacer()
+                    Text("Join next event meeting:")
+                    KeyboardShortcuts.Recorder(for: .joinEventShortcut)
+                }
+            }
+            Spacer()
+            Divider()
+            AboutApp()
+        }.padding()
+    }
+}
+
+struct Appearance: View {
     @Default(.eventTitleFormat) var eventTitleFormat
     @Default(.titleLength) var titleLength
 
@@ -42,174 +199,101 @@ struct PreferencesView: View {
     @Default(.declinedEventsAppereance) var declinedEventsAppereance
     @Default(.disablePastEvents) var disablePastEvents
 
-    // Integrations
-    @Default(.createMeetingService) var createMeetingService
+    var body: some View {
+        VStack(alignment: .leading, spacing: 15) {
+            Text("Status Bar").font(.headline).bold()
+            Section {
+                Section {
+                    HStack {
+                        Picker("Show", selection: $eventTitleFormat) {
+                            Text("event title").tag(EventTitleFormat.show)
+                            Text("dot (•)").tag(EventTitleFormat.dot)
+                        }
+                    }
+                    HStack {
+                        Text(generateTitleSample(eventTitleFormat, Int(titleLength)))
+                        Spacer()
+                    }.padding(.all, 10)
+                        .border(Color.gray, width: 3)
+                    HStack {
+                        Text("5")
+                        Slider(value: $titleLength, in: TitleLengthLimits.min...TitleLengthLimits.max, step: 1)
+                        Text("55")
+                    }.disabled(eventTitleFormat != EventTitleFormat.show)
+                    Text("Tip:").disabled(true)
+                }.padding(.horizontal, 10)
+            }
+            Divider()
+            Text("Menu").font(.headline).bold()
+            Section {
+                HStack {
+                    Toggle("Allow to join past event meeting", isOn: $disablePastEvents)
+                    Spacer()
+                    Toggle("Show event details as submenu", isOn: $showEventDetails)
+                }
+                HStack {
+                    Picker("Declined events:", selection: $declinedEventsAppereance) {
+                        Text("show with strikethrough").tag(DeclinedEventsAppereance.strikethrough)
+                        Text("hide").tag(DeclinedEventsAppereance.hide)
+                    }
+                }
+                HStack {
+                    Picker("Time format:", selection: $timeFormat) {
+                        Text("12-hour (AM/PM)").tag(TimeFormat.am_pm)
+                        Text("24-hour").tag(TimeFormat.military)
+                    }
+                }
+            }.padding(.horizontal, 10)
+            Spacer()
+        }.padding()
+    }
+}
+
+struct Configuration: View {
     @Default(.useChromeForMeetLinks) var useChromeForMeetLinks
     @Default(.useChromeForHangoutsLinks) var useChromeForHangoutsLinks
     @Default(.useAppForZoomLinks) var useAppForZoomLinks
     @Default(.useAppForTeamsLinks) var useAppForTeamsLinks
 
-    // Calendars
-    @Default(.selectedCalendarIDs) var selectedCalendarIDs
-
-    let calendarsBySource: [String: [EKCalendar]]
-
     var body: some View {
-        VStack {
-            TabView {
-                VStack(alignment: .leading, spacing: 15) {
-                    Form {
-                        Section {
-                            List {
-                                ForEach(Array(calendarsBySource.keys), id: \.self) { source in
-                                    Section(header: Text(source)) {
-                                        ForEach(self.calendarsBySource[source]!, id: \.self) { calendar in
-                                            MultipleSelectionRow(title: calendar.title, isSelected: self.selectedCalendarIDs.contains(calendar.calendarIdentifier), color: Color(calendar.color)) {
-                                                if self.selectedCalendarIDs.contains(calendar.calendarIdentifier) {
-                                                    self.selectedCalendarIDs.removeAll(where: { $0 == calendar.calendarIdentifier })
-                                                } else {
-                                                    self.selectedCalendarIDs.append(calendar.calendarIdentifier)
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }.listStyle(SidebarListStyle())
-                        }
-                    }
-                }.padding().tabItem { Text("Calendars") }
-                TabView {
-                    VStack(alignment: .leading, spacing: 15) {
-
-                        Section {
-                            Picker("Show events for", selection: $showEventsForPeriod) {
-                                Text("today").tag(ShowEventsForPeriod.today)
-                                Text("today&tomorrow").tag(ShowEventsForPeriod.today_n_tomorrow)
-                            }
-                            Toggle("Send notification when event starting", isOn: $joinEventNotification).toggleStyle(SwitchToggleStyle())
-                        }
-                        Spacer()
-                        Divider()
-                        Text("Global shortcuts").font(.headline).bold()
-                        Section {
-                            HStack {
-                                Text("Create meeting:")
-                                KeyboardShortcuts.Recorder(for: .createMeetingShortcut)
-                            }
-                            HStack {
-                                Text("Join next event meeting:")
-                                KeyboardShortcuts.Recorder(for: .joinEventShortcut)
-                            }
-                        }.padding(.horizontal, 10)
-                        Spacer()
-                        }.padding().tabItem { Text("Behavior") }
-                    VStack(alignment: .leading, spacing: 15) {
-                        Text("Status Bar").font(.headline).bold()
-                        Section {
-                            Section {
-                                HStack {
-                                    Picker("Use", selection: $eventTitleFormat) {
-                                        Text("event title").tag(EventTitleFormat.show)
-                                        Text("dot (•)").tag(EventTitleFormat.dot)
-                                    }.pickerStyle(SegmentedPickerStyle())
-                                }
-                                HStack {
-                                    Text(generateTitleSample(eventTitleFormat, Int(titleLength)))
-                                    Spacer()
-                                }.padding(.all, 10)
-                                    .border(Color.gray, width: 3)
-                                HStack {
-                                    Text("5")
-                                    Slider(value: $titleLength, in: TitleLengthLimits.min...TitleLengthLimits.max, step: 1)
-                                    Text("55")
-                                }.disabled(eventTitleFormat != EventTitleFormat.show)
-                            }.padding(.horizontal, 10)
-                        }
-                        Divider()
-                        Text("Menu").font(.headline).bold()
-                        Section {
-                            HStack {
-                                Toggle("Allow to join past events", isOn: $disablePastEvents)
-                                Spacer()
-                                Toggle("Show event details as submenu", isOn: $showEventDetails)
-                            }
-                            HStack {
-                                Picker("Declined events:", selection: $declinedEventsAppereance) {
-                                    Text("show with strikethrough").tag(DeclinedEventsAppereance.strikethrough)
-                                    Text("hide").tag(DeclinedEventsAppereance.hide)
-                                }
-                            }
-                            HStack {
-                                Picker("Time format:", selection: $timeFormat) {
-                                    Text("12-hour (AM/PM)").tag(TimeFormat.am_pm)
-                                    Text("24-hour").tag(TimeFormat.military)
-                                }
-                            }
-                        }.padding(.horizontal, 10)
-                        Spacer()
-                    }.padding().tabItem { Text("Appearance") }
-                    VStack(alignment: .leading, spacing: 15) {
-                        Text("Services").font(.headline).bold()
-                        Section {
-                            Picker(selection: $useChromeForMeetLinks, label: Text("Open Meet links in").frame(width: 150, alignment: .leading)) {
-                                Text("Default Browser").tag(false)
-                                Text("Chrome").tag(true)
-                            }
-                            Picker(selection: $useChromeForHangoutsLinks, label: Text("Open Hangouts links in").frame(width: 150, alignment: .leading)) {
-                                Text("Default Browser").tag(false)
-                                Text("Chrome").tag(true)
-                            }
-                            Picker(selection: $useAppForZoomLinks, label: Text("Open Zoom links in").frame(width: 150, alignment: .leading)) {
-                                Text("Default Browser").tag(false)
-                                Text("Zoom app").tag(true)
-                            }
-                            Picker(selection: $useAppForTeamsLinks, label: Text("Open Teams links in").frame(width: 150, alignment: .leading)) {
-                                Text("Default Browser").tag(false)
-                                Text("Teams app").tag(true)
-                            }
-                            Spacer()
-                        }.padding(.horizontal, 10)
-                        Divider()
-                        Section {
-                            Picker(selection: $createMeetingService, label: Text("Create meetings in ")) {
-                                Text(MeetingServices.meet.rawValue).tag(MeetingServices.meet)
-                                Text(MeetingServices.zoom.rawValue).tag(MeetingServices.zoom)
-                                Text(MeetingServices.teams.rawValue).tag(MeetingServices.teams)
-                                Text(MeetingServices.hangouts.rawValue).tag(MeetingServices.hangouts)
-                            }
-                        }.padding(.horizontal, 10)
-                    }.padding().tabItem { Text("Integrations") }
-                }.tabItem { Text("Configuration") }.padding(5)
-                VStack(alignment: .leading, spacing: 15) {
-                    Section {
-                        VStack(alignment: .center) {
-                            Spacer()
-                            Image("icon").padding()
-                            Text("MeetingBar").font(.system(size: 20)).bold()
-                            if Bundle.main.infoDictionary != nil {
-                                Text("Version \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "unknown")").foregroundColor(.gray)
-                            }
-                            Spacer()
-                            Spacer()
-                            HStack {
-                                Button("About this app", action: openAboutThisApp)
-                                Spacer()
-                                Button("Support the creator", action: openSupportTheCreator)
-                            }
-                        }
-                    }
-                }.padding().tabItem { Text("About") }
-            }
+        VStack(alignment: .leading, spacing: 15) {
+            Section {
+                Picker(selection: $useChromeForMeetLinks, label: Text("Open Meet links in").frame(width: 150, alignment: .leading)) {
+                    Text("Default Browser").tag(false)
+                    Text("Chrome").tag(true)
+                }
+                Picker(selection: $useChromeForHangoutsLinks, label: Text("Open Hangouts links in").frame(width: 150, alignment: .leading)) {
+                    Text("Default Browser").tag(false)
+                    Text("Chrome").tag(true)
+                }
+                Picker(selection: $useAppForZoomLinks, label: Text("Open Zoom links in").frame(width: 150, alignment: .leading)) {
+                    Text("Default Browser").tag(false)
+                    Text("Zoom app").tag(true)
+                }
+                Picker(selection: $useAppForTeamsLinks, label: Text("Open Teams links in").frame(width: 150, alignment: .leading)) {
+                    Text("Default Browser").tag(false)
+                    Text("Teams app").tag(true)
+                }
+                Spacer()
+            }.padding(.horizontal, 10)
+            Divider()
+            HStack {
+                Text("Create meetings in").frame(width: 150, alignment: .leading)
+                CreateMeetingServicePicker()
+            }.padding(.horizontal, 10)
         }.padding()
     }
 }
 
-func openAboutThisApp() {
-    NSLog("Open AboutThisApp")
-    _ = openLinkInDefaultBrowser(Links.aboutThisApp)
-}
+struct CreateMeetingServicePicker: View {
+    @Default(.createMeetingService) var createMeetingService
 
-func openSupportTheCreator() {
-    NSLog("Open SupportTheCreator")
-    _ = openLinkInDefaultBrowser(Links.supportTheCreator)
+    var body: some View {
+        Picker(selection: $createMeetingService, label: Text("")) {
+            Text(MeetingServices.meet.rawValue).tag(MeetingServices.meet)
+            Text(MeetingServices.zoom.rawValue).tag(MeetingServices.zoom)
+            Text(MeetingServices.teams.rawValue).tag(MeetingServices.teams)
+            Text(MeetingServices.hangouts.rawValue).tag(MeetingServices.hangouts)
+        }.labelsHidden()
+    }
 }
