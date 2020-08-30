@@ -29,6 +29,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     var showEventsForPeriodObserver: DefaultsObservation?
     var ignoredEventIDsObserver: DefaultsObservation?
 
+    var eventAuth: Bool = false
+    var reminderAuth: Bool = false
     var preferencesWindow: NSWindow!
 
     func applicationDidFinishLaunching(_: Notification) {
@@ -39,7 +41,29 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             case .success(let granted):
                 if granted {
                     NSLog("Access to Calendar is granted")
-                    self.setup()
+                    self.eventAuth = true
+                    if self.eventAuth && self.reminderAuth {
+                        self.setup()
+                    }
+                } else {
+                    NSLog("Access to Calendar is denied")
+                    NSApplication.shared.terminate(self)
+                }
+            case .failure(let error):
+                NSLog(error.localizedDescription)
+                NSApplication.shared.terminate(self)
+            }
+        }
+
+        statusBarItem.eventStore.accessCheckReminder { result in
+            switch result {
+            case .success(let granted):
+                if granted {
+                    NSLog("Access to Calendar is granted")
+                    self.reminderAuth = true
+                    if self.eventAuth && self.reminderAuth {
+                        self.setup()
+                    }
                 } else {
                     NSLog("Access to Calendar is denied")
                     NSApplication.shared.terminate(self)

@@ -31,6 +31,28 @@ extension EKEventStore {
         }
     }
 
+    func accessCheckReminder(_ completion: @escaping (AuthResult) -> Void) {
+        switch EKEventStore.authorizationStatus(for: .reminder) {
+        case .authorized:
+            NSLog("EventStore: reminder already authorized")
+            completion(.success(true))
+        case .denied, .notDetermined:
+            NSLog("EventStore: reminder request access")
+            self.requestAccess(
+                to: .event,
+                completion:
+                { (granted: Bool, error: Error?) -> Void in
+                    if error != nil {
+                        completion(.failure(error!))
+                    } else {
+                        completion(.success(granted))
+                    }
+                })
+        default:
+            completion(.failure(NSError(domain: "Unknown reminder authorization status", code: 0)))
+        }
+    }
+
     func getCalendars(titles: [String] = [], ids: [String] = []) -> [EKCalendar] {
         var matchedCalendars: [EKCalendar] = []
 
