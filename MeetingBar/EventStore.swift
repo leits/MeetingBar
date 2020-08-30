@@ -128,13 +128,8 @@ extension EKEventStore {
 
     func cleanupIgnoredEvents() {
         let old = Defaults[.ignoredEventIDs]
-        let calendars = getCalendars(ids: Defaults[.selectedCalendarIDs])
-        let now = Date()
-        let startPeriod = Calendar.current.date(byAdding: .day, value: -14, to: now)!
-        let endPeriod = Calendar.current.date(byAdding: .day, value: 14, to: now)!
-        let predicate = self.predicateForEvents(withStart: startPeriod, end: endPeriod, calendars: calendars)
-        let allEvents = Set(self.events(matching: predicate).map { $0.eventIdentifier })
-        let filtered = old.filter {allEvents.contains($0)}
+        let filtered = old.filter {event(withIdentifier: $0) != nil}
+        NSLog("Changing ignored event IDs from \(old) to \(filtered)")
         Defaults[.ignoredEventIDs] = filtered
     }
 }
