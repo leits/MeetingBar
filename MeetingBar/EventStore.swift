@@ -129,7 +129,6 @@ extension EKEventStore {
     func cleanupIgnoredEvents() {
         let old = Defaults[.ignoredEventIDs]
         let filtered = old.filter {event(withIdentifier: $0) != nil}
-        NSLog("Changing ignored event IDs from \(old) to \(filtered)")
         Defaults[.ignoredEventIDs] = filtered
     }
 }
