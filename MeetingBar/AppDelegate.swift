@@ -201,7 +201,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         let activity = NSBackgroundActivityScheduler(identifier: "leits.MeetingBar.cleanupignoredevents")
 
         activity.repeats = true
-        activity.interval = 5
+        activity.interval = 60 * 5
         activity.qualityOfService = QualityOfService.userInteractive
 
         activity.schedule { (completion: @escaping NSBackgroundActivityScheduler.CompletionHandler) in
