@@ -51,6 +51,7 @@ struct CreateMeetingLinks {
 struct Links {
     static var supportTheCreator = URL(string: "https://www.patreon.com/meetingbar")!
     static var aboutThisApp = URL(string: "https://meetingbar.onrender.com")!
+    static var emailMe = URL(string: "mailto:leits.dev@gmail.com?subject=MeetingBar")!
 }
 
 enum MeetingServices: String, Codable, CaseIterable {
@@ -76,7 +77,7 @@ enum MeetingServices: String, Codable, CaseIterable {
     case voov = "Tencent VooV"
     case skype = "Skype"
     case skype4biz = "Skype For Business"
-    case skype4biz_selfhosted = "Skype For Business Self-Hosted"
+    case skype4biz_selfhosted = "Skype For Business (SH)"
 }
 
 enum TimeFormat: String, Codable, CaseIterable {

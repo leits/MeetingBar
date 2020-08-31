@@ -53,10 +53,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                 Defaults[.selectedCalendarIDs].append(calendar.calendarIdentifier)
             }
         }
-
-        if Defaults[.selectedCalendarIDs].count > 0 && !Defaults[.onboardingCompleted] {
-            Defaults[.onboardingCompleted] = true
-        }
         //
 
         if Defaults[.onboardingCompleted] {

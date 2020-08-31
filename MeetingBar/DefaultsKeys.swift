@@ -31,7 +31,7 @@ extension Defaults.Keys {
     static let timeFormat = Key<TimeFormat>("timeFormat", default: .military)
 
     // Integrations
-    static let createMeetingService = Key<MeetingServices>("createMeetingService", default: .meet)
+    static let createMeetingService = Key<MeetingServices>("createMeetingService", default: .zoom)
     static let useChromeForMeetLinks = Key<Bool>("useChromeForMeetLinks", default: false)
     static let useChromeForHangoutsLinks = Key<Bool>("useChromeForHangoutsLinks", default: false)
     static let useAppForZoomLinks = Key<Bool>("useAppForZoomLinks", default: false)

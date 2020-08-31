@@ -53,10 +53,10 @@ func generateTitleSample(_ titleFormat: EventTitleFormat, _ offset: Int) -> Stri
     var title: String
     switch titleFormat {
     case .show:
-        title = "Event with long title may not be displayed in your status bar"
+        title = "An event with an excessively sizeable 55-character title"
         let index = title.index(title.startIndex, offsetBy: offset, limitedBy: title.endIndex)
         title = String(title[...(index ?? title.endIndex)])
-        if offset < Int(TitleLengthLimits.max) {
+        if offset < (title.count - 1) {
             title += "..."
         }
     case .dot:

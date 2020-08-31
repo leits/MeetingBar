@@ -201,7 +201,7 @@ struct Appearance: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
-            Text("Status Bar").font(.headline).bold()
+            Text("Status bar").font(.headline).bold()
             Section {
                 Section {
                     HStack {
@@ -220,7 +220,7 @@ struct Appearance: View {
                         Slider(value: $titleLength, in: TitleLengthLimits.min...TitleLengthLimits.max, step: 1)
                         Text("55")
                     }.disabled(eventTitleFormat != EventTitleFormat.show)
-                    Text("Tip:").disabled(true)
+                    Text("Tip: If the app disappears from the status bar, make the length shorter").foregroundColor(Color.gray)
                 }.padding(.horizontal, 10)
             }
             Divider()
@@ -274,8 +274,15 @@ struct Configuration: View {
                     Text("Default Browser").tag(false)
                     Text("Teams app").tag(true)
                 }
-                Spacer()
             }.padding(.horizontal, 10)
+            Spacer()
+            Section {
+                Text("Supported links for services:\n\(MeetingServices.allCases.map { $0.rawValue }.joined(separator: ", "))")
+                HStack {
+                    Text("If the service you use isn't supported, email me")
+                    Button("✉️", action: emailMe)
+                }
+            }.foregroundColor(.gray).font(.system(size: 12)).padding(.horizontal, 10)
             Divider()
             HStack {
                 Text("Create meetings in").frame(width: 150, alignment: .leading)
@@ -296,4 +303,9 @@ struct CreateMeetingServicePicker: View {
             Text(MeetingServices.hangouts.rawValue).tag(MeetingServices.hangouts)
         }.labelsHidden()
     }
+}
+
+func emailMe() {
+    NSLog("Click email me")
+    _ = openLinkInDefaultBrowser(Links.emailMe)
 }

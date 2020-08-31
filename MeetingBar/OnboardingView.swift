@@ -100,18 +100,22 @@ struct AccessScreenView: View {
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     var body: some View {
-        VStack {
+        VStack(alignment: .center) {
+            Spacer()
             if accessDenied {
                 Text("Oops! It looks like you denied access to calendars.")
-                Text("")
+                Spacer()
                 Text("Go to")
-                Text("System Preferences > Security & Privacy > Privacy > Calendars.")
+                Text("System Preferences > Security & Privacy > Privacy > Calendars")
                 Text("and select a checkbox near MeetingBar.")
-                Text("")
-                Text("Then you will need to launch the app manually to continue setting up.")
+                Spacer()
+                Text("Then you need to launch the app manually to continue setting up.")
             } else {
-                Text("Requesting your access to calendars")
+                Text("Requesting your access to calendars.")
+                Text("")
+                Text("Click \"OK\" in popup window from MacOS.")
             }
+            Spacer()
         }.padding()
             .onAppear {
                 self.requestAccess()
@@ -154,7 +158,7 @@ struct CalendarsScreenView: View {
             HStack {
                 Spacer()
                 if self.selectedCalendarIDs.count == 0 {
-                    Text("Select at least one calendar")
+                    Text("Select at least one calendar").foregroundColor(Color.gray)
                 }
                 Button(action: self.close) {
                     Text("Start using app")
