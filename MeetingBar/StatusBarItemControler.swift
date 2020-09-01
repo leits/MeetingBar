@@ -39,11 +39,7 @@ class StatusBarItemControler {
             if let nextEvent = nextEvent {
                 title = createEventStatusString(nextEvent)
                 if Defaults[.joinEventNotification] {
-                    let now = Date()
-                    let differenceInSeconds = nextEvent.startDate.timeIntervalSince(now)
-                    if nextEvent.startDate > now, differenceInSeconds < 60 {
-                        scheduleEventNotification(nextEvent, "Event starts soon")
-                    }
+                    scheduleEventNotification(nextEvent)
                 }
             } else {
                 title = "🏁"

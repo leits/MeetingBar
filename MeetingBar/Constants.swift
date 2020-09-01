@@ -103,3 +103,10 @@ enum ShowEventsForPeriod: String, Codable, CaseIterable {
     case today
     case today_n_tomorrow
 }
+
+enum JoinEventNotificationTime: Int, Codable {
+    case atStart = 5
+    case minuteBefore = 60
+    case threeMinuteBefore = 180
+    case fiveMinuteBefore = 300
+}

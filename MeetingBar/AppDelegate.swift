@@ -117,7 +117,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
         joinEventNotificationObserver = Defaults.observe(.joinEventNotification) { change in
             NSLog("Changed joinEventNotification from \(change.oldValue) to \(change.newValue)")
-            requestNotificationAuthorization()
+            if change.newValue == true {
+                if let nextEvent = self.statusBarItem.eventStore.getNextEvent(calendars: self.statusBarItem.calendars) {
+                    scheduleEventNotification(nextEvent)
+                }
+            } else {
+                UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+            }
         }
     }
 

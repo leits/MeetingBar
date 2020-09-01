@@ -8,6 +8,8 @@
 import EventKit
 import UserNotifications
 
+import Defaults
+
 func requestNotificationAuthorization() {
     let center = UNUserNotificationCenter.current()
     center.requestAuthorization(options: [.alert, .badge, .sound]) { granted, _ in
@@ -50,23 +52,27 @@ func sendNotification(_ title: String, _ text: String) {
     center.add(request)
 }
 
-func scheduleEventNotification(_ event: EKEvent, _ text: String) {
+func scheduleEventNotification(_ event: EKEvent) {
     requestNotificationAuthorization() // By the apple best practices
 
-    NSLog("Send join notification: \(String(describing: event.title)) - \(text)")
+    let now = Date()
+    let notificationTime = Double(Defaults[.joinEventNotificationTime].rawValue)
+    let timeInterval = event.startDate.timeIntervalSince(now) - notificationTime
+
+    if timeInterval < 0.5 {
+        return
+    }
+
     let center = UNUserNotificationCenter.current()
 
     let content = UNMutableNotificationContent()
     content.title = event.title
-    content.body = text
+    content.body = "The event starts soon"
     content.categoryIdentifier = "EVENT"
     content.sound = UNNotificationSound.default
     content.userInfo = ["eventID": event.eventIdentifier!]
 
-    let now = Date()
-    var timeInterval = event.startDate.timeIntervalSince(now) - 5 // send notification 5 second before event
-    timeInterval = timeInterval > 0.1 ? timeInterval : 0.1
     let trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeInterval, repeats: false)
-    let request = UNNotificationRequest(identifier: "next_event", content: content, trigger: trigger)
+    let request = UNNotificationRequest(identifier: "NEXT_EVENT", content: content, trigger: trigger)
     center.add(request)
 }
