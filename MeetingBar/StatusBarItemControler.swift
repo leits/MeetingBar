@@ -420,19 +420,29 @@ func openMeetingURL(_ service: MeetingServices, _ url: URL) {
             _ = openLinkInDefaultBrowser(url)
         }
     case .teams:
-        var teamsAppURL = URLComponents(url: url, resolvingAgainstBaseURL: false)!
-        teamsAppURL.scheme = "msteams"
-        let result = openLinkInDefaultBrowser(teamsAppURL.url!)
-        if !result {
-            sendNotification("Oops! Unable to open the link in Microsoft Teams app", "Make sure you have Microsoft Teams app installed, or change the app in the preferences.")
+        if Defaults[.useAppForTeamsLinks] {
+            var teamsAppURL = URLComponents(url: url, resolvingAgainstBaseURL: false)!
+            teamsAppURL.scheme = "msteams"
+            let result = openLinkInDefaultBrowser(teamsAppURL.url!)
+            if !result {
+                sendNotification("Oops! Unable to open the link in Microsoft Teams app", "Make sure you have Microsoft Teams app installed, or change the app in the preferences.")
+                _ = openLinkInDefaultBrowser(url)
+            }
+        } else {
             _ = openLinkInDefaultBrowser(url)
         }
     case .zoom:
-        var teamsAppURL = URLComponents(url: url, resolvingAgainstBaseURL: false)!
-        teamsAppURL.scheme = "zoommtg"
-        let result = openLinkInDefaultBrowser(teamsAppURL.url!)
-        if !result {
-            sendNotification("Oops! Unable to open the link in Zoom app", "Make sure you have Zoom app installed, or change the app in the preferences.")
+        if Defaults[.useAppForZoomLinks] {
+            let urlString = url.absoluteString.replacingOccurrences(of: "/j/", with: "/join?confno=")
+            var teamsAppURL = URLComponents(url: URL(string: urlString)!, resolvingAgainstBaseURL: false)!
+            teamsAppURL.scheme = "zoommtg"
+            let result = openLinkInDefaultBrowser(teamsAppURL.url!)
+            if !result {
+                sendNotification("Oops! Unable to open the link in Zoom app", "Make sure you have Zoom app installed, or change the app in the preferences.")
+                _ = openLinkInDefaultBrowser(url)
+
+            }
+        } else {
             _ = openLinkInDefaultBrowser(url)
         }
     default:
