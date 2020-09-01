@@ -14,7 +14,6 @@
 		140D843D2493B7BF0055E1CE /* EventStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 140D843C2493B7BF0055E1CE /* EventStore.swift */; };
 		140D843F2493B7CB0055E1CE /* DefaultsKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 140D843E2493B7CB0055E1CE /* DefaultsKeys.swift */; };
 		140D84412493B8030055E1CE /* KeyboardShortcutsNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = 140D84402493B8030055E1CE /* KeyboardShortcutsNames.swift */; };
-		14158D3B246C65AD0006436C /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 14158D3A246C65AD0006436C /* README.md */; };
 		144C017D2462D0C3000C9FFC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 144C017C2462D0C3000C9FFC /* AppDelegate.swift */; };
 		144C01812462D0C5000C9FFC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 144C01802462D0C5000C9FFC /* Assets.xcassets */; };
 		144C01842462D0C5000C9FFC /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 144C01832462D0C5000C9FFC /* Preview Assets.xcassets */; };
@@ -181,7 +180,6 @@
 			files = (
 				144C01872462D0C5000C9FFC /* Main.storyboard in Resources */,
 				144C01842462D0C5000C9FFC /* Preview Assets.xcassets in Resources */,
-				14158D3B246C65AD0006436C /* README.md in Resources */,
 				144C01812462D0C5000C9FFC /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -347,7 +345,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = "1.4-rc1";
-				DEVELOPMENT_ASSET_PATHS = "\"MeetingBar/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = KGH289N6T8;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -374,7 +372,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = "1.4-rc1";
-				DEVELOPMENT_ASSET_PATHS = "\"MeetingBar/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = KGH289N6T8;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
