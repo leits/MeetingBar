@@ -367,7 +367,7 @@ func openEvent(_ event: EKEvent) {
     if let (service, url) = getMeetingLink(event) {
         openMeetingURL(service, url)
     } else {
-        sendNotification("Can't join \(eventTitle)", "Meeting link not found")
+        sendNotification("Epp! Can't join the \(eventTitle)", "Link not found, or your meeting service is not yet supported")
     }
 }
 
@@ -424,7 +424,7 @@ func openMeetingURL(_ service: MeetingServices, _ url: URL) {
         teamsAppURL.scheme = "msteams"
         let result = openLinkInDefaultBrowser(teamsAppURL.url!)
         if !result {
-            sendNotification("Can't open link in Teams app", "Check Teams app or change preferences")
+            sendNotification("Oops! Unable to open the link in Microsoft Teams app", "Make sure you have Microsoft Teams app installed, or change the app in the preferences.")
             _ = openLinkInDefaultBrowser(url)
         }
     case .zoom:
@@ -432,7 +432,7 @@ func openMeetingURL(_ service: MeetingServices, _ url: URL) {
         teamsAppURL.scheme = "zoommtg"
         let result = openLinkInDefaultBrowser(teamsAppURL.url!)
         if !result {
-            sendNotification("Can't open link in Zoom app", "Check Zoom app or change preferences")
+            sendNotification("Oops! Unable to open the link in Zoom app", "Make sure you have Zoom app installed, or change the app in the preferences.")
             _ = openLinkInDefaultBrowser(url)
         }
     default:

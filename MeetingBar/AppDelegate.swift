@@ -207,7 +207,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             openEvent(nextEvent)
         } else {
             NSLog("No next event")
-            sendNotification("No next event", "There are no more meetings today")
+            sendNotification("There are no next meetings today", "Woohoo! It's time to make cocoa")
             return
         }
     }
