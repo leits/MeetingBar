@@ -433,7 +433,7 @@ func openMeetingURL(_ service: MeetingServices, _ url: URL) {
         }
     case .zoom:
         if Defaults[.useAppForZoomLinks] {
-            let urlString = url.absoluteString.replacingOccurrences(of: "/j/", with: "/join?confno=")
+            let urlString = url.absoluteString.replacingOccurrences(of: "?", with: "&").replacingOccurrences(of: "/j/", with: "/join?confno=")
             var teamsAppURL = URLComponents(url: URL(string: urlString)!, resolvingAgainstBaseURL: false)!
             teamsAppURL.scheme = "zoommtg"
             let result = openLinkInDefaultBrowser(teamsAppURL.url!)
