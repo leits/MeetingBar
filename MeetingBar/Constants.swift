@@ -16,7 +16,7 @@ struct TitleLengthLimits {
 struct LinksRegex {
     let meet = try! NSRegularExpression(pattern: #"https://meet.google.com/[a-z-]+"#)
     let hangouts = try! NSRegularExpression(pattern: #"https://hangouts.google.com/.*"#)
-    let zoom = try! NSRegularExpression(pattern: #"https://([a-z0-9.]+)?zoom.(us|com.cn)/j/[a-zA-Z0-9?&=]+"#)
+    let zoom = try! NSRegularExpression(pattern: #"https://([a-z0-9.]+)?zoom.(us|com.cn)/j/.*"#)
     let teams = try! NSRegularExpression(pattern: #"https://teams.microsoft.com/l/meetup-join/[a-zA-Z0-9_%\/=\-\+\.?]+"#)
     let webex = try! NSRegularExpression(pattern: #"https://([a-z0-9.]+)?webex.com/.*"#)
     let jitsi = try! NSRegularExpression(pattern: #"https://meet.jit.si/.*"#)
