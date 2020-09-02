@@ -106,7 +106,7 @@ struct AccessScreenView: View {
                 Text("Oops! It looks like you denied access to calendars.")
                 Spacer()
                 Text("Go to")
-                Text("System Preferences > Security & Privacy > Privacy > Calendars")
+                Button("System Preferences", action: self.openSystemCalendarPreferences)
                 Text("and select a checkbox near MeetingBar.")
                 Spacer()
                 Text("Then you need to launch the app manually to continue setting up.")
@@ -145,6 +145,10 @@ struct AccessScreenView: View {
                 self.viewRouter.currentScreen = .calendars
             }
         }
+    }
+
+    func openSystemCalendarPreferences() {
+        NSWorkspace.shared.open(Links.calendarPreferences)
     }
 }
 

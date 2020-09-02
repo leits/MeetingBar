@@ -52,6 +52,7 @@ struct Links {
     static var supportTheCreator = URL(string: "https://www.patreon.com/meetingbar")!
     static var aboutThisApp = URL(string: "https://meetingbar.onrender.com")!
     static var emailMe = URL(string: "mailto:leits.dev@gmail.com?subject=MeetingBar")!
+    static var calendarPreferences = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Calendars")!
 }
 
 enum MeetingServices: String, Codable, CaseIterable {
