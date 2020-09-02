@@ -18,7 +18,7 @@ extension Defaults.Keys {
 
     static let showEventsForPeriod = Key<ShowEventsForPeriod>("showEventsForPeriod", default: .today)
     static let joinEventNotification = Key<Bool>("joinEventNotification", default: true)
-    static let joinEventNotificationTime = Key<JoinEventNotificationTime>("joinEventNotificationTime", default: .minuteBefore)
+    static let joinEventNotificationTime = Key<JoinEventNotificationTime>("joinEventNotificationTime", default: .atStart)
 
 
     // Status Bar Appearance

@@ -178,7 +178,6 @@ struct General: View {
                     Picker("", selection: $joinEventNotificationTime) {
                         Text("when event starts").tag(JoinEventNotificationTime.atStart)
                         Text("1 minute before").tag(JoinEventNotificationTime.minuteBefore)
-                        Text("3 minute before").tag(JoinEventNotificationTime.threeMinuteBefore)
                         Text("5 minute before").tag(JoinEventNotificationTime.fiveMinuteBefore)
                     }.frame(width: 150, alignment: .leading).labelsHidden().disabled(!joinEventNotification)
                 }
