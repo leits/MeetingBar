@@ -31,7 +31,7 @@ extension EKEventStore {
         let nextDayMidnight = Calendar.current.date(byAdding: .day, value: 1, to: dayMidnight)!
 
         let predicate = self.predicateForEvents(withStart: dayMidnight, end: nextDayMidnight, calendars: calendars)
-        let calendarEvents = self.events(matching: predicate)
+        let calendarEvents = self.events(matching: predicate).filter { Calendar.current.isDate($0.startDate, inSameDayAs: dayMidnight) }
 
         let df = DateFormatter()
         df.dateFormat = "yyyy-MM-dd"
