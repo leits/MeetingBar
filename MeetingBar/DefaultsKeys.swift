@@ -30,6 +30,7 @@ extension Defaults.Keys {
     static let showEventDetails = Key<Bool>("showEventDetails", default: false)
     static let declinedEventsAppereance = Key<DeclinedEventsAppereance>("declinedEventsAppereance", default: .strikethrough)
     static let disablePastEvents = Key<Bool>("disablePastEvents", default: true)
+    static let hidePastEvents = Key<Bool>("hidePastEvents", default: false)
     static let timeFormat = Key<TimeFormat>("timeFormat", default: .military)
 
     // Integrations

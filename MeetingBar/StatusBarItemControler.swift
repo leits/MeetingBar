@@ -141,6 +141,12 @@ class StatusBarItemControler {
         }
 
         let now = Date()
+      
+        if Defaults[.hidePastEvents]{
+          if event.endDate < now {
+            return
+          }
+        }
 
         let eventTitle = String(event.title)
 

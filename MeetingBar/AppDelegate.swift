@@ -24,6 +24,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     var timeFormatObserver: DefaultsObservation?
     var eventTitleFormatObserver: DefaultsObservation?
     var disablePastEventObserver: DefaultsObservation?
+    var hidePastEventObserver: DefaultsObservation?
     var declinedEventsAppereanceObserver: DefaultsObservation?
     var showEventsForPeriodObserver: DefaultsObservation?
     var joinEventNotificationObserver: DefaultsObservation?
@@ -104,6 +105,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
         disablePastEventObserver = Defaults.observe(.disablePastEvents) { change in
             NSLog("Changed disablePastEvents from \(change.oldValue) to \(change.newValue)")
+            self.statusBarItem.updateMenu()
+        }
+        hidePastEventObserver = Defaults.observe(.hidePastEvents) { change in
+            NSLog("Changed hidePastEvents from \(change.oldValue) to \(change.newValue)")
             self.statusBarItem.updateMenu()
         }
         declinedEventsAppereanceObserver = Defaults.observe(.declinedEventsAppereance) { change in
