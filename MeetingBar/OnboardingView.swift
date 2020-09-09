@@ -78,6 +78,8 @@ struct WelcomeScreenView: View {
                     Spacer()
                 }.padding(5)
                 Spacer()
+                JoinEventNotificationPicker()
+                Spacer()
             }
             Spacer()
             Divider()

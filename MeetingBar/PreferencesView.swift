@@ -162,9 +162,6 @@ struct CalendarRow: View {
 
 struct General: View {
     @Default(.showEventsForPeriod) var showEventsForPeriod
-    @Default(.joinEventNotification) var joinEventNotification
-    @Default(.joinEventNotificationTime) var joinEventNotificationTime
-
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
             Spacer()
@@ -173,14 +170,7 @@ struct General: View {
                     Text("today").tag(ShowEventsForPeriod.today)
                     Text("today and tomorrow").tag(ShowEventsForPeriod.today_n_tomorrow)
                 }.frame(width: 270, alignment: .leading)
-                HStack {
-                    Toggle("Send notification to join next event meeting", isOn: $joinEventNotification)
-                    Picker("", selection: $joinEventNotificationTime) {
-                        Text("when event starts").tag(JoinEventNotificationTime.atStart)
-                        Text("1 minute before").tag(JoinEventNotificationTime.minuteBefore)
-                        Text("5 minute before").tag(JoinEventNotificationTime.fiveMinuteBefore)
-                    }.frame(width: 150, alignment: .leading).labelsHidden().disabled(!joinEventNotification)
-                }
+                JoinEventNotificationPicker()
             }
             Section {
                 HStack {
@@ -310,6 +300,22 @@ struct CreateMeetingServicePicker: View {
             Text(MeetingServices.teams.rawValue).tag(MeetingServices.teams)
             Text(MeetingServices.hangouts.rawValue).tag(MeetingServices.hangouts)
         }.labelsHidden()
+    }
+}
+
+struct JoinEventNotificationPicker: View {
+    @Default(.joinEventNotification) var joinEventNotification
+    @Default(.joinEventNotificationTime) var joinEventNotificationTime
+
+    var body: some View {
+        HStack {
+            Toggle("Send notification to join next event meeting", isOn: $joinEventNotification)
+            Picker("", selection: $joinEventNotificationTime) {
+                Text("when event starts").tag(JoinEventNotificationTime.atStart)
+                Text("1 minute before").tag(JoinEventNotificationTime.minuteBefore)
+                Text("5 minute before").tag(JoinEventNotificationTime.fiveMinuteBefore)
+            }.frame(width: 150, alignment: .leading).labelsHidden().disabled(!joinEventNotification)
+        }
     }
 }
 
