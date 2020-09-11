@@ -6,6 +6,7 @@
 //  Copyright © 2020 Andrii Leitsius. All rights reserved.
 //
 import Cocoa
+import EventKit
 
 func getMatch(text: String, regex: NSRegularExpression) -> String? {
     let resultsIterator = regex.matches(in: text, range: NSRange(text.startIndex..., in: text))
@@ -73,6 +74,18 @@ func getRegexForService(_ service: MeetingServices) -> NSRegularExpression? {
         if child.label == String(describing: service) {
             return (child.value as! NSRegularExpression)
         }
+    }
+    return nil
+}
+
+func getGmailAccount(_ event: EKEvent) -> String? {
+    // Hacky and likely to break, but should work until Apple changes something
+    let regex = GoogleRegex.emailAddress
+    let text = event.calendar.source.description
+    let resultsIterator = regex.matches(in: text, range: NSRange(text.startIndex..., in: text))
+    let resultsMap = resultsIterator.map { String(text[Range($0.range(at: 1), in: text)!]) }
+    if !resultsMap.isEmpty {
+        return resultsMap.first
     }
     return nil
 }

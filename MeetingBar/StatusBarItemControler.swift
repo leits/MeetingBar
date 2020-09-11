@@ -394,7 +394,13 @@ func getMeetingLink(_ event: EKEvent) -> (service: MeetingServices, url: URL)? {
     for field in linkFields {
         for service in MeetingServices.allCases {
             if let regex = getRegexForService(service) {
-                if let link = getMatch(text: field, regex: regex) {
+                if var link = getMatch(text: field, regex: regex) {
+                    if service == .meet,
+                        let account = getGmailAccount(event),
+                        let urlEncodedAccount = account.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
+                        link += "?authuser=\(urlEncodedAccount)"
+                    }
+                    
                     if let url = URL(string: link) {
                         return (service, url)
                     }
