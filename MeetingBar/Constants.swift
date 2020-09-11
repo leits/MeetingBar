@@ -110,3 +110,7 @@ enum JoinEventNotificationTime: Int, Codable {
     case minuteBefore = 60
     case fiveMinuteBefore = 300
 }
+
+struct GoogleRegex {
+    static let emailAddress = try! NSRegularExpression(pattern: #""mailto:(.+@.+)""#)
+}
