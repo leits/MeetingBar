@@ -51,16 +51,7 @@ If you have some installation problems or some other questions please check the 
 - Skype
 - Skype For Bussines
 
-
-## Preferences
-
-* Show event title in status bar  (*default: Yes*)
-* Limit title length (*default: unlimited*)
-* Service for ad-hoc meetings (*default: Google Meet*)
-* Use Chrome for Meet meetings (*default: No*)
-* Show event details as event submenu (*default: Yes*)
-* Shortcut for join next event (*default: disabled*)
-* Shortcut for create meeting (*default: disabled*)
+If the service you use isn't supported, add a comment [here](https://github.com/leits/MeetingBar/issues/62).
 
 ## Support the creator
 
