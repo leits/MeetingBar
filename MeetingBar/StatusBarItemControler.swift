@@ -387,6 +387,9 @@ func getMeetingLink(_ event: EKEvent) -> (service: MeetingServices, url: URL)? {
     if let location = event.location {
         linkFields.append(location)
     }
+    if let url = event.url {
+        linkFields.append(url.absoluteString)
+    }
     if let notes = event.notes {
         linkFields.append(notes)
     }
