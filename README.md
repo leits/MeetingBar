@@ -7,7 +7,7 @@
 
 **MeetingBar** is a menu bar app for your calendar meetings (macOS 10.15+).
 
-Integrated with Google Meet and Zoom so you can quickly join meetings from event or create ad hoc meeting.
+Integrated with 20+ meeting services so you can quickly join meetings from event or create ad hoc meeting.
 
 <img src="https://github.com/leits/MeetingBar/blob/master/screenshot.png" width="700">
 
@@ -23,6 +23,34 @@ brew cask install meetingbar
 5. Never miss your next meeting again :tada:
 
 If you have some installation problems or some other questions please check the [FAQ](../../wiki/FAQ) or [add an issue](https://github.com/leits/MeetingBar/issues/new).
+
+## Supported meeting services
+
+- Google Meet
+- Zoom
+- Google Hangouts
+- Microsoft Teams
+- Amazon Chime
+- Cisco Webex
+- Jitsi
+- Ring Central
+- GoToMeeting
+- GoToWebinar
+- BlueJeans
+- 8x8
+- Demio
+- Join.me
+- ZoomGov
+- Whereby
+- Uber Conference
+- Blizz
+- VSee
+- StarLeaf
+- Google Duo
+- Tencent VooV
+- Skype
+- Skype For Bussines
+
 
 ## Preferences
 
