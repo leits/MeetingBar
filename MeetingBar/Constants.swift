@@ -16,11 +16,11 @@ struct TitleLengthLimits {
 struct LinksRegex {
     let meet = try! NSRegularExpression(pattern: #"https://meet.google.com/[a-z-]+"#)
     let hangouts = try! NSRegularExpression(pattern: #"https://hangouts.google.com/[^\s]*"#)
-    let zoom = try! NSRegularExpression(pattern: #"https://([a-z0-9.]+)?zoom.(us|com.cn)/j/[^\s]*"#)
+    let zoom = try! NSRegularExpression(pattern: #"https://([a-z0-9-.]+)?zoom.(us|com.cn)/j/[^\s]*"#)
     let teams = try! NSRegularExpression(pattern: #"https://teams.microsoft.com/l/meetup-join/[a-zA-Z0-9_%\/=\-\+\.?]+"#)
     let webex = try! NSRegularExpression(pattern: #"https://([a-z0-9.]+)?webex.com/[^\s]*"#)
     let jitsi = try! NSRegularExpression(pattern: #"https://meet.jit.si/[^\s]*"#)
-    let chime = try! NSRegularExpression(pattern: #"https://app.chime.aws/[^\s]*"#)
+    let chime = try! NSRegularExpression(pattern: #"https://([a-z0-9-.]+)?chime.aws/[^\s]*"#)
     let ringcentral = try! NSRegularExpression(pattern: #"https://meetings.ringcentral.com/[^\s]*"#)
     let gotomeeting = try! NSRegularExpression(pattern: #"https://([a-z0-9.]+)?gotomeeting.com/[^\s]*"#)
     let gotowebinar = try! NSRegularExpression(pattern: #"https://([a-z0-9.]+)?gotowebinar.com/[^\s]*"#)
@@ -57,10 +57,12 @@ struct Links {
 
 enum MeetingServices: String, Codable, CaseIterable {
     case meet = "Google Meet"
+    case hangouts = "Google Hangouts"
     case zoom = "Zoom"
     case teams = "Microsoft Teams"
-    case hangouts = "Google Hangouts"
     case webex = "Cisco Webex"
+    case jitsi = "Jitsi"
+    case chime = "Amazon Chime"
     case ringcentral = "Ring Central"
     case gotomeeting = "GoToMeeting"
     case gotowebinar = "GoToWebinar"
