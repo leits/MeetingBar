@@ -114,3 +114,7 @@ enum JoinEventNotificationTime: Int, Codable {
 struct GoogleRegex {
     static let emailAddress = try! NSRegularExpression(pattern: #""mailto:(.+@.+)""#)
 }
+
+public struct AutoLauncher {
+    static let bundleIdentifier: String = "leits.AutoLauncher"
+}

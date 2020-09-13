@@ -13,6 +13,7 @@ import UserNotifications
 
 import Defaults
 import KeyboardShortcuts
+import ServiceManagement
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDelegate {
@@ -27,6 +28,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     var declinedEventsAppereanceObserver: DefaultsObservation?
     var showEventsForPeriodObserver: DefaultsObservation?
     var joinEventNotificationObserver: DefaultsObservation?
+    var launchAtLoginObserver: DefaultsObservation?
 
     var preferencesWindow: NSWindow!
     var onboardingWindow: NSWindow!
@@ -114,6 +116,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             NSLog("Changed showEventsForPeriod from \(change.oldValue) to \(change.newValue)")
             self.statusBarItem.updateTitle()
             self.statusBarItem.updateMenu()
+        }
+        launchAtLoginObserver = Defaults.observe(.launchAtLogin) { change in
+            NSLog("Changed launchAtLogin from \(change.oldValue) to \(change.newValue)")
+            SMLoginItemSetEnabled(AutoLauncher.bundleIdentifier as CFString, change.newValue)
         }
         joinEventNotificationObserver = Defaults.observe(.joinEventNotification) { change in
             NSLog("Changed joinEventNotification from \(change.oldValue) to \(change.newValue)")

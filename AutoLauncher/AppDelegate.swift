@@ -7,22 +7,25 @@
 //
 
 import Cocoa
-import SwiftUI
 
-@NSApplicationMain
 class AutoLauncherAppDelegate: NSObject, NSApplicationDelegate {
-
-    var window: NSWindow!
-
+    
+    struct Constants {
+        static let mainAppBundleID = "leits.MeetingBar"
+    }
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         let runningApps = NSWorkspace.shared.runningApplications
         let isRunning = runningApps.contains {
-            $0.bundleIdentifier == "leits.MeetingBar.AutoLauncher"
+            $0.bundleIdentifier == Constants.mainAppBundleID
         }
-        
+
         if !isRunning {
             var path = Bundle.main.bundlePath as NSString
+            // This Auto Launcher app is actually embedded inside the main app bundle
+            // under the subdirectory Contents/Library/LoginItems.
+            // So including the helper app name there will be a
+            // total of 4 path components to be deleted.
             for _ in 1...4 {
                 path = path.deletingLastPathComponent as NSString
             }
