@@ -29,7 +29,11 @@ class AutoLauncherAppDelegate: NSObject, NSApplicationDelegate {
             for _ in 1...4 {
                 path = path.deletingLastPathComponent as NSString
             }
-            NSWorkspace.shared.launchApplication(path as String)
+            let applicationPathString = path as String
+            guard let pathURL = URL(string: applicationPathString) else { return }
+            NSWorkspace.shared.openApplication(at: pathURL,
+                                               configuration: NSWorkspace.OpenConfiguration(),
+                                               completionHandler: nil)
         }
     }
 

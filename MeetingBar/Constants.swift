@@ -116,5 +116,5 @@ struct GoogleRegex {
 }
 
 public struct AutoLauncher {
-    static let bundleIdentifier: String = "leits.AutoLauncher"
+    static let bundleIdentifier: String = "leits.MeetingBar.AutoLauncher"
 }
