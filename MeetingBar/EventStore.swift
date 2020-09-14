@@ -9,6 +9,7 @@ import Defaults
 import EventKit
 
 extension EKEventStore {
+
     func getMatchedCalendars(titles: [String] = [], ids: [String] = []) -> [EKCalendar] {
         var matchedCalendars: [EKCalendar] = []
 
@@ -61,10 +62,13 @@ extension EKEventStore {
         // but the next event is closer than 10 minutes later
         // then show the next event
         for event in nextEvents {
-            // Skip event if declined
-            if event.isAllDay { continue }
+            if event.isAllDay {
+                continue
+            }
             if let status = getEventStatus(event) {
-                if status == .declined { continue }
+                if status == .declined { // Skip event if declined
+                    continue
+                }
             }
             if event.status == .canceled {
                 continue
@@ -84,4 +88,5 @@ extension EKEventStore {
         }
         return nextEvent
     }
+
 }

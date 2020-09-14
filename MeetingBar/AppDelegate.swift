@@ -264,4 +264,5 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         NSLog("User click Quit")
         NSApplication.shared.terminate(self)
     }
+
 }

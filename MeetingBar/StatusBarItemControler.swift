@@ -317,6 +317,7 @@ class StatusBarItemControler {
             action: #selector(AppDelegate.quit),
             keyEquivalent: "q")
     }
+
 }
 
 func createEventStatusString(_ event: EKEvent) -> String {
@@ -403,7 +404,6 @@ func getMeetingLink(_ event: EKEvent) -> (service: MeetingServices, url: URL)? {
                         let urlEncodedAccount = account.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
                         link += "?authuser=\(urlEncodedAccount)"
                     }
-                    
                     if let url = URL(string: link) {
                         return (service, url)
                     }
