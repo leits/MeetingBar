@@ -184,6 +184,29 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
         completionHandler()
     }
+  
+  // just opens the calendar
+  @objc func openCalendar(_: Any? = nil) {
+    NSLog("Open Calendar")
+    let url = URL(string: "ical://")
+    NSWorkspace.shared.open([url!],
+    withAppBundleIdentifier:"com.apple.iCal",
+    options: [],
+    additionalEventParamDescriptor: nil,
+    launchIdentifiers: nil)
+  }
+  
+  // try to open to specific event
+  @objc func openCalendarEvent(_: Any? = nil){
+    let identifier = "EF087808-AC5B-4672-A49E-90FC400D4C61" // HARDCODED identifier works!
+    NSLog("Open Calendar EVENT with identifier \(identifier)")
+    let url = URL(string: "ical://ekevent/\(identifier)")
+    NSWorkspace.shared.open([url!],
+    withAppBundleIdentifier:"com.apple.iCal",
+    options: [],
+    additionalEventParamDescriptor: nil,
+    launchIdentifiers: nil)
+  }
 
     @objc func createMeeting(_: Any? = nil) {
         NSLog("Create meeting in \(Defaults[.createMeetingService].rawValue)")

@@ -102,6 +102,12 @@ class StatusBarItemControler {
             action: #selector(AppDelegate.createMeeting),
             keyEquivalent: "")
         createItem.setShortcut(for: .createMeetingShortcut)
+      
+      self.item.menu!.addItem(
+        withTitle: "Open Calendar",
+        action: #selector(AppDelegate.openCalendar),
+        keyEquivalent: "")
+      
     }
 
     func createDateSection(date: Date, title: String) {
@@ -192,7 +198,13 @@ class StatusBarItemControler {
             let titleItem = eventMenu.addItem(withTitle: eventTitle, action: nil, keyEquivalent: "")
             titleItem.attributedTitle = NSAttributedString(string: eventTitle, attributes: [NSAttributedString.Key.font: NSFont.boldSystemFont(ofSize: 15)])
             eventMenu.addItem(NSMenuItem.separator())
-
+          
+            // Open in Calendar
+          eventMenu.addItem(
+            withTitle: "Open in Calendar",
+            action: #selector(AppDelegate.openCalendarEvent),
+            keyEquivalent: "")
+          
             // Calendar
             if Defaults[.selectedCalendarIDs].count > 1 {
                 eventMenu.addItem(withTitle: "Calendar:", action: nil, keyEquivalent: "")
