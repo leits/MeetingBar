@@ -162,9 +162,13 @@ struct CalendarRow: View {
 
 struct General: View {
     @Default(.showEventsForPeriod) var showEventsForPeriod
+    @Default(.launchAtLogin) var launchAtLogin
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
             Spacer()
+            Section {
+                Toggle("Launch at Login", isOn: $launchAtLogin)
+            }
             Section {
                 Picker("Show events for", selection: $showEventsForPeriod) {
                     Text("today").tag(ShowEventsForPeriod.today)

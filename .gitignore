@@ -1,0 +1,8 @@
+# MacOS generated files
+.DS_Store
+.DS_Store?
+
+# XCode generated files
+MeetingBar.xcodeproj/project.xcworkspace/xcuserdata/*
+MeetingBar.xcodeproj/xcuserdata/*
+
