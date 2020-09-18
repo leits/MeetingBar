@@ -18,10 +18,9 @@ Integrated with 20+ meeting services so you can quickly join meetings from event
 ```
 brew cask install meetingbar
 ```
-2. Make sure your calendar synchronized to macOS calendar
-3. Open the app, and if you see a warning, allow app to open from System Preferences [Security & Privacy > General > Open Anyway button].
-4. Go to the app Preferences and select your calendars
-5. Never miss your next meeting again :tada:
+2. Make sure your calendar synchronized to macOS calendar or [add a calendar account](https://support.apple.com/guide/calendar/add-or-delete-calendar-accounts-icl4308d6701/mac).
+3. Open the app and go through the onboarding.
+3. Never miss your next meeting again :tada:
 
 If you have some installation problems or some other questions please check the [FAQ](../../wiki/FAQ) or [add an issue](https://github.com/leits/MeetingBar/issues/new).
 
