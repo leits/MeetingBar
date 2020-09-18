@@ -1,6 +1,8 @@
 ## MeetingBar ![logo](https://github.com/leits/MeetingBar/blob/master/MeetingBar/Assets.xcassets/AppIcon.appiconset/icon32.png)
 
 [![GitHub license](https://img.shields.io/github/license/leits/MeetingBar.svg)](https://github.com/leits/MeetingBar/blob/master/LICENSE)
+
+[![Homebrew cask version](https://img.shields.io/homebrew/cask/v/meetingbar)](https://formulae.brew.sh/cask/meetingbar)
 [![Github all releases](https://img.shields.io/github/downloads/leits/MeetingBar/total.svg)](https://GitHub.com/leits/MeetingBar/releases/)
 
 <a href="https://www.producthunt.com/posts/meetingbar?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-meetingbar" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=203807&theme=light" alt="MeetingBar - Join your next meeting from your menu bar | Product Hunt Embed" style="width: 250px; height: 54px;" width="250px" height="54px" /></a>
