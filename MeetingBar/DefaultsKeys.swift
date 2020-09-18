@@ -23,7 +23,7 @@ extension Defaults.Keys {
 
 
     // Status Bar Appearance
-    static let showEventTitleInStatusBar = Key<Bool?>("showEventTitleInStatusBar", default: true) // Backward compatibility
+    static let showEventTitleInStatusBar = Key<Bool?>("showEventTitleInStatusBar", default: nil) // Backward compatibility
     static let eventTitleFormat = Key<EventTitleFormat>("eventTitleFormat", default: .show)
     static let titleLength = Key<Double>("titleLength", default: TitleLengthLimits.max)
 
