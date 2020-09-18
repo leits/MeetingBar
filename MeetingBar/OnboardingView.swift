@@ -50,15 +50,23 @@ struct OnboardingView: View {
 
 struct WelcomeScreenView: View {
     @ObservedObject var viewRouter: ViewRouter
+    @Default(.launchAtLogin) var launchAtLogin
+
 
     var body: some View {
         VStack {
             VStack {
                 VStack {
+                    Spacer()
                     Text("Hi! MeetingBar is such a simple app that everything is almost ready.")
                     Text("Let’s make it 100% yours!")
+                    Spacer()
                 }
-                Spacer()
+                Divider()
+                HStack {
+                    Toggle("Launch MeetingBar at Login", isOn: $launchAtLogin)
+                    Spacer()
+                }.padding(10)
                 Divider()
                 HStack {
                     Text("Join next event meeting with your shortcut:")

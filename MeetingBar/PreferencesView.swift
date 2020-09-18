@@ -169,6 +169,7 @@ struct General: View {
             Section {
                 Toggle("Launch at Login", isOn: $launchAtLogin)
             }
+            Divider()
             Section {
                 Picker("Show events for", selection: $showEventsForPeriod) {
                     Text("today").tag(ShowEventsForPeriod.today)
