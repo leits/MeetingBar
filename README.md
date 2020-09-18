@@ -1,7 +1,6 @@
 ## MeetingBar ![logo](https://github.com/leits/MeetingBar/blob/master/MeetingBar/Assets.xcassets/AppIcon.appiconset/icon32.png)
 
 [![GitHub license](https://img.shields.io/github/license/leits/MeetingBar.svg)](https://github.com/leits/MeetingBar/blob/master/LICENSE)
-
 [![Homebrew cask version](https://img.shields.io/homebrew/cask/v/meetingbar)](https://formulae.brew.sh/cask/meetingbar)
 [![Github all releases](https://img.shields.io/github/downloads/leits/MeetingBar/total.svg)](https://GitHub.com/leits/MeetingBar/releases/)
 
