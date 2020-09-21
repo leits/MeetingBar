@@ -201,6 +201,7 @@ struct Appearance: View {
     @Default(.showEventDetails) var showEventDetails
     @Default(.declinedEventsAppereance) var declinedEventsAppereance
     @Default(.disablePastEvents) var disablePastEvents
+    @Default(.hidePastEvents) var hidePastEvents
 
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
@@ -234,6 +235,9 @@ struct Appearance: View {
                     Spacer()
                     Toggle("Show event details as submenu", isOn: $showEventDetails)
                 }
+              HStack{
+                Toggle("Hide past events", isOn: $hidePastEvents)
+              }
                 HStack {
                     Picker("Declined events:", selection: $declinedEventsAppereance) {
                         Text("show with strikethrough").tag(DeclinedEventsAppereance.strikethrough)
