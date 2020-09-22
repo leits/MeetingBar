@@ -8,8 +8,7 @@
 
 import Cocoa
 
-class AutoLauncherAppDelegate: NSObject, NSApplicationDelegate {
-    
+class AutoLauncherAppDelegate: NSObject, NSApplicationDelegate {    
     struct Constants {
         static let mainAppBundleID = "leits.MeetingBar"
     }
@@ -41,6 +40,4 @@ class AutoLauncherAppDelegate: NSObject, NSApplicationDelegate {
         // Insert code here to tear down your application
     }
 
-
 }
-

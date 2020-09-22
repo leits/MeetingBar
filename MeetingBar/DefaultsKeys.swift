@@ -21,7 +21,6 @@ extension Defaults.Keys {
     static let joinEventNotificationTime = Key<JoinEventNotificationTime>("joinEventNotificationTime", default: .atStart)
     static let launchAtLogin = Key<Bool>("launchAtLogin", default: false)
 
-
     // Status Bar Appearance
     static let showEventTitleInStatusBar = Key<Bool?>("showEventTitleInStatusBar", default: nil) // Backward compatibility
     static let eventTitleFormat = Key<EventTitleFormat>("eventTitleFormat", default: .show)

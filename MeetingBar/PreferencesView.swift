@@ -235,7 +235,7 @@ struct Appearance: View {
                     Spacer()
                     Toggle("Show event details as submenu", isOn: $showEventDetails)
                 }
-              HStack{
+              HStack {
                 Toggle("Hide past events", isOn: $hidePastEvents)
               }
                 HStack {

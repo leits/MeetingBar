@@ -52,7 +52,6 @@ struct WelcomeScreenView: View {
     @ObservedObject var viewRouter: ViewRouter
     @Default(.launchAtLogin) var launchAtLogin
 
-
     var body: some View {
         VStack {
             VStack {

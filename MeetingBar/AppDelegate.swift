@@ -237,7 +237,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             preferencesWindow.close()
         }
         preferencesWindow = NSWindow(
-            contentRect: NSMakeRect(0, 0, 570, 450),
+            contentRect: NSRect(x: 0, y: 0, width: 570, height: 450),
             styleMask: [.closable, .titled],
             backing: .buffered,
             defer: false)
@@ -258,7 +258,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             onboardingWindow.close()
         }
         onboardingWindow = NSWindow(
-            contentRect: NSMakeRect(0, 0, 520, 400),
+            contentRect: NSRect(x: 0, y: 0, width: 520, height: 400),
             styleMask: [.closable, .titled],
             backing: .buffered,
             defer: false)
