@@ -58,7 +58,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
         //
 
-        if Defaults[.onboardingCompleted] {
+        let eventStoreAuthorized = (EKEventStore.authorizationStatus(for: .event) == .authorized)
+        if Defaults[.onboardingCompleted], eventStoreAuthorized {
             setup()
         } else {
             openOnboardingWindow()
