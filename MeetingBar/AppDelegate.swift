@@ -139,7 +139,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
     }
 
-    @objc func eventStoreChanged(notification _: NSNotification) {
+    @objc
+    func eventStoreChanged(notification _: NSNotification) {
         NSLog("Store changed. Update status bar menu.")
         statusBarItem.updateTitle()
         statusBarItem.updateMenu()
@@ -173,9 +174,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
     }
 
-    internal func userNotificationCenter(_: UNUserNotificationCenter,
-                                         didReceive response: UNNotificationResponse,
-                                         withCompletionHandler completionHandler: @escaping () -> Void) {
+    internal func userNotificationCenter(_: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         switch response.actionIdentifier {
         case "JOIN_ACTION", UNNotificationDefaultActionIdentifier:
             if response.notification.request.content.categoryIdentifier == "EVENT" {
@@ -197,7 +196,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         completionHandler()
     }
 
-    @objc func createMeeting(_: Any? = nil) {
+    @objc
+    func createMeeting(_: Any? = nil) {
         NSLog("Create meeting in \(Defaults[.createMeetingService].rawValue)")
         switch Defaults[.createMeetingService] {
         case .meet:
@@ -213,7 +213,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
     }
 
-    @objc func joinNextMeeting(_: NSStatusBarButton? = nil) {
+    @objc
+    func joinNextMeeting(_: NSStatusBarButton? = nil) {
         if let nextEvent = statusBarItem.eventStore.getNextEvent(calendars: statusBarItem.calendars) {
             NSLog("Join next event")
             openEvent(nextEvent)
@@ -224,13 +225,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
     }
 
-    @objc func clickOnEvent(sender: NSMenuItem) {
+    @objc
+    func clickOnEvent(sender: NSMenuItem) {
         NSLog("Click on event (\(sender.title))!")
         let event: EKEvent = sender.representedObject as! EKEvent
         openEvent(event)
     }
 
-    @objc func openPrefecencesWindow(_: NSStatusBarButton?) {
+    @objc
+    func openPrefecencesWindow(_: NSStatusBarButton?) {
         NSLog("Open preferences window")
         let contentView = PreferencesView()
         if preferencesWindow != nil {
@@ -272,9 +275,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         onboardingWindow.orderFrontRegardless()
     }
 
-    @objc func quit(_: NSStatusBarButton) {
+    @objc
+    func quit(_: NSStatusBarButton) {
         NSLog("User click Quit")
         NSApplication.shared.terminate(self)
     }
-
 }

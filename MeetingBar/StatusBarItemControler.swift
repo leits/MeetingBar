@@ -120,8 +120,8 @@ class StatusBarItemControler {
         titleItem.isEnabled = false
 
         // Events
-        let sortedEvents = events.sorted(by: { $0.startDate < $1.startDate })
-        if sortedEvents.count == 0 {
+        let sortedEvents = events.sorted { $0.startDate < $1.startDate }
+        if sortedEvents.isEmpty {
             let item = self.item.menu!.addItem(
                 withTitle: "Nothing for \(title.lowercased())",
                 action: nil,
@@ -250,7 +250,7 @@ class StatusBarItemControler {
             // Notes
             if event.hasNotes {
                 let notes = cleanUpNotes(event.notes ?? "")
-                if notes.count > 0 {
+                if !notes.isEmpty {
                     eventMenu.addItem(withTitle: "Notes:", action: nil, keyEquivalent: "")
                     let item = eventMenu.addItem(withTitle: "", action: nil, keyEquivalent: "")
                     let paragraphStyle = NSMutableParagraphStyle()
@@ -323,7 +323,6 @@ class StatusBarItemControler {
             action: #selector(AppDelegate.quit),
             keyEquivalent: "q")
     }
-
 }
 
 func createEventStatusString(_ event: EKEvent) -> String {
@@ -455,7 +454,6 @@ func openMeetingURL(_ service: MeetingServices, _ url: URL) {
             if !result {
                 sendNotification("Oops! Unable to open the link in Zoom app", "Make sure you have Zoom app installed, or change the app in the preferences.")
                 _ = openLinkInDefaultBrowser(url)
-
             }
         } else {
             _ = openLinkInDefaultBrowser(url)

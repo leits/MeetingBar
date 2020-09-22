@@ -79,7 +79,7 @@ struct Calendars: View {
                                     ForEach(self.calendarsBySource[source]!, id: \.self) { calendar in
                                         CalendarRow(title: calendar.title, isSelected: self.selectedCalendarIDs.contains(calendar.calendarIdentifier), color: Color(calendar.color)) {
                                             if self.selectedCalendarIDs.contains(calendar.calendarIdentifier) {
-                                                self.selectedCalendarIDs.removeAll(where: { $0 == calendar.calendarIdentifier })
+                                                self.selectedCalendarIDs.removeAll { $0 == calendar.calendarIdentifier }
                                             } else {
                                                 self.selectedCalendarIDs.append(calendar.calendarIdentifier)
                                             }
@@ -93,7 +93,7 @@ struct Calendars: View {
             }.border(Color.gray)
             HStack {
                 Text("Don't see the calendar you need?")
-                Button("Add account", action: { self.showingAddAcountModal.toggle() })
+                Button("Add account") { self.showingAddAcountModal.toggle() }
                     .sheet(isPresented: $showingAddAcountModal) {
                         AddAccountModal()
                     }

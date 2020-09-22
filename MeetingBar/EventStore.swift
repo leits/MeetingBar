@@ -9,7 +9,6 @@ import Defaults
 import EventKit
 
 extension EKEventStore {
-
     func getMatchedCalendars(titles: [String] = [], ids: [String] = []) -> [EKCalendar] {
         var matchedCalendars: [EKCalendar] = []
 
@@ -24,7 +23,7 @@ extension EKEventStore {
 
     func getAllCalendars() -> [String: [EKCalendar]] {
         let calendars = self.calendars(for: .event)
-        return Dictionary(grouping: calendars, by: { $0.source.title })
+        return Dictionary(grouping: calendars) { $0.source.title }
     }
 
     func loadEventsForDate(calendars: [EKCalendar], date: Date) -> [EKEvent] {
@@ -34,9 +33,9 @@ extension EKEventStore {
         let predicate = self.predicateForEvents(withStart: dayMidnight, end: nextDayMidnight, calendars: calendars)
         let calendarEvents = self.events(matching: predicate).filter { $0.isAllDay || Calendar.current.isDate($0.startDate, inSameDayAs: dayMidnight) }
 
-        let df = DateFormatter()
-        df.dateFormat = "yyyy-MM-dd"
-        let dateString = df.string(from: date)
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        let dateString = formatter.string(from: date)
         NSLog("Loaded events for date \(dateString) from calendars \(calendars.map { $0.title })")
         return calendarEvents
     }
@@ -88,5 +87,4 @@ extension EKEventStore {
         }
         return nextEvent
     }
-
 }

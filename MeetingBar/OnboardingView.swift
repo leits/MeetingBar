@@ -31,7 +31,7 @@ class ViewRouter: ObservableObject {
 }
 
 struct OnboardingView: View {
-    @ObservedObject var viewRouter: ViewRouter = ViewRouter()
+    @ObservedObject var viewRouter = ViewRouter()
 
     var body: some View {
         VStack(alignment: .leading) {
@@ -170,13 +170,13 @@ struct CalendarsScreenView: View {
             Divider()
             HStack {
                 Spacer()
-                if self.selectedCalendarIDs.count == 0 {
+                if self.selectedCalendarIDs.isEmpty {
                     Text("Select at least one calendar").foregroundColor(Color.gray)
                 }
                 Button(action: self.close) {
                     Text("Start using app")
                     Image(nsImage: NSImage(named: NSImage.goForwardTemplateName)!)
-                }.disabled(self.selectedCalendarIDs.count == 0)
+                }.disabled(self.selectedCalendarIDs.isEmpty)
             }.padding(5)
         }
     }

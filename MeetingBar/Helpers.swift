@@ -21,8 +21,7 @@ func getMatch(text: String, regex: NSRegularExpression) -> String? {
 func openLinkInChrome(_ link: URL) {
     let configuration = NSWorkspace.OpenConfiguration()
     let chromeUrl = URL(fileURLWithPath: "/Applications/Google Chrome.app")
-    NSWorkspace.shared.open([link], withApplicationAt: chromeUrl, configuration: configuration, completionHandler: {
-        app, error in
+    NSWorkspace.shared.open([link], withApplicationAt: chromeUrl, configuration: configuration) { app, error in
         if app != nil {
             NSLog("Open \(link) in Chrome")
         } else {
@@ -30,7 +29,7 @@ func openLinkInChrome(_ link: URL) {
             sendNotification("Oops! Unable to open the link in Chrome", "Make sure you have Chrome installed, or change the browser in the preferences.")
             _ = openLinkInDefaultBrowser(link)
         }
-        })
+    }
 }
 
 func openLinkInDefaultBrowser(_ link: URL) -> Bool {

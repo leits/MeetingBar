@@ -8,7 +8,7 @@
 
 import Cocoa
 
-class AutoLauncherAppDelegate: NSObject, NSApplicationDelegate {    
+class AutoLauncherAppDelegate: NSObject, NSApplicationDelegate {
     struct Constants {
         static let mainAppBundleID = "leits.MeetingBar"
     }
@@ -29,7 +29,9 @@ class AutoLauncherAppDelegate: NSObject, NSApplicationDelegate {
                 path = path.deletingLastPathComponent as NSString
             }
             let applicationPathString = path as String
-            guard let pathURL = URL(string: applicationPathString) else { return }
+            guard let pathURL = URL(string: applicationPathString) else {
+                return
+            }
             NSWorkspace.shared.openApplication(at: pathURL,
                                                configuration: NSWorkspace.OpenConfiguration(),
                                                completionHandler: nil)
@@ -39,5 +41,4 @@ class AutoLauncherAppDelegate: NSObject, NSApplicationDelegate {
     func applicationWillTerminate(_ aNotification: Notification) {
         // Insert code here to tear down your application
     }
-
 }
