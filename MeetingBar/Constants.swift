@@ -39,6 +39,7 @@ struct LinksRegex {
     let skype = try! NSRegularExpression(pattern: #"https://join.skype.com/[^\s]*"#)
     let skype4biz = try! NSRegularExpression(pattern: #"https://meet.lync.com/[^\s]*"#)
     let skype4biz_selfhosted = try! NSRegularExpression(pattern: #"https://meet\.[^\s]*"#)
+    let lifesize = try! NSRegularExpression(pattern: #"https://call.lifesizecloud.com/[^\s]*"#)
 }
 
 struct CreateMeetingLinks {
@@ -81,6 +82,7 @@ enum MeetingServices: String, Codable, CaseIterable {
     case skype = "Skype"
     case skype4biz = "Skype For Business"
     case skype4biz_selfhosted = "Skype For Business (SH)"
+    case lifesize = "Lifesize"
 }
 
 enum TimeFormat: String, Codable, CaseIterable {
