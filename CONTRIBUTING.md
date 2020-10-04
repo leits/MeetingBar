@@ -1,5 +1,5 @@
 
-# Contributing to Transcriptase
+# Contributing to MeetingBar
 We love your input! We want to make contributing to this project as easy and transparent as possible, whether it's:
 
 - Reporting a bug
@@ -25,6 +25,12 @@ We use GitHub issues to track public bugs. Report a bug by [opening a new issue]
 - Notes (possibly including why you think this might be happening, or stuff you tried that didn't work)
 
 People *love* thorough bug reports. I'm not even kidding.
+
+## Building locally
+To build MeetingBar on your computer, you need to configure the project to use your own Apple-supplied development team. You can do this *without making changes to the Xcode project*, by creating the plain-text file `XCConfig/DevTeamOverride.xcconfig` containing the following:
+```
+DEVELOPMENT_TEAM = <your development team id here>"
+```
 
 ## License
 By contributing, you agree that your contributions will be licensed under its Apache License 2.0.
