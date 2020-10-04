@@ -102,7 +102,7 @@ class StatusBarItemControler {
             action: #selector(AppDelegate.createMeeting),
             keyEquivalent: "")
         createItem.setShortcut(for: .createMeetingShortcut)
-        
+
         if !Defaults[.bookmarkMeetingURL].isEmpty {
             self.item.menu!.addItem(NSMenuItem.separator())
             let joinItem = self.item.menu!.addItem(

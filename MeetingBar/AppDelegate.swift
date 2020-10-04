@@ -90,7 +90,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.eventStoreChanged), name: .EKEventStoreChanged, object: statusBarItem.eventStore)
 
         NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.userDefaultsChanged), name: UserDefaults.didChangeNotification, object: nil)
-        
+
         selectedCalendarIDsObserver = Defaults.observe(.selectedCalendarIDs) { change in
             NSLog("Changed selectedCalendarIDs from \(change.oldValue) to \(change.newValue)")
             self.statusBarItem.loadCalendars()
@@ -228,11 +228,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     func joinBookmark(_: Any? = nil) {
         NSLog("Join bookmark")
         let urlString = Defaults[.bookmarkMeetingURL]
-        guard !urlString.isEmpty else { return }
-        guard let url = URL(string: urlString) else { return }
+        guard !urlString.isEmpty, let url = URL(string: urlString) else {
+            return
+        }
         openMeetingURL(Defaults[.bookmarkMeetingService], url)
     }
-    
+
     @objc
     func joinNextMeeting(_: NSStatusBarButton? = nil) {
         if let nextEvent = statusBarItem.eventStore.getNextEvent(calendars: statusBarItem.calendars) {

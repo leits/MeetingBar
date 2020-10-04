@@ -304,7 +304,7 @@ struct Bookmark: View {
     @Default(.bookmarkMeetingName) var bookmarkMeetingName
     @Default(.bookmarkMeetingURL) var bookmarkMeetingURL
     @Default(.bookmarkMeetingService) var bookmarkMeetingService
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
             Section {
