@@ -33,6 +33,11 @@ extension Defaults.Keys {
     static let hidePastEvents = Key<Bool>("hidePastEvents", default: false)
     static let timeFormat = Key<TimeFormat>("timeFormat", default: .military)
 
+    // Bookmark
+    static let bookmarkMeetingName = Key<String>("bookmarkMeetingName", default: "")
+    static let bookmarkMeetingService = Key<MeetingServices>("bookmarkMeetingService", default: .zoom)
+    static let bookmarkMeetingURL = Key<String>("bookmarkMeetingURL", default: "")
+
     // Integrations
     static let createMeetingService = Key<MeetingServices>("createMeetingService", default: .zoom)
     static let useChromeForMeetLinks = Key<Bool>("useChromeForMeetLinks", default: false)

@@ -16,6 +16,7 @@ struct PreferencesView: View {
         VStack {
             TabView {
                 General().tabItem { Text("General") }
+                Bookmark().tabItem { Text("Bookmark") }
                 Appearance().tabItem { Text("Appearance") }
                 Configuration().tabItem { Text("Services") }
                 Calendars().padding().tabItem { Text("Calendars") }
@@ -298,6 +299,36 @@ struct Configuration: View {
         }.padding()
     }
 }
+
+struct Bookmark: View {
+    @Default(.bookmarkMeetingName) var bookmarkMeetingName
+    @Default(.bookmarkMeetingURL) var bookmarkMeetingURL
+    @Default(.bookmarkMeetingService) var bookmarkMeetingService
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 15) {
+            Section {
+                HStack {
+                    Picker(selection: $bookmarkMeetingService, label: Text("")) {
+                        Text(MeetingServices.meet.rawValue).tag(MeetingServices.meet)
+                        Text(MeetingServices.zoom.rawValue).tag(MeetingServices.zoom)
+                        Text(MeetingServices.teams.rawValue).tag(MeetingServices.teams)
+                        Text(MeetingServices.hangouts.rawValue).tag(MeetingServices.hangouts)
+                    }.labelsHidden()
+                    .frame(width: 120, alignment: .leading)
+                    TextField("URL", text: $bookmarkMeetingURL)
+                }
+                HStack {
+                    TextField("Name (optional)", text: $bookmarkMeetingName)
+                    Text("Shortcut:")
+                    KeyboardShortcuts.Recorder(for: .joinBookmarkShortcut)
+                }
+            }
+            Spacer()
+        }.padding()
+    }
+}
+
 
 struct CreateMeetingServicePicker: View {
     @Default(.createMeetingService) var createMeetingService

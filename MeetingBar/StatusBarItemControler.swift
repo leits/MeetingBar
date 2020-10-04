@@ -102,6 +102,15 @@ class StatusBarItemControler {
             action: #selector(AppDelegate.createMeeting),
             keyEquivalent: "")
         createItem.setShortcut(for: .createMeetingShortcut)
+        
+        if !Defaults[.bookmarkMeetingURL].isEmpty {
+            self.item.menu!.addItem(NSMenuItem.separator())
+            let joinItem = self.item.menu!.addItem(
+                withTitle: "Join bookmark \"\(Defaults[.bookmarkMeetingName])\"",
+                action: #selector(AppDelegate.joinBookmark),
+                keyEquivalent: "")
+            joinItem.setShortcut(for: .joinBookmarkShortcut)
+        }
     }
 
     func createDateSection(date: Date, title: String) {
