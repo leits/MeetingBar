@@ -1,0 +1,2 @@
+DEVELOPMENT_TEAM = KGH289N6T8
+#include? "DevTeamOverride.xcconfig"

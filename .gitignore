@@ -2,6 +2,9 @@
 .DS_Store
 .DS_Store?
 
+# Development Team override
+XCConfig/DevTeamOverride.xcconfig
+
 # XCode generated files
 MeetingBar.xcodeproj/project.xcworkspace/xcuserdata/*
 MeetingBar.xcodeproj/xcuserdata/*

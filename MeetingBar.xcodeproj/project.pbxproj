@@ -65,6 +65,9 @@
 		40DC704C250E5BB100217DD9 /* AutoLauncher.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AutoLauncher.entitlements; sourceTree = "<group>"; };
 		40DC7053250E5E1000217DD9 /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = System/Library/Frameworks/ServiceManagement.framework; sourceTree = SDKROOT; };
 		40E60312250E81EA005986C7 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		E4DD0F0A2529D0D20029E395 /* Project-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Project-Release.xcconfig"; sourceTree = "<group>"; };
+		E4DD0F0B2529D0D20029E395 /* Project.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Project.xcconfig; sourceTree = "<group>"; };
+		E4DD0F0C2529D0D20029E395 /* Project-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Project-Debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -102,6 +105,7 @@
 			isa = PBXGroup;
 			children = (
 				14158D3A246C65AD0006436C /* README.md */,
+				E4DD0F092529D0D20029E395 /* XCConfig */,
 				144C017B2462D0C3000C9FFC /* MeetingBar */,
 				40DC7041250E5B9C00217DD9 /* AutoLauncher */,
 				144C017A2462D0C3000C9FFC /* Products */,
@@ -163,6 +167,16 @@
 				40DC7053250E5E1000217DD9 /* ServiceManagement.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		E4DD0F092529D0D20029E395 /* XCConfig */ = {
+			isa = PBXGroup;
+			children = (
+				E4DD0F0B2529D0D20029E395 /* Project.xcconfig */,
+				E4DD0F0A2529D0D20029E395 /* Project-Release.xcconfig */,
+				E4DD0F0C2529D0D20029E395 /* Project-Debug.xcconfig */,
+			);
+			path = XCConfig;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -333,6 +347,7 @@
 /* Begin XCBuildConfiguration section */
 		144C018A2462D0C5000C9FFC /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E4DD0F0C2529D0D20029E395 /* Project-Debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -396,6 +411,7 @@
 		};
 		144C018B2462D0C5000C9FFC /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E4DD0F0A2529D0D20029E395 /* Project-Release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -461,7 +477,6 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 100;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = KGH289N6T8;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = MeetingBar/Info.plist;
@@ -488,7 +503,6 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 100;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = KGH289N6T8;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = MeetingBar/Info.plist;
@@ -513,7 +527,6 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = KGH289N6T8;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = AutoLauncher/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -536,7 +549,6 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = KGH289N6T8;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = AutoLauncher/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
