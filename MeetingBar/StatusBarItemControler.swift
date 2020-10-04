@@ -225,8 +225,16 @@ class StatusBarItemControler {
                     status = " 👎 Canceled"
                 case .tentative:
                     status = " ☝️ Tentative"
+                case .pending:
+                    status = " ⏳ Pending"
+                case .unknown:
+                    status = " ❔ Unknown"
                 default:
-                    status = " ❔ (\(String(describing: eventStatus))))"
+                    if let eventStatus = eventStatus {
+                        status = " ❔ (\(String(describing: eventStatus)))"
+                    } else {
+                        status = " ❔ (Unknown)"
+                    }
                 }
                 eventMenu.addItem(withTitle: "Status: \(status)", action: nil, keyEquivalent: "")
                 eventMenu.addItem(NSMenuItem.separator())
