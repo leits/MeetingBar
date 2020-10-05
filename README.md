@@ -5,6 +5,7 @@
 [![Github all releases](https://img.shields.io/github/downloads/leits/MeetingBar/total.svg)](https://GitHub.com/leits/MeetingBar/releases/)
 
 <a href="https://www.producthunt.com/posts/meetingbar?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-meetingbar" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=203807&theme=light" alt="MeetingBar - Join your next meeting from your menu bar | Product Hunt Embed" style="width: 250px; height: 54px;" width="250px" height="54px" /></a>
+[![Download on the Mac App Store](mas_badge.png)](https://apps.apple.com/us/app/id1532419400)
 
 **MeetingBar** is a menu bar app for your calendar meetings (macOS 10.15+).
 
@@ -14,10 +15,10 @@ Integrated with 20+ meeting services so you can quickly join meetings from event
 
 ## Setup
 
-1. Download the [latest version](https://github.com/leits/MeetingBar/releases/latest/download/MeetingBar.dmg) 🆕 or install it from brew:
-```
-brew cask install meetingbar
-```
+1. Install:
+  * From the [App Store](https://apps.apple.com/us/app/id1532419400)
+  * From homebrew `brew cask install meetingbar`
+  * Manual download the [latest version](https://github.com/leits/MeetingBar/releases/latest/download/MeetingBar.dmg)
 2. Make sure your calendar synchronized to macOS calendar or [add a calendar account](https://support.apple.com/guide/calendar/add-or-delete-calendar-accounts-icl4308d6701/mac).
 3. Open the app and go through the onboarding.
 3. Never miss your next meeting again :tada:
