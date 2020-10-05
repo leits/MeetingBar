@@ -105,8 +105,9 @@ class StatusBarItemControler {
 
         if !Defaults[.bookmarkMeetingURL].isEmpty {
             self.item.menu!.addItem(NSMenuItem.separator())
+            let name = Defaults[.bookmarkMeetingName]
             let joinItem = self.item.menu!.addItem(
-                withTitle: "Join bookmark \"\(Defaults[.bookmarkMeetingName])\"",
+                withTitle: "Join \(name.isEmpty ? "bookmarked meeting" : name)",
                 action: #selector(AppDelegate.joinBookmark),
                 keyEquivalent: "")
             joinItem.setShortcut(for: .joinBookmarkShortcut)
