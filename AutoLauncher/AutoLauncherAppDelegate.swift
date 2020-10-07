@@ -9,7 +9,6 @@
 import Cocoa
 
 class AutoLauncherAppDelegate: NSObject, NSApplicationDelegate {
-
     struct Constants {
         static let mainAppBundleID = "leits.MeetingBar"
         static let mainAppName = "MeetingBar"
@@ -42,7 +41,7 @@ class AutoLauncherAppDelegate: NSObject, NSApplicationDelegate {
             }
             components.append(Constants.appTargetPlatform)
             components.append(Constants.mainAppName)
-            
+
             let actualAppPath = NSString.path(withComponents: components)
             guard let pathURL = URL(string: actualAppPath) else {
                 return
@@ -54,8 +53,7 @@ class AutoLauncherAppDelegate: NSObject, NSApplicationDelegate {
             self.terminateApp()
         }
     }
-    
-    
+
     /// Terminate the app if the launcher is not needed anymore.
     @objc
     private func terminateApp() {
