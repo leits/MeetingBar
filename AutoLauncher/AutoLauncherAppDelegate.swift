@@ -43,12 +43,7 @@ class AutoLauncherAppDelegate: NSObject, NSApplicationDelegate {
             components.append(Constants.mainAppName)
 
             let actualAppPath = NSString.path(withComponents: components)
-            guard let pathURL = URL(string: actualAppPath) else {
-                return
-            }
-            NSWorkspace.shared.openApplication(at: pathURL,
-                                               configuration: NSWorkspace.OpenConfiguration(),
-                                               completionHandler: nil)
+            NSWorkspace.shared.launchApplication(actualAppPath)
         } else {
             self.terminateApp()
         }
