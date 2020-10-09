@@ -199,6 +199,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     @objc
     func createMeeting(_: Any? = nil) {
         NSLog("Create meeting in \(Defaults[.createMeetingService].rawValue)")
+
+        if Defaults[.pauseMusicOnJoin] {
+            MusicController.pauseMusic()
+        }
+
         switch Defaults[.createMeetingService] {
         case .meet:
             openMeetingURL(MeetingServices.meet, CreateMeetingLinks.meet)

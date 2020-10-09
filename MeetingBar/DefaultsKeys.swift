@@ -39,4 +39,7 @@ extension Defaults.Keys {
     static let useChromeForHangoutsLinks = Key<Bool>("useChromeForHangoutsLinks", default: false)
     static let useAppForZoomLinks = Key<Bool>("useAppForZoomLinks", default: false)
     static let useAppForTeamsLinks = Key<Bool>("useAppForTeamsLinks", default: false)
+
+    // Actions
+    static let pauseMusicOnJoin = Key<Bool>("pauseMusicOnJoin", default: false)
 }

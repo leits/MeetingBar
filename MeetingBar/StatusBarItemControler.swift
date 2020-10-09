@@ -428,6 +428,10 @@ func getMeetingLink(_ event: EKEvent) -> (service: MeetingServices, url: URL)? {
 }
 
 func openMeetingURL(_ service: MeetingServices, _ url: URL) {
+    if Defaults[.pauseMusicOnJoin] {
+        MusicController.pauseMusic()
+    }
+
     switch service {
     case .meet:
         if Defaults[.useChromeForMeetLinks] {

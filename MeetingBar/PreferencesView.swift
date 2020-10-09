@@ -19,6 +19,7 @@ struct PreferencesView: View {
                 Appearance().tabItem { Text("Appearance") }
                 Configuration().tabItem { Text("Services") }
                 Calendars().padding().tabItem { Text("Calendars") }
+                Actions().padding().tabItem { Text("Actions") }
             }
         }.padding()
     }
@@ -331,4 +332,23 @@ struct JoinEventNotificationPicker: View {
 func emailMe() {
     NSLog("Click email me")
     _ = openLinkInDefaultBrowser(Links.emailMe)
+}
+
+struct PreferencesView_Previews: PreviewProvider {
+    static var previews: some View {
+        /*@START_MENU_TOKEN@*/Text("Hello, World!")/*@END_MENU_TOKEN@*/
+    }
+}
+
+struct Actions: View {
+    @Default(.pauseMusicOnJoin) var pauseMusicOnJoin
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 15) {
+            Section {
+                Toggle("Pause music on join", isOn: $pauseMusicOnJoin)
+            }
+            Spacer()
+        }.padding()
+    }
 }

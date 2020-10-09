@@ -26,6 +26,9 @@
 		40DC7051250E5DB500217DD9 /* AutoLauncher.app in CopyFiles */ = {isa = PBXBuildFile; fileRef = 40DC7040250E5B9C00217DD9 /* AutoLauncher.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		40DC7054250E5E1000217DD9 /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC7053250E5E1000217DD9 /* ServiceManagement.framework */; };
 		40E60313250E81EA005986C7 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40E60312250E81EA005986C7 /* main.swift */; };
+		67EABB392530FF29001DDFEE /* MusicScripting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67EABB372530FF28001DDFEE /* MusicScripting.swift */; };
+		67EABB3A2530FF29001DDFEE /* Music.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67EABB382530FF28001DDFEE /* Music.swift */; };
+		67EABB3E2530FF31001DDFEE /* MusicController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67EABB3D2530FF31001DDFEE /* MusicController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -65,6 +68,9 @@
 		40DC704C250E5BB100217DD9 /* AutoLauncher.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AutoLauncher.entitlements; sourceTree = "<group>"; };
 		40DC7053250E5E1000217DD9 /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = System/Library/Frameworks/ServiceManagement.framework; sourceTree = SDKROOT; };
 		40E60312250E81EA005986C7 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		67EABB372530FF28001DDFEE /* MusicScripting.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MusicScripting.swift; sourceTree = "<group>"; };
+		67EABB382530FF28001DDFEE /* Music.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Music.swift; sourceTree = "<group>"; };
+		67EABB3D2530FF31001DDFEE /* MusicController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MusicController.swift; sourceTree = "<group>"; };
 		E4DD0F0A2529D0D20029E395 /* Project-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Project-Release.xcconfig"; sourceTree = "<group>"; };
 		E4DD0F0B2529D0D20029E395 /* Project.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Project.xcconfig; sourceTree = "<group>"; };
 		E4DD0F0C2529D0D20029E395 /* Project-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Project-Debug.xcconfig"; sourceTree = "<group>"; };
@@ -125,6 +131,7 @@
 		144C017B2462D0C3000C9FFC /* MeetingBar */ = {
 			isa = PBXGroup;
 			children = (
+				67EABB362530FF28001DDFEE /* ScriptingBridge */,
 				14E4110D246F2F9200F73ACF /* PreferencesView.swift */,
 				148E47E724F400C400399929 /* OnboardingView.swift */,
 				144C017C2462D0C3000C9FFC /* AppDelegate.swift */,
@@ -136,6 +143,7 @@
 				140D84332493A4180055E1CE /* Constants.swift */,
 				144C01892462D0C5000C9FFC /* MeetingBar.entitlements */,
 				140D84392493A6240055E1CE /* Helpers.swift */,
+				67EABB3D2530FF31001DDFEE /* MusicController.swift */,
 				14879B2A24E6889C00DB0A7E /* Notifications.swift */,
 				144C01822462D0C5000C9FFC /* Preview Content */,
 			);
@@ -167,6 +175,15 @@
 				40DC7053250E5E1000217DD9 /* ServiceManagement.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		67EABB362530FF28001DDFEE /* ScriptingBridge */ = {
+			isa = PBXGroup;
+			children = (
+				67EABB372530FF28001DDFEE /* MusicScripting.swift */,
+				67EABB382530FF28001DDFEE /* Music.swift */,
+			);
+			path = ScriptingBridge;
 			sourceTree = "<group>";
 		};
 		E4DD0F092529D0D20029E395 /* XCConfig */ = {
@@ -317,8 +334,11 @@
 				140D84412493B8030055E1CE /* KeyboardShortcutsNames.swift in Sources */,
 				140D843D2493B7BF0055E1CE /* EventStore.swift in Sources */,
 				14E4110E246F2F9200F73ACF /* PreferencesView.swift in Sources */,
+				67EABB392530FF29001DDFEE /* MusicScripting.swift in Sources */,
+				67EABB3E2530FF31001DDFEE /* MusicController.swift in Sources */,
 				140D84322493A3FE0055E1CE /* StatusBarItemControler.swift in Sources */,
 				140D84342493A4180055E1CE /* Constants.swift in Sources */,
+				67EABB3A2530FF29001DDFEE /* Music.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
