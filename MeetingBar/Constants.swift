@@ -104,6 +104,12 @@ enum DeclinedEventsAppereance: String, Codable, CaseIterable {
     case hide
 }
 
+enum PastEventsAppereance: String, Codable, CaseIterable {
+    case show_active
+    case show_inactive
+    case hide
+}
+
 enum ShowEventsForPeriod: String, Codable, CaseIterable {
     case today
     case today_n_tomorrow

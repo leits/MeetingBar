@@ -24,8 +24,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     var titleLengthObserver: DefaultsObservation?
     var timeFormatObserver: DefaultsObservation?
     var eventTitleFormatObserver: DefaultsObservation?
-    var disablePastEventObserver: DefaultsObservation?
-    var hidePastEventObserver: DefaultsObservation?
+    var pastEventsAppereanceObserver: DefaultsObservation?
     var declinedEventsAppereanceObserver: DefaultsObservation?
     var showEventsForPeriodObserver: DefaultsObservation?
     var joinEventNotificationObserver: DefaultsObservation?
@@ -55,6 +54,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             for calendar in matchCalendars {
                 Defaults[.selectedCalendarIDs].append(calendar.calendarIdentifier)
             }
+        }
+        if let disablePastEvents = Defaults[.disablePastEvents] {
+            Defaults[.pastEventsAppereance] = disablePastEvents ? .show_inactive : .show_active
+            Defaults[.disablePastEvents] = nil
         }
         //
 
@@ -122,12 +125,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             NSLog("Changed titleLength from \(change.oldValue) to \(change.newValue)")
             self.statusBarItem.updateTitle()
         }
-        disablePastEventObserver = Defaults.observe(.disablePastEvents) { change in
-            NSLog("Changed disablePastEvents from \(change.oldValue) to \(change.newValue)")
-            self.statusBarItem.updateMenu()
-        }
-        hidePastEventObserver = Defaults.observe(.hidePastEvents) { change in
-            NSLog("Changed hidePastEvents from \(change.oldValue) to \(change.newValue)")
+        pastEventsAppereanceObserver = Defaults.observe(.pastEventsAppereance) { change in
+            NSLog("Changed pastEventsAppereance from \(change.oldValue) to \(change.newValue)")
             self.statusBarItem.updateMenu()
         }
         declinedEventsAppereanceObserver = Defaults.observe(.declinedEventsAppereance) { change in
@@ -256,7 +255,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             preferencesWindow.close()
         }
         preferencesWindow = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 570, height: 450),
+            contentRect: NSRect(x: 0, y: 0, width: 570, height: 460),
             styleMask: [.closable, .titled],
             backing: .buffered,
             defer: false)

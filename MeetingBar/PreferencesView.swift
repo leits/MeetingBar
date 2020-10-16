@@ -200,11 +200,11 @@ struct Appearance: View {
     @Default(.timeFormat) var timeFormat
     @Default(.showEventDetails) var showEventDetails
     @Default(.declinedEventsAppereance) var declinedEventsAppereance
-    @Default(.disablePastEvents) var disablePastEvents
-    @Default(.hidePastEvents) var hidePastEvents
+    @Default(.pastEventsAppereance) var pastEventsAppereance
 
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
+            Spacer()
             Text("Status bar").font(.headline).bold()
             Section {
                 Section {
@@ -231,13 +231,15 @@ struct Appearance: View {
             Text("Menu").font(.headline).bold()
             Section {
                 HStack {
-                    Toggle("Allow to join past event meeting", isOn: $disablePastEvents)
-                    Spacer()
                     Toggle("Show event details as submenu", isOn: $showEventDetails)
                 }
-              HStack {
-                Toggle("Hide past events", isOn: $hidePastEvents)
-              }
+                HStack {
+                    Picker("Past events:", selection: $pastEventsAppereance) {
+                        Text("show").tag(PastEventsAppereance.show_active)
+                        Text("show as inactive").tag(PastEventsAppereance.show_inactive)
+                        Text("hide").tag(PastEventsAppereance.hide)
+                    }
+                }
                 HStack {
                     Picker("Declined events:", selection: $declinedEventsAppereance) {
                         Text("show with strikethrough").tag(DeclinedEventsAppereance.strikethrough)

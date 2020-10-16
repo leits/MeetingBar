@@ -22,15 +22,15 @@ extension Defaults.Keys {
     static let launchAtLogin = Key<Bool>("launchAtLogin", default: false)
 
     // Status Bar Appearance
-    static let showEventTitleInStatusBar = Key<Bool?>("showEventTitleInStatusBar", default: nil) // Backward compatibility
+    static let showEventTitleInStatusBar = Key<Bool?>("showEventTitleInStatusBar") // Backward compatibility
     static let eventTitleFormat = Key<EventTitleFormat>("eventTitleFormat", default: .show)
     static let titleLength = Key<Double>("titleLength", default: TitleLengthLimits.max)
 
     // Menu Appearance
     static let showEventDetails = Key<Bool>("showEventDetails", default: false)
     static let declinedEventsAppereance = Key<DeclinedEventsAppereance>("declinedEventsAppereance", default: .strikethrough)
-    static let disablePastEvents = Key<Bool>("disablePastEvents", default: true)
-    static let hidePastEvents = Key<Bool>("hidePastEvents", default: false)
+    static let pastEventsAppereance = Key<PastEventsAppereance>("pastEventsAppereance", default: .show_inactive)
+    static let disablePastEvents = Key<Bool?>("disablePastEvents")
     static let timeFormat = Key<TimeFormat>("timeFormat", default: .military)
 
     // Integrations

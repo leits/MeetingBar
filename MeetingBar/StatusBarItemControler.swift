@@ -142,7 +142,7 @@ class StatusBarItemControler {
 
         let now = Date()
 
-        if Defaults[.hidePastEvents] {
+        if Defaults[.pastEventsAppereance] == .hide {
           if event.endDate < now {
             return
           }
@@ -180,7 +180,7 @@ class StatusBarItemControler {
         }
         if event.endDate < now {
             eventItem.state = .on
-            if Defaults[.disablePastEvents], !Defaults[.showEventDetails] {
+            if Defaults[.pastEventsAppereance] == .show_inactive, !Defaults[.showEventDetails] {
                 eventItem.isEnabled = false
             }
         } else if event.startDate < now, event.endDate > now {
