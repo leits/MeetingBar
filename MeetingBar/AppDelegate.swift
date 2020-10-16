@@ -64,6 +64,22 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         } else {
             openOnboardingWindow()
         }
+
+        // When our main application starts, we have to kill
+        // the auto launcher application if it's still running.
+        postNotificationForAutoLauncher()
+    }
+
+    /// Sending a notification to AutoLauncher app
+    /// about main application running status
+    private func postNotificationForAutoLauncher() {
+        let runningApps = NSWorkspace.shared.runningApplications
+        let isRunning = runningApps.contains { $0.bundleIdentifier == AutoLauncher.bundleIdentifier }
+        if isRunning {
+            let killAutoLauncherNotificationName = Notification.Name(rawValue: "killAutoLauncher")
+            DistributedNotificationCenter.default().post(name: killAutoLauncherNotificationName,
+                                                         object: Bundle.main.bundleIdentifier)
+        }
     }
 
     func setup() {
