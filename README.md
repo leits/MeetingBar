@@ -51,6 +51,7 @@ If you have some installation problems or some other questions please check the 
 - Tencent VooV
 - Skype
 - Skype For Bussines
+- Lifesize
 
 If the service you use isn't supported, add a comment [here](https://github.com/leits/MeetingBar/issues/62).
 
