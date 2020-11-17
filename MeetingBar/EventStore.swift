@@ -76,7 +76,7 @@ extension EKEventStore {
                     nextEvent = event
                     continue
                 } else {
-                    let soon = now.addingTimeInterval(600) // 10 min from now
+                    let soon = now.addingTimeInterval(900) // 15 min from now
                     if event.startDate < soon {
                         nextEvent = event
                     } else {
