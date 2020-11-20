@@ -252,6 +252,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     }
 
     @objc
+    func openEventInCalendar(sender: NSMenuItem) {
+        if let identifier = sender.representedObject as? String {
+            let url = URL(string: "ical://ekevent/\(identifier)")!
+            _ = openLinkInDefaultBrowser(url)
+        }
+    }
+
+    @objc
     func openPrefecencesWindow(_: NSStatusBarButton?) {
         NSLog("Open preferences window")
         let contentView = PreferencesView()

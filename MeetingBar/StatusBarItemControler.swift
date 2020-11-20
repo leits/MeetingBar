@@ -322,7 +322,12 @@ class StatusBarItemControler {
                     let item = eventMenu.addItem(withTitle: itemTitle, action: nil, keyEquivalent: "")
                     item.attributedTitle = NSAttributedString(string: itemTitle, attributes: attributes)
                 }
+                eventMenu.addItem(NSMenuItem.separator())
             }
+
+            // Open in App
+            let openItem = eventMenu.addItem(withTitle: "Open in Calendar App", action: #selector(AppDelegate.openEventInCalendar), keyEquivalent: "")
+            openItem.representedObject = event.eventIdentifier
         }
     }
 
