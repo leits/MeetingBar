@@ -374,7 +374,7 @@ struct EditRegexModal: View {
             _ = try NSRegularExpression(pattern: new_regex)
             self.function(new_regex)
             self.presentationMode.wrappedValue.dismiss()
-        } catch let error {
+        } catch let error as NSError {
             error_msg = error.localizedDescription
             showingAlert = true
         }
