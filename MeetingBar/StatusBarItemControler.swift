@@ -384,18 +384,19 @@ func createEventStatusString(_ event: EKEvent) -> String {
 }
 
 func openEvent(_ event: EKEvent) {
-    if Defaults[.runJoinEventScript], Defaults[.joinEventScriptLocation] != nil {
-        if let url = Defaults[.joinEventScriptLocation]?.appendingPathComponent("joinEventScript.scpt") {
-            print("URL: \(url)")
-            let task = try! NSUserAppleScriptTask(url: url)
-            task.execute { erro in
-                print("error:\(String(describing: erro))")
+    let eventTitle = event.title ?? "No title"
+    if let (service, url) = getMeetingLink(event) {
+        if Defaults[.runJoinEventScript], Defaults[.joinEventScriptLocation] != nil {
+            if let url = Defaults[.joinEventScriptLocation]?.appendingPathComponent("joinEventScript.scpt") {
+                print("URL: \(url)")
+                let task = try! NSUserAppleScriptTask(url: url)
+                task.execute { error in
+                    if let error = error {
+                        sendNotification("AppleScript return error", error.localizedDescription)
+                    }
+                }
             }
         }
-    }
-    let eventTitle = event.title ?? "No title"
-
-    if let (service, url) = getMeetingLink(event) {
         openMeetingURL(service, url)
     } else {
         sendNotification("Epp! Can't join the \(eventTitle)", "Link not found, or your meeting service is not yet supported")
