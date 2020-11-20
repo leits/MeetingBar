@@ -5,7 +5,7 @@
 //  Created by Andrii Leitsius on 12.06.2020.
 //  Copyright © 2020 Andrii Leitsius. All rights reserved.
 //
-
+import Foundation
 import Defaults
 
 extension Defaults.Keys {
@@ -39,4 +39,10 @@ extension Defaults.Keys {
     static let useChromeForHangoutsLinks = Key<Bool>("useChromeForHangoutsLinks", default: false)
     static let useAppForZoomLinks = Key<Bool>("useAppForZoomLinks", default: false)
     static let useAppForTeamsLinks = Key<Bool>("useAppForTeamsLinks", default: false)
+
+    // Advanced
+    static let joinEventScriptLocation = Key<URL?>("joinEventScriptLocation", default: nil)
+    static let runJoinEventScript = Key<Bool>("runAppleScriptWhenJoiningEvent", default: false)
+    static let joinEventScript = Key<String>("joinEventScript", default: "# write your script here\ntell application \"Music\" to pause")
+    static let customRegexes = Key<[String]>("customRegexes", default: [])
 }

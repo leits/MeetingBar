@@ -19,6 +19,7 @@ struct PreferencesView: View {
                 Appearance().tabItem { Text("Appearance") }
                 Configuration().tabItem { Text("Services") }
                 Calendars().padding().tabItem { Text("Calendars") }
+                Advanced().tabItem { Text("Advanced") }
             }
         }.padding()
     }
@@ -104,7 +105,7 @@ struct Calendars: View {
 
     func loadCalendarList() {
         if let app = NSApplication.shared.delegate as! AppDelegate? {
-            self.calendarsBySource = app.statusBarItem.eventStore.getAllCalendars()
+            calendarsBySource = app.statusBarItem.eventStore.getAllCalendars()
         }
     }
 }
@@ -326,6 +327,218 @@ struct JoinEventNotificationPicker: View {
                 Text("1 minute before").tag(JoinEventNotificationTime.minuteBefore)
                 Text("5 minute before").tag(JoinEventNotificationTime.fiveMinuteBefore)
             }.frame(width: 150, alignment: .leading).labelsHidden().disabled(!joinEventNotification)
+        }
+    }
+}
+
+struct EditRegexModal: View {
+    @Environment(\.presentationMode) var presentationMode
+    @State var new_regex: String = ""
+    var regex: String
+    var function: (_ regex: String) -> Void
+
+    @State private var showingAlert = false
+    @State private var error_msg = ""
+
+    var body: some View {
+        VStack {
+            Spacer()
+            TextField("Enter regex", text: $new_regex)
+            Spacer()
+            HStack {
+                Button(action: cancel) {
+                    Text("Cancel")
+                }
+                Spacer()
+                Button(action: save) {
+                    Text("Save")
+                }.disabled(new_regex.isEmpty)
+            }
+        }.padding()
+        .frame(width: 500, height: 150)
+        .onAppear { self.new_regex = self.regex }
+        .alert(isPresented: $showingAlert) {
+            Alert(title: Text("Can't save regex"), message: Text(error_msg), dismissButton: .default(Text("OK")))
+        }
+    }
+
+    func cancel() {
+        if !regex.isEmpty {
+            self.function(regex)
+        }
+        self.presentationMode.wrappedValue.dismiss()
+    }
+
+    func save() {
+        do {
+            _ = try NSRegularExpression(pattern: new_regex)
+            self.function(new_regex)
+            self.presentationMode.wrappedValue.dismiss()
+        } catch let error {
+            error_msg = error.localizedDescription
+            showingAlert = true
+        }
+    }
+}
+
+struct Advanced: View {
+    @Default(.runJoinEventScript) var runJoinEventScript
+    @Default(.joinEventScript) var joinEventScript
+    @Default(.customRegexes) var customRegexes
+
+    @State private var script = Defaults[.joinEventScript]
+    @State private var showingAlert = false
+    @State private var showingEditRegexModal = false
+    @State private var selectedRegex = ""
+
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            Section {
+                HStack {
+                    Toggle("Run AppleScript when joining to meeting", isOn: $runJoinEventScript)
+                    Spacer()
+                    if script != joinEventScript {
+                        Button(action: saveScript) {
+                            Text("Save script")
+                        }
+                    }
+                }.frame(height: 15)
+                NSScrollableTextViewWrapper(text: $script).padding(.leading, 19)
+                .alert(isPresented: $showingAlert) {
+                    Alert(title: Text("Wrong location"), message: Text("Please select the User > Library > Application Scripts > leits.MeetingBar folder"), dismissButton: .default(Text("Got it!")))
+                }
+            }
+            Divider()
+            Section {
+                HStack {
+                    Text("Custom link regexes")
+                    Spacer()
+                    Button("Add regex") {
+                        self.selectedRegex = ""
+                        self.showingEditRegexModal.toggle()
+                    }
+                        .sheet(isPresented: $showingEditRegexModal) {
+                            EditRegexModal(regex: selectedRegex, function: addRegex)
+                        }
+                }
+                List {
+                    ForEach(customRegexes, id: \.self) { regex in
+                        HStack {
+                            Text(regex)
+                            Spacer()
+                            Button(action: {
+                                    if let index = customRegexes.firstIndex(of: regex) {
+                                        customRegexes.remove(at: index)
+                                    }
+                                    self.selectedRegex = regex
+                                    self.showingEditRegexModal.toggle()
+                            }) {
+                                Text("edit")
+                            }
+                            Button(action: {
+                                if let index = customRegexes.firstIndex(of: regex) {
+                                    customRegexes.remove(at: index)
+                                }
+                            }) {
+                                Text("x")
+                            }
+                        }
+                    }
+                }
+            }.padding(.leading, 19)
+            Divider()
+            HStack {
+                Spacer()
+                Text("⚠️ Use these options only if you understand what they do.")
+                Spacer()
+            }
+        }.padding()
+    }
+
+    func addRegex(_ regex: String) {
+        if !customRegexes.contains(regex) {
+            customRegexes.append(regex)
+        }
+    }
+
+    func saveScript() {
+        let openPanel = NSOpenPanel()
+        openPanel.canChooseFiles = false
+        openPanel.canChooseDirectories = true
+        openPanel.allowedFileTypes = ["none"]
+        openPanel.allowsOtherFileTypes = false
+        openPanel.prompt = "Save script"
+        openPanel.message = "Please select only User > Library > Application Scripts > leits.MeetingBar folder"
+        openPanel.directoryURL = getASDirectory()
+        if openPanel.runModal() == NSApplication.ModalResponse.OK {
+            if openPanel.url != getASDirectory() {
+                showingAlert = true
+                return
+            }
+            Defaults[.joinEventScriptLocation] = openPanel.url
+            if let filepath = openPanel.url?.appendingPathComponent("joinEventScript.scpt") {
+                do {
+                    try script.write(to: filepath, atomically: true, encoding: String.Encoding.utf8)
+                    NSLog("Script saved")
+                    joinEventScript = script
+                } catch {}
+            }
+        }
+    }
+}
+
+struct NSScrollableTextViewWrapper: NSViewRepresentable {
+    typealias NSViewType = NSScrollView
+    var isEditable = true
+    var textSize: CGFloat = 12
+
+    @Binding var text: String
+
+    var didEndEditing: (() -> Void)?
+
+    func makeNSView(context: Context) -> NSScrollView {
+        let scrollView = NSTextView.scrollableTextView()
+        let textView = scrollView.documentView as? NSTextView
+        textView?.font = NSFont.systemFont(ofSize: textSize)
+        textView?.isEditable = isEditable
+        textView?.isSelectable = true
+        textView?.isAutomaticQuoteSubstitutionEnabled = false
+//        textView?.backgroundColor = .clear
+        textView?.delegate = context.coordinator
+
+        return scrollView
+    }
+
+    func updateNSView(_ nsView: NSScrollView, context: Context) {
+        let textView = nsView.documentView as? NSTextView
+        guard textView?.string != text else {
+            return
+        }
+
+        textView?.string = text
+        textView?.display() // force update UI to re-draw the string
+        textView?.scrollRangeToVisible(NSRange(location: text.count, length: 0))
+    }
+
+    func makeCoordinator() -> Coordinator { Coordinator(self) }
+
+    class Coordinator: NSObject, NSTextViewDelegate {
+        var view: NSScrollableTextViewWrapper
+
+        init(_ view: NSScrollableTextViewWrapper) {
+            self.view = view
+        }
+
+        func textDidChange(_ notification: Notification) {
+            guard let textView = notification.object as? NSTextView else {
+                return
+            }
+            view.text = textView.string
+        }
+
+        func textDidEndEditing(_ notification: Notification) {
+            view.didEndEditing?()
         }
     }
 }

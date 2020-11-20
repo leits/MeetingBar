@@ -376,6 +376,15 @@ func createEventStatusString(_ event: EKEvent) -> String {
 }
 
 func openEvent(_ event: EKEvent) {
+    if Defaults[.runJoinEventScript] && Defaults[.joinEventScriptLocation] != nil {
+        if let url = Defaults[.joinEventScriptLocation]?.appendingPathComponent("joinEventScript.scpt") {
+            print("URL: \(url)")
+            let task = try! NSUserAppleScriptTask(url: url)
+            task.execute { erro in
+                print("error:\(String(describing: erro))")
+            }
+        }
+    }
     let eventTitle = event.title ?? "No title"
 
     if let (service, url) = getMeetingLink(event) {
@@ -396,7 +405,7 @@ func getEventStatus(_ event: EKEvent) -> EKParticipantStatus? {
     return EKParticipantStatus.unknown
 }
 
-func getMeetingLink(_ event: EKEvent) -> (service: MeetingServices, url: URL)? {
+func getMeetingLink(_ event: EKEvent) -> (service: MeetingServices?, url: URL)? {
     var linkFields: [String] = []
     if let location = event.location {
         linkFields.append(location)
@@ -409,6 +418,15 @@ func getMeetingLink(_ event: EKEvent) -> (service: MeetingServices, url: URL)? {
     }
 
     for field in linkFields {
+        for pattern in Defaults[.customRegexes] {
+            if let regex = try? NSRegularExpression(pattern: pattern) {
+                if let link = getMatch(text: field, regex: regex) {
+                    if let url = URL(string: link) {
+                        return (nil, url)
+                    }
+                }
+            }
+        }
         for service in MeetingServices.allCases {
             if let regex = getRegexForService(service) {
                 if var link = getMatch(text: field, regex: regex) {
@@ -427,7 +445,7 @@ func getMeetingLink(_ event: EKEvent) -> (service: MeetingServices, url: URL)? {
     return nil
 }
 
-func openMeetingURL(_ service: MeetingServices, _ url: URL) {
+func openMeetingURL(_ service: MeetingServices?, _ url: URL) {
     switch service {
     case .meet:
         if Defaults[.useChromeForMeetLinks] {
