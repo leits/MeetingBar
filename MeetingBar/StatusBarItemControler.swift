@@ -207,8 +207,7 @@ class StatusBarItemControler {
 
             // Calendar
             if Defaults[.selectedCalendarIDs].count > 1 {
-                eventMenu.addItem(withTitle: "Calendar:", action: nil, keyEquivalent: "")
-                eventMenu.addItem(withTitle: event.calendar.title, action: nil, keyEquivalent: "")
+                eventMenu.addItem(withTitle: "Calendar: \(event.calendar.title)", action: nil, keyEquivalent: "")
                 eventMenu.addItem(NSMenuItem.separator())
             }
 
