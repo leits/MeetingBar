@@ -89,7 +89,6 @@ func getGmailAccount(_ event: EKEvent) -> String? {
     return nil
 }
 
-func getASDirectory() -> URL {
-    let path = try! FileManager.default.url(for: .applicationScriptsDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
-    return path
+func emailMe() {
+    _ = openLinkInDefaultBrowser(Links.emailMe)
 }

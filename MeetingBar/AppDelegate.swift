@@ -258,7 +258,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             contentRect: NSRect(x: 0, y: 0, width: 570, height: 460),
             styleMask: [.closable, .titled],
             backing: .buffered,
-            defer: false)
+            defer: false
+        )
         preferencesWindow.title = "MeetingBar Preferences"
         preferencesWindow.contentView = NSHostingView(rootView: contentView)
         let controller = NSWindowController(window: preferencesWindow)
@@ -279,7 +280,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             contentRect: NSRect(x: 0, y: 0, width: 520, height: 400),
             styleMask: [.closable, .titled],
             backing: .buffered,
-            defer: false)
+            defer: false
+        )
         onboardingWindow.title = "Welcome to MeetingBar!"
         onboardingWindow.contentView = NSHostingView(rootView: contentView)
         let controller = NSWindowController(window: onboardingWindow)

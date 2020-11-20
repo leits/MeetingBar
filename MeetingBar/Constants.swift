@@ -43,14 +43,14 @@ struct LinksRegex {
     let facebook_workspace = try! NSRegularExpression(pattern: #"https://([a-z0-9-.]+)?workplace.com/meet/[^\s]"#)
 }
 
-struct CreateMeetingLinks {
+enum CreateMeetingLinks {
     static var meet = URL(string: "https://meet.google.com/new")!
     static var hangouts = URL(string: "https://hangouts.google.com/call")!
     static var zoom = URL(string: "https://zoom.us/start?confno=123456789&zc=0")!
     static var teams = URL(string: "https://teams.microsoft.com/l/meeting/new?subject=")!
 }
 
-struct Links {
+enum Links {
     static var supportTheCreator = URL(string: "https://www.patreon.com/meetingbar")!
     static var aboutThisApp = URL(string: "https://meetingbar.onrender.com?utm_source=app")!
     static var emailMe = URL(string: "mailto:leits.dev@gmail.com?subject=MeetingBar")!
@@ -123,10 +123,10 @@ enum JoinEventNotificationTime: Int, Codable {
     case fiveMinuteBefore = 300
 }
 
-struct GoogleRegex {
+enum GoogleRegex {
     static let emailAddress = try! NSRegularExpression(pattern: #""mailto:(.+@.+)""#)
 }
 
-public struct AutoLauncher {
+public enum AutoLauncher {
     static let bundleIdentifier: String = "leits.MeetingBar.AutoLauncher"
 }

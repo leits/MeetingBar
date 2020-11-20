@@ -12,7 +12,7 @@ extension EKEventStore {
     func getMatchedCalendars(titles: [String] = [], ids: [String] = []) -> [EKCalendar] {
         var matchedCalendars: [EKCalendar] = []
 
-        let allCalendars = self.calendars(for: .event)
+        let allCalendars = calendars(for: .event)
         for calendar in allCalendars {
             if titles.contains(calendar.title) || ids.contains(calendar.calendarIdentifier) {
                 matchedCalendars.append(calendar)
@@ -30,8 +30,8 @@ extension EKEventStore {
         let dayMidnight = Calendar.current.startOfDay(for: date)
         let nextDayMidnight = Calendar.current.date(byAdding: .day, value: 1, to: dayMidnight)!
 
-        let predicate = self.predicateForEvents(withStart: dayMidnight, end: nextDayMidnight, calendars: calendars)
-        let calendarEvents = self.events(matching: predicate).filter { $0.isAllDay || Calendar.current.isDate($0.startDate, inSameDayAs: dayMidnight) }
+        let predicate = predicateForEvents(withStart: dayMidnight, end: nextDayMidnight, calendars: calendars)
+        let calendarEvents = events(matching: predicate).filter { $0.isAllDay || Calendar.current.isDate($0.startDate, inSameDayAs: dayMidnight) }
 
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
@@ -55,8 +55,8 @@ extension EKEventStore {
             endPeriod = Calendar.current.date(byAdding: .day, value: 2, to: todayMidnight)!
         }
 
-        let predicate = self.predicateForEvents(withStart: startPeriod, end: endPeriod, calendars: calendars)
-        let nextEvents = self.events(matching: predicate)
+        let predicate = predicateForEvents(withStart: startPeriod, end: endPeriod, calendars: calendars)
+        let nextEvents = events(matching: predicate)
         // If the current event is still going on,
         // but the next event is closer than 10 minutes later
         // then show the next event
