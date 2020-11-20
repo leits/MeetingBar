@@ -223,8 +223,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             openMeetingURL(MeetingServices.hangouts, CreateMeetingLinks.hangouts)
         case .teams:
             openMeetingURL(MeetingServices.teams, CreateMeetingLinks.teams)
-        default:
-            break
+        case .gcalendar:
+            openMeetingURL(nil, CreateMeetingLinks.gcalendar)
+        case .outlook_office365:
+            openMeetingURL(nil, CreateMeetingLinks.outlook_office365)
+        case .outlook_live:
+            openMeetingURL(nil, CreateMeetingLinks.outlook_live)
         }
     }
 

@@ -307,10 +307,13 @@ struct CreateMeetingServicePicker: View {
 
     var body: some View {
         Picker(selection: $createMeetingService, label: Text("")) {
-            Text(MeetingServices.meet.rawValue).tag(MeetingServices.meet)
-            Text(MeetingServices.zoom.rawValue).tag(MeetingServices.zoom)
-            Text(MeetingServices.teams.rawValue).tag(MeetingServices.teams)
-            Text(MeetingServices.hangouts.rawValue).tag(MeetingServices.hangouts)
+            Text(CreateMeetingServices.meet.rawValue).tag(CreateMeetingServices.meet)
+            Text(CreateMeetingServices.zoom.rawValue).tag(CreateMeetingServices.zoom)
+            Text(CreateMeetingServices.teams.rawValue).tag(CreateMeetingServices.teams)
+            Text(CreateMeetingServices.hangouts.rawValue).tag(CreateMeetingServices.hangouts)
+            Text(CreateMeetingServices.gcalendar.rawValue).tag(CreateMeetingServices.gcalendar)
+            Text(CreateMeetingServices.outlook_live.rawValue).tag(CreateMeetingServices.outlook_live)
+            Text(CreateMeetingServices.outlook_office365.rawValue).tag(CreateMeetingServices.outlook_office365)
         }.labelsHidden()
     }
 }
