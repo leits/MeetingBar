@@ -111,7 +111,7 @@ class StatusBarItemControler {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "E, d MMM"
         let dateString = dateFormatter.string(from: date)
-        let dateTitle = "\(title) events (\(dateString)):"
+        let dateTitle = "\(title) (\(dateString)):"
         let titleItem = self.item.menu!.addItem(
             withTitle: dateTitle,
             action: nil,
