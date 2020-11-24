@@ -394,7 +394,7 @@ struct Advanced: View {
             Divider()
             HStack {
                 Spacer()
-                Text("⚠️ Use these options only if you understand what they do.")
+                Text("⚠️ Use these settings only if you understand what they do")
                 Spacer()
             }
         }.padding()
@@ -463,7 +463,7 @@ struct RegexesView: View {
     var body: some View {
         Section {
             HStack {
-                Text("Custom link regexes")
+                Text("Custom regexes for meeting link")
                 Spacer()
                 Button("Add regex") { openEditRegexModal("") }
             }
