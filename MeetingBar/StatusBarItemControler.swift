@@ -61,7 +61,6 @@ class StatusBarItemControler {
                 if button.image == nil {
                     button.title = "\(title)"
                 }
-
             }
         }
     }
