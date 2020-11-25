@@ -33,7 +33,6 @@ class StatusBarItemControler {
 
     func updateTitle() {
         var title = "MeetingBar"
-
         if !calendars.isEmpty {
             let nextEvent = eventStore.getNextEvent(calendars: calendars)
             if let nextEvent = nextEvent {
@@ -49,13 +48,10 @@ class StatusBarItemControler {
         }
         DispatchQueue.main.async {
             if let button = self.item.button {
-                //
-                if #available(macOS 11, *) {
-                    if title == "🏁" {
-                        button.image = NSImage(named: "iconCalendarCheckmark")
-                    } else if title == "MeetingBar" {
-                        button.image = NSImage(named: "iconCalendar")
-                    }
+                if title == "🏁" {
+                    button.image = NSImage(named: "iconCalendarCheckmark")
+                } else if title == "MeetingBar" {
+                    button.image = NSImage(named: "iconCalendar")
                 }
                 //
                 if button.image == nil {
