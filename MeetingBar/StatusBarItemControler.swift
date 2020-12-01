@@ -48,15 +48,14 @@ class StatusBarItemControler {
         }
         DispatchQueue.main.async {
             if let button = self.item.button {
+                button.image = nil
+                //
                 if title == "🏁" {
                     button.image = NSImage(named: "iconCalendarCheckmark")
                 } else if title == "MeetingBar" {
                     button.image = NSImage(named: "iconCalendar")
                 }
-                //
-                if button.image == nil {
-                    button.title = "\(title)"
-                }
+                button.title = "\(title)"
             }
         }
     }
