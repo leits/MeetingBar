@@ -470,9 +470,12 @@ func getMeetingLink(_ event: EKEvent) -> (service: MeetingServices?, url: URL)? 
 func openMeetingURL(_ service: MeetingServices?, _ url: URL) {
     switch service {
     case .meet:
-        if Defaults[.useChromeForMeetLinks] {
+        switch Defaults[.useChromeForMeetLinks] {
+        case .chrome:
             openLinkInChrome(url)
-        } else {
+        case .chromium:
+            openLinkInChromium(url)
+        default:
             _ = openLinkInDefaultBrowser(url)
         }
     case .hangouts:

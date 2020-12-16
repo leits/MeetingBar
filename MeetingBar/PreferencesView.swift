@@ -269,12 +269,14 @@ struct Configuration: View {
         VStack(alignment: .leading, spacing: 15) {
             Section {
                 Picker(selection: $useChromeForMeetLinks, label: Text("Open Meet links in").frame(width: 150, alignment: .leading)) {
-                    Text("Default Browser").tag(false)
-                    Text("Chrome").tag(true)
+                    Text("Default Browser").tag(ChromeExecutable.defaultBrowser)
+                    Text("Chrome").tag(ChromeExecutable.chrome)
+                    Text("Chromium").tag(ChromeExecutable.chromium)
                 }
                 Picker(selection: $useChromeForHangoutsLinks, label: Text("Open Hangouts links in").frame(width: 150, alignment: .leading)) {
-                    Text("Default Browser").tag(false)
-                    Text("Chrome").tag(true)
+                    Text("Default Browser").tag(ChromeExecutable.defaultBrowser)
+                    Text("Chrome").tag(ChromeExecutable.chrome)
+                    Text("Chromium").tag(ChromeExecutable.chromium)
                 }
                 Picker(selection: $useAppForZoomLinks, label: Text("Open Zoom links in").frame(width: 150, alignment: .leading)) {
                     Text("Default Browser").tag(false)
