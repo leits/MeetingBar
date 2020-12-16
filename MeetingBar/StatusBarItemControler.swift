@@ -195,8 +195,11 @@ class StatusBarItemControler {
         }
         if event.endDate < now {
             eventItem.state = .on
-            if Defaults[.pastEventsAppereance] == .show_inactive, !Defaults[.showEventDetails] {
-                eventItem.isEnabled = false
+            if Defaults[.pastEventsAppereance] == .show_inactive {
+                eventItem.attributedTitle = NSAttributedString(
+                    string: itemTitle,
+                    attributes: [NSAttributedString.Key.foregroundColor: NSColor.disabledControlTextColor]
+                )
             }
         } else if event.startDate < now, event.endDate > now {
             eventItem.state = .mixed
