@@ -29,15 +29,37 @@ extension EKEventStore {
     func loadEventsForDate(calendars: [EKCalendar], date: Date) -> [EKEvent] {
         let dayMidnight = Calendar.current.startOfDay(for: date)
         let nextDayMidnight = Calendar.current.date(byAdding: .day, value: 1, to: dayMidnight)!
+        let showAllDayEvents = Defaults[.allDayEvents]
 
         let predicate = predicateForEvents(withStart: dayMidnight, end: nextDayMidnight, calendars: calendars)
-        let calendarEvents = events(matching: predicate).filter { $0.isAllDay || Calendar.current.isDate($0.startDate, inSameDayAs: dayMidnight) }
+        let calendarEvents = events(matching: predicate).filter { ($0.isAllDay && showAllDayEvents) || Calendar.current.isDate($0.startDate, inSameDayAs: dayMidnight) }
+
+        var filteredCalendarEvents = [EKEvent]()
+
+        let allDayLinksOnly = Defaults[.allDayEventsWithLinkOnly]
+
+        for calendarEvent in calendarEvents {
+            if calendarEvent.isAllDay {
+                if showAllDayEvents && !allDayLinksOnly {
+                    filteredCalendarEvents.append(calendarEvent)
+                } else if showAllDayEvents && allDayLinksOnly {
+                    let result = getMeetingLink(calendarEvent)
+
+                    if result?.url != nil {
+                        filteredCalendarEvents.append(calendarEvent)
+                    }
+                }
+            } else {
+                filteredCalendarEvents.append(calendarEvent)
+            }
+        }
 
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
         let dateString = formatter.string(from: date)
         NSLog("Loaded events for date \(dateString) from calendars \(calendars.map { $0.title })")
-        return calendarEvents
+
+        return filteredCalendarEvents
     }
 
     func getNextEvent(calendars: [EKCalendar]) -> EKEvent? {
