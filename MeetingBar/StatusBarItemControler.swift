@@ -427,45 +427,7 @@ func getEventStatus(_ event: EKEvent) -> EKParticipantStatus? {
     return EKParticipantStatus.unknown
 }
 
-func getMeetingLink(_ event: EKEvent) -> (service: MeetingServices?, url: URL)? {
-    var linkFields: [String] = []
-    if let location = event.location {
-        linkFields.append(location)
-    }
-    if let url = event.url {
-        linkFields.append(url.absoluteString)
-    }
-    if let notes = event.notes {
-        linkFields.append(notes)
-    }
 
-    for field in linkFields {
-        for pattern in Defaults[.customRegexes] {
-            if let regex = try? NSRegularExpression(pattern: pattern) {
-                if let link = getMatch(text: field, regex: regex) {
-                    if let url = URL(string: link) {
-                        return (nil, url)
-                    }
-                }
-            }
-        }
-        for service in MeetingServices.allCases {
-            if let regex = getRegexForService(service) {
-                if var link = getMatch(text: field, regex: regex) {
-                    if service == .meet,
-                       let account = getGmailAccount(event),
-                       let urlEncodedAccount = account.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
-                        link += "?authuser=\(urlEncodedAccount)"
-                    }
-                    if let url = URL(string: link) {
-                        return (service, url)
-                    }
-                }
-            }
-        }
-    }
-    return nil
-}
 
 func openMeetingURL(_ service: MeetingServices?, _ url: URL) {
     switch service {
