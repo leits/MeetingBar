@@ -21,6 +21,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
     var selectedCalendarIDsObserver: DefaultsObservation?
     var showEventDetailsObserver: DefaultsObservation?
+    var showMeetingServiceIconObserver: DefaultsObservation?
 
     var allDayEventsObserver: DefaultsObservation?
     var allDayEventsWithLinkOnlyObserver: DefaultsObservation?
@@ -114,6 +115,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
         showEventDetailsObserver = Defaults.observe(.showEventDetails) { change in
             NSLog("Change showEventDetails from \(change.oldValue) to \(change.newValue)")
+            self.statusBarItem.updateMenu()
+        }
+
+        showMeetingServiceIconObserver = Defaults.observe(.showMeetingServiceIcon) { change in
+            NSLog("Change showMeetingServiceIcon from \(change.oldValue) to \(change.newValue)")
             self.statusBarItem.updateMenu()
         }
 

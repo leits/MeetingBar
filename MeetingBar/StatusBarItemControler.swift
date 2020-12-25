@@ -12,6 +12,9 @@ import EventKit
 import Defaults
 import KeyboardShortcuts
 
+/**
+ * creates the menu in the system status bar, creates the menu items and controls the whole lifecycle.
+ */
 class StatusBarItemControler {
     let item: NSStatusItem
     let eventStore = EKEventStore()
@@ -146,6 +149,147 @@ class StatusBarItemControler {
         }
     }
 
+    /**
+     * try  to get the correct image for the specific
+     */
+    func getMeetingIcon(_ event: EKEvent) -> NSImage {
+        var image: NSImage? = NSImage(named: "no_online_session")
+        image!.size = NSSize(width: 16, height: 16)
+
+        let result = getMeetingLink(event)
+        switch result?.service {
+        // tested and verified
+        case .some(.teams):
+            image = NSImage(named: "ms_teams_icon")!
+            image!.size = NSSize(width: 16, height: 16)
+
+        // tested and verified
+        case .some(.meet):
+            image = NSImage(named: "google_meet_icon")!
+            image!.size = NSSize(width: 16, height: 13.2)
+
+        // tested and verified -> deprecated, can be removed because hangouts was replaced by google meet
+        case .some(.hangouts):
+            image = NSImage(named: "google_hangouts_icon")!
+            image!.size = NSSize(width: 16, height: 17.8)
+
+        // tested and verified
+        case .some(.zoom), .some(.zoomgov):
+            image = NSImage(named: "zoom_icon")!
+            image!.size = NSSize(width: 16, height: 16)
+
+        // tested and verified
+        case .some(.webex):
+            image = NSImage(named: "webex_icon")!
+            image!.size = NSSize(width: 16, height: 16)
+
+        // tested and verified
+        case .some(.jitsi):
+            image = NSImage(named: "jitsi_icon")!
+            image!.size = NSSize(width: 16, height: 16)
+
+        // tested and verified
+        case .some(.chime):
+            image = NSImage(named: "amazon_chime_icon")!
+            image!.size = NSSize(width: 16, height: 16)
+
+        case .some(.ringcentral):
+            image = NSImage(named: "online_meeting_icon")!
+            image!.size = NSSize(width: 16, height: 16)
+
+        // tested and verified
+        case .some(.gotomeeting):
+            image = NSImage(named: "gotomeeting_icon")!
+            image!.size = NSSize(width: 16, height: 16)
+
+        // tested and verified
+        case .some(.gotowebinar):
+            image = NSImage(named: "gotowebinar_icon")!
+            image!.size = NSSize(width: 16, height: 16)
+
+        case .some(.bluejeans):
+            image = NSImage(named: "online_meeting_icon")!
+            image!.size = NSSize(width: 16, height: 16)
+
+        // tested and verified
+        case .some(.eight_x_eight):
+            image = NSImage(named: "8x8_icon")!
+            image!.size = NSSize(width: 16, height: 8)
+
+        // tested and verified
+        case .some(.demio):
+            image = NSImage(named: "demio_icon")!
+            image!.size = NSSize(width: 16, height: 16)
+
+        // tested and verified
+        case .some(.join_me):
+            image = NSImage(named: "joinme_icon")!
+            image!.size = NSSize(width: 16, height: 10)
+
+        // tested and verified
+        case .some(.whereby):
+            image = NSImage(named: "whereby_icon")!
+            image!.size = NSSize(width: 16, height: 18)
+
+        // tested and verified
+        case .some(.uberconference):
+            image = NSImage(named: "uberconference_icon")!
+            image!.size = NSSize(width: 16, height: 16)
+
+        // tested and verified
+        case .some(.blizz), .some(.teamviewer_meeting):
+            image = NSImage(named: "teamviewer_meeting_icon")!
+            image!.size = NSSize(width: 16, height: 16)
+
+        // tested and verified
+        case .some(.vsee):
+            image = NSImage(named: "vsee_icon")!
+            image!.size = NSSize(width: 16, height: 16)
+
+        // tested and verified
+        case .some(.starleaf):
+            image = NSImage(named: "starleaf_icon")!
+            image!.size = NSSize(width: 16, height: 16)
+
+        // tested and verified
+        case .some(.duo):
+            image = NSImage(named: "google_duo_icon")!
+            image!.size = NSSize(width: 16, height: 16)
+
+        // tested and verified
+        case .some(.voov):
+            image = NSImage(named: "voov_icon")!
+            image!.size = NSSize(width: 16, height: 16)
+
+        // tested and verified
+        case .some(.skype):
+            image = NSImage(named: "skype_icon")!
+            image!.size = NSSize(width: 16, height: 16)
+
+        // tested and verified
+        case .some(.skype4biz), .some(.skype4biz_selfhosted):
+            image = NSImage(named: "skype_business_icon")!
+            image!.size = NSSize(width: 16, height: 16)
+
+        // tested and verified
+        case .some(.lifesize):
+            image = NSImage(named: "lifesize_icon")!
+            image!.size = NSSize(width: 16, height: 16)
+
+        // tested and verified
+        case .some(.facebook_workspace):
+            image = NSImage(named: "facebook_workplace_icon")!
+            image!.size = NSSize(width: 16, height: 16)
+
+        // tested and verified
+        case .none:
+            image = NSImage(named: "no_online_session")!
+            image!.size = NSSize(width: 16, height: 16)
+        }
+
+        return image!
+    }
+
     func createEventItem(event: EKEvent) {
         let eventStatus = getEventStatus(event)
 
@@ -181,11 +325,18 @@ class StatusBarItemControler {
 
         // Event Item
         let itemTitle = "\(eventStartTime) - \(eventTitle)"
-        let eventItem = item.menu!.addItem(
-            withTitle: itemTitle,
-            action: #selector(AppDelegate.clickOnEvent(sender:)),
-            keyEquivalent: ""
-        )
+        let eventItem = NSMenuItem()
+
+        eventItem.title = itemTitle
+        eventItem.action = #selector(AppDelegate.clickOnEvent(sender:))
+        eventItem.keyEquivalent = ""
+
+        if Defaults[.showMeetingServiceIcon] {
+            let image: NSImage = getMeetingIcon(event)
+            eventItem.image = image
+        }
+
+        item.menu!.addItem(eventItem)
 
         if eventStatus == .declined {
             eventItem.attributedTitle = NSAttributedString(
@@ -458,9 +609,9 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL) {
     case .zoom:
         if Defaults[.useAppForZoomLinks] {
             let urlString = url.absoluteString.replacingOccurrences(of: "?", with: "&").replacingOccurrences(of: "/j/", with: "/join?confno=")
-            var teamsAppURL = URLComponents(url: URL(string: urlString)!, resolvingAgainstBaseURL: false)!
-            teamsAppURL.scheme = "zoommtg"
-            let result = openLinkInDefaultBrowser(teamsAppURL.url!)
+            var zoomAppUrl = URLComponents(url: URL(string: urlString)!, resolvingAgainstBaseURL: false)!
+            zoomAppUrl.scheme = "zoommtg"
+            let result = openLinkInDefaultBrowser(zoomAppUrl.url!)
             if !result {
                 sendNotification("Oops! Unable to open the link in Zoom app", "Make sure you have Zoom app installed, or change the app in the preferences.")
                 _ = openLinkInDefaultBrowser(url)

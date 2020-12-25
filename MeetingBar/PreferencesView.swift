@@ -200,13 +200,14 @@ struct Appearance: View {
 
     @Default(.timeFormat) var timeFormat
     @Default(.showEventDetails) var showEventDetails
+    @Default(.showMeetingServiceIcon) var showMeetingServiceIcon
     @Default(.declinedEventsAppereance) var declinedEventsAppereance
     @Default(.pastEventsAppereance) var pastEventsAppereance
     @Default(.allDayEvents) var allDayEvents
     @Default(.allDayEventsWithLinkOnly) var allDayEventsWithLinkOnly
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 15) {
+        VStack(alignment: .leading, spacing: 10) {
             Spacer()
             Text("Status bar").font(.headline).bold()
             Section {
@@ -232,6 +233,10 @@ struct Appearance: View {
             }
             Divider()
             Section {
+                HStack {
+                    Toggle("Show event meeting service icon", isOn: $showMeetingServiceIcon)
+                }
+
                 HStack {
                     Toggle("Show event details as submenu", isOn: $showEventDetails)
                 }
