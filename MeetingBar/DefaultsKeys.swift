@@ -41,8 +41,8 @@ extension Defaults.Keys {
 
     // Integrations
     static let createMeetingService = Key<CreateMeetingServices>("createMeetingService", default: .zoom)
-    static let useChromeForMeetLinks = Key<Bool>("useChromeForMeetLinks", default: false)
-    static let useChromeForHangoutsLinks = Key<Bool>("useChromeForHangoutsLinks", default: false)
+    static let useChromeForMeetLinks = Key<ChromeExecutable>("useChromeForMeetLinks", default: .defaultBrowser)
+    static let useChromeForHangoutsLinks = Key<ChromeExecutable>("useChromeForHangoutsLinks", default: .defaultBrowser)
     static let useAppForZoomLinks = Key<Bool>("useAppForZoomLinks", default: false)
     static let useAppForTeamsLinks = Key<Bool>("useAppForTeamsLinks", default: false)
 
