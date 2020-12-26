@@ -29,6 +29,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     var eventTitleFormatObserver: DefaultsObservation?
     var pastEventsAppereanceObserver: DefaultsObservation?
     var declinedEventsAppereanceObserver: DefaultsObservation?
+    var personalEventsAppereanceObserver: DefaultsObservation?
     var showEventsForPeriodObserver: DefaultsObservation?
     var joinEventNotificationObserver: DefaultsObservation?
     var launchAtLoginObserver: DefaultsObservation?
@@ -145,6 +146,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
         declinedEventsAppereanceObserver = Defaults.observe(.declinedEventsAppereance) { change in
             NSLog("Changed declinedEventsAppereance from \(change.oldValue) to \(change.newValue)")
+            self.statusBarItem.updateMenu()
+        }
+        personalEventsAppereanceObserver = Defaults.observe(.personalEventsAppereance) { change in
+            NSLog("Changed personalEventsAppereance from \(change.oldValue) to \(change.newValue)")
             self.statusBarItem.updateMenu()
         }
         showEventsForPeriodObserver = Defaults.observe(.showEventsForPeriod) { change in
@@ -281,7 +286,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             preferencesWindow.close()
         }
         preferencesWindow = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 570, height: 460),
+            contentRect: NSRect(x: 0, y: 0, width: 570, height: 500),
             styleMask: [.closable, .titled],
             backing: .buffered,
             defer: false

@@ -78,7 +78,13 @@ extension EKEventStore {
         }
 
         let predicate = predicateForEvents(withStart: startPeriod, end: endPeriod, calendars: calendars)
-        let nextEvents = events(matching: predicate)
+        var nextEvents = events(matching: predicate)
+
+        // Filter out personal events, if not marked as 'active'
+        if Defaults[.personalEventsAppereance] != .show_active {
+            nextEvents = nextEvents.filter { $0.hasAttendees }
+        }
+
         // If the current event is still going on,
         // but the next event is closer than 10 minutes later
         // then show the next event

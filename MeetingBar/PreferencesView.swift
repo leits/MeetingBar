@@ -201,6 +201,7 @@ struct Appearance: View {
     @Default(.timeFormat) var timeFormat
     @Default(.showEventDetails) var showEventDetails
     @Default(.declinedEventsAppereance) var declinedEventsAppereance
+    @Default(.personalEventsAppereance) var personalEventsAppereance
     @Default(.pastEventsAppereance) var pastEventsAppereance
     @Default(.allDayEvents) var allDayEvents
     @Default(.allDayEventsWithLinkOnly) var allDayEventsWithLinkOnly
@@ -251,6 +252,13 @@ struct Appearance: View {
                     Picker("Declined events:", selection: $declinedEventsAppereance) {
                         Text("show with strikethrough").tag(DeclinedEventsAppereance.strikethrough)
                         Text("hide").tag(DeclinedEventsAppereance.hide)
+                    }
+                }
+                HStack {
+                    Picker("Events without guests:", selection: $personalEventsAppereance) {
+                        Text("show").tag(PastEventsAppereance.show_active)
+                        Text("show as inactive").tag(PastEventsAppereance.show_inactive)
+                        Text("hide").tag(PastEventsAppereance.hide)
                     }
                 }
                 HStack {
