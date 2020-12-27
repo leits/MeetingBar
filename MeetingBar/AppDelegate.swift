@@ -135,7 +135,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             self.statusBarItem.updateTitle()
         }
         self.disablePastEventObserver = Defaults.observe(.disablePastEvents) { change in
-            NSLog("Changed disablePastEvents from \(change.oldValue) to \(change.newValue)")
+            NSLog("Changed disablePastEvents from \(String(describing: change.oldValue)) to \(String(describing: change.newValue))")
             self.statusBarItem.updateMenu()
         }
         self.declinedEventsAppereanceObserver = Defaults.observe(.declinedEventsAppereance) { change in
