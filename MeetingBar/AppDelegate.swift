@@ -106,8 +106,20 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         KeyboardShortcuts.onKeyUp(for: .joinEventShortcut) {
             self.joinNextMeeting()
         }
-        KeyboardShortcuts.onKeyUp(for: .joinBookmarkShortcut) {
+        KeyboardShortcuts.onKeyUp(for: .joinBookmarkShortcut1) {
             self.joinBookmark()
+        }
+        KeyboardShortcuts.onKeyUp(for: .joinBookmarkShortcut2) {
+            self.joinBookmark2()
+        }
+        KeyboardShortcuts.onKeyUp(for: .joinBookmarkShortcut3) {
+            self.joinBookmark3()
+        }
+        KeyboardShortcuts.onKeyUp(for: .joinBookmarkShortcut4) {
+            self.joinBookmark4()
+        }
+        KeyboardShortcuts.onKeyUp(for: .joinBookmarkShortcut5) {
+            self.joinBookmark5()
         }
 
 
@@ -300,14 +312,41 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
     }
 
-    @objc
-    func joinBookmark(_: Any? = nil) {
-        NSLog("Join bookmark")
-        let urlString = Defaults[.bookmarkMeetingURL]
+    func joinBookmarkInternal(urlString: String, service: MeetingServices) {
         guard !urlString.isEmpty, let url = URL(string: urlString) else {
             return
         }
-        openMeetingURL(Defaults[.bookmarkMeetingService], url)
+        openMeetingURL(service, url)
+    }
+
+    @objc
+    func joinBookmark2(_: Any? = nil) {
+        NSLog("Join bookmark 2")
+        joinBookmarkInternal(urlString: Defaults[.bookmarkMeetingURL2], service: Defaults[.bookmarkMeetingService2])
+    }
+
+    @objc
+    func joinBookmark3(_: Any? = nil) {
+        NSLog("Join bookmark 3")
+        joinBookmarkInternal(urlString: Defaults[.bookmarkMeetingURL3], service: Defaults[.bookmarkMeetingService3])
+    }
+
+    @objc
+    func joinBookmark4(_: Any? = nil) {
+        NSLog("Join bookmark 4")
+        joinBookmarkInternal(urlString: Defaults[.bookmarkMeetingURL4], service: Defaults[.bookmarkMeetingService4])
+    }
+
+    @objc
+    func joinBookmark5(_: Any? = nil) {
+        NSLog("Join bookmark 5")
+        joinBookmarkInternal(urlString: Defaults[.bookmarkMeetingURL5], service: Defaults[.bookmarkMeetingService5])
+    }
+
+    @objc
+    func joinBookmark(_: Any? = nil) {
+        NSLog("Join bookmark")
+        joinBookmarkInternal(urlString: Defaults[.bookmarkMeetingURL], service: Defaults[.bookmarkMeetingService])
     }
 
     @objc
@@ -345,8 +384,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             preferencesWindow.close()
         }
         preferencesWindow = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 570, height: 500),
-            styleMask: [.closable, .titled],
+            contentRect: NSRect(x: 0, y: 0, width: 570, height: 650),
+            styleMask: [.closable, .titled, .resizable],
             backing: .buffered,
             defer: false
         )

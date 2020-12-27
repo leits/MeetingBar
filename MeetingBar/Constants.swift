@@ -72,6 +72,7 @@ enum Links {
 }
 
 enum MeetingServices: String, Codable, CaseIterable {
+    case other = "Other"
     case meet = "Google Meet"
     case hangouts = "Google Hangouts"
     case zoom = "Zoom"
