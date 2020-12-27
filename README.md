@@ -17,6 +17,10 @@ Integrated with 20+ meeting services so you can quickly join meetings from event
 
 * Show the next meeting in the system menubar
 * Show all upcoming events from today and tomorrow (optional) in the expanded system menubar 
+  * show or hide all day events
+  * show or hide events without guests
+  * show or hide meeting type icons 
+
 * Show events from all your macos calendars incl. notes, location and attendees
 * Join the next onlinemeeting with a single shortcut
 * Select for specific services like zoom or ms teams to start the meeting in the installed app or browser

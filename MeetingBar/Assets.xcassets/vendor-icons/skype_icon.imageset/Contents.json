@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "skype_icon.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
