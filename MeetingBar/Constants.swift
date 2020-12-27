@@ -147,7 +147,7 @@ public enum AutoLauncher {
     static let bundleIdentifier: String = "leits.MeetingBar.AutoLauncher"
 }
 
-enum ChromeExecutable : String, Codable, CaseIterable{
+enum ChromeExecutable: String, Codable, CaseIterable {
     case chrome = "Google Chrome"
     case chromium = "Chromium"
     case defaultBrowser = "Default Browser"

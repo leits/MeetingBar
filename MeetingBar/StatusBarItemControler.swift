@@ -602,7 +602,6 @@ func getEventStatus(_ event: EKEvent) -> EKParticipantStatus? {
 }
 
 
-
 func openMeetingURL(_ service: MeetingServices?, _ url: URL) {
     switch service {
     case .meet:
