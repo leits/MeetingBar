@@ -17,7 +17,7 @@ Integrated with 20+ meeting services so you can quickly join meetings from event
 
 1. Install:
   * From the [App Store](https://apps.apple.com/us/app/id1532419400)
-  * From homebrew `brew cask install meetingbar`
+  * From homebrew `brew install --cask meetingbar`
   * Manual download the [latest version](https://github.com/leits/MeetingBar/releases/latest/download/MeetingBar.dmg)
 2. Make sure your calendar synchronized to macOS calendar or [add a calendar account](https://support.apple.com/guide/calendar/add-or-delete-calendar-accounts-icl4308d6701/mac).
 3. Open the app and go through the onboarding.
