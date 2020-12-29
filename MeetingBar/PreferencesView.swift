@@ -201,6 +201,7 @@ struct Appearance: View {
     @Default(.titleLength) var titleLength
 
     @Default(.timeFormat) var timeFormat
+    @Default(.showEventEndDate) var showEventEndDate
     @Default(.showEventDetails) var showEventDetails
     @Default(.showMeetingServiceIcon) var showMeetingServiceIcon
     @Default(.declinedEventsAppereance) var declinedEventsAppereance
@@ -235,9 +236,14 @@ struct Appearance: View {
                 }.padding(.horizontal, 10)
             }
             Divider()
+            Text("Menu").font(.headline).bold()
             Section {
                 HStack {
-                    Toggle("Show event meeting service icon", isOn: $showMeetingServiceIcon)
+                    Toggle("Show event end date", isOn: $showEventEndDate)
+                }
+
+                HStack {
+                    Toggle("Show event icon", isOn: $showMeetingServiceIcon)
                 }
 
                 HStack {

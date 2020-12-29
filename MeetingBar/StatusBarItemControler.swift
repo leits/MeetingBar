@@ -117,8 +117,6 @@ class StatusBarItemControler {
         )
         createItem.setShortcut(for: .createMeetingShortcut)
 
-
-
         if !Defaults[.bookmarkMeetingURL].isEmpty || !Defaults[.bookmarkMeetingURL2].isEmpty || !Defaults[.bookmarkMeetingURL3].isEmpty || !Defaults[.bookmarkMeetingURL4].isEmpty || !Defaults[.bookmarkMeetingURL5].isEmpty {
             self.item.menu!.addItem(NSMenuItem.separator())
 
@@ -320,7 +318,8 @@ class StatusBarItemControler {
             image = NSImage(named: "no_online_session")!
             image!.size = NSSize(width: 16, height: 16)
 
-        default: break
+        default:
+            break
         }
 
         return image!
@@ -355,19 +354,32 @@ class StatusBarItemControler {
         }
 
         var eventStartTime = ""
+        var eventEndTime = ""
         if event.isAllDay {
             eventStartTime = "All day"
+            eventEndTime = "\t"
         } else {
             eventStartTime = eventTimeFormatter.string(from: event.startDate)
+            eventEndTime = eventTimeFormatter.string(from: event.endDate)
+        }
+
+
+        let itemTitle: String
+        if Defaults[.showEventEndDate] {
+            itemTitle = "\(eventStartTime)\t \(eventEndTime) \t  \(eventTitle)"
+        } else {
+            itemTitle = "\(eventStartTime)\t  \(eventTitle)"
         }
 
         // Event Item
-        let itemTitle = "\(eventStartTime) - \(eventTitle)"
-        let eventItem = NSMenuItem()
 
+        let eventItem = NSMenuItem()
         eventItem.title = itemTitle
         eventItem.action = #selector(AppDelegate.clickOnEvent(sender:))
         eventItem.keyEquivalent = ""
+        eventItem.attributedTitle = NSAttributedString(string: itemTitle, attributes: [NSAttributedString.Key.font: NSFont.systemFont(ofSize: 14)])
+
+
 
         if Defaults[.showMeetingServiceIcon] {
             let image: NSImage = getMeetingIcon(event)
@@ -379,29 +391,52 @@ class StatusBarItemControler {
         if eventStatus == .declined {
             eventItem.attributedTitle = NSAttributedString(
                 string: itemTitle,
-                attributes: [NSAttributedString.Key.strikethroughStyle: NSUnderlineStyle.thick.rawValue]
+                attributes: [NSAttributedString.Key.strikethroughStyle: NSUnderlineStyle.thick.rawValue, NSAttributedString.Key.font: NSFont.systemFont(ofSize: 14)]
             )
         }
 
         if !event.hasAttendees, Defaults[.personalEventsAppereance] == .show_inactive {
             eventItem.attributedTitle = NSAttributedString(
                 string: itemTitle,
-                attributes: [NSAttributedString.Key.foregroundColor: NSColor.disabledControlTextColor]
+                attributes: [NSAttributedString.Key.foregroundColor: NSColor.disabledControlTextColor, NSAttributedString.Key.font: NSFont.systemFont(ofSize: 14)]
             )
         }
 
         if event.endDate < now {
             eventItem.state = .on
+            eventItem.onStateImage = nil
             if Defaults[.pastEventsAppereance] == .show_inactive {
                 eventItem.attributedTitle = NSAttributedString(
                     string: itemTitle,
-                    attributes: [NSAttributedString.Key.foregroundColor: NSColor.disabledControlTextColor]
+                    attributes: [NSAttributedString.Key.foregroundColor: NSColor.disabledControlTextColor, NSAttributedString.Key.font: NSFont.systemFont(ofSize: 14)]
                 )
             }
         } else if event.startDate < now, event.endDate > now {
             eventItem.state = .mixed
+
+            // if highlightRunningEvent
+            eventItem.mixedStateImage = nil
+
+            // create an NSMutableAttributedString that we'll append everything to
+            let eventTitle = NSMutableAttributedString()
+
+            // create our NSTextAttachment
+            let runningImage = NSTextAttachment()
+            runningImage.image = NSImage(named: "running_icon")
+            runningImage.image?.size = NSSize(width: 16, height: 16)
+
+            // wrap the attachment in its own attributed string so we can append it
+            let runningIcon = NSAttributedString(attachment: runningImage)
+
+            // add the NSTextAttachment wrapper to our full string, then add some more text.
+
+            eventTitle.append(NSAttributedString(string: itemTitle + " ", attributes: [NSAttributedString.Key.font: NSFont.systemFont(ofSize: 14)]))
+            eventTitle.append(runningIcon)
+
+            eventItem.attributedTitle = eventTitle
         } else {
             eventItem.state = .off
+            eventItem.offStateImage = nil
         }
         eventItem.representedObject = event
 
@@ -410,7 +445,7 @@ class StatusBarItemControler {
             eventItem.submenu = eventMenu
 
             // Title
-            let titleItem = eventMenu.addItem(withTitle: eventTitle, action: nil, keyEquivalent: "")
+            let titleItem = eventMenu.addItem(withTitle: event.title, action: nil, keyEquivalent: "")
             titleItem.attributedTitle = NSAttributedString(string: eventTitle, attributes: [NSAttributedString.Key.font: NSFont.boldSystemFont(ofSize: 15)])
             eventMenu.addItem(NSMenuItem.separator())
 
@@ -537,6 +572,8 @@ class StatusBarItemControler {
             // Open in App
             let openItem = eventMenu.addItem(withTitle: "Open in Calendar App", action: #selector(AppDelegate.openEventInCalendar), keyEquivalent: "")
             openItem.representedObject = event.eventIdentifier
+        } else {
+            eventItem.toolTip = event.title
         }
     }
 
