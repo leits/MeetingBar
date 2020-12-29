@@ -108,6 +108,8 @@ class StatusBarItemControler {
                     keyEquivalent: ""
                 )
                 joinItem.setShortcut(for: .joinEventShortcut)
+                joinItem.image = NSImage(named: "play")
+                joinItem.image!.size = NSSize(width: 16, height: 16)
             }
         }
 
