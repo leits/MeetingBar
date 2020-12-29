@@ -16,10 +16,10 @@ struct PreferencesView: View {
         VStack {
             TabView {
                 General().tabItem { Text("General") }
-
-                Appearance().tabItem { Text("Appearance") }
+                StatusBar().tabItem { Text("Statusbar") }
+                Menu().tabItem { Text("Menu") }
                 Configuration().tabItem { Text("Services") }
-                Calendars().padding().tabItem { Text("Calendars") }
+                Calendars().tabItem { Text("Calendars") }
                 Bookmark().tabItem { Text("Bookmarks") }
                 Advanced().tabItem { Text("Advanced") }
             }
@@ -36,7 +36,6 @@ struct AboutApp: View {
                 if Bundle.main.infoDictionary != nil {
                     Text("Version \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "unknown")").foregroundColor(.gray)
                 }
-                Spacer()
                 Spacer()
                 HStack {
                     Button("About this app", action: openAboutThisApp)
@@ -196,11 +195,13 @@ struct General: View {
     }
 }
 
-struct Appearance: View {
+struct StatusBar: View {
     @Default(.eventTitleFormat) var eventTitleFormat
     @Default(.titleLength) var titleLength
 
     @Default(.timeFormat) var timeFormat
+    @Default(.shortenEventTitle) var shortenEventTitle
+    @Default(.menuEventTitleLength) var menuEventTitleLength
     @Default(.showEventEndDate) var showEventEndDate
     @Default(.showEventDetails) var showEventDetails
     @Default(.showMeetingServiceIcon) var showMeetingServiceIcon
@@ -212,7 +213,6 @@ struct Appearance: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
-            Spacer()
             Text("Status bar").font(.headline).bold()
             Section {
                 Section {
@@ -235,52 +235,86 @@ struct Appearance: View {
                     Text("Tip: If the app disappears from the status bar, make the length shorter").foregroundColor(Color.gray)
                 }.padding(.horizontal, 10)
             }
-            Divider()
+            Spacer()
+        }.padding()
+    }
+}
+
+struct Menu: View {
+    @Default(.timeFormat) var timeFormat
+    @Default(.shortenEventTitle) var shortenEventTitle
+    @Default(.menuEventTitleLength) var menuEventTitleLength
+    @Default(.showEventEndDate) var showEventEndDate
+    @Default(.showEventDetails) var showEventDetails
+    @Default(.showMeetingServiceIcon) var showMeetingServiceIcon
+    @Default(.declinedEventsAppereance) var declinedEventsAppereance
+    @Default(.personalEventsAppereance) var personalEventsAppereance
+    @Default(.pastEventsAppereance) var pastEventsAppereance
+    @Default(.allDayEvents) var allDayEvents
+    @Default(.allDayEventsWithLinkOnly) var allDayEventsWithLinkOnly
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 15) {
             Text("Menu").font(.headline).bold()
             Section {
                 HStack {
+                    Toggle("Shorten event title", isOn: $shortenEventTitle)
+                }
+
+                HStack {
+                    Text(generateTitleSample(Int(menuEventTitleLength))).lineLimit(nil)
+                    Spacer()
+                }.padding(.all, 10).border(Color.gray, width: 3)
+
+                VStack {
+                HStack {
+                    Text("5")
+                    Slider(value: $menuEventTitleLength, in: MenuTitleLengthLimits.min ... MenuTitleLengthLimits.max, step: 1)
+                    Text("100")
+                }.disabled(!shortenEventTitle)
+                    Text(String(Int(menuEventTitleLength)))
+                }
+                Group {
                     Toggle("Show event end date", isOn: $showEventEndDate)
-                }
-
-                HStack {
                     Toggle("Show event icon", isOn: $showMeetingServiceIcon)
-                }
-
-                HStack {
                     Toggle("Show event details as submenu", isOn: $showEventDetails)
-                }
+                    Toggle("Show event notes in details", isOn: $showEventDetails).padding(.leading, 30)
 
-                HStack {
-                    Toggle("Show all day events", isOn: $allDayEvents)
-                    Toggle("... with meeting links only", isOn: ($allDayEventsWithLinkOnly)).disabled(!$allDayEvents.wrappedValue)
-                }
-                HStack {
-                    Picker("Past events:", selection: $pastEventsAppereance) {
-                        Text("show").tag(PastEventsAppereance.show_active)
-                        Text("show as inactive").tag(PastEventsAppereance.show_inactive)
-                        Text("hide").tag(PastEventsAppereance.hide)
+
+                    HStack {
+                        Toggle("Show all day events", isOn: $allDayEvents)
+                        Toggle("... with meeting links only", isOn: ($allDayEventsWithLinkOnly)).disabled(!$allDayEvents.wrappedValue)
                     }
-                }
-                HStack {
-                    Picker("Declined events:", selection: $declinedEventsAppereance) {
-                        Text("show with strikethrough").tag(DeclinedEventsAppereance.strikethrough)
-                        Text("hide").tag(DeclinedEventsAppereance.hide)
+
+                    HStack {
+                        Picker("Past events:", selection: $pastEventsAppereance) {
+                            Text("show").tag(PastEventsAppereance.show_active)
+                            Text("show as inactive").tag(PastEventsAppereance.show_inactive)
+                            Text("hide").tag(PastEventsAppereance.hide)
+                        }
                     }
-                }
-                HStack {
-                    Picker("Events without guests:", selection: $personalEventsAppereance) {
-                        Text("show").tag(PastEventsAppereance.show_active)
-                        Text("show as inactive").tag(PastEventsAppereance.show_inactive)
-                        Text("hide").tag(PastEventsAppereance.hide)
+                    HStack {
+                        Picker("Declined events:", selection: $declinedEventsAppereance) {
+                            Text("show with strikethrough").tag(DeclinedEventsAppereance.strikethrough)
+                            Text("hide").tag(DeclinedEventsAppereance.hide)
+                        }
                     }
-                }
-                HStack {
-                    Picker("Time format:", selection: $timeFormat) {
-                        Text("12-hour (AM/PM)").tag(TimeFormat.am_pm)
-                        Text("24-hour").tag(TimeFormat.military)
+                    HStack {
+                        Picker("Events without guests:", selection: $personalEventsAppereance) {
+                            Text("show").tag(PastEventsAppereance.show_active)
+                            Text("show as inactive").tag(PastEventsAppereance.show_inactive)
+                            Text("hide").tag(PastEventsAppereance.hide)
+                        }
+                    }
+                    HStack {
+                        Picker("Time format:", selection: $timeFormat) {
+                            Text("12-hour (AM/PM)").tag(TimeFormat.am_pm)
+                            Text("24-hour").tag(TimeFormat.military)
+                        }
                     }
                 }
             }.padding(.horizontal, 10)
+
             Spacer()
         }.padding()
     }
@@ -350,7 +384,7 @@ struct Bookmark: View {
         VStack(alignment: .leading) {
             Section {
                 HStack {
-                    Text("Bookmark 1").font(.subheadline).bold()
+                    Text("Bookmark 1").font(.system(size: 12)).bold()
                     Button(action: reset(argument1: "bookmarkMeetingName", argument2: "bookmarkMeetingURL", argument3: "bookmarkMeetingService", argument4: KeyboardShortcuts.Name.joinBookmarkShortcut1)) {
                         Text("Reset").font(.system(size: 8))
                     }.disabled(bookmarkMeetingName.isEmpty && bookmarkMeetingURL.isEmpty)
@@ -362,19 +396,20 @@ struct Bookmark: View {
                         Text(MeetingServices.meet.rawValue).tag(MeetingServices.meet)
                         Text(MeetingServices.other.rawValue).tag(MeetingServices.other)
                     }.labelsHidden()
+                    .controlSize(ControlSize.small)
                     .frame(width: 150, alignment: .leading)
-                    TextField("URL", text: $bookmarkMeetingURL)
+                    TextField("URL", text: $bookmarkMeetingURL).controlSize(ControlSize.small)
                 }
                 HStack {
-                    TextField("Name (optional)", text: $bookmarkMeetingName)
-                    Text("Shortcut:")
-                    KeyboardShortcuts.Recorder(for: .joinBookmarkShortcut1)
+                    TextField("Name (optional)", text: $bookmarkMeetingName).controlSize(ControlSize.small)
+                    Text("Shortcut:").controlSize(ControlSize.small)
+                    KeyboardShortcuts.Recorder(for: .joinBookmarkShortcut1).controlSize(ControlSize.small)
                 }
             }
             Spacer()
             Section {
                 HStack {
-                    Text("Bookmark 2").font(.subheadline).bold()
+                    Text("Bookmark 2").font(.system(size: 12)).bold()
                     Button(action: reset(argument1: "bookmarkMeetingName2", argument2: "bookmarkMeetingURL2", argument3: "bookmarkMeetingService2", argument4: KeyboardShortcuts.Name.joinBookmarkShortcut2)) {
                         Text("Reset").font(.system(size: 8))
                     }.disabled(bookmarkMeetingName2.isEmpty && bookmarkMeetingURL2.isEmpty)
@@ -387,19 +422,20 @@ struct Bookmark: View {
                         Text(MeetingServices.meet.rawValue).tag(MeetingServices.meet)
                         Text(MeetingServices.other.rawValue).tag(MeetingServices.other)
                     }.labelsHidden()
+                    .controlSize(ControlSize.small)
                     .frame(width: 150, alignment: .leading)
                     TextField("URL", text: $bookmarkMeetingURL2)
                 }
                 HStack {
-                    TextField("Name (optional)", text: $bookmarkMeetingName2)
-                    Text("Shortcut:")
-                    KeyboardShortcuts.Recorder(for: .joinBookmarkShortcut2)
+                    TextField("Name (optional)", text: $bookmarkMeetingName2).controlSize(ControlSize.small)
+                    Text("Shortcut:").controlSize(ControlSize.small)
+                    KeyboardShortcuts.Recorder(for: .joinBookmarkShortcut2).controlSize(ControlSize.small)
                 }
             }
             Spacer()
             Section {
                 HStack {
-                    Text("Bookmark 3").font(.subheadline).bold()
+                    Text("Bookmark 3").font(.system(size: 12)).bold()
                     Button(action: reset(argument1: "bookmarkMeetingName3", argument2: "bookmarkMeetingURL3", argument3: "bookmarkMeetingService3", argument4: KeyboardShortcuts.Name.joinBookmarkShortcut3)) {
                         Text("Reset").font(.system(size: 8))
                     }.disabled(bookmarkMeetingName.isEmpty && bookmarkMeetingURL.isEmpty)
@@ -411,19 +447,20 @@ struct Bookmark: View {
                         Text(MeetingServices.meet.rawValue).tag(MeetingServices.meet)
                         Text(MeetingServices.other.rawValue).tag(MeetingServices.other)
                     }.labelsHidden()
+                    .controlSize(ControlSize.small)
                     .frame(width: 150, alignment: .leading)
-                    TextField("URL", text: $bookmarkMeetingURL3)
+                    TextField("URL", text: $bookmarkMeetingURL3).controlSize(ControlSize.small)
                 }
                 HStack {
-                    TextField("Name (optional)", text: $bookmarkMeetingName3)
-                    Text("Shortcut:")
-                    KeyboardShortcuts.Recorder(for: .joinBookmarkShortcut3)
+                    TextField("Name (optional)", text: $bookmarkMeetingName3).controlSize(ControlSize.small)
+                    Text("Shortcut:").controlSize(ControlSize.small)
+                    KeyboardShortcuts.Recorder(for: .joinBookmarkShortcut3).controlSize(ControlSize.small)
                 }
             }
             Spacer()
             Section {
                 HStack {
-                    Text("Bookmark 4").font(.subheadline).bold()
+                    Text("Bookmark 4").font(.system(size: 12)).bold()
                     Button(action: reset(argument1: "bookmarkMeetingName4", argument2: "bookmarkMeetingURL4", argument3: "bookmarkMeetingService4", argument4: KeyboardShortcuts.Name.joinBookmarkShortcut4)) {
                         Text("Reset").font(.system(size: 8))
                     }.disabled(bookmarkMeetingName.isEmpty && bookmarkMeetingURL.isEmpty)
@@ -435,19 +472,20 @@ struct Bookmark: View {
                         Text(MeetingServices.meet.rawValue).tag(MeetingServices.meet)
                         Text(MeetingServices.other.rawValue).tag(MeetingServices.other)
                     }.labelsHidden()
+                    .controlSize(ControlSize.small)
                     .frame(width: 150, alignment: .leading)
                     TextField("URL", text: $bookmarkMeetingURL4)
                 }
                 HStack {
-                    TextField("Name (optional)", text: $bookmarkMeetingName4)
-                    Text("Shortcut:")
-                    KeyboardShortcuts.Recorder(for: .joinBookmarkShortcut4)
+                    TextField("Name (optional)", text: $bookmarkMeetingName4).controlSize(ControlSize.small)
+                    Text("Shortcut:").controlSize(ControlSize.small)
+                    KeyboardShortcuts.Recorder(for: .joinBookmarkShortcut4).controlSize(ControlSize.small)
                 }
             }
             Spacer()
             Section {
                 HStack {
-                    Text("Bookmark 5").font(.subheadline).bold()
+                    Text("Bookmark 5").font(.system(size: 12)).bold()
                     Button(action: reset(argument1: "bookmarkMeetingName5", argument2: "bookmarkMeetingURL5", argument3: "bookmarkMeetingService5", argument4: KeyboardShortcuts.Name.joinBookmarkShortcut5)) {
                         Text("Reset").font(.system(size: 8))
                     }.disabled(bookmarkMeetingName.isEmpty && bookmarkMeetingURL.isEmpty)
@@ -459,13 +497,14 @@ struct Bookmark: View {
                         Text(MeetingServices.meet.rawValue).tag(MeetingServices.meet)
                         Text(MeetingServices.other.rawValue).tag(MeetingServices.other)
                     }.labelsHidden()
+                    .controlSize(ControlSize.small)
                     .frame(width: 150, alignment: .leading)
                     TextField("URL", text: $bookmarkMeetingURL5)
                 }
                 HStack {
-                    TextField("Name (optional)", text: $bookmarkMeetingName5)
-                    Text("Shortcut:")
-                    KeyboardShortcuts.Recorder(for: .joinBookmarkShortcut5)
+                    TextField("Name (optional)", text: $bookmarkMeetingName5).controlSize(ControlSize.small)
+                    Text("Shortcut:").controlSize(ControlSize.small)
+                    KeyboardShortcuts.Recorder(for: .joinBookmarkShortcut5).controlSize(ControlSize.small)
                 }
             }
             Spacer()
@@ -474,7 +513,7 @@ struct Bookmark: View {
 
 
     func reset(argument1: String, argument2: String, argument3: String, argument4: KeyboardShortcuts.Name) -> () -> Void {
-           {
+        {
             let bookmarkMeetingNameVariable = Defaults.Key<String?>(argument1)
             let bookmarkMeetingUrlVariable = Defaults.Key<String?>(argument2)
             let bookmarkMeetingServiceVariable = Defaults.Key<MeetingServices?>(argument3)
@@ -483,7 +522,7 @@ struct Bookmark: View {
             Defaults[bookmarkMeetingUrlVariable] = nil
             Defaults[bookmarkMeetingServiceVariable] = nil
             KeyboardShortcuts.reset(argument4)
-           }
+        }
     }
 }
 

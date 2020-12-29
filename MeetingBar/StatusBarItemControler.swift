@@ -110,12 +110,17 @@ class StatusBarItemControler {
                 joinItem.setShortcut(for: .joinEventShortcut)
             }
         }
-        let createItem = item.menu!.addItem(
-            withTitle: "Create meeting",
-            action: #selector(AppDelegate.createMeeting),
-            keyEquivalent: ""
-        )
-        createItem.setShortcut(for: .createMeetingShortcut)
+
+
+        let createEventItem = NSMenuItem()
+        createEventItem.title = "Create meeting"
+        createEventItem.action = #selector(AppDelegate.createMeeting)
+        createEventItem.keyEquivalent = ""
+        createEventItem.setShortcut(for: .createMeetingShortcut)
+        createEventItem.image = NSImage(named: "calendar_badge_plus")
+        createEventItem.image!.size = NSSize(width: 16, height: 16)
+
+        item.menu!.addItem(createEventItem)
 
         if !Defaults[.bookmarkMeetingURL].isEmpty || !Defaults[.bookmarkMeetingURL2].isEmpty || !Defaults[.bookmarkMeetingURL3].isEmpty || !Defaults[.bookmarkMeetingURL4].isEmpty || !Defaults[.bookmarkMeetingURL5].isEmpty {
             self.item.menu!.addItem(NSMenuItem.separator())
@@ -342,7 +347,15 @@ class StatusBarItemControler {
             return
         }
 
-        let eventTitle = String(event.title)
+        let eventTitle: String
+
+        if Defaults[.shortenEventTitle] {
+            eventTitle = shortenTitleForMenu(event: event)
+        } else {
+            eventTitle = String(event.title)
+        }
+
+
 
         let eventTimeFormatter = DateFormatter()
 
@@ -378,8 +391,6 @@ class StatusBarItemControler {
         eventItem.action = #selector(AppDelegate.clickOnEvent(sender:))
         eventItem.keyEquivalent = ""
         eventItem.attributedTitle = NSAttributedString(string: itemTitle, attributes: [NSAttributedString.Key.font: NSFont.systemFont(ofSize: 14)])
-
-
 
         if Defaults[.showMeetingServiceIcon] {
             let image: NSImage = getMeetingIcon(event)
@@ -430,7 +441,7 @@ class StatusBarItemControler {
 
             // add the NSTextAttachment wrapper to our full string, then add some more text.
 
-            eventTitle.append(NSAttributedString(string: itemTitle + " ", attributes: [NSAttributedString.Key.font: NSFont.systemFont(ofSize: 14)]))
+            eventTitle.append(NSAttributedString(string: itemTitle + " ", attributes: [NSAttributedString.Key.font: NSFont.boldSystemFont(ofSize: 14)]))
             eventTitle.append(runningIcon)
 
             eventItem.attributedTitle = eventTitle
@@ -583,13 +594,39 @@ class StatusBarItemControler {
             action: #selector(AppDelegate.openPrefecencesWindow),
             keyEquivalent: ","
         )
-        item.menu!.addItem(
+
+        let quitItem = item.menu!.addItem(
             withTitle: "Quit Meetingbar",
             action: #selector(AppDelegate.quit),
             keyEquivalent: "q"
         )
+        quitItem.image = NSImage(named: "xmark_square")
+        quitItem.image!.size = NSSize(width: 16, height: 16)
     }
 }
+
+func shortenTitleForSystembar(event: EKEvent) -> String {
+    var eventTitle = String(event.title ?? "No title").trimmingCharacters(in: .whitespaces)
+    if eventTitle.count > Int(Defaults[.titleLength]) {
+        let index = eventTitle.index(eventTitle.startIndex, offsetBy: Int(Defaults[.titleLength]))
+        eventTitle = String(eventTitle[...index])
+        eventTitle += "..."
+    }
+
+    return eventTitle
+}
+
+func shortenTitleForMenu(event: EKEvent) -> String {
+    var eventTitle = String(event.title ?? "No title").trimmingCharacters(in: .whitespaces)
+    if eventTitle.count > Int(Defaults[.menuEventTitleLength]) {
+        let index = eventTitle.index(eventTitle.startIndex, offsetBy: Int(Defaults[.menuEventTitleLength]))
+        eventTitle = String(eventTitle[...index])
+        eventTitle += "..."
+    }
+
+    return eventTitle
+}
+
 
 func createEventStatusString(_ event: EKEvent) -> String {
     var eventStatus: String
@@ -597,12 +634,7 @@ func createEventStatusString(_ event: EKEvent) -> String {
     var eventTitle: String
     switch Defaults[.eventTitleFormat] {
     case .show:
-        eventTitle = String(event.title ?? "No title").trimmingCharacters(in: .whitespaces)
-        if eventTitle.count > Int(Defaults[.titleLength]) {
-            let index = eventTitle.index(eventTitle.startIndex, offsetBy: Int(Defaults[.titleLength]))
-            eventTitle = String(eventTitle[...index])
-            eventTitle += "..."
-        }
+        eventTitle = shortenTitleForSystembar(event: event)
     case .dot:
         eventTitle = "•"
     }

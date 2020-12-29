@@ -13,6 +13,11 @@ struct TitleLengthLimits {
     static let max = 55.0
 }
 
+struct MenuTitleLengthLimits {
+    static let min = 5.0
+    static let max = 100.0
+}
+
 struct LinksRegex {
     let meet = try! NSRegularExpression(pattern: #"https://meet.google.com/[a-z-]+"#)
     let hangouts = try! NSRegularExpression(pattern: #"https://hangouts.google.com/[^\s]*"#)
