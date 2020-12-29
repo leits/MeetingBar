@@ -589,11 +589,14 @@ class StatusBarItemControler {
     }
 
     func createPreferencesSection() {
-        item.menu!.addItem(
+        let prefItem = item.menu!.addItem(
             withTitle: "Preferences",
             action: #selector(AppDelegate.openPrefecencesWindow),
             keyEquivalent: ","
         )
+
+        prefItem.image = NSImage(named: "gear")
+        prefItem.image!.size = NSSize(width: 16, height: 16)
 
         let quitItem = item.menu!.addItem(
             withTitle: "Quit Meetingbar",
