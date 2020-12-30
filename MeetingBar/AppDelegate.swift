@@ -403,6 +403,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         )
         preferencesWindow.title = "MeetingBar Preferences"
         preferencesWindow.contentView = NSHostingView(rootView: contentView)
+        preferencesWindow.makeKeyAndOrderFront(nil)
+        // allow the preference window can be focused automatically when opened
+        NSApplication.shared.activate(ignoringOtherApps: true)
+
         let controller = NSWindowController(window: preferencesWindow)
         controller.showWindow(self)
 
