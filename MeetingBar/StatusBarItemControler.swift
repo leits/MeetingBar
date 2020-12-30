@@ -15,17 +15,72 @@ import KeyboardShortcuts
 /**
  * creates the menu in the system status bar, creates the menu items and controls the whole lifecycle.
  */
-class StatusBarItemControler {
-    let item: NSStatusItem
+class StatusBarItemControler: NSObject, NSMenuDelegate {
+    var statusItem: NSStatusItem!
+    var statusItemMenu: NSMenu!
+    var menuIsOpen = false
+
     let eventStore = EKEventStore()
     var calendars: [EKCalendar] = []
 
+    weak var appdelegate: AppDelegate!
+
+    func enableButtonAction() {
+        let button: NSStatusBarButton = self.statusItem.button!
+        button.target = self
+        button.action = #selector(self.statusMenuBarAction)
+        button.sendAction(on: [NSEvent.EventTypeMask.rightMouseDown, NSEvent.EventTypeMask.leftMouseUp, NSEvent.EventTypeMask.leftMouseDown])
+        self.menuIsOpen = false
+    }
+
+    override
     init() {
-        item = NSStatusBar.system.statusItem(
+        super.init()
+
+        statusItem = NSStatusBar.system.statusItem(
             withLength: NSStatusItem.variableLength
         )
-        let statusBarMenu = NSMenu(title: "MeetingBar in Status Bar Menu")
-        item.menu = statusBarMenu
+
+        statusItemMenu = NSMenu(title: "MeetingBar in Status Bar Menu")
+        statusItemMenu.delegate = self
+
+        enableButtonAction()
+    }
+
+    @objc
+    func menuWillOpen(_ menu: NSMenu) {
+        NSLog("menu has been opened \(self.menuIsOpen) for menu \(menu)")
+        self.menuIsOpen = true
+    }
+
+    @objc
+    func menuDidClose(_ menu: NSMenu) {
+        NSLog("menu will close - \(self.menuIsOpen) for menu \(menu)")
+        // remove menu when closed so we can override left click behavior
+        self.statusItem.menu = nil
+        self.menuIsOpen = false
+    }
+
+    @objc
+    func statusMenuBarAction(sender: NSStatusItem) {
+        if !self.menuIsOpen && self.statusItem.menu == nil {
+            let event = NSApp.currentEvent!
+            NSLog("Event occured \(event.type.rawValue)")
+
+            if event.type == NSEvent.EventType.rightMouseDown || event.type == NSEvent.EventType.rightMouseUp {
+                // Right button click
+                self.appdelegate.joinNextMeeting()
+            } else if event.type == NSEvent.EventType.leftMouseDown || event.type == NSEvent.EventType.leftMouseUp {
+                // show the menu as normal
+                self.statusItem.menu = self.statusItemMenu
+                self.statusItem.button?.performClick(nil) // ...and click
+
+            }
+        }
+    }
+
+    func setAppDelegate(appdelegate: AppDelegate) {
+        self.appdelegate = appdelegate
     }
 
     func loadCalendars() {
@@ -49,8 +104,9 @@ class StatusBarItemControler {
         } else {
             NSLog("No loaded calendars")
         }
+
         DispatchQueue.main.async {
-            if let button = self.item.button {
+            if let button = self.statusItem.button {
                 button.image = nil
                 button.title = ""
                 if title == "🏁" {
@@ -58,51 +114,65 @@ class StatusBarItemControler {
                 } else if title == "MeetingBar" {
                     button.image = NSImage(named: "iconCalendar")
                 }
-                //
+
                 if button.image == nil {
-                    button.title = "\(title)"
+                    // create an NSMutableAttributedString that we'll append everything to
+                    let menuTitle = NSMutableAttributedString()
+
+                    // create our NSTextAttachment
+                    let menuImage = NSTextAttachment()
+                    menuImage.bounds = CGRect(x: 0, y: -2, width: 16, height: 16)
+                    menuImage.image = NSImage(named: "iconCalendar")
+                    menuImage.image?.size = NSSize(width: 16, height: 16)
+
+
+                    // add the NSTextAttachment wrapper to our full string, then add some more text.
+                    menuTitle.append(NSAttributedString(attachment: menuImage))
+                    // add non breakable space
+                    menuTitle.append(NSAttributedString(string: "\u{00A0}"))
+                    menuTitle.append(NSAttributedString(string: title, attributes: [NSAttributedString.Key.font: NSFont.systemFont(ofSize: 14)]))
+
+                    button.attributedTitle = menuTitle
                 }
             }
         }
     }
 
     func updateMenu() {
-        if let statusBarMenu = item.menu {
-            statusBarMenu.autoenablesItems = false
-            statusBarMenu.removeAllItems()
+        statusItemMenu.autoenablesItems = false
+        statusItemMenu.removeAllItems()
 
-            if !calendars.isEmpty {
-                let today = Date()
-                switch Defaults[.showEventsForPeriod] {
-                case .today:
-                    createDateSection(date: today, title: "Today")
-                case .today_n_tomorrow:
-                    let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today)!
-                    createDateSection(date: today, title: "Today")
-                    statusBarMenu.addItem(NSMenuItem.separator())
-                    createDateSection(date: tomorrow, title: "Tomorrow")
-                }
-            } else {
-                let text = "Select calendars in preferences\nto see your meetings"
-                let item = self.item.menu!.addItem(withTitle: "", action: nil, keyEquivalent: "")
-                let paragraphStyle = NSMutableParagraphStyle()
-                paragraphStyle.lineBreakMode = NSLineBreakMode.byWordWrapping
-                item.attributedTitle = NSAttributedString(string: text, attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
-                item.isEnabled = false
+        if !calendars.isEmpty {
+            let today = Date()
+            switch Defaults[.showEventsForPeriod] {
+            case .today:
+                createDateSection(date: today, title: "Today")
+            case .today_n_tomorrow:
+                let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today)!
+                createDateSection(date: today, title: "Today")
+                statusItemMenu.addItem(NSMenuItem.separator())
+                createDateSection(date: tomorrow, title: "Tomorrow")
             }
-            statusBarMenu.addItem(NSMenuItem.separator())
-            createJoinSection()
-            statusBarMenu.addItem(NSMenuItem.separator())
-
-            createPreferencesSection()
+        } else {
+            let text = "Select calendars in preferences\nto see your meetings"
+            let item = self.statusItemMenu.addItem(withTitle: "", action: nil, keyEquivalent: "")
+            let paragraphStyle = NSMutableParagraphStyle()
+            paragraphStyle.lineBreakMode = NSLineBreakMode.byWordWrapping
+            item.attributedTitle = NSAttributedString(string: text, attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
+            item.isEnabled = false
         }
+        statusItemMenu.addItem(NSMenuItem.separator())
+        createJoinSection()
+        statusItemMenu.addItem(NSMenuItem.separator())
+
+        createPreferencesSection()
     }
 
     func createJoinSection() {
         if !calendars.isEmpty {
             let nextEvent = eventStore.getNextEvent(calendars: calendars)
             if nextEvent != nil {
-                let joinItem = item.menu!.addItem(
+                let joinItem = self.statusItemMenu.addItem(
                     withTitle: "Join next event meeting",
                     action: #selector(AppDelegate.joinNextMeeting),
                     keyEquivalent: ""
@@ -122,12 +192,12 @@ class StatusBarItemControler {
         createEventItem.image = NSImage(named: "calendar_badge_plus")
         createEventItem.image!.size = NSSize(width: 16, height: 16)
 
-        item.menu!.addItem(createEventItem)
+        self.statusItemMenu.addItem(createEventItem)
 
         if !Defaults[.bookmarkMeetingURL].isEmpty || !Defaults[.bookmarkMeetingURL2].isEmpty || !Defaults[.bookmarkMeetingURL3].isEmpty || !Defaults[.bookmarkMeetingURL4].isEmpty || !Defaults[.bookmarkMeetingURL5].isEmpty {
-            self.item.menu!.addItem(NSMenuItem.separator())
+            self.statusItemMenu.addItem(NSMenuItem.separator())
 
-            let bookmarkItemTitle = self.item.menu!.addItem(
+            let bookmarkItemTitle = self.statusItemMenu.addItem(
                 withTitle: "Bookmarks",
                 action: nil,
                 keyEquivalent: ""
@@ -149,7 +219,7 @@ class StatusBarItemControler {
 
     func createBookmarkItem(url: String, name: String, service: MeetingServices, function: Selector, keyboardShortcut: KeyboardShortcuts.Name ) {
         if !url.isEmpty {
-            let bookmarkItem = self.item.menu!.addItem(
+            let bookmarkItem = self.statusItemMenu.addItem(
                 withTitle: "Join \(name.isEmpty ? "bookmarked meeting" : name + " (" + service.rawValue + ")" )",
                 action: function,
                 keyEquivalent: "")
@@ -167,7 +237,7 @@ class StatusBarItemControler {
         dateFormatter.dateFormat = "E, d MMM"
         let dateString = dateFormatter.string(from: date)
         let dateTitle = "\(title) (\(dateString)):"
-        let titleItem = item.menu!.addItem(
+        let titleItem = self.statusItemMenu.addItem(
             withTitle: dateTitle,
             action: nil,
             keyEquivalent: ""
@@ -178,7 +248,7 @@ class StatusBarItemControler {
         // Events
         let sortedEvents = events.sorted { $0.startDate < $1.startDate }
         if sortedEvents.isEmpty {
-            let item = self.item.menu!.addItem(
+            let item = self.statusItemMenu.addItem(
                 withTitle: "Nothing for \(title.lowercased())",
                 action: nil,
                 keyEquivalent: ""
@@ -401,7 +471,7 @@ class StatusBarItemControler {
             eventItem.image = image
         }
 
-        item.menu!.addItem(eventItem)
+        self.statusItemMenu.addItem(eventItem)
 
         if eventStatus == .declined {
             eventItem.attributedTitle = NSAttributedString(
@@ -593,7 +663,7 @@ class StatusBarItemControler {
     }
 
     func createPreferencesSection() {
-        let prefItem = item.menu!.addItem(
+        let prefItem = self.statusItemMenu.addItem(
             withTitle: "Preferences",
             action: #selector(AppDelegate.openPrefecencesWindow),
             keyEquivalent: ","
@@ -602,7 +672,7 @@ class StatusBarItemControler {
         prefItem.image = NSImage(named: "gear")
         prefItem.image!.size = NSSize(width: 16, height: 16)
 
-        let quitItem = item.menu!.addItem(
+        let quitItem = self.statusItemMenu.addItem(
             withTitle: "Quit Meetingbar",
             action: #selector(AppDelegate.quit),
             keyEquivalent: "q"

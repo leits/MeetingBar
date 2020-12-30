@@ -23,7 +23,9 @@ extension String {
      - Returns: 'String' object.
      */
    func trunc(limit: Int, position: TruncationPosition = .tail, leader: String = "...") -> String {
-       guard self.count > limit else { return self }
+       guard self.count > limit else {
+        return self
+       }
 
        switch position {
        case .head:

@@ -95,6 +95,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
     func setup() {
         statusBarItem = StatusBarItemControler()
+        statusBarItem.setAppDelegate(appdelegate: self)
 
         registerNotificationCategories()
         UNUserNotificationCenter.current().delegate = self

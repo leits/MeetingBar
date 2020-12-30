@@ -199,18 +199,6 @@ struct StatusBar: View {
     @Default(.eventTitleFormat) var eventTitleFormat
     @Default(.titleLength) var titleLength
 
-    @Default(.timeFormat) var timeFormat
-    @Default(.shortenEventTitle) var shortenEventTitle
-    @Default(.menuEventTitleLength) var menuEventTitleLength
-    @Default(.showEventEndDate) var showEventEndDate
-    @Default(.showEventDetails) var showEventDetails
-    @Default(.showMeetingServiceIcon) var showMeetingServiceIcon
-    @Default(.declinedEventsAppereance) var declinedEventsAppereance
-    @Default(.personalEventsAppereance) var personalEventsAppereance
-    @Default(.pastEventsAppereance) var pastEventsAppereance
-    @Default(.allDayEvents) var allDayEvents
-    @Default(.allDayEventsWithLinkOnly) var allDayEventsWithLinkOnly
-
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
             Text("Status bar").font(.headline).bold()
