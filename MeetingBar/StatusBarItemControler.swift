@@ -91,8 +91,9 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
 
     func updateTitle() {
         var title = "MeetingBar"
+        var nextEvent: EKEvent!
         if !calendars.isEmpty {
-            let nextEvent = eventStore.getNextEvent(calendars: calendars)
+            nextEvent = eventStore.getNextEvent(calendars: calendars)!
             if let nextEvent = nextEvent {
                 title = createEventStatusString(nextEvent)
                 if Defaults[.joinEventNotification] {
@@ -133,6 +134,9 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                     menuTitle.append(NSAttributedString(string: title, attributes: [NSAttributedString.Key.font: NSFont.systemFont(ofSize: 14)]))
 
                     button.attributedTitle = menuTitle
+                    if nextEvent != nil {
+                        button.toolTip = nextEvent.title
+                    }
                 }
             }
         }
