@@ -149,11 +149,13 @@ class StatusBarItemControler {
 
     func createBookmarkItem(url: String, name: String, service: MeetingServices, function: Selector, keyboardShortcut: KeyboardShortcuts.Name ) {
         if !url.isEmpty {
-            let joinItem = self.item.menu!.addItem(
+            let bookmarkItem = self.item.menu!.addItem(
                 withTitle: "Join \(name.isEmpty ? "bookmarked meeting" : name + " (" + service.rawValue + ")" )",
                 action: function,
                 keyEquivalent: "")
-            joinItem.setShortcut(for: keyboardShortcut)
+            bookmarkItem.setShortcut(for: keyboardShortcut)
+            bookmarkItem.image = NSImage(named: "bookmark")
+            bookmarkItem.image!.size = NSSize(width: 16, height: 16)
         }
     }
 
