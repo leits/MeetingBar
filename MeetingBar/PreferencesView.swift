@@ -266,8 +266,6 @@ struct Menu: View {
                     Toggle("Show event end date", isOn: $showEventEndDate)
                     Toggle("Show event icon", isOn: $showMeetingServiceIcon)
                     Toggle("Show event details as submenu", isOn: $showEventDetails)
-                    Toggle("Show event notes in details", isOn: $showEventDetails).padding(.leading, 30)
-
 
                     HStack {
                         Toggle("Show all day events", isOn: $allDayEvents)
