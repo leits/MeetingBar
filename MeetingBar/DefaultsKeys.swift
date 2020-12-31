@@ -70,6 +70,9 @@ extension Defaults.Keys {
     // show all day events only when they have a meeting link
     static let allDayEventsWithLinkOnly = Key<Bool>("allDayEventsWithLinkOnly", default: false)
 
+    // show non all day events only when they have a meeting link
+    static let eventsWithLinkOnly = Key<Bool>("eventsWithLinkOnly", default: false)
+
     // show the end date of a meeting in the meetingbar for each event entry
     static let showEventEndDate = Key<Bool>("showEventEndDate", default: true)
 
