@@ -33,6 +33,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     var showEventEndDateObserver: DefaultsObservation?
 
     var eventTitleFormatObserver: DefaultsObservation?
+    var eventTitleIconFormatObserver: DefaultsObservation?
     var pastEventsAppereanceObserver: DefaultsObservation?
     var disablePastEventObserver: DefaultsObservation?
     var declinedEventsAppereanceObserver: DefaultsObservation?
@@ -214,6 +215,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             NSLog("Changed eventTitleFormat from \(String(describing: change.oldValue)) to \(String(describing: change.newValue))")
             self.statusBarItem.updateTitle()
         }
+
+        eventTitleIconFormatObserver = Defaults.observe(.eventTitleIconFormat) { change in
+            NSLog("Changed eventTitleFormat from \(String(describing: change.oldValue)) to \(String(describing: change.newValue))")
+            self.statusBarItem.updateTitle()
+        }
+
         titleLengthObserver = Defaults.observe(.titleLength) { change in
             NSLog("Changed titleLength from \(change.oldValue) to \(change.newValue)")
             self.statusBarItem.updateTitle()

@@ -24,6 +24,8 @@ extension Defaults.Keys {
     // Status Bar Appearance
     static let showEventTitleInStatusBar = Key<Bool?>("showEventTitleInStatusBar") // Backward compatibility
     static let eventTitleFormat = Key<EventTitleFormat>("eventTitleFormat", default: .show)
+    static let eventTitleIconFormat = Key<EventTitleIconFormat>("eventTitleIconFormat", default: .none)
+
     static let titleLength = Key<Double>("titleLength", default: TitleLengthLimits.max)
 
     // Menu Appearance

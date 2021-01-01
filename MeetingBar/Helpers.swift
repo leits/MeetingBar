@@ -71,10 +71,25 @@ func generateTitleSample(_ titleFormat: EventTitleFormat, _ offset: Int) -> Stri
     case .show:
         title = "An event with an excessively sizeable 55-character title"
         title = title.trunc(limit: offset)
+        title += " in 1h 25m"
     case .dot:
-        title = "•"
+        title = "• in 1h 25m"
+    case .none:
+        title = ""
     }
-    return "\(title) in 1h 25m"
+
+    return title
+}
+
+func generateTitleIconSample(_ titleIconFormat: EventTitleIconFormat) -> NSImage {
+    let image: NSImage
+    if titleIconFormat == EventTitleIconFormat.eventtype {
+        image = NSImage(named: "ms_teams_icon")!
+    } else {
+        image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
+    }
+    image.size = NSSize(width: 16, height: 16)
+    return image
 }
 
 func generateTitleSample(_ offset: Int) -> String {
