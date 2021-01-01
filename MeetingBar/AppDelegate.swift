@@ -174,7 +174,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             NSLog("Changed showEventsForPeriod from \(change.oldValue) to \(change.newValue)")
             self.statusBarItem.updateMenu()
         }
-        NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.userDefaultsChanged), name: UserDefaults.didChangeNotification, object: nil)
+
 
         selectedCalendarIDsObserver = Defaults.observe(.selectedCalendarIDs) { change in
             NSLog("Changed selectedCalendarIDs from \(change.oldValue) to \(change.newValue)")
@@ -228,6 +228,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
         personalEventsAppereanceObserver = Defaults.observe(.personalEventsAppereance) { change in
             NSLog("Changed personalEventsAppereance from \(change.oldValue) to \(change.newValue)")
+            self.statusBarItem.updateTitle()
             self.statusBarItem.updateMenu()
         }
         showEventsForPeriodObserver = Defaults.observe(.showEventsForPeriod) { change in
@@ -255,12 +256,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     func eventStoreChanged(notification _: NSNotification) {
         NSLog("Store changed. Update status bar menu.")
         statusBarItem.updateTitle()
-        statusBarItem.updateMenu()
-    }
-
-    @objc
-    func userDefaultsChanged(notification _: NSNotification) {
-        NSLog("User defaults changed. Update status bar menu.")
         statusBarItem.updateMenu()
     }
 
