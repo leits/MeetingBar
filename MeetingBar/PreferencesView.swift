@@ -16,11 +16,12 @@ struct PreferencesView: View {
         VStack {
             TabView {
                 General().tabItem { Text("General") }
+                Events().tabItem { Text("Events") }
                 StatusBar().tabItem { Text("Statusbar") }
                 Menu().tabItem { Text("Menu") }
                 Configuration().tabItem { Text("Services") }
-                Calendars().tabItem { Text("Calendars") }
                 Bookmark().tabItem { Text("Bookmarks") }
+                Calendars().tabItem { Text("Calendars") }
                 Advanced().tabItem { Text("Advanced") }
             }
         }.padding()
@@ -101,7 +102,7 @@ struct Calendars: View {
                     }
                 Spacer()
             }
-        }.onAppear { self.loadCalendarList() }
+        }.onAppear { self.loadCalendarList() }.padding()
     }
 
     func loadCalendarList() {
@@ -198,23 +199,21 @@ struct General: View {
 struct StatusBar: View {
     @Default(.eventTitleIconFormat) var eventTitleIconFormat
     @Default(.eventTitleFormat) var eventTitleFormat
+    @Default(.eventTimeFormat) var eventTimeFormat
+    @Default(.eventTitleLayout) var eventTitleLayout
 
     @Default(.titleLength) var titleLength
+
 
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
             Text("Status bar").font(.headline).bold()
             Section {
-                Text("Next event").font(.subheadline).bold()
                 HStack {
-                    Text("Sample")
-
-                    HStack {
-                        Image(nsImage: generateTitleIconSample(eventTitleIconFormat))
-                        Text(generateTitleSample(eventTitleFormat, Int(titleLength)))
-                        Spacer()
-                    }.padding(.all, 10)
-                    .border(Color.gray, width: 3)
+                    Picker("Layout", selection: $eventTitleLayout) {
+                        Text("One row").tag(EventTitleLayout.onerow)
+                        Text("Two rows").tag(EventTitleLayout.tworow)
+                    }
                 }
 
                 HStack {
@@ -250,7 +249,6 @@ struct StatusBar: View {
                             Text("\u{00A0}Event specific icon (e.g. MS Teams)")
                         }.tag(EventTitleIconFormat.eventtype)
 
-
                         HStack {
                             Image(nsImage: NSImage(named: EventTitleIconFormat.none.rawValue)!).resizable()
                                 .frame(width: 16.0, height: 16.0)
@@ -263,9 +261,28 @@ struct StatusBar: View {
                     Picker("Title", selection: $eventTitleFormat) {
                         Text("event title").tag(EventTitleFormat.show)
                         Text("dot (•)").tag(EventTitleFormat.dot)
-                        Text("-").tag(EventTitleFormat.none)
+                        Text("hide").tag(EventTitleFormat.none)
                     }
                 }
+                HStack {
+                    Picker("Time", selection: $eventTimeFormat) {
+                        Text("show").tag(EventTimeFormat.show)
+                        Text("hide").tag(EventTimeFormat.hide)
+                    }
+                }
+                Divider()
+
+                HStack {
+                    Text("Sample")
+
+                    HStack {
+                        Image(nsImage: generateTitleIconSample(eventTitleIconFormat))
+                        Text(generateTitleSample(eventTitleFormat, Int(titleLength)))
+                        Spacer()
+                    }.padding(.all, 10)
+                    .border(Color.gray, width: 3)
+                }
+
 
 
                 HStack {
@@ -274,8 +291,54 @@ struct StatusBar: View {
                     Text("55")
                 }.disabled(eventTitleFormat != EventTitleFormat.show)
 
-
                 Text("Tip: If the app disappears from the status bar, make the length shorter").foregroundColor(Color.gray)
+            }.padding(.horizontal, 10)
+
+            Spacer()
+        }.padding()
+    }
+}
+
+struct Events: View {
+    @Default(.declinedEventsAppereance) var declinedEventsAppereance
+    @Default(.personalEventsAppereance) var personalEventsAppereance
+    @Default(.pastEventsAppereance) var pastEventsAppereance
+    @Default(.allDayEvents) var allDayEvents
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 15) {
+            Text("Events").font(.headline).bold()
+            Section {
+                Group {
+                    HStack {
+                        Picker("All day events:", selection: $allDayEvents) {
+                            Text("show all").tag(AlldayEventsAppereance.show)
+                            Text("show all with meeting link").tag(AlldayEventsAppereance.show_with_meeting_link_only)
+                            Text("hide all").tag(AlldayEventsAppereance.hide)
+                        }
+                    }
+
+                    HStack {
+                        Picker("Past events:", selection: $pastEventsAppereance) {
+                            Text("show").tag(PastEventsAppereance.show_active)
+                            Text("show as inactive").tag(PastEventsAppereance.show_inactive)
+                            Text("hide").tag(PastEventsAppereance.hide)
+                        }
+                    }
+                    HStack {
+                        Picker("Declined events:", selection: $declinedEventsAppereance) {
+                            Text("show with strikethrough").tag(DeclinedEventsAppereance.strikethrough)
+                            Text("hide").tag(DeclinedEventsAppereance.hide)
+                        }
+                    }
+                    HStack {
+                        Picker("Events without guests:", selection: $personalEventsAppereance) {
+                            Text("show").tag(PastEventsAppereance.show_active)
+                            Text("show as inactive").tag(PastEventsAppereance.show_inactive)
+                            Text("hide").tag(PastEventsAppereance.hide)
+                        }
+                    }
+                }
             }.padding(.horizontal, 10)
 
             Spacer()
@@ -290,13 +353,6 @@ struct Menu: View {
     @Default(.showEventEndDate) var showEventEndDate
     @Default(.showEventDetails) var showEventDetails
     @Default(.showMeetingServiceIcon) var showMeetingServiceIcon
-    @Default(.declinedEventsAppereance) var declinedEventsAppereance
-    @Default(.personalEventsAppereance) var personalEventsAppereance
-    @Default(.pastEventsAppereance) var pastEventsAppereance
-    @Default(.allDayEvents) var allDayEvents
-    @Default(.allDayEventsWithLinkOnly) var allDayEventsWithLinkOnly
-    @Default(.eventsWithLinkOnly) var eventsWithLinkOnly
-
 
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
@@ -330,36 +386,6 @@ struct Menu: View {
                     Toggle("Show event end date", isOn: $showEventEndDate)
                     Toggle("Show event icon", isOn: $showMeetingServiceIcon)
                     Toggle("Show event details as submenu", isOn: $showEventDetails)
-
-                    Text("Hide events").font(.headline).bold().padding(10)
-
-                    Toggle("Show (non all day) events with meeting links only", isOn: $eventsWithLinkOnly)
-
-                    HStack {
-                        Toggle("Show all day events", isOn: $allDayEvents)
-                        Toggle("... with meeting links only", isOn: ($allDayEventsWithLinkOnly)).disabled(!$allDayEvents.wrappedValue)
-                    }
-
-                    HStack {
-                        Picker("Past events:", selection: $pastEventsAppereance) {
-                            Text("show").tag(PastEventsAppereance.show_active)
-                            Text("show as inactive").tag(PastEventsAppereance.show_inactive)
-                            Text("hide").tag(PastEventsAppereance.hide)
-                        }
-                    }
-                    HStack {
-                        Picker("Declined events:", selection: $declinedEventsAppereance) {
-                            Text("show with strikethrough").tag(DeclinedEventsAppereance.strikethrough)
-                            Text("hide").tag(DeclinedEventsAppereance.hide)
-                        }
-                    }
-                    HStack {
-                        Picker("Events without guests:", selection: $personalEventsAppereance) {
-                            Text("show").tag(PastEventsAppereance.show_active)
-                            Text("show as inactive").tag(PastEventsAppereance.show_inactive)
-                            Text("hide").tag(PastEventsAppereance.hide)
-                        }
-                    }
                 }
             }.padding(.horizontal, 10)
 
@@ -375,7 +401,7 @@ struct Configuration: View {
     @Default(.useAppForTeamsLinks) var useAppForTeamsLinks
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 15) {
+        VStack {
             Section {
                 Picker(selection: $useChromeForMeetLinks, label: Text("Open Meet links in").frame(width: 150, alignment: .leading)) {
                     Text("Default Browser").tag(ChromeExecutable.defaultBrowser)
@@ -403,6 +429,7 @@ struct Configuration: View {
                 Text("Create meetings in").frame(width: 150, alignment: .leading)
                 CreateMeetingServicePicker()
             }.padding(.horizontal, 10)
+            Spacer()
         }.padding()
     }
 }

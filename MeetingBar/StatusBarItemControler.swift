@@ -91,11 +91,12 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
 
     func updateTitle() {
         var title = "MeetingBar"
+        var time = ""
         var nextEvent: EKEvent!
         if !calendars.isEmpty {
-            nextEvent = eventStore.getNextEvent(calendars: calendars)!
+            nextEvent = eventStore.getNextEvent(calendars: calendars)
             if let nextEvent = nextEvent {
-                title = createEventStatusString(nextEvent)
+                (title, time) = createEventStatusString(nextEvent)
                 if Defaults[.joinEventNotification] {
                     scheduleEventNotification(nextEvent)
                 }
@@ -112,19 +113,14 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                 button.title = ""
                 if title == "🏁" {
                     button.image = NSImage(named: "iconCalendarCheckmark")
+                    button.imagePosition = .imageLeft
+                    button.title = "No meetings"
                 } else if title == "MeetingBar" {
                     button.image = NSImage(named: "iconCalendar")
                 }
 
                 if button.image == nil {
-                    // create an NSMutableAttributedString that we'll append everything to
-                    let menuTitle = NSMutableAttributedString()
-
                     if Defaults[.eventTitleIconFormat] != EventTitleIconFormat.none {
-                        // create our NSTextAttachment
-                        let menuImage = NSTextAttachment()
-                        menuImage.bounds = CGRect(x: 0, y: -2, width: 16, height: 16)
-
                         let image: NSImage
                         if Defaults[.eventTitleIconFormat] == EventTitleIconFormat.eventtype {
                             image = self.getMeetingIcon(nextEvent)
@@ -132,17 +128,39 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                             image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
                         }
 
-                        menuImage.image = image
-                        menuImage.image?.size = NSSize(width: 16, height: 16)
-
-                        // add the NSTextAttachment wrapper to our full string, then add some more text.
-                        menuTitle.append(NSAttributedString(attachment: menuImage))
-
-                        // add non breakable space
-                        menuTitle.append(NSAttributedString(string: "\u{00A0}"))
+                        button.image = image
+                        button.image?.size = NSSize(width: 16, height: 16)
+                        if image.name() == "no_online_session" {
+                            button.imagePosition = .noImage
+                        } else {
+                            button.imagePosition = .imageLeft
+                        }
                     }
 
-                    menuTitle.append(NSAttributedString(string: title, attributes: [NSAttributedString.Key.font: NSFont.systemFont(ofSize: 14)]))
+                    // create an NSMutableAttributedString that we'll append everything to
+                    let menuTitle = NSMutableAttributedString()
+
+                    if Defaults[.eventTitleLayout] == .onerow || Defaults[.eventTimeFormat] == EventTimeFormat.hide || Defaults[.eventTitleFormat] == .none {
+                        var eventTitle = title
+                        if Defaults[.eventTimeFormat] == EventTimeFormat.show {
+                            eventTitle += " " + time
+                        }
+
+                        menuTitle.append(NSAttributedString(string: eventTitle, attributes: [NSAttributedString.Key.font: NSFont.systemFont(ofSize: 13)]))
+                    } else {
+                        let paragraphStyle = NSMutableParagraphStyle()
+                        paragraphStyle.lineHeightMultiple = 0.7
+                        paragraphStyle.alignment = .center
+
+                        menuTitle.append(NSAttributedString(string: title, attributes: [NSAttributedString.Key.font: NSFont.systemFont(ofSize: 12), NSAttributedString.Key.baselineOffset: -3]))
+
+                        if Defaults[.eventTimeFormat] == EventTimeFormat.show {
+                            menuTitle.append(NSAttributedString(string: "\n" + time, attributes: [NSAttributedString.Key.font: NSFont.systemFont(ofSize: 9), NSAttributedString.Key.foregroundColor: NSColor.lightGray]))
+                        }
+
+
+                        menuTitle.addAttributes([NSAttributedString.Key.paragraphStyle: paragraphStyle], range: NSRange(location: 0, length: menuTitle.length))
+                    }
 
                     button.attributedTitle = menuTitle
                     if nextEvent != nil {
@@ -154,33 +172,35 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
     }
 
     func updateMenu() {
-        statusItemMenu.autoenablesItems = false
-        statusItemMenu.removeAllItems()
+        DispatchQueue.main.async {
+            self.statusItemMenu.autoenablesItems = false
+            self.statusItemMenu.removeAllItems()
 
-        if !calendars.isEmpty {
-            let today = Date()
-            switch Defaults[.showEventsForPeriod] {
-            case .today:
-                createDateSection(date: today, title: "Today")
-            case .today_n_tomorrow:
-                let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today)!
-                createDateSection(date: today, title: "Today")
-                statusItemMenu.addItem(NSMenuItem.separator())
-                createDateSection(date: tomorrow, title: "Tomorrow")
+            if !self.calendars.isEmpty {
+                let today = Date()
+                switch Defaults[.showEventsForPeriod] {
+                case .today:
+                    self.createDateSection(date: today, title: "Today")
+                case .today_n_tomorrow:
+                    let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today)!
+                    self.createDateSection(date: today, title: "Today")
+                    self.statusItemMenu.addItem(NSMenuItem.separator())
+                    self.createDateSection(date: tomorrow, title: "Tomorrow")
+                }
+            } else {
+                let text = "Select calendars in preferences\nto see your meetings"
+                let item = self.statusItemMenu.addItem(withTitle: "", action: nil, keyEquivalent: "")
+                let paragraphStyle = NSMutableParagraphStyle()
+                paragraphStyle.lineBreakMode = NSLineBreakMode.byWordWrapping
+                item.attributedTitle = NSAttributedString(string: text, attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
+                item.isEnabled = false
             }
-        } else {
-            let text = "Select calendars in preferences\nto see your meetings"
-            let item = self.statusItemMenu.addItem(withTitle: "", action: nil, keyEquivalent: "")
-            let paragraphStyle = NSMutableParagraphStyle()
-            paragraphStyle.lineBreakMode = NSLineBreakMode.byWordWrapping
-            item.attributedTitle = NSAttributedString(string: text, attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
-            item.isEnabled = false
-        }
-        statusItemMenu.addItem(NSMenuItem.separator())
-        createJoinSection()
-        statusItemMenu.addItem(NSMenuItem.separator())
+            self.statusItemMenu.addItem(NSMenuItem.separator())
+            self.createJoinSection()
+            self.statusItemMenu.addItem(NSMenuItem.separator())
 
-        createPreferencesSection()
+            self.createPreferencesSection()
+        }
     }
 
     func createJoinSection() {
@@ -450,7 +470,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
 
         switch Defaults[.timeFormat] {
         case .am_pm:
-            eventTimeFormatter.dateFormat = "h:mm a"
+            eventTimeFormatter.dateFormat = "hh:mm a"
         case .military:
             eventTimeFormatter.dateFormat = "HH:mm"
         }
@@ -720,8 +740,8 @@ func shortenTitleForMenu(event: EKEvent) -> String {
 }
 
 
-func createEventStatusString(_ event: EKEvent) -> String {
-    var eventStatus: String
+func createEventStatusString(_ event: EKEvent) -> (String, String) {
+    var eventTime: String
 
     var eventTitle: String
     switch Defaults[.eventTitleFormat] {
@@ -752,11 +772,11 @@ func createEventStatusString(_ event: EKEvent) -> String {
     let formattedTimeLeft = formatter.string(from: now, to: eventDate)!
 
     if isActiveEvent {
-        eventStatus = "\(eventTitle) now (\(formattedTimeLeft) left)"
+        eventTime = "now (\(formattedTimeLeft) left)"
     } else {
-        eventStatus = "\(eventTitle) in \(formattedTimeLeft)"
+        eventTime = "in \(formattedTimeLeft)"
     }
-    return eventStatus
+    return (eventTitle, eventTime)
 }
 
 func openEvent(_ event: EKEvent) {
