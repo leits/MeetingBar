@@ -253,7 +253,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
     func createBookmarkItem(url: String, name: String, service: MeetingServices, function: Selector, keyboardShortcut: KeyboardShortcuts.Name ) {
         if !url.isEmpty {
             let bookmarkItem = self.statusItemMenu.addItem(
-                withTitle: "Join \(name.isEmpty ? "bookmarked meeting" : name + " (" + service.rawValue + ")" )",
+                withTitle: "\(name.isEmpty ? "bookmarked meeting" : name + " (" + service.rawValue + ")" )",
                 action: function,
                 keyEquivalent: "")
             bookmarkItem.setShortcut(for: keyboardShortcut)
@@ -850,6 +850,12 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL) {
         } else {
             _ = openLinkInDefaultBrowser(url)
         }
+    case .facetime:
+        NSWorkspace.shared.open(URL(string: "facetime://" + url.absoluteString)!)
+    case .facetimeaudio:
+        NSWorkspace.shared.open(URL(string: "facetime-audio://" + url.absoluteString)!)
+    case .phone:
+        NSWorkspace.shared.open(URL(string: "tel://" + url.absoluteString)!)
     default:
         _ = openLinkInDefaultBrowser(url)
     }

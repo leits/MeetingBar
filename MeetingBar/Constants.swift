@@ -106,6 +106,9 @@ enum MeetingServices: String, Codable, CaseIterable {
     case skype = "Skype"
     case skype4biz = "Skype For Business"
     case skype4biz_selfhosted = "Skype For Business (SH)"
+    case facetime = "Facetime"
+    case facetimeaudio = "Facetime Audio"
+    case phone = "Phone"
 }
 
 enum TimeFormat: String, Codable, CaseIterable {
