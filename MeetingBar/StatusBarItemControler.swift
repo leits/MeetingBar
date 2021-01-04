@@ -438,11 +438,12 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
     }
 
     func createEventItem(event: EKEvent) {
-        let eventStatus = getEventStatus(event)
+        let eventParticipantStatus = getEventParticipantStatus(event)
+        let eventStatus = event.status
 
         let now = Date()
 
-        if eventStatus == .declined, Defaults[.declinedEventsAppereance] == .hide {
+        if eventParticipantStatus == .declined || eventStatus == .canceled, Defaults[.declinedEventsAppereance] == .hide {
             return
         }
 
@@ -461,8 +462,6 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
         } else {
             eventTitle = String(event.title)
         }
-
-
 
         let eventTimeFormatter = DateFormatter()
 
@@ -497,39 +496,40 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
         eventItem.title = itemTitle
         eventItem.action = #selector(AppDelegate.clickOnEvent(sender:))
         eventItem.keyEquivalent = ""
-        eventItem.attributedTitle = NSAttributedString(string: itemTitle, attributes: [NSAttributedString.Key.font: NSFont.systemFont(ofSize: 14)])
 
         if Defaults[.showMeetingServiceIcon] {
             let image: NSImage = getMeetingIcon(event)
             eventItem.image = image
         }
 
-        self.statusItemMenu.addItem(eventItem)
+        var styles = [NSAttributedString.Key: Any]()
 
-        if eventStatus == .declined {
-            eventItem.attributedTitle = NSAttributedString(
-                string: itemTitle,
-                attributes: [NSAttributedString.Key.strikethroughStyle: NSUnderlineStyle.thick.rawValue, NSAttributedString.Key.font: NSFont.systemFont(ofSize: 14)]
-            )
+        if eventParticipantStatus == .declined || eventStatus == .canceled {
+            if Defaults[.declinedEventsAppereance] == .show_inactive {
+                styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
+            } else {
+                styles[NSAttributedString.Key.strikethroughStyle] = NSUnderlineStyle.thick.rawValue
+            }
         }
 
         if !event.hasAttendees, Defaults[.personalEventsAppereance] == .show_inactive {
-            eventItem.attributedTitle = NSAttributedString(
-                string: itemTitle,
-                attributes: [NSAttributedString.Key.foregroundColor: NSColor.disabledControlTextColor, NSAttributedString.Key.font: NSFont.systemFont(ofSize: 14)]
-            )
+            styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
         }
 
-        if event.endDate < now {
+
+        if event.endDate < now, eventStatus != .canceled {
             eventItem.state = .on
             eventItem.onStateImage = nil
             if Defaults[.pastEventsAppereance] == .show_inactive {
+                styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
+                styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: 14)
+
                 eventItem.attributedTitle = NSAttributedString(
                     string: itemTitle,
-                    attributes: [NSAttributedString.Key.foregroundColor: NSColor.disabledControlTextColor, NSAttributedString.Key.font: NSFont.systemFont(ofSize: 14)]
+                    attributes: styles
                 )
             }
-        } else if event.startDate < now, event.endDate > now {
+        } else if event.startDate < now, event.endDate > now, eventStatus != .canceled {
             eventItem.state = .mixed
 
             // if highlightRunningEvent
@@ -548,14 +548,19 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
 
             // add the NSTextAttachment wrapper to our full string, then add some more text.
 
-            eventTitle.append(NSAttributedString(string: itemTitle + " ", attributes: [NSAttributedString.Key.font: NSFont.boldSystemFont(ofSize: 14)]))
+            styles[NSAttributedString.Key.font] = NSFont.boldSystemFont(ofSize: 14)
+
+            eventTitle.append(NSAttributedString(string: itemTitle + " ", attributes: styles))
             eventTitle.append(runningIcon)
 
             eventItem.attributedTitle = eventTitle
         } else {
             eventItem.state = .off
             eventItem.offStateImage = nil
+            eventItem.attributedTitle = NSAttributedString(string: itemTitle, attributes: styles)
         }
+
+        self.statusItemMenu.addItem(eventItem)
         eventItem.representedObject = event
 
         if Defaults[.showEventDetails] {
@@ -583,9 +588,9 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             }
 
             // Status
-            if eventStatus != nil {
+            if eventParticipantStatus != nil {
                 var status: String
-                switch eventStatus {
+                switch eventParticipantStatus {
                 case .accepted:
                     status = " 👍 Accepted"
                 case .declined:
@@ -597,7 +602,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                 case .unknown:
                     status = " ❔ Unknown"
                 default:
-                    if let eventStatus = eventStatus {
+                    if let eventStatus = eventParticipantStatus {
                         status = " ❔ (\(String(describing: eventStatus)))"
                     } else {
                         status = " ❔ (Unknown)"
@@ -797,7 +802,7 @@ func openEvent(_ event: EKEvent) {
     }
 }
 
-func getEventStatus(_ event: EKEvent) -> EKParticipantStatus? {
+func getEventParticipantStatus(_ event: EKEvent) -> EKParticipantStatus? {
     if event.hasAttendees {
         if let attendees = event.attendees {
             if let currentUser = attendees.first(where: { $0.isCurrentUser }) {

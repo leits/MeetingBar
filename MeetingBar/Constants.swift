@@ -153,6 +153,7 @@ enum EventTimeFormat: String, Codable, CaseIterable {
 
 enum DeclinedEventsAppereance: String, Codable, CaseIterable {
     case strikethrough
+    case show_inactive
     case hide
 }
 

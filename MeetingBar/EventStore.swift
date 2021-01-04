@@ -92,7 +92,7 @@ extension EKEventStore {
             if event.isAllDay {
                 continue
             }
-            if let status = getEventStatus(event) {
+            if let status = getEventParticipantStatus(event) {
                 if status == .declined { // Skip event if declined
                     continue
                 }
