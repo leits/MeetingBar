@@ -149,3 +149,9 @@ enum GoogleRegex {
 public enum AutoLauncher {
     static let bundleIdentifier: String = "leits.MeetingBar.AutoLauncher"
 }
+
+enum ChromeExecutable {
+    case chrome = "Google Chrome"
+    case chromium = "Chromium"
+    case defaultBrowser = "Default Browser"
+}

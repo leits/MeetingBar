@@ -34,6 +34,20 @@ func openLinkInChrome(_ link: URL) {
     }
 }
 
+func openLinkInChromium(_ link: URL) {
+    let configuration = NSWorkspace.OpenConfiguration()
+    let chromeUrl = URL(fileURLWithPath: "/Applications/Chromium.app")
+    NSWorkspace.shared.open([link], withApplicationAt: chromeUrl, configuration: configuration) { app, error in
+        if app != nil {
+            NSLog("Open \(link) in Chromium")
+        } else {
+            NSLog("Can't open \(link) in Chromium: \(String(describing: error?.localizedDescription))")
+            sendNotification("Oops! Unable to open the link in Chromium", "Make sure you have Chromium installed, or change the browser in the preferences.")
+            _ = openLinkInDefaultBrowser(link)
+        }
+    }
+}
+
 func openLinkInDefaultBrowser(_ link: URL) -> Bool {
     let result = NSWorkspace.shared.open(link)
     if result {
