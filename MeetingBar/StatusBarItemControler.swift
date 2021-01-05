@@ -274,17 +274,21 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             withTitle: dateTitle,
             action: nil,
             keyEquivalent: ""
+
         )
         titleItem.attributedTitle = NSAttributedString(string: dateTitle, attributes: [NSAttributedString.Key.font: NSFont.boldSystemFont(ofSize: 13)])
         titleItem.isEnabled = false
 
         // Events
-        let sortedEvents = events.sorted { $0.startDate < $1.startDate }
+        let sortedEvents = events.sorted {
+            $0.startDate < $1.startDate
+        }
         if sortedEvents.isEmpty {
             let item = self.statusItemMenu.addItem(
                 withTitle: "Nothing for \(title.lowercased())",
                 action: nil,
                 keyEquivalent: ""
+
             )
             item.isEnabled = false
         }
@@ -643,7 +647,9 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             // Attendees
             if event.hasAttendees {
                 let attendees: [EKParticipant] = event.attendees ?? []
-                let count = attendees.filter { $0.participantType == .person }.count
+                let count = attendees.filter {
+                    $0.participantType == .person
+                }.count
                 let sortedAttendees = attendees.sorted {
                     if $0.participantRole.rawValue != $1.participantRole.rawValue {
                         return $0.participantRole.rawValue < $1.participantRole.rawValue

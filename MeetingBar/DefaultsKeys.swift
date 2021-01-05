@@ -70,6 +70,7 @@ extension Defaults.Keys {
     static let bookmarkMeetingService5 = Key<MeetingServices>("bookmarkMeetingService5", default: .other)
     static let bookmarkMeetingURL5 = Key<String>("bookmarkMeetingURL5", default: "")
 
+
     // show all day events - by default true
     static let allDayEvents = Key<AlldayEventsAppereance>("allDayEvents", default: AlldayEventsAppereance.show)
 
