@@ -68,7 +68,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             NSLog("Event occured \(event.type.rawValue)")
 
             // Right button click
-            if event.type == NSEvent.EventType.rightMouseDown || event.type == NSEvent.EventType.rightMouseUp {
+            if event.type == NSEvent.EventType.rightMouseUp {
                 self.appdelegate.joinNextMeeting()
             } else if event.type == NSEvent.EventType.leftMouseDown || event.type == NSEvent.EventType.leftMouseUp {
                 // show the menu as normal
