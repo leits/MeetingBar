@@ -240,6 +240,8 @@ struct Menu: View {
     @Default(.pastEventsAppereance) var pastEventsAppereance
     @Default(.allDayEvents) var allDayEvents
     @Default(.allDayEventsWithLinkOnly) var allDayEventsWithLinkOnly
+    @Default(.eventsWithLinkOnly) var eventsWithLinkOnly
+
 
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
@@ -263,9 +265,20 @@ struct Menu: View {
                     Text(String(Int(menuEventTitleLength)))
                 }
                 Group {
+                    HStack {
+                        Picker("Time format:", selection: $timeFormat) {
+                            Text("12-hour (AM/PM)").tag(TimeFormat.am_pm)
+                            Text("24-hour").tag(TimeFormat.military)
+                        }
+                    }
+
                     Toggle("Show event end date", isOn: $showEventEndDate)
                     Toggle("Show event icon", isOn: $showMeetingServiceIcon)
                     Toggle("Show event details as submenu", isOn: $showEventDetails)
+
+                    Text("Hide events").font(.headline).bold().padding(10)
+
+                    Toggle("Show (non all day) events with meeting links only", isOn: $eventsWithLinkOnly)
 
                     HStack {
                         Toggle("Show all day events", isOn: $allDayEvents)
@@ -290,12 +303,6 @@ struct Menu: View {
                             Text("show").tag(PastEventsAppereance.show_active)
                             Text("show as inactive").tag(PastEventsAppereance.show_inactive)
                             Text("hide").tag(PastEventsAppereance.hide)
-                        }
-                    }
-                    HStack {
-                        Picker("Time format:", selection: $timeFormat) {
-                            Text("12-hour (AM/PM)").tag(TimeFormat.am_pm)
-                            Text("24-hour").tag(TimeFormat.military)
                         }
                     }
                 }

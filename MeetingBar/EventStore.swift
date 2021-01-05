@@ -37,6 +37,7 @@ extension EKEventStore {
         var filteredCalendarEvents = [EKEvent]()
 
         let allDayLinksOnly = Defaults[.allDayEventsWithLinkOnly]
+        let eventsWithLinksOnly = Defaults[.eventsWithLinkOnly]
 
         for calendarEvent in calendarEvents {
             if calendarEvent.isAllDay {
@@ -50,7 +51,15 @@ extension EKEventStore {
                     }
                 }
             } else {
-                filteredCalendarEvents.append(calendarEvent)
+                if eventsWithLinksOnly {
+                    let result = getMeetingLink(calendarEvent)
+
+                    if result?.url != nil {
+                        filteredCalendarEvents.append(calendarEvent)
+                    }
+                } else {
+                    filteredCalendarEvents.append(calendarEvent)
+                }
             }
         }
 
