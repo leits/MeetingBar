@@ -71,6 +71,14 @@ func generateTitleSample(_ titleFormat: EventTitleFormat, _ offset: Int) -> Stri
     case .show:
         title = "An event with an excessively sizeable 55-character title"
         title = title.trunc(limit: offset)
+        // TODO: Apply https://github.com/leits/MeetingBar/pull/115 to latest changes
+        //
+        // let index = title.index(title.startIndex, offsetBy: offset - 1, limitedBy: title.endIndex)
+        // title = String(title[...(index ?? title.endIndex)])
+        //         .trimmingCharacters(in: TitleTruncationRules.excludeAtEnds)
+        // if offset < (title.count - 1) {
+        //     title += "..."
+        // }
     case .dot:
         title = "•"
     }
