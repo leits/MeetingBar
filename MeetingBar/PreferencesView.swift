@@ -180,13 +180,22 @@ struct General: View {
                 }.frame(width: 270, alignment: .leading)
                 JoinEventNotificationPicker()
             }
+            Divider()
             Section {
+                Text("Shortcuts").font(.headline).bold()
                 HStack {
-                    Text("Create meeting:")
-                    KeyboardShortcuts.Recorder(for: .createMeetingShortcut)
-                    Spacer()
-                    Text("Join next event meeting:")
-                    KeyboardShortcuts.Recorder(for: .joinEventShortcut)
+                    VStack {
+                        Text("Global app shortcut:")
+                        KeyboardShortcuts.Recorder(for: .openMenuShortcut)
+                    }
+                    VStack {
+                        Text("Create meeting:")
+                        KeyboardShortcuts.Recorder(for: .createMeetingShortcut)
+                    }
+                    VStack {
+                        Text("Join next event meeting:")
+                        KeyboardShortcuts.Recorder(for: .joinEventShortcut)
+                    }
                 }
             }
             Spacer()

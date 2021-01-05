@@ -172,35 +172,33 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
     }
 
     func updateMenu() {
-        DispatchQueue.main.async {
-            self.statusItemMenu.autoenablesItems = false
-            self.statusItemMenu.removeAllItems()
+        self.statusItemMenu.autoenablesItems = false
+        self.statusItemMenu.removeAllItems()
 
-            if !self.calendars.isEmpty {
-                let today = Date()
-                switch Defaults[.showEventsForPeriod] {
-                case .today:
-                    self.createDateSection(date: today, title: "Today")
-                case .today_n_tomorrow:
-                    let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today)!
-                    self.createDateSection(date: today, title: "Today")
-                    self.statusItemMenu.addItem(NSMenuItem.separator())
-                    self.createDateSection(date: tomorrow, title: "Tomorrow")
-                }
-            } else {
-                let text = "Select calendars in preferences\nto see your meetings"
-                let item = self.statusItemMenu.addItem(withTitle: "", action: nil, keyEquivalent: "")
-                let paragraphStyle = NSMutableParagraphStyle()
-                paragraphStyle.lineBreakMode = NSLineBreakMode.byWordWrapping
-                item.attributedTitle = NSAttributedString(string: text, attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
-                item.isEnabled = false
+        if !self.calendars.isEmpty {
+            let today = Date()
+            switch Defaults[.showEventsForPeriod] {
+            case .today:
+                self.createDateSection(date: today, title: "Today")
+            case .today_n_tomorrow:
+                let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today)!
+                self.createDateSection(date: today, title: "Today")
+                self.statusItemMenu.addItem(NSMenuItem.separator())
+                self.createDateSection(date: tomorrow, title: "Tomorrow")
             }
-            self.statusItemMenu.addItem(NSMenuItem.separator())
-            self.createJoinSection()
-            self.statusItemMenu.addItem(NSMenuItem.separator())
-
-            self.createPreferencesSection()
+        } else {
+            let text = "Select calendars in preferences\nto see your meetings"
+            let item = self.statusItemMenu.addItem(withTitle: "", action: nil, keyEquivalent: "")
+            let paragraphStyle = NSMutableParagraphStyle()
+            paragraphStyle.lineBreakMode = NSLineBreakMode.byWordWrapping
+            item.attributedTitle = NSAttributedString(string: text, attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
+            item.isEnabled = false
         }
+        self.statusItemMenu.addItem(NSMenuItem.separator())
+        self.createJoinSection()
+        self.statusItemMenu.addItem(NSMenuItem.separator())
+
+        self.createPreferencesSection()
     }
 
     func createJoinSection() {

@@ -116,6 +116,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         KeyboardShortcuts.onKeyUp(for: .joinEventShortcut) {
             self.joinNextMeeting()
         }
+
+        KeyboardShortcuts.onKeyUp(for: .openMenuShortcut) {
+            // show the menu as normal
+            self.statusBarItem.statusItem.menu = self.statusBarItem.statusItemMenu
+            self.statusBarItem.statusItem.button?.performClick(nil) // ...and click
+        }
+
         KeyboardShortcuts.onKeyUp(for: .joinBookmarkShortcut1) {
             self.joinBookmark()
         }
@@ -286,7 +293,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
         activity.schedule { (completion: @escaping NSBackgroundActivityScheduler.CompletionHandler) in
             NSLog("Firing reccuring updateStatusBarMenu")
-            self.statusBarItem.updateMenu()
+            DispatchQueue.main.async {
+                self.statusBarItem.updateMenu()
+            }
             completion(NSBackgroundActivityScheduler.Result.finished)
         }
     }
