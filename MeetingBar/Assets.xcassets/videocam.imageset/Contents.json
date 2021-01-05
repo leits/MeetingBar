@@ -1,7 +1,6 @@
 {
   "images" : [
     {
-      "filename" : "ms-teams-icon.svg",
       "idiom" : "universal"
     },
     {
@@ -11,7 +10,7 @@
           "value" : "light"
         }
       ],
-      "filename" : "ms-teams-icon-1.svg",
+      "filename" : "videocam.svg",
       "idiom" : "universal"
     },
     {
@@ -21,6 +20,7 @@
           "value" : "dark"
         }
       ],
+      "filename" : "videocam_dark.svg",
       "idiom" : "universal"
     }
   ],

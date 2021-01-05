@@ -120,17 +120,28 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                     // create an NSMutableAttributedString that we'll append everything to
                     let menuTitle = NSMutableAttributedString()
 
-                    // create our NSTextAttachment
-                    let menuImage = NSTextAttachment()
-                    menuImage.bounds = CGRect(x: 0, y: -2, width: 16, height: 16)
-                    menuImage.image = NSImage(named: "iconCalendar")
-                    menuImage.image?.size = NSSize(width: 16, height: 16)
+                    if Defaults[.eventTitleIconFormat] != EventTitleIconFormat.none {
+                        // create our NSTextAttachment
+                        let menuImage = NSTextAttachment()
+                        menuImage.bounds = CGRect(x: 0, y: -2, width: 16, height: 16)
 
+                        let image: NSImage
+                        if Defaults[.eventTitleIconFormat] == EventTitleIconFormat.eventtype {
+                            image = self.getMeetingIcon(nextEvent)
+                        } else {
+                            image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
+                        }
 
-                    // add the NSTextAttachment wrapper to our full string, then add some more text.
-                    menuTitle.append(NSAttributedString(attachment: menuImage))
-                    // add non breakable space
-                    menuTitle.append(NSAttributedString(string: "\u{00A0}"))
+                        menuImage.image = image
+                        menuImage.image?.size = NSSize(width: 16, height: 16)
+
+                        // add the NSTextAttachment wrapper to our full string, then add some more text.
+                        menuTitle.append(NSAttributedString(attachment: menuImage))
+
+                        // add non breakable space
+                        menuTitle.append(NSAttributedString(string: "\u{00A0}"))
+                    }
+
                     menuTitle.append(NSAttributedString(string: title, attributes: [NSAttributedString.Key.font: NSFont.systemFont(ofSize: 14)]))
 
                     button.attributedTitle = menuTitle
@@ -731,6 +742,8 @@ func createEventStatusString(_ event: EKEvent) -> String {
         eventTitle = shortenTitleForSystembar(event: event)
     case .dot:
         eventTitle = "•"
+    case .none:
+        eventTitle = ""
     }
 
     var isActiveEvent: Bool

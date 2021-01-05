@@ -196,33 +196,88 @@ struct General: View {
 }
 
 struct StatusBar: View {
+    @Default(.eventTitleIconFormat) var eventTitleIconFormat
     @Default(.eventTitleFormat) var eventTitleFormat
+
     @Default(.titleLength) var titleLength
 
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
             Text("Status bar").font(.headline).bold()
             Section {
-                Section {
+                Text("Next event").font(.subheadline).bold()
+                HStack {
+                    Text("Sample")
+
                     HStack {
-                        Picker("Show", selection: $eventTitleFormat) {
-                            Text("event title").tag(EventTitleFormat.show)
-                            Text("dot (•)").tag(EventTitleFormat.dot)
-                        }
-                    }
-                    HStack {
+                        Image(nsImage: generateTitleIconSample(eventTitleIconFormat))
                         Text(generateTitleSample(eventTitleFormat, Int(titleLength)))
                         Spacer()
                     }.padding(.all, 10)
                     .border(Color.gray, width: 3)
-                    HStack {
-                        Text("5")
-                        Slider(value: $titleLength, in: TitleLengthLimits.min ... TitleLengthLimits.max, step: 1)
-                        Text("55")
-                    }.disabled(eventTitleFormat != EventTitleFormat.show)
-                    Text("Tip: If the app disappears from the status bar, make the length shorter").foregroundColor(Color.gray)
-                }.padding(.horizontal, 10)
-            }
+                }
+
+                HStack {
+                    Picker("Icon", selection: $eventTitleIconFormat) {
+                        HStack {
+                            Image(nsImage: NSImage(named: EventTitleIconFormat.calendar.rawValue)!).resizable()
+                                .frame(width: 16.0, height: 16.0)
+                            Text("\u{00A0}Calendar icon")
+                        }.tag(EventTitleIconFormat.calendar)
+
+                        HStack {
+                            Image(nsImage: NSImage(named: EventTitleIconFormat.videocam.rawValue)!).resizable()
+                                .frame(width: 16.0, height: 16.0)
+                            Text("\u{00A0}Videocam icon")
+                        }.tag(EventTitleIconFormat.videocam)
+
+
+                        HStack {
+                            Image(nsImage: NSImage(named: EventTitleIconFormat.onlinemeeting.rawValue)!).resizable()
+                                    .frame(width: 16.0, height: 16.0)
+                            Text("\u{00A0}Onlinemeeting icon")
+                        }.tag(EventTitleIconFormat.onlinemeeting)
+
+                        HStack {
+                            Image(nsImage: NSImage(named: EventTitleIconFormat.appicon.rawValue)!).resizable()
+                                    .frame(width: 16.0, height: 16.0)
+                            Text("\u{00A0}App icon")
+                        }.tag(EventTitleIconFormat.appicon)
+
+                        HStack {
+                            Image(nsImage: NSImage(named: EventTitleIconFormat.eventtype.rawValue)!).resizable()
+                                    .frame(width: 16.0, height: 16.0)
+                            Text("\u{00A0}Event specific icon (e.g. MS Teams)")
+                        }.tag(EventTitleIconFormat.eventtype)
+
+
+                        HStack {
+                            Image(nsImage: NSImage(named: EventTitleIconFormat.none.rawValue)!).resizable()
+                                .frame(width: 16.0, height: 16.0)
+                            Text("\u{00A0}No icon")
+                        }.tag(EventTitleIconFormat.none)
+                    }
+                }
+
+                HStack {
+                    Picker("Title", selection: $eventTitleFormat) {
+                        Text("event title").tag(EventTitleFormat.show)
+                        Text("dot (•)").tag(EventTitleFormat.dot)
+                        Text("-").tag(EventTitleFormat.none)
+                    }
+                }
+
+
+                HStack {
+                    Text("5")
+                    Slider(value: $titleLength, in: TitleLengthLimits.min ... TitleLengthLimits.max, step: 1)
+                    Text("55")
+                }.disabled(eventTitleFormat != EventTitleFormat.show)
+
+
+                Text("Tip: If the app disappears from the status bar, make the length shorter").foregroundColor(Color.gray)
+            }.padding(.horizontal, 10)
+
             Spacer()
         }.padding()
     }
@@ -257,11 +312,11 @@ struct Menu: View {
                 }.padding(.all, 10).border(Color.gray, width: 3)
 
                 VStack {
-                HStack {
-                    Text("5")
-                    Slider(value: $menuEventTitleLength, in: MenuTitleLengthLimits.min ... MenuTitleLengthLimits.max, step: 1)
-                    Text("100")
-                }.disabled(!shortenEventTitle)
+                    HStack {
+                        Text("5")
+                        Slider(value: $menuEventTitleLength, in: MenuTitleLengthLimits.min ... MenuTitleLengthLimits.max, step: 1)
+                        Text("100")
+                    }.disabled(!shortenEventTitle)
                     Text(String(Int(menuEventTitleLength)))
                 }
                 Group {

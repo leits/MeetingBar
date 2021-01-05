@@ -122,9 +122,22 @@ enum AuthResult {
     case success(Bool), failure(Error)
 }
 
+/**
+ * 
+ */
+enum EventTitleIconFormat: String, Codable, CaseIterable {
+    case calendar = "iconCalendar"
+    case appicon = "AppIcon"
+    case videocam = "videocam"
+    case onlinemeeting = "online_meeting_icon"
+    case eventtype = "ms_teams_icon"
+    case none = "no_online_session"
+}
+
 enum EventTitleFormat: String, Codable, CaseIterable {
     case show
     case dot
+    case none
 }
 
 enum DeclinedEventsAppereance: String, Codable, CaseIterable {

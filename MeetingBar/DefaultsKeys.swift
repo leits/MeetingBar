@@ -24,10 +24,13 @@ extension Defaults.Keys {
     // Status Bar Appearance
     static let showEventTitleInStatusBar = Key<Bool?>("showEventTitleInStatusBar") // Backward compatibility
     static let eventTitleFormat = Key<EventTitleFormat>("eventTitleFormat", default: .show)
+    static let eventTitleIconFormat = Key<EventTitleIconFormat>("eventTitleIconFormat", default: .none)
+
     static let titleLength = Key<Double>("titleLength", default: TitleLengthLimits.max)
 
     // Menu Appearance
-    static let shortenEventTitle = Key<Bool>("shortenEventTitle", default: true)
+    // if the event title in the menu should be shortened or not -> the length will be stored in field menuEventTitleLength
+    static let shortenEventTitle = Key<Bool>("shortenEventTitle", default: false)
     static let menuEventTitleLength = Key<Double>("menuEventTitleLength", default: MenuTitleLengthLimits.max)
 
     static let showEventDetails = Key<Bool>("showEventDetails", default: false)
