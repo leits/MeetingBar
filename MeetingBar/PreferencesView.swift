@@ -201,6 +201,7 @@ struct Appearance: View {
 
     @Default(.timeFormat) var timeFormat
     @Default(.showEventDetails) var showEventDetails
+    @Default(.showMeetingServiceIcon) var showMeetingServiceIcon
     @Default(.declinedEventsAppereance) var declinedEventsAppereance
     @Default(.personalEventsAppereance) var personalEventsAppereance
     @Default(.pastEventsAppereance) var pastEventsAppereance
@@ -234,6 +235,10 @@ struct Appearance: View {
             }
             Divider()
             Section {
+                HStack {
+                    Toggle("Show event meeting service icon", isOn: $showMeetingServiceIcon)
+                }
+
                 HStack {
                     Toggle("Show event details as submenu", isOn: $showEventDetails)
                 }

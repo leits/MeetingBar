@@ -37,15 +37,16 @@ struct LinksRegex {
     let whereby = try! NSRegularExpression(pattern: #"https://whereby.com/[^\s]*"#)
     let uberconference = try! NSRegularExpression(pattern: #"https://uberconference.com/[^\s]*"#)
     let blizz = try! NSRegularExpression(pattern: #"https://go.blizz.com/[^\s]*"#)
+    let teamviewer_meeting = try! NSRegularExpression(pattern: #"https://go.teamviewer.com/[^\s]*"#)
     let vsee = try! NSRegularExpression(pattern: #"https://vsee.com/[^\s]*"#)
     let starleaf = try! NSRegularExpression(pattern: #"https://meet.starleaf.com/[^\s]*"#)
     let duo = try! NSRegularExpression(pattern: #"https://duo.app.goo.gl/[^\s]*"#)
     let voov = try! NSRegularExpression(pattern: #"https://voovmeeting.com/[^\s]*"#)
+    let facebook_workspace = try! NSRegularExpression(pattern: #"https://([a-z0-9-.]+)?workplace.com/[^\s]"#)
     let skype = try! NSRegularExpression(pattern: #"https://join.skype.com/[^\s]*"#)
     let skype4biz = try! NSRegularExpression(pattern: #"https://meet.lync.com/[^\s]*"#)
-    let skype4biz_selfhosted = try! NSRegularExpression(pattern: #"https://meet\.[^\s]*"#)
+    let skype4biz_selfhosted = try! NSRegularExpression(pattern: #"https://[meet\.]?[join\.]?[^\s]*"#)
     let lifesize = try! NSRegularExpression(pattern: #"https://call.lifesizecloud.com/[^\s]*"#)
-    let facebook_workspace = try! NSRegularExpression(pattern: #"https://([a-z0-9-.]+)?workplace.com/meet/[^\s]"#)
 }
 
 enum CreateMeetingLinks {
@@ -94,15 +95,16 @@ enum MeetingServices: String, Codable, CaseIterable {
     case whereby = "Whereby"
     case uberconference = "Uber Conference"
     case blizz = "Blizz"
+    case teamviewer_meeting = "Teamviewer Meeting"
     case vsee = "VSee"
     case starleaf = "StarLeaf"
     case duo = "Google Duo"
     case voov = "Tencent VooV"
+    case facebook_workspace = "Facebook Workspace"
+    case lifesize = "Lifesize"
     case skype = "Skype"
     case skype4biz = "Skype For Business"
     case skype4biz_selfhosted = "Skype For Business (SH)"
-    case lifesize = "Lifesize"
-    case facebook_workspace = "Facebook Workspace"
 }
 
 enum TimeFormat: String, Codable, CaseIterable {
