@@ -321,9 +321,9 @@ struct Events: View {
                 Group {
                     HStack {
                         Picker("All day events:", selection: $allDayEvents) {
-                            Text("show all").tag(AlldayEventsAppereance.show)
-                            Text("show all with meeting link").tag(AlldayEventsAppereance.show_with_meeting_link_only)
-                            Text("hide all").tag(AlldayEventsAppereance.hide)
+                            Text("show").tag(AlldayEventsAppereance.show)
+                            Text("show only with meeting link").tag(AlldayEventsAppereance.show_with_meeting_link_only)
+                            Text("hide").tag(AlldayEventsAppereance.hide)
                         }
                     }
 
