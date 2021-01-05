@@ -27,6 +27,9 @@ extension Defaults.Keys {
     static let titleLength = Key<Double>("titleLength", default: TitleLengthLimits.max)
 
     // Menu Appearance
+    static let shortenEventTitle = Key<Bool>("shortenEventTitle", default: true)
+    static let menuEventTitleLength = Key<Double>("menuEventTitleLength", default: MenuTitleLengthLimits.max)
+
     static let showEventDetails = Key<Bool>("showEventDetails", default: false)
     static let showMeetingServiceIcon = Key<Bool>("showMeetingServiceIcon", default: true)
 

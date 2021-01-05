@@ -26,6 +26,7 @@
 		40DC7051250E5DB500217DD9 /* AutoLauncher.app in CopyFiles */ = {isa = PBXBuildFile; fileRef = 40DC7040250E5B9C00217DD9 /* AutoLauncher.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		40DC7054250E5E1000217DD9 /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC7053250E5E1000217DD9 /* ServiceManagement.framework */; };
 		40E60313250E81EA005986C7 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40E60312250E81EA005986C7 /* main.swift */; };
+		E249D534259BBC3800429BF1 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = E249D533259BBC3800429BF1 /* String.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -65,6 +66,7 @@
 		40DC704C250E5BB100217DD9 /* AutoLauncher.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AutoLauncher.entitlements; sourceTree = "<group>"; };
 		40DC7053250E5E1000217DD9 /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = System/Library/Frameworks/ServiceManagement.framework; sourceTree = SDKROOT; };
 		40E60312250E81EA005986C7 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		E249D533259BBC3800429BF1 /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		E4DD0F0A2529D0D20029E395 /* Project-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Project-Release.xcconfig"; sourceTree = "<group>"; };
 		E4DD0F0B2529D0D20029E395 /* Project.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Project.xcconfig; sourceTree = "<group>"; };
 		E4DD0F0C2529D0D20029E395 /* Project-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Project-Debug.xcconfig"; sourceTree = "<group>"; };
@@ -97,6 +99,7 @@
 				140D843C2493B7BF0055E1CE /* EventStore.swift */,
 				140D843E2493B7CB0055E1CE /* DefaultsKeys.swift */,
 				140D84402493B8030055E1CE /* KeyboardShortcutsNames.swift */,
+				E249D533259BBC3800429BF1 /* String.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -300,7 +303,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if which swiftlint >/dev/null; then\n  swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+			shellScript = "if which swiftlint >/dev/null; then\n  swiftlint autocorrect && swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -310,6 +313,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				140D843F2493B7CB0055E1CE /* DefaultsKeys.swift in Sources */,
+				E249D534259BBC3800429BF1 /* String.swift in Sources */,
 				140D843A2493A6240055E1CE /* Helpers.swift in Sources */,
 				144C017D2462D0C3000C9FFC /* AppDelegate.swift in Sources */,
 				148E47E824F400C400399929 /* OnboardingView.swift in Sources */,

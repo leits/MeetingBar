@@ -13,6 +13,11 @@ struct TitleLengthLimits {
     static let max = 55.0
 }
 
+struct MenuTitleLengthLimits {
+    static let min = 5.0
+    static let max = 100.0
+}
+
 struct TitleTruncationRules {
     static let excludeAtEnds = CharacterSet.whitespacesAndNewlines
             .union(CharacterSet.punctuationCharacters)

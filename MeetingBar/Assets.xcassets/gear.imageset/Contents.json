@@ -10,7 +10,7 @@
           "value" : "light"
         }
       ],
-      "filename" : "Icon-Calendar.svg",
+      "filename" : "gear.svg",
       "idiom" : "universal"
     },
     {
@@ -20,15 +20,12 @@
           "value" : "dark"
         }
       ],
-      "filename" : "Icon-Calendar_dark-1.svg",
+      "filename" : "gear_dark.svg",
       "idiom" : "universal"
     }
   ],
   "info" : {
     "author" : "xcode",
     "version" : 1
-  },
-  "properties" : {
-    "template-rendering-intent" : "template"
   }
 }

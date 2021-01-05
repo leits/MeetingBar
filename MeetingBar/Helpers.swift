@@ -70,16 +70,24 @@ func generateTitleSample(_ titleFormat: EventTitleFormat, _ offset: Int) -> Stri
     switch titleFormat {
     case .show:
         title = "An event with an excessively sizeable 55-character title"
-        let index = title.index(title.startIndex, offsetBy: offset - 1, limitedBy: title.endIndex)
-        title = String(title[...(index ?? title.endIndex)])
-                .trimmingCharacters(in: TitleTruncationRules.excludeAtEnds)
-        if offset < (title.count - 1) {
-            title += "..."
-        }
+        title = title.trunc(limit: offset)
+        // TODO: Apply https://github.com/leits/MeetingBar/pull/115 to latest changes
+        //
+        // let index = title.index(title.startIndex, offsetBy: offset - 1, limitedBy: title.endIndex)
+        // title = String(title[...(index ?? title.endIndex)])
+        //         .trimmingCharacters(in: TitleTruncationRules.excludeAtEnds)
+        // if offset < (title.count - 1) {
+        //     title += "..."
+        // }
     case .dot:
         title = "•"
     }
     return "\(title) in 1h 25m"
+}
+
+func generateTitleSample(_ offset: Int) -> String {
+    let title = "An event with an excessively sizeable 100-character title to show the shorten capabilities here ...."
+    return title.trunc(limit: offset)
 }
 
 func getRegexForService(_ service: MeetingServices) -> NSRegularExpression? {
