@@ -215,6 +215,13 @@ class StatusBarItemControler {
             )
         }
 
+        if !event.hasAttendees, Defaults[.personalEventsAppereance] == .show_inactive {
+            eventItem.attributedTitle = NSAttributedString(
+                string: itemTitle,
+                attributes: [NSAttributedString.Key.foregroundColor: NSColor.disabledControlTextColor]
+            )
+        }
+
         if event.endDate < now {
             eventItem.state = .on
             if Defaults[.pastEventsAppereance] == .show_inactive {
@@ -470,9 +477,12 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL) {
             _ = openLinkInDefaultBrowser(url)
         }
     case .hangouts:
-        if Defaults[.useChromeForHangoutsLinks] {
+        switch Defaults[.useChromeForHangoutsLinks] {
+        case .chrome:
             openLinkInChrome(url)
-        } else {
+        case .chromium:
+            openLinkInChromium(url)
+        default:
             _ = openLinkInDefaultBrowser(url)
         }
     case .teams:
