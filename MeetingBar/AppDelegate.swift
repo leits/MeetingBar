@@ -30,10 +30,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     var titleLengthObserver: DefaultsObservation?
     var timeFormatObserver: DefaultsObservation?
 
-    var showEventEndDateObserver: DefaultsObservation?
-
     var eventTitleFormatObserver: DefaultsObservation?
     var eventTitleIconFormatObserver: DefaultsObservation?
+
+    var shortenEventTitleObserver: DefaultsObservation?
+    var menuEventTitleLengthObserver: DefaultsObservation?
+    var showEventEndDateObserver: DefaultsObservation?
     var pastEventsAppereanceObserver: DefaultsObservation?
     var disablePastEventObserver: DefaultsObservation?
     var declinedEventsAppereanceObserver: DefaultsObservation?
@@ -138,6 +140,21 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
         self.showEventDetailsObserver = Defaults.observe(.showEventDetails) { change in
             NSLog("Change showEventDetails from \(change.oldValue) to \(change.newValue)")
+            if change.oldValue != change.newValue {
+                self.statusBarItem.updateMenu()
+            }
+        }
+
+
+        self.shortenEventTitleObserver = Defaults.observe(.shortenEventTitle) { change in
+            NSLog("Change shortenEventTitle from \(change.oldValue) to \(change.newValue)")
+            if change.oldValue != change.newValue {
+                self.statusBarItem.updateMenu()
+            }
+        }
+
+        self.menuEventTitleLengthObserver = Defaults.observe(.menuEventTitleLength) { change in
+            NSLog("Change menuEventTitleLengthObserver from \(change.oldValue) to \(change.newValue)")
             if change.oldValue != change.newValue {
                 self.statusBarItem.updateMenu()
             }
