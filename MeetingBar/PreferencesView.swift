@@ -337,6 +337,7 @@ struct Events: View {
                     HStack {
                         Picker("Declined events:", selection: $declinedEventsAppereance) {
                             Text("show with strikethrough").tag(DeclinedEventsAppereance.strikethrough)
+                            Text("show as inactive").tag(DeclinedEventsAppereance.show_inactive)
                             Text("hide").tag(DeclinedEventsAppereance.hide)
                         }
                     }
