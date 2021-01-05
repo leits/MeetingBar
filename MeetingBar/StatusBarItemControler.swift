@@ -120,7 +120,8 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                     }
                     button.image?.size = NSSize(width: 16, height: 16)
                 } else if title == "MeetingBar" {
-                    button.image = NSImage(named: "iconCalendar")
+                    button.image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
+                    button.image?.size = NSSize(width: 16, height: 16)
                 }
 
                 if button.image == nil {
