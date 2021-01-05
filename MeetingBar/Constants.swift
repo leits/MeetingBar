@@ -13,6 +13,11 @@ struct TitleLengthLimits {
     static let max = 55.0
 }
 
+struct TitleTruncationRules {
+    static let excludeAtEnds = CharacterSet.whitespacesAndNewlines
+            .union(CharacterSet.punctuationCharacters)
+}
+
 struct LinksRegex {
     let meet = try! NSRegularExpression(pattern: #"https://meet.google.com/[a-z-]+"#)
     let hangouts = try! NSRegularExpression(pattern: #"https://hangouts.google.com/[^\s]*"#)
