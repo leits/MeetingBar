@@ -29,21 +29,20 @@ extension EKEventStore {
     func loadEventsForDate(calendars: [EKCalendar], date: Date) -> [EKEvent] {
         let dayMidnight = Calendar.current.startOfDay(for: date)
         let nextDayMidnight = Calendar.current.date(byAdding: .day, value: 1, to: dayMidnight)!
-        let showAllDayEvents = Defaults[.allDayEvents]
+
+        let showAlldayEvents: Bool = Defaults[.allDayEvents] == AlldayEventsAppereance.show
 
         let predicate = predicateForEvents(withStart: dayMidnight, end: nextDayMidnight, calendars: calendars)
-        let calendarEvents = events(matching: predicate).filter { ($0.isAllDay && showAllDayEvents) || Calendar.current.isDate($0.startDate, inSameDayAs: dayMidnight) }
+        let calendarEvents = events(matching: predicate).filter { ($0.isAllDay && showAlldayEvents) || Calendar.current.isDate($0.startDate, inSameDayAs: dayMidnight) }
 
         var filteredCalendarEvents = [EKEvent]()
 
-        let allDayLinksOnly = Defaults[.allDayEventsWithLinkOnly]
-        let eventsWithLinksOnly = Defaults[.eventsWithLinkOnly]
 
         for calendarEvent in calendarEvents {
             if calendarEvent.isAllDay {
-                if showAllDayEvents && !allDayLinksOnly {
+                if Defaults[.allDayEvents] == AlldayEventsAppereance.show {
                     filteredCalendarEvents.append(calendarEvent)
-                } else if showAllDayEvents && allDayLinksOnly {
+                } else if Defaults[.allDayEvents] == AlldayEventsAppereance.show_with_meeting_link_only {
                     let result = getMeetingLink(calendarEvent)
 
                     if result?.url != nil {
@@ -51,15 +50,7 @@ extension EKEventStore {
                     }
                 }
             } else {
-                if eventsWithLinksOnly {
-                    let result = getMeetingLink(calendarEvent)
-
-                    if result?.url != nil {
-                        filteredCalendarEvents.append(calendarEvent)
-                    }
-                } else {
-                    filteredCalendarEvents.append(calendarEvent)
-                }
+                 filteredCalendarEvents.append(calendarEvent)
             }
         }
 

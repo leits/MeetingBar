@@ -24,9 +24,11 @@ extension Defaults.Keys {
     // Status Bar Appearance
     static let showEventTitleInStatusBar = Key<Bool?>("showEventTitleInStatusBar") // Backward compatibility
     static let eventTitleFormat = Key<EventTitleFormat>("eventTitleFormat", default: .show)
-    static let eventTitleIconFormat = Key<EventTitleIconFormat>("eventTitleIconFormat", default: .none)
+    static let eventTimeFormat = Key<EventTimeFormat>("eventTimeFormat", default: .show)
 
+    static let eventTitleIconFormat = Key<EventTitleIconFormat>("eventTitleIconFormat", default: .none)
     static let titleLength = Key<Double>("titleLength", default: TitleLengthLimits.max)
+    static let eventTitleLayout = Key<EventTitleLayout>("eventTitleLayout", default: .onerow)
 
     // Menu Appearance
     // if the event title in the menu should be shortened or not -> the length will be stored in field menuEventTitleLength
@@ -70,12 +72,7 @@ extension Defaults.Keys {
 
 
     // show all day events - by default true
-    static let allDayEvents = Key<Bool>("allDayEvents", default: true)
-    // show all day events only when they have a meeting link
-    static let allDayEventsWithLinkOnly = Key<Bool>("allDayEventsWithLinkOnly", default: false)
-
-    // show non all day events only when they have a meeting link
-    static let eventsWithLinkOnly = Key<Bool>("eventsWithLinkOnly", default: false)
+    static let allDayEvents = Key<AlldayEventsAppereance>("allDayEvents", default: AlldayEventsAppereance.show)
 
     // show the end date of a meeting in the meetingbar for each event entry
     static let showEventEndDate = Key<Bool>("showEventEndDate", default: true)

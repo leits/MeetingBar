@@ -123,7 +123,7 @@ enum AuthResult {
 }
 
 /**
- * 
+ * the icon to display in the status bar
  */
 enum EventTitleIconFormat: String, Codable, CaseIterable {
     case calendar = "iconCalendar"
@@ -134,14 +134,36 @@ enum EventTitleIconFormat: String, Codable, CaseIterable {
     case none = "no_online_session"
 }
 
+/**
+ * the layout of the event title in the status bar
+ */
+enum EventTitleLayout: String, Codable, CaseIterable {
+    case onerow = "1 row"
+    case tworow = "2 rows"
+}
+
 enum EventTitleFormat: String, Codable, CaseIterable {
     case show
     case dot
     case none
 }
 
+/**
+ * format for time in statusbar - can be shown or be hidden
+ */
+enum EventTimeFormat: String, Codable, CaseIterable {
+    case show
+    case hide
+}
+
 enum DeclinedEventsAppereance: String, Codable, CaseIterable {
     case strikethrough
+    case hide
+}
+
+enum AlldayEventsAppereance: String, Codable, CaseIterable {
+    case show
+    case show_with_meeting_link_only
     case hide
 }
 
