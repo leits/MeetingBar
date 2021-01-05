@@ -13,6 +13,20 @@ Integrated with 20+ meeting services so you can quickly join meetings from event
 
 <img src="https://github.com/leits/MeetingBar/blob/master/screenshot.png" width="700">
 
+## Features
+
+* Show the next meeting in the system menubar
+* Show all upcoming events from today and tomorrow (optional) in the expanded system menubar 
+* Show events from all your macos calendars incl. notes, location and attendees
+* Join the next onlinemeeting with a single shortcut
+* Select for specific services like zoom or ms teams to start the meeting in the installed app or browser
+* Attend an online meeting using one click
+* Create a new meeting in your favorite app by using a shortcut
+* Sends macos notifications for upcoming events
+* Bookmark your favorite meeting, show it in the statusmenu and make it accessable with a shortcut
+* Automatic launch the app when your system starts 
+* Execute your custom apple script, e.g. to pause music when joining a new online event 
+
 ## Setup
 
 1. Install:
@@ -55,6 +69,12 @@ If you have some installation problems or some other questions please check the 
 - Facebook Workspace
 
 If the service you use isn't supported, add a comment [here](https://github.com/leits/MeetingBar/issues/62).
+
+
+## Other similar apps
+
+* NextMeeting - free, more simple
+* Meeter - commercial solution, provides similar features and more regarding contacts
 
 ## Contribute
 

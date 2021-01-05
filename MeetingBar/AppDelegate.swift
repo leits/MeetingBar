@@ -18,32 +18,32 @@ import ServiceManagement
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDelegate {
     var statusBarItem: StatusBarItemControler!
-
+    
     var selectedCalendarIDsObserver: DefaultsObservation?
     var showEventDetailsObserver: DefaultsObservation?
-
+    
     var allDayEventsObserver: DefaultsObservation?
     var allDayEventsWithLinkOnlyObserver: DefaultsObservation?
     var titleLengthObserver: DefaultsObservation?
     var timeFormatObserver: DefaultsObservation?
     var eventTitleFormatObserver: DefaultsObservation?
     var pastEventsAppereanceObserver: DefaultsObservation?
+    var disablePastEventObserver: DefaultsObservation?
     var declinedEventsAppereanceObserver: DefaultsObservation?
     var personalEventsAppereanceObserver: DefaultsObservation?
     var showEventsForPeriodObserver: DefaultsObservation?
+    var ignoredEventIDsObserver: DefaultsObservation?
     var joinEventNotificationObserver: DefaultsObservation?
     var launchAtLoginObserver: DefaultsObservation?
-
     var preferencesWindow: NSWindow!
     var onboardingWindow: NSWindow!
-
+    
     func applicationDidFinishLaunching(_: Notification) {
         // Backward compatibility
         if let oldEventTitleOption = Defaults[.showEventTitleInStatusBar] {
             Defaults[.eventTitleFormat] = oldEventTitleOption ? EventTitleFormat.show : EventTitleFormat.dot
             Defaults[.showEventTitleInStatusBar] = nil
         }
-
         var calendarTitles: [String] = []
         if Defaults[.calendarTitle] != "" {
             calendarTitles.append(Defaults[.calendarTitle])
@@ -64,19 +64,20 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             Defaults[.disablePastEvents] = nil
         }
         //
-
+        
         let eventStoreAuthorized = (EKEventStore.authorizationStatus(for: .event) == .authorized)
         if Defaults[.onboardingCompleted], eventStoreAuthorized {
             setup()
+            
         } else {
             openOnboardingWindow()
         }
-
+        
         // When our main application starts, we have to kill
         // the auto launcher application if it's still running.
         postNotificationForAutoLauncher()
     }
-
+    
     /// Sending a notification to AutoLauncher app
     /// about main application running status
     private func postNotificationForAutoLauncher() {
@@ -88,18 +89,17 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                                                          object: Bundle.main.bundleIdentifier)
         }
     }
-
+    
     func setup() {
         statusBarItem = StatusBarItemControler()
-
+        
         registerNotificationCategories()
         UNUserNotificationCenter.current().delegate = self
-
+        
         statusBarItem.loadCalendars()
-
+        
         scheduleUpdateStatusBarTitle()
         scheduleUpdateEvents()
-
         KeyboardShortcuts.onKeyUp(for: .createMeetingShortcut) {
             self.createMeeting()
         }
@@ -109,11 +109,46 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         KeyboardShortcuts.onKeyUp(for: .joinBookmarkShortcut) {
             self.joinBookmark()
         }
-
+        
+        
+        
         NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.eventStoreChanged), name: .EKEventStoreChanged, object: statusBarItem.eventStore)
+        
+        self.selectedCalendarIDsObserver = Defaults.observe(.selectedCalendarIDs) { change in
+            NSLog("Changed selectedCalendarIDs from \(change.oldValue) to \(change.newValue)")
+            self.statusBarItem.loadCalendars()
+        }
+        self.showEventDetailsObserver = Defaults.observe(.showEventDetails) { change in
+            NSLog("Change showEventDetails from \(change.oldValue) to \(change.newValue)")
+            self.statusBarItem.updateMenu()
+        }
+        self.timeFormatObserver = Defaults.observe(.timeFormat) { change in
+            NSLog("Change timeFormat from \(change.oldValue) to \(change.newValue)")
+            self.statusBarItem.updateMenu()
+        }
+        self.eventTitleFormatObserver = Defaults.observe(.eventTitleFormat) { change in
+            NSLog("Changed eventTitleFormat from \(String(describing: change.oldValue)) to \(String(describing: change.newValue))")
+            self.statusBarItem.updateTitle()
+        }
 
+        self.titleLengthObserver = Defaults.observe(.titleLength) { change in
+            NSLog("Changed titleLength from \(change.oldValue) to \(change.newValue)")
+            self.statusBarItem.updateTitle()
+        }
+        self.disablePastEventObserver = Defaults.observe(.disablePastEvents) { change in
+            NSLog("Changed disablePastEvents from \(change.oldValue) to \(change.newValue)")
+            self.statusBarItem.updateMenu()
+        }
+        self.declinedEventsAppereanceObserver = Defaults.observe(.declinedEventsAppereance) { change in
+            NSLog("Changed declinedEventsAppereance from \(change.oldValue) to \(change.newValue)")
+            self.statusBarItem.updateMenu()
+        }
+        self.showEventsForPeriodObserver = Defaults.observe(.showEventsForPeriod) { change in
+            NSLog("Changed showEventsForPeriod from \(change.oldValue) to \(change.newValue)")
+            self.statusBarItem.updateMenu()
+        }
         NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.userDefaultsChanged), name: UserDefaults.didChangeNotification, object: nil)
-
+        
         selectedCalendarIDsObserver = Defaults.observe(.selectedCalendarIDs) { change in
             NSLog("Changed selectedCalendarIDs from \(change.oldValue) to \(change.newValue)")
             self.statusBarItem.loadCalendars()
@@ -122,17 +157,17 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             NSLog("Change showEventDetails from \(change.oldValue) to \(change.newValue)")
             self.statusBarItem.updateMenu()
         }
-
+        
         allDayEventsObserver = Defaults.observe(.allDayEvents) { change in
             NSLog("Change allDayEvents from \(change.oldValue) to \(change.newValue)")
             self.statusBarItem.updateMenu()
         }
-
+        
         allDayEventsWithLinkOnlyObserver = Defaults.observe(.allDayEventsWithLinkOnly) { change in
             NSLog("Change allDayEventsWithLinkOnly from \(change.oldValue) to \(change.newValue)")
             self.statusBarItem.updateMenu()
         }
-
+        
         timeFormatObserver = Defaults.observe(.timeFormat) { change in
             NSLog("Change timeFormat from \(change.oldValue) to \(change.newValue)")
             self.statusBarItem.updateMenu()
@@ -177,48 +212,47 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             }
         }
     }
-
+    
     @objc
     func eventStoreChanged(notification _: NSNotification) {
         NSLog("Store changed. Update status bar menu.")
         statusBarItem.updateTitle()
         statusBarItem.updateMenu()
     }
-
+    
     @objc
     func userDefaultsChanged(notification _: NSNotification) {
         NSLog("User defaults changed. Update status bar menu.")
         statusBarItem.updateMenu()
     }
-
+    
     private func scheduleUpdateStatusBarTitle() {
         let activity = NSBackgroundActivityScheduler(identifier: "leits.MeetingBar.updatestatusbartitle")
-
+        
         activity.repeats = true
         activity.interval = 30
         activity.qualityOfService = QualityOfService.userInteractive
-
+        
         activity.schedule { (completion: @escaping NSBackgroundActivityScheduler.CompletionHandler) in
             NSLog("Firing reccuring updateStatusBarTitle")
             self.statusBarItem.updateTitle()
             completion(NSBackgroundActivityScheduler.Result.finished)
         }
     }
-
+    
     private func scheduleUpdateEvents() {
         let activity = NSBackgroundActivityScheduler(identifier: "leits.MeetingBar.updateevents")
-
+        
         activity.repeats = true
         activity.interval = 60 * 5
         activity.qualityOfService = QualityOfService.userInteractive
-
+        
         activity.schedule { (completion: @escaping NSBackgroundActivityScheduler.CompletionHandler) in
             NSLog("Firing reccuring updateStatusBarMenu")
             self.statusBarItem.updateMenu()
             completion(NSBackgroundActivityScheduler.Result.finished)
         }
     }
-
     internal func userNotificationCenter(_: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         switch response.actionIdentifier {
         case "JOIN_ACTION", UNNotificationDefaultActionIdentifier:
@@ -237,10 +271,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         default:
             break
         }
-
+        
         completionHandler()
     }
-
+    
     @objc
     func createMeeting(_: Any? = nil) {
         NSLog("Create meeting in \(Defaults[.createMeetingService].rawValue)")
@@ -261,7 +295,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             openMeetingURL(nil, CreateMeetingLinks.outlook_live)
         }
     }
-
+    
     @objc
     func joinBookmark(_: Any? = nil) {
         NSLog("Join bookmark")
@@ -271,7 +305,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
         openMeetingURL(Defaults[.bookmarkMeetingService], url)
     }
-
+    
     @objc
     func joinNextMeeting(_: NSStatusBarButton? = nil) {
         if let nextEvent = statusBarItem.eventStore.getNextEvent(calendars: statusBarItem.calendars) {
@@ -283,14 +317,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             return
         }
     }
-
+    
     @objc
     func clickOnEvent(sender: NSMenuItem) {
         NSLog("Click on event (\(sender.title))!")
         let event: EKEvent = sender.representedObject as! EKEvent
         openEvent(event)
     }
-
+    
     @objc
     func openEventInCalendar(sender: NSMenuItem) {
         if let identifier = sender.representedObject as? String {
@@ -298,7 +332,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             _ = openLinkInDefaultBrowser(url)
         }
     }
-
+    
     @objc
     func openPrefecencesWindow(_: NSStatusBarButton?) {
         NSLog("Open preferences window")
@@ -316,14 +350,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         preferencesWindow.contentView = NSHostingView(rootView: contentView)
         let controller = NSWindowController(window: preferencesWindow)
         controller.showWindow(self)
-
+        
         preferencesWindow.center()
         preferencesWindow.orderFrontRegardless()
     }
-
+    
     func openOnboardingWindow() {
         NSLog("Open onboarding window")
-
+        
         let contentView = OnboardingView()
         if onboardingWindow != nil {
             onboardingWindow.close()
@@ -338,12 +372,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         onboardingWindow.contentView = NSHostingView(rootView: contentView)
         let controller = NSWindowController(window: onboardingWindow)
         controller.showWindow(self)
-
+        
         onboardingWindow.level = NSWindow.Level.floating
         onboardingWindow.center()
         onboardingWindow.orderFrontRegardless()
     }
-
+    
     @objc
     func quit(_: NSStatusBarButton) {
         NSLog("User click Quit")
