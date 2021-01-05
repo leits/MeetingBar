@@ -22,7 +22,7 @@ class StatusBarItemControler {
 
     init() {
         item = NSStatusBar.system.statusItem(
-            withLength: NSStatusItem.variableLength
+                withLength: NSStatusItem.variableLength
         )
         let statusBarMenu = NSMenu(title: "MeetingBar in Status Bar Menu")
         item.menu = statusBarMenu
@@ -103,17 +103,17 @@ class StatusBarItemControler {
             let nextEvent = eventStore.getNextEvent(calendars: calendars)
             if nextEvent != nil {
                 let joinItem = item.menu!.addItem(
-                    withTitle: "Join next event meeting",
-                    action: #selector(AppDelegate.joinNextMeeting),
-                    keyEquivalent: ""
+                        withTitle: "Join next event meeting",
+                        action: #selector(AppDelegate.joinNextMeeting),
+                        keyEquivalent: ""
                 )
                 joinItem.setShortcut(for: .joinEventShortcut)
             }
         }
         let createItem = item.menu!.addItem(
-            withTitle: "Create meeting",
-            action: #selector(AppDelegate.createMeeting),
-            keyEquivalent: ""
+                withTitle: "Create meeting",
+                action: #selector(AppDelegate.createMeeting),
+                keyEquivalent: ""
         )
         createItem.setShortcut(for: .createMeetingShortcut)
 
@@ -137,20 +137,22 @@ class StatusBarItemControler {
         let dateString = dateFormatter.string(from: date)
         let dateTitle = "\(title) (\(dateString)):"
         let titleItem = item.menu!.addItem(
-            withTitle: dateTitle,
-            action: nil,
-            keyEquivalent: ""
+                withTitle: dateTitle,
+                action: nil,
+                keyEquivalent: ""
         )
         titleItem.attributedTitle = NSAttributedString(string: dateTitle, attributes: [NSAttributedString.Key.font: NSFont.boldSystemFont(ofSize: 13)])
         titleItem.isEnabled = false
 
         // Events
-        let sortedEvents = events.sorted { $0.startDate < $1.startDate }
+        let sortedEvents = events.sorted {
+            $0.startDate < $1.startDate
+        }
         if sortedEvents.isEmpty {
             let item = self.item.menu!.addItem(
-                withTitle: "Nothing for \(title.lowercased())",
-                action: nil,
-                keyEquivalent: ""
+                    withTitle: "Nothing for \(title.lowercased())",
+                    action: nil,
+                    keyEquivalent: ""
             )
             item.isEnabled = false
         }
@@ -352,8 +354,15 @@ class StatusBarItemControler {
 
         if eventStatus == .declined {
             eventItem.attributedTitle = NSAttributedString(
+                    string: itemTitle,
+                    attributes: [NSAttributedString.Key.strikethroughStyle: NSUnderlineStyle.thick.rawValue]
+            )
+        }
+
+        if !event.hasAttendees, Defaults[.personalEventsAppereance] == .show_inactive {
+            eventItem.attributedTitle = NSAttributedString(
                 string: itemTitle,
-                attributes: [NSAttributedString.Key.strikethroughStyle: NSUnderlineStyle.thick.rawValue]
+                attributes: [NSAttributedString.Key.foregroundColor: NSColor.disabledControlTextColor]
             )
         }
 
@@ -459,7 +468,9 @@ class StatusBarItemControler {
             // Attendees
             if event.hasAttendees {
                 let attendees: [EKParticipant] = event.attendees ?? []
-                let count = attendees.filter { $0.participantType == .person }.count
+                let count = attendees.filter {
+                    $0.participantType == .person
+                }.count
                 let sortedAttendees = attendees.sorted {
                     if $0.participantRole.rawValue != $1.participantRole.rawValue {
                         return $0.participantRole.rawValue < $1.participantRole.rawValue
@@ -516,14 +527,14 @@ class StatusBarItemControler {
 
     func createPreferencesSection() {
         item.menu!.addItem(
-            withTitle: "Preferences",
-            action: #selector(AppDelegate.openPrefecencesWindow),
-            keyEquivalent: ","
+                withTitle: "Preferences",
+                action: #selector(AppDelegate.openPrefecencesWindow),
+                keyEquivalent: ","
         )
         item.menu!.addItem(
-            withTitle: "Quit",
-            action: #selector(AppDelegate.quit),
-            keyEquivalent: "q"
+                withTitle: "Quit",
+                action: #selector(AppDelegate.quit),
+                keyEquivalent: "q"
         )
     }
 }
@@ -534,10 +545,12 @@ func createEventStatusString(_ event: EKEvent) -> String {
     var eventTitle: String
     switch Defaults[.eventTitleFormat] {
     case .show:
-        eventTitle = String(event.title ?? "No title").trimmingCharacters(in: .whitespaces)
+        eventTitle = String(event.title ?? "No title")
+                .trimmingCharacters(in: TitleTruncationRules.excludeAtEnds)
         if eventTitle.count > Int(Defaults[.titleLength]) {
-            let index = eventTitle.index(eventTitle.startIndex, offsetBy: Int(Defaults[.titleLength]))
+            let index = eventTitle.index(eventTitle.startIndex, offsetBy: Int(Defaults[.titleLength]) - 1)
             eventTitle = String(eventTitle[...index])
+                    .trimmingCharacters(in: TitleTruncationRules.excludeAtEnds)
             eventTitle += "..."
         }
     case .dot:
