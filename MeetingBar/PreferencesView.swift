@@ -185,7 +185,7 @@ struct General: View {
                 Text("Shortcuts").font(.headline).bold()
                 HStack {
                     VStack {
-                        Text("Global app shortcut:")
+                        Text("Open menu:")
                         KeyboardShortcuts.Recorder(for: .openMenuShortcut)
                     }
                     VStack {
