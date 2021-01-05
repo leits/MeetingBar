@@ -28,7 +28,6 @@ extension Defaults.Keys {
 
     static let eventTitleIconFormat = Key<EventTitleIconFormat>("eventTitleIconFormat", default: .none)
     static let titleLength = Key<Double>("titleLength", default: TitleLengthLimits.max)
-    static let eventTitleLayout = Key<EventTitleLayout>("eventTitleLayout", default: .onerow)
 
     // Menu Appearance
     // if the event title in the menu should be shortened or not -> the length will be stored in field menuEventTitleLength

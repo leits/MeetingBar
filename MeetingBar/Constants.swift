@@ -137,14 +137,6 @@ enum EventTitleIconFormat: String, Codable, CaseIterable {
     case none = "no_online_session"
 }
 
-/**
- * the layout of the event title in the status bar
- */
-enum EventTitleLayout: String, Codable, CaseIterable {
-    case onerow = "1 row"
-    case tworow = "2 rows"
-}
-
 enum EventTitleFormat: String, Codable, CaseIterable {
     case show
     case dot
@@ -152,10 +144,11 @@ enum EventTitleFormat: String, Codable, CaseIterable {
 }
 
 /**
- * format for time in statusbar - can be shown or be hidden
+ * format for time in statusbar - can be shown, be under title or be hidden
  */
 enum EventTimeFormat: String, Codable, CaseIterable {
     case show
+    case show_under_title
     case hide
 }
 

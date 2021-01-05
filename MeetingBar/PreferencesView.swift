@@ -209,7 +209,6 @@ struct StatusBar: View {
     @Default(.eventTitleIconFormat) var eventTitleIconFormat
     @Default(.eventTitleFormat) var eventTitleFormat
     @Default(.eventTimeFormat) var eventTimeFormat
-    @Default(.eventTitleLayout) var eventTitleLayout
 
     @Default(.titleLength) var titleLength
 
@@ -218,13 +217,6 @@ struct StatusBar: View {
         VStack(alignment: .leading, spacing: 15) {
             Text("Status bar").font(.headline).bold()
             Section {
-                HStack {
-                    Picker("Layout", selection: $eventTitleLayout) {
-                        Text("One row").tag(EventTitleLayout.onerow)
-                        Text("Two rows").tag(EventTitleLayout.tworow)
-                    }
-                }
-
                 HStack {
                     Picker("Icon", selection: $eventTitleIconFormat) {
                         HStack {
@@ -276,6 +268,7 @@ struct StatusBar: View {
                 HStack {
                     Picker("Time", selection: $eventTimeFormat) {
                         Text("show").tag(EventTimeFormat.show)
+                        Text("show under title").tag(EventTimeFormat.show_under_title)
                         Text("hide").tag(EventTimeFormat.hide)
                     }
                 }

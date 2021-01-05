@@ -145,7 +145,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                     // create an NSMutableAttributedString that we'll append everything to
                     let menuTitle = NSMutableAttributedString()
 
-                    if Defaults[.eventTitleLayout] == .onerow || Defaults[.eventTimeFormat] == EventTimeFormat.hide || Defaults[.eventTitleFormat] == .none {
+                    if Defaults[.eventTimeFormat] != EventTimeFormat.show_under_title || Defaults[.eventTitleFormat] == .none {
                         var eventTitle = title
                         if Defaults[.eventTimeFormat] == EventTimeFormat.show {
                             eventTitle += " " + time
@@ -159,9 +159,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
 
                         menuTitle.append(NSAttributedString(string: title, attributes: [NSAttributedString.Key.font: NSFont.systemFont(ofSize: 12), NSAttributedString.Key.baselineOffset: -3]))
 
-                        if Defaults[.eventTimeFormat] == EventTimeFormat.show {
-                            menuTitle.append(NSAttributedString(string: "\n" + time, attributes: [NSAttributedString.Key.font: NSFont.systemFont(ofSize: 9), NSAttributedString.Key.foregroundColor: NSColor.lightGray]))
-                        }
+                        menuTitle.append(NSAttributedString(string: "\n" + time, attributes: [NSAttributedString.Key.font: NSFont.systemFont(ofSize: 9), NSAttributedString.Key.foregroundColor: NSColor.lightGray]))
 
 
                         menuTitle.addAttributes([NSAttributedString.Key.paragraphStyle: paragraphStyle], range: NSRange(location: 0, length: menuTitle.length))

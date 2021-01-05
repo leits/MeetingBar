@@ -30,7 +30,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     var bookmarkObserver: DefaultsObservation?
 
     var eventTitleFormatObserver: DefaultsObservation?
-    var eventTitleLayoutObserver: DefaultsObservation?
     var eventTimeFormatObserver: DefaultsObservation?
 
     var eventTitleIconFormatObserver: DefaultsObservation?
@@ -170,13 +169,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             NSLog("Change showEventEndDate from \(change.oldValue) to \(change.newValue)")
             if change.oldValue != change.newValue {
                 self.statusBarItem.updateMenu()
-            }
-        }
-
-        eventTitleLayoutObserver = Defaults.observe(.eventTitleLayout) { change in
-            NSLog("Changed eventTitleLayout from \(String(describing: change.oldValue)) to \(String(describing: change.newValue))")
-            if change.oldValue != change.newValue {
-                self.statusBarItem.updateTitle()
             }
         }
 
