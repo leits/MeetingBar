@@ -27,6 +27,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     var allDayEventsWithLinkOnlyObserver: DefaultsObservation?
     var titleLengthObserver: DefaultsObservation?
     var timeFormatObserver: DefaultsObservation?
+
+    var showEventEndDateObserver: DefaultsObservation?
+
     var eventTitleFormatObserver: DefaultsObservation?
     var pastEventsAppereanceObserver: DefaultsObservation?
     var disablePastEventObserver: DefaultsObservation?
@@ -133,6 +136,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             NSLog("Change showEventDetails from \(change.oldValue) to \(change.newValue)")
             self.statusBarItem.updateMenu()
         }
+
+        self.showEventEndDateObserver = Defaults.observe(.showEventEndDate) { change in
+            NSLog("Change showEventEndDate from \(change.oldValue) to \(change.newValue)")
+            if change.oldValue != change.newValue {
+                self.statusBarItem.updateMenu()
+            }
+        }
+
         self.timeFormatObserver = Defaults.observe(.timeFormat) { change in
             NSLog("Change timeFormat from \(change.oldValue) to \(change.newValue)")
             self.statusBarItem.updateMenu()
