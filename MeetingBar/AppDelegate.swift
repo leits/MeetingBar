@@ -27,6 +27,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
     var titleLengthObserver: DefaultsObservation?
     var timeFormatObserver: DefaultsObservation?
+    var bookmarkObserver: DefaultsObservation?
 
     var eventTitleFormatObserver: DefaultsObservation?
     var eventTitleLayoutObserver: DefaultsObservation?
@@ -218,6 +219,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             NSLog("Change timeFormat from \(change.oldValue) to \(change.newValue)")
             self.statusBarItem.updateMenu()
         }
+
+        bookmarkObserver = Defaults.observe(keys: .bookmarkMeetingURL, .bookmarkMeetingURL2, .bookmarkMeetingURL3, .bookmarkMeetingURL4, .bookmarkMeetingURL5, .bookmarkMeetingName, .bookmarkMeetingName2, .bookmarkMeetingName3, .bookmarkMeetingName4, .bookmarkMeetingName5, .bookmarkMeetingService, .bookmarkMeetingService2, .bookmarkMeetingService3, .bookmarkMeetingService4, .bookmarkMeetingService5) {
+                self.statusBarItem.updateMenu()
+        }
+
         eventTitleFormatObserver = Defaults.observe(.eventTitleFormat) { change in
             NSLog("Changed eventTitleFormat from \(String(describing: change.oldValue)) to \(String(describing: change.newValue))")
             self.statusBarItem.updateTitle()
