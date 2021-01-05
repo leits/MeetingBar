@@ -106,8 +106,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         KeyboardShortcuts.onKeyUp(for: .joinEventShortcut) {
             self.joinNextMeeting()
         }
+        KeyboardShortcuts.onKeyUp(for: .joinBookmarkShortcut) {
+            self.joinBookmark()
+        }
 
         NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.eventStoreChanged), name: .EKEventStoreChanged, object: statusBarItem.eventStore)
+
+        NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.userDefaultsChanged), name: UserDefaults.didChangeNotification, object: nil)
 
         selectedCalendarIDsObserver = Defaults.observe(.selectedCalendarIDs) { change in
             NSLog("Changed selectedCalendarIDs from \(change.oldValue) to \(change.newValue)")
@@ -180,6 +185,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         statusBarItem.updateMenu()
     }
 
+    @objc
+    func userDefaultsChanged(notification _: NSNotification) {
+        NSLog("User defaults changed. Update status bar menu.")
+        statusBarItem.updateMenu()
+    }
+
     private func scheduleUpdateStatusBarTitle() {
         let activity = NSBackgroundActivityScheduler(identifier: "leits.MeetingBar.updatestatusbartitle")
 
@@ -249,6 +260,16 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         case .outlook_live:
             openMeetingURL(nil, CreateMeetingLinks.outlook_live)
         }
+    }
+
+    @objc
+    func joinBookmark(_: Any? = nil) {
+        NSLog("Join bookmark")
+        let urlString = Defaults[.bookmarkMeetingURL]
+        guard !urlString.isEmpty, let url = URL(string: urlString) else {
+            return
+        }
+        openMeetingURL(Defaults[.bookmarkMeetingService], url)
     }
 
     @objc

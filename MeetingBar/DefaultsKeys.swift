@@ -34,6 +34,11 @@ extension Defaults.Keys {
     static let disablePastEvents = Key<Bool?>("disablePastEvents")
     static let timeFormat = Key<TimeFormat>("timeFormat", default: .military)
 
+    // Bookmark
+    static let bookmarkMeetingName = Key<String>("bookmarkMeetingName", default: "")
+    static let bookmarkMeetingService = Key<MeetingServices>("bookmarkMeetingService", default: .zoom)
+    static let bookmarkMeetingURL = Key<String>("bookmarkMeetingURL", default: "")
+  
     // show all day events - by default true
     static let allDayEvents = Key<Bool>("allDayEvents", default: true)
     // show all day events only when they have a meeting link

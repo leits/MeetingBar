@@ -11,4 +11,5 @@ import KeyboardShortcuts
 extension KeyboardShortcuts.Name {
     static let createMeetingShortcut = Self("createMeetingShortcut")
     static let joinEventShortcut = Self("joinEventShortcut")
+    static let joinBookmarkShortcut = Self("joinBookmarkShortcut")
 }
