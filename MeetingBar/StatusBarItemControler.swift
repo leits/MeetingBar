@@ -117,14 +117,38 @@ class StatusBarItemControler {
         )
         createItem.setShortcut(for: .createMeetingShortcut)
 
-        if !Defaults[.bookmarkMeetingURL].isEmpty {
+
+
+        if !Defaults[.bookmarkMeetingURL].isEmpty || !Defaults[.bookmarkMeetingURL2].isEmpty || !Defaults[.bookmarkMeetingURL3].isEmpty || !Defaults[.bookmarkMeetingURL4].isEmpty || !Defaults[.bookmarkMeetingURL5].isEmpty {
             self.item.menu!.addItem(NSMenuItem.separator())
-            let name = Defaults[.bookmarkMeetingName]
+
+            let bookmarkItemTitle = self.item.menu!.addItem(
+                withTitle: "Bookmarks",
+                action: nil,
+                keyEquivalent: ""
+            )
+            bookmarkItemTitle.attributedTitle = NSAttributedString(string: "Bookmarks", attributes: [NSAttributedString.Key.font: NSFont.boldSystemFont(ofSize: 13)])
+            bookmarkItemTitle.isEnabled = false
+        }
+
+        createBookmarkItem(url: Defaults[.bookmarkMeetingURL], name: Defaults[.bookmarkMeetingName], service: Defaults[.bookmarkMeetingService], function: #selector(AppDelegate.joinBookmark), keyboardShortcut: .joinBookmarkShortcut1)
+
+        createBookmarkItem(url: Defaults[.bookmarkMeetingURL2], name: Defaults[.bookmarkMeetingName2], service: Defaults[.bookmarkMeetingService2], function: #selector(AppDelegate.joinBookmark2), keyboardShortcut: .joinBookmarkShortcut2)
+
+        createBookmarkItem(url: Defaults[.bookmarkMeetingURL3], name: Defaults[.bookmarkMeetingName3], service: Defaults[.bookmarkMeetingService3], function: #selector(AppDelegate.joinBookmark3), keyboardShortcut: .joinBookmarkShortcut3)
+
+        createBookmarkItem(url: Defaults[.bookmarkMeetingURL4], name: Defaults[.bookmarkMeetingName4], service: Defaults[.bookmarkMeetingService4], function: #selector(AppDelegate.joinBookmark4), keyboardShortcut: .joinBookmarkShortcut4)
+
+        createBookmarkItem(url: Defaults[.bookmarkMeetingURL5], name: Defaults[.bookmarkMeetingName5], service: Defaults[.bookmarkMeetingService5], function: #selector(AppDelegate.joinBookmark5), keyboardShortcut: .joinBookmarkShortcut5)
+    }
+
+    func createBookmarkItem(url: String, name: String, service: MeetingServices, function: Selector, keyboardShortcut: KeyboardShortcuts.Name ) {
+        if !url.isEmpty {
             let joinItem = self.item.menu!.addItem(
-                withTitle: "Join \(name.isEmpty ? "bookmarked meeting" : name)",
-                action: #selector(AppDelegate.joinBookmark),
+                withTitle: "Join \(name.isEmpty ? "bookmarked meeting" : name + " (" + service.rawValue + ")" )",
+                action: function,
                 keyEquivalent: "")
-            joinItem.setShortcut(for: .joinBookmarkShortcut)
+            joinItem.setShortcut(for: keyboardShortcut)
         }
     }
 
@@ -297,6 +321,8 @@ class StatusBarItemControler {
         case .none:
             image = NSImage(named: "no_online_session")!
             image!.size = NSSize(width: 16, height: 16)
+
+        default: break
         }
 
         return image!
@@ -532,9 +558,9 @@ class StatusBarItemControler {
                 keyEquivalent: ","
         )
         item.menu!.addItem(
-                withTitle: "Quit",
-                action: #selector(AppDelegate.quit),
-                keyEquivalent: "q"
+            withTitle: "Quit Meetingbar",
+            action: #selector(AppDelegate.quit),
+            keyEquivalent: "q"
         )
     }
 }
@@ -613,7 +639,6 @@ func getEventStatus(_ event: EKEvent) -> EKParticipantStatus? {
     }
     return EKParticipantStatus.unknown
 }
-
 
 
 func openMeetingURL(_ service: MeetingServices?, _ url: URL) {

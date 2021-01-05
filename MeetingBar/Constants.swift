@@ -77,6 +77,7 @@ enum Links {
 }
 
 enum MeetingServices: String, Codable, CaseIterable {
+    case other = "Other"
     case meet = "Google Meet"
     case hangouts = "Google Hangouts"
     case zoom = "Zoom"
@@ -152,7 +153,7 @@ public enum AutoLauncher {
     static let bundleIdentifier: String = "leits.MeetingBar.AutoLauncher"
 }
 
-enum ChromeExecutable : String, Codable, CaseIterable{
+enum ChromeExecutable: String, Codable, CaseIterable {
     case chrome = "Google Chrome"
     case chromium = "Chromium"
     case defaultBrowser = "Default Browser"

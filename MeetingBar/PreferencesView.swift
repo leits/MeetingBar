@@ -16,10 +16,11 @@ struct PreferencesView: View {
         VStack {
             TabView {
                 General().tabItem { Text("General") }
-                Bookmark().tabItem { Text("Bookmark") }
+
                 Appearance().tabItem { Text("Appearance") }
                 Configuration().tabItem { Text("Services") }
                 Calendars().padding().tabItem { Text("Calendars") }
+                Bookmark().tabItem { Text("Bookmarks") }
                 Advanced().tabItem { Text("Advanced") }
             }
         }.padding()
@@ -224,7 +225,7 @@ struct Appearance: View {
                         Text(generateTitleSample(eventTitleFormat, Int(titleLength)))
                         Spacer()
                     }.padding(.all, 10)
-                        .border(Color.gray, width: 3)
+                    .border(Color.gray, width: 3)
                     HStack {
                         Text("5")
                         Slider(value: $titleLength, in: TitleLengthLimits.min ... TitleLengthLimits.max, step: 1)
@@ -293,11 +294,6 @@ struct Configuration: View {
                     Text("Chrome").tag(ChromeExecutable.chrome)
                     Text("Chromium").tag(ChromeExecutable.chromium)
                 }
-                Picker(selection: $useChromeForHangoutsLinks, label: Text("Open Hangouts links in").frame(width: 150, alignment: .leading)) {
-                    Text("Default Browser").tag(ChromeExecutable.defaultBrowser)
-                    Text("Chrome").tag(ChromeExecutable.chrome)
-                    Text("Chromium").tag(ChromeExecutable.chromium)
-                }
                 Picker(selection: $useAppForZoomLinks, label: Text("Open Zoom links in").frame(width: 150, alignment: .leading)) {
                     Text("Default Browser").tag(false)
                     Text("Zoom app").tag(true)
@@ -307,7 +303,6 @@ struct Configuration: View {
                     Text("Teams app").tag(true)
                 }
             }.padding(.horizontal, 10)
-            Spacer()
             Section {
                 Text("Supported links for services:\n\(MeetingServices.allCases.map { $0.rawValue }.joined(separator: ", "))")
                 HStack {
@@ -329,29 +324,163 @@ struct Bookmark: View {
     @Default(.bookmarkMeetingURL) var bookmarkMeetingURL
     @Default(.bookmarkMeetingService) var bookmarkMeetingService
 
+    @Default(.bookmarkMeetingName2) var bookmarkMeetingName2
+    @Default(.bookmarkMeetingURL2) var bookmarkMeetingURL2
+    @Default(.bookmarkMeetingService2) var bookmarkMeetingService2
+
+    @Default(.bookmarkMeetingName3) var bookmarkMeetingName3
+    @Default(.bookmarkMeetingURL3) var bookmarkMeetingURL3
+    @Default(.bookmarkMeetingService3) var bookmarkMeetingService3
+
+    @Default(.bookmarkMeetingName4) var bookmarkMeetingName4
+    @Default(.bookmarkMeetingURL4) var bookmarkMeetingURL4
+    @Default(.bookmarkMeetingService4) var bookmarkMeetingService4
+
+    @Default(.bookmarkMeetingName5) var bookmarkMeetingName5
+    @Default(.bookmarkMeetingURL5) var bookmarkMeetingURL5
+    @Default(.bookmarkMeetingService5) var bookmarkMeetingService5
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 15) {
+        VStack(alignment: .leading) {
             Section {
                 HStack {
+                    Text("Bookmark 1").font(.subheadline).bold()
+                    Button(action: reset(argument1: "bookmarkMeetingName", argument2: "bookmarkMeetingURL", argument3: "bookmarkMeetingService", argument4: KeyboardShortcuts.Name.joinBookmarkShortcut1)) {
+                        Text("Reset").font(.system(size: 8))
+                    }.disabled(bookmarkMeetingName.isEmpty && bookmarkMeetingURL.isEmpty)
+                }
+                HStack {
                     Picker(selection: $bookmarkMeetingService, label: Text("")) {
-                        Text(MeetingServices.meet.rawValue).tag(MeetingServices.meet)
-                        Text(MeetingServices.zoom.rawValue).tag(MeetingServices.zoom)
                         Text(MeetingServices.teams.rawValue).tag(MeetingServices.teams)
-                        Text(MeetingServices.hangouts.rawValue).tag(MeetingServices.hangouts)
+                        Text(MeetingServices.zoom.rawValue).tag(MeetingServices.zoom)
+                        Text(MeetingServices.meet.rawValue).tag(MeetingServices.meet)
+                        Text(MeetingServices.other.rawValue).tag(MeetingServices.other)
                     }.labelsHidden()
-                    .frame(width: 120, alignment: .leading)
+                    .frame(width: 150, alignment: .leading)
                     TextField("URL", text: $bookmarkMeetingURL)
                 }
                 HStack {
                     TextField("Name (optional)", text: $bookmarkMeetingName)
                     Text("Shortcut:")
-                    KeyboardShortcuts.Recorder(for: .joinBookmarkShortcut)
+                    KeyboardShortcuts.Recorder(for: .joinBookmarkShortcut1)
+                }
+            }
+            Spacer()
+            Section {
+                HStack {
+                    Text("Bookmark 2").font(.subheadline).bold()
+                    Button(action: reset(argument1: "bookmarkMeetingName2", argument2: "bookmarkMeetingURL2", argument3: "bookmarkMeetingService2", argument4: KeyboardShortcuts.Name.joinBookmarkShortcut2)) {
+                        Text("Reset").font(.system(size: 8))
+                    }.disabled(bookmarkMeetingName2.isEmpty && bookmarkMeetingURL2.isEmpty)
+                }
+
+                HStack {
+                    Picker(selection: $bookmarkMeetingService2, label: Text("")) {
+                        Text(MeetingServices.teams.rawValue).tag(MeetingServices.teams)
+                        Text(MeetingServices.zoom.rawValue).tag(MeetingServices.zoom)
+                        Text(MeetingServices.meet.rawValue).tag(MeetingServices.meet)
+                        Text(MeetingServices.other.rawValue).tag(MeetingServices.other)
+                    }.labelsHidden()
+                    .frame(width: 150, alignment: .leading)
+                    TextField("URL", text: $bookmarkMeetingURL2)
+                }
+                HStack {
+                    TextField("Name (optional)", text: $bookmarkMeetingName2)
+                    Text("Shortcut:")
+                    KeyboardShortcuts.Recorder(for: .joinBookmarkShortcut2)
+                }
+            }
+            Spacer()
+            Section {
+                HStack {
+                    Text("Bookmark 3").font(.subheadline).bold()
+                    Button(action: reset(argument1: "bookmarkMeetingName3", argument2: "bookmarkMeetingURL3", argument3: "bookmarkMeetingService3", argument4: KeyboardShortcuts.Name.joinBookmarkShortcut3)) {
+                        Text("Reset").font(.system(size: 8))
+                    }.disabled(bookmarkMeetingName.isEmpty && bookmarkMeetingURL.isEmpty)
+                }
+                HStack {
+                    Picker(selection: $bookmarkMeetingService3, label: Text("")) {
+                        Text(MeetingServices.teams.rawValue).tag(MeetingServices.teams)
+                        Text(MeetingServices.zoom.rawValue).tag(MeetingServices.zoom)
+                        Text(MeetingServices.meet.rawValue).tag(MeetingServices.meet)
+                        Text(MeetingServices.other.rawValue).tag(MeetingServices.other)
+                    }.labelsHidden()
+                    .frame(width: 150, alignment: .leading)
+                    TextField("URL", text: $bookmarkMeetingURL3)
+                }
+                HStack {
+                    TextField("Name (optional)", text: $bookmarkMeetingName3)
+                    Text("Shortcut:")
+                    KeyboardShortcuts.Recorder(for: .joinBookmarkShortcut3)
+                }
+            }
+            Spacer()
+            Section {
+                HStack {
+                    Text("Bookmark 4").font(.subheadline).bold()
+                    Button(action: reset(argument1: "bookmarkMeetingName4", argument2: "bookmarkMeetingURL4", argument3: "bookmarkMeetingService4", argument4: KeyboardShortcuts.Name.joinBookmarkShortcut4)) {
+                        Text("Reset").font(.system(size: 8))
+                    }.disabled(bookmarkMeetingName.isEmpty && bookmarkMeetingURL.isEmpty)
+                }
+                HStack {
+                    Picker(selection: $bookmarkMeetingService4, label: Text("")) {
+                        Text(MeetingServices.teams.rawValue).tag(MeetingServices.teams)
+                        Text(MeetingServices.zoom.rawValue).tag(MeetingServices.zoom)
+                        Text(MeetingServices.meet.rawValue).tag(MeetingServices.meet)
+                        Text(MeetingServices.other.rawValue).tag(MeetingServices.other)
+                    }.labelsHidden()
+                    .frame(width: 150, alignment: .leading)
+                    TextField("URL", text: $bookmarkMeetingURL4)
+                }
+                HStack {
+                    TextField("Name (optional)", text: $bookmarkMeetingName4)
+                    Text("Shortcut:")
+                    KeyboardShortcuts.Recorder(for: .joinBookmarkShortcut4)
+                }
+            }
+            Spacer()
+            Section {
+                HStack {
+                    Text("Bookmark 5").font(.subheadline).bold()
+                    Button(action: reset(argument1: "bookmarkMeetingName5", argument2: "bookmarkMeetingURL5", argument3: "bookmarkMeetingService5", argument4: KeyboardShortcuts.Name.joinBookmarkShortcut5)) {
+                        Text("Reset").font(.system(size: 8))
+                    }.disabled(bookmarkMeetingName.isEmpty && bookmarkMeetingURL.isEmpty)
+                }
+                HStack {
+                    Picker(selection: $bookmarkMeetingService5, label: Text("")) {
+                        Text(MeetingServices.teams.rawValue).tag(MeetingServices.teams)
+                        Text(MeetingServices.zoom.rawValue).tag(MeetingServices.zoom)
+                        Text(MeetingServices.meet.rawValue).tag(MeetingServices.meet)
+                        Text(MeetingServices.other.rawValue).tag(MeetingServices.other)
+                    }.labelsHidden()
+                    .frame(width: 150, alignment: .leading)
+                    TextField("URL", text: $bookmarkMeetingURL5)
+                }
+                HStack {
+                    TextField("Name (optional)", text: $bookmarkMeetingName5)
+                    Text("Shortcut:")
+                    KeyboardShortcuts.Recorder(for: .joinBookmarkShortcut5)
                 }
             }
             Spacer()
         }.padding()
     }
+
+
+    func reset(argument1: String, argument2: String, argument3: String, argument4: KeyboardShortcuts.Name) -> () -> Void {
+           {
+            let bookmarkMeetingNameVariable = Defaults.Key<String?>(argument1)
+            let bookmarkMeetingUrlVariable = Defaults.Key<String?>(argument2)
+            let bookmarkMeetingServiceVariable = Defaults.Key<MeetingServices?>(argument3)
+
+            Defaults[bookmarkMeetingNameVariable] = nil
+            Defaults[bookmarkMeetingUrlVariable] = nil
+            Defaults[bookmarkMeetingServiceVariable] = nil
+            KeyboardShortcuts.reset(argument4)
+           }
+    }
 }
+
 
 
 struct CreateMeetingServicePicker: View {
@@ -411,11 +540,11 @@ struct EditRegexModal: View {
                 }.disabled(new_regex.isEmpty)
             }
         }.padding()
-            .frame(width: 500, height: 150)
-            .onAppear { self.new_regex = self.regex }
-            .alert(isPresented: $showingAlert) {
-                Alert(title: Text("Can't save regex"), message: Text(error_msg), dismissButton: .default(Text("OK")))
-            }
+        .frame(width: 500, height: 150)
+        .onAppear { self.new_regex = self.regex }
+        .alert(isPresented: $showingAlert) {
+            Alert(title: Text("Can't save regex"), message: Text(error_msg), dismissButton: .default(Text("OK")))
+        }
     }
 
     func cancel() {

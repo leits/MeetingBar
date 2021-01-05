@@ -37,10 +37,31 @@ extension Defaults.Keys {
     static let hidePastEvents = Key<Bool>("hidePastEvents", default: false)
     static let timeFormat = Key<TimeFormat>("timeFormat", default: .military)
 
-    // Bookmark
+    // Bookmark 1
     static let bookmarkMeetingName = Key<String>("bookmarkMeetingName", default: "")
-    static let bookmarkMeetingService = Key<MeetingServices>("bookmarkMeetingService", default: .zoom)
+    static let bookmarkMeetingService = Key<MeetingServices>("bookmarkMeetingService", default: .other)
     static let bookmarkMeetingURL = Key<String>("bookmarkMeetingURL", default: "")
+
+    // Bookmark 2
+    static let bookmarkMeetingName2 = Key<String>("bookmarkMeetingName2", default: "")
+    static let bookmarkMeetingService2 = Key<MeetingServices>("bookmarkMeetingService2", default: .other)
+    static let bookmarkMeetingURL2 = Key<String>("bookmarkMeetingURL2", default: "")
+
+    // Bookmark 3
+    static let bookmarkMeetingName3 = Key<String>("bookmarkMeetingName3", default: "")
+    static let bookmarkMeetingService3 = Key<MeetingServices>("bookmarkMeetingService3", default: .other)
+    static let bookmarkMeetingURL3 = Key<String>("bookmarkMeetingURL3", default: "")
+
+    // Bookmark 4
+    static let bookmarkMeetingName4 = Key<String>("bookmarkMeetingName4", default: "")
+    static let bookmarkMeetingService4 = Key<MeetingServices>("bookmarkMeetingService4", default: .other)
+    static let bookmarkMeetingURL4 = Key<String>("bookmarkMeetingURL4", default: "")
+
+    // Bookmark 5
+    static let bookmarkMeetingName5 = Key<String>("bookmarkMeetingName5", default: "")
+    static let bookmarkMeetingService5 = Key<MeetingServices>("bookmarkMeetingService5", default: .other)
+    static let bookmarkMeetingURL5 = Key<String>("bookmarkMeetingURL5", default: "")
+
 
     // show all day events - by default true
     static let allDayEvents = Key<Bool>("allDayEvents", default: true)
