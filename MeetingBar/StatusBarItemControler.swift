@@ -652,15 +652,6 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL) {
         default:
             _ = openLinkInDefaultBrowser(url)
         }
-    case .hangouts:
-        switch Defaults[.useChromeForHangoutsLinks] {
-        case .chrome:
-            openLinkInChrome(url)
-        case .chromium:
-            openLinkInChromium(url)
-        default:
-            _ = openLinkInDefaultBrowser(url)
-        }
     case .teams:
         if Defaults[.useAppForTeamsLinks] {
             var teamsAppURL = URLComponents(url: url, resolvingAgainstBaseURL: false)!
