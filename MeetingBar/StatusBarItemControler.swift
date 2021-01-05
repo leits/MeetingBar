@@ -112,9 +112,13 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                 button.image = nil
                 button.title = ""
                 if title == "🏁" {
-                    button.image = NSImage(named: "iconCalendarCheckmark")
-                    button.imagePosition = .imageLeft
-                    button.title = "No meetings"
+                    switch Defaults[.eventTitleIconFormat] {
+                    case .appicon:
+                        button.image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
+                    default:
+                        button.image = NSImage(named: "iconCalendarCheckmark")
+                    }
+                    button.image?.size = NSSize(width: 16, height: 16)
                 } else if title == "MeetingBar" {
                     button.image = NSImage(named: "iconCalendar")
                 }
