@@ -22,7 +22,7 @@
 		148E47E824F400C400399929 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 148E47E724F400C400399929 /* OnboardingView.swift */; };
 		148E47EB24F546E700399929 /* Defaults in Frameworks */ = {isa = PBXBuildFile; productRef = 148E47EA24F546E700399929 /* Defaults */; };
 		14E4110E246F2F9200F73ACF /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14E4110D246F2F9200F73ACF /* PreferencesView.swift */; };
-		40DC7043250E5B9C00217DD9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40DC7042250E5B9C00217DD9 /* AppDelegate.swift */; };
+		40DC7043250E5B9C00217DD9 /* AutoLauncherAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40DC7042250E5B9C00217DD9 /* AutoLauncherAppDelegate.swift */; };
 		40DC7051250E5DB500217DD9 /* AutoLauncher.app in CopyFiles */ = {isa = PBXBuildFile; fileRef = 40DC7040250E5B9C00217DD9 /* AutoLauncher.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		40DC7054250E5E1000217DD9 /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC7053250E5E1000217DD9 /* ServiceManagement.framework */; };
 		40E60313250E81EA005986C7 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40E60312250E81EA005986C7 /* main.swift */; };
@@ -60,7 +60,7 @@
 		148E47E724F400C400399929 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		14E4110D246F2F9200F73ACF /* PreferencesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesView.swift; sourceTree = "<group>"; };
 		40DC7040250E5B9C00217DD9 /* AutoLauncher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AutoLauncher.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		40DC7042250E5B9C00217DD9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		40DC7042250E5B9C00217DD9 /* AutoLauncherAppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoLauncherAppDelegate.swift; sourceTree = "<group>"; };
 		40DC704B250E5BB100217DD9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		40DC704C250E5BB100217DD9 /* AutoLauncher.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AutoLauncher.entitlements; sourceTree = "<group>"; };
 		40DC7053250E5E1000217DD9 /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = System/Library/Frameworks/ServiceManagement.framework; sourceTree = SDKROOT; };
@@ -125,19 +125,19 @@
 		144C017B2462D0C3000C9FFC /* MeetingBar */ = {
 			isa = PBXGroup;
 			children = (
+				144C017C2462D0C3000C9FFC /* AppDelegate.swift */,
 				14E4110D246F2F9200F73ACF /* PreferencesView.swift */,
 				148E47E724F400C400399929 /* OnboardingView.swift */,
-				144C017C2462D0C3000C9FFC /* AppDelegate.swift */,
-				144C01802462D0C5000C9FFC /* Assets.xcassets */,
-				140D843B2493B7A50055E1CE /* Extensions */,
 				140D84312493A3FE0055E1CE /* StatusBarItemControler.swift */,
-				144C01852462D0C5000C9FFC /* Main.storyboard */,
-				144C01882462D0C5000C9FFC /* Info.plist */,
 				140D84332493A4180055E1CE /* Constants.swift */,
-				144C01892462D0C5000C9FFC /* MeetingBar.entitlements */,
 				140D84392493A6240055E1CE /* Helpers.swift */,
 				14879B2A24E6889C00DB0A7E /* Notifications.swift */,
+				140D843B2493B7A50055E1CE /* Extensions */,
 				144C01822462D0C5000C9FFC /* Preview Content */,
+				144C01852462D0C5000C9FFC /* Main.storyboard */,
+				144C01882462D0C5000C9FFC /* Info.plist */,
+				144C01802462D0C5000C9FFC /* Assets.xcassets */,
+				144C01892462D0C5000C9FFC /* MeetingBar.entitlements */,
 			);
 			path = MeetingBar;
 			sourceTree = "<group>";
@@ -153,7 +153,7 @@
 		40DC7041250E5B9C00217DD9 /* AutoLauncher */ = {
 			isa = PBXGroup;
 			children = (
-				40DC7042250E5B9C00217DD9 /* AppDelegate.swift */,
+				40DC7042250E5B9C00217DD9 /* AutoLauncherAppDelegate.swift */,
 				40DC704B250E5BB100217DD9 /* Info.plist */,
 				40DC704C250E5BB100217DD9 /* AutoLauncher.entitlements */,
 				40E60312250E81EA005986C7 /* main.swift */,
@@ -327,7 +327,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				40E60313250E81EA005986C7 /* main.swift in Sources */,
-				40DC7043250E5B9C00217DD9 /* AppDelegate.swift in Sources */,
+				40DC7043250E5B9C00217DD9 /* AutoLauncherAppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -475,8 +475,9 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 100;
+				CURRENT_PROJECT_VERSION = 108;
 				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = KGH289N6T8;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = MeetingBar/Info.plist;
@@ -485,7 +486,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
-				MARKETING_VERSION = 1.6.1;
+				MARKETING_VERSION = 2.0.5;
 				PRODUCT_BUNDLE_IDENTIFIER = leits.MeetingBar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -501,8 +502,9 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 100;
+				CURRENT_PROJECT_VERSION = 108;
 				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = KGH289N6T8;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = MeetingBar/Info.plist;
@@ -511,7 +513,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
-				MARKETING_VERSION = 1.6.1;
+				MARKETING_VERSION = 2.0.5;
 				PRODUCT_BUNDLE_IDENTIFIER = leits.MeetingBar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -527,6 +529,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = KGH289N6T8;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = AutoLauncher/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -549,6 +552,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = KGH289N6T8;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = AutoLauncher/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (

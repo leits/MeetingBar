@@ -21,12 +21,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
     var selectedCalendarIDsObserver: DefaultsObservation?
     var showEventDetailsObserver: DefaultsObservation?
+
+    var allDayEventsObserver: DefaultsObservation?
+    var allDayEventsWithLinkOnlyObserver: DefaultsObservation?
     var titleLengthObserver: DefaultsObservation?
     var timeFormatObserver: DefaultsObservation?
     var eventTitleFormatObserver: DefaultsObservation?
-    var disablePastEventObserver: DefaultsObservation?
-    var hidePastEventObserver: DefaultsObservation?
+    var pastEventsAppereanceObserver: DefaultsObservation?
     var declinedEventsAppereanceObserver: DefaultsObservation?
+    var personalEventsAppereanceObserver: DefaultsObservation?
     var showEventsForPeriodObserver: DefaultsObservation?
     var joinEventNotificationObserver: DefaultsObservation?
     var launchAtLoginObserver: DefaultsObservation?
@@ -56,6 +59,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                 Defaults[.selectedCalendarIDs].append(calendar.calendarIdentifier)
             }
         }
+        if let disablePastEvents = Defaults[.disablePastEvents] {
+            Defaults[.pastEventsAppereance] = disablePastEvents ? .show_inactive : .show_active
+            Defaults[.disablePastEvents] = nil
+        }
         //
 
         let eventStoreAuthorized = (EKEventStore.authorizationStatus(for: .event) == .authorized)
@@ -63,6 +70,22 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             setup()
         } else {
             openOnboardingWindow()
+        }
+
+        // When our main application starts, we have to kill
+        // the auto launcher application if it's still running.
+        postNotificationForAutoLauncher()
+    }
+
+    /// Sending a notification to AutoLauncher app
+    /// about main application running status
+    private func postNotificationForAutoLauncher() {
+        let runningApps = NSWorkspace.shared.runningApplications
+        let isRunning = runningApps.contains { $0.bundleIdentifier == AutoLauncher.bundleIdentifier }
+        if isRunning {
+            let killAutoLauncherNotificationName = Notification.Name(rawValue: "killAutoLauncher")
+            DistributedNotificationCenter.default().post(name: killAutoLauncherNotificationName,
+                                                         object: Bundle.main.bundleIdentifier)
         }
     }
 
@@ -99,6 +122,17 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             NSLog("Change showEventDetails from \(change.oldValue) to \(change.newValue)")
             self.statusBarItem.updateMenu()
         }
+
+        allDayEventsObserver = Defaults.observe(.allDayEvents) { change in
+            NSLog("Change allDayEvents from \(change.oldValue) to \(change.newValue)")
+            self.statusBarItem.updateMenu()
+        }
+
+        allDayEventsWithLinkOnlyObserver = Defaults.observe(.allDayEventsWithLinkOnly) { change in
+            NSLog("Change allDayEventsWithLinkOnly from \(change.oldValue) to \(change.newValue)")
+            self.statusBarItem.updateMenu()
+        }
+
         timeFormatObserver = Defaults.observe(.timeFormat) { change in
             NSLog("Change timeFormat from \(change.oldValue) to \(change.newValue)")
             self.statusBarItem.updateMenu()
@@ -111,16 +145,16 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             NSLog("Changed titleLength from \(change.oldValue) to \(change.newValue)")
             self.statusBarItem.updateTitle()
         }
-        disablePastEventObserver = Defaults.observe(.disablePastEvents) { change in
-            NSLog("Changed disablePastEvents from \(change.oldValue) to \(change.newValue)")
-            self.statusBarItem.updateMenu()
-        }
-        hidePastEventObserver = Defaults.observe(.hidePastEvents) { change in
-            NSLog("Changed hidePastEvents from \(change.oldValue) to \(change.newValue)")
+        pastEventsAppereanceObserver = Defaults.observe(.pastEventsAppereance) { change in
+            NSLog("Changed pastEventsAppereance from \(change.oldValue) to \(change.newValue)")
             self.statusBarItem.updateMenu()
         }
         declinedEventsAppereanceObserver = Defaults.observe(.declinedEventsAppereance) { change in
             NSLog("Changed declinedEventsAppereance from \(change.oldValue) to \(change.newValue)")
+            self.statusBarItem.updateMenu()
+        }
+        personalEventsAppereanceObserver = Defaults.observe(.personalEventsAppereance) { change in
+            NSLog("Changed personalEventsAppereance from \(change.oldValue) to \(change.newValue)")
             self.statusBarItem.updateMenu()
         }
         showEventsForPeriodObserver = Defaults.observe(.showEventsForPeriod) { change in
@@ -219,8 +253,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             openMeetingURL(MeetingServices.hangouts, CreateMeetingLinks.hangouts)
         case .teams:
             openMeetingURL(MeetingServices.teams, CreateMeetingLinks.teams)
-        default:
-            break
+        case .gcalendar:
+            openMeetingURL(nil, CreateMeetingLinks.gcalendar)
+        case .outlook_office365:
+            openMeetingURL(nil, CreateMeetingLinks.outlook_office365)
+        case .outlook_live:
+            openMeetingURL(nil, CreateMeetingLinks.outlook_live)
         }
     }
 
@@ -254,6 +292,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     }
 
     @objc
+    func openEventInCalendar(sender: NSMenuItem) {
+        if let identifier = sender.representedObject as? String {
+            let url = URL(string: "ical://ekevent/\(identifier)")!
+            _ = openLinkInDefaultBrowser(url)
+        }
+    }
+
+    @objc
     func openPrefecencesWindow(_: NSStatusBarButton?) {
         NSLog("Open preferences window")
         let contentView = PreferencesView()
@@ -261,10 +307,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             preferencesWindow.close()
         }
         preferencesWindow = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 570, height: 450),
+            contentRect: NSRect(x: 0, y: 0, width: 570, height: 500),
             styleMask: [.closable, .titled],
             backing: .buffered,
-            defer: false)
+            defer: false
+        )
         preferencesWindow.title = "MeetingBar Preferences"
         preferencesWindow.contentView = NSHostingView(rootView: contentView)
         let controller = NSWindowController(window: preferencesWindow)
@@ -285,7 +332,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             contentRect: NSRect(x: 0, y: 0, width: 520, height: 400),
             styleMask: [.closable, .titled],
             backing: .buffered,
-            defer: false)
+            defer: false
+        )
         onboardingWindow.title = "Welcome to MeetingBar!"
         onboardingWindow.contentView = NSHostingView(rootView: contentView)
         let controller = NSWindowController(window: onboardingWindow)

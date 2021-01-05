@@ -13,6 +13,11 @@ struct TitleLengthLimits {
     static let max = 55.0
 }
 
+struct TitleTruncationRules {
+    static let excludeAtEnds = CharacterSet.whitespacesAndNewlines
+            .union(CharacterSet.punctuationCharacters)
+}
+
 struct LinksRegex {
     let meet = try! NSRegularExpression(pattern: #"https://meet.google.com/[a-z-]+"#)
     let hangouts = try! NSRegularExpression(pattern: #"https://hangouts.google.com/[^\s]*"#)
@@ -40,16 +45,30 @@ struct LinksRegex {
     let skype4biz = try! NSRegularExpression(pattern: #"https://meet.lync.com/[^\s]*"#)
     let skype4biz_selfhosted = try! NSRegularExpression(pattern: #"https://meet\.[^\s]*"#)
     let lifesize = try! NSRegularExpression(pattern: #"https://call.lifesizecloud.com/[^\s]*"#)
+    let facebook_workspace = try! NSRegularExpression(pattern: #"https://([a-z0-9-.]+)?workplace.com/meet/[^\s]"#)
 }
 
-struct CreateMeetingLinks {
+enum CreateMeetingLinks {
     static var meet = URL(string: "https://meet.google.com/new")!
     static var hangouts = URL(string: "https://hangouts.google.com/call")!
     static var zoom = URL(string: "https://zoom.us/start?confno=123456789&zc=0")!
     static var teams = URL(string: "https://teams.microsoft.com/l/meeting/new?subject=")!
+    static var gcalendar = URL(string: "https://calendar.google.com/calendar/u/0/r/eventedit")!
+    static var outlook_live = URL(string: "https://outlook.live.com/calendar/0/action/compose")!
+    static var outlook_office365 = URL(string: "https://outlook.office365.com/calendar/0/action/compose")!
 }
 
-struct Links {
+enum CreateMeetingServices: String, Codable, CaseIterable {
+    case meet = "Google Meet"
+    case hangouts = "Google Hangouts"
+    case zoom = "Zoom"
+    case teams = "Microsoft Teams"
+    case gcalendar = "Google Calendar"
+    case outlook_live = "Outlook Live"
+    case outlook_office365 = "Outlook Office365"
+}
+
+enum Links {
     static var supportTheCreator = URL(string: "https://www.patreon.com/meetingbar")!
     static var aboutThisApp = URL(string: "https://meetingbar.onrender.com?utm_source=app")!
     static var emailMe = URL(string: "mailto:leits.dev@gmail.com?subject=MeetingBar")!
@@ -83,6 +102,7 @@ enum MeetingServices: String, Codable, CaseIterable {
     case skype4biz = "Skype For Business"
     case skype4biz_selfhosted = "Skype For Business (SH)"
     case lifesize = "Lifesize"
+    case facebook_workspace = "Facebook Workspace"
 }
 
 enum TimeFormat: String, Codable, CaseIterable {
@@ -104,6 +124,12 @@ enum DeclinedEventsAppereance: String, Codable, CaseIterable {
     case hide
 }
 
+enum PastEventsAppereance: String, Codable, CaseIterable {
+    case show_active
+    case show_inactive
+    case hide
+}
+
 enum ShowEventsForPeriod: String, Codable, CaseIterable {
     case today
     case today_n_tomorrow
@@ -112,13 +138,14 @@ enum ShowEventsForPeriod: String, Codable, CaseIterable {
 enum JoinEventNotificationTime: Int, Codable {
     case atStart = 5
     case minuteBefore = 60
+    case threeMinuteBefore = 180
     case fiveMinuteBefore = 300
 }
 
-struct GoogleRegex {
+enum GoogleRegex {
     static let emailAddress = try! NSRegularExpression(pattern: #""mailto:(.+@.+)""#)
 }
 
-public struct AutoLauncher {
+public enum AutoLauncher {
     static let bundleIdentifier: String = "leits.MeetingBar.AutoLauncher"
 }

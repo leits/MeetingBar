@@ -12,7 +12,7 @@ extension EKEventStore {
     func getMatchedCalendars(titles: [String] = [], ids: [String] = []) -> [EKCalendar] {
         var matchedCalendars: [EKCalendar] = []
 
-        let allCalendars = self.calendars(for: .event)
+        let allCalendars = calendars(for: .event)
         for calendar in allCalendars {
             if titles.contains(calendar.title) || ids.contains(calendar.calendarIdentifier) {
                 matchedCalendars.append(calendar)
@@ -29,15 +29,37 @@ extension EKEventStore {
     func loadEventsForDate(calendars: [EKCalendar], date: Date) -> [EKEvent] {
         let dayMidnight = Calendar.current.startOfDay(for: date)
         let nextDayMidnight = Calendar.current.date(byAdding: .day, value: 1, to: dayMidnight)!
+        let showAllDayEvents = Defaults[.allDayEvents]
 
-        let predicate = self.predicateForEvents(withStart: dayMidnight, end: nextDayMidnight, calendars: calendars)
-        let calendarEvents = self.events(matching: predicate).filter { $0.isAllDay || Calendar.current.isDate($0.startDate, inSameDayAs: dayMidnight) }
+        let predicate = predicateForEvents(withStart: dayMidnight, end: nextDayMidnight, calendars: calendars)
+        let calendarEvents = events(matching: predicate).filter { ($0.isAllDay && showAllDayEvents) || Calendar.current.isDate($0.startDate, inSameDayAs: dayMidnight) }
+
+        var filteredCalendarEvents = [EKEvent]()
+
+        let allDayLinksOnly = Defaults[.allDayEventsWithLinkOnly]
+
+        for calendarEvent in calendarEvents {
+            if calendarEvent.isAllDay {
+                if showAllDayEvents && !allDayLinksOnly {
+                    filteredCalendarEvents.append(calendarEvent)
+                } else if showAllDayEvents && allDayLinksOnly {
+                    let result = getMeetingLink(calendarEvent)
+
+                    if result?.url != nil {
+                        filteredCalendarEvents.append(calendarEvent)
+                    }
+                }
+            } else {
+                filteredCalendarEvents.append(calendarEvent)
+            }
+        }
 
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
         let dateString = formatter.string(from: date)
         NSLog("Loaded events for date \(dateString) from calendars \(calendars.map { $0.title })")
-        return calendarEvents
+
+        return filteredCalendarEvents
     }
 
     func getNextEvent(calendars: [EKCalendar]) -> EKEvent? {
@@ -55,8 +77,14 @@ extension EKEventStore {
             endPeriod = Calendar.current.date(byAdding: .day, value: 2, to: todayMidnight)!
         }
 
-        let predicate = self.predicateForEvents(withStart: startPeriod, end: endPeriod, calendars: calendars)
-        let nextEvents = self.events(matching: predicate)
+        let predicate = predicateForEvents(withStart: startPeriod, end: endPeriod, calendars: calendars)
+        var nextEvents = events(matching: predicate)
+
+        // Filter out personal events, if not marked as 'active'
+        if Defaults[.personalEventsAppereance] != .show_active {
+            nextEvents = nextEvents.filter { $0.hasAttendees }
+        }
+
         // If the current event is still going on,
         // but the next event is closer than 10 minutes later
         // then show the next event
@@ -76,7 +104,7 @@ extension EKEventStore {
                     nextEvent = event
                     continue
                 } else {
-                    let soon = now.addingTimeInterval(600) // 10 min from now
+                    let soon = now.addingTimeInterval(900) // 15 min from now
                     if event.startDate < soon {
                         nextEvent = event
                     } else {
