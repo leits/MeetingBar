@@ -203,6 +203,8 @@ struct Appearance: View {
     @Default(.declinedEventsAppereance) var declinedEventsAppereance
     @Default(.personalEventsAppereance) var personalEventsAppereance
     @Default(.pastEventsAppereance) var pastEventsAppereance
+    @Default(.allDayEvents) var allDayEvents
+    @Default(.allDayEventsWithLinkOnly) var allDayEventsWithLinkOnly
 
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
@@ -230,10 +232,14 @@ struct Appearance: View {
                 }.padding(.horizontal, 10)
             }
             Divider()
-            Text("Menu").font(.headline).bold()
             Section {
                 HStack {
                     Toggle("Show event details as submenu", isOn: $showEventDetails)
+                }
+
+                HStack {
+                    Toggle("Show all day events", isOn: $allDayEvents)
+                    Toggle("... with meeting links only", isOn: ($allDayEventsWithLinkOnly)).disabled(!$allDayEvents.wrappedValue)
                 }
                 HStack {
                     Picker("Past events:", selection: $pastEventsAppereance) {
