@@ -125,19 +125,19 @@
 		144C017B2462D0C3000C9FFC /* MeetingBar */ = {
 			isa = PBXGroup;
 			children = (
+				144C017C2462D0C3000C9FFC /* AppDelegate.swift */,
 				14E4110D246F2F9200F73ACF /* PreferencesView.swift */,
 				148E47E724F400C400399929 /* OnboardingView.swift */,
-				144C017C2462D0C3000C9FFC /* AppDelegate.swift */,
-				144C01802462D0C5000C9FFC /* Assets.xcassets */,
-				140D843B2493B7A50055E1CE /* Extensions */,
 				140D84312493A3FE0055E1CE /* StatusBarItemControler.swift */,
-				144C01852462D0C5000C9FFC /* Main.storyboard */,
-				144C01882462D0C5000C9FFC /* Info.plist */,
 				140D84332493A4180055E1CE /* Constants.swift */,
-				144C01892462D0C5000C9FFC /* MeetingBar.entitlements */,
 				140D84392493A6240055E1CE /* Helpers.swift */,
 				14879B2A24E6889C00DB0A7E /* Notifications.swift */,
+				140D843B2493B7A50055E1CE /* Extensions */,
 				144C01822462D0C5000C9FFC /* Preview Content */,
+				144C01852462D0C5000C9FFC /* Main.storyboard */,
+				144C01882462D0C5000C9FFC /* Info.plist */,
+				144C01802462D0C5000C9FFC /* Assets.xcassets */,
+				144C01892462D0C5000C9FFC /* MeetingBar.entitlements */,
 			);
 			path = MeetingBar;
 			sourceTree = "<group>";
