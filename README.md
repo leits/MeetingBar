@@ -5,7 +5,7 @@
 [![Github all releases](https://img.shields.io/github/downloads/leits/MeetingBar/total.svg)](https://GitHub.com/leits/MeetingBar/releases/)
 
 <a href="https://www.producthunt.com/posts/meetingbar?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-meetingbar" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=203807&theme=light" alt="MeetingBar - Join your next meeting from your menu bar | Product Hunt Embed" style="width: 250px; height: 54px;" width="250px" height="54px" /></a>
-[![Download on the Mac App Store](mas_badge.png)](https://apps.apple.com/us/app/id1532419400)
+[![Download on the Mac App Store](mas_badge.png)](https://apps.apple.com/us/app/id1532419400) [![Join the chat at https://gitter.im/MeetingBar/community](https://badges.gitter.im/MeetingBar/community.svg)](https://gitter.im/MeetingBar/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 **MeetingBar** is a menu bar app for your calendar meetings (macOS 10.15+).
 
