@@ -337,6 +337,23 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             openMeetingURL(nil, CreateMeetingLinks.outlook_office365)
         case .outlook_live:
             openMeetingURL(nil, CreateMeetingLinks.outlook_live)
+        case .url:
+            var url: String = Defaults[.createMeetingServiceUrl]
+
+            if !url.isEmpty, let checkedUrl = NSURL(string: url) {
+                if !url.starts(with: "http://") && !url.starts(with: "https://") {
+                    url = "https://" + url
+                }
+
+                openMeetingURL(nil, URL(string: url)!)
+            } else {
+                let createUrlAlert = NSAlert()
+                createUrlAlert.messageText = "Cannot create new meeting"
+                createUrlAlert.informativeText = "The custom url \(url) is missing or not valid. Please enter a custom url in the app preferences."
+                createUrlAlert.alertStyle = NSAlert.Style.informational
+                createUrlAlert.addButton(withTitle: "OK")
+                createUrlAlert.runModal()
+            }
         }
     }
 

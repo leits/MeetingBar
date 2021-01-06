@@ -429,11 +429,44 @@ struct Configuration: View {
             }.foregroundColor(.gray).font(.system(size: 12)).padding(.horizontal, 10)
             Divider()
             HStack {
-                Text("Create meetings in").frame(width: 150, alignment: .leading)
                 CreateMeetingServicePicker()
             }.padding(.horizontal, 10)
             Spacer()
         }.padding()
+    }
+}
+
+struct CreateMeetingServicePicker: View {
+    @Default(.createMeetingService) var createMeetingService
+    @Default(.createMeetingServiceUrl) var createMeetingServiceUrl
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            HStack {
+                Text("Create meetings via").frame(width: 150, alignment: .leading)
+                Picker(selection: $createMeetingService, label: Text("")) {
+                    Text(CreateMeetingServices.meet.rawValue).tag(CreateMeetingServices.meet)
+                    Text(CreateMeetingServices.zoom.rawValue).tag(CreateMeetingServices.zoom)
+                    Text(CreateMeetingServices.teams.rawValue).tag(CreateMeetingServices.teams)
+                    Text(CreateMeetingServices.hangouts.rawValue).tag(CreateMeetingServices.hangouts)
+                    Text(CreateMeetingServices.gcalendar.rawValue).tag(CreateMeetingServices.gcalendar)
+                    Text(CreateMeetingServices.outlook_live.rawValue).tag(CreateMeetingServices.outlook_live)
+                    Text(CreateMeetingServices.outlook_office365.rawValue).tag(CreateMeetingServices.outlook_office365)
+                    Text(CreateMeetingServices.url.rawValue).tag(CreateMeetingServices.url)
+                }.labelsHidden()
+            }
+
+
+            if createMeetingService == CreateMeetingServices.url {
+                HStack {
+                    Text("Custom url").frame(width: 150, alignment: .leading)
+                    TextField("Please enter a valid url", text: $createMeetingServiceUrl).textFieldStyle(RoundedBorderTextFieldStyle())
+                }
+                HStack {
+                    Text("Tip: Google Meet supports choosing account via parameter, e.g. https://meet.google.com/new?authuser=1").foregroundColor(.gray).font(.system(size: 12))
+                }
+            }
+        }
     }
 }
 
@@ -621,21 +654,7 @@ struct Bookmark: View {
 
 
 
-struct CreateMeetingServicePicker: View {
-    @Default(.createMeetingService) var createMeetingService
 
-    var body: some View {
-        Picker(selection: $createMeetingService, label: Text("")) {
-            Text(CreateMeetingServices.meet.rawValue).tag(CreateMeetingServices.meet)
-            Text(CreateMeetingServices.zoom.rawValue).tag(CreateMeetingServices.zoom)
-            Text(CreateMeetingServices.teams.rawValue).tag(CreateMeetingServices.teams)
-            Text(CreateMeetingServices.hangouts.rawValue).tag(CreateMeetingServices.hangouts)
-            Text(CreateMeetingServices.gcalendar.rawValue).tag(CreateMeetingServices.gcalendar)
-            Text(CreateMeetingServices.outlook_live.rawValue).tag(CreateMeetingServices.outlook_live)
-            Text(CreateMeetingServices.outlook_office365.rawValue).tag(CreateMeetingServices.outlook_office365)
-        }.labelsHidden()
-    }
-}
 
 struct JoinEventNotificationPicker: View {
     @Default(.joinEventNotification) var joinEventNotification

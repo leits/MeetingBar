@@ -72,6 +72,7 @@ enum CreateMeetingServices: String, Codable, CaseIterable {
     case gcalendar = "Google Calendar"
     case outlook_live = "Outlook Live"
     case outlook_office365 = "Outlook Office365"
+    case url = "Custom url"
 }
 
 enum Links {
