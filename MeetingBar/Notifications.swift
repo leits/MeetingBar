@@ -37,7 +37,7 @@ func registerNotificationCategories() {
     notificationCenter.setNotificationCategories([eventCategory])
 }
 
-func sendNotification(_ title: String, _ text: String) {
+func sendNotification(title: String, text: String, subtitle: String = "") {
     requestNotificationAuthorization() // By the apple best practices
 
     NSLog("Send notification: \(title) - \(text)")
@@ -46,6 +46,9 @@ func sendNotification(_ title: String, _ text: String) {
     let content = UNMutableNotificationContent()
     content.title = title
     content.body = text
+    if !subtitle.isEmpty {
+        content.subtitle = subtitle
+    }
 
     let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0.1, repeats: false)
     let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)

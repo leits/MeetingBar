@@ -28,7 +28,7 @@ func openLinkInChrome(_ link: URL) {
             NSLog("Open \(link) in Chrome")
         } else {
             NSLog("Can't open \(link) in Chrome: \(String(describing: error?.localizedDescription))")
-            sendNotification("Oops! Unable to open the link in Chrome", "Make sure you have Chrome installed, or change the browser in the preferences.")
+            sendNotification(title: "Oops! Unable to open the link in Chrome", text: "Make sure you have Chrome installed, or change the browser in the preferences.")
             _ = openLinkInDefaultBrowser(link)
         }
     }
@@ -42,7 +42,7 @@ func openLinkInChromium(_ link: URL) {
             NSLog("Open \(link) in Chromium")
         } else {
             NSLog("Can't open \(link) in Chromium: \(String(describing: error?.localizedDescription))")
-            sendNotification("Oops! Unable to open the link in Chromium", "Make sure you have Chromium installed, or change the browser in the preferences.")
+            sendNotification(title: "Oops! Unable to open the link in Chromium", text: "Make sure you have Chromium installed, or change the browser in the preferences.")
             _ = openLinkInDefaultBrowser(link)
         }
     }
