@@ -277,7 +277,6 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             withTitle: dateTitle,
             action: nil,
             keyEquivalent: ""
-
         )
         titleItem.attributedTitle = NSAttributedString(string: dateTitle, attributes: [NSAttributedString.Key.font: NSFont.boldSystemFont(ofSize: 13)])
         titleItem.isEnabled = false
@@ -291,7 +290,6 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                 withTitle: "Nothing for \(title.lowercased())",
                 action: nil,
                 keyEquivalent: ""
-
             )
             item.isEnabled = false
         }

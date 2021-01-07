@@ -13,56 +13,43 @@ import Defaults
 func requestNotificationAuthorization() {
     let center = UNUserNotificationCenter.current()
 
-    center.getNotificationSettings { notificationSettings in
-        NSLog("Before Alert settings \(notificationSettings.alertSetting.rawValue)")
-        NSLog("Before Alert Style settings \(notificationSettings.alertStyle.rawValue)")
-        NSLog("Before Authorisation status \(notificationSettings.authorizationStatus.rawValue)")
-    }
-
     center.requestAuthorization(options: [.alert, .badge, .sound]) { granted, _ in
         if granted {
             NSLog("Access to notications granted")
+            center.getNotificationSettings { notificationSettings in
+                NSLog("Authorisation status \(notificationSettings.authorizationStatus.rawValue)")
+                NSLog("Alert Style settings \(notificationSettings.alertStyle.rawValue)")
+            }
         } else {
             NSLog("Access to notications denied")
         }
     }
 
-    center.getNotificationSettings { notificationSettings in
-        NSLog("After Alert settings \(notificationSettings.alertSetting.rawValue)")
-        NSLog("After Alert Style settings \(notificationSettings.alertStyle.rawValue)")
-        NSLog("After Authorisation status \(notificationSettings.authorizationStatus.rawValue)")
-    }
+
 }
 
 func registerNotificationCategories() {
-    DispatchQueue.main.async {
-        let acceptAction = UNNotificationAction(identifier: "JOIN_ACTION",
-                                                title: "Join",
-                                                options: .foreground)
+    let acceptAction = UNNotificationAction(identifier: "JOIN_ACTION",
+                                            title: "Join",
+                                            options: .foreground)
 
-        let eventCategory =
-            UNNotificationCategory(identifier: "EVENT",
-                                   actions: [acceptAction],
-                                   intentIdentifiers: [],
-                                   hiddenPreviewsBodyPlaceholder: "",
-                                   options: [.customDismissAction, .hiddenPreviewsShowTitle])
+    let eventCategory =
+        UNNotificationCategory(identifier: "EVENT",
+                               actions: [acceptAction],
+                               intentIdentifiers: [],
+                               hiddenPreviewsBodyPlaceholder: "",
+                               options: [.customDismissAction, .hiddenPreviewsShowTitle])
 
-        let notificationCenter = UNUserNotificationCenter.current()
+    let notificationCenter = UNUserNotificationCenter.current()
 
-        notificationCenter.getNotificationCategories { categories in
-            for category in categories {
-                NSLog("Before Category \(category.identifier) registered")
-            }
-        }
+    notificationCenter.setNotificationCategories([eventCategory])
 
-        notificationCenter.setNotificationCategories([eventCategory])
-
-        notificationCenter.getNotificationCategories { categories in
-            for category in categories {
-                NSLog("After Category \(category.identifier) registered")
-            }
+    notificationCenter.getNotificationCategories { categories in
+        for category in categories {
+            NSLog("Category \(category.identifier) was registered")
         }
     }
+
 }
 
 func sendNotification(_ title: String, _ text: String) {
@@ -117,30 +104,4 @@ func scheduleEventNotification(_ event: EKEvent) {
     }
 }
 
-func scheduleTestEventNotification() {
-    requestNotificationAuthorization() // By the apple best practices
 
-    let timeInterval = 0.1
-
-    let center = UNUserNotificationCenter.current()
-
-    let content = UNMutableNotificationContent()
-    content.title = "Test title"
-    content.body = "The event starts soon"
-    content.subtitle = "Test subtitle"
-    content.categoryIdentifier = "EVENT"
-    content.sound = UNNotificationSound.default
-    content.userInfo = ["eventID": "1"]
-    content.badge = 1
-   // content.threadIdentifier = "meetingbar"
-
-    let trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeInterval, repeats: false)
-    let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
-    center.add(request) { error in
-        if let error = error {
-            NSLog("%@", "request \(request) could not be added because of error \(error)")
-        } else {
-            NSLog("%@", "request \(request) was added")
-        }
-    }
-}

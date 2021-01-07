@@ -106,8 +106,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         registerNotificationCategories()
         UNUserNotificationCenter.current().delegate = self
 
-        scheduleTestEventNotification()
-
         statusBarItem.loadCalendars()
 
         scheduleUpdateStatusBarTitle()
