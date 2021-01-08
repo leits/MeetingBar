@@ -72,7 +72,7 @@ If you have some installation problems or some other questions please check the 
 - Lifesize
 - Facebook Workspace
 
-If the service you use isn't supported, add a comment [here](https://github.com/leits/MeetingBar/issues/62).
+If the service you use isn't supported, add a comment [here](https://github.com/leits/MeetingBar/discussions/108).
 
 
 ## Other similar apps
