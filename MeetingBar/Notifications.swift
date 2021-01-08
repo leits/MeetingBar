@@ -7,7 +7,7 @@
 //
 import EventKit
 import UserNotifications
-
+import AppKit
 import Defaults
 
 func requestNotificationAuthorization() {
@@ -37,8 +37,12 @@ func registerNotificationCategories() {
     notificationCenter.setNotificationCategories([eventCategory])
 }
 
-func sendNotification(_ title: String, _ text: String) {
-    requestNotificationAuthorization() // By the apple best practices
+/**
+ * displays a notification for the given title and text immediately -> trigger is nil
+ */
+func displayNotification(_ title: String, _ text: String) {
+    requestNotificationAuthorization()
+    // By the apple best practices
 
     NSLog("Send notification: \(title) - \(text)")
     let center = UNUserNotificationCenter.current()
@@ -47,9 +51,59 @@ func sendNotification(_ title: String, _ text: String) {
     content.title = title
     content.body = text
 
-    let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0.1, repeats: false)
-    let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+    let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
     center.add(request)
+}
+
+/**
+ * check whether the notifications for meetingbar are enabled and alert or banner style is enabled.
+ * in this case the method will return true, otherwise false.
+ *
+ */
+func notificationsEnabled() -> Bool {
+    let center = UNUserNotificationCenter.current()
+    let group = DispatchGroup()
+    group.enter()
+
+    var correctAlertStyle = false
+    var notificationsEnabled = false
+
+    center.getNotificationSettings { notificationSettings in
+        correctAlertStyle = notificationSettings.alertStyle == UNAlertStyle.alert || notificationSettings.alertStyle == UNAlertStyle.banner
+        notificationsEnabled = notificationSettings.authorizationStatus == UNAuthorizationStatus.authorized
+        group.leave()
+    }
+
+    group.wait()
+    return correctAlertStyle && notificationsEnabled
+}
+
+/**
+ * sends a notification to the user.
+ */
+func sendNotification(_ title: String, _ text: String) {
+    requestNotificationAuthorization() // By the apple best practices
+
+    if notificationsEnabled() {
+        displayNotification(title, text)
+    } else {
+        displayAlert(title: title, text: text)
+    }
+}
+
+/**
+ * adds an alert for the user- we will only use NSAlert if the user has switched off notifications
+ */
+func displayAlert(title: String, text: String) {
+    NSLog("Display alert: \(title) - \(text)")
+
+    let userAlert = NSAlert()
+    userAlert.messageText = title
+    userAlert.informativeText = text
+    userAlert.alertStyle = NSAlert.Style.informational
+    userAlert.addButton(withTitle: "OK")
+
+    userAlert.runModal()
 }
 
 func scheduleEventNotification(_ event: EKEvent) {

@@ -460,7 +460,7 @@ struct CreateMeetingServicePicker: View {
             if createMeetingService == CreateMeetingServices.url {
                 HStack {
                     Text("Custom url").frame(width: 150, alignment: .leading)
-                    TextField("Please enter a valid url", text: $createMeetingServiceUrl).textFieldStyle(RoundedBorderTextFieldStyle())
+                    TextField("Please enter a valid url (with the url scheme, e.g. https://)", text: $createMeetingServiceUrl).textFieldStyle(RoundedBorderTextFieldStyle())
                 }
                 HStack {
                     Text("Tip: Google Meet supports choosing account via parameter, e.g. https://meet.google.com/new?authuser=1").foregroundColor(.gray).font(.system(size: 12))

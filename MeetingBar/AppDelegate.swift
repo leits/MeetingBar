@@ -213,7 +213,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
 
         bookmarkObserver = Defaults.observe(keys: .bookmarkMeetingURL, .bookmarkMeetingURL2, .bookmarkMeetingURL3, .bookmarkMeetingURL4, .bookmarkMeetingURL5, .bookmarkMeetingName, .bookmarkMeetingName2, .bookmarkMeetingName3, .bookmarkMeetingName4, .bookmarkMeetingName5, .bookmarkMeetingService, .bookmarkMeetingService2, .bookmarkMeetingService3, .bookmarkMeetingService4, .bookmarkMeetingService5) {
-                self.statusBarItem.updateMenu()
+            self.statusBarItem.updateMenu()
         }
 
         eventTitleFormatObserver = Defaults.observe(.eventTitleFormat) { change in
@@ -297,6 +297,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             completion(NSBackgroundActivityScheduler.Result.finished)
         }
     }
+
+    /**
+     * implementation is necessary to show notifications even when the app has focus!
+     */
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        completionHandler([.alert, .badge, .sound])     }
+
     internal func userNotificationCenter(_: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         switch response.actionIdentifier {
         case "JOIN_ACTION", UNNotificationDefaultActionIdentifier:
@@ -339,20 +346,16 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             openMeetingURL(nil, CreateMeetingLinks.outlook_live)
         case .url:
             var url: String = Defaults[.createMeetingServiceUrl]
+            let checkedUrl = NSURL(string: url)
 
-            if !url.isEmpty, let checkedUrl = NSURL(string: url) {
-                if !url.starts(with: "http://") && !url.starts(with: "https://") {
-                    url = "https://" + url
-                }
-
+            if !url.isEmpty && checkedUrl != nil {
                 openMeetingURL(nil, URL(string: url)!)
             } else {
-                let createUrlAlert = NSAlert()
-                createUrlAlert.messageText = "Cannot create new meeting"
-                createUrlAlert.informativeText = "The custom url \(url) is missing or not valid. Please enter a custom url in the app preferences."
-                createUrlAlert.alertStyle = NSAlert.Style.informational
-                createUrlAlert.addButton(withTitle: "OK")
-                createUrlAlert.runModal()
+                if !url.isEmpty {
+                    url += " "
+                }
+
+                sendNotification("Cannot create new meeeting", "Custom url \(url)is missing or invalid. Please enter a value in the app preferences.")
             }
         }
     }
