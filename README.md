@@ -86,11 +86,11 @@ Read more [here](CONTRIBUTING.md) about how to contribute to MeetingBar.
 
 ## Support the creator
 
-❤️ Love this project? Support @leits's FOSS on [Patreon](https://www.patreon.com/meetingbar)
+❤️ Love this project? Support on [Patreon](https://www.patreon.com/meetingbar)
 
 ## Credits
 
-MeetingBar is in **active development** by [leits](https://github.com/leits). Written in Swift 5.0.
+MeetingBar is **stable** and in **active development** by [leits](https://github.com/leits). Written in Swift 5.0.
 
 MeetingBar also uses these resources:
 - [KeyboardShortcuts](https://github.com/sindresorhus/KeyboardShortcuts) for managing global keyboard shortcuts
