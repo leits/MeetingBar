@@ -24,8 +24,6 @@ func requestNotificationAuthorization() {
             NSLog("Access to notications denied")
         }
     }
-
-
 }
 
 func registerNotificationCategories() {
@@ -49,7 +47,6 @@ func registerNotificationCategories() {
             NSLog("Category \(category.identifier) was registered")
         }
     }
-
 }
 
 func sendNotification(_ title: String, _ text: String) {
@@ -103,5 +100,3 @@ func scheduleEventNotification(_ event: EKEvent) {
         }
     }
 }
-
-
