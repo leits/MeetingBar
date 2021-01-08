@@ -680,10 +680,6 @@ struct JoinEventNotificationPicker: View {
         if disabled && joinEventNotification {
             Text("⚠️ Your macos notification settings for Meetingbar are currently off. Please enable the notifications in macos system settings to do not miss a meeting.").foregroundColor(Color.gray).font(.system(size: 12))
         }
-
-        if !disabled && !noAlertStyle && joinEventNotification {
-            Text("🎉 Your macos notification settings for Meetingbar are enabled with alert style.").foregroundColor(Color.gray).font(.system(size: 12))
-        }
     }
 }
 
