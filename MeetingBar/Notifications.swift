@@ -52,7 +52,7 @@ func registerNotificationCategories() {
 func sendNotification(title: String, text: String, subtitle: String = "") {
     requestNotificationAuthorization() // By the apple best practices
 
-    NSLog("Send notification: \(title) - \(text)")
+    NSLog("Send notification: \(title) - \(text) - \(subtitle)")
     let center = UNUserNotificationCenter.current()
 
     let content = UNMutableNotificationContent()
@@ -62,8 +62,8 @@ func sendNotification(title: String, text: String, subtitle: String = "") {
         content.subtitle = subtitle
     }
 
-    let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0.1, repeats: false)
-    let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+    let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
+
     center.add(request) { error in
         if let error = error {
             NSLog("%@", "request \(request) could not be added because of error \(error)")
@@ -102,7 +102,7 @@ func sendNotification(_ title: String, _ text: String) {
     requestNotificationAuthorization() // By the apple best practices
 
     if notificationsEnabled() {
-        displayNotification(title, text)
+        sendNotification(title, text)
     } else {
         displayAlert(title: title, text: text)
     }
