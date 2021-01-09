@@ -12,9 +12,14 @@ import Defaults
 
 func requestNotificationAuthorization() {
     let center = UNUserNotificationCenter.current()
+
     center.requestAuthorization(options: [.alert, .badge, .sound]) { granted, _ in
         if granted {
             NSLog("Access to notications granted")
+            center.getNotificationSettings { notificationSettings in
+                NSLog("Authorisation status \(notificationSettings.authorizationStatus.rawValue)")
+                NSLog("Alert Style settings \(notificationSettings.alertStyle.rawValue)")
+            }
         } else {
             NSLog("Access to notications denied")
         }
@@ -31,18 +36,21 @@ func registerNotificationCategories() {
                                actions: [acceptAction],
                                intentIdentifiers: [],
                                hiddenPreviewsBodyPlaceholder: "",
-                               options: .customDismissAction)
+                               options: [.customDismissAction, .hiddenPreviewsShowTitle])
 
     let notificationCenter = UNUserNotificationCenter.current()
+
     notificationCenter.setNotificationCategories([eventCategory])
+
+    notificationCenter.getNotificationCategories { categories in
+        for category in categories {
+            NSLog("Category \(category.identifier) was registered")
+        }
+    }
 }
 
-/**
- * displays a notification for the given title and text immediately -> trigger is nil
- */
-func displayNotification(_ title: String, _ text: String) {
-    requestNotificationAuthorization()
-    // By the apple best practices
+func sendNotification(title: String, text: String, subtitle: String = "") {
+    requestNotificationAuthorization() // By the apple best practices
 
     NSLog("Send notification: \(title) - \(text)")
     let center = UNUserNotificationCenter.current()
@@ -50,10 +58,19 @@ func displayNotification(_ title: String, _ text: String) {
     let content = UNMutableNotificationContent()
     content.title = title
     content.body = text
+    if !subtitle.isEmpty {
+        content.subtitle = subtitle
+    }
 
-    let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
-    center.add(request)
-}
+    let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0.1, repeats: false)
+    let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+    center.add(request) { error in
+        if let error = error {
+            NSLog("%@", "request \(request) could not be added because of error \(error)")
+        } else {
+            NSLog("%@", "request \(request) was added")
+        }
+    }}
 
 /**
  * check whether the notifications for meetingbar are enabled and alert or banner style is enabled.
@@ -125,8 +142,15 @@ func scheduleEventNotification(_ event: EKEvent) {
     content.categoryIdentifier = "EVENT"
     content.sound = UNNotificationSound.default
     content.userInfo = ["eventID": event.eventIdentifier!]
+    content.threadIdentifier = "meetingbar"
 
     let trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeInterval, repeats: false)
     let request = UNNotificationRequest(identifier: "NEXT_EVENT", content: content, trigger: trigger)
-    center.add(request)
+    center.add(request) { error in
+        if let error = error {
+            NSLog("%@", "request \(request) could not be added because of error \(error)")
+        } else {
+            NSLog("%@", "request \(request) was added")
+        }
+    }
 }

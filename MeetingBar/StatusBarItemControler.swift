@@ -323,7 +323,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             image!.size = NSSize(width: 16, height: 17.8)
 
         // tested and verified
-        case .some(.zoom), .some(.zoomgov):
+        case .some(.zoom), .some(.zoomgov), .some(.zoom_native):
             image = NSImage(named: "zoom_icon")!
             image!.size = NSSize(width: 16, height: 16)
 
@@ -798,14 +798,14 @@ func openEvent(_ event: EKEvent) {
                 let task = try! NSUserAppleScriptTask(url: url)
                 task.execute { error in
                     if let error = error {
-                        sendNotification("AppleScript return error", error.localizedDescription)
+                        sendNotification(title: "AppleScript return error", text: error.localizedDescription)
                     }
                 }
             }
         }
         openMeetingURL(service, url)
     } else {
-        sendNotification("Epp! Can't join the \(eventTitle)", "Link not found, or your meeting service is not yet supported")
+        sendNotification(title: "Epp! Can't join the \(eventTitle)", text: "Link not found, or your meeting service is not yet supported")
     }
 }
 
@@ -838,7 +838,7 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL) {
             teamsAppURL.scheme = "msteams"
             let result = openLinkInDefaultBrowser(teamsAppURL.url!)
             if !result {
-                sendNotification("Oops! Unable to open the link in Microsoft Teams app", "Make sure you have Microsoft Teams app installed, or change the app in the preferences.")
+                sendNotification(title: "Oops! Unable to open the link in Microsoft Teams app", text: "Make sure you have Microsoft Teams app installed, or change the app in the preferences.")
                 _ = openLinkInDefaultBrowser(url)
             }
         } else {
@@ -851,11 +851,21 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL) {
             zoomAppUrl.scheme = "zoommtg"
             let result = openLinkInDefaultBrowser(zoomAppUrl.url!)
             if !result {
-                sendNotification("Oops! Unable to open the link in Zoom app", "Make sure you have Zoom app installed, or change the app in the preferences.")
+                sendNotification(title: "Oops! Unable to open the link in Zoom app", text: "Make sure you have Zoom app installed, or change the app in the preferences.")
                 _ = openLinkInDefaultBrowser(url)
             }
         } else {
             _ = openLinkInDefaultBrowser(url)
+        }
+    case .zoom_native:
+        let result = openLinkInDefaultBrowser(url)
+        if !result {
+            sendNotification(title: "Oops! Unable to open the native link in Zoom app", text: "Make sure you have Zoom app installed, or change the app in the preferences.", subtitle: url.absoluteString)
+
+            let urlString = url.absoluteString.stringByReplacingFirstOccurrenceOfString(target: "&", withString: "?").replacingOccurrences(of: "/join?confno=", with: "/j/")
+            var zoomBrowserUrl = URLComponents(url: URL(string: urlString)!, resolvingAgainstBaseURL: false)!
+            zoomBrowserUrl.scheme = "https"
+            _ = openLinkInDefaultBrowser(zoomBrowserUrl.url!)
         }
     case .facetime:
         NSWorkspace.shared.open(URL(string: "facetime://" + url.absoluteString)!)

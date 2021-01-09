@@ -26,7 +26,14 @@ struct TitleTruncationRules {
 struct LinksRegex {
     let meet = try! NSRegularExpression(pattern: #"https://meet.google.com/[a-z-]+"#)
     let hangouts = try! NSRegularExpression(pattern: #"https://hangouts.google.com/[^\s]*"#)
+
     let zoom = try! NSRegularExpression(pattern: #"https://([a-z0-9-.]+)?zoom.(us|com.cn)/j/[^\s]*"#)
+
+    /**
+     * Examples:
+     * - zoom native links: zoommtg://zoom.us/join?confno=92333341349&uname=Person&pwd=123456
+     */
+    let zoom_native = try! NSRegularExpression(pattern: #"zoommtg://([a-z0-9-.]+)?zoom.(us|com.cn)/join[^\s]*"#)
     let teams = try! NSRegularExpression(pattern: #"https://teams.microsoft.com/l/meetup-join/[a-zA-Z0-9_%\/=\-\+\.?]+"#)
     let webex = try! NSRegularExpression(pattern: #"https://([a-z0-9.]+)?webex.com/[^\s]*"#)
     let jitsi = try! NSRegularExpression(pattern: #"https://meet.jit.si/[^\s]*"#)
@@ -87,6 +94,7 @@ enum MeetingServices: String, Codable, CaseIterable {
     case meet = "Google Meet"
     case hangouts = "Google Hangouts"
     case zoom = "Zoom"
+    case zoom_native = "Zoom native"
     case teams = "Microsoft Teams"
     case webex = "Cisco Webex"
     case jitsi = "Jitsi"
