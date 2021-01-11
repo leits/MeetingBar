@@ -363,21 +363,8 @@ struct Menu: View {
             Text("Menu").font(.headline).bold()
             Section {
                 HStack {
-                    Toggle("Shorten event title", isOn: $shortenEventTitle)
-                }
-
-                HStack {
-                    Text(generateTitleSample(Int(menuEventTitleLength))).lineLimit(nil)
-                    Spacer()
-                }.padding(.all, 10).border(Color.gray, width: 3)
-
-                VStack {
-                    HStack {
-                        Text("5")
-                        Slider(value: $menuEventTitleLength, in: MenuTitleLengthLimits.min ... MenuTitleLengthLimits.max, step: 1)
-                        Text("100")
-                    }.disabled(!shortenEventTitle)
-                    Text(String(Int(menuEventTitleLength)))
+                    Toggle("Shorten event title to", isOn: $shortenEventTitle)
+                    Stepper("\(menuEventTitleLength) chars", value: $menuEventTitleLength, in: 20...100, step: 5).disabled(!shortenEventTitle)
                 }
                 Group {
                     HStack {
