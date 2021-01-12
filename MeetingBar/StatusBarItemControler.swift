@@ -902,7 +902,7 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL) {
         if !result {
             sendNotification(title: "Oops! Unable to open the native link in Zoom app", text: "Make sure you have Zoom app installed, or change the app in the preferences.", subtitle: url.absoluteString)
 
-            let urlString = url.absoluteString.stringByReplacingFirstOccurrenceOfString(target: "&", withString: "?").replacingOccurrences(of: "/join?confno=", with: "/j/")
+            let urlString = url.absoluteString.replacingFirstOccurrence(of: "&", with: "?").replacingOccurrences(of: "/join?confno=", with: "/j/")
             var zoomBrowserUrl = URLComponents(url: URL(string: urlString)!, resolvingAgainstBaseURL: false)!
             zoomBrowserUrl.scheme = "https"
             _ = openLinkInDefaultBrowser(zoomBrowserUrl.url!)
