@@ -489,7 +489,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
 
 
         let itemTitle: String
-        if Defaults[.showEventEndDate] {
+        if Defaults[.showEventEndTime] {
             itemTitle = "\(eventStartTime)\t \(eventEndTime) \t  \(eventTitle)"
         } else {
             itemTitle = "\(eventStartTime)\t  \(eventTitle)"

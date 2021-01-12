@@ -74,8 +74,8 @@ extension Defaults.Keys {
     // show all day events - by default true
     static let allDayEvents = Key<AlldayEventsAppereance>("allDayEvents", default: AlldayEventsAppereance.show)
 
-    // show the end date of a meeting in the meetingbar for each event entry
-    static let showEventEndDate = Key<Bool>("showEventEndDate", default: true)
+    // show the end time of a meeting in the meetingbar for each event entry
+    static let showEventEndTime = Key<Bool>("showEventEndTime", default: true)
 
     // Integrations
     static let createMeetingService = Key<CreateMeetingServices>("createMeetingService", default: .zoom)

@@ -341,7 +341,7 @@ struct Menu: View {
     @Default(.timeFormat) var timeFormat
     @Default(.shortenEventTitle) var shortenEventTitle
     @Default(.menuEventTitleLength) var menuEventTitleLength
-    @Default(.showEventEndDate) var showEventEndDate
+    @Default(.showEventEndTime) var showEventEndTime
     @Default(.showEventDetails) var showEventDetails
     @Default(.showMeetingServiceIcon) var showMeetingServiceIcon
 
@@ -361,7 +361,7 @@ struct Menu: View {
                 }
                 HStack {
                     Text("Show event:")
-                    Toggle("end time", isOn: $showEventEndDate)
+                    Toggle("end time", isOn: $showEventEndTime)
                     Toggle("icon", isOn: $showMeetingServiceIcon)
                     Toggle("details as submenu", isOn: $showEventDetails)
                 }
