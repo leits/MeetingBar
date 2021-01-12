@@ -729,8 +729,8 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
 
 func shortenTitleForSystembar(event: EKEvent) -> String {
     var eventTitle = String(event.title ?? "No title").trimmingCharacters(in: .whitespaces)
-    if eventTitle.count > Int(Defaults[.titleLength]) {
-        let index = eventTitle.index(eventTitle.startIndex, offsetBy: Int(Defaults[.titleLength]))
+    if eventTitle.count > Defaults[.statusbarEventTitleLength] {
+        let index = eventTitle.index(eventTitle.startIndex, offsetBy: Defaults[.statusbarEventTitleLength])
         eventTitle = String(eventTitle[...index])
         eventTitle += "..."
     }

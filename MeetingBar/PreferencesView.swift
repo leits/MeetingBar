@@ -211,7 +211,7 @@ struct StatusBar: View {
     @Default(.eventTitleFormat) var eventTitleFormat
     @Default(.eventTimeFormat) var eventTimeFormat
 
-    @Default(.titleLength) var titleLength
+    @Default(.statusbarEventTitleLength) var statusbarEventTitleLength
 
 
     var body: some View {
@@ -265,6 +265,9 @@ struct StatusBar: View {
                         Text("dot (•)").tag(EventTitleFormat.dot)
                         Text("hide").tag(EventTitleFormat.none)
                     }
+                    if eventTitleFormat == EventTitleFormat.show {
+                        Stepper("shorten to \(statusbarEventTitleLength) chars", value: $statusbarEventTitleLength, in: statusbarEventTitleLengthLimits.min...statusbarEventTitleLengthLimits.max, step: 5)
+                    }
                 }
                 HStack {
                     Picker("Time", selection: $eventTimeFormat) {
@@ -274,27 +277,6 @@ struct StatusBar: View {
                     }
                 }
                 Divider()
-
-                HStack {
-                    Text("Sample")
-
-                    HStack {
-                        Image(nsImage: generateTitleIconSample(eventTitleIconFormat))
-                        Text(generateTitleSample(eventTitleFormat, Int(titleLength)))
-                        Spacer()
-                    }.padding(.all, 10)
-                    .border(Color.gray, width: 3)
-                }
-
-
-
-                HStack {
-                    Text("5")
-                    Slider(value: $titleLength, in: TitleLengthLimits.min ... TitleLengthLimits.max, step: 1)
-                    Text("55")
-                }.disabled(eventTitleFormat != EventTitleFormat.show)
-
-                Text("Tip: If the app disappears from the status bar, make the length shorter").foregroundColor(Color.gray)
             }.padding(.horizontal, 10)
 
             Spacer()

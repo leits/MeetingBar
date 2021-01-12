@@ -8,9 +8,9 @@
 
 import Cocoa
 
-struct TitleLengthLimits {
-    static let min = 5.0
-    static let max = 55.0
+struct statusbarEventTitleLengthLimits {
+    static let min = 5
+    static let max = 55
 }
 
 struct TitleTruncationRules {
