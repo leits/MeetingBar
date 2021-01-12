@@ -52,12 +52,13 @@ extension String {
     /// Returns a version of the string with all HTML tags removed, if any.
     /// - Returns: The string without HTML tags.
     func htmlTagsStripped() -> String {
-        let data = self.data(using: .utf8)!
-        let attributedSelf = NSAttributedString(
+        if let data = self.data(using: .utf8), let attributedSelf = NSAttributedString(
             html: data,
             options: [.documentType: NSAttributedString.DocumentType.html],
             documentAttributes: nil
-        )!
-        return attributedSelf.string
+        ) {
+            return attributedSelf.string
+        }
+        return self
     }
 }
