@@ -358,10 +358,12 @@ struct Menu: View {
                             Text("24-hour").tag(TimeFormat.military)
                         }
                     }
-
-                    Toggle("Show event end date", isOn: $showEventEndDate)
-                    Toggle("Show event icon", isOn: $showMeetingServiceIcon)
-                    Toggle("Show event details as submenu", isOn: $showEventDetails)
+                    HStack {
+                        Text("Show event:")
+                        Toggle("end time", isOn: $showEventEndDate)
+                        Toggle("icon", isOn: $showMeetingServiceIcon)
+                        Toggle("details as submenu", isOn: $showEventDetails)
+                    }
                 }
             }.padding(.horizontal, 10)
 
