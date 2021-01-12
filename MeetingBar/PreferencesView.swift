@@ -294,34 +294,37 @@ struct Events: View {
         VStack(alignment: .leading, spacing: 15) {
             Text("Events").font(.headline).bold()
             Section {
-                Group {
-                    HStack {
-                        Picker("All day events:", selection: $allDayEvents) {
-                            Text("show").tag(AlldayEventsAppereance.show)
-                            Text("show only with meeting link").tag(AlldayEventsAppereance.show_with_meeting_link_only)
-                            Text("hide").tag(AlldayEventsAppereance.hide)
+                HStack {
+                    VStack {
+                        HStack {
+                            Picker("All day events:", selection: $allDayEvents) {
+                                Text("show").tag(AlldayEventsAppereance.show)
+                                Text("show only with meeting link").tag(AlldayEventsAppereance.show_with_meeting_link_only)
+                                Text("hide").tag(AlldayEventsAppereance.hide)
+                            }
+                        }
+                        HStack {
+                            Picker("Past events:", selection: $pastEventsAppereance) {
+                                Text("show").tag(PastEventsAppereance.show_active)
+                                Text("show as inactive").tag(PastEventsAppereance.show_inactive)
+                                Text("hide").tag(PastEventsAppereance.hide)
+                            }
                         }
                     }
-
-                    HStack {
-                        Picker("Past events:", selection: $pastEventsAppereance) {
-                            Text("show").tag(PastEventsAppereance.show_active)
-                            Text("show as inactive").tag(PastEventsAppereance.show_inactive)
-                            Text("hide").tag(PastEventsAppereance.hide)
+                    VStack {
+                        HStack {
+                            Picker("Events without guests:", selection: $personalEventsAppereance) {
+                                Text("show").tag(PastEventsAppereance.show_active)
+                                Text("show as inactive").tag(PastEventsAppereance.show_inactive)
+                                Text("hide").tag(PastEventsAppereance.hide)
+                            }
                         }
-                    }
-                    HStack {
-                        Picker("Declined events:", selection: $declinedEventsAppereance) {
-                            Text("show with strikethrough").tag(DeclinedEventsAppereance.strikethrough)
-                            Text("show as inactive").tag(DeclinedEventsAppereance.show_inactive)
-                            Text("hide").tag(DeclinedEventsAppereance.hide)
-                        }
-                    }
-                    HStack {
-                        Picker("Events without guests:", selection: $personalEventsAppereance) {
-                            Text("show").tag(PastEventsAppereance.show_active)
-                            Text("show as inactive").tag(PastEventsAppereance.show_inactive)
-                            Text("hide").tag(PastEventsAppereance.hide)
+                        HStack {
+                            Picker("Declined events:", selection: $declinedEventsAppereance) {
+                                Text("show with strikethrough").tag(DeclinedEventsAppereance.strikethrough)
+                                Text("show as inactive").tag(DeclinedEventsAppereance.show_inactive)
+                                Text("hide").tag(DeclinedEventsAppereance.hide)
+                            }
                         }
                     }
                 }
