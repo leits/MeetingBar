@@ -17,9 +17,7 @@ struct PreferencesView: View {
         VStack {
             TabView {
                 General().tabItem { Text("General") }
-                Events().tabItem { Text("Events") }
-                StatusBar().tabItem { Text("Statusbar") }
-                Menu().tabItem { Text("Menu") }
+                Appearance().tabItem { Text("Appearance") }
                 Configuration().tabItem { Text("Services") }
                 Bookmark().tabItem { Text("Bookmarks") }
                 Calendars().tabItem { Text("Calendars") }
@@ -206,6 +204,19 @@ struct General: View {
     }
 }
 
+struct Appearance: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 15) {
+            StatusBar()
+            Divider()
+            Menu()
+            Divider()
+            Events()
+            Spacer()
+        }.padding()
+    }
+}
+
 struct StatusBar: View {
     @Default(.eventTitleIconFormat) var eventTitleIconFormat
     @Default(.eventTitleFormat) var eventTitleFormat
@@ -215,72 +226,67 @@ struct StatusBar: View {
 
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 15) {
-            Text("Status bar").font(.headline).bold()
-            Section {
-                HStack {
-                    Picker("Icon", selection: $eventTitleIconFormat) {
-                        HStack {
-                            Image(nsImage: NSImage(named: EventTitleIconFormat.calendar.rawValue)!).resizable()
+        Text("Status bar").font(.headline).bold()
+        Section {
+            HStack {
+                Picker("Icon", selection: $eventTitleIconFormat) {
+                    HStack {
+                        Image(nsImage: NSImage(named: EventTitleIconFormat.calendar.rawValue)!).resizable()
+                            .frame(width: 16.0, height: 16.0)
+                        Text("\u{00A0}Calendar icon")
+                    }.tag(EventTitleIconFormat.calendar)
+
+                    HStack {
+                        Image(nsImage: NSImage(named: EventTitleIconFormat.videocam.rawValue)!).resizable()
+                            .frame(width: 16.0, height: 16.0)
+                        Text("\u{00A0}Videocam icon")
+                    }.tag(EventTitleIconFormat.videocam)
+
+
+                    HStack {
+                        Image(nsImage: NSImage(named: EventTitleIconFormat.onlinemeeting.rawValue)!).resizable()
                                 .frame(width: 16.0, height: 16.0)
-                            Text("\u{00A0}Calendar icon")
-                        }.tag(EventTitleIconFormat.calendar)
+                        Text("\u{00A0}Onlinemeeting icon")
+                    }.tag(EventTitleIconFormat.onlinemeeting)
 
-                        HStack {
-                            Image(nsImage: NSImage(named: EventTitleIconFormat.videocam.rawValue)!).resizable()
+                    HStack {
+                        Image(nsImage: NSImage(named: EventTitleIconFormat.appicon.rawValue)!).resizable()
                                 .frame(width: 16.0, height: 16.0)
-                            Text("\u{00A0}Videocam icon")
-                        }.tag(EventTitleIconFormat.videocam)
+                        Text("\u{00A0}App icon")
+                    }.tag(EventTitleIconFormat.appicon)
 
-
-                        HStack {
-                            Image(nsImage: NSImage(named: EventTitleIconFormat.onlinemeeting.rawValue)!).resizable()
-                                    .frame(width: 16.0, height: 16.0)
-                            Text("\u{00A0}Onlinemeeting icon")
-                        }.tag(EventTitleIconFormat.onlinemeeting)
-
-                        HStack {
-                            Image(nsImage: NSImage(named: EventTitleIconFormat.appicon.rawValue)!).resizable()
-                                    .frame(width: 16.0, height: 16.0)
-                            Text("\u{00A0}App icon")
-                        }.tag(EventTitleIconFormat.appicon)
-
-                        HStack {
-                            Image(nsImage: NSImage(named: EventTitleIconFormat.eventtype.rawValue)!).resizable()
-                                    .frame(width: 16.0, height: 16.0)
-                            Text("\u{00A0}Event specific icon (e.g. MS Teams)")
-                        }.tag(EventTitleIconFormat.eventtype)
-
-                        HStack {
-                            Image(nsImage: NSImage(named: EventTitleIconFormat.none.rawValue)!).resizable()
+                    HStack {
+                        Image(nsImage: NSImage(named: EventTitleIconFormat.eventtype.rawValue)!).resizable()
                                 .frame(width: 16.0, height: 16.0)
-                            Text("\u{00A0}No icon")
-                        }.tag(EventTitleIconFormat.none)
-                    }
-                }
+                        Text("\u{00A0}Event specific icon (e.g. MS Teams)")
+                    }.tag(EventTitleIconFormat.eventtype)
 
-                HStack {
-                    Picker("Title", selection: $eventTitleFormat) {
-                        Text("event title").tag(EventTitleFormat.show)
-                        Text("dot (•)").tag(EventTitleFormat.dot)
-                        Text("hide").tag(EventTitleFormat.none)
-                    }
-                    if eventTitleFormat == EventTitleFormat.show {
-                        Stepper("shorten to \(statusbarEventTitleLength) chars", value: $statusbarEventTitleLength, in: statusbarEventTitleLengthLimits.min...statusbarEventTitleLengthLimits.max, step: 5)
-                    }
+                    HStack {
+                        Image(nsImage: NSImage(named: EventTitleIconFormat.none.rawValue)!).resizable()
+                            .frame(width: 16.0, height: 16.0)
+                        Text("\u{00A0}No icon")
+                    }.tag(EventTitleIconFormat.none)
                 }
-                HStack {
-                    Picker("Time", selection: $eventTimeFormat) {
-                        Text("show").tag(EventTimeFormat.show)
-                        Text("show under title").tag(EventTimeFormat.show_under_title)
-                        Text("hide").tag(EventTimeFormat.hide)
-                    }
-                }
-                Divider()
-            }.padding(.horizontal, 10)
+            }
 
-            Spacer()
-        }.padding()
+            HStack {
+                Picker("Title", selection: $eventTitleFormat) {
+                    Text("event title").tag(EventTitleFormat.show)
+                    Text("dot (•)").tag(EventTitleFormat.dot)
+                    Text("hide").tag(EventTitleFormat.none)
+                }
+                if eventTitleFormat == EventTitleFormat.show {
+                    Stepper("shorten to \(statusbarEventTitleLength) chars", value: $statusbarEventTitleLength, in: statusbarEventTitleLengthLimits.min...statusbarEventTitleLengthLimits.max, step: 5)
+                }
+            }
+            HStack {
+                Picker("Time", selection: $eventTimeFormat) {
+                    Text("show").tag(EventTimeFormat.show)
+                    Text("show under title").tag(EventTimeFormat.show_under_title)
+                    Text("hide").tag(EventTimeFormat.hide)
+                }
+            }
+        }.padding(.horizontal, 10)
     }
 }
 
@@ -291,47 +297,43 @@ struct Events: View {
     @Default(.allDayEvents) var allDayEvents
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 15) {
-            Text("Events").font(.headline).bold()
-            Section {
-                HStack {
-                    VStack {
-                        HStack {
-                            Picker("All day events:", selection: $allDayEvents) {
-                                Text("show").tag(AlldayEventsAppereance.show)
-                                Text("show only with meeting link").tag(AlldayEventsAppereance.show_with_meeting_link_only)
-                                Text("hide").tag(AlldayEventsAppereance.hide)
-                            }
-                        }
-                        HStack {
-                            Picker("Past events:", selection: $pastEventsAppereance) {
-                                Text("show").tag(PastEventsAppereance.show_active)
-                                Text("show as inactive").tag(PastEventsAppereance.show_inactive)
-                                Text("hide").tag(PastEventsAppereance.hide)
-                            }
+        Text("Events").font(.headline).bold()
+        Section {
+            HStack {
+                VStack {
+                    HStack {
+                        Picker("All day events:", selection: $allDayEvents) {
+                            Text("show").tag(AlldayEventsAppereance.show)
+                            Text("show only with meeting link").tag(AlldayEventsAppereance.show_with_meeting_link_only)
+                            Text("hide").tag(AlldayEventsAppereance.hide)
                         }
                     }
-                    VStack {
-                        HStack {
-                            Picker("Events without guests:", selection: $personalEventsAppereance) {
-                                Text("show").tag(PastEventsAppereance.show_active)
-                                Text("show as inactive").tag(PastEventsAppereance.show_inactive)
-                                Text("hide").tag(PastEventsAppereance.hide)
-                            }
-                        }
-                        HStack {
-                            Picker("Declined events:", selection: $declinedEventsAppereance) {
-                                Text("show with strikethrough").tag(DeclinedEventsAppereance.strikethrough)
-                                Text("show as inactive").tag(DeclinedEventsAppereance.show_inactive)
-                                Text("hide").tag(DeclinedEventsAppereance.hide)
-                            }
+                    HStack {
+                        Picker("Past events:", selection: $pastEventsAppereance) {
+                            Text("show").tag(PastEventsAppereance.show_active)
+                            Text("show as inactive").tag(PastEventsAppereance.show_inactive)
+                            Text("hide").tag(PastEventsAppereance.hide)
                         }
                     }
                 }
-            }.padding(.horizontal, 10)
-
-            Spacer()
-        }.padding()
+                VStack {
+                    HStack {
+                        Picker("Events without guests:", selection: $personalEventsAppereance) {
+                            Text("show").tag(PastEventsAppereance.show_active)
+                            Text("show as inactive").tag(PastEventsAppereance.show_inactive)
+                            Text("hide").tag(PastEventsAppereance.hide)
+                        }
+                    }
+                    HStack {
+                        Picker("Declined events:", selection: $declinedEventsAppereance) {
+                            Text("show with strikethrough").tag(DeclinedEventsAppereance.strikethrough)
+                            Text("show as inactive").tag(DeclinedEventsAppereance.show_inactive)
+                            Text("hide").tag(DeclinedEventsAppereance.hide)
+                        }
+                    }
+                }
+            }
+        }.padding(.horizontal, 10)
     }
 }
 
@@ -344,31 +346,27 @@ struct Menu: View {
     @Default(.showMeetingServiceIcon) var showMeetingServiceIcon
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 15) {
-            Text("Menu").font(.headline).bold()
-            Section {
+        Text("Menu").font(.headline).bold()
+        Section {
+            HStack {
+                Toggle("Shorten event title to", isOn: $shortenEventTitle)
+                Stepper("\(menuEventTitleLength) chars", value: $menuEventTitleLength, in: 20...100, step: 5).disabled(!shortenEventTitle)
+            }
+            Group {
                 HStack {
-                    Toggle("Shorten event title to", isOn: $shortenEventTitle)
-                    Stepper("\(menuEventTitleLength) chars", value: $menuEventTitleLength, in: 20...100, step: 5).disabled(!shortenEventTitle)
-                }
-                Group {
-                    HStack {
-                        Picker("Time format:", selection: $timeFormat) {
-                            Text("12-hour (AM/PM)").tag(TimeFormat.am_pm)
-                            Text("24-hour").tag(TimeFormat.military)
-                        }
-                    }
-                    HStack {
-                        Text("Show event:")
-                        Toggle("end time", isOn: $showEventEndDate)
-                        Toggle("icon", isOn: $showMeetingServiceIcon)
-                        Toggle("details as submenu", isOn: $showEventDetails)
+                    Picker("Time format:", selection: $timeFormat) {
+                        Text("12-hour (AM/PM)").tag(TimeFormat.am_pm)
+                        Text("24-hour").tag(TimeFormat.military)
                     }
                 }
-            }.padding(.horizontal, 10)
-
-            Spacer()
-        }.padding()
+                HStack {
+                    Text("Show event:")
+                    Toggle("end time", isOn: $showEventEndDate)
+                    Toggle("icon", isOn: $showMeetingServiceIcon)
+                    Toggle("details as submenu", isOn: $showEventDetails)
+                }
+            }
+        }.padding(.horizontal, 10)
     }
 }
 
