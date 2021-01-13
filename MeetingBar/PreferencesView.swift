@@ -181,8 +181,9 @@ struct General: View {
             }
             Divider()
             Section {
-                Text("Shortcuts").font(.headline).bold()
                 HStack {
+                    Text("Shortcuts").font(.headline).bold()
+                    Spacer()
                     VStack {
                         Text("Open menu:")
                         KeyboardShortcuts.Recorder(for: .openMenuShortcut)
