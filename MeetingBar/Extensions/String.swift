@@ -49,10 +49,18 @@ extension String {
         return self
     }
 
+    /// A Boolean value indicating whether the string contains HTML tags.
+    var containsHTML: Bool {
+        let htmlTest = NSPredicate(format: "SELF MATCHES %@", #"</?[A-z][ \t\S]*>"#)
+        return htmlTest.evaluate(with: self)
+    }
+
     /// Returns a version of the string with all HTML tags removed, if any.
     /// - Returns: The string without HTML tags.
     func htmlTagsStripped() -> String {
-        if let data = self.data(using: .utf8), let attributedSelf = NSAttributedString(
+        if self.containsHTML,
+           let data = self.data(using: .utf8),
+           let attributedSelf = NSAttributedString(
             html: data,
             options: [.documentType: NSAttributedString.DocumentType.html],
             documentAttributes: nil
