@@ -27,7 +27,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
     var statusbarEventTitleLengthObserver: DefaultsObservation?
     var timeFormatObserver: DefaultsObservation?
-    var bookmarkObserver: DefaultsObservation?
+    var bookmarksObserver: DefaultsObservation?
 
     var eventTitleFormatObserver: DefaultsObservation?
     var eventTimeFormatObserver: DefaultsObservation?
@@ -128,23 +128,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             self.statusBarItem.statusItem.button?.performClick(nil) // ...and click
         }
 
-        KeyboardShortcuts.onKeyUp(for: .joinBookmarkShortcut1) {
-            self.joinBookmark()
-        }
-        KeyboardShortcuts.onKeyUp(for: .joinBookmarkShortcut2) {
-            self.joinBookmark2()
-        }
-        KeyboardShortcuts.onKeyUp(for: .joinBookmarkShortcut3) {
-            self.joinBookmark3()
-        }
-        KeyboardShortcuts.onKeyUp(for: .joinBookmarkShortcut4) {
-            self.joinBookmark4()
-        }
-        KeyboardShortcuts.onKeyUp(for: .joinBookmarkShortcut5) {
-            self.joinBookmark5()
-        }
-
-
         NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.eventStoreChanged), name: .EKEventStoreChanged, object: statusBarItem.eventStore)
 
 
@@ -217,7 +200,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             self.statusBarItem.updateMenu()
         }
 
-        bookmarkObserver = Defaults.observe(keys: .bookmarkMeetingURL, .bookmarkMeetingURL2, .bookmarkMeetingURL3, .bookmarkMeetingURL4, .bookmarkMeetingURL5, .bookmarkMeetingName, .bookmarkMeetingName2, .bookmarkMeetingName3, .bookmarkMeetingName4, .bookmarkMeetingName5, .bookmarkMeetingService, .bookmarkMeetingService2, .bookmarkMeetingService3, .bookmarkMeetingService4, .bookmarkMeetingService5) {
+        bookmarksObserver = Defaults.observe(keys: .bookmarks) {
                 self.statusBarItem.updateMenu()
         }
 
@@ -350,41 +333,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
     }
 
-    func joinBookmarkInternal(urlString: String, service: MeetingServices) {
-        guard !urlString.isEmpty, let url = URL(string: urlString) else {
-            return
-        }
-        openMeetingURL(service, url)
-    }
-
     @objc
-    func joinBookmark2(_: Any? = nil) {
-        NSLog("Join bookmark 2")
-        joinBookmarkInternal(urlString: Defaults[.bookmarkMeetingURL2], service: Defaults[.bookmarkMeetingService2])
-    }
-
-    @objc
-    func joinBookmark3(_: Any? = nil) {
-        NSLog("Join bookmark 3")
-        joinBookmarkInternal(urlString: Defaults[.bookmarkMeetingURL3], service: Defaults[.bookmarkMeetingService3])
-    }
-
-    @objc
-    func joinBookmark4(_: Any? = nil) {
-        NSLog("Join bookmark 4")
-        joinBookmarkInternal(urlString: Defaults[.bookmarkMeetingURL4], service: Defaults[.bookmarkMeetingService4])
-    }
-
-    @objc
-    func joinBookmark5(_: Any? = nil) {
-        NSLog("Join bookmark 5")
-        joinBookmarkInternal(urlString: Defaults[.bookmarkMeetingURL5], service: Defaults[.bookmarkMeetingService5])
-    }
-
-    @objc
-    func joinBookmark(_: Any? = nil) {
+    func joinBookmark(sender: NSMenuItem) {
         NSLog("Join bookmark")
-        joinBookmarkInternal(urlString: Defaults[.bookmarkMeetingURL], service: Defaults[.bookmarkMeetingService])
+        if let bookmark: Bookmark = sender.representedObject as? Bookmark {
+            guard let url = URL(string: bookmark.url) else {
+                return
+            }
+            openMeetingURL(bookmark.service, url)
+        }
     }
 
     @objc
