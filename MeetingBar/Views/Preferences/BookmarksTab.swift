@@ -51,12 +51,12 @@ struct AddBookmarkModal: View {
 
     @Default(.bookmarks) var bookmarks
 
+    @State private var showingAlert = false
+    @State private var error_msg = ""
+
     @State var name: String = ""
     @State var url: String = ""
     @State var service = MeetingServices.meet
-
-
-
 
     var body: some View {
         VStack {
@@ -98,13 +98,22 @@ struct AddBookmarkModal: View {
                     Text("Cancel")
                 }
                 Button(action: {
-                    self.presentationMode.wrappedValue.dismiss()
-                    let bookmark = Bookmark(name: name, service: service, url: url)
-                    bookmarks.append(bookmark)
+                    if let bookmark = bookmarks.first(where: { $0.url == url }) {
+                        error_msg = "A bookmark with this link/phone already exists with the name \(bookmark.name):\n\(url)"
+                        showingAlert = true
+                    } else {
+                        self.presentationMode.wrappedValue.dismiss()
+                        let bookmark = Bookmark(name: name, service: service, url: url)
+                        bookmarks.append(bookmark)
+                    }
                 }) {
                     Text("Add")
                 }.disabled(url.isEmpty || name.isEmpty)
             }
-        }.padding().frame(width: 500, height: 200)
+        }.frame(width: 500, height: 200)
+        .padding()
+        .alert(isPresented: $showingAlert) {
+            Alert(title: Text("Can't add bookmark"), message: Text(error_msg), dismissButton: .default(Text("OK")))
+        }
     }
 }
