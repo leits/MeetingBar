@@ -18,19 +18,15 @@ struct BookmarksTab: View {
 
     var body: some View {
         VStack(alignment: .leading) {
-            VStack(alignment: .leading, spacing: 15) {
-                Form {
-                    List {
-                        ForEach(bookmarks, id: \.self) { bookmark in
-                            HStack {
-                                Text("\(bookmark.name) (\(bookmark.service.rawValue)): \(bookmark.url)")
-                                Spacer()
-                                Button("x") {
-                                    self.removeBookmark(bookmark)
-                                }
-                            }
-                        }.padding()
-                    }.listStyle(SidebarListStyle())
+            List {
+                ForEach(bookmarks, id: \.self) { bookmark in
+                    HStack {
+                        Text("\(bookmark.name) (\(bookmark.service.rawValue)): \(bookmark.url)")
+                        Spacer()
+                        Button("x") {
+                            self.removeBookmark(bookmark)
+                        }
+                    }
                 }
             }.border(Color.gray)
             HStack {
