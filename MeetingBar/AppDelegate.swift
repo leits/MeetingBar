@@ -25,7 +25,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
     var allDayEventsObserver: DefaultsObservation?
 
-    var titleLengthObserver: DefaultsObservation?
+    var statusbarEventTitleLengthObserver: DefaultsObservation?
     var timeFormatObserver: DefaultsObservation?
     var bookmarkObserver: DefaultsObservation?
 
@@ -36,7 +36,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
     var shortenEventTitleObserver: DefaultsObservation?
     var menuEventTitleLengthObserver: DefaultsObservation?
-    var showEventEndDateObserver: DefaultsObservation?
+    var showEventEndTimeObserver: DefaultsObservation?
     var pastEventsAppereanceObserver: DefaultsObservation?
     var disablePastEventObserver: DefaultsObservation?
     var declinedEventsAppereanceObserver: DefaultsObservation?
@@ -80,6 +80,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             setup()
         } else {
             openOnboardingWindow()
+        }
+
+        if let titleLength = Defaults[.titleLength] {
+            Defaults[.statusbarEventTitleLength] = Int(titleLength)
+            Defaults[.titleLength] = nil
         }
 
         // When our main application starts, we have to kill
@@ -165,8 +170,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             }
         }
 
-        showEventEndDateObserver = Defaults.observe(.showEventEndDate) { change in
-            NSLog("Change showEventEndDate from \(change.oldValue) to \(change.newValue)")
+        showEventEndTimeObserver = Defaults.observe(.showEventEndTime) { change in
+            NSLog("Change showEventEndTime from \(change.oldValue) to \(change.newValue)")
             if change.oldValue != change.newValue {
                 self.statusBarItem.updateMenu()
             }
@@ -179,8 +184,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             }
         }
 
-        titleLengthObserver = Defaults.observe(.titleLength) { change in
-            NSLog("Changed titleLength from \(change.oldValue) to \(change.newValue)")
+        statusbarEventTitleLengthObserver = Defaults.observe(.statusbarEventTitleLength) { change in
+            NSLog("Changed statusbarEventTitleLengthLimits from \(change.oldValue) to \(change.newValue)")
             self.statusBarItem.updateTitle()
         }
 

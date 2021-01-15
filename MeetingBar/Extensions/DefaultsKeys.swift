@@ -27,7 +27,8 @@ extension Defaults.Keys {
     static let eventTimeFormat = Key<EventTimeFormat>("eventTimeFormat", default: .show)
 
     static let eventTitleIconFormat = Key<EventTitleIconFormat>("eventTitleIconFormat", default: .none)
-    static let titleLength = Key<Double>("titleLength", default: TitleLengthLimits.max)
+    static let titleLength = Key<Double?>("titleLength", default: nil) // Backward compatibility
+    static let statusbarEventTitleLength = Key<Int>("statusbarEventTitleLength", default: statusbarEventTitleLengthLimits.max)
 
     // Menu Appearance
     // if the event title in the menu should be shortened or not -> the length will be stored in field menuEventTitleLength
@@ -73,8 +74,8 @@ extension Defaults.Keys {
     // show all day events - by default true
     static let allDayEvents = Key<AlldayEventsAppereance>("allDayEvents", default: AlldayEventsAppereance.show)
 
-    // show the end date of a meeting in the meetingbar for each event entry
-    static let showEventEndDate = Key<Bool>("showEventEndDate", default: true)
+    // show the end time of a meeting in the meetingbar for each event entry
+    static let showEventEndTime = Key<Bool>("showEventEndTime", default: true)
 
     // Integrations
     static let createMeetingService = Key<CreateMeetingServices>("createMeetingService", default: .zoom)
