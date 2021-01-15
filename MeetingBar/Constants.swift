@@ -21,8 +21,7 @@ struct TitleTruncationRules {
 struct LinksRegex {
     let meet = try! NSRegularExpression(pattern: #"https://meet.google.com/[a-z-]+"#)
     let hangouts = try! NSRegularExpression(pattern: #"https://hangouts.google.com/[^\s]*"#)
-
-    let zoom = try! NSRegularExpression(pattern: #"https://([a-z0-9-.]+)?zoom.(us|com.cn)/j/[^\s]*"#)
+    let zoom = try! NSRegularExpression(pattern: #"https:\/\/(?:[a-z0-9-.]+)?zoom.(?:us|com.cn)\/j\/[0-9a-zA-Z?=]*"#)
 
     /**
      * Examples:
