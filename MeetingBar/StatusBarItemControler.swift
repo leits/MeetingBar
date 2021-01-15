@@ -233,28 +233,33 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
         if !Defaults[.bookmarks].isEmpty {
             self.statusItemMenu.addItem(NSMenuItem.separator())
 
-            let bookmarkItemTitle = self.statusItemMenu.addItem(
+            let bookmarksItem = self.statusItemMenu.addItem(
                 withTitle: "Bookmarks",
                 action: nil,
                 keyEquivalent: ""
             )
-            bookmarkItemTitle.attributedTitle = NSAttributedString(string: "Bookmarks", attributes: [NSAttributedString.Key.font: NSFont.boldSystemFont(ofSize: 13)])
-            bookmarkItemTitle.isEnabled = false
+            bookmarksItem.image = NSImage(named: "bookmark")
+            bookmarksItem.image!.size = NSSize(width: 16, height: 16)
+
+            var bookmarksMenu: NSMenu
+
+            if Defaults[.bookmarks].count > 3 {
+                bookmarksMenu = NSMenu(title: "Bookmarks menu")
+                bookmarksItem.submenu = bookmarksMenu
+            } else {
+                bookmarksItem.attributedTitle = NSAttributedString(string: "Bookmarks", attributes: [NSAttributedString.Key.font: NSFont.boldSystemFont(ofSize: 13)])
+                bookmarksItem.isEnabled = false
+                bookmarksMenu = self.statusItemMenu
+            }
 
             for bookmark in Defaults[.bookmarks] {
-                createBookmarkItem(bookmark)
+                let bookmarkItem = bookmarksMenu.addItem(
+                    withTitle: bookmark.name,
+                    action: #selector(AppDelegate.joinBookmark),
+                    keyEquivalent: "")
+                bookmarkItem.representedObject = bookmark
             }
         }
-    }
-
-    func createBookmarkItem(_ bookmark: Bookmark ) {
-        let bookmarkItem = self.statusItemMenu.addItem(
-            withTitle: bookmark.name,
-            action: #selector(AppDelegate.joinBookmark),
-            keyEquivalent: "")
-        bookmarkItem.representedObject = bookmark
-        bookmarkItem.image = NSImage(named: "bookmark")
-        bookmarkItem.image!.size = NSSize(width: 16, height: 16)
     }
 
     func createDateSection(date: Date, title: String) {
