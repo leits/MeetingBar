@@ -9,6 +9,11 @@ import Cocoa
 import EventKit
 import Defaults
 
+struct Bookmark: Encodable, Decodable, Hashable {
+    var name: String
+    var service: MeetingServices
+    var url: String
+}
 
 func getMatch(text: String, regex: NSRegularExpression) -> String? {
     let resultsIterator = regex.matches(in: text, range: NSRange(text.startIndex..., in: text))

@@ -230,7 +230,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
 
         self.statusItemMenu.addItem(createEventItem)
 
-        if !Defaults[.bookmarkMeetingURL].isEmpty || !Defaults[.bookmarkMeetingURL2].isEmpty || !Defaults[.bookmarkMeetingURL3].isEmpty || !Defaults[.bookmarkMeetingURL4].isEmpty || !Defaults[.bookmarkMeetingURL5].isEmpty {
+        if !Defaults[.bookmarks].isEmpty {
             self.statusItemMenu.addItem(NSMenuItem.separator())
 
             let bookmarkItemTitle = self.statusItemMenu.addItem(
@@ -240,29 +240,21 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             )
             bookmarkItemTitle.attributedTitle = NSAttributedString(string: "Bookmarks", attributes: [NSAttributedString.Key.font: NSFont.boldSystemFont(ofSize: 13)])
             bookmarkItemTitle.isEnabled = false
+
+            for bookmark in Defaults[.bookmarks] {
+                createBookmarkItem(bookmark)
+            }
         }
-
-        createBookmarkItem(url: Defaults[.bookmarkMeetingURL], name: Defaults[.bookmarkMeetingName], service: Defaults[.bookmarkMeetingService], function: #selector(AppDelegate.joinBookmark), keyboardShortcut: .joinBookmarkShortcut1)
-
-        createBookmarkItem(url: Defaults[.bookmarkMeetingURL2], name: Defaults[.bookmarkMeetingName2], service: Defaults[.bookmarkMeetingService2], function: #selector(AppDelegate.joinBookmark2), keyboardShortcut: .joinBookmarkShortcut2)
-
-        createBookmarkItem(url: Defaults[.bookmarkMeetingURL3], name: Defaults[.bookmarkMeetingName3], service: Defaults[.bookmarkMeetingService3], function: #selector(AppDelegate.joinBookmark3), keyboardShortcut: .joinBookmarkShortcut3)
-
-        createBookmarkItem(url: Defaults[.bookmarkMeetingURL4], name: Defaults[.bookmarkMeetingName4], service: Defaults[.bookmarkMeetingService4], function: #selector(AppDelegate.joinBookmark4), keyboardShortcut: .joinBookmarkShortcut4)
-
-        createBookmarkItem(url: Defaults[.bookmarkMeetingURL5], name: Defaults[.bookmarkMeetingName5], service: Defaults[.bookmarkMeetingService5], function: #selector(AppDelegate.joinBookmark5), keyboardShortcut: .joinBookmarkShortcut5)
     }
 
-    func createBookmarkItem(url: String, name: String, service: MeetingServices, function: Selector, keyboardShortcut: KeyboardShortcuts.Name ) {
-        if !url.isEmpty {
-            let bookmarkItem = self.statusItemMenu.addItem(
-                withTitle: "\(name.isEmpty ? "bookmarked meeting" : name + " (" + service.rawValue + ")" )",
-                action: function,
-                keyEquivalent: "")
-            bookmarkItem.setShortcut(for: keyboardShortcut)
-            bookmarkItem.image = NSImage(named: "bookmark")
-            bookmarkItem.image!.size = NSSize(width: 16, height: 16)
-        }
+    func createBookmarkItem(_ bookmark: Bookmark ) {
+        let bookmarkItem = self.statusItemMenu.addItem(
+            withTitle: bookmark.name,
+            action: #selector(AppDelegate.joinBookmark),
+            keyEquivalent: "")
+        bookmarkItem.representedObject = bookmark
+        bookmarkItem.image = NSImage(named: "bookmark")
+        bookmarkItem.image!.size = NSSize(width: 16, height: 16)
     }
 
     func createDateSection(date: Date, title: String) {
