@@ -286,9 +286,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
     }
 
+    /**
+     * implementation is necessary to show notifications even when the app has focus!
+     */
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        completionHandler(.alert)
-    }
+        completionHandler([.alert, .badge, .sound])     }
 
     internal func userNotificationCenter(_: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         switch response.actionIdentifier {
@@ -330,6 +332,19 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             openMeetingURL(nil, CreateMeetingLinks.outlook_office365)
         case .outlook_live:
             openMeetingURL(nil, CreateMeetingLinks.outlook_live)
+        case .url:
+            var url: String = Defaults[.createMeetingServiceUrl]
+            let checkedUrl = NSURL(string: url)
+
+            if !url.isEmpty && checkedUrl != nil {
+                openMeetingURL(nil, URL(string: url)!)
+            } else {
+                if !url.isEmpty {
+                    url += " "
+                }
+
+                sendNotification("Cannot create new meeeting", "Custom url \(url)is missing or invalid. Please enter a value in the app preferences.")
+            }
         }
     }
 

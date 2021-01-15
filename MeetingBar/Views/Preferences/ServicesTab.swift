@@ -15,6 +15,8 @@ struct ServicesTab: View {
     @Default(.useChromeForHangoutsLinks) var useChromeForHangoutsLinks
     @Default(.useAppForZoomLinks) var useAppForZoomLinks
     @Default(.useAppForTeamsLinks) var useAppForTeamsLinks
+    @Default(.createMeetingServiceUrl) var createMeetingServiceUrl
+    @Default(.createMeetingService) var createMeetingService
 
     var body: some View {
         VStack {
@@ -41,10 +43,22 @@ struct ServicesTab: View {
                 }
             }.foregroundColor(.gray).font(.system(size: 12)).padding(.horizontal, 10)
             Divider()
-            HStack {
-                Text("Create meetings in").frame(width: 150, alignment: .leading)
-                CreateMeetingServicePicker()
-            }.padding(.horizontal, 10)
+            VStack {
+                HStack {
+                    Text("Create meetings via").frame(width: 150, alignment: .leading)
+                    CreateMeetingServicePicker()
+                }.padding(.horizontal, 10)
+
+                if createMeetingService == CreateMeetingServices.url {
+                    HStack {
+                        Text("Custom url").frame(width: 150, alignment: .leading)
+                        TextField("Please enter a valid url (with the url scheme, e.g. https://)", text: $createMeetingServiceUrl).textFieldStyle(RoundedBorderTextFieldStyle())
+                    }.padding(.horizontal, 10)
+                    HStack {
+                        Text("Tip: Google Meet supports choosing account via parameter, e.g. https://meet.google.com/new?authuser=1").foregroundColor(.gray).font(.system(size: 12))
+                    }
+                }
+            }
             Spacer()
         }.padding()
     }
@@ -62,6 +76,7 @@ struct CreateMeetingServicePicker: View {
             Text(CreateMeetingServices.gcalendar.rawValue).tag(CreateMeetingServices.gcalendar)
             Text(CreateMeetingServices.outlook_live.rawValue).tag(CreateMeetingServices.outlook_live)
             Text(CreateMeetingServices.outlook_office365.rawValue).tag(CreateMeetingServices.outlook_office365)
+            Text(CreateMeetingServices.url.rawValue).tag(CreateMeetingServices.url)
         }.labelsHidden()
     }
 }
