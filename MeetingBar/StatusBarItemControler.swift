@@ -151,13 +151,32 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                             eventTitle += " " + time
                         }
 
-                        menuTitle.append(NSAttributedString(string: eventTitle, attributes: [NSAttributedString.Key.font: NSFont.systemFont(ofSize: 13)]))
+                        var styles = [NSAttributedString.Key: Any]()
+                        styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: 13)
+
+                        if Defaults[.showPendingEvents] == PendingEventsAppereance.show_inactive {
+                            styles[NSAttributedString.Key.foregroundColor] = NSColor.lightGray
+                        } else if Defaults[.showPendingEvents] == PendingEventsAppereance.show_underlined {
+                            styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
+                        }
+
+                        menuTitle.append(NSAttributedString(string: eventTitle, attributes: styles))
                     } else {
                         let paragraphStyle = NSMutableParagraphStyle()
                         paragraphStyle.lineHeightMultiple = 0.7
                         paragraphStyle.alignment = .center
 
-                        menuTitle.append(NSAttributedString(string: title, attributes: [NSAttributedString.Key.font: NSFont.systemFont(ofSize: 12), NSAttributedString.Key.baselineOffset: -3]))
+                        var styles = [NSAttributedString.Key: Any]()
+                        styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: 12)
+                        styles[NSAttributedString.Key.baselineOffset] = -3
+
+                        if Defaults[.showPendingEvents] == PendingEventsAppereance.show_inactive {
+                            styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
+                        } else if Defaults[.showPendingEvents] == PendingEventsAppereance.show_underlined {
+                            styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
+                        }
+
+                        menuTitle.append(NSAttributedString(string: title, attributes: styles))
 
                         menuTitle.append(NSAttributedString(string: "\n" + time, attributes: [NSAttributedString.Key.font: NSFont.systemFont(ofSize: 9), NSAttributedString.Key.foregroundColor: NSColor.lightGray]))
 
@@ -257,6 +276,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                     withTitle: bookmark.name,
                     action: #selector(AppDelegate.joinBookmark),
                     keyEquivalent: "")
+
                 bookmarkItem.representedObject = bookmark
             }
         }
@@ -500,10 +520,10 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
         eventItem.keyEquivalent = ""
 
         if Defaults[.showMeetingServiceIcon] {
-            let image: NSImage = getMeetingIcon(event)
-            eventItem.image = image
+            eventItem.image = getMeetingIcon(event)
         }
 
+        var shouldShowAsActive = true
         var styles = [NSAttributedString.Key: Any]()
 
         if eventParticipantStatus == .declined || eventStatus == .canceled {
@@ -512,10 +532,20 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             } else {
                 styles[NSAttributedString.Key.strikethroughStyle] = NSUnderlineStyle.thick.rawValue
             }
+            shouldShowAsActive = false
+        }
+
+        if eventParticipantStatus == .pending {
+            if Defaults[.showPendingEvents] == PendingEventsAppereance.show_inactive {
+                styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
+            } else if Defaults[.showPendingEvents] == PendingEventsAppereance.show_underlined {
+                styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
+            }
         }
 
         if !event.hasAttendees, Defaults[.personalEventsAppereance] == .show_inactive {
             styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
+            shouldShowAsActive = false
         }
 
 
@@ -540,20 +570,26 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             // create an NSMutableAttributedString that we'll append everything to
             let eventTitle = NSMutableAttributedString()
 
-            // create our NSTextAttachment
-            let runningImage = NSTextAttachment()
-            runningImage.image = NSImage(named: "running_icon")
-            runningImage.image?.size = NSSize(width: 16, height: 16)
+            if shouldShowAsActive && Defaults[.showPendingEvents] != PendingEventsAppereance.show_underlined {
+                // add the NSTextAttachment wrapper to our full string, then add some more text.
+                styles[NSAttributedString.Key.font] = NSFont.boldSystemFont(ofSize: 14)
+            } else {
+                styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: 14)
+            }
 
-            // wrap the attachment in its own attributed string so we can append it
-            let runningIcon = NSAttributedString(attachment: runningImage)
+            eventTitle.append(NSAttributedString(string: itemTitle, attributes: styles))
 
-            // add the NSTextAttachment wrapper to our full string, then add some more text.
+            if shouldShowAsActive {
+                // create our NSTextAttachment
+                let runningImage = NSTextAttachment()
+                runningImage.image = NSImage(named: "running_icon")
+                runningImage.image?.size = NSSize(width: 16, height: 16)
 
-            styles[NSAttributedString.Key.font] = NSFont.boldSystemFont(ofSize: 14)
-
-            eventTitle.append(NSAttributedString(string: itemTitle + " ", attributes: styles))
-            eventTitle.append(runningIcon)
+                // wrap the attachment in its own attributed string so we can append it
+                let runningIcon = NSAttributedString(attachment: runningImage)
+                eventTitle.append(NSAttributedString(string: " "))
+                eventTitle.append(runningIcon)
+            }
 
             eventItem.attributedTitle = eventTitle
         } else {

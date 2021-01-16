@@ -134,6 +134,7 @@ struct EventsSection: View {
     @Default(.personalEventsAppereance) var personalEventsAppereance
     @Default(.pastEventsAppereance) var pastEventsAppereance
     @Default(.allDayEvents) var allDayEvents
+    @Default(.showPendingEvents) var showPendingEvents
 
     var body: some View {
         Text("Events").font(.headline).bold()
@@ -170,6 +171,18 @@ struct EventsSection: View {
                             Text("hide").tag(DeclinedEventsAppereance.hide)
                         }
                     }
+                }
+            }
+            VStack {
+                HStack {
+                    Picker("Pending events", selection: $showPendingEvents) {
+                        Text("show").tag(PendingEventsAppereance.show)
+                        Text("show as inactive").tag(PendingEventsAppereance.show_inactive)
+                        Text("show as underlined").tag(PendingEventsAppereance.show_underlined)
+                        Text("hide").tag(PendingEventsAppereance.hide)
+                    }
+                }
+                HStack {
                 }
             }
         }.padding(.horizontal, 10)

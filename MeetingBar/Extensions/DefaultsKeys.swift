@@ -43,6 +43,10 @@ extension Defaults.Keys {
     static let personalEventsAppereance = Key<PastEventsAppereance>("personalEventsAppereance", default: .show_active)
     static let disablePastEvents = Key<Bool?>("disablePastEvents")
     static let hidePastEvents = Key<Bool>("hidePastEvents", default: false)
+
+    // appearance of pending events should be shown in the statusbar and menu
+    static let showPendingEvents = Key<PendingEventsAppereance>("showPendingEvents", default: PendingEventsAppereance.show)
+
     static let timeFormat = Key<TimeFormat>("timeFormat", default: .military)
 
     // Bookmarks

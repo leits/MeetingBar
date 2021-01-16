@@ -39,6 +39,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     var showEventEndTimeObserver: DefaultsObservation?
     var pastEventsAppereanceObserver: DefaultsObservation?
     var disablePastEventObserver: DefaultsObservation?
+    var showPendingEventObserver: DefaultsObservation?
     var declinedEventsAppereanceObserver: DefaultsObservation?
     var personalEventsAppereanceObserver: DefaultsObservation?
     var showEventsForPeriodObserver: DefaultsObservation?
@@ -177,12 +178,17 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             self.statusBarItem.updateMenu()
         }
 
+        showPendingEventObserver = Defaults.observe(.showPendingEvents) { change in
+            NSLog("Changed showPendingEvents from \(String(describing: change.oldValue)) to \(String(describing: change.newValue))")
+
+            self.statusBarItem.updateTitle()
+            self.statusBarItem.updateMenu()
+        }
 
         selectedCalendarIDsObserver = Defaults.observe(.selectedCalendarIDs) { change in
             NSLog("Changed selectedCalendarIDs from \(change.oldValue) to \(change.newValue)")
             self.statusBarItem.loadCalendars()
         }
-
 
         showMeetingServiceIconObserver = Defaults.observe(.showMeetingServiceIcon) { change in
             NSLog("Change showMeetingServiceIcon from \(change.oldValue) to \(change.newValue)")

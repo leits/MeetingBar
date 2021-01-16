@@ -167,6 +167,13 @@ enum AlldayEventsAppereance: String, Codable, CaseIterable {
     case hide
 }
 
+enum PendingEventsAppereance: String, Codable, CaseIterable {
+    case show
+    case show_inactive
+    case show_underlined
+    case hide
+}
+
 enum PastEventsAppereance: String, Codable, CaseIterable {
     case show_active
     case show_inactive
