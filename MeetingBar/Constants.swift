@@ -51,7 +51,7 @@ struct LinksRegex {
     let facebook_workspace = try! NSRegularExpression(pattern: #"https://([a-z0-9-.]+)?workplace.com/[^\s]"#)
     let skype = try! NSRegularExpression(pattern: #"https://join.skype.com/[^\s]*"#)
     let skype4biz = try! NSRegularExpression(pattern: #"https://meet.lync.com/[^\s]*"#)
-    let skype4biz_selfhosted = try! NSRegularExpression(pattern: #"https://meet|join\.[^\s]*"#)
+    let skype4biz_selfhosted = try! NSRegularExpression(pattern: #"https:\/\/(meet|join)\.[^\s]*\/[a-z0-9.]+/meet\/[A-Za-z0-9./]+"#)
     let lifesize = try! NSRegularExpression(pattern: #"https://call.lifesizecloud.com/[^\s]*"#)
 }
 
