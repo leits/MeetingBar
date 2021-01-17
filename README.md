@@ -96,7 +96,7 @@ MeetingBar also uses these resources:
 - [KeyboardShortcuts](https://github.com/sindresorhus/KeyboardShortcuts) for managing global keyboard shortcuts
 - [Defaults](https://github.com/sindresorhus/Defaults) for managing user settings
 
-Icon made by [Chanut](https://www.flaticon.com/authors/chanut) from [flaticon](https://www.flaticon.com)
+App logo made by [Miroslav Rajkovic](https://www.rajkovic.co/).
 
 If you encounter any bugs or have a feature request, [add an issue](https://github.com/leits/MeetingBar/issues/new).
 
