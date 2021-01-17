@@ -144,6 +144,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
 
                     // create an NSMutableAttributedString that we'll append everything to
                     let menuTitle = NSMutableAttributedString()
+                    let eventStatus = getEventParticipantStatus(nextEvent)
 
                     if Defaults[.eventTimeFormat] != EventTimeFormat.show_under_title || Defaults[.eventTitleFormat] == .none {
                         var eventTitle = title
@@ -154,9 +155,10 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                         var styles = [NSAttributedString.Key: Any]()
                         styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: 13)
 
-                        if Defaults[.showPendingEvents] == PendingEventsAppereance.show_inactive {
+
+                        if eventStatus == .pending && Defaults[.showPendingEvents] == PendingEventsAppereance.show_inactive {
                             styles[NSAttributedString.Key.foregroundColor] = NSColor.lightGray
-                        } else if Defaults[.showPendingEvents] == PendingEventsAppereance.show_underlined {
+                        } else if eventStatus == .pending && Defaults[.showPendingEvents] == PendingEventsAppereance.show_underlined {
                             styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
                         }
 
@@ -170,9 +172,9 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                         styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: 12)
                         styles[NSAttributedString.Key.baselineOffset] = -3
 
-                        if Defaults[.showPendingEvents] == PendingEventsAppereance.show_inactive {
+                        if eventStatus == .pending && Defaults[.showPendingEvents] == PendingEventsAppereance.show_inactive {
                             styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
-                        } else if Defaults[.showPendingEvents] == PendingEventsAppereance.show_underlined {
+                        } else if eventStatus == .pending && Defaults[.showPendingEvents] == PendingEventsAppereance.show_underlined {
                             styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
                         }
 
