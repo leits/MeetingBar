@@ -86,6 +86,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             Defaults[.statusbarEventTitleLength] = Int(titleLength)
             Defaults[.titleLength] = nil
         }
+        if let useChromeForMeetLinks = Defaults[.useChromeForMeetLinks] {
+            Defaults[.browserForMeetLinks] = useChromeForMeetLinks ? .chrome : .defaultBrowser
+            Defaults[.useChromeForMeetLinks] = nil
+        }
 
         // When our main application starts, we have to kill
         // the auto launcher application if it's still running.

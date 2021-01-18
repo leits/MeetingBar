@@ -61,8 +61,9 @@ extension Defaults.Keys {
     // custom url to create meetings
     static let createMeetingServiceUrl = Key<String>("createMeetingServiceUrl", default: "")
 
-    static let useChromeForMeetLinks = Key<ChromeExecutable>("useChromeForMeetLinks", default: .defaultBrowser)
-    static let useChromeForHangoutsLinks = Key<ChromeExecutable>("useChromeForHangoutsLinks", default: .defaultBrowser)
+    static let browserForMeetLinks = Key<ChromeExecutable>("browserForMeetLinks", default: .defaultBrowser)
+
+    static let useChromeForMeetLinks = Key<Bool?>("useChromeForMeetLinks") // Backward compatibility
     static let useAppForZoomLinks = Key<Bool>("useAppForZoomLinks", default: false)
     static let useAppForTeamsLinks = Key<Bool>("useAppForTeamsLinks", default: false)
 

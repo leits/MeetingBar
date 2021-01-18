@@ -11,8 +11,7 @@ import SwiftUI
 import Defaults
 
 struct ServicesTab: View {
-    @Default(.useChromeForMeetLinks) var useChromeForMeetLinks
-    @Default(.useChromeForHangoutsLinks) var useChromeForHangoutsLinks
+    @Default(.browserForMeetLinks) var browserForMeetLinks
     @Default(.useAppForZoomLinks) var useAppForZoomLinks
     @Default(.useAppForTeamsLinks) var useAppForTeamsLinks
     @Default(.createMeetingServiceUrl) var createMeetingServiceUrl
@@ -21,7 +20,7 @@ struct ServicesTab: View {
     var body: some View {
         VStack {
             Section {
-                Picker(selection: $useChromeForMeetLinks, label: Text("Open Meet links in").frame(width: 150, alignment: .leading)) {
+                Picker(selection: $browserForMeetLinks, label: Text("Open Meet links in").frame(width: 150, alignment: .leading)) {
                     Text("Default Browser").tag(ChromeExecutable.defaultBrowser)
                     Text("Chrome").tag(ChromeExecutable.chrome)
                     Text("Chromium").tag(ChromeExecutable.chromium)
