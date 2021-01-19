@@ -75,7 +75,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
         //
 
-        if let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? nil {
+        if let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
             Defaults[.appVersion] = appVersion
         }
 
