@@ -10,6 +10,8 @@ import Foundation
 
 extension Defaults.Keys {
     // General
+    static let appVersion = Key<String>("appVersion", default: "2.0.5")
+
     static let calendarTitle = Key<String>("calendarTitle", default: "") // Backward compatibility
     static let selectedCalendars = Key<[String]>("selectedCalendars", default: []) // Backward compatibility
     static let selectedCalendarIDs = Key<[String]>("selectedCalendarIDs", default: [])

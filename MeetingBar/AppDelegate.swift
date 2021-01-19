@@ -75,6 +75,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
         //
 
+        if let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? nil {
+            Defaults[.appVersion] = appVersion
+        }
+
         let eventStoreAuthorized = (EKEventStore.authorizationStatus(for: .event) == .authorized)
         if Defaults[.onboardingCompleted], eventStoreAuthorized {
             setup()
