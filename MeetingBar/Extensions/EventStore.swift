@@ -43,7 +43,7 @@ extension EKEventStore {
 
             if calendarEvent.isAllDay {
                 if Defaults[.allDayEvents] == AlldayEventsAppereance.show {
-                    filteredCalendarEvents.append(calendarEvent)
+                    addEvent = true
                 } else if Defaults[.allDayEvents] == AlldayEventsAppereance.show_with_meeting_link_only {
                     let result = getMeetingLink(calendarEvent)
 
