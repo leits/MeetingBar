@@ -12,7 +12,6 @@ import Defaults
 import KeyboardShortcuts
 
 struct GeneralTab: View {
-    @Default(.showEventsForPeriod) var showEventsForPeriod
     @Default(.launchAtLogin) var launchAtLogin
 
     var body: some View {
@@ -23,10 +22,6 @@ struct GeneralTab: View {
             }
             Divider()
             Section {
-                Picker("Show events for", selection: $showEventsForPeriod) {
-                    Text("today").tag(ShowEventsForPeriod.today)
-                    Text("today and tomorrow").tag(ShowEventsForPeriod.today_n_tomorrow)
-                }.frame(width: 270, alignment: .leading)
                 JoinEventNotificationPicker()
             }
             Divider()
