@@ -768,10 +768,10 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
 }
 
 func shortenTitleForSystembar(event: EKEvent) -> String {
-    var eventTitle = String(event.title ?? "No title").trimmingCharacters(in: .whitespaces)
+    var eventTitle = String(event.title ?? "No title").trimmingCharacters(in: TitleTruncationRules.excludeAtEnds)
     if eventTitle.count > Defaults[.statusbarEventTitleLength] {
-        let index = eventTitle.index(eventTitle.startIndex, offsetBy: Defaults[.statusbarEventTitleLength])
-        eventTitle = String(eventTitle[...index])
+        let index = eventTitle.index(eventTitle.startIndex, offsetBy: Defaults[.statusbarEventTitleLength] - 1)
+        eventTitle = String(eventTitle[...index]).trimmingCharacters(in: TitleTruncationRules.excludeAtEnds)
         eventTitle += "..."
     }
 
@@ -779,10 +779,10 @@ func shortenTitleForSystembar(event: EKEvent) -> String {
 }
 
 func shortenTitleForMenu(event: EKEvent) -> String {
-    var eventTitle = String(event.title ?? "No title").trimmingCharacters(in: .whitespaces)
+    var eventTitle = String(event.title ?? "No title").trimmingCharacters(in: TitleTruncationRules.excludeAtEnds)
     if eventTitle.count > Int(Defaults[.menuEventTitleLength]) {
-        let index = eventTitle.index(eventTitle.startIndex, offsetBy: Int(Defaults[.menuEventTitleLength]))
-        eventTitle = String(eventTitle[...index])
+        let index = eventTitle.index(eventTitle.startIndex, offsetBy: Int(Defaults[.menuEventTitleLength]) - 1)
+        eventTitle = String(eventTitle[...index]).trimmingCharacters(in: TitleTruncationRules.excludeAtEnds)
         eventTitle += "..."
     }
 
