@@ -85,7 +85,7 @@ enum Links {
 }
 
 enum MeetingServices: String, Codable, CaseIterable {
-    case other = "Other"
+    case phone = "Phone"
     case meet = "Google Meet"
     case hangouts = "Google Hangouts"
     case zoom = "Zoom"
@@ -117,8 +117,8 @@ enum MeetingServices: String, Codable, CaseIterable {
     case skype4biz_selfhosted = "Skype For Business (SH)"
     case facetime = "Facetime"
     case facetimeaudio = "Facetime Audio"
-    case phone = "Phone"
     case youtube = "YouTube"
+    case other = "Other"
 }
 
 enum TimeFormat: String, Codable, CaseIterable {
