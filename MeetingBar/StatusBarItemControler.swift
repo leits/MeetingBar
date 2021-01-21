@@ -450,6 +450,11 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             image!.size = NSSize(width: 16, height: 16)
 
         // tested and verified
+        case .some(.youtube):
+            image = NSImage(named: "youtube_icon")!
+            image!.size = NSSize(width: 16, height: 16)
+
+        // tested and verified
         case .none:
             image = NSImage(named: "no_online_session")!
             image!.size = NSSize(width: 16, height: 16)
@@ -859,7 +864,7 @@ func getEventParticipantStatus(_ event: EKEvent) -> EKParticipantStatus? {
 func openMeetingURL(_ service: MeetingServices?, _ url: URL) {
     switch service {
     case .meet:
-        switch Defaults[.useChromeForMeetLinks] {
+        switch Defaults[.browserForMeetLinks] {
         case .chrome:
             openLinkInChrome(url)
         case .chromium:

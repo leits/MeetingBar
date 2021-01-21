@@ -76,6 +76,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
         //
 
+        if let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
+            Defaults[.appVersion] = appVersion
+        }
+
         let eventStoreAuthorized = (EKEventStore.authorizationStatus(for: .event) == .authorized)
         if Defaults[.onboardingCompleted], eventStoreAuthorized {
             setup()
@@ -86,6 +90,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         if let titleLength = Defaults[.titleLength] {
             Defaults[.statusbarEventTitleLength] = Int(titleLength)
             Defaults[.titleLength] = nil
+        }
+        if let useChromeForMeetLinks = Defaults[.useChromeForMeetLinks] {
+            Defaults[.browserForMeetLinks] = useChromeForMeetLinks ? .chrome : .defaultBrowser
+            Defaults[.useChromeForMeetLinks] = nil
         }
 
         // When our main application starts, we have to kill
