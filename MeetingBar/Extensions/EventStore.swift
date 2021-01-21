@@ -108,7 +108,7 @@ extension EKEventStore {
                     continue
                 }
 
-                if status == .pending && Defaults[.showPendingEvents] == PendingEventsAppereance.hide {
+                if status == .pending && (Defaults[.showPendingEvents] == PendingEventsAppereance.hide || Defaults[.showPendingEvents] == PendingEventsAppereance.show_inactive) {
                     continue
                 }
             }
