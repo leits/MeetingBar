@@ -39,18 +39,29 @@ extension EKEventStore {
 
 
         for calendarEvent in calendarEvents {
+            var addEvent = false
+
             if calendarEvent.isAllDay {
                 if Defaults[.allDayEvents] == AlldayEventsAppereance.show {
-                    filteredCalendarEvents.append(calendarEvent)
+                    addEvent = true
                 } else if Defaults[.allDayEvents] == AlldayEventsAppereance.show_with_meeting_link_only {
                     let result = getMeetingLink(calendarEvent)
 
                     if result?.url != nil {
-                        filteredCalendarEvents.append(calendarEvent)
+                        addEvent = true
                     }
                 }
             } else {
-                 filteredCalendarEvents.append(calendarEvent)
+                addEvent = true
+            }
+
+            let status = getEventParticipantStatus(calendarEvent)
+            if status == .pending && Defaults[.showPendingEvents] == .hide {
+                addEvent = false
+            }
+
+            if addEvent {
+                filteredCalendarEvents.append(calendarEvent)
             }
         }
 
@@ -94,6 +105,10 @@ extension EKEventStore {
             }
             if let status = getEventParticipantStatus(event) {
                 if status == .declined { // Skip event if declined
+                    continue
+                }
+
+                if status == .pending && (Defaults[.showPendingEvents] == PendingEventsAppereance.hide || Defaults[.showPendingEvents] == PendingEventsAppereance.show_inactive) {
                     continue
                 }
             }
