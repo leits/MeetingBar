@@ -15,6 +15,8 @@ struct BookmarksTab: View {
     @Default(.bookmarks) var bookmarks
 
     @State var showingAddBookmarkModal = false
+    @State private var showingAlert = false
+    @State private var bookmark: Bookmark?
 
     var body: some View {
         VStack(alignment: .leading) {
@@ -23,12 +25,26 @@ struct BookmarksTab: View {
                     HStack {
                         Text("\(bookmark.name) (\(bookmark.service.rawValue)): \(bookmark.url)")
                         Spacer()
-                        Button("x") {
-                            self.removeBookmark(bookmark)
+                        Button(action: {
+                            self.bookmark = bookmark
+                            self.showingAlert = true
+                        }) {
+                            Text("x")
                         }
                     }
-                }
+                }.onMove(perform: moveBookmark)
             }.border(Color.gray)
+            .alert(isPresented: $showingAlert) {
+                Alert(
+                    title: Text("Delete bookmark?"),
+                    message: Text("Do you want to delete bookmark \(self.bookmark!.name)?"),
+                    primaryButton: .default(Text("Delete")) {
+                        self.removeBookmark(self.bookmark!)
+                    },
+                    secondaryButton: .cancel()
+                )
+            }
+
             HStack {
                 Spacer()
                 Button("Add bookmark") {
@@ -41,6 +57,14 @@ struct BookmarksTab: View {
         }.padding()
     }
 
+    // allow to change the order of bookmarks
+    private func moveBookmark(source: IndexSet, destination: Int) {
+        bookmarks.move(fromOffsets: source, toOffset: destination)
+    }
+
+    /**
+     * allows to remove the bookmark
+     */
     func removeBookmark(_ bookmark: Bookmark) {
         bookmarks.removeAll { $0.url == bookmark.url }
     }
