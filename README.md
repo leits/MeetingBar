@@ -19,7 +19,6 @@ Integrated with 20+ meeting services so you can quickly join meetings from event
   * show or hide all day events
   * show or hide events without guests
   * show or hide meeting type icons 
-
 * Show events from all your macos calendars incl. notes, location and attendees
 * Join the next onlinemeeting with a single shortcut
 * Select for specific services like zoom or ms teams to start the meeting in the installed app or browser
@@ -44,32 +43,32 @@ If you have some installation problems or some other questions please check the 
 
 ## Supported meeting services
 
-- Google Meet
-- Zoom
-- Google Hangouts
-- Microsoft Teams
-- Amazon Chime
-- Cisco Webex
-- Jitsi
-- Ring Central
-- GoToMeeting
-- GoToWebinar
-- BlueJeans
-- 8x8
-- Demio
-- Join.me
-- ZoomGov
-- Whereby
-- Uber Conference
-- Blizz
-- VSee
-- StarLeaf
-- Google Duo
-- Tencent VooV
-- Skype
-- Skype For Bussines
-- Lifesize
-- Facebook Workspace
+* Google Meet
+* Zoom
+* Google Hangouts
+* Microsoft Teams
+* Amazon Chime
+* Cisco Webex
+* Jitsi
+* Ring Central
+* GoToMeeting
+* GoToWebinar
+* BlueJeans
+* 8x8
+* Demio
+* Join.me
+* ZoomGov
+* Whereby
+* Uber Conference
+* Blizz
+* VSee
+v StarLeaf
+* Google Duo
+* Tencent VooV
+* Skype
+* Skype For Bussines
+* Lifesize
+* Facebook Workspace
 
 If the service you use isn't supported, add a comment [here](https://github.com/leits/MeetingBar/discussions/108).
 
@@ -92,8 +91,8 @@ Read more [here](CONTRIBUTING.md) about how to contribute to MeetingBar.
 MeetingBar is **stable** and in **active development** by [leits](https://github.com/leits). Written in Swift 5.0.
 
 MeetingBar also uses these resources:
-- [KeyboardShortcuts](https://github.com/sindresorhus/KeyboardShortcuts) for managing global keyboard shortcuts
-- [Defaults](https://github.com/sindresorhus/Defaults) for managing user settings
+* [KeyboardShortcuts](https://github.com/sindresorhus/KeyboardShortcuts) for managing global keyboard shortcuts
+* [Defaults](https://github.com/sindresorhus/Defaults) for managing user settings
 
 App logo made by [Miroslav Rajkovic](https://www.rajkovic.co/).
 
