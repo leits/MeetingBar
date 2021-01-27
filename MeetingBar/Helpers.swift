@@ -78,7 +78,7 @@ func generateTitleSample(_ titleFormat: EventTitleFormat, _ offset: Int) -> Stri
     switch titleFormat {
     case .show:
         title = "An event with an excessively sizeable 55-character title"
-        title = title.trunc(limit: offset)
+        title = title.truncated(to: offset)
         title += " in 1h 25m"
     case .dot:
         title = "• in 1h 25m"
@@ -102,7 +102,7 @@ func generateTitleIconSample(_ titleIconFormat: EventTitleIconFormat) -> NSImage
 
 func generateTitleSample(_ offset: Int) -> String {
     let title = "An event with an excessively sizeable 100-character title to show the shorten capabilities here ...."
-    return title.trunc(limit: offset)
+    return title.truncated(to: offset)
 }
 
 func getRegexForService(_ service: MeetingServices) -> NSRegularExpression? {
@@ -111,7 +111,7 @@ func getRegexForService(_ service: MeetingServices) -> NSRegularExpression? {
 
     for child in mirror.children {
         if child.label == String(describing: service) {
-            return (child.value as! NSRegularExpression)
+            return child.value as? NSRegularExpression
         }
     }
     return nil

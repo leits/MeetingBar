@@ -15,36 +15,41 @@ extension String {
         case tail
     }
 
-    /*
-     Truncates the string to the specified length number of characters and appends an optional trailing string if longer.
-     - Parameter length: Desired maximum lengths of a string
-     - Parameter trailing: A 'String' that will be appended after the truncation.
-     
-     - Returns: 'String' object.
-     */
-    func trunc(limit: Int, position: TruncationPosition = .tail, leader: String = "...") -> String {
+    /// Returns a truncated version of the string, limited to the specified length
+    /// in characters, indicating the truncating with an optional truncation mark.
+    /// - Parameters:
+    ///   - limit: Desired maximum length of the string.
+    ///   - position: The position where the truncation should be applied.
+    ///   - truncationMark: A string that will be placed at the truncation position.
+    /// - Returns: The truncated string, if applicable.
+    func truncated(to limit: Int, at position: TruncationPosition = .tail, truncationMark: String = "…") -> String {
         guard self.count > limit else {
             return self
         }
 
         switch position {
         case .head:
-            return leader + self.suffix(limit)
+            return truncationMark + self.suffix(limit)
+
         case .middle:
-            let headCharactersCount = Int(ceil(Float(limit - leader.count) / 2.0))
+            let headCharactersCount = Int(ceil(Float(limit - truncationMark.count) / 2.0))
+            let tailCharactersCount = Int(floor(Float(limit - truncationMark.count) / 2.0))
+            return "\(self.prefix(headCharactersCount))\(truncationMark)\(self.suffix(tailCharactersCount))"
 
-            let tailCharactersCount = Int(floor(Float(limit - leader.count) / 2.0))
-
-            return "\(self.prefix(headCharactersCount))\(leader)\(self.suffix(tailCharactersCount))"
         case .tail:
-            return self.prefix(limit) + leader
+            return self.prefix(limit) + truncationMark
         }
     }
 
 
-    func stringByReplacingFirstOccurrenceOfString( target: String, withString replaceString: String ) -> String {
+    /// Returns a version of the first occurence of `target` is replaced by `replacement`.
+    /// - Parameters:
+    ///   - target: The string to search for.
+    ///   - replacement: The replacement string.
+    /// - Returns: The string with the replacement, if any.
+    func replacingFirstOccurrence(of target: String, with replacement: String) -> String {
         if let range = self.range(of: target) {
-            return self.replacingCharacters(in: range, with: replaceString)
+            return self.replacingCharacters(in: range, with: replacement)
         }
         return self
     }
