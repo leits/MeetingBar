@@ -64,7 +64,7 @@ func scheduleRunScriptForMeetingStart() {
 
             if scriptNonAlldayCandidate || scriptAllDayCandidate {
                 var events = Defaults[.processedEvents]
-                let matchedEvent = events.firstIndex(where: { $0.id == nextEvent.eventIdentifier })
+                let matchedEvent = events.firstIndex { $0.id == nextEvent.eventIdentifier }
 
                 // was a script for the event identified by id already scheduled?
                 var alreadyExecuted = matchedEvent != nil
