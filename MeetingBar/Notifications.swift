@@ -70,7 +70,8 @@ func sendNotification(title: String, text: String, subtitle: String = "") {
         } else {
             NSLog("%@", "request \(request) was added")
         }
-    }}
+    }
+}
 
 /**
  * check whether the notifications for meetingbar are enabled and alert or banner style is enabled.
