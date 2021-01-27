@@ -206,5 +206,10 @@ public enum AutoLauncher {
 enum ChromeExecutable: String, Codable, CaseIterable {
     case chrome = "Google Chrome"
     case chromium = "Chromium"
+    case firefox = "Firefox"
+    case edge = "Microsoft Edge"
+    case brave = "Brave"
+    case vivaldi = "Vivaldi"
+    case opera = "Opera"
     case defaultBrowser = "Default Browser"
 }
