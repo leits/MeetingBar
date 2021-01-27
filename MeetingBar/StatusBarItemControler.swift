@@ -869,6 +869,16 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL) {
             openLinkInChrome(url)
         case .chromium:
             openLinkInChromium(url)
+        case .firefox:
+            openLinkInFirefox(url)
+        case .edge:
+            openLinkInEdge(url)
+        case .brave:
+            openLinkInBrave(url)
+        case .vivaldi:
+            openLinkInVivaldi(url)
+        case .opera:
+            openLinkInOpera(url)
         default:
             _ = openLinkInDefaultBrowser(url)
         }
@@ -902,7 +912,7 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL) {
         if !result {
             sendNotification(title: "Oops! Unable to open the native link in Zoom app", text: "Make sure you have Zoom app installed, or change the app in the preferences.", subtitle: url.absoluteString)
 
-            let urlString = url.absoluteString.stringByReplacingFirstOccurrenceOfString(target: "&", withString: "?").replacingOccurrences(of: "/join?confno=", with: "/j/")
+            let urlString = url.absoluteString.replacingFirstOccurrence(of: "&", with: "?").replacingOccurrences(of: "/join?confno=", with: "/j/")
             var zoomBrowserUrl = URLComponents(url: URL(string: urlString)!, resolvingAgainstBaseURL: false)!
             zoomBrowserUrl.scheme = "https"
             _ = openLinkInDefaultBrowser(zoomBrowserUrl.url!)

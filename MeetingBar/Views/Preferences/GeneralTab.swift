@@ -77,7 +77,7 @@ struct AboutAppSection: View {
                 HStack {
                     Button("About this app", action: openAboutThisApp)
                     Spacer()
-                    Button("Support the creator", action: openSupportTheCreator)
+                    Button("Open manual", action: openManual)
                 }
             }
         }
@@ -88,8 +88,8 @@ struct AboutAppSection: View {
         _ = openLinkInDefaultBrowser(Links.aboutThisApp)
     }
 
-    func openSupportTheCreator() {
-        NSLog("Open SupportTheCreator")
-        _ = openLinkInDefaultBrowser(Links.supportTheCreator)
+    func openManual() {
+        NSLog("Open manual")
+        _ = openLinkInDefaultBrowser(Links.manual)
     }
 }

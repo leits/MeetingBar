@@ -23,17 +23,19 @@ struct BookmarksTab: View {
             List {
                 ForEach(bookmarks, id: \.self) { bookmark in
                     HStack {
+                        Image(nsImage: NSImage(named: NSImage.listViewTemplateName)!).foregroundColor(.gray)
+
                         Text("\(bookmark.name) (\(bookmark.service.rawValue)): \(bookmark.url)")
                         Spacer()
                         Button(action: {
                             self.bookmark = bookmark
                             self.showingAlert = true
                         }) {
-                            Text("x")
-                        }
-                    }
+                            Image(nsImage: NSImage(named: NSImage.stopProgressFreestandingTemplateName)!)
+                        }.buttonStyle(PlainButtonStyle())
+                    }.padding(3)
                 }.onMove(perform: moveBookmark)
-            }.border(Color.gray)
+            }
             .alert(isPresented: $showingAlert) {
                 Alert(
                     title: Text("Delete bookmark?"),

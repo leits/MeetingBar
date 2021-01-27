@@ -47,13 +47,83 @@ func openLinkInChrome(_ link: URL) {
 
 func openLinkInChromium(_ link: URL) {
     let configuration = NSWorkspace.OpenConfiguration()
-    let chromeUrl = URL(fileURLWithPath: "/Applications/Chromium.app")
-    NSWorkspace.shared.open([link], withApplicationAt: chromeUrl, configuration: configuration) { app, error in
+    let chromiumUrl = URL(fileURLWithPath: "/Applications/Chromium.app")
+    NSWorkspace.shared.open([link], withApplicationAt: chromiumUrl, configuration: configuration) { app, error in
         if app != nil {
             NSLog("Open \(link) in Chromium")
         } else {
             NSLog("Can't open \(link) in Chromium: \(String(describing: error?.localizedDescription))")
             sendNotification(title: "Oops! Unable to open the link in Chromium", text: "Make sure you have Chromium installed, or change the browser in the preferences.")
+            _ = openLinkInDefaultBrowser(link)
+        }
+    }
+}
+
+func openLinkInFirefox(_ link: URL) {
+    let configuration = NSWorkspace.OpenConfiguration()
+    let firefoxUrl = URL(fileURLWithPath: "/Applications/Firefox.app")
+    NSWorkspace.shared.open([link], withApplicationAt: firefoxUrl, configuration: configuration) { app, error in
+        if app != nil {
+            NSLog("Open \(link) in Firefox")
+        } else {
+            NSLog("Can't open \(link) in Firefox: \(String(describing: error?.localizedDescription))")
+            sendNotification(title: "Oops! Unable to open the link in Firefox", text: "Make sure you have Firefox installed, or change the browser in the preferences.")
+            _ = openLinkInDefaultBrowser(link)
+        }
+    }
+}
+
+func openLinkInEdge(_ link: URL) {
+    let configuration = NSWorkspace.OpenConfiguration()
+    let edgeUrl = URL(fileURLWithPath: "/Applications/Microsoft Edge.app")
+    NSWorkspace.shared.open([link], withApplicationAt: edgeUrl, configuration: configuration) { app, error in
+        if app != nil {
+            NSLog("Open \(link) in Edge")
+        } else {
+            NSLog("Can't open \(link) in Edge: \(String(describing: error?.localizedDescription))")
+            sendNotification(title: "Oops! Unable to open the link in Edge", text: "Make sure you have Edge installed, or change the browser in the preferences.")
+            _ = openLinkInDefaultBrowser(link)
+        }
+    }
+}
+
+func openLinkInBrave(_ link: URL) {
+    let configuration = NSWorkspace.OpenConfiguration()
+    let braveUrl = URL(fileURLWithPath: "/Applications/Brave Browser.app")
+    NSWorkspace.shared.open([link], withApplicationAt: braveUrl, configuration: configuration) { app, error in
+        if app != nil {
+            NSLog("Open \(link) in Brave")
+        } else {
+            NSLog("Can't open \(link) in Brave: \(String(describing: error?.localizedDescription))")
+            sendNotification(title: "Oops! Unable to open the link in Brave", text: "Make sure you have Brave installed, or change the browser in the preferences.")
+            _ = openLinkInDefaultBrowser(link)
+        }
+    }
+}
+
+func openLinkInVivaldi(_ link: URL) {
+    let configuration = NSWorkspace.OpenConfiguration()
+    let vivaldiUrl = URL(fileURLWithPath: "/Applications/Vivaldi.app")
+    NSWorkspace.shared.open([link], withApplicationAt: vivaldiUrl, configuration: configuration) { app, error in
+        if app != nil {
+            NSLog("Open \(link) in Vivaldi")
+        } else {
+            NSLog("Can't open \(link) in Vivaldi: \(String(describing: error?.localizedDescription))")
+            sendNotification(title: "Oops! Unable to open the link in Vivaldi", text: "Make sure you have Vivaldi installed, or change the browser in the preferences.")
+            _ = openLinkInDefaultBrowser(link)
+        }
+    }
+}
+
+func openLinkInOpera(_ link: URL) {
+    let configuration = NSWorkspace.OpenConfiguration()
+    let operaUrl = URL(fileURLWithPath: "/Applications/Opera.app")
+    NSWorkspace.shared.open([link], withApplicationAt: operaUrl, configuration: configuration) { app, error in
+        if app != nil {
+            NSLog("Open \(link) in Opera")
+        } else {
+            NSLog("Can't open \(link) in Opera: \(String(describing: error?.localizedDescription))")
+            sendNotification(title: "Oops! Unable to open the link in Opera", text: "Make sure you have Opera installed, or change the browser in the preferences.")
             _ = openLinkInDefaultBrowser(link)
         }
     }
@@ -84,7 +154,7 @@ func generateTitleSample(_ titleFormat: EventTitleFormat, _ offset: Int) -> Stri
     switch titleFormat {
     case .show:
         title = "An event with an excessively sizeable 55-character title"
-        title = title.trunc(limit: offset)
+        title = title.truncated(to: offset)
         title += " in 1h 25m"
     case .dot:
         title = "• in 1h 25m"
@@ -108,7 +178,7 @@ func generateTitleIconSample(_ titleIconFormat: EventTitleIconFormat) -> NSImage
 
 func generateTitleSample(_ offset: Int) -> String {
     let title = "An event with an excessively sizeable 100-character title to show the shorten capabilities here ...."
-    return title.trunc(limit: offset)
+    return title.truncated(to: offset)
 }
 
 func getRegexForService(_ service: MeetingServices) -> NSRegularExpression? {
@@ -117,7 +187,7 @@ func getRegexForService(_ service: MeetingServices) -> NSRegularExpression? {
 
     for child in mirror.children {
         if child.label == String(describing: service) {
-            return (child.value as! NSRegularExpression)
+            return child.value as? NSRegularExpression
         }
     }
     return nil
