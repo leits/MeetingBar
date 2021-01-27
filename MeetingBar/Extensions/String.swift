@@ -56,8 +56,8 @@ extension String {
 
     /// A Boolean value indicating whether the string contains HTML tags.
     var containsHTML: Bool {
-        let htmlTest = NSPredicate(format: "SELF MATCHES %@", #"</?[A-z][ \t\S]*>"#)
-        return htmlTest.evaluate(with: self)
+        let htmlRange = self.range(of: #"</?[A-z][ \t\S]*>"#, options: .regularExpression)
+        return htmlRange != nil
     }
 
     /// Returns a version of the string with all HTML tags removed, if any.
