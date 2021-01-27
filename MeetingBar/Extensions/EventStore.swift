@@ -100,7 +100,7 @@ extension EKEventStore {
         // but the next event is closer than 10 minutes later
         // then show the next event
         for event in nextEvents {
-            if event.isAllDay {
+            if event.isAllDay && Defaults[.allDayEvents] == AlldayEventsAppereance.hide {
                 continue
             }
             if let status = getEventParticipantStatus(event) {

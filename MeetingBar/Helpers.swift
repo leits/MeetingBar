@@ -9,6 +9,12 @@ import Cocoa
 import EventKit
 import Defaults
 
+
+struct Event: Encodable, Decodable, Hashable {
+    var id: String
+    var lastModifiedDate: Date
+}
+
 struct Bookmark: Encodable, Decodable, Hashable {
     var name: String
     var service: MeetingServices

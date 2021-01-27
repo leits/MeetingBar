@@ -124,6 +124,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
         scheduleUpdateStatusBarTitle()
         scheduleUpdateEvents()
+        scheduleRunScriptForMeetingStart()
+
         KeyboardShortcuts.onKeyUp(for: .createMeetingShortcut) {
             self.createMeeting()
         }
@@ -283,6 +285,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             completion(NSBackgroundActivityScheduler.Result.finished)
         }
     }
+
 
     private func scheduleUpdateEvents() {
         let activity = NSBackgroundActivityScheduler(identifier: "leits.MeetingBar.updateevents")
