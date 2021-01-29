@@ -235,8 +235,6 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                     keyEquivalent: ""
                 )
                 joinItem.setShortcut(for: .joinEventShortcut)
-                joinItem.image = NSImage(named: "play")
-                joinItem.image!.size = NSSize(width: 16, height: 16)
             }
         }
 
@@ -246,8 +244,6 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
         createEventItem.action = #selector(AppDelegate.createMeeting)
         createEventItem.keyEquivalent = ""
         createEventItem.setShortcut(for: .createMeetingShortcut)
-        createEventItem.image = NSImage(named: "calendar_badge_plus")
-        createEventItem.image!.size = NSSize(width: 16, height: 16)
 
         self.statusItemMenu.addItem(createEventItem)
 
@@ -259,8 +255,6 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                 action: nil,
                 keyEquivalent: ""
             )
-            bookmarksItem.image = NSImage(named: "bookmark")
-            bookmarksItem.image!.size = NSSize(width: 16, height: 16)
 
             var bookmarksMenu: NSMenu
 
@@ -748,22 +742,17 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
     }
 
     func createPreferencesSection() {
-        let prefItem = self.statusItemMenu.addItem(
+        self.statusItemMenu.addItem(
             withTitle: "Preferences",
             action: #selector(AppDelegate.openPrefecencesWindow),
             keyEquivalent: ","
         )
 
-        prefItem.image = NSImage(named: "gear")
-        prefItem.image!.size = NSSize(width: 16, height: 16)
-
-        let quitItem = self.statusItemMenu.addItem(
-            withTitle: "Quit Meetingbar",
+        self.statusItemMenu.addItem(
+            withTitle: "Quit MeetingBar",
             action: #selector(AppDelegate.quit),
             keyEquivalent: "q"
         )
-        quitItem.image = NSImage(named: "xmark_square")
-        quitItem.image!.size = NSSize(width: 16, height: 16)
     }
 }
 

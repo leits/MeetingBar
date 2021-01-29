@@ -43,19 +43,6 @@ struct StatusBarSection: View {
                     }.tag(EventTitleIconFormat.calendar)
 
                     HStack {
-                        Image(nsImage: NSImage(named: EventTitleIconFormat.videocam.rawValue)!).resizable()
-                            .frame(width: 16.0, height: 16.0)
-                        Text("\u{00A0}Videocam icon")
-                    }.tag(EventTitleIconFormat.videocam)
-
-
-                    HStack {
-                        Image(nsImage: NSImage(named: EventTitleIconFormat.onlinemeeting.rawValue)!).resizable()
-                                .frame(width: 16.0, height: 16.0)
-                        Text("\u{00A0}Onlinemeeting icon")
-                    }.tag(EventTitleIconFormat.onlinemeeting)
-
-                    HStack {
                         Image(nsImage: NSImage(named: EventTitleIconFormat.appicon.rawValue)!).resizable()
                                 .frame(width: 16.0, height: 16.0)
                         Text("\u{00A0}App icon")

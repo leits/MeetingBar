@@ -137,8 +137,6 @@ enum AuthResult {
 enum EventTitleIconFormat: String, Codable, CaseIterable {
     case calendar = "iconCalendar"
     case appicon = "AppIcon"
-    case videocam = "videocam"
-    case onlinemeeting = "online_meeting_icon"
     case eventtype = "ms_teams_icon"
     case none = "no_online_session"
 }
