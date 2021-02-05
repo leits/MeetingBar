@@ -21,14 +21,9 @@ struct ServicesTab: View {
         VStack {
             Section {
                 Picker(selection: $browserForMeetLinks, label: Text("Open Meet links in").frame(width: 150, alignment: .leading)) {
-                    Text("Default Browser").tag(ChromeExecutable.defaultBrowser)
-                    Text("Chrome").tag(ChromeExecutable.chrome)
-                    Text("Chromium").tag(ChromeExecutable.chromium)
-                    Text("Firefox").tag(ChromeExecutable.firefox)
-                    Text("Microsoft Edge").tag(ChromeExecutable.edge)
-                    Text("Brave").tag(ChromeExecutable.brave)
-                    Text("Vivaldi").tag(ChromeExecutable.vivaldi)
-                    Text("Opera").tag(ChromeExecutable.opera)
+                    ForEach(Browser.allCases, id: \.self) { (browser: Browser) in
+                        Text(browser.rawValue).tag(browser)
+                    }
                 }
                 Picker(selection: $useAppForZoomLinks, label: Text("Open Zoom links in").frame(width: 150, alignment: .leading)) {
                     Text("Default Browser").tag(false)

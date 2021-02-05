@@ -396,7 +396,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     func openEventInCalendar(sender: NSMenuItem) {
         if let identifier = sender.representedObject as? String {
             let url = URL(string: "ical://ekevent/\(identifier)")!
-            _ = openLinkInDefaultBrowser(url)
+            url.openInDefaultBrowser()
         }
     }
 

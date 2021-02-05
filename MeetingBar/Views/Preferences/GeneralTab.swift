@@ -55,12 +55,12 @@ struct ShortcutsSection: View {
 
     func openAboutThisApp() {
         NSLog("Open AboutThisApp")
-        _ = openLinkInDefaultBrowser(Links.aboutThisApp)
+        Links.aboutThisApp.openInDefaultBrowser()
     }
 
     func openSupportTheCreator() {
         NSLog("Open SupportTheCreator")
-        _ = openLinkInDefaultBrowser(Links.supportTheCreator)
+        Links.supportTheCreator.openInDefaultBrowser()
     }
 }
 
@@ -99,12 +99,12 @@ struct AboutAppSection: View {
 
     func openAboutThisApp() {
         NSLog("Open AboutThisApp")
-        _ = openLinkInDefaultBrowser(Links.aboutThisApp)
+        Links.aboutThisApp.openInDefaultBrowser()
     }
 
     func openManual() {
         NSLog("Open manual")
-        _ = openLinkInDefaultBrowser(Links.manual)
+        Links.manual.openInDefaultBrowser()
     }
 }
 
