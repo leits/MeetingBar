@@ -33,13 +33,10 @@ func completeStoreTransactions() {
 }
 
 func checkAppSource() {
-    SwiftyStoreKit.fetchReceipt(forceRefresh: true) { result in
-        switch result {
-        case .success:
-            Defaults[.isInstalledFromAppStore] = true
-        case .error:
-            Defaults[.isInstalledFromAppStore] = false
-        }
+    if SwiftyStoreKit.localReceiptData == nil {
+        Defaults[.isInstalledFromAppStore] = false
+    } else {
+        Defaults[.isInstalledFromAppStore] = true
     }
 }
 
