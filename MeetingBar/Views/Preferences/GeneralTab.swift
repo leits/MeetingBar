@@ -135,7 +135,7 @@ struct AboutModal: View {
             }
             Divider()
             Spacer()
-            if isInstalledFromAppStore, patronageDuration > 0 {
+            if patronageDuration > 0 {
                 Text("Thanks! You support MeetingBar for \(patronageDuration) Month! 🎉")
                 Spacer()
                 Divider()
