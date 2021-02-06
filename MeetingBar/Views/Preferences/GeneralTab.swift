@@ -77,10 +77,10 @@ struct AboutAppSection: View {
                         AboutModal()
                     }
                     Spacer()
-                    Button(action: openManual) {
-                        Text("Manual")
-                        Image(nsImage: NSImage(named: NSImage.followLinkFreestandingTemplateName)!)
-                    }
+//                    Button(action: openManual) {
+//                        Text("Manual")
+//                        Image(nsImage: NSImage(named: NSImage.followLinkFreestandingTemplateName)!)
+//                    }
                 }
             }
         }
