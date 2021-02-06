@@ -457,6 +457,10 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             image = NSImage(named: "online_meeting_icon")!
             image!.size = NSSize(width: 16, height: 16)
 
+        case .some(.meetStream):
+            image = NSImage(named: "online_meeting_icon")!
+            image!.size = NSSize(width: 16, height: 16)
+
         default:
             break
         }
