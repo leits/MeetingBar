@@ -827,14 +827,14 @@ func openEvent(_ event: EKEvent) {
                 let task = try! NSUserAppleScriptTask(url: url)
                 task.execute { error in
                     if let error = error {
-                        sendNotification(title: "AppleScript return error", text: error.localizedDescription)
+                        sendNotification("AppleScript return error", error.localizedDescription)
                     }
                 }
             }
         }
         openMeetingURL(service, url)
     } else {
-        sendNotification(title: "Epp! Can't join the \(eventTitle)", text: "Link not found, or your meeting service is not yet supported")
+        sendNotification("Epp! Can't join the \(eventTitle)", "Link not found, or your meeting service is not yet supported")
     }
 }
 
@@ -862,7 +862,7 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL) {
             teamsAppURL.scheme = "msteams"
             let result = teamsAppURL.url!.openInDefaultBrowser()
             if !result {
-                sendNotification(title: "Oops! Unable to open the link in Microsoft Teams app", text: "Make sure you have Microsoft Teams app installed, or change the app in the preferences.")
+                sendNotification("Oops! Unable to open the link in Microsoft Teams app", "Make sure you have Microsoft Teams app installed, or change the app in the preferences.")
                 url.openInDefaultBrowser()
             }
         } else {
@@ -875,7 +875,7 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL) {
             zoomAppUrl.scheme = "zoommtg"
             let result = zoomAppUrl.url!.openInDefaultBrowser()
             if !result {
-                sendNotification(title: "Oops! Unable to open the link in Zoom app", text: "Make sure you have Zoom app installed, or change the app in the preferences.")
+                sendNotification("Oops! Unable to open the link in Zoom app", "Make sure you have Zoom app installed, or change the app in the preferences.")
                 url.openInDefaultBrowser()
             }
         } else {
@@ -884,7 +884,7 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL) {
     case .zoom_native:
         let result = url.openInDefaultBrowser()
         if !result {
-            sendNotification(title: "Oops! Unable to open the native link in Zoom app", text: "Make sure you have Zoom app installed, or change the app in the preferences.", subtitle: url.absoluteString)
+            sendNotification("Oops! Unable to open the native link in Zoom app", "Make sure you have Zoom app installed, or change the app in the preferences.")
 
             let urlString = url.absoluteString.replacingFirstOccurrence(of: "&", with: "?").replacingOccurrences(of: "/join?confno=", with: "/j/")
             var zoomBrowserUrl = URLComponents(url: URL(string: urlString)!, resolvingAgainstBaseURL: false)!
