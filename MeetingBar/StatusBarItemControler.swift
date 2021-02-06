@@ -453,6 +453,10 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             image = NSImage(named: "no_online_session")!
             image!.size = NSSize(width: 16, height: 16)
 
+        case .some(.vonageMeetings):
+            image = NSImage(named: "online_meeting_icon")!
+            image!.size = NSSize(width: 16, height: 16)
+
         default:
             break
         }
