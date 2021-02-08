@@ -15,6 +15,16 @@ struct Bookmark: Encodable, Decodable, Hashable {
     var url: String
 }
 
+/**
+ * defines a browser by using a browser name, a path to the application and arguments to run
+ */
+struct Browser: Encodable, Decodable, Hashable {
+    var name: String
+    var path: String
+    var arguments: String = ""
+    var deletable: Bool = true
+}
+
 func getMatch(text: String, regex: NSRegularExpression) -> String? {
     let resultsIterator = regex.matches(in: text, range: NSRange(text.startIndex..., in: text))
     let resultsMap = resultsIterator.map { String(text[Range($0.range, in: text)!]) }
@@ -241,4 +251,22 @@ func getMeetingLink(_ event: EKEvent) -> (service: MeetingServices?, url: URL)? 
         }
     }
     return nil
+}
+
+/**
+ * adds the default browsers for the browser dialog
+ */
+func addInstalledBrowser() {
+    let existingBrowser = Defaults[.browser]
+
+
+    var appUrls = LSCopyApplicationURLsForURL(URL(string: "https:")! as CFURL, .all)?.takeRetainedValue() as? [URL]
+    appUrls = appUrls?.sorted { $0.path.fileName() < $1.path.fileName() }
+
+    appUrls?.forEach {
+        let browser = Browser(name: $0.path.fileName(), path: $0.path)
+        if !existingBrowser.contains { $0.name == browser.path.fileName() } {
+            Defaults[.browser].append(browser)
+        }
+    }
 }

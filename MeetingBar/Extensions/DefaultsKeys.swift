@@ -54,6 +54,9 @@ extension Defaults.Keys {
     // Bookmarks
     static let bookmarks = Key<[Bookmark]>("bookmarks", default: [])
 
+    // Browser configurations
+    static let browser = Key<[Browser]>("browser", default: [])
+
 
     // show all day events - by default true
     static let allDayEvents = Key<AlldayEventsAppereance>("allDayEvents", default: AlldayEventsAppereance.show)

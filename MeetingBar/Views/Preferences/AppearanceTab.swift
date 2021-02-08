@@ -49,7 +49,7 @@ struct StatusBarSection: View {
                     }.tag(EventTitleIconFormat.appicon)
 
                     HStack {
-                        Image(nsImage: NSImage(named: EventTitleIconFormat.eventtype.rawValue)!).resizable()
+                        Image(nsImage: getImage(EventTitleIconFormat.eventtype.rawValue)).resizable()
                                 .frame(width: 16.0, height: 16.0)
                         Text("\u{00A0}Event specific icon (e.g. MS Teams)")
                     }.tag(EventTitleIconFormat.eventtype)
@@ -80,6 +80,12 @@ struct StatusBarSection: View {
                 }
             }
         }.padding(.horizontal, 10)
+    }
+
+    func getImage(iconName:String) -> NSImage{
+        let icon = NSImage(named: iconName)
+        icon!.size = NSSize(width: 16, height: 16);
+        return icon!
     }
 }
 

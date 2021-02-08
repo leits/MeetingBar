@@ -37,6 +37,7 @@
 		40DC7054250E5E1000217DD9 /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC7053250E5E1000217DD9 /* ServiceManagement.framework */; };
 		40E60313250E81EA005986C7 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40E60312250E81EA005986C7 /* main.swift */; };
 		E249D534259BBC3800429BF1 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = E249D533259BBC3800429BF1 /* String.swift */; };
+		E2A59ACD25CC9E5B002FE6E0 /* BrowsersTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2A59ACC25CC9E5B002FE6E0 /* BrowsersTab.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -87,6 +88,7 @@
 		40DC7053250E5E1000217DD9 /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = System/Library/Frameworks/ServiceManagement.framework; sourceTree = SDKROOT; };
 		40E60312250E81EA005986C7 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		E249D533259BBC3800429BF1 /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
+		E2A59ACC25CC9E5B002FE6E0 /* BrowsersTab.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrowsersTab.swift; sourceTree = "<group>"; };
 		E2AE715525AA54A600D3C7CF /* DevTeamOverride.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = DevTeamOverride.xcconfig; sourceTree = "<group>"; };
 		E4DD0F0A2529D0D20029E395 /* Project-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Project-Release.xcconfig"; sourceTree = "<group>"; };
 		E4DD0F0B2529D0D20029E395 /* Project.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Project.xcconfig; sourceTree = "<group>"; };
@@ -178,6 +180,7 @@
 				14E4110D246F2F9200F73ACF /* Preferences.swift */,
 				1452C9B425AF5CE700C46CDF /* GeneralTab.swift */,
 				1452C9C525AF85B400C46CDF /* ServicesTab.swift */,
+				E2A59ACC25CC9E5B002FE6E0 /* BrowsersTab.swift */,
 				1452C9C925AF861300C46CDF /* BookmarksTab.swift */,
 				1452C9CD25AF868E00C46CDF /* CalendarsTab.swift */,
 				1452C9C125AF854000C46CDF /* AppearanceTab.swift */,
@@ -388,6 +391,7 @@
 				14E4110E246F2F9200F73ACF /* Preferences.swift in Sources */,
 				1452C9CA25AF861300C46CDF /* BookmarksTab.swift in Sources */,
 				140D84322493A3FE0055E1CE /* StatusBarItemControler.swift in Sources */,
+				E2A59ACD25CC9E5B002FE6E0 /* BrowsersTab.swift in Sources */,
 				140D84342493A4180055E1CE /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

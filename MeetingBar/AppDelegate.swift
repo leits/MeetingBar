@@ -124,6 +124,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
         scheduleUpdateStatusBarTitle()
         scheduleUpdateEvents()
+
+        if Defaults[.browser].isEmpty {
+            addInstalledBrowser()
+        }
+
+
         KeyboardShortcuts.onKeyUp(for: .createMeetingShortcut) {
             self.createMeeting()
         }
