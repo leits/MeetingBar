@@ -227,10 +227,10 @@ enum Browser: String, Codable, CaseIterable {
             return URL(fileURLWithPath: "/Applications/Chromium.app")
 
         case .edge:
-            return URL(fileURLWithPath: "/Applications/Firefox.app")
+            return URL(fileURLWithPath: "/Applications/Microsoft Edge.app")
 
         case .firefox:
-            return URL(fileURLWithPath: "/Applications/Microsoft Edge.app")
+            return URL(fileURLWithPath: "/Applications/Firefox.app")
 
         case .opera:
             return URL(fileURLWithPath: "/Applications/Opera.app")
