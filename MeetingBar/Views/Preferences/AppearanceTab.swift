@@ -37,25 +37,25 @@ struct StatusBarSection: View {
             HStack {
                 Picker("Icon", selection: $eventTitleIconFormat) {
                     HStack {
-                        Image(nsImage: NSImage(named: EventTitleIconFormat.calendar.rawValue)!).resizable()
+                        Image(nsImage: getImage(iconName: EventTitleIconFormat.calendar.rawValue)).resizable()
                             .frame(width: 16.0, height: 16.0)
                         Text("\u{00A0}Calendar icon")
                     }.tag(EventTitleIconFormat.calendar)
 
                     HStack {
-                        Image(nsImage: NSImage(named: EventTitleIconFormat.appicon.rawValue)!).resizable()
-                                .frame(width: 16.0, height: 16.0)
+                        Image(nsImage: getImage(iconName: EventTitleIconFormat.appicon.rawValue)).resizable()
+                            .frame(width: 16.0, height: 16.0)
                         Text("\u{00A0}App icon")
                     }.tag(EventTitleIconFormat.appicon)
 
                     HStack {
-                        Image(nsImage: NSImage(named: EventTitleIconFormat.eventtype.rawValue)!).resizable()
-                                .frame(width: 16.0, height: 16.0)
+                        Image(nsImage: getImage(iconName: EventTitleIconFormat.eventtype.rawValue)).resizable()
+                            .frame(width: 16.0, height: 16.0)
                         Text("\u{00A0}Event specific icon (e.g. MS Teams)")
                     }.tag(EventTitleIconFormat.eventtype)
 
                     HStack {
-                        Image(nsImage: NSImage(named: EventTitleIconFormat.none.rawValue)!).resizable()
+                        Image(nsImage: getImage(iconName: EventTitleIconFormat.none.rawValue)).resizable()
                             .frame(width: 16.0, height: 16.0)
                         Text("\u{00A0}No icon")
                     }.tag(EventTitleIconFormat.none)
@@ -80,6 +80,12 @@ struct StatusBarSection: View {
                 }
             }
         }.padding(.horizontal, 10)
+    }
+
+    func getImage(iconName: String) -> NSImage {
+        let icon = NSImage(named: iconName)
+        icon!.size = NSSize(width: 16, height: 16)
+        return icon!
     }
 }
 
