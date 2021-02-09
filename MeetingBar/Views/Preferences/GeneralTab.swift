@@ -28,7 +28,7 @@ struct GeneralTab: View {
             ShortcutsSection()
             Spacer()
             Divider()
-            AboutAppSection()
+            PatronageAppSection()
         }.padding()
     }
 }
@@ -54,8 +54,8 @@ struct ShortcutsSection: View {
     }
 }
 
-struct AboutAppSection: View {
-    @State var showingAboutModal = false
+struct PatronageAppSection: View {
+    @State var showingPatronageModal = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
@@ -71,10 +71,10 @@ struct AboutAppSection: View {
                 }
                 Spacer()
                 HStack {
-                    Button(action: { self.showingAboutModal.toggle() }) {
-                        Text("About")
-                    }.sheet(isPresented: $showingAboutModal) {
-                        AboutModal()
+                    Button(action: { self.showingPatronageModal.toggle() }) {
+                        Text("Patronage")
+                    }.sheet(isPresented: $showingPatronageModal) {
+                        PatronageModal()
                     }
                     Spacer()
 //                    Button(action: openManual) {
@@ -93,7 +93,7 @@ struct AboutAppSection: View {
 }
 
 
-struct AboutModal: View {
+struct PatronageModal: View {
     @Environment(\.presentationMode) var presentationMode
     @State var products: [String] = []
 
