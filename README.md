@@ -106,6 +106,22 @@ MeetingBar also uses these resources:
 
 App logo made by [Miroslav Rajkovic](https://www.rajkovic.co/).
 
-If you encounter any bugs or have a feature request, [add an issue](https://github.com/leits/MeetingBar/issues/new).
+## Contributors ✨
 
-Thanks! :wave:
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tr>
+    <td align="center"><a href="https://github.com/leits"><img src="https://avatars.githubusercontent.com/u/12017826?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Andrii Leitsius</b></sub></a><br /><a href="https://github.com/leits/MeetingBar/commits?author=leits" title="Code">💻</a> <a href="#maintenance-leits" title="Maintenance">🚧</a></td>
+  </tr>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+If you encounter any bugs or have a feature request, [add an issue](https://github.com/leits/MeetingBar/issues/new).
