@@ -1,4 +1,7 @@
 [![GitHub license](https://img.shields.io/github/license/leits/MeetingBar.svg)](https://github.com/leits/MeetingBar/blob/master/LICENSE)
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
 [![Github all releases](https://img.shields.io/github/downloads/leits/MeetingBar/total.svg)](https://GitHub.com/leits/MeetingBar/releases/)
 
 **MeetingBar** is a menu bar app for your calendar meetings (macOS 10.15+).
@@ -109,3 +112,23 @@ App logo made by [Miroslav Rajkovic](https://www.rajkovic.co/).
 If you encounter any bugs or have a feature request, [add an issue](https://github.com/leits/MeetingBar/issues/new).
 
 Thanks! :wave:
+
+## Contributors ✨
+
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tr>
+    <td align="center"><a href="https://github.com/leits"><img src="https://avatars.githubusercontent.com/u/12017826?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Andrii Leitsius</b></sub></a><br /><a href="https://github.com/leits/MeetingBar/commits?author=leits" title="Code">💻</a> <a href="#maintenance-leits" title="Maintenance">🚧</a></td>
+  </tr>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
