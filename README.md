@@ -37,7 +37,7 @@ Integrated with 20+ meeting services so you can quickly join meetings from event
   * Manual download the [latest version](https://github.com/leits/MeetingBar/releases/latest/download/MeetingBar.dmg)
 2. Make sure your calendar synchronized to macOS calendar or [add a calendar account](https://support.apple.com/guide/calendar/add-or-delete-calendar-accounts-icl4308d6701/mac).
 3. Open the app and go through the onboarding.
-3. Never miss your next meeting again :tada:
+4. Never miss your next meeting again :tada:
 
 If you have some installation problems or some other questions please check the [FAQ](../../wiki/FAQ) or [add an issue](https://github.com/leits/MeetingBar/issues/new).
 
@@ -89,9 +89,11 @@ If the service you use isn't supported, add a comment [here](https://github.com/
 
 Read more [here](CONTRIBUTING.md) about how to contribute to MeetingBar.
 
-## Support the creator
+## Support the project
 
-❤️ Love this project? Support on [Patreon](https://www.patreon.com/meetingbar)
+❤️ Love this project?
+
+Support on [Patreon](https://www.patreon.com/meetingbar) or via in-app purchases.
 
 ## Credits
 
@@ -100,6 +102,7 @@ MeetingBar is **stable** and in **active development** by [leits](https://github
 MeetingBar also uses these resources:
 * [KeyboardShortcuts](https://github.com/sindresorhus/KeyboardShortcuts) for managing global keyboard shortcuts
 * [Defaults](https://github.com/sindresorhus/Defaults) for managing user settings
+* [SwiftyStoreKit](https://github.com/bizz84/SwiftyStoreKit) for patronage via in-app purchases
 
 App logo made by [Miroslav Rajkovic](https://www.rajkovic.co/).
 
