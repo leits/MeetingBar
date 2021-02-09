@@ -69,6 +69,13 @@ v StarLeaf
 * Skype For Bussines
 * Lifesize
 * Facebook Workspace
+* Facetime scheme
+* Telephone scheme
+* Youtube
+* TeamViewer Meeting
+* Google Meet Stream
+* Vonage Meetings
+
 
 If the service you use isn't supported, add a comment [here](https://github.com/leits/MeetingBar/discussions/108).
 
