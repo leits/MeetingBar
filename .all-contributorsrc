@@ -19,10 +19,19 @@
       "login": "jgoldhammer",
       "name": "Jens Goldhammer",
       "avatar_url": "https://avatars.githubusercontent.com/u/3872101?v=4",
-      "profile": "https://medium.com/@jens.goldhammer",
+      "profile": "https://github.com/jgoldhammer",
       "contributions": [
         "code",
         "maintenance"
+      ]
+    },
+    {
+      "login": "0bmxa",
+      "name": "Max",
+      "avatar_url": "https://avatars.githubusercontent.com/u/15385891?v=4",
+      "profile": "https://github.com/0bmxa",
+      "contributions": [
+        "code"
       ]
     }
   ],
