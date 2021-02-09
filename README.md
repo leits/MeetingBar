@@ -1,7 +1,4 @@
 [![GitHub license](https://img.shields.io/github/license/leits/MeetingBar.svg)](https://github.com/leits/MeetingBar/blob/master/LICENSE)
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
 [![Github all releases](https://img.shields.io/github/downloads/leits/MeetingBar/total.svg)](https://GitHub.com/leits/MeetingBar/releases/)
 
 **MeetingBar** is a menu bar app for your calendar meetings (macOS 10.15+).
@@ -109,10 +106,6 @@ MeetingBar also uses these resources:
 
 App logo made by [Miroslav Rajkovic](https://www.rajkovic.co/).
 
-If you encounter any bugs or have a feature request, [add an issue](https://github.com/leits/MeetingBar/issues/new).
-
-Thanks! :wave:
-
 ## Contributors ✨
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -131,4 +124,4 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
-This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
+If you encounter any bugs or have a feature request, [add an issue](https://github.com/leits/MeetingBar/issues/new).
