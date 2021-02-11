@@ -75,7 +75,9 @@ struct StatusBarSection: View {
             HStack {
                 Picker("Time", selection: $eventTimeFormat) {
                     Text("show").tag(EventTimeFormat.show)
-                    Text("show under title").tag(EventTimeFormat.show_under_title)
+                    if #available(OSX 11.0, *) {} else {
+                        Text("show under title").tag(EventTimeFormat.show_under_title)
+                    }
                     Text("hide").tag(EventTimeFormat.hide)
                 }
             }
