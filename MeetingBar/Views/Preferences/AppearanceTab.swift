@@ -129,7 +129,7 @@ struct EventsSection: View {
     @Default(.allDayEvents) var allDayEvents
     @Default(.showPendingEvents) var showPendingEvents
     @Default(.showEventsForPeriod) var showEventsForPeriod
-    @Default(.showEventMaxTimeUntilEventTreshold) var showEventMaxTimeUntilEventTreshold
+    @Default(.showEventMaxTimeUntilEventThreshold) var showEventMaxTimeUntilEventThreshold
     @Default(.showEventMaxTimeUntilEventEnabled) var showEventMaxTimeUntilEventEnabled
 
     var body: some View {
@@ -148,7 +148,7 @@ struct EventsSection: View {
             }
             HStack {
                 Toggle("Show only events starting in", isOn: $showEventMaxTimeUntilEventEnabled)
-                Stepper("\(showEventMaxTimeUntilEventTreshold) minutes", value: $showEventMaxTimeUntilEventTreshold, in: 5...120, step: 5)
+                Stepper("\(showEventMaxTimeUntilEventThreshold) minutes", value: $showEventMaxTimeUntilEventThreshold, in: 5...120, step: 5)
                     .disabled(!showEventMaxTimeUntilEventEnabled)
             }
 

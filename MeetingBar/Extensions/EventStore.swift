@@ -101,8 +101,8 @@ extension EKEventStore {
                 // Positive, if in the future. Negative, if already started.
                 // Current or past events therefore don't get filtered out.
                 let timeUntilStart = $0.startDate.timeIntervalSinceNow
-                let tresholdInSeconds = TimeInterval(Defaults[.showEventMaxTimeUntilEventTreshold] * 60)
-                return timeUntilStart < tresholdInSeconds
+                let thresholdInSeconds = TimeInterval(Defaults[.showEventMaxTimeUntilEventThreshold] * 60)
+                return timeUntilStart < thresholdInSeconds
             }
         }
 

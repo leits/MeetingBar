@@ -48,7 +48,7 @@ extension Defaults.Keys {
     static let disablePastEvents = Key<Bool?>("disablePastEvents")
     static let hidePastEvents = Key<Bool>("hidePastEvents", default: false)
 
-    static let showEventMaxTimeUntilEventTreshold = Key<Int>("showEventMaxTimeUntilEventTreshold", default: 60)
+    static let showEventMaxTimeUntilEventThreshold = Key<Int>("showEventMaxTimeUntilEventThreshold", default: 60)
     static let showEventMaxTimeUntilEventEnabled = Key<Bool>("showEventMaxTimeUntilEventEnabled", default: false)
 
     // appearance of pending events should be shown in the statusbar and menu

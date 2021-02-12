@@ -46,7 +46,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     var ignoredEventIDsObserver: DefaultsObservation?
     var joinEventNotificationObserver: DefaultsObservation?
     var launchAtLoginObserver: DefaultsObservation?
-    var showEventMaxTimeUntilEventTresholdObserver: DefaultsObservation?
+    var showEventMaxTimeUntilEventThresholdObserver: DefaultsObservation?
     var showEventMaxTimeUntilEventEnabledObserver: DefaultsObservation?
     var preferencesWindow: NSWindow!
     var onboardingWindow: NSWindow!
@@ -268,8 +268,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                 UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
             }
         }
-        showEventMaxTimeUntilEventTresholdObserver = Defaults.observe(.showEventMaxTimeUntilEventTreshold) { change in
-            NSLog("Changed showEventMaxTimeUntilEventTreshold from \(change.oldValue) to \(change.newValue)")
+        showEventMaxTimeUntilEventThresholdObserver = Defaults.observe(.showEventMaxTimeUntilEventThreshold) { change in
+            NSLog("Changed showEventMaxTimeUntilEventThreshold from \(change.oldValue) to \(change.newValue)")
             if change.oldValue != change.newValue {
                 self.statusBarItem.updateTitle()
             }
