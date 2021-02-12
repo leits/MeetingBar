@@ -98,6 +98,8 @@ struct MenuSection: View {
     @Default(.showEventEndTime) var showEventEndTime
     @Default(.showEventDetails) var showEventDetails
     @Default(.showMeetingServiceIcon) var showMeetingServiceIcon
+    @Default(.showEventMaxTimeUntilEventThreshold) var showEventMaxTimeUntilEventThreshold
+    @Default(.showEventMaxTimeUntilEventEnabled) var showEventMaxTimeUntilEventEnabled
 
     var body: some View {
         Text("Menu").font(.headline).bold()
@@ -120,6 +122,12 @@ struct MenuSection: View {
                     Toggle("details as submenu", isOn: $showEventDetails)
                 }
             }
+
+            HStack {
+                Toggle("Show only next event starting within", isOn: $showEventMaxTimeUntilEventEnabled)
+                Stepper("\(showEventMaxTimeUntilEventThreshold) minutes", value: $showEventMaxTimeUntilEventThreshold, in: 5...120, step: 5)
+                    .disabled(!showEventMaxTimeUntilEventEnabled)
+            }
         }.padding(.horizontal, 10)
     }
 }
@@ -131,8 +139,6 @@ struct EventsSection: View {
     @Default(.allDayEvents) var allDayEvents
     @Default(.showPendingEvents) var showPendingEvents
     @Default(.showEventsForPeriod) var showEventsForPeriod
-    @Default(.showEventMaxTimeUntilEventThreshold) var showEventMaxTimeUntilEventThreshold
-    @Default(.showEventMaxTimeUntilEventEnabled) var showEventMaxTimeUntilEventEnabled
 
     var body: some View {
         Text("Events").font(.headline).bold()
@@ -147,11 +153,6 @@ struct EventsSection: View {
                     Text("show only with meeting link").tag(AlldayEventsAppereance.show_with_meeting_link_only)
                     Text("hide").tag(AlldayEventsAppereance.hide)
                 }
-            }
-            HStack {
-                Toggle("Show only events starting in", isOn: $showEventMaxTimeUntilEventEnabled)
-                Stepper("\(showEventMaxTimeUntilEventThreshold) minutes", value: $showEventMaxTimeUntilEventThreshold, in: 5...120, step: 5)
-                    .disabled(!showEventMaxTimeUntilEventEnabled)
             }
 
             HStack {
