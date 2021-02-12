@@ -30,6 +30,8 @@ struct StatusBarSection: View {
 
     @Default(.statusbarEventTitleLength) var statusbarEventTitleLength
 
+    @Default(.showEventMaxTimeUntilEventThreshold) var showEventMaxTimeUntilEventThreshold
+    @Default(.showEventMaxTimeUntilEventEnabled) var showEventMaxTimeUntilEventEnabled
 
     var body: some View {
         Text("Status bar").font(.headline).bold()
@@ -81,6 +83,12 @@ struct StatusBarSection: View {
                     Text("hide").tag(EventTimeFormat.hide)
                 }
             }
+
+            HStack {
+                Toggle("Show only next event starting within", isOn: $showEventMaxTimeUntilEventEnabled)
+                Stepper("\(showEventMaxTimeUntilEventThreshold) minutes", value: $showEventMaxTimeUntilEventThreshold, in: 5...120, step: 5)
+                    .disabled(!showEventMaxTimeUntilEventEnabled)
+            }
         }.padding(.horizontal, 10)
     }
 
@@ -98,8 +106,6 @@ struct MenuSection: View {
     @Default(.showEventEndTime) var showEventEndTime
     @Default(.showEventDetails) var showEventDetails
     @Default(.showMeetingServiceIcon) var showMeetingServiceIcon
-    @Default(.showEventMaxTimeUntilEventThreshold) var showEventMaxTimeUntilEventThreshold
-    @Default(.showEventMaxTimeUntilEventEnabled) var showEventMaxTimeUntilEventEnabled
 
     var body: some View {
         Text("Menu").font(.headline).bold()
@@ -121,12 +127,6 @@ struct MenuSection: View {
                     Toggle("icon", isOn: $showMeetingServiceIcon)
                     Toggle("details as submenu", isOn: $showEventDetails)
                 }
-            }
-
-            HStack {
-                Toggle("Show only next event starting within", isOn: $showEventMaxTimeUntilEventEnabled)
-                Stepper("\(showEventMaxTimeUntilEventThreshold) minutes", value: $showEventMaxTimeUntilEventThreshold, in: 5...120, step: 5)
-                    .disabled(!showEventMaxTimeUntilEventEnabled)
             }
         }.padding(.horizontal, 10)
     }
