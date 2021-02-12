@@ -96,6 +96,16 @@ extension EKEventStore {
             nextEvents = nextEvents.filter { $0.hasAttendees }
         }
 
+        if Defaults[.showEventMaxTimeUntilEventEnabled] {
+            nextEvents = nextEvents.filter {
+                // Positive, if in the future. Negative, if already started.
+                // Current or past events therefore don't get filtered out.
+                let timeUntilStart = $0.startDate.timeIntervalSinceNow
+                let tresholdInSeconds = TimeInterval(Defaults[.showEventMaxTimeUntilEventTreshold] * 60)
+                return timeUntilStart < tresholdInSeconds
+            }
+        }
+
         // If the current event is still going on,
         // but the next event is closer than 10 minutes later
         // then show the next event

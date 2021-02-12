@@ -75,9 +75,7 @@ struct StatusBarSection: View {
             HStack {
                 Picker("Time", selection: $eventTimeFormat) {
                     Text("show").tag(EventTimeFormat.show)
-                    if #available(OSX 11.0, *) {} else {
-                        Text("show under title").tag(EventTimeFormat.show_under_title)
-                    }
+                    Text("show under title").tag(EventTimeFormat.show_under_title)
                     Text("hide").tag(EventTimeFormat.hide)
                 }
             }
@@ -131,6 +129,8 @@ struct EventsSection: View {
     @Default(.allDayEvents) var allDayEvents
     @Default(.showPendingEvents) var showPendingEvents
     @Default(.showEventsForPeriod) var showEventsForPeriod
+    @Default(.showEventMaxTimeUntilEventTreshold) var showEventMaxTimeUntilEventTreshold
+    @Default(.showEventMaxTimeUntilEventEnabled) var showEventMaxTimeUntilEventEnabled
 
     var body: some View {
         Text("Events").font(.headline).bold()
@@ -140,14 +140,18 @@ struct EventsSection: View {
                     Text("today").tag(ShowEventsForPeriod.today)
                     Text("today and tomorrow").tag(ShowEventsForPeriod.today_n_tomorrow)
                 }
-
-
                 Picker("All day events:", selection: $allDayEvents) {
                     Text("show").tag(AlldayEventsAppereance.show)
                     Text("show only with meeting link").tag(AlldayEventsAppereance.show_with_meeting_link_only)
                     Text("hide").tag(AlldayEventsAppereance.hide)
                 }
             }
+            HStack {
+                Toggle("Show only events starting in", isOn: $showEventMaxTimeUntilEventEnabled)
+                Stepper("\(showEventMaxTimeUntilEventTreshold) minutes", value: $showEventMaxTimeUntilEventTreshold, in: 5...120, step: 5)
+                    .disabled(!showEventMaxTimeUntilEventEnabled)
+            }
+
             HStack {
                 Picker("Events without guests:", selection: $personalEventsAppereance) {
                     Text("show").tag(PastEventsAppereance.show_active)
