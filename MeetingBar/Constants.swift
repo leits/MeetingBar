@@ -15,7 +15,6 @@ struct statusbarEventTitleLengthLimits {
 
 struct TitleTruncationRules {
     static let excludeAtEnds = CharacterSet.whitespacesAndNewlines
-            .union(CharacterSet.punctuationCharacters)
 }
 
 struct LinksRegex {
