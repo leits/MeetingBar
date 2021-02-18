@@ -101,6 +101,9 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                     scheduleEventNotification(nextEvent)
                 }
             } else {
+                if Defaults[.joinEventNotification] {
+                    removePendingNotificationRequests()
+                }
                 title = "🏁"
             }
         } else {

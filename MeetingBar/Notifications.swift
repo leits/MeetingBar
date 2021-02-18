@@ -132,6 +132,8 @@ func scheduleEventNotification(_ event: EKEvent) {
         return
     }
 
+    removePendingNotificationRequests()
+
     let center = UNUserNotificationCenter.current()
 
     let content = UNMutableNotificationContent()
@@ -151,4 +153,9 @@ func scheduleEventNotification(_ event: EKEvent) {
             NSLog("%@", "request \(request) was added")
         }
     }
+}
+
+func removePendingNotificationRequests() {
+    let center = UNUserNotificationCenter.current()
+    center.removeAllPendingNotificationRequests()
 }
