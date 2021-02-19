@@ -28,7 +28,7 @@ struct GeneralTab: View {
             ShortcutsSection()
             Spacer()
             Divider()
-            AboutAppSection()
+            PatronageAppSection()
         }.padding()
     }
 }
@@ -52,82 +52,148 @@ struct ShortcutsSection: View {
             }
         }
     }
-
-    func openAboutThisApp() {
-        NSLog("Open AboutThisApp")
-        _ = openLinkInDefaultBrowser(Links.aboutThisApp)
-    }
-
-    func openSupportTheCreator() {
-        NSLog("Open SupportTheCreator")
-        _ = openLinkInDefaultBrowser(Links.supportTheCreator)
-    }
 }
 
-struct AboutAppSection: View {
-    @State var showingAboutModal = false
+struct PatronageAppSection: View {
+    @State var showingPatronageModal = false
+    @State var showingContactModal = false
+
+    @Default(.isInstalledFromAppStore) var isInstalledFromAppStore
 
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
             VStack(alignment: .center) {
                 Spacer()
-                VStack(alignment: .center) {
-                    Image(nsImage: NSImage(named: EventTitleIconFormat.appicon.rawValue)!).resizable()
-                            .frame(width: 120.0, height: 120.0)
-                    Text("MeetingBar").font(.system(size: 20)).bold()
-                    if Bundle.main.infoDictionary != nil {
-                        Text("Version \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "unknown")").foregroundColor(.gray)
-                    }
+                HStack {
+                    VStack(alignment: .center) {
+                        Image(nsImage: NSImage(named: EventTitleIconFormat.appicon.rawValue)!).resizable()
+                                .frame(width: 120.0, height: 120.0)
+                        Text("MeetingBar").font(.system(size: 20)).bold()
+                        if Bundle.main.infoDictionary != nil {
+                            Text("Version \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "unknown")").foregroundColor(.gray)
+                        }
+                    }.frame(minWidth: 0, maxWidth: .infinity)
+                    VStack {
+                        Spacer()
+                        Text("MeetingBar is open-source app created by Andrii Leitsius\nThe app aims to make your experience with online meetings smoother and easier").multilineTextAlignment(.center)
+                        Spacer()
+
+                        HStack {
+                            Spacer()
+                            Button(action: clickPatronage) {
+                                Text("Patronage")
+                            }.sheet(isPresented: $showingPatronageModal) {
+                                PatronageModal()
+                            }
+                            Spacer()
+                            Button(action: { Links.github.openInDefaultBrowser() }) {
+                                Text("GitHub")
+                            }
+                            Spacer()
+                            Button(action: { self.showingContactModal.toggle() }) {
+                                Text("Contact")
+                            }.sheet(isPresented: $showingContactModal) {
+                                ContactModal()
+                            }
+                            Spacer()
+                        }
+                        Spacer()
+                    }.frame(minWidth: 360, maxWidth: .infinity)
                 }
                 Spacer()
-                HStack {
-                    Button(action: { self.showingAboutModal.toggle() }) {
-                        Image(nsImage: NSImage(named: NSImage.touchBarGetInfoTemplateName)!).resizable().frame(width: 12.0, height: 16.0)
-                        Text("About this app")
-                    }.sheet(isPresented: $showingAboutModal) {
-                        AboutModal()
-                    }
-                    Spacer()
-                    Button(action: openManual) {
-                        Image(nsImage: NSImage(named: NSImage.followLinkFreestandingTemplateName)!)
-                        Text("Open manual")
-                    }
-                }
             }
         }
     }
 
-    func openAboutThisApp() {
-        NSLog("Open AboutThisApp")
-        _ = openLinkInDefaultBrowser(Links.aboutThisApp)
-    }
-
-    func openManual() {
-        NSLog("Open manual")
-        _ = openLinkInDefaultBrowser(Links.manual)
+    func clickPatronage() {
+        if isInstalledFromAppStore {
+            self.showingPatronageModal.toggle()
+        } else {
+            Links.patreon.openInDefaultBrowser()
+        }
     }
 }
 
 
-struct AboutModal: View {
+struct PatronageModal: View {
     @Environment(\.presentationMode) var presentationMode
+    @State var products: [String] = []
+
+    @Default(.patronageDuration) var patronageDuration
 
     var body: some View {
         VStack {
             Spacer()
-            VStack(alignment: .leading) {
-                Text(
-                    ""
-                )
+            HStack {
+                VStack(alignment: .leading) {
+                    HStack {
+                        Text("Become a Patron").bold()
+                    }
+                }.frame(width: 120)
+                Spacer()
+                VStack(alignment: .leading) {
+                    Button(action: { purchasePatronage(patronageProducts.threeMonth) }) {
+                        Text("3 Month - 2.99 USD").frame(width: 150)
+                    }
+                    Button(action: { purchasePatronage(patronageProducts.sixMonth) }) {
+                        Text("6 Month - 5.99 USD").frame(width: 150)
+                    }
+                    Button(action: { purchasePatronage(patronageProducts.twelveMonth) }) {
+                        Text("12 Month - 11.99 USD").frame(width: 150)
+                    }
+                    Text("These one-time purchases do not auto-renew.").font(.system(size: 10))
+                }.frame(maxWidth: .infinity)
+            }
+            if patronageDuration > 0 {
+                Divider()
+                Spacer()
+                Text("Thanks! You support MeetingBar for \(patronageDuration) Month! 🎉")
             }
             Spacer()
+            Divider()
             HStack {
+                Button(action: restorePatronagePurchases) {
+                    Text("Restore Purchases")
+                }
+                Spacer()
                 Button(action: {
                     self.presentationMode.wrappedValue.dismiss()
                 }) {
                     Text("Close")
                 }
             }
-        }.padding().frame(width: 400, height: 200)
+        }.padding().frame(width: 400, height: 300)
+    }
+}
+
+struct ContactModal: View {
+    @Environment(\.presentationMode) var presentationMode
+
+    var body: some View {
+        VStack {
+            Spacer()
+            Text("If you have any questions or feedback,\nfeel free to contact me:")
+            Spacer()
+
+            Button(action: { Links.emailMe.openInDefaultBrowser() }) {
+                Text("email").frame(width: 80)
+            }
+            Button(action: { Links.twitter.openInDefaultBrowser() }) {
+                Text("twitter").frame(width: 80)
+            }
+            Button(action: { Links.telegram.openInDefaultBrowser() }) {
+                Text("telegram").frame(width: 80)
+            }
+            Spacer()
+            Divider()
+            HStack {
+                Spacer()
+                Button(action: {
+                    self.presentationMode.wrappedValue.dismiss()
+                }) {
+                    Text("Close")
+                }
+            }
+        }.padding().frame(width: 300, height: 220)
     }
 }

@@ -49,18 +49,15 @@ func registerNotificationCategories() {
     }
 }
 
-func sendNotification(title: String, text: String, subtitle: String = "") {
+func sendUserNotification(_ title: String, _ text: String) {
     requestNotificationAuthorization() // By the apple best practices
 
-    NSLog("Send notification: \(title) - \(text) - \(subtitle)")
+    NSLog("Send notification: \(title) - \(text)")
     let center = UNUserNotificationCenter.current()
 
     let content = UNMutableNotificationContent()
     content.title = title
     content.body = text
-    if !subtitle.isEmpty {
-        content.subtitle = subtitle
-    }
 
     let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
 
@@ -103,7 +100,7 @@ func sendNotification(_ title: String, _ text: String) {
     requestNotificationAuthorization() // By the apple best practices
 
     if notificationsEnabled() {
-        sendNotification(title, text)
+        sendUserNotification(title, text)
     } else {
         displayAlert(title: title, text: text)
     }
@@ -135,6 +132,8 @@ func scheduleEventNotification(_ event: EKEvent) {
         return
     }
 
+    removePendingNotificationRequests()
+
     let center = UNUserNotificationCenter.current()
 
     let content = UNMutableNotificationContent()
@@ -154,4 +153,9 @@ func scheduleEventNotification(_ event: EKEvent) {
             NSLog("%@", "request \(request) was added")
         }
     }
+}
+
+func removePendingNotificationRequests() {
+    let center = UNUserNotificationCenter.current()
+    center.removeAllPendingNotificationRequests()
 }

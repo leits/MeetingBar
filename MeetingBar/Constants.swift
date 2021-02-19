@@ -15,13 +15,13 @@ struct statusbarEventTitleLengthLimits {
 
 struct TitleTruncationRules {
     static let excludeAtEnds = CharacterSet.whitespacesAndNewlines
-            .union(CharacterSet.punctuationCharacters)
 }
 
 struct LinksRegex {
     let meet = try! NSRegularExpression(pattern: #"https://meet.google.com/[a-z-]+"#)
     let hangouts = try! NSRegularExpression(pattern: #"https://hangouts.google.com/[^\s]*"#)
-    let zoom = try! NSRegularExpression(pattern: #"https:\/\/(?:[a-z0-9-.]+)?zoom.(?:us|com.cn)\/j\/[0-9a-zA-Z?=]*"#)
+    let zoom = try! NSRegularExpression(pattern: #"https:\/\/(?:[a-z0-9-.]+)?zoom.(?:us|com.cn)\/(?:j|my)\/[0-9a-zA-Z?=.]*"#)
+
 
     /**
      * Examples:
@@ -48,12 +48,15 @@ struct LinksRegex {
     let starleaf = try! NSRegularExpression(pattern: #"https://meet.starleaf.com/[^\s]*"#)
     let duo = try! NSRegularExpression(pattern: #"https://duo.app.goo.gl/[^\s]*"#)
     let voov = try! NSRegularExpression(pattern: #"https://voovmeeting.com/[^\s]*"#)
-    let facebook_workspace = try! NSRegularExpression(pattern: #"https://([a-z0-9-.]+)?workplace.com/[^\s]"#)
+    let facebook_workspace = try! NSRegularExpression(pattern: #"https://([a-z0-9-.]+)?workplace.com/[^\s]+"#)
     let skype = try! NSRegularExpression(pattern: #"https://join.skype.com/[^\s]*"#)
     let skype4biz = try! NSRegularExpression(pattern: #"https://meet.lync.com/[^\s]*"#)
     let skype4biz_selfhosted = try! NSRegularExpression(pattern: #"https:\/\/(meet|join)\.[^\s]*\/[a-z0-9.]+/meet\/[A-Za-z0-9./]+"#)
     let lifesize = try! NSRegularExpression(pattern: #"https://call.lifesizecloud.com/[^\s]*"#)
     let youtube = try! NSRegularExpression(pattern: #"https://((www|m)\.)?(youtube\.com|youtu\.be)/[^\s]*"#)
+    let vonageMeetings = try! NSRegularExpression(pattern: #"https://meetings\.vonage\.com/[0-9]{9}"#)
+    let meetStream = try! NSRegularExpression(pattern: #"https://stream\.meet\.google\.com/stream/[a-z0-9-]+"#)
+    let around = try! NSRegularExpression(pattern: #"https://meet\.around\.co/[^\s]*"#)
 }
 
 enum CreateMeetingLinks {
@@ -78,9 +81,10 @@ enum CreateMeetingServices: String, Codable, CaseIterable {
 }
 
 enum Links {
-    static var supportTheCreator = URL(string: "https://www.patreon.com/meetingbar")!
-    static var manual = URL(string: "https://meetingbar.onrender.com/manual?utm_source=app")!
-    static var aboutThisApp = URL(string: "https://meetingbar.onrender.com?utm_source=app")!
+    static var patreon = URL(string: "https://www.patreon.com/meetingbar")!
+    static var github = URL(string: "https://github.com/leits/MeetingBar")!
+    static var telegram = URL(string: "https://t.me/leits")!
+    static var twitter = URL(string: "https://twitter.com/leits_dev")!
     static var emailMe = URL(string: "mailto:leits.dev@gmail.com?subject=MeetingBar")!
     static var calendarPreferences = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Calendars")!
 }
@@ -119,6 +123,9 @@ enum MeetingServices: String, Codable, CaseIterable {
     case facetime = "Facetime"
     case facetimeaudio = "Facetime Audio"
     case youtube = "YouTube"
+    case vonageMeetings = "Vonage Meetings"
+    case meetStream = "Google Meet Stream"
+    case around = "Around"
     case other = "Other"
 }
 
@@ -201,13 +208,41 @@ public enum AutoLauncher {
     static let bundleIdentifier: String = "leits.MeetingBar.AutoLauncher"
 }
 
-enum ChromeExecutable: String, Codable, CaseIterable {
+enum Browser: String, Codable, CaseIterable {
+    case brave = "Brave"
     case chrome = "Google Chrome"
     case chromium = "Chromium"
-    case firefox = "Firefox"
     case edge = "Microsoft Edge"
-    case brave = "Brave"
-    case vivaldi = "Vivaldi"
+    case firefox = "Firefox"
     case opera = "Opera"
+    case vivaldi = "Vivaldi"
     case defaultBrowser = "Default Browser"
+
+    var url: URL? {
+        switch self {
+        case .brave:
+            return URL(fileURLWithPath: "/Applications/Brave Browser.app")
+
+        case .chrome:
+            return URL(fileURLWithPath: "/Applications/Google Chrome.app")
+
+        case .chromium:
+            return URL(fileURLWithPath: "/Applications/Chromium.app")
+
+        case .edge:
+            return URL(fileURLWithPath: "/Applications/Microsoft Edge.app")
+
+        case .firefox:
+            return URL(fileURLWithPath: "/Applications/Firefox.app")
+
+        case .opera:
+            return URL(fileURLWithPath: "/Applications/Opera.app")
+
+        case .vivaldi:
+            return URL(fileURLWithPath: "/Applications/Vivaldi.app")
+
+        default:
+            return nil
+        }
+    }
 }

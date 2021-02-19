@@ -101,6 +101,9 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                     scheduleEventNotification(nextEvent)
                 }
             } else {
+                if Defaults[.joinEventNotification] {
+                    removePendingNotificationRequests()
+                }
                 title = "🏁"
             }
         } else {
@@ -453,6 +456,14 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             image = NSImage(named: "no_online_session")!
             image!.size = NSSize(width: 16, height: 16)
 
+        case .some(.vonageMeetings):
+            image = NSImage(named: "online_meeting_icon")!
+            image!.size = NSSize(width: 16, height: 16)
+
+        case .some(.meetStream):
+            image = NSImage(named: "online_meeting_icon")!
+            image!.size = NSSize(width: 16, height: 16)
+
         default:
             break
         }
@@ -508,9 +519,9 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
 
         let itemTitle: String
         if Defaults[.showEventEndTime] {
-            itemTitle = "\(eventStartTime)\t \(eventEndTime) \t  \(eventTitle)"
+            itemTitle = "\(eventStartTime) \t \(eventEndTime) \t \(eventTitle)"
         } else {
-            itemTitle = "\(eventStartTime)\t  \(eventTitle)"
+            itemTitle = "\(eventStartTime) \t \(eventTitle)"
         }
 
         // Event Item
@@ -827,14 +838,14 @@ func openEvent(_ event: EKEvent) {
                 let task = try! NSUserAppleScriptTask(url: url)
                 task.execute { error in
                     if let error = error {
-                        sendNotification(title: "AppleScript return error", text: error.localizedDescription)
+                        sendNotification("AppleScript return error", error.localizedDescription)
                     }
                 }
             }
         }
         openMeetingURL(service, url)
     } else {
-        sendNotification(title: "Epp! Can't join the \(eventTitle)", text: "Link not found, or your meeting service is not yet supported")
+        sendNotification("Epp! Can't join the \(eventTitle)", "Link not found, or your meeting service is not yet supported")
     }
 }
 
@@ -853,58 +864,43 @@ func getEventParticipantStatus(_ event: EKEvent) -> EKParticipantStatus? {
 func openMeetingURL(_ service: MeetingServices?, _ url: URL) {
     switch service {
     case .meet:
-        switch Defaults[.browserForMeetLinks] {
-        case .chrome:
-            openLinkInChrome(url)
-        case .chromium:
-            openLinkInChromium(url)
-        case .firefox:
-            openLinkInFirefox(url)
-        case .edge:
-            openLinkInEdge(url)
-        case .brave:
-            openLinkInBrave(url)
-        case .vivaldi:
-            openLinkInVivaldi(url)
-        case .opera:
-            openLinkInOpera(url)
-        default:
-            _ = openLinkInDefaultBrowser(url)
-        }
+        let browser = Defaults[.browserForMeetLinks]
+        url.openIn(browser: browser)
+
     case .teams:
         if Defaults[.useAppForTeamsLinks] {
             var teamsAppURL = URLComponents(url: url, resolvingAgainstBaseURL: false)!
             teamsAppURL.scheme = "msteams"
-            let result = openLinkInDefaultBrowser(teamsAppURL.url!)
+            let result = teamsAppURL.url!.openInDefaultBrowser()
             if !result {
-                sendNotification(title: "Oops! Unable to open the link in Microsoft Teams app", text: "Make sure you have Microsoft Teams app installed, or change the app in the preferences.")
-                _ = openLinkInDefaultBrowser(url)
+                sendNotification("Oops! Unable to open the link in Microsoft Teams app", "Make sure you have Microsoft Teams app installed, or change the app in the preferences.")
+                url.openInDefaultBrowser()
             }
         } else {
-            _ = openLinkInDefaultBrowser(url)
+            url.openInDefaultBrowser()
         }
     case .zoom:
         if Defaults[.useAppForZoomLinks] {
             let urlString = url.absoluteString.replacingOccurrences(of: "?", with: "&").replacingOccurrences(of: "/j/", with: "/join?confno=")
             var zoomAppUrl = URLComponents(url: URL(string: urlString)!, resolvingAgainstBaseURL: false)!
             zoomAppUrl.scheme = "zoommtg"
-            let result = openLinkInDefaultBrowser(zoomAppUrl.url!)
+            let result = zoomAppUrl.url!.openInDefaultBrowser()
             if !result {
-                sendNotification(title: "Oops! Unable to open the link in Zoom app", text: "Make sure you have Zoom app installed, or change the app in the preferences.")
-                _ = openLinkInDefaultBrowser(url)
+                sendNotification("Oops! Unable to open the link in Zoom app", "Make sure you have Zoom app installed, or change the app in the preferences.")
+                url.openInDefaultBrowser()
             }
         } else {
-            _ = openLinkInDefaultBrowser(url)
+            url.openInDefaultBrowser()
         }
     case .zoom_native:
-        let result = openLinkInDefaultBrowser(url)
+        let result = url.openInDefaultBrowser()
         if !result {
-            sendNotification(title: "Oops! Unable to open the native link in Zoom app", text: "Make sure you have Zoom app installed, or change the app in the preferences.", subtitle: url.absoluteString)
+            sendNotification("Oops! Unable to open the native link in Zoom app", "Make sure you have Zoom app installed, or change the app in the preferences.")
 
             let urlString = url.absoluteString.replacingFirstOccurrence(of: "&", with: "?").replacingOccurrences(of: "/join?confno=", with: "/j/")
             var zoomBrowserUrl = URLComponents(url: URL(string: urlString)!, resolvingAgainstBaseURL: false)!
             zoomBrowserUrl.scheme = "https"
-            _ = openLinkInDefaultBrowser(zoomBrowserUrl.url!)
+            zoomBrowserUrl.url!.openInDefaultBrowser()
         }
     case .facetime:
         NSWorkspace.shared.open(URL(string: "facetime://" + url.absoluteString)!)
@@ -913,6 +909,6 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL) {
     case .phone:
         NSWorkspace.shared.open(URL(string: "tel://" + url.absoluteString)!)
     default:
-        _ = openLinkInDefaultBrowser(url)
+        url.openInDefaultBrowser()
     }
 }

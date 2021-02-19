@@ -11,6 +11,8 @@ import Foundation
 extension Defaults.Keys {
     // General
     static let appVersion = Key<String>("appVersion", default: "2.0.5")
+    static let isInstalledFromAppStore = Key<Bool>("isInstalledFromAppStore", default: false)
+    static let patronageDuration = Key<Int>("patronageDuration", default: 0)
 
     static let calendarTitle = Key<String>("calendarTitle", default: "") // Backward compatibility
     static let selectedCalendars = Key<[String]>("selectedCalendars", default: []) // Backward compatibility
@@ -70,7 +72,7 @@ extension Defaults.Keys {
     // custom url to create meetings
     static let createMeetingServiceUrl = Key<String>("createMeetingServiceUrl", default: "")
 
-    static let browserForMeetLinks = Key<ChromeExecutable>("browserForMeetLinks", default: .defaultBrowser)
+    static let browserForMeetLinks = Key<Browser>("browserForMeetLinks", default: .defaultBrowser)
 
     static let useChromeForMeetLinks = Key<Bool?>("useChromeForMeetLinks") // Backward compatibility
     static let useAppForZoomLinks = Key<Bool>("useAppForZoomLinks", default: false)

@@ -74,6 +74,20 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             Defaults[.pastEventsAppereance] = disablePastEvents ? .show_inactive : .show_active
             Defaults[.disablePastEvents] = nil
         }
+
+        if let titleLength = Defaults[.titleLength] {
+            Defaults[.statusbarEventTitleLength] = Int(titleLength)
+            Defaults[.titleLength] = nil
+        }
+        if let useChromeForMeetLinks = Defaults[.useChromeForMeetLinks] {
+            Defaults[.browserForMeetLinks] = useChromeForMeetLinks ? .chrome : .defaultBrowser
+            Defaults[.useChromeForMeetLinks] = nil
+        }
+
+        // AppStore sync
+        completeStoreTransactions()
+        checkAppSource()
+
         //
 
         if let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
@@ -85,15 +99,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             setup()
         } else {
             openOnboardingWindow()
-        }
-
-        if let titleLength = Defaults[.titleLength] {
-            Defaults[.statusbarEventTitleLength] = Int(titleLength)
-            Defaults[.titleLength] = nil
-        }
-        if let useChromeForMeetLinks = Defaults[.useChromeForMeetLinks] {
-            Defaults[.browserForMeetLinks] = useChromeForMeetLinks ? .chrome : .defaultBrowser
-            Defaults[.useChromeForMeetLinks] = nil
         }
 
         // When our main application starts, we have to kill
@@ -386,7 +391,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             openEvent(nextEvent)
         } else {
             NSLog("No next event")
-            sendNotification(title: "There are no next meetings today", text: "Woohoo! It's time to make cocoa")
+            sendNotification("There are no next meetings today", "Woohoo! It's time to make cocoa")
             return
         }
     }
@@ -402,7 +407,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     func openEventInCalendar(sender: NSMenuItem) {
         if let identifier = sender.representedObject as? String {
             let url = URL(string: "ical://ekevent/\(identifier)")!
-            _ = openLinkInDefaultBrowser(url)
+            url.openInDefaultBrowser()
         }
     }
 
