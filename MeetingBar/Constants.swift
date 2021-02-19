@@ -201,6 +201,10 @@ enum GoogleRegex {
     static let emailAddress = try! NSRegularExpression(pattern: #""mailto:(.+@.+)""#)
 }
 
+
+let outlookSafeLinkRegex = try! NSRegularExpression(pattern: #"https://[\S]+\.safelinks\.protection\.outlook\.com/[\S]+url=([\S]*)"#)
+
+
 public enum AutoLauncher {
     static let bundleIdentifier: String = "leits.MeetingBar.AutoLauncher"
 }
