@@ -15,7 +15,6 @@ struct statusbarEventTitleLengthLimits {
 
 struct TitleTruncationRules {
     static let excludeAtEnds = CharacterSet.whitespacesAndNewlines
-            .union(CharacterSet.punctuationCharacters)
 }
 
 struct LinksRegex {
@@ -49,7 +48,7 @@ struct LinksRegex {
     let starleaf = try! NSRegularExpression(pattern: #"https://meet.starleaf.com/[^\s]*"#)
     let duo = try! NSRegularExpression(pattern: #"https://duo.app.goo.gl/[^\s]*"#)
     let voov = try! NSRegularExpression(pattern: #"https://voovmeeting.com/[^\s]*"#)
-    let facebook_workspace = try! NSRegularExpression(pattern: #"https://([a-z0-9-.]+)?workplace.com/[^\s]"#)
+    let facebook_workspace = try! NSRegularExpression(pattern: #"https://([a-z0-9-.]+)?workplace.com/[^\s]+"#)
     let skype = try! NSRegularExpression(pattern: #"https://join.skype.com/[^\s]*"#)
     let skype4biz = try! NSRegularExpression(pattern: #"https://meet.lync.com/[^\s]*"#)
     let skype4biz_selfhosted = try! NSRegularExpression(pattern: #"https:\/\/(meet|join)\.[^\s]*\/[a-z0-9.]+/meet\/[A-Za-z0-9./]+"#)
@@ -83,7 +82,9 @@ enum CreateMeetingServices: String, Codable, CaseIterable {
 
 enum Links {
     static var patreon = URL(string: "https://www.patreon.com/meetingbar")!
-    static var manual = URL(string: "https://meetingbar.onrender.com/manual?utm_source=app")!
+    static var github = URL(string: "https://github.com/leits/MeetingBar")!
+    static var telegram = URL(string: "https://t.me/leits")!
+    static var twitter = URL(string: "https://twitter.com/leits_dev")!
     static var emailMe = URL(string: "mailto:leits.dev@gmail.com?subject=MeetingBar")!
     static var calendarPreferences = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Calendars")!
 }
