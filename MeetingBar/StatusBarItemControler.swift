@@ -168,12 +168,13 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                         menuTitle.append(NSAttributedString(string: eventTitle, attributes: styles))
                     } else {
                         let paragraphStyle = NSMutableParagraphStyle()
-                        paragraphStyle.lineHeightMultiple = 0.7
+                        paragraphStyle.lineHeightMultiple = 0.4
+                        //paragraphStyle.maximumLineHeight = 1
                         paragraphStyle.alignment = .center
 
                         var styles = [NSAttributedString.Key: Any]()
                         styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: 12)
-                        styles[NSAttributedString.Key.baselineOffset] = -3
+                        styles[NSAttributedString.Key.baselineOffset] = 1
 
                         if eventStatus == .pending && Defaults[.showPendingEvents] == PendingEventsAppereance.show_inactive {
                             styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
@@ -864,7 +865,7 @@ func getEventParticipantStatus(_ event: EKEvent) -> EKParticipantStatus? {
 func openMeetingURL(_ service: MeetingServices?, _ url: URL) {
     switch service {
     case .meet:
-        let browser = Defaults[.browserForMeetLinks]
+        var browser = Defaults[.browserForMeetLinks]
         url.openIn(browser: browser)
 
     case .teams:
@@ -909,6 +910,12 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL) {
     case .phone:
         NSWorkspace.shared.open(URL(string: "tel://" + url.absoluteString)!)
     default:
-        url.openInDefaultBrowser()
+
+        let meetingBrowser = Default(.defaultBrowser)
+        if meetingBrowser.wrappedValue != nil {
+            url.openIn(browser: meetingBrowser.wrappedValue)
+        } else {
+            url.openInDefaultBrowser()
+        }
     }
 }

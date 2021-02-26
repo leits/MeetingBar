@@ -10,26 +10,38 @@ import SwiftUI
 
 import Defaults
 
+var systemDefaultBrowser = Browser(name: "Default Browser", path: "")
+
 struct ServicesTab: View {
     @Default(.browserForMeetLinks) var browserForMeetLinks
+    @Default(.defaultBrowser) var defaultBrowser
     @Default(.useAppForZoomLinks) var useAppForZoomLinks
     @Default(.useAppForTeamsLinks) var useAppForTeamsLinks
     @Default(.createMeetingServiceUrl) var createMeetingServiceUrl
     @Default(.createMeetingService) var createMeetingService
+    @Default(.browser) var allBrowser
 
     var body: some View {
         VStack {
             Section {
-                Picker(selection: $browserForMeetLinks, label: Text("Open Meet links in").frame(width: 150, alignment: .leading)) {
-                    ForEach(Browser.allCases, id: \.self) { (browser: Browser) in
-                        Text(browser.rawValue).tag(browser)
+                Picker(selection: $defaultBrowser, label: Text("Open meeting links in").frame(width: 160, alignment: .leading)) {
+                    Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
+                    ForEach(allBrowser, id: \.self) { (browser: Browser) in
+                        Text(browser.name).tag(browser)
                     }
                 }
-                Picker(selection: $useAppForZoomLinks, label: Text("Open Zoom links in").frame(width: 150, alignment: .leading)) {
+
+                Picker(selection: $browserForMeetLinks, label: Text("Open Google Meet links in").frame(width: 160, alignment: .leading)) {
+                    Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
+                    ForEach(allBrowser, id: \.self) { (browser: Browser) in
+                        Text(browser.name).tag(browser)
+                    }
+                }
+                Picker(selection: $useAppForZoomLinks, label: Text("Open Zoom links in").frame(width: 160, alignment: .leading)) {
                     Text("Default Browser").tag(false)
                     Text("Zoom app").tag(true)
                 }
-                Picker(selection: $useAppForTeamsLinks, label: Text("Open Teams links in").frame(width: 150, alignment: .leading)) {
+                Picker(selection: $useAppForTeamsLinks, label: Text("Open Teams links in").frame(width: 160, alignment: .leading)) {
                     Text("Default Browser").tag(false)
                     Text("Teams app").tag(true)
                 }

@@ -1,7 +1,6 @@
 {
   "images" : [
     {
-      "filename" : "pencil.svg",
       "idiom" : "universal"
     },
     {
@@ -11,6 +10,7 @@
           "value" : "light"
         }
       ],
+      "filename" : "pencil_circle_fill.svg",
       "idiom" : "universal"
     },
     {
@@ -20,6 +20,7 @@
           "value" : "dark"
         }
       ],
+      "filename" : "pencil_circle.svg",
       "idiom" : "universal"
     }
   ],

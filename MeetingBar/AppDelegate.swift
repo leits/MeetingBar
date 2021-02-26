@@ -80,7 +80,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             Defaults[.titleLength] = nil
         }
         if let useChromeForMeetLinks = Defaults[.useChromeForMeetLinks] {
-            Defaults[.browserForMeetLinks] = useChromeForMeetLinks ? .chrome : .defaultBrowser
+            if useChromeForMeetLinks {
+                let chromeBrowser = Defaults[.browser].first(where: { $0.name == "Google Chrome" })
+                Defaults[.browserForMeetLinks] = chromeBrowser!
+            } else {
+                Defaults[.browserForMeetLinks] = Browser(name: "Default Browser", path: "", arguments: "", deletable: false)
+            }
+
+
             Defaults[.useChromeForMeetLinks] = nil
         }
 

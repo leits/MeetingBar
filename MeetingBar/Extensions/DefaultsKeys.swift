@@ -56,9 +56,11 @@ extension Defaults.Keys {
     // Bookmarks
     static let bookmarks = Key<[Bookmark]>("bookmarks", default: [])
 
-    // Browser configurations
+    // all browser configurations
     static let browser = Key<[Browser]>("browser", default: [])
 
+    // default browser for meeting links
+    static let defaultBrowser = Key<Browser>("defaultBrowser", default: Browser(name: "Default Browser", path: "", arguments: "", deletable: false))
 
     // show all day events - by default true
     static let allDayEvents = Key<AlldayEventsAppereance>("allDayEvents", default: AlldayEventsAppereance.show)
@@ -72,7 +74,7 @@ extension Defaults.Keys {
     // custom url to create meetings
     static let createMeetingServiceUrl = Key<String>("createMeetingServiceUrl", default: "")
 
-    static let browserForMeetLinks = Key<Browser>("browserForMeetLinks", default: .defaultBrowser)
+    static let browserForMeetLinks = Key<Browser>("browserForMeetLinks", default: Browser(name: "Default Browser", path: "", arguments: "", deletable: false))
 
     static let useChromeForMeetLinks = Key<Bool?>("useChromeForMeetLinks") // Backward compatibility
     static let useAppForZoomLinks = Key<Bool>("useAppForZoomLinks", default: false)

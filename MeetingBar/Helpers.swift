@@ -8,6 +8,8 @@
 import Cocoa
 import EventKit
 import Defaults
+import AppKit
+
 
 struct Bookmark: Encodable, Decodable, Hashable {
     var name: String
@@ -22,8 +24,9 @@ struct Browser: Encodable, Decodable, Hashable {
     var name: String
     var path: String
     var arguments: String = ""
-    var deletable: Bool = true
+    var deletable = true
 }
+
 
 func getMatch(text: String, regex: NSRegularExpression) -> String? {
     let resultsIterator = regex.matches(in: text, range: NSRange(text.startIndex..., in: text))
@@ -146,20 +149,36 @@ func getMeetingLink(_ event: EKEvent) -> (service: MeetingServices?, url: URL)? 
     return nil
 }
 
+
+func bundleIdentifier(forAppName appName: String) -> String? {
+    let workspace = NSWorkspace.shared
+    let appPath = workspace.fullPath(forApplication: appName)
+    if let appPath = appPath {
+        let appBundle = Bundle(path: appPath)
+        return appBundle?.bundleIdentifier
+    }
+    return nil
+}
+
 /**
  * adds the default browsers for the browser dialog
  */
 func addInstalledBrowser() {
     let existingBrowser = Defaults[.browser]
 
-
+    let defaultBrowserPath = NSWorkspace.shared.urlForApplication(toOpen: URL(string: "https://")!)
     var appUrls = LSCopyApplicationURLsForURL(URL(string: "https:")! as CFURL, .all)?.takeRetainedValue() as? [URL]
-    appUrls = appUrls?.sorted { $0.path.fileName() < $1.path.fileName() }
 
-    appUrls?.forEach {
-        let browser = Browser(name: $0.path.fileName(), path: $0.path)
-        if !existingBrowser.contains { $0.name == browser.path.fileName() } {
-            Defaults[.browser].append(browser)
+    if !appUrls!.isEmpty {
+        appUrls = appUrls?.sorted { $0.path.fileName() < $1.path.fileName() }
+
+        appUrls?.forEach {
+            let bundleId = bundleIdentifier(forAppName: $0.path)
+
+            let browser = Browser(name: $0.path.fileName(), path: $0.path)
+            if !existingBrowser.contains { $0.name == browser.path.fileName() } {
+                Defaults[.browser].append(browser)
+            }
         }
     }
 }

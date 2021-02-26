@@ -17,6 +17,7 @@ struct BrowsersTab: View {
     @State var showingAddBrowserModal = false
     @State var showingEditBrowserModal = false
     @State private var showingAlert = false
+    @State private var showingDeleteAllAlert = false
     @State private var browser = Browser(name: "", path: "", arguments: "", deletable: true)
 
     var body: some View {
@@ -63,20 +64,49 @@ struct BrowsersTab: View {
                 )
             }
 
-            HStack {
+            HStack(alignment: .center, spacing: 20, content: {
                 Spacer()
-                Button("Add new browser") {
-                    self.showingAddBrowserModal.toggle()
-                }.sheet(isPresented: $showingAddBrowserModal) {
-                    EditBrowserModal(browser: Binding.constant())
+                MenuButton(
+                    label: Image(nsImage: NSImage(named: NSImage.addTemplateName)!),
+                    content: {
+                        Button("Custom browser", action: {
+                            self.showingAddBrowserModal.toggle()
+                        })
+
+                        Button(action: {
+                            self.addSystemBrowser()
+                        }) {
+                            HStack {
+                                Text("All system browser")
+                            }
+                        }
+                    })
+                .frame(width: 20, height: 20, alignment: .center)
+                .menuButtonStyle(BorderlessPullDownMenuButtonStyle())
+                .sheet(isPresented: $showingAddBrowserModal) {
+                    EditBrowserModal(browser: $browser)
                 }
-                Button("Add system installed browser") {
-                    self.addSystemBrowser()
-                }
-                Button("Delete all browser") {
-                    self.removeAllBrowser()
-                }
+
+                Button(action: {
+                    self.showingDeleteAllAlert = true
+                }) {
+                    Image(nsImage: NSImage(named: NSImage.touchBarDeleteTemplateName)!)
+                    if #available(OSX 11.0, *) {
+                     //   image.offset(x: 0.0, y: 4.0)
+                    }
+                }.buttonStyle(BorderlessButtonStyle())
+
                 Spacer()
+            })
+            .alert(isPresented: $showingDeleteAllAlert) {
+                Alert(
+                    title: Text("Delete all browser configs?"),
+                    message: Text("Do you want to delete all browser configs?"),
+                    primaryButton: .default(Text("Delete all")) {
+                        self.removeAllBrowser()
+                    },
+                    secondaryButton: .cancel()
+                )
             }
         }.padding()
     }
@@ -124,99 +154,6 @@ struct BrowsersTab: View {
     }
 }
 
-struct AddBrowserModal: View {
-    @Environment(\.presentationMode) var presentationMode
-
-    @Default(.browser) var browserConfigs
-
-    @State private var showingAlert = false
-    @State private var error_msg = ""
-
-    @State var name: String = ""
-    @State var path: String = ""
-    @State var arguments: String = ""
-
-    var body: some View {
-        VStack {
-            HStack {
-                Text("New browser").font(.headline)
-            }
-            Spacer()
-            HStack {
-                VStack(
-                    alignment: .leading,
-                    spacing: 15
-                ) {
-                    Text("Name")
-                    Text("Path to Browser")
-                    Text("Arguments")
-                }
-                VStack(
-                    alignment: .leading,
-                    spacing: 10
-                ) {
-                    TextField("", text: $name)
-                    TextField("", text: $path)
-                    TextField("", text: $arguments)
-                }
-                VStack(
-                    alignment: .leading,
-                    spacing: 10
-                ) {
-                    Button(action: chooseApplication) {
-                        Text("Choose browser")
-                    }
-                }
-            }
-            Spacer()
-            HStack {
-                Button(action: {
-                    self.presentationMode.wrappedValue.dismiss()
-                }) {
-                    Text("Cancel")
-                }
-                Button(action: {
-                    if let browserConfig = browserConfigs.first(where: { $0.name == name }) {
-                        error_msg = "A browser config already exists with the name \(browserConfig.name)"
-                        showingAlert = true
-                    } else {
-                        self.presentationMode.wrappedValue.dismiss()
-                        let browserConfig = Browser(name: name, path: path, arguments: arguments)
-                        browserConfigs.append(browserConfig)
-                    }
-                }) {
-                    Text("Add")
-                }.disabled(name.isEmpty || path.isEmpty)
-            }
-        }.frame(width: 500, height: 200)
-        .padding()
-        .alert(isPresented: $showingAlert) {
-            Alert(title: Text("Can't add browser config"), message: Text(error_msg), dismissButton: .default(Text("OK")))
-        }
-    }
-
-    func chooseApplication() {
-        let openPanel = NSOpenPanel()
-        openPanel.canChooseFiles = true
-        openPanel.canChooseDirectories = false
-        openPanel.allowsMultipleSelection = false
-        openPanel.title = "Select a valid browser app"
-        openPanel.prompt = "Choose browser"
-        openPanel.message = "Please select a browser from any path!"
-
-        let appPath = try! FileManager.default.url(for: .applicationDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
-
-        openPanel.directoryURL = appPath
-        openPanel.begin { response in
-            if response == .OK {
-                path = (openPanel.url?.path)!
-                name = openPanel.url!.deletingPathExtension().lastPathComponent.fileName()
-                openPanel.close()
-            }
-        }
-    }
-}
-
 struct EditBrowserModal: View {
     @Environment(\.presentationMode) var presentationMode
     @Default(.browser) var browserConfigs
@@ -229,7 +166,7 @@ struct EditBrowserModal: View {
     var body: some View {
         VStack {
             HStack {
-                if browser == nil {
+                if browser.name.isEmpty {
                     Text("Add browser").font(.headline)
                 } else {
                     Text("Edit browser").font(.headline)
@@ -242,8 +179,8 @@ struct EditBrowserModal: View {
                     spacing: 15
                 ) {
                     Text("Name")
-                    Text("App Path")
-                    Text("Arguments")
+                    Text("Path")
+              //      Text("Arguments")
                 }
                 VStack(
                     alignment: .leading,
@@ -251,11 +188,11 @@ struct EditBrowserModal: View {
                 ) {
                     TextField("", text: $browser.name)
                     TextField("", text: $browser.path)
-                    TextField("", text: $browser.arguments)
+                //    TextField("", text: $browser.arguments)
                 }
                 VStack(
-                    alignment: .leading,
-                    spacing: 10
+                    alignment: .leading
+                    //spacing: 10
                 ) {
                     Button(action: chooseApplication) {
                         Text("Choose browser")
@@ -266,6 +203,7 @@ struct EditBrowserModal: View {
             HStack {
                 Button(action: {
                     self.presentationMode.wrappedValue.dismiss()
+                    self.browser = Browser(name: "", path: "", arguments: "", deletable: true)
                 }) {
                     Text("Cancel")
                 }
@@ -275,6 +213,7 @@ struct EditBrowserModal: View {
                     browserConfigs.removeAll(where: { $0.name == browser.name })
                     browserConfigs.append(browserConfig)
                     browserConfigs = browserConfigs.sorted { $0.path.fileName() < $1.path.fileName() }
+                    self.browser = Browser(name: "", path: "", arguments: "", deletable: true)
                 }) {
                     Text("Save")
                 }.disabled(browser.name.isEmpty || browser.name.isEmpty)
@@ -295,13 +234,13 @@ struct EditBrowserModal: View {
         openPanel.prompt = "Choose browser"
         openPanel.message = "Please select a browser from any path!"
 
-        let appPath = try! FileManager.default.url(for: .applicationDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+        let appPath = try! FileManager.default.url(for: .allApplicationsDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
 
         openPanel.directoryURL = appPath
         openPanel.begin { response in
             if response == .OK {
-                browser.path = (openPanel.url?.path)!
-                browser.name = openPanel.url!.deletingPathExtension().lastPathComponent.fileName()
+                self.browser.path = (openPanel.url?.path)!
+                self.browser.name = openPanel.url!.deletingPathExtension().lastPathComponent.fileName()
                 openPanel.close()
             }
         }
