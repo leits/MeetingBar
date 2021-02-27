@@ -101,6 +101,9 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                     scheduleEventNotification(nextEvent)
                 }
             } else {
+                if Defaults[.joinEventNotification] {
+                    removePendingNotificationRequests()
+                }
                 title = "🏁"
             }
         } else {
@@ -516,9 +519,9 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
 
         let itemTitle: String
         if Defaults[.showEventEndTime] {
-            itemTitle = "\(eventStartTime)\t \(eventEndTime) \t  \(eventTitle)"
+            itemTitle = "\(eventStartTime) \t \(eventEndTime) \t \(eventTitle)"
         } else {
-            itemTitle = "\(eventStartTime)\t  \(eventTitle)"
+            itemTitle = "\(eventStartTime) \t \(eventTitle)"
         }
 
         // Event Item
