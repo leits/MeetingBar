@@ -15,9 +15,42 @@ struct Bookmark: Encodable, Decodable, Hashable {
     var url: String
 }
 
+/**
+ * this method will extract m365 safe links if any of these links are found in the given text..
+ * The method will extract the real url from safe links and decode it, so that the following regex logic can detect the meeting service.
+ *
+ * The original link looks like this
+ *https://nam12.safelinks.protection.outlook.com/ap/t-59584e83/?url=https%3A%2F%2Fteams.microsoft.com%2Fl%2Fmeetup-join%2F19%253ameeting_[obfuscated]&data=[obfuscated]
+ *
+ * and the method will extract it to https://teams.microsoft.com/l/meetup-join/19%3ameeting_[obfuscated]
+ * If no m365 links are found, the original text is returned.
+ *
+ */
+fileprivate func cleanupOutlookSafeLinks( text: inout String) -> String {
+    NSLog("Check text \(text) for outlook safe links")
+
+    var links = outlookSafeLinkRegex.matches(in: text, range: NSRange(text.startIndex..., in: text))
+    if !links.isEmpty {
+        repeat {
+            let urlRange = links[0].range( at: 1)
+            let safeLinks = links.map { String(text[Range($0.range, in: text)!]) }
+            if !safeLinks.isEmpty {
+                let serviceUrl = (text as NSString).substring(with: urlRange)
+                NSLog("Found service url \(serviceUrl)")
+                text = text.replacingOccurrences(of: safeLinks[0], with: serviceUrl.decodeUrl()!)
+            }
+            links = outlookSafeLinkRegex.matches(in: text, range: NSRange(text.startIndex..., in: text))
+        } while !links.isEmpty
+    }
+
+    NSLog("Returning text \(text)")
+    return text
+}
+
 func getMatch(text: String, regex: NSRegularExpression) -> String? {
     let resultsIterator = regex.matches(in: text, range: NSRange(text.startIndex..., in: text))
     let resultsMap = resultsIterator.map { String(text[Range($0.range, in: text)!]) }
+
     if !resultsMap.isEmpty {
         let meetLink = resultsMap[0]
         return meetLink
@@ -96,19 +129,28 @@ func emailMe() {
     Links.emailMe.openInDefaultBrowser()
 }
 
+/**
+ * this method will collect text from the location, url and notes field of an event and try to find a known meeting url link.
+ * As meeting links can be part of a outlook safe url, we will extract the original link from outlook safe links.
+ */
 func getMeetingLink(_ event: EKEvent) -> (service: MeetingServices?, url: URL)? {
     var linkFields: [String] = []
+
     if let location = event.location {
         linkFields.append(location)
     }
+
     if let url = event.url {
         linkFields.append(url.absoluteString)
     }
+
     if let notes = event.notes {
         linkFields.append(notes)
     }
 
-    for field in linkFields {
+    for var field in linkFields {
+        _ = cleanupOutlookSafeLinks(text: &field)
+
         for pattern in Defaults[.customRegexes] {
             if let regex = try? NSRegularExpression(pattern: pattern) {
                 if let link = getMatch(text: field, regex: regex) {
@@ -118,6 +160,7 @@ func getMeetingLink(_ event: EKEvent) -> (service: MeetingServices?, url: URL)? 
                 }
             }
         }
+
         for service in MeetingServices.allCases {
             if let regex = getRegexForService(service) {
                 if var link = getMatch(text: field, regex: regex) {
