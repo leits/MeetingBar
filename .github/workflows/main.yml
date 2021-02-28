@@ -1,5 +1,5 @@
 # This is a basic workflow to help you get started with Actions
-name: SwiftLint
+name: Lint&Test
 
 on:
   push:
@@ -26,3 +26,13 @@ jobs:
         uses: norio-nomura/action-swiftlint@3.1.0
         env:
           DIFF_BASE: ${{ github.base_ref }}
+  Tests:
+    runs-on: macOS-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: List available Xcode versions
+      run: ls /Applications | grep Xcode
+    - name: Select Xcode
+      run: sudo xcode-select -switch /Applications/Xcode_12.2.app && /usr/bin/xcodebuild -version
+    - name: Run unit tests
+      run: xcodebuild -scheme MeetingBar test
