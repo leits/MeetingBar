@@ -9,7 +9,7 @@ import Cocoa
 import EventKit
 import Defaults
 
-struct MeetingLink {
+struct MeetingLink: Equatable {
     let service: MeetingServices?
     let url: URL
 }
