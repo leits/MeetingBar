@@ -31,4 +31,4 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Run unit tests
-      run: xcodebuild -scheme MeetingBar -allowProvisioningUpdates test CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+      run: xcodebuild -scheme MeetingBar test CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO | xcbeautify
