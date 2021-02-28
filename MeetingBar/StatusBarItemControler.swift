@@ -310,7 +310,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             item.isEnabled = false
         }
         for event in sortedEvents {
-            createEventItem(event: event)
+            createEventItem(event: event, dateSection: date)
         }
     }
 
@@ -471,7 +471,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
         return image!
     }
 
-    func createEventItem(event: EKEvent) {
+    func createEventItem(event: EKEvent, dateSection: Date) {
         let eventParticipantStatus = getEventParticipantStatus(event)
         let eventStatus = event.status
 
@@ -747,10 +747,15 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             // Open in App
             let openItem = eventMenu.addItem(withTitle: "Open in Calendar App", action: #selector(AppDelegate.openEventInCalendar), keyEquivalent: "")
             openItem.representedObject = event.eventIdentifier
+
+            // Open in fanctastical
+            let fantasticalItem = eventMenu.addItem(withTitle: "Open in Fantastical", action: #selector(AppDelegate.openEventInFantastical), keyEquivalent: "")
+            fantasticalItem.representedObject = EventWithDate(event: event, dateSection: dateSection)
         } else {
             eventItem.toolTip = event.title
         }
     }
+
 
     func createPreferencesSection() {
         self.statusItemMenu.addItem(
