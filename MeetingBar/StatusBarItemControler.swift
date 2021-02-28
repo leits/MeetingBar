@@ -836,7 +836,7 @@ func createEventStatusString(_ event: EKEvent) -> (String, String) {
 
 func openEvent(_ event: EKEvent) {
     let eventTitle = event.title ?? "No title"
-    if let (service, url) = getMeetingLink(event) {
+    if let meeting = getMeetingLink(event) {
         if Defaults[.runJoinEventScript], Defaults[.joinEventScriptLocation] != nil {
             if let url = Defaults[.joinEventScriptLocation]?.appendingPathComponent("joinEventScript.scpt") {
                 print("URL: \(url)")
@@ -848,7 +848,7 @@ func openEvent(_ event: EKEvent) {
                 }
             }
         }
-        openMeetingURL(service, url)
+        openMeetingURL(meeting.service, meeting.url)
     } else {
         sendNotification("Epp! Can't join the \(eventTitle)", "Link not found, or your meeting service is not yet supported")
     }

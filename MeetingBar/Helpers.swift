@@ -12,6 +12,10 @@ import Defaults
 struct EventWithDate {
     let event: EKEvent
     let dateSection: Date
+
+  struct MeetingLink: Equatable {
+    let service: MeetingServices?
+    let url: URL
 }
 
 struct Bookmark: Encodable, Decodable, Hashable {
@@ -138,7 +142,7 @@ func emailMe() {
  * this method will collect text from the location, url and notes field of an event and try to find a known meeting url link.
  * As meeting links can be part of a outlook safe url, we will extract the original link from outlook safe links.
  */
-func getMeetingLink(_ event: EKEvent) -> (service: MeetingServices?, url: URL)? {
+func getMeetingLink(_ event: EKEvent) -> MeetingLink? {
     var linkFields: [String] = []
 
     if let location = event.location {
@@ -160,7 +164,7 @@ func getMeetingLink(_ event: EKEvent) -> (service: MeetingServices?, url: URL)? 
             if let regex = try? NSRegularExpression(pattern: pattern) {
                 if let link = getMatch(text: field, regex: regex) {
                     if let url = URL(string: link) {
-                        return (nil, url)
+                        return MeetingLink(service: MeetingServices.other, url: url)
                     }
                 }
             }
@@ -175,7 +179,7 @@ func getMeetingLink(_ event: EKEvent) -> (service: MeetingServices?, url: URL)? 
                         link += "?authuser=\(urlEncodedAccount)"
                     }
                     if let url = URL(string: link) {
-                        return (service, url)
+                        return MeetingLink(service: service, url: url)
                     }
                 }
             }
