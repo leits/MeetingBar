@@ -241,6 +241,12 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             }
         }
 
+        let openLinkFromClipboardItem = NSMenuItem()
+        openLinkFromClipboardItem.title = "Open meeting from clipboard"
+        openLinkFromClipboardItem.action = #selector(AppDelegate.openLinkFromClipboard)
+        openLinkFromClipboardItem.keyEquivalent = ""
+        openLinkFromClipboardItem.setShortcut(for: .openClipboardShortcut)
+        self.statusItemMenu.addItem(openLinkFromClipboardItem)
 
         let createEventItem = NSMenuItem()
         createEventItem.title = "Create meeting"
@@ -314,14 +320,10 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
         }
     }
 
-    /**
-     * try  to get the correct image for the specific
-     */
-    func getMeetingIcon(_ event: EKEvent) -> NSImage {
+    func getMeetingIconForLink(_ result: MeetingLink?) -> NSImage {
         var image: NSImage? = NSImage(named: "no_online_session")
         image!.size = NSSize(width: 16, height: 16)
 
-        let result = getMeetingLink(event)
         switch result?.service {
         // tested and verified
         case .some(.teams):
@@ -469,6 +471,15 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
         }
 
         return image!
+    }
+
+    /**
+     * try  to get the correct image for the specific
+     */
+    func getMeetingIcon(_ event: EKEvent) -> NSImage {
+        let result = getMeetingLink(event)
+
+        return getMeetingIconForLink(result)
     }
 
     func createEventItem(event: EKEvent) {
