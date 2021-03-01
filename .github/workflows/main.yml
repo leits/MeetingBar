@@ -30,5 +30,7 @@ jobs:
     runs-on: macOS-latest
     steps:
     - uses: actions/checkout@v1
+    - name: Install xcbeautify
+      run: brew install xcbeautify
     - name: Run unit tests
       run: xcodebuild -scheme MeetingBar test CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO | xcbeautify
