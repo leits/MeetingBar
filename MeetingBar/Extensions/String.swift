@@ -74,4 +74,12 @@ extension String {
         }
         return self
     }
+
+    func encodeUrl() -> String? {
+        self.addingPercentEncoding( withAllowedCharacters: NSCharacterSet.urlQueryAllowed)
+    }
+
+    func decodeUrl() -> String? {
+        self.removingPercentEncoding
+    }
 }
