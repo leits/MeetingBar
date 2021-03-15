@@ -57,7 +57,7 @@ struct LinksRegex {
     let vonageMeetings = try! NSRegularExpression(pattern: #"https://meetings\.vonage\.com/[0-9]{9}"#)
     let meetStream = try! NSRegularExpression(pattern: #"https://stream\.meet\.google\.com/stream/[a-z0-9-]+"#)
     let around = try! NSRegularExpression(pattern: #"https://meet\.around\.co/[^\s]*"#)
-    let discord = try! NSRegularExpression(pattern: #"((https?|discord):\/\/)?(www\.)?(canary\.)?discord(app)?\.([a-zA-Z]{2,})(.+)?"#)
+    let discord = try! NSRegularExpression(pattern: #"(https|discord)://(www\.)?(canary\.)?discord(app)?\.([a-zA-Z]{2,})(.+)?"#)
 }
 
 enum CreateMeetingLinks {
