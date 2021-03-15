@@ -59,7 +59,6 @@ struct LinksRegex {
     let around = try! NSRegularExpression(pattern: #"https://meet\.around\.co/[^\s]*"#)
     let jam = try! NSRegularExpression(pattern: #"https://jam\.systems/room-id[^\s]*"#)
     let discord = try! NSRegularExpression(pattern: #"(https|discord)://(www\.)?(canary\.)?discord(app)?\.([a-zA-Z]{2,})(.+)?"#)
-
 }
 
 enum CreateMeetingLinks {
