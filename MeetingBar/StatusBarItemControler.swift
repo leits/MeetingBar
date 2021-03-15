@@ -90,24 +90,52 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
     }
 
     func updateTitle() {
+        enum NextEventState {
+            case none
+            case afterThreshold(EKEvent)
+            case nextEvent(EKEvent)
+        }
+
         var title = "MeetingBar"
         var time = ""
         var nextEvent: EKEvent!
+        let nextEventState: NextEventState
         if !calendars.isEmpty {
             nextEvent = eventStore.getNextEvent(calendars: calendars)
-            if let nextEvent = nextEvent {
-                (title, time) = createEventStatusString(nextEvent)
-                if Defaults[.joinEventNotification] {
-                    scheduleEventNotification(nextEvent)
+            nextEventState = {
+                guard let nextEvent = nextEvent else {
+                    return .none
                 }
-            } else {
+                guard Defaults[.showEventMaxTimeUntilEventEnabled] else {
+                    return .nextEvent(nextEvent)
+                }
+                // Positive, if in the future. Negative, if already started.
+                // Current or past events therefore don't get ignored.
+                let timeUntilStart = nextEvent.startDate.timeIntervalSinceNow
+                let thresholdInSeconds = TimeInterval(Defaults[.showEventMaxTimeUntilEventThreshold] * 60)
+                return timeUntilStart < thresholdInSeconds ? .nextEvent(nextEvent) : .afterThreshold(nextEvent)
+            }()
+            switch nextEventState {
+            case .none:
                 if Defaults[.joinEventNotification] {
                     removePendingNotificationRequests()
                 }
                 title = "🏁"
+            case .nextEvent(let event):
+                (title, time) = createEventStatusString(event)
+                if Defaults[.joinEventNotification] {
+                    scheduleEventNotification(event)
+                }
+            case .afterThreshold(let event):
+                // Not sure, what the title should be in this case.
+                title = "⏰"
+                if Defaults[.joinEventNotification] {
+                    scheduleEventNotification(event)
+                }
             }
         } else {
             NSLog("No loaded calendars")
+            nextEventState = .none
         }
 
         DispatchQueue.main.async {
@@ -125,6 +153,13 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                 } else if title == "MeetingBar" {
                     button.image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
                     button.image?.size = NSSize(width: 16, height: 16)
+                } else if case .afterThreshold = nextEventState {
+                    switch Defaults[.eventTitleIconFormat] {
+                    case .appicon:
+                        button.image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
+                    default:
+                        button.image = NSImage(named: "iconCalendar")
+                    }
                 }
 
                 if button.image == nil {
