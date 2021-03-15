@@ -58,6 +58,8 @@ struct LinksRegex {
     let meetStream = try! NSRegularExpression(pattern: #"https://stream\.meet\.google\.com/stream/[a-z0-9-]+"#)
     let around = try! NSRegularExpression(pattern: #"https://meet\.around\.co/[^\s]*"#)
     let jam = try! NSRegularExpression(pattern: #"https://jam\.systems/room-id[^\s]*"#)
+    let discord = try! NSRegularExpression(pattern: #"(https|discord)://(www\.)?(canary\.)?discord(app)?\.([a-zA-Z]{2,})(.+)?"#)
+
 }
 
 enum CreateMeetingLinks {
@@ -128,6 +130,7 @@ enum MeetingServices: String, Codable, CaseIterable {
     case meetStream = "Google Meet Stream"
     case around = "Around"
     case jam = "Jam"
+    case discord = "Discord"
     case other = "Other"
 }
 
