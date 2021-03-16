@@ -46,6 +46,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     var ignoredEventIDsObserver: DefaultsObservation?
     var joinEventNotificationObserver: DefaultsObservation?
     var launchAtLoginObserver: DefaultsObservation?
+    var showEventMaxTimeUntilEventThresholdObserver: DefaultsObservation?
+    var showEventMaxTimeUntilEventEnabledObserver: DefaultsObservation?
     var preferencesWindow: NSWindow!
     var onboardingWindow: NSWindow!
 
@@ -266,6 +268,18 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                 UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
             }
         }
+        showEventMaxTimeUntilEventThresholdObserver = Defaults.observe(.showEventMaxTimeUntilEventThreshold) { change in
+            NSLog("Changed showEventMaxTimeUntilEventThreshold from \(change.oldValue) to \(change.newValue)")
+            if change.oldValue != change.newValue {
+                self.statusBarItem.updateTitle()
+            }
+        }
+        showEventMaxTimeUntilEventEnabledObserver = Defaults.observe(.showEventMaxTimeUntilEventEnabled) { change in
+            NSLog("Change showEventMaxTimeUntilEventEnabled from \(change.oldValue) to \(change.newValue)")
+            if change.oldValue != change.newValue {
+                self.statusBarItem.updateTitle()
+            }
+        }
     }
 
     @objc
@@ -434,7 +448,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             preferencesWindow.close()
         }
         preferencesWindow = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 700, height: 550),
+            contentRect: NSRect(x: 0, y: 0, width: 700, height: 570),
             styleMask: [.closable, .titled, .resizable],
             backing: .buffered,
             defer: false

@@ -30,6 +30,8 @@ struct StatusBarSection: View {
 
     @Default(.statusbarEventTitleLength) var statusbarEventTitleLength
 
+    @Default(.showEventMaxTimeUntilEventThreshold) var showEventMaxTimeUntilEventThreshold
+    @Default(.showEventMaxTimeUntilEventEnabled) var showEventMaxTimeUntilEventEnabled
 
     var body: some View {
         Text("Status bar").font(.headline).bold()
@@ -80,6 +82,12 @@ struct StatusBarSection: View {
                     }
                     Text("hide").tag(EventTimeFormat.hide)
                 }
+            }
+
+            HStack {
+                Toggle("Show only next event starting within", isOn: $showEventMaxTimeUntilEventEnabled)
+                Stepper("\(showEventMaxTimeUntilEventThreshold) minutes", value: $showEventMaxTimeUntilEventThreshold, in: 5...120, step: 5)
+                    .disabled(!showEventMaxTimeUntilEventEnabled)
             }
         }.padding(.horizontal, 10)
     }
@@ -140,14 +148,13 @@ struct EventsSection: View {
                     Text("today").tag(ShowEventsForPeriod.today)
                     Text("today and tomorrow").tag(ShowEventsForPeriod.today_n_tomorrow)
                 }
-
-
                 Picker("All day events:", selection: $allDayEvents) {
                     Text("show").tag(AlldayEventsAppereance.show)
                     Text("show only with meeting link").tag(AlldayEventsAppereance.show_with_meeting_link_only)
                     Text("hide").tag(AlldayEventsAppereance.hide)
                 }
             }
+
             HStack {
                 Picker("Events without guests:", selection: $personalEventsAppereance) {
                     Text("show").tag(PastEventsAppereance.show_active)
