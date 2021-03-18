@@ -64,7 +64,7 @@ extension String {
     /// - Returns: The string without HTML tags.
     func htmlTagsStripped() -> String {
         if self.containsHTML,
-           let data = self.data(using: .utf8),
+           let data = self.data(using: .utf16),
            let attributedSelf = NSAttributedString(
             html: data,
             options: [.documentType: NSAttributedString.DocumentType.html],
