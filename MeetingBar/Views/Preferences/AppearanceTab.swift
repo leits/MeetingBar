@@ -85,8 +85,8 @@ struct StatusBarSection: View {
             }
 
             HStack {
-                Toggle("Show only next event starting within", isOn: $showEventMaxTimeUntilEventEnabled)
-                Stepper("\(showEventMaxTimeUntilEventThreshold) minutes", value: $showEventMaxTimeUntilEventThreshold, in: 5...120, step: 5)
+                Toggle("", isOn: $showEventMaxTimeUntilEventEnabled).labelsHidden()
+                Stepper("Show only next event starting within \(showEventMaxTimeUntilEventThreshold) minutes", value: $showEventMaxTimeUntilEventThreshold, in: 5...120, step: 5)
                     .disabled(!showEventMaxTimeUntilEventEnabled)
             }
         }.padding(.horizontal, 10)
