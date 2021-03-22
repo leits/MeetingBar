@@ -221,6 +221,7 @@ public enum AutoLauncher {
 enum Browser: String, Codable, CaseIterable {
     case chrome = "Google Chrome"
     case firefox = "Firefox"
+    case safari = "Safari"
     case chromium = "Chromium"
     case brave = "Brave"
     case edge = "Microsoft Edge"
@@ -235,6 +236,9 @@ enum Browser: String, Codable, CaseIterable {
 
         case .firefox:
             return URL(fileURLWithPath: "/Applications/Firefox.app")
+
+        case .safari:
+            return URL(fileURLWithPath: "/Applications/Safari.app")
 
         case .chromium:
             return URL(fileURLWithPath: "/Applications/Chromium.app")
