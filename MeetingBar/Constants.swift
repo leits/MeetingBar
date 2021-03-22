@@ -59,6 +59,7 @@ struct LinksRegex {
     let around = try! NSRegularExpression(pattern: #"https?://meet\.around\.co/[^\s]*"#)
     let jam = try! NSRegularExpression(pattern: #"https?://jam\.systems/[^\s]*"#)
     let discord = try! NSRegularExpression(pattern: #"(http|https|discord)://(www\.)?(canary\.)?discord(app)?\.([a-zA-Z]{2,})(.+)?"#)
+    let blackboard_collab = try! NSRegularExpression(pattern: #"https?://us\.bbcollab\.com/[^\s]*"#)
 }
 
 enum CreateMeetingLinks {
@@ -130,6 +131,7 @@ enum MeetingServices: String, Codable, CaseIterable {
     case around = "Around"
     case jam = "Jam"
     case discord = "Discord"
+    case blackboard_collab = "Blackboard Collaborate"
     case other = "Other"
 }
 
