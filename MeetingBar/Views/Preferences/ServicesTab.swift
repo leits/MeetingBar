@@ -38,7 +38,9 @@ struct ServicesTab: View {
                 Text("Supported links for services:\n\(MeetingServices.allCases.map { $0.rawValue }.joined(separator: ", "))")
                 HStack {
                     Text("If the service you use isn't supported, email me")
-                    Button("✉️", action: emailMe)
+                    Button("✉️") {
+                        Links.emailMe.openInDefaultBrowser()
+                    }
                 }
             }.foregroundColor(.gray).font(.system(size: 12)).padding(.horizontal, 10)
             Divider()

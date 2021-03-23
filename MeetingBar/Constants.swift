@@ -140,10 +140,6 @@ enum TimeFormat: String, Codable, CaseIterable {
     case military = "24-hour"
 }
 
-enum AuthResult {
-    case success(Bool), failure(Error)
-}
-
 /**
  * the icon to display in the status bar
  */
@@ -206,13 +202,10 @@ enum JoinEventNotificationTime: Int, Codable {
     case fiveMinuteBefore = 300
 }
 
-enum GoogleRegex {
+enum UtilsRegex {
     static let emailAddress = try! NSRegularExpression(pattern: #""mailto:(.+@.+)""#)
+    static let outlookSafeLinkRegex = try! NSRegularExpression(pattern: #"https://[\S]+\.safelinks\.protection\.outlook\.com/[\S]+url=([\S]*)"#)
 }
-
-
-let outlookSafeLinkRegex = try! NSRegularExpression(pattern: #"https://[\S]+\.safelinks\.protection\.outlook\.com/[\S]+url=([\S]*)"#)
-
 
 public enum AutoLauncher {
     static let bundleIdentifier: String = "leits.MeetingBar.AutoLauncher"
