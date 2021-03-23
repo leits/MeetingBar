@@ -24,7 +24,7 @@ struct JoinEventNotificationPicker: View {
 
         center.getNotificationSettings { notificationSettings in
             noAlertStyle = notificationSettings.alertStyle != UNAlertStyle.alert
-            notificationsDisabled = notificationSettings.authorizationStatus != UNAuthorizationStatus.denied
+            notificationsDisabled = notificationSettings.authorizationStatus == UNAuthorizationStatus.denied
             group.leave()
         }
 
