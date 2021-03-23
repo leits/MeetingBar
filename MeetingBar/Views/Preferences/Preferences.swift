@@ -11,12 +11,12 @@ struct PreferencesView: View {
     var body: some View {
         VStack {
             TabView {
-                GeneralTab().tabItem { Text("General") }
-                AppearanceTab().tabItem { Text("Appearance") }
-                ServicesTab().tabItem { Text("Services") }
-                BookmarksTab().tabItem { Text("Bookmarks") }
-                CalendarsTab().tabItem { Text("Calendars") }
-                AdvancedTab().tabItem { Text("Advanced") }
+                GeneralTab().tabItem { Text("preferences_tab_general".loco()) }
+                AppearanceTab().tabItem { Text("preferences_tab_appearance".loco()) }
+                ServicesTab().tabItem { Text("preferences_tab_services".loco()) }
+                BookmarksTab().tabItem { Text("preferences_tab_bookmarks".loco()) }
+                CalendarsTab().tabItem { Text("preferences_tab_calendars".loco()) }
+                AdvancedTab().tabItem { Text("preferences_tab_advanced".loco()) }
             }
         }.padding()
     }

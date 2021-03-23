@@ -78,11 +78,11 @@ func generateTitleSample(_ titleFormat: EventTitleFormat, _ offset: Int) -> Stri
     var title: String
     switch titleFormat {
     case .show:
-        title = "An event with an excessively sizeable 55-character title"
+        title = "helper_title_sample_show_title".loco()
         title = title.truncated(to: offset)
-        title += " in 1h 25m"
+        title += "helper_title_sample_show_time".loco()
     case .dot:
-        title = "• in 1h 25m"
+        title = "helper_title_sample_dot_time".loco()
     case .none:
         title = ""
     }
@@ -102,7 +102,7 @@ func generateTitleIconSample(_ titleIconFormat: EventTitleIconFormat) -> NSImage
 }
 
 func generateTitleSample(_ offset: Int) -> String {
-    let title = "An event with an excessively sizeable 100-character title to show the shorten capabilities here ...."
+    let title = "helper_title_sample_offset_title".loco()
     return title.truncated(to: offset)
 }
 

@@ -62,9 +62,9 @@ func restorePatronagePurchases() {
                 let restorePatronageDuration = getPatronageDurationFromProductID(purchase.productId)
                 Defaults[.patronageDuration] += restorePatronageDuration * purchase.quantity
             }
-            sendNotification("MeetingBar Patronage", "Successfully restored")
+            sendNotification("store_patronage_title".loco(), "store_patronage_restore_success_message".loco())
         } else {
-            sendNotification("MeetingBar Patronage", "Nothing to Restore")
+            sendNotification("store_patronage_title".loco(), "store_patronage_restore_nothing_message".loco())
         }
     }
 }
@@ -75,29 +75,29 @@ func purchasePatronage(_ productID: String) {
         case .success:
             let purchasePatronageDuration = getPatronageDurationFromProductID(productID)
             Defaults[.patronageDuration] += purchasePatronageDuration
-            sendNotification("MeetingBar Patronage", "Successfully purchased. Thanks for support!")
+            sendNotification("store_patronage_title".loco(), "store_patronage_purchase_success_message".loco())
         case .error(let error):
             switch error.code {
             case .unknown:
-                sendNotification("MeetingBar Patronage", "Unknown error. Please contact support")
+                sendNotification("store_patronage_title".loco(), "store_patronage_purchase_unknown_message".loco())
             case .clientInvalid:
-                sendNotification("MeetingBar Patronage", "Not allowed to make the payment")
+                sendNotification("store_patronage_title".loco(), "store_patronage_purchase_client_invalid_message".loco())
             case .paymentCancelled:
                 break
             case .paymentInvalid:
-                sendNotification("MeetingBar Patronage", "The purchase identifier was invalid")
+                sendNotification("store_patronage_title".loco(), "store_patronage_purchase_payment_invalid_message".loco())
             case .paymentNotAllowed:
-                sendNotification("MeetingBar Patronage", "The device is not allowed to make the payment")
+                sendNotification("store_patronage_title".loco(), "store_patronage_purchase_payment_not_allowed_message".loco())
             case .storeProductNotAvailable:
-                sendNotification("MeetingBar Patronage", "The product is not available in the current storefront")
+                sendNotification("store_patronage_title".loco(), "store_patronage_purchase_store_product_not_available_message".loco())
             case .cloudServicePermissionDenied:
-                sendNotification("MeetingBar Patronage", "Access to cloud service information is not allowed")
+                sendNotification("store_patronage_title".loco(), "store_patronage_purchase_cloud_service_permission_denied_message".loco())
             case .cloudServiceNetworkConnectionFailed:
-                sendNotification("MeetingBar Patronage", "Could not connect to the network")
+                sendNotification("store_patronage_title".loco(), "store_patronage_purchase_cloud_service_network_connection_failed".loco())
             case .cloudServiceRevoked:
-                sendNotification("MeetingBar Patronage", "User has revoked permission to use this cloud service")
+                sendNotification("store_patronage_title".loco(), "store_patronage_purchase_cloud_service_revoked_message".loco())
             default:
-                sendNotification("MeetingBar Patronage", (error as NSError).localizedDescription)
+                sendNotification("store_patronage_title".loco(), (error as NSError).localizedDescription)
             }
         }
     }

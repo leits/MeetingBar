@@ -46,6 +46,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     var ignoredEventIDsObserver: DefaultsObservation?
     var joinEventNotificationObserver: DefaultsObservation?
     var launchAtLoginObserver: DefaultsObservation?
+    var preferredLanguageObserver: DefaultsObservation?
     var showEventMaxTimeUntilEventThresholdObserver: DefaultsObservation?
     var showEventMaxTimeUntilEventEnabledObserver: DefaultsObservation?
     var preferencesWindow: NSWindow!
@@ -258,6 +259,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             NSLog("Changed launchAtLogin from \(change.oldValue) to \(change.newValue)")
             SMLoginItemSetEnabled(AutoLauncher.bundleIdentifier as CFString, change.newValue)
         }
+        preferredLanguageObserver = Defaults.observe(.preferredLanguage, handler: { change in
+            NSLog("Changed preferredLanguage from \(change.oldValue) to \(change.newValue)")
+            if I18N.instance.changeLanguage(to: change.newValue) {
+                self.statusBarItem.updateTitle()
+                self.statusBarItem.updateMenu()
+            }
+        })
         joinEventNotificationObserver = Defaults.observe(.joinEventNotification) { change in
             NSLog("Changed joinEventNotification from \(change.oldValue) to \(change.newValue)")
             if change.newValue == true {
@@ -376,7 +384,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                     url += " "
                 }
 
-                sendNotification("Cannot create new meeeting", "Custom url \(url)is missing or invalid. Please enter a value in the app preferences.")
+                sendNotification("create_meeting_error_title".loco(), "create_meeting_error_message".loco(url))
             }
         }
     }
@@ -399,7 +407,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             openEvent(nextEvent)
         } else {
             NSLog("No next event")
-            sendNotification("There are no next meetings today", "Woohoo! It's time to make cocoa")
+            sendNotification("next_meeting_empty_title".loco(), "next_meeting_empty_message".loco())
             return
         }
     }
@@ -432,7 +440,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             backing: .buffered,
             defer: false
         )
-        preferencesWindow.title = "MeetingBar Preferences"
+        preferencesWindow.title = "preferences_window_title".loco()
         preferencesWindow.contentView = NSHostingView(rootView: contentView)
         preferencesWindow.makeKeyAndOrderFront(nil)
         // allow the preference window can be focused automatically when opened
@@ -458,7 +466,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             backing: .buffered,
             defer: false
         )
-        onboardingWindow.title = "Welcome to MeetingBar!"
+        onboardingWindow.title = "onboarding_window_title".loco()
         onboardingWindow.contentView = NSHostingView(rootView: contentView)
         let controller = NSWindowController(window: onboardingWindow)
         controller.showWindow(self)

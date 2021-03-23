@@ -38,9 +38,9 @@ struct BookmarksTab: View {
             }
             .alert(isPresented: $showingAlert) {
                 Alert(
-                    title: Text("Delete bookmark?"),
-                    message: Text("Do you want to delete bookmark \(self.bookmark!.name)?"),
-                    primaryButton: .default(Text("Delete")) {
+                    title: Text("preferences_bookmarks_delete_bookmark_title".loco()),
+                    message: Text("preferences_bookmarks_delete_bookmark_message".loco(self.bookmark!.name)),
+                    primaryButton: .default(Text("general_delete".loco())) {
                         self.removeBookmark(self.bookmark!)
                     },
                     secondaryButton: .cancel()
@@ -49,7 +49,7 @@ struct BookmarksTab: View {
 
             HStack {
                 Spacer()
-                Button("Add bookmark") {
+                Button("preferences_bookmarks_add_bookmark_button".loco()) {
                     self.showingAddBookmarkModal.toggle()
                 }.sheet(isPresented: $showingAddBookmarkModal) {
                     AddBookmarkModal()
@@ -87,7 +87,7 @@ struct AddBookmarkModal: View {
     var body: some View {
         VStack {
             HStack {
-                Text("New bookmark").font(.headline)
+                Text("preferences_bookmarks_new_bookmark_title".loco()).font(.headline)
             }
             Spacer()
             HStack {
@@ -95,9 +95,9 @@ struct AddBookmarkModal: View {
                     alignment: .leading,
                     spacing: 15
                 ) {
-                    Text("Name")
-                    Text("Link/Phone")
-                    Text("Service")
+                    Text("preferences_bookmarks_new_bookmark_name".loco())
+                    Text("preferences_bookmarks_new_bookmark_link_phone".loco())
+                    Text("preferences_bookmarks_new_bookmark_service".loco())
                 }
                 VStack(
                     alignment: .leading,
@@ -121,11 +121,11 @@ struct AddBookmarkModal: View {
                 Button(action: {
                     self.presentationMode.wrappedValue.dismiss()
                 }) {
-                    Text("Cancel")
+                    Text("general_cancel".loco())
                 }
                 Button(action: {
                     if let bookmark = bookmarks.first(where: { $0.url == url }) {
-                        error_msg = "A bookmark with this link/phone already exists with the name \(bookmark.name):\n\(url)"
+                        error_msg = "preferences_bookmarks_new_bookmark_already_exist".loco(bookmark.name, url)
                         showingAlert = true
                     } else {
                         self.presentationMode.wrappedValue.dismiss()
@@ -133,13 +133,13 @@ struct AddBookmarkModal: View {
                         bookmarks.append(bookmark)
                     }
                 }) {
-                    Text("Add")
+                    Text("general_add".loco())
                 }.disabled(url.isEmpty || name.isEmpty)
             }
         }.frame(width: 500, height: 200)
         .padding()
         .alert(isPresented: $showingAlert) {
-            Alert(title: Text("Can't add bookmark"), message: Text(error_msg), dismissButton: .default(Text("OK")))
+            Alert(title: Text("preferences_bookmarks_new_bookmark_error_title".loco()), message: Text(error_msg), dismissButton: .default(Text("general_ok".loco())))
         }
     }
 }

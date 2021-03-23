@@ -82,4 +82,20 @@ extension String {
     func decodeUrl() -> String? {
         self.removingPercentEncoding
     }
+
+    func loco() -> String {
+        I18N.instance.localizedString(for: self)
+    }
+
+    func loco(_ arg: CVarArg) -> String {
+        I18N.instance.localizedString(for: self, arg)
+    }
+
+    func loco(_ firstArg: CVarArg, _ secondArg: CVarArg) -> String {
+        I18N.instance.localizedString(for: self, firstArg, secondArg)
+    }
+
+    func loco(_ firstArg: CVarArg, _ secondArg: CVarArg, _ thirdArg: CVarArg) -> String {
+        I18N.instance.localizedString(for: self, firstArg, secondArg, thirdArg)
+    }
 }
