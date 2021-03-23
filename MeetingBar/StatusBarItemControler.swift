@@ -142,6 +142,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             if let button = self.statusItem.button {
                 button.image = nil
                 button.title = ""
+                button.toolTip = nil
                 if title == "🏁" {
                     switch Defaults[.eventTitleIconFormat] {
                     case .appicon:
