@@ -90,6 +90,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         completeStoreTransactions()
         checkAppSource()
 
+        // Handle windows closing closing
+        NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.windowClosed), name: NSWindow.willCloseNotification, object: nil)
+
         //
 
         if let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
@@ -283,6 +286,16 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     }
 
     @objc
+    func windowClosed(notification: NSNotification) {
+        let window = notification.object as? NSWindow
+        if let windowTitle = window?.title {
+            if windowTitle == windowTitles.onboarding, !Defaults[.onboardingCompleted] {
+                NSApplication.shared.terminate(self)
+            }
+        }
+    }
+
+    @objc
     func eventStoreChanged(notification _: NSNotification) {
         NSLog("Store changed. Update status bar menu.")
         statusBarItem.updateTitle()
@@ -432,7 +445,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             backing: .buffered,
             defer: false
         )
-        preferencesWindow.title = "MeetingBar Preferences"
+        preferencesWindow.title = windowTitles.preferences
         preferencesWindow.contentView = NSHostingView(rootView: contentView)
         preferencesWindow.makeKeyAndOrderFront(nil)
         // allow the preference window can be focused automatically when opened
@@ -458,7 +471,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             backing: .buffered,
             defer: false
         )
-        onboardingWindow.title = "Welcome to MeetingBar!"
+        onboardingWindow.title = windowTitles.onboarding
         onboardingWindow.contentView = NSHostingView(rootView: contentView)
         let controller = NSWindowController(window: onboardingWindow)
         controller.showWindow(self)

@@ -260,3 +260,9 @@ enum Browser: String, Codable, CaseIterable {
         }
     }
 }
+
+
+struct windowTitles {
+    static let onboarding = "Welcome to MeetingBar!"
+    static let preferences = "MeetingBar Preferences"
+}
