@@ -165,7 +165,7 @@
 "status_bar_section_date_nothing" = "Ничего на %@";
 "status_bar_event_start_time_all_day" = "Весь день";
 "status_bar_submenu_calendar_title" = "Календарь: %@";
-"status_bar_submenu_duration_all_day" = "%@ - %@ (%@ minutes)";
+"status_bar_submenu_duration_all_day" = "%@ - %@ (%@ минут(а/ы))";
 "status_bar_submenu_status_title" = "Статус: %@";
 "status_bar_submenu_status_accepted" = " 👍 Принято";
 "status_bar_submenu_status_canceled" = " 👎 Отклонено";
