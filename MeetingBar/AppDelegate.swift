@@ -48,8 +48,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     var launchAtLoginObserver: DefaultsObservation?
     var showEventMaxTimeUntilEventThresholdObserver: DefaultsObservation?
     var showEventMaxTimeUntilEventEnabledObserver: DefaultsObservation?
+
     var preferencesWindow: NSWindow!
     var onboardingWindow: NSWindow!
+    var changelogWindow: NSWindow!
 
     func applicationDidFinishLaunching(_: Notification) {
         // Backward compatibility
@@ -291,6 +293,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         if let windowTitle = window?.title {
             if windowTitle == windowTitles.onboarding, !Defaults[.onboardingCompleted] {
                 NSApplication.shared.terminate(self)
+            } else if windowTitle == windowTitles.changelog {
+                Defaults[.lastRevisedVersionInChangelog] = Defaults[.appVersion]
+                self.statusBarItem.updateMenu()
             }
         }
     }
@@ -430,6 +435,32 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             let url = URL(string: "ical://ekevent/\(identifier)")!
             url.openInDefaultBrowser()
         }
+    }
+
+    @objc
+    func openChangelogWindow(_: NSStatusBarButton?) {
+        NSLog("Open changelof window")
+        let contentView = ChangelogView()
+        if changelogWindow != nil {
+            changelogWindow.close()
+        }
+        changelogWindow = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 600, height: 400),
+            styleMask: [.closable, .titled, .resizable],
+            backing: .buffered,
+            defer: false
+        )
+        changelogWindow.title = windowTitles.changelog
+        changelogWindow.contentView = NSHostingView(rootView: contentView)
+        changelogWindow.makeKeyAndOrderFront(nil)
+        // allow the changelof window can be focused automatically when opened
+        NSApplication.shared.activate(ignoringOtherApps: true)
+
+        let controller = NSWindowController(window: changelogWindow)
+        controller.showWindow(self)
+
+        changelogWindow.center()
+        changelogWindow.orderFrontRegardless()
     }
 
     @objc

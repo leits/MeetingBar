@@ -183,3 +183,10 @@ func getMeetingLink(_ event: EKEvent) -> MeetingLink? {
     }
     return nil
 }
+
+func removePatchVerion(_ version: String) -> String {
+    let versionArray = version.split(separator: ".")
+    let major = versionArray[0]
+    let minor = versionArray[1]
+    return "\(major).\(minor)"
+}

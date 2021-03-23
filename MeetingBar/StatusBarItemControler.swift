@@ -793,6 +793,15 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
     }
 
     func createPreferencesSection() {
+        if removePatchVerion(Defaults[.appVersion]) > removePatchVerion(Defaults[.lastRevisedVersionInChangelog]) {
+            let changelogItem = self.statusItemMenu.addItem(
+                withTitle: "What's new?",
+                action: #selector(AppDelegate.openChangelogWindow),
+                keyEquivalent: ""
+            )
+            changelogItem.image = NSImage(named: NSImage.statusAvailableName)
+        }
+
         self.statusItemMenu.addItem(
             withTitle: "Preferences",
             action: #selector(AppDelegate.openPrefecencesWindow),
