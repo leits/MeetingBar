@@ -137,98 +137,95 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             NSLog("No loaded calendars")
             nextEventState = .none
         }
-
-        DispatchQueue.main.async {
-            if let button = self.statusItem.button {
-                button.image = nil
-                button.title = ""
-                button.toolTip = nil
-                if title == "🏁" {
-                    switch Defaults[.eventTitleIconFormat] {
-                    case .appicon:
-                        button.image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
-                    default:
-                        button.image = NSImage(named: "iconCalendarCheckmark")
-                    }
-                    button.image?.size = NSSize(width: 16, height: 16)
-                } else if title == "MeetingBar" {
+        if let button = self.statusItem.button {
+            button.image = nil
+            button.title = ""
+            button.toolTip = nil
+            if title == "🏁" {
+                switch Defaults[.eventTitleIconFormat] {
+                case .appicon:
                     button.image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
+                default:
+                    button.image = NSImage(named: "iconCalendarCheckmark")
+                }
+                button.image?.size = NSSize(width: 16, height: 16)
+            } else if title == "MeetingBar" {
+                button.image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
+                button.image?.size = NSSize(width: 16, height: 16)
+            } else if case .afterThreshold = nextEventState {
+                switch Defaults[.eventTitleIconFormat] {
+                case .appicon:
+                    button.image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
+                default:
+                    button.image = NSImage(named: "iconCalendar")
+                }
+            }
+
+            if button.image == nil {
+                if Defaults[.eventTitleIconFormat] != EventTitleIconFormat.none {
+                    let image: NSImage
+                    if Defaults[.eventTitleIconFormat] == EventTitleIconFormat.eventtype {
+                        image = getMeetingIcon(nextEvent)
+                    } else {
+                        image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
+                    }
+
+                    button.image = image
                     button.image?.size = NSSize(width: 16, height: 16)
-                } else if case .afterThreshold = nextEventState {
-                    switch Defaults[.eventTitleIconFormat] {
-                    case .appicon:
-                        button.image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
-                    default:
-                        button.image = NSImage(named: "iconCalendar")
+                    if image.name() == "no_online_session" {
+                        button.imagePosition = .noImage
+                    } else {
+                        button.imagePosition = .imageLeft
                     }
                 }
 
-                if button.image == nil {
-                    if Defaults[.eventTitleIconFormat] != EventTitleIconFormat.none {
-                        let image: NSImage
-                        if Defaults[.eventTitleIconFormat] == EventTitleIconFormat.eventtype {
-                            image = getMeetingIcon(nextEvent)
-                        } else {
-                            image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
-                        }
+                // create an NSMutableAttributedString that we'll append everything to
+                let menuTitle = NSMutableAttributedString()
+                let eventStatus = getEventParticipantStatus(nextEvent)
 
-                        button.image = image
-                        button.image?.size = NSSize(width: 16, height: 16)
-                        if image.name() == "no_online_session" {
-                            button.imagePosition = .noImage
-                        } else {
-                            button.imagePosition = .imageLeft
-                        }
+                if Defaults[.eventTimeFormat] != EventTimeFormat.show_under_title || Defaults[.eventTitleFormat] == .none {
+                    var eventTitle = title
+                    if Defaults[.eventTimeFormat] == EventTimeFormat.show {
+                        eventTitle += " " + time
                     }
 
-                    // create an NSMutableAttributedString that we'll append everything to
-                    let menuTitle = NSMutableAttributedString()
-                    let eventStatus = getEventParticipantStatus(nextEvent)
-
-                    if Defaults[.eventTimeFormat] != EventTimeFormat.show_under_title || Defaults[.eventTitleFormat] == .none {
-                        var eventTitle = title
-                        if Defaults[.eventTimeFormat] == EventTimeFormat.show {
-                            eventTitle += " " + time
-                        }
-
-                        var styles = [NSAttributedString.Key: Any]()
-                        styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: 13)
+                    var styles = [NSAttributedString.Key: Any]()
+                    styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: 13)
 
 
-                        if eventStatus == .pending && Defaults[.showPendingEvents] == PendingEventsAppereance.show_inactive {
-                            styles[NSAttributedString.Key.foregroundColor] = NSColor.lightGray
-                        } else if eventStatus == .pending && Defaults[.showPendingEvents] == PendingEventsAppereance.show_underlined {
-                            styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
-                        }
-
-                        menuTitle.append(NSAttributedString(string: eventTitle, attributes: styles))
-                    } else {
-                        let paragraphStyle = NSMutableParagraphStyle()
-                        paragraphStyle.lineHeightMultiple = 0.7
-                        paragraphStyle.alignment = .center
-
-                        var styles = [NSAttributedString.Key: Any]()
-                        styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: 12)
-                        styles[NSAttributedString.Key.baselineOffset] = -3
-
-                        if eventStatus == .pending && Defaults[.showPendingEvents] == PendingEventsAppereance.show_inactive {
-                            styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
-                        } else if eventStatus == .pending && Defaults[.showPendingEvents] == PendingEventsAppereance.show_underlined {
-                            styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
-                        }
-
-                        menuTitle.append(NSAttributedString(string: title, attributes: styles))
-
-                        menuTitle.append(NSAttributedString(string: "\n" + time, attributes: [NSAttributedString.Key.font: NSFont.systemFont(ofSize: 9), NSAttributedString.Key.foregroundColor: NSColor.lightGray]))
-
-
-                        menuTitle.addAttributes([NSAttributedString.Key.paragraphStyle: paragraphStyle], range: NSRange(location: 0, length: menuTitle.length))
+                    if eventStatus == .pending && Defaults[.showPendingEvents] == PendingEventsAppereance.show_inactive {
+                        styles[NSAttributedString.Key.foregroundColor] = NSColor.lightGray
+                    } else if eventStatus == .pending && Defaults[.showPendingEvents] == PendingEventsAppereance.show_underlined {
+                        styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
                     }
 
-                    button.attributedTitle = menuTitle
-                    if nextEvent != nil {
-                        button.toolTip = nextEvent.title
+                    menuTitle.append(NSAttributedString(string: eventTitle, attributes: styles))
+                } else {
+                    let paragraphStyle = NSMutableParagraphStyle()
+                    paragraphStyle.lineHeightMultiple = 0.7
+                    paragraphStyle.alignment = .center
+
+                    var styles = [NSAttributedString.Key: Any]()
+                    styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: 12)
+                    styles[NSAttributedString.Key.baselineOffset] = -3
+
+                    if eventStatus == .pending && Defaults[.showPendingEvents] == PendingEventsAppereance.show_inactive {
+                        styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
+                    } else if eventStatus == .pending && Defaults[.showPendingEvents] == PendingEventsAppereance.show_underlined {
+                        styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
                     }
+
+                    menuTitle.append(NSAttributedString(string: title, attributes: styles))
+
+                    menuTitle.append(NSAttributedString(string: "\n" + time, attributes: [NSAttributedString.Key.font: NSFont.systemFont(ofSize: 9), NSAttributedString.Key.foregroundColor: NSColor.lightGray]))
+
+
+                    menuTitle.addAttributes([NSAttributedString.Key.paragraphStyle: paragraphStyle], range: NSRange(location: 0, length: menuTitle.length))
+                }
+
+                button.attributedTitle = menuTitle
+                if nextEvent != nil {
+                    button.toolTip = nextEvent.title
                 }
             }
         }

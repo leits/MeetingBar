@@ -316,7 +316,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
         activity.schedule { (completion: @escaping NSBackgroundActivityScheduler.CompletionHandler) in
             NSLog("Firing reccuring updateStatusBarTitle")
-            self.statusBarItem.updateTitle()
+            DispatchQueue.main.async {
+                self.statusBarItem.updateTitle()
+            }
             completion(NSBackgroundActivityScheduler.Result.finished)
         }
     }
