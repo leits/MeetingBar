@@ -311,7 +311,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         let activity = NSBackgroundActivityScheduler(identifier: "leits.MeetingBar.updatestatusbartitle")
 
         activity.repeats = true
-        activity.interval = 30
+        activity.interval = 15
         activity.qualityOfService = QualityOfService.userInteractive
 
         activity.schedule { (completion: @escaping NSBackgroundActivityScheduler.CompletionHandler) in
