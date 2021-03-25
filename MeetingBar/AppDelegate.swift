@@ -98,6 +98,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         //
 
         if let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
+            if Defaults[.appVersion] == UserDefaults.standard.string(forKey: Defaults.Keys.appVersion.name) {
+                Defaults[.lastRevisedVersionInChangelog] = appVersion
+            }
             Defaults[.appVersion] = appVersion
         }
 
