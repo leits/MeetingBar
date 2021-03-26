@@ -85,7 +85,6 @@ extension String {
 }
 
 extension String {
-
     func splitWithNewLineString(with attributes: [NSAttributedString.Key: Any], maxWidth: CGFloat) -> String {
         let words = self.split(separator: " ").map { String($0) }
         var lineWidth: CGFloat = 0.0
@@ -93,7 +92,7 @@ extension String {
         var lines: [String] = []
 
         func width(for string: String) -> CGFloat {
-            return string.boundingRect(with: NSSize.zero, options: [ .usesLineFragmentOrigin, .usesFontLeading], attributes: attributes).width
+            string.boundingRect(with: NSSize.zero, options: [ .usesLineFragmentOrigin, .usesFontLeading], attributes: attributes).width
         }
 
         func addToAllLines(_ text: String) {
