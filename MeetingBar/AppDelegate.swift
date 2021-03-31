@@ -378,10 +378,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             openMeetingURL(MeetingServices.meet, CreateMeetingLinks.meet)
         case .zoom:
             openMeetingURL(MeetingServices.zoom, CreateMeetingLinks.zoom)
-        case .hangouts:
-            openMeetingURL(MeetingServices.hangouts, CreateMeetingLinks.hangouts)
         case .teams:
             openMeetingURL(MeetingServices.teams, CreateMeetingLinks.teams)
+        case .jam:
+            openMeetingURL(MeetingServices.jam, CreateMeetingLinks.jam)
         case .gcalendar:
             openMeetingURL(nil, CreateMeetingLinks.gcalendar)
         case .outlook_office365:

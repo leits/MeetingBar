@@ -66,6 +66,7 @@ enum CreateMeetingLinks {
     static var meet = URL(string: "https://meet.google.com/new")!
     static var zoom = URL(string: "https://zoom.us/start?confno=123456789&zc=0")!
     static var teams = URL(string: "https://teams.microsoft.com/l/meeting/new?subject=")!
+    static var jam = URL(string: "https://jam.systems/new")!
     static var gcalendar = URL(string: "https://calendar.google.com/calendar/u/0/r/eventedit")!
     static var outlook_live = URL(string: "https://outlook.live.com/calendar/0/action/compose")!
     static var outlook_office365 = URL(string: "https://outlook.office365.com/calendar/0/action/compose")!
@@ -75,6 +76,7 @@ enum CreateMeetingServices: String, Codable, CaseIterable {
     case meet = "Google Meet"
     case zoom = "Zoom"
     case teams = "Microsoft Teams"
+    case jam = "Jam"
     case gcalendar = "Google Calendar"
     case outlook_live = "Outlook Live"
     case outlook_office365 = "Outlook Office365"
