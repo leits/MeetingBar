@@ -85,7 +85,7 @@ func notificationsEnabled() -> Bool {
 
     center.getNotificationSettings { notificationSettings in
         correctAlertStyle = notificationSettings.alertStyle == UNAlertStyle.alert || notificationSettings.alertStyle == UNAlertStyle.banner
-        notificationsEnabled = notificationSettings.authorizationStatus == UNAuthorizationStatus.authorized
+        notificationsEnabled = notificationSettings.authorizationStatus != UNAuthorizationStatus.denied
         group.leave()
     }
 

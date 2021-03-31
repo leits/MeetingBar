@@ -38,7 +38,7 @@ struct Bookmark: Encodable, Decodable, Hashable {
 fileprivate func cleanupOutlookSafeLinks( text: inout String) -> String {
     NSLog("Check text \(text) for outlook safe links")
 
-    var links = outlookSafeLinkRegex.matches(in: text, range: NSRange(text.startIndex..., in: text))
+    var links = UtilsRegex.outlookSafeLinkRegex.matches(in: text, range: NSRange(text.startIndex..., in: text))
     if !links.isEmpty {
         repeat {
             let urlRange = links[0].range( at: 1)
@@ -48,7 +48,7 @@ fileprivate func cleanupOutlookSafeLinks( text: inout String) -> String {
                 NSLog("Found service url \(serviceUrl)")
                 text = text.replacingOccurrences(of: safeLinks[0], with: serviceUrl.decodeUrl()!)
             }
-            links = outlookSafeLinkRegex.matches(in: text, range: NSRange(text.startIndex..., in: text))
+            links = UtilsRegex.outlookSafeLinkRegex.matches(in: text, range: NSRange(text.startIndex..., in: text))
         } while !links.isEmpty
     }
 
@@ -61,8 +61,8 @@ func getMatch(text: String, regex: NSRegularExpression) -> String? {
     let resultsMap = resultsIterator.map { String(text[Range($0.range, in: text)!]) }
 
     if !resultsMap.isEmpty {
-        let meetLink = resultsMap[0]
-        return meetLink
+        let match = resultsMap[0]
+        return match
     }
     return nil
 }
@@ -76,38 +76,6 @@ func cleanUpNotes(_ notes: String) -> String {
         .components(separatedBy: meetSeparator)[0]
         .htmlTagsStripped()
     return cleanNotes
-}
-
-func generateTitleSample(_ titleFormat: EventTitleFormat, _ offset: Int) -> String {
-    var title: String
-    switch titleFormat {
-    case .show:
-        title = "An event with an excessively sizeable 55-character title"
-        title = title.truncated(to: offset)
-        title += " in 1h 25m"
-    case .dot:
-        title = "• in 1h 25m"
-    case .none:
-        title = ""
-    }
-
-    return title
-}
-
-func generateTitleIconSample(_ titleIconFormat: EventTitleIconFormat) -> NSImage {
-    let image: NSImage
-    if titleIconFormat == EventTitleIconFormat.eventtype {
-        image = NSImage(named: "ms_teams_icon")!
-    } else {
-        image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
-    }
-    image.size = NSSize(width: 16, height: 16)
-    return image
-}
-
-func generateTitleSample(_ offset: Int) -> String {
-    let title = "An event with an excessively sizeable 100-character title to show the shorten capabilities here ...."
-    return title.truncated(to: offset)
 }
 
 func getRegexForService(_ service: MeetingServices) -> NSRegularExpression? {
@@ -124,7 +92,7 @@ func getRegexForService(_ service: MeetingServices) -> NSRegularExpression? {
 
 func getGmailAccount(_ event: EKEvent) -> String? {
     // Hacky and likely to break, but should work until Apple changes something
-    let regex = GoogleRegex.emailAddress
+    let regex = UtilsRegex.emailAddress
     let text = event.calendar.source.description
     let resultsIterator = regex.matches(in: text, range: NSRange(text.startIndex..., in: text))
     let resultsMap = resultsIterator.map { String(text[Range($0.range(at: 1), in: text)!]) }
@@ -132,10 +100,6 @@ func getGmailAccount(_ event: EKEvent) -> String? {
         return resultsMap.first
     }
     return nil
-}
-
-func emailMe() {
-    Links.emailMe.openInDefaultBrowser()
 }
 
 /**
@@ -186,4 +150,95 @@ func getMeetingLink(_ event: EKEvent) -> MeetingLink? {
         }
     }
     return nil
+}
+
+func openEvent(_ event: EKEvent) {
+    let eventTitle = event.title ?? "No title"
+    if let meeting = getMeetingLink(event) {
+        if Defaults[.runJoinEventScript], Defaults[.joinEventScriptLocation] != nil {
+            if let url = Defaults[.joinEventScriptLocation]?.appendingPathComponent("joinEventScript.scpt") {
+                print("URL: \(url)")
+                let task = try! NSUserAppleScriptTask(url: url)
+                task.execute { error in
+                    if let error = error {
+                        sendNotification("AppleScript return error", error.localizedDescription)
+                    }
+                }
+            }
+        }
+        openMeetingURL(meeting.service, meeting.url)
+    } else {
+        sendNotification("Epp! Can't join the \(eventTitle)", "Link not found, or your meeting service is not yet supported")
+    }
+}
+
+func getEventParticipantStatus(_ event: EKEvent) -> EKParticipantStatus? {
+    if event.hasAttendees {
+        if let attendees = event.attendees {
+            if let currentUser = attendees.first(where: { $0.isCurrentUser }) {
+                return currentUser.participantStatus
+            }
+        }
+    }
+    return EKParticipantStatus.unknown
+}
+
+
+func openMeetingURL(_ service: MeetingServices?, _ url: URL) {
+    switch service {
+    case .meet:
+        let browser = Defaults[.browserForMeetLinks]
+        url.openIn(browser: browser)
+
+    case .teams:
+        if Defaults[.useAppForTeamsLinks] {
+            var teamsAppURL = URLComponents(url: url, resolvingAgainstBaseURL: false)!
+            teamsAppURL.scheme = "msteams"
+            let result = teamsAppURL.url!.openInDefaultBrowser()
+            if !result {
+                sendNotification("Oops! Unable to open the link in Microsoft Teams app", "Make sure you have Microsoft Teams app installed, or change the app in the preferences.")
+                url.openInDefaultBrowser()
+            }
+        } else {
+            url.openInDefaultBrowser()
+        }
+    case .zoom:
+        if Defaults[.useAppForZoomLinks] {
+            let urlString = url.absoluteString.replacingOccurrences(of: "?", with: "&").replacingOccurrences(of: "/j/", with: "/join?confno=")
+            var zoomAppUrl = URLComponents(url: URL(string: urlString)!, resolvingAgainstBaseURL: false)!
+            zoomAppUrl.scheme = "zoommtg"
+            let result = zoomAppUrl.url!.openInDefaultBrowser()
+            if !result {
+                sendNotification("Oops! Unable to open the link in Zoom app", "Make sure you have Zoom app installed, or change the app in the preferences.")
+                url.openInDefaultBrowser()
+            }
+        } else {
+            url.openInDefaultBrowser()
+        }
+    case .zoom_native:
+        let result = url.openInDefaultBrowser()
+        if !result {
+            sendNotification("Oops! Unable to open the native link in Zoom app", "Make sure you have Zoom app installed, or change the app in the preferences.")
+
+            let urlString = url.absoluteString.replacingFirstOccurrence(of: "&", with: "?").replacingOccurrences(of: "/join?confno=", with: "/j/")
+            var zoomBrowserUrl = URLComponents(url: URL(string: urlString)!, resolvingAgainstBaseURL: false)!
+            zoomBrowserUrl.scheme = "https"
+            zoomBrowserUrl.url!.openInDefaultBrowser()
+        }
+    case .facetime:
+        NSWorkspace.shared.open(URL(string: "facetime://" + url.absoluteString)!)
+    case .facetimeaudio:
+        NSWorkspace.shared.open(URL(string: "facetime-audio://" + url.absoluteString)!)
+    case .phone:
+        NSWorkspace.shared.open(URL(string: "tel://" + url.absoluteString)!)
+    default:
+        url.openInDefaultBrowser()
+    }
+}
+
+func removePatchVerion(_ version: String) -> String {
+    let versionArray = version.split(separator: ".")
+    let major = versionArray[0]
+    let minor = versionArray[1]
+    return "\(major).\(minor)"
 }
