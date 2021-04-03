@@ -46,8 +46,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     var ignoredEventIDsObserver: DefaultsObservation?
     var joinEventNotificationObserver: DefaultsObservation?
     var launchAtLoginObserver: DefaultsObservation?
+    var showEventMaxTimeUntilEventThresholdObserver: DefaultsObservation?
+    var showEventMaxTimeUntilEventEnabledObserver: DefaultsObservation?
+
     var preferencesWindow: NSWindow!
     var onboardingWindow: NSWindow!
+    var changelogWindow: NSWindow!
 
     func applicationDidFinishLaunching(_: Notification) {
         // Backward compatibility
@@ -95,9 +99,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         completeStoreTransactions()
         checkAppSource()
 
+        // Handle windows closing closing
+        NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.windowClosed), name: NSWindow.willCloseNotification, object: nil)
+
         //
 
         if let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
+            if Defaults[.appVersion] == UserDefaults.standard.string(forKey: Defaults.Keys.appVersion.name) {
+                Defaults[.lastRevisedVersionInChangelog] = appVersion
+            }
             Defaults[.appVersion] = appVersion
         }
 
@@ -279,10 +289,35 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                 UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
             }
         }
+        showEventMaxTimeUntilEventThresholdObserver = Defaults.observe(.showEventMaxTimeUntilEventThreshold) { change in
+            NSLog("Changed showEventMaxTimeUntilEventThreshold from \(change.oldValue) to \(change.newValue)")
+            if change.oldValue != change.newValue {
+                self.statusBarItem.updateTitle()
+            }
+        }
+        showEventMaxTimeUntilEventEnabledObserver = Defaults.observe(.showEventMaxTimeUntilEventEnabled) { change in
+            NSLog("Change showEventMaxTimeUntilEventEnabled from \(change.oldValue) to \(change.newValue)")
+            if change.oldValue != change.newValue {
+                self.statusBarItem.updateTitle()
+            }
+        }
     }
 
     @objc
-    func eventStoreChanged(notification _: NSNotification) {
+    func windowClosed(notification: NSNotification) {
+        let window = notification.object as? NSWindow
+        if let windowTitle = window?.title {
+            if windowTitle == windowTitles.onboarding, !Defaults[.onboardingCompleted] {
+                NSApplication.shared.terminate(self)
+            } else if windowTitle == windowTitles.changelog {
+                Defaults[.lastRevisedVersionInChangelog] = Defaults[.appVersion]
+                self.statusBarItem.updateMenu()
+            }
+        }
+    }
+
+    @objc
+    func eventStoreChanged(_ notification: NSNotification) {
         NSLog("Store changed. Update status bar menu.")
         statusBarItem.updateTitle()
         statusBarItem.updateMenu()
@@ -292,12 +327,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         let activity = NSBackgroundActivityScheduler(identifier: "leits.MeetingBar.updatestatusbartitle")
 
         activity.repeats = true
-        activity.interval = 30
+        activity.interval = 15
         activity.qualityOfService = QualityOfService.userInteractive
 
         activity.schedule { (completion: @escaping NSBackgroundActivityScheduler.CompletionHandler) in
             NSLog("Firing reccuring updateStatusBarTitle")
-            self.statusBarItem.updateTitle()
+            DispatchQueue.main.async {
+                self.statusBarItem.updateTitle()
+            }
             completion(NSBackgroundActivityScheduler.Result.finished)
         }
     }
@@ -354,10 +391,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             openMeetingURL(MeetingServices.meet, CreateMeetingLinks.meet)
         case .zoom:
             openMeetingURL(MeetingServices.zoom, CreateMeetingLinks.zoom)
-        case .hangouts:
-            openMeetingURL(MeetingServices.hangouts, CreateMeetingLinks.hangouts)
         case .teams:
             openMeetingURL(MeetingServices.teams, CreateMeetingLinks.teams)
+        case .jam:
+            openMeetingURL(MeetingServices.jam, CreateMeetingLinks.jam)
         case .gcalendar:
             openMeetingURL(nil, CreateMeetingLinks.gcalendar)
         case .outlook_office365:
@@ -419,6 +456,32 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     }
 
     @objc
+    func openChangelogWindow(_: NSStatusBarButton?) {
+        NSLog("Open changelof window")
+        let contentView = ChangelogView()
+        if changelogWindow != nil {
+            changelogWindow.close()
+        }
+        changelogWindow = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 600, height: 400),
+            styleMask: [.closable, .titled, .resizable],
+            backing: .buffered,
+            defer: false
+        )
+        changelogWindow.title = windowTitles.changelog
+        changelogWindow.contentView = NSHostingView(rootView: contentView)
+        changelogWindow.makeKeyAndOrderFront(nil)
+        // allow the changelof window can be focused automatically when opened
+        NSApplication.shared.activate(ignoringOtherApps: true)
+
+        let controller = NSWindowController(window: changelogWindow)
+        controller.showWindow(self)
+
+        changelogWindow.center()
+        changelogWindow.orderFrontRegardless()
+    }
+
+    @objc
     func openPrefecencesWindow(_: NSStatusBarButton?) {
         NSLog("Open preferences window")
         let contentView = PreferencesView()
@@ -426,12 +489,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             preferencesWindow.close()
         }
         preferencesWindow = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 700, height: 550),
+            contentRect: NSRect(x: 0, y: 0, width: 700, height: 570),
             styleMask: [.closable, .titled, .resizable],
             backing: .buffered,
             defer: false
         )
-        preferencesWindow.title = "MeetingBar Preferences"
+        preferencesWindow.title = windowTitles.preferences
         preferencesWindow.contentView = NSHostingView(rootView: contentView)
         preferencesWindow.makeKeyAndOrderFront(nil)
         // allow the preference window can be focused automatically when opened
@@ -457,7 +520,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             backing: .buffered,
             defer: false
         )
-        onboardingWindow.title = "Welcome to MeetingBar!"
+        onboardingWindow.title = windowTitles.onboarding
         onboardingWindow.contentView = NSHostingView(rootView: contentView)
         let controller = NSWindowController(window: onboardingWindow)
         controller.showWindow(self)

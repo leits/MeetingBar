@@ -12,9 +12,4 @@ extension KeyboardShortcuts.Name {
     static let createMeetingShortcut = Self("createMeetingShortcut")
     static let openMenuShortcut = Self("openMenuShortcut")
     static let joinEventShortcut = Self("joinEventShortcut")
-    static let joinBookmarkShortcut1 = Self("joinBookmarkShortcut")
-    static let joinBookmarkShortcut2 = Self("joinBookmarkShortcut2")
-    static let joinBookmarkShortcut3 = Self("joinBookmarkShortcut3")
-    static let joinBookmarkShortcut4 = Self("joinBookmarkShortcut4")
-    static let joinBookmarkShortcut5 = Self("joinBookmarkShortcut5")
 }

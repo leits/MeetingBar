@@ -66,13 +66,12 @@ struct PatronageAppSection: View {
                 Spacer()
                 HStack {
                     VStack(alignment: .center) {
-                        Image(nsImage: NSImage(named: EventTitleIconFormat.appicon.rawValue)!).resizable()
-                                .frame(width: 120.0, height: 120.0)
+                        Image(nsImage: NSImage(named: "appIconForAbout")!).resizable().frame(width: 120.0, height: 120.0)
                         Text("MeetingBar").font(.system(size: 20)).bold()
                         if Bundle.main.infoDictionary != nil {
                             Text("Version \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "unknown")").foregroundColor(.gray)
                         }
-                    }.frame(minWidth: 0, maxWidth: .infinity)
+                    }.lineLimit(1).minimumScaleFactor(0.5).frame(minWidth: 0, maxWidth: .infinity)
                     VStack {
                         Spacer()
                         Text("MeetingBar is open-source app created by Andrii Leitsius\nThe app aims to make your experience with online meetings smoother and easier").multilineTextAlignment(.center)
