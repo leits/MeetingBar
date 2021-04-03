@@ -142,7 +142,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
             if let meetingLink = meetingLink {
                 openMeetingURL(meetingLink.service, meetingLink.url)
-
             } else {
                 let validUrl = NSURL(string: clipboardContent)
                 if validUrl != nil {
