@@ -274,6 +274,12 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             }
         }
 
+        let openLinkFromClipboardItem = NSMenuItem()
+        openLinkFromClipboardItem.title = "Open meeting from clipboard"
+        openLinkFromClipboardItem.action = #selector(AppDelegate.openLinkFromClipboard)
+        openLinkFromClipboardItem.keyEquivalent = ""
+        openLinkFromClipboardItem.setShortcut(for: .openClipboardShortcut)
+        self.statusItemMenu.addItem(openLinkFromClipboardItem)
 
         let createEventItem = NSMenuItem()
         createEventItem.title = "Create meeting"
@@ -348,7 +354,169 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
     }
 
 
-    func createEventItem(event: EKEvent, dateSection: Date) {
+    func getMeetingIconForLink(_ result: MeetingLink?) -> NSImage {
+            var image: NSImage? = NSImage(named: "no_online_session")
+            image!.size = NSSize(width: 16, height: 16)
+
+            switch result?.service {
+            // tested and verified
+            case .some(.teams):
+                image = NSImage(named: "ms_teams_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.meet):
+                image = NSImage(named: "google_meet_icon")!
+                image!.size = NSSize(width: 16, height: 13.2)
+
+            // tested and verified -> deprecated, can be removed because hangouts was replaced by google meet
+            case .some(.hangouts):
+                image = NSImage(named: "google_hangouts_icon")!
+                image!.size = NSSize(width: 16, height: 17.8)
+
+            // tested and verified
+            case .some(.zoom), .some(.zoomgov), .some(.zoom_native):
+                image = NSImage(named: "zoom_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.webex):
+                image = NSImage(named: "webex_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.jitsi):
+                image = NSImage(named: "jitsi_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.chime):
+                image = NSImage(named: "amazon_chime_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            case .some(.ringcentral):
+                image = NSImage(named: "online_meeting_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.gotomeeting):
+                image = NSImage(named: "gotomeeting_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.gotowebinar):
+                image = NSImage(named: "gotowebinar_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            case .some(.bluejeans):
+                image = NSImage(named: "online_meeting_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.eight_x_eight):
+                image = NSImage(named: "8x8_icon")!
+                image!.size = NSSize(width: 16, height: 8)
+
+            // tested and verified
+            case .some(.demio):
+                image = NSImage(named: "demio_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.join_me):
+                image = NSImage(named: "joinme_icon")!
+                image!.size = NSSize(width: 16, height: 10)
+
+            // tested and verified
+            case .some(.whereby):
+                image = NSImage(named: "whereby_icon")!
+                image!.size = NSSize(width: 16, height: 18)
+
+            // tested and verified
+            case .some(.uberconference):
+                image = NSImage(named: "uberconference_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.blizz), .some(.teamviewer_meeting):
+                image = NSImage(named: "teamviewer_meeting_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.vsee):
+                image = NSImage(named: "vsee_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.starleaf):
+                image = NSImage(named: "starleaf_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.duo):
+                image = NSImage(named: "google_duo_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.voov):
+                image = NSImage(named: "voov_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.skype):
+                image = NSImage(named: "skype_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.skype4biz), .some(.skype4biz_selfhosted):
+                image = NSImage(named: "skype_business_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.lifesize):
+                image = NSImage(named: "lifesize_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.facebook_workspace):
+                image = NSImage(named: "facebook_workplace_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.youtube):
+                image = NSImage(named: "youtube_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .none:
+                image = NSImage(named: "no_online_session")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            case .some(.vonageMeetings):
+                image = NSImage(named: "online_meeting_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            case .some(.meetStream):
+                image = NSImage(named: "online_meeting_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            default:
+                break
+            }
+
+            return image!
+        }
+
+    /**
+     * try  to get the correct image for the specific
+     */
+    func getMeetingIcon(_ event: EKEvent) -> NSImage {
+        let result = getMeetingLink(event)
+
+        return getMeetingIconForLink(result)
+    }
+
+    func createEventItem(event: EKEvent) {
         let eventParticipantStatus = getEventParticipantStatus(event)
         let eventStatus = event.status
 
@@ -718,165 +886,4 @@ func createEventStatusString(_ event: EKEvent) -> (String, String) {
         eventTime = "in \(formattedTimeLeft)"
     }
     return (eventTitle, eventTime)
-}
-
-/**
- * try  to get the correct image for the specific event
- */
-func getMeetingIcon(_ event: EKEvent) -> NSImage {
-    var image: NSImage? = NSImage(named: "no_online_session")
-    image!.size = NSSize(width: 16, height: 16)
-
-    let result = getMeetingLink(event)
-    switch result?.service {
-    // tested and verified
-    case .some(.teams):
-        image = NSImage(named: "ms_teams_icon")!
-        image!.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.meet):
-        image = NSImage(named: "google_meet_icon")!
-        image!.size = NSSize(width: 16, height: 13.2)
-
-    // tested and verified -> deprecated, can be removed because hangouts was replaced by google meet
-    case .some(.hangouts):
-        image = NSImage(named: "google_hangouts_icon")!
-        image!.size = NSSize(width: 16, height: 17.8)
-
-    // tested and verified
-    case .some(.zoom), .some(.zoomgov), .some(.zoom_native):
-        image = NSImage(named: "zoom_icon")!
-        image!.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.webex):
-        image = NSImage(named: "webex_icon")!
-        image!.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.jitsi):
-        image = NSImage(named: "jitsi_icon")!
-        image!.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.chime):
-        image = NSImage(named: "amazon_chime_icon")!
-        image!.size = NSSize(width: 16, height: 16)
-
-    case .some(.ringcentral):
-        image = NSImage(named: "online_meeting_icon")!
-        image!.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.gotomeeting):
-        image = NSImage(named: "gotomeeting_icon")!
-        image!.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.gotowebinar):
-        image = NSImage(named: "gotowebinar_icon")!
-        image!.size = NSSize(width: 16, height: 16)
-
-    case .some(.bluejeans):
-        image = NSImage(named: "online_meeting_icon")!
-        image!.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.eight_x_eight):
-        image = NSImage(named: "8x8_icon")!
-        image!.size = NSSize(width: 16, height: 8)
-
-    // tested and verified
-    case .some(.demio):
-        image = NSImage(named: "demio_icon")!
-        image!.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.join_me):
-        image = NSImage(named: "joinme_icon")!
-        image!.size = NSSize(width: 16, height: 10)
-
-    // tested and verified
-    case .some(.whereby):
-        image = NSImage(named: "whereby_icon")!
-        image!.size = NSSize(width: 16, height: 18)
-
-    // tested and verified
-    case .some(.uberconference):
-        image = NSImage(named: "uberconference_icon")!
-        image!.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.blizz), .some(.teamviewer_meeting):
-        image = NSImage(named: "teamviewer_meeting_icon")!
-        image!.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.vsee):
-        image = NSImage(named: "vsee_icon")!
-        image!.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.starleaf):
-        image = NSImage(named: "starleaf_icon")!
-        image!.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.duo):
-        image = NSImage(named: "google_duo_icon")!
-        image!.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.voov):
-        image = NSImage(named: "voov_icon")!
-        image!.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.skype):
-        image = NSImage(named: "skype_icon")!
-        image!.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.skype4biz), .some(.skype4biz_selfhosted):
-        image = NSImage(named: "skype_business_icon")!
-        image!.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.lifesize):
-        image = NSImage(named: "lifesize_icon")!
-        image!.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.facebook_workspace):
-        image = NSImage(named: "facebook_workplace_icon")!
-        image!.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.youtube):
-        image = NSImage(named: "youtube_icon")!
-        image!.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .none:
-        image = NSImage(named: "no_online_session")!
-        image!.size = NSSize(width: 16, height: 16)
-
-    case .some(.vonageMeetings):
-        image = NSImage(named: "online_meeting_icon")!
-        image!.size = NSSize(width: 16, height: 16)
-
-    case .some(.meetStream):
-        image = NSImage(named: "online_meeting_icon")!
-        image!.size = NSSize(width: 16, height: 16)
-
-    case .some(.discord):
-        image = NSImage(named: "discord_icon")!
-        image!.size = NSSize(width: 16, height: 16)
-
-    default:
-        break
-    }
-
-    return image!
 }
