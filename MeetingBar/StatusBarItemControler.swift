@@ -798,7 +798,6 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                 let fantasticalItem = eventMenu.addItem(withTitle: "Open in Fantastical", action: #selector(AppDelegate.openEventInFantastical), keyEquivalent: "")
                 fantasticalItem.representedObject = EventWithDate(event: event, dateSection: dateSection)
             }
-
         } else {
             eventItem.toolTip = event.title
         }
@@ -808,7 +807,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
      * checks if fantastical is installed
      */
     func isFantasticalInstalled () -> Bool {
-        return NSWorkspace.shared.urlForApplication(withBundleIdentifier: "com.flexibits.fantastical2.mac") != nil
+        NSWorkspace.shared.urlForApplication(withBundleIdentifier: "com.flexibits.fantastical2.mac") != nil
     }
 
 
