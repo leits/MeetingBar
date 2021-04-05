@@ -13,7 +13,7 @@ import AppKit
 
 struct MeetingLink: Equatable {
     let service: MeetingServices?
-    let url: URL
+    var url: URL
 }
 
 struct Bookmark: Encodable, Decodable, Hashable {
@@ -100,6 +100,31 @@ func getGmailAccount(_ event: EKEvent) -> String? {
     return nil
 }
 
+func detectLink(_ field: inout String) -> MeetingLink? {
+    _ = cleanupOutlookSafeLinks(text: &field)
+
+    for pattern in Defaults[.customRegexes] {
+        if let regex = try? NSRegularExpression(pattern: pattern) {
+            if let link = getMatch(text: field, regex: regex) {
+                if let url = URL(string: link) {
+                    return MeetingLink(service: MeetingServices.other, url: url)
+                }
+            }
+        }
+    }
+
+    for service in MeetingServices.allCases {
+        if let regex = getRegexForService(service) {
+            if let link = getMatch(text: field, regex: regex) {
+                if let url = URL(string: link) {
+                    return MeetingLink(service: service, url: url)
+                }
+            }
+        }
+    }
+    return nil
+}
+
 /**
  * this method will collect text from the location, url and notes field of an event and try to find a known meeting url link.
  * As meeting links can be part of a outlook safe url, we will extract the original link from outlook safe links.
@@ -120,31 +145,15 @@ func getMeetingLink(_ event: EKEvent) -> MeetingLink? {
     }
 
     for var field in linkFields {
-        _ = cleanupOutlookSafeLinks(text: &field)
-
-        for pattern in Defaults[.customRegexes] {
-            if let regex = try? NSRegularExpression(pattern: pattern) {
-                if let link = getMatch(text: field, regex: regex) {
-                    if let url = URL(string: link) {
-                        return MeetingLink(service: MeetingServices.other, url: url)
-                    }
-                }
+        var meetingLink = detectLink(&field)
+        if meetingLink != nil {
+            if meetingLink?.service == .meet,
+               let account = getGmailAccount(event),
+               let urlEncodedAccount = account.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
+            let url = URL(string: (meetingLink?.url.absoluteString)! + "?authuser=\(urlEncodedAccount)")!
+                meetingLink?.url = url
             }
-        }
-
-        for service in MeetingServices.allCases {
-            if let regex = getRegexForService(service) {
-                if var link = getMatch(text: field, regex: regex) {
-                    if service == .meet,
-                       let account = getGmailAccount(event),
-                       let urlEncodedAccount = account.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
-                        link += "?authuser=\(urlEncodedAccount)"
-                    }
-                    if let url = URL(string: link) {
-                        return MeetingLink(service: service, url: url)
-                    }
-                }
-            }
+            return meetingLink
         }
     }
     return nil

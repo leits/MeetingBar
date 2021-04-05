@@ -135,6 +135,35 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
     }
 
+    /**
+     * tries to open the link from the macos system clipboard.
+     */
+    @objc
+    func openLinkFromClipboard() {
+        NSLog("Check macos clipboard for link")
+        var clipboardContent = getClipboardContent()
+        NSLog("Found \(clipboardContent) in clipboard")
+
+        if !clipboardContent.isEmpty {
+            let meetingLink = detectLink(&clipboardContent)
+
+            if let meetingLink = meetingLink {
+                openMeetingURL(meetingLink.service, meetingLink.url)
+            } else {
+                let validUrl = NSURL(string: clipboardContent)
+                if validUrl != nil {
+                    URL(string: clipboardContent)?.openInDefaultBrowser()
+                } else {
+                    sendNotification("No valid url",
+                                     "Clipboard has no meeting link, so the meeting cannot be started")
+                }
+            }
+        } else {
+            sendNotification("Clipboard is empty",
+                             "Clipboard has no content, so the meeting cannot be started...")
+        }
+    }
+
     func setup() {
         statusBarItem = StatusBarItemControler()
         statusBarItem.setAppDelegate(appdelegate: self)
@@ -155,6 +184,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         KeyboardShortcuts.onKeyUp(for: .createMeetingShortcut) {
             self.createMeeting()
         }
+
         KeyboardShortcuts.onKeyUp(for: .joinEventShortcut) {
             self.joinNextMeeting()
         }
@@ -165,8 +195,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             self.statusBarItem.statusItem.button?.performClick(nil) // ...and click
         }
 
-        NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.eventStoreChanged), name: .EKEventStoreChanged, object: statusBarItem.eventStore)
+        KeyboardShortcuts.onKeyUp(for: .openClipboardShortcut) {
+            self.openLinkFromClipboard()
+        }
 
+        NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.eventStoreChanged), name: .EKEventStoreChanged, object: statusBarItem.eventStore)
 
         showEventDetailsObserver = Defaults.observe(.showEventDetails) { change in
             NSLog("Change showEventDetails from \(change.oldValue) to \(change.newValue)")
@@ -314,6 +347,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                 self.statusBarItem.updateMenu()
             }
         }
+    }
+
+    func getClipboardContent() -> String {
+       let pasteboard = NSPasteboard.general
+        return pasteboard.string(forType: .string) ?? ""
     }
 
     @objc
