@@ -12,8 +12,9 @@ import Defaults
 struct EventWithDate {
     let event: EKEvent
     let dateSection: Date
+}
 
-  struct MeetingLink: Equatable {
+struct MeetingLink: Equatable {
     let service: MeetingServices?
     var url: URL
 }
