@@ -13,8 +13,8 @@ import Defaults
 
 struct AccessScreen: View {
     @ObservedObject var viewRouter: ViewRouter
-    @State var accessDenied: Bool
-    @State var accessToEvents: Bool
+    @State var accessDenied = false
+    @State var accessToEvents = false
 
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
