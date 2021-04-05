@@ -481,6 +481,27 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
     }
 
+    /**
+     * opens an event in the fantastical app. It uses the x-fantastical url handler which is not fully described on the fantastical website,
+     * but was confirmed in the github ticket. 
+     */
+    @objc
+    func openEventInFantastical(sender: NSMenuItem) {
+        if let eventWithDate: EventWithDate = sender.representedObject as? EventWithDate {
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd"
+
+            let queryItems = [URLQueryItem(name: "date", value: dateFormatter.string(from: eventWithDate.dateSection)), URLQueryItem(name: "title", value: eventWithDate.event.title)]
+            var fantasticalUrlComp = URLComponents()
+            fantasticalUrlComp.scheme = "x-fantastical3"
+            fantasticalUrlComp.host = "show"
+            fantasticalUrlComp.queryItems = queryItems
+
+            let fantasticalUrl = fantasticalUrlComp.url!
+            fantasticalUrl.openInDefaultBrowser()
+        }
+    }
+
     @objc
     func openChangelogWindow(_: NSStatusBarButton?) {
         NSLog("Open changelof window")
