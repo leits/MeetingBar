@@ -128,6 +128,35 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
     }
 
+    /**
+     * tries to open the link from the macos system clipboard.
+     */
+    @objc
+    func openLinkFromClipboard() {
+        NSLog("Check macos clipboard for link")
+        var clipboardContent = getClipboardContent()
+        NSLog("Found \(clipboardContent) in clipboard")
+
+        if !clipboardContent.isEmpty {
+            let meetingLink = detectLink(&clipboardContent)
+
+            if let meetingLink = meetingLink {
+                openMeetingURL(meetingLink.service, meetingLink.url)
+            } else {
+                let validUrl = NSURL(string: clipboardContent)
+                if validUrl != nil {
+                    URL(string: clipboardContent)?.openInDefaultBrowser()
+                } else {
+                    sendNotification("No valid url",
+                                     "Clipboard has no meeting link, so the meeting cannot be started")
+                }
+            }
+        } else {
+            sendNotification("Clipboard is empty",
+                             "Clipboard has no content, so the meeting cannot be started...")
+        }
+    }
+
     func setup() {
         statusBarItem = StatusBarItemControler()
         statusBarItem.setAppDelegate(appdelegate: self)
@@ -139,9 +168,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
         scheduleUpdateStatusBarTitle()
         scheduleUpdateEvents()
+
         KeyboardShortcuts.onKeyUp(for: .createMeetingShortcut) {
             self.createMeeting()
         }
+
         KeyboardShortcuts.onKeyUp(for: .joinEventShortcut) {
             self.joinNextMeeting()
         }
@@ -152,8 +183,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             self.statusBarItem.statusItem.button?.performClick(nil) // ...and click
         }
 
-        NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.eventStoreChanged), name: .EKEventStoreChanged, object: statusBarItem.eventStore)
+        KeyboardShortcuts.onKeyUp(for: .openClipboardShortcut) {
+            self.openLinkFromClipboard()
+        }
 
+        NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.eventStoreChanged), name: .EKEventStoreChanged, object: statusBarItem.eventStore)
 
         showEventDetailsObserver = Defaults.observe(.showEventDetails) { change in
             NSLog("Change showEventDetails from \(change.oldValue) to \(change.newValue)")
@@ -303,6 +337,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
     }
 
+    func getClipboardContent() -> String {
+       let pasteboard = NSPasteboard.general
+        return pasteboard.string(forType: .string) ?? ""
+    }
+
     @objc
     func eventStoreChanged(_ notification: NSNotification) {
         NSLog("Store changed. Update status bar menu.")
@@ -378,10 +417,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             openMeetingURL(MeetingServices.meet, CreateMeetingLinks.meet)
         case .zoom:
             openMeetingURL(MeetingServices.zoom, CreateMeetingLinks.zoom)
-        case .hangouts:
-            openMeetingURL(MeetingServices.hangouts, CreateMeetingLinks.hangouts)
         case .teams:
             openMeetingURL(MeetingServices.teams, CreateMeetingLinks.teams)
+        case .jam:
+            openMeetingURL(MeetingServices.jam, CreateMeetingLinks.jam)
         case .gcalendar:
             openMeetingURL(nil, CreateMeetingLinks.gcalendar)
         case .outlook_office365:
@@ -439,6 +478,27 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         if let identifier = sender.representedObject as? String {
             let url = URL(string: "ical://ekevent/\(identifier)")!
             url.openInDefaultBrowser()
+        }
+    }
+
+    /**
+     * opens an event in the fantastical app. It uses the x-fantastical url handler which is not fully described on the fantastical website,
+     * but was confirmed in the github ticket. 
+     */
+    @objc
+    func openEventInFantastical(sender: NSMenuItem) {
+        if let eventWithDate: EventWithDate = sender.representedObject as? EventWithDate {
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd"
+
+            let queryItems = [URLQueryItem(name: "date", value: dateFormatter.string(from: eventWithDate.dateSection)), URLQueryItem(name: "title", value: eventWithDate.event.title)]
+            var fantasticalUrlComp = URLComponents()
+            fantasticalUrlComp.scheme = "x-fantastical3"
+            fantasticalUrlComp.host = "show"
+            fantasticalUrlComp.queryItems = queryItems
+
+            let fantasticalUrl = fantasticalUrlComp.url!
+            fantasticalUrl.openInDefaultBrowser()
         }
     }
 

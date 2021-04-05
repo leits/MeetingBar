@@ -50,6 +50,10 @@ struct ShortcutsSection: View {
                 Text("Join next event meeting:")
                 KeyboardShortcuts.Recorder(for: .joinEventShortcut)
             }
+            VStack {
+                Text("Join meeting from clipbloard:")
+                KeyboardShortcuts.Recorder(for: .openClipboardShortcut)
+            }
         }
     }
 }
