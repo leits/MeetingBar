@@ -11,7 +11,9 @@ import SwiftUI
 import Defaults
 import KeyboardShortcuts
 
-struct BrowsersTab: View {
+struct BrowserConfigView: View {
+    @Environment(\.presentationMode) var presentationMode
+
     @Default(.browser) var browserConfigs
 
     @State var showingAddBrowserModal = false
@@ -51,7 +53,7 @@ struct BrowsersTab: View {
                 }.onMove(perform: moveBrowser)
             }
             .sheet(isPresented: $showingEditBrowserModal) {
-                EditBrowserModal(browser: $browser)
+                EditBrowserModal(browser: self.$browser)
             }
             .alert(isPresented: $showingAlert) {
                 Alert(
@@ -97,6 +99,13 @@ struct BrowsersTab: View {
                 }.buttonStyle(BorderlessButtonStyle())
 
                 Spacer()
+
+                Button("OK") {
+                   presentationMode.wrappedValue.dismiss()
+                }
+                .frame(width: 20, height: 20, alignment: .trailing)
+
+
             })
             .alert(isPresented: $showingDeleteAllAlert) {
                 Alert(
@@ -108,7 +117,7 @@ struct BrowsersTab: View {
                     secondaryButton: .cancel()
                 )
             }
-        }.padding()
+        }.padding().frame(width: 500, height: 500, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
     }
 
     private func generatePath (browser: Browser) -> String {
@@ -216,7 +225,7 @@ struct EditBrowserModal: View {
                     self.browser = Browser(name: "", path: "", arguments: "", deletable: true)
                 }) {
                     Text("Save")
-                }.disabled(browser.name.isEmpty || browser.name.isEmpty)
+                }.disabled(self.browser.name.isEmpty || self.browser.name.isEmpty)
             }
         }.frame(width: 500, height: 200)
         .padding()

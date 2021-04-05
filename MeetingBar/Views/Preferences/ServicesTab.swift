@@ -13,13 +13,17 @@ import Defaults
 var systemDefaultBrowser = Browser(name: "Default Browser", path: "")
 
 struct ServicesTab: View {
+
     @Default(.browserForMeetLinks) var browserForMeetLinks
+    @Default(.browserForCreateMeeting) var browserForCreateMeeting
     @Default(.defaultBrowser) var defaultBrowser
     @Default(.useAppForZoomLinks) var useAppForZoomLinks
     @Default(.useAppForTeamsLinks) var useAppForTeamsLinks
     @Default(.createMeetingServiceUrl) var createMeetingServiceUrl
     @Default(.createMeetingService) var createMeetingService
     @Default(.browser) var allBrowser
+
+    @State var showBrowserConfiguration = false
 
     var body: some View {
         VStack {
@@ -37,15 +41,20 @@ struct ServicesTab: View {
                         Text(browser.name).tag(browser)
                     }
                 }
+
                 Picker(selection: $useAppForZoomLinks, label: Text("Open Zoom links in").frame(width: 160, alignment: .leading)) {
                     Text("Default Browser").tag(false)
                     Text("Zoom app").tag(true)
                 }
+
                 Picker(selection: $useAppForTeamsLinks, label: Text("Open Teams links in").frame(width: 160, alignment: .leading)) {
                     Text("Default Browser").tag(false)
                     Text("Teams app").tag(true)
                 }
+
+
             }.padding(.horizontal, 10)
+            
             Section {
                 Text("Supported links for services:\n\(MeetingServices.allCases.map { $0.rawValue }.joined(separator: ", "))")
                 HStack {
@@ -55,6 +64,7 @@ struct ServicesTab: View {
                     }
                 }
             }.foregroundColor(.gray).font(.system(size: 12)).padding(.horizontal, 10)
+
             Divider()
             VStack {
                 HStack {
@@ -71,9 +81,31 @@ struct ServicesTab: View {
                         Text("Tip: Google Meet supports choosing account via parameter, e.g. https://meet.google.com/new?authuser=1").foregroundColor(.gray).font(.system(size: 12))
                     }
                 }
-            }
+                HStack {
+                    Picker(selection: $browserForCreateMeeting, label: Text("Use browser").frame(width: 150, alignment: .leading)) {
+                        Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
+                        ForEach(allBrowser, id: \.self) { (browser: Browser) in
+                            Text(browser.name).tag(browser)
+                        }
+                    }
+                }.padding(.horizontal, 10)
+            }.padding()
+
+            Divider()
+
+            VStack {
+                Button(action: clickConfigureBrowser) {
+                    Text("Configure browsers")
+                }.sheet(isPresented: $showBrowserConfiguration) {
+                    BrowserConfigView()
+                }
+            }.padding()
             Spacer()
         }.padding()
+    }
+
+    func clickConfigureBrowser() {
+        self.showBrowserConfiguration.toggle()
     }
 }
 

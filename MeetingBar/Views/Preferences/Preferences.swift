@@ -16,7 +16,6 @@ struct PreferencesView: View {
                 ServicesTab().tabItem { Text("Services") }
                 BookmarksTab().tabItem { Text("Bookmarks") }
                 CalendarsTab().tabItem { Text("Calendars") }
-                BrowsersTab().tabItem { Text("Browser") }
                 AdvancedTab().tabItem { Text("Advanced") }
             }
         }.padding()

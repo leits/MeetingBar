@@ -164,7 +164,7 @@ func openEvent(_ event: EKEvent) {
                 }
             }
         }
-        openMeetingURL(meeting.service, meeting.url)
+        openMeetingURL(meeting.service, meeting.url, systemDefaultBrowser)
     } else {
         sendNotification("Epp! Can't join the \(eventTitle)", "Link not found, or your meeting service is not yet supported")
     }
@@ -182,11 +182,10 @@ func getEventParticipantStatus(_ event: EKEvent) -> EKParticipantStatus? {
 }
 
 
-func openMeetingURL(_ service: MeetingServices?, _ url: URL) {
+func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?) {
     switch service {
     case .meet:
-        let browser = Defaults[.browserForMeetLinks]
-        url.openIn(browser: browser)
+        url.openIn(browser: browser ?? Defaults[.browserForMeetLinks])
 
     case .teams:
         if Defaults[.useAppForTeamsLinks] {
@@ -198,8 +197,9 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL) {
                 url.openInDefaultBrowser()
             }
         } else {
-            url.openInDefaultBrowser()
+            url.openIn(browser: browser ?? systemDefaultBrowser)
         }
+        
     case .zoom:
         if Defaults[.useAppForZoomLinks] {
             let urlString = url.absoluteString.replacingOccurrences(of: "?", with: "&").replacingOccurrences(of: "/j/", with: "/join?confno=")
@@ -211,7 +211,7 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL) {
                 url.openInDefaultBrowser()
             }
         } else {
-            url.openInDefaultBrowser()
+            url.openIn(browser: browser ?? systemDefaultBrowser)
         }
     case .zoom_native:
         let result = url.openInDefaultBrowser()
@@ -229,8 +229,9 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL) {
         NSWorkspace.shared.open(URL(string: "facetime-audio://" + url.absoluteString)!)
     case .phone:
         NSWorkspace.shared.open(URL(string: "tel://" + url.absoluteString)!)
+
     default:
-        url.openInDefaultBrowser()
+        url.openIn(browser: browser!)
     }
 }
 
