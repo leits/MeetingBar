@@ -301,13 +301,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             NSLog("Changed launchAtLogin from \(change.oldValue) to \(change.newValue)")
             SMLoginItemSetEnabled(AutoLauncher.bundleIdentifier as CFString, change.newValue)
         }
-        preferredLanguageObserver = Defaults.observe(.preferredLanguage, handler: { change in
+        preferredLanguageObserver = Defaults.observe(.preferredLanguage) { change in
             NSLog("Changed preferredLanguage from \(change.oldValue) to \(change.newValue)")
             if I18N.instance.changeLanguage(to: change.newValue) {
                 self.statusBarItem.updateTitle()
                 self.statusBarItem.updateMenu()
             }
-        })
+        }
         joinEventNotificationObserver = Defaults.observe(.joinEventNotification) { change in
             NSLog("Changed joinEventNotification from \(change.oldValue) to \(change.newValue)")
             if change.newValue == true {

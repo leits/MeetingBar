@@ -37,7 +37,6 @@ struct ServicesTab: View {
             Section {
                 Text("preferences_services_supported_links_list".loco(MeetingServices.allCases.map { $0.localizedValue }.sorted().joined(separator: ", ")))
                 HStack {
-
                     Text("preferences_services_supported_links_mailback".loco())
                     Button("✉️") {
                         Links.emailMe.openInDefaultBrowser()

@@ -9,11 +9,10 @@
 import Foundation
 
 final class I18N {
-
     static let instance = I18N()
 
-    private var bundle: Bundle = Bundle.main
-    var locale: Locale = Locale.current
+    private var bundle = Bundle.main
+    var locale = Locale.current
 
     private init() {}
 
@@ -39,14 +38,16 @@ final class I18N {
     }
 
     private func checkLanguageAvailability(_ language: String) -> Bundle? {
-        guard let path = Bundle.main.path(forResource: language, ofType: "lproj") else { return nil }
+        guard let path = Bundle.main.path(forResource: language, ofType: "lproj") else {
+            return nil
+        }
         return Bundle(path: path)
     }
 
     // MARK: - Loco
 
     func localizedString(for key: String) -> String {
-        return self.bundle.localizedString(forKey: key, value: "$\(key)$", table: nil)
+        self.bundle.localizedString(forKey: key, value: "$\(key)$", table: nil)
     }
 
     func localizedString(for key: String, _ arg: CVarArg) -> String {
@@ -64,4 +65,3 @@ final class I18N {
         return String.localizedStringWithFormat(format, firstArg, secondArg, thirdArg)
     }
 }
-
