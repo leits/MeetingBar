@@ -90,8 +90,7 @@
 "preferences_appearance_status_bar_time_show_value" = "показать";
 "preferences_appearance_status_bar_time_show_under_title_value" = "показать под заголовком";
 "preferences_appearance_status_bar_time_hide_value" = "скрыть";
-"preferences_appearance_status_bar_next_event_toggle" = "Показывать только следующее событие, начинающееся за";
-"preferences_appearance_status_bar_next_event_stepper" = "%d минут";
+"preferences_appearance_status_bar_next_event" = "Показывать только следующее событие, начинающееся за %d минут";
 "preferences_appearance_menu_title" = "Меню";
 "preferences_appearance_menu_shorten_event_title_toggle" = "Сократить название мероприятия до";
 "preferences_appearance_menu_shorten_event_title_stepper" = "%d символов";
