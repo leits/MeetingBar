@@ -187,6 +187,7 @@ enum MeetingServices: String, Codable, CaseIterable {
         case .around: return "constants_meeting_service_around".loco()
         case .jam: return "constants_meeting_service_jam".loco()
         case .discord: return "constants_meeting_service_discord".loco()
+        case .blackboard_collab: return "constants_meeting_service_blackboard_collab".loco()
         case .other: return "constants_meeting_service_other".loco()
         }
     }
@@ -325,6 +326,7 @@ enum Browser: String, Codable, CaseIterable {
         case .firefox: return "constants_browser_firefox".loco()
         case .opera: return "constants_browser_opera".loco()
         case .vivaldi: return "constants_browser_vivaldi".loco()
+        case .safari: return "constants_browser_safari".loco()
         case .defaultBrowser: return "constants_browser_defaultBrowser".loco()
         }
     }

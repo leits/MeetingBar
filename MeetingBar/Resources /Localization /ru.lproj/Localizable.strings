@@ -283,6 +283,7 @@
 "constants_meeting_service_around" = "Around";
 "constants_meeting_service_jam" = "Jam";
 "constants_meeting_service_discord" = "Discord";
+"constants_meeting_service_blackboard_collab" = "Blackboard Collaborate";
 "constants_meeting_service_other" = "Другое";
 
 "constants_browser_brave" = "Brave";
@@ -292,6 +293,7 @@
 "constants_browser_firefox" = "Firefox";
 "constants_browser_opera" = "Opera";
 "constants_browser_vivaldi" = "Vivaldi";
+"constants_browser_safari" = "Safari";
 "constants_browser_defaultBrowser" = "Браузер по умолчанию";
 
 "constants_time_format_12_h" = "12-часовой";
