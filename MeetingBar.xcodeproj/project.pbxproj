@@ -15,6 +15,7 @@
 		140D843F2493B7CB0055E1CE /* DefaultsKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 140D843E2493B7CB0055E1CE /* DefaultsKeys.swift */; };
 		140D84412493B8030055E1CE /* KeyboardShortcutsNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = 140D84402493B8030055E1CE /* KeyboardShortcutsNames.swift */; };
 		1432D98C25C4B94900FD121D /* SwiftyStoreKit in Frameworks */ = {isa = PBXBuildFile; productRef = 1432D98B25C4B94900FD121D /* SwiftyStoreKit */; };
+		1435E44C260954D00071B188 /* Changelog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1435E44B260954D00071B188 /* Changelog.swift */; };
 		144C017D2462D0C3000C9FFC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 144C017C2462D0C3000C9FFC /* AppDelegate.swift */; };
 		144C01812462D0C5000C9FFC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 144C01802462D0C5000C9FFC /* Assets.xcassets */; };
 		144C01842462D0C5000C9FFC /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 144C01832462D0C5000C9FFC /* Preview Assets.xcassets */; };
@@ -77,6 +78,7 @@
 		140D843E2493B7CB0055E1CE /* DefaultsKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsKeys.swift; sourceTree = "<group>"; };
 		140D84402493B8030055E1CE /* KeyboardShortcutsNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardShortcutsNames.swift; sourceTree = "<group>"; };
 		14158D3A246C65AD0006436C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		1435E44B260954D00071B188 /* Changelog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Changelog.swift; sourceTree = "<group>"; };
 		144C01792462D0C3000C9FFC /* MeetingBar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MeetingBar.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		144C017C2462D0C3000C9FFC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		144C01802462D0C5000C9FFC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -149,6 +151,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1435E44A260954660071B188 /* Changelog */ = {
+			isa = PBXGroup;
+			children = (
+				1435E44B260954D00071B188 /* Changelog.swift */,
+			);
+			path = Changelog;
+			sourceTree = "<group>";
+		};
 		144C01702462D0C3000C9FFC = {
 			isa = PBXGroup;
 			children = (
@@ -205,6 +215,7 @@
 		1452C9AD25AF5B1000C46CDF /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				1435E44A260954660071B188 /* Changelog */,
 				1452C9B225AF5C6F00C46CDF /* Preferences */,
 				1452C9B325AF5C7D00C46CDF /* Onboarding */,
 				1452C9BB25AF5D8700C46CDF /* Shared.swift */,
@@ -316,7 +327,6 @@
 				144C01762462D0C3000C9FFC /* Frameworks */,
 				144C01772462D0C3000C9FFC /* Resources */,
 				40DC7050250E5D8D00217DD9 /* CopyFiles */,
-				1421055A251A63B500DA94BD /* Swiftlint */,
 			);
 			buildRules = (
 			);
@@ -443,27 +453,6 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
-/* Begin PBXShellScriptBuildPhase section */
-		1421055A251A63B500DA94BD /* Swiftlint */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = Swiftlint;
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "if which swiftlint >/dev/null; then\n  swiftlint autocorrect && swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
-		};
-/* End PBXShellScriptBuildPhase section */
-
 /* Begin PBXSourcesBuildPhase section */
 		144C01752462D0C3000C9FFC /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -471,6 +460,7 @@
 			files = (
 				1452C9D825AF889A00C46CDF /* WelcomeScreen.swift in Sources */,
 				1452C9BC25AF5D8700C46CDF /* Shared.swift in Sources */,
+				1435E44C260954D00071B188 /* Changelog.swift in Sources */,
 				1452C9D225AF86E700C46CDF /* AdvancedTab.swift in Sources */,
 				A7B68FA325CDE9E200CA3A68 /* URL.swift in Sources */,
 				1452C9DC25AF88EF00C46CDF /* AccessScreen.swift in Sources */,
@@ -676,7 +666,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 114;
+				CURRENT_PROJECT_VERSION = 116;
 				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -686,7 +676,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
-				MARKETING_VERSION = 3.1.2;
+				MARKETING_VERSION = 3.2.1;
 				PRODUCT_BUNDLE_IDENTIFIER = leits.MeetingBar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -702,7 +692,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 114;
+				CURRENT_PROJECT_VERSION = 116;
 				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -712,7 +702,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
-				MARKETING_VERSION = 3.1.2;
+				MARKETING_VERSION = 3.2.1;
 				PRODUCT_BUNDLE_IDENTIFIER = leits.MeetingBar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

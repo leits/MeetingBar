@@ -66,6 +66,10 @@ struct ShortcutsSection: View {
                 Text("preferences_general_shortcut_join_next".loco())
                 KeyboardShortcuts.Recorder(for: .joinEventShortcut)
             }
+            VStack {
+                Text("Join meeting from clipbloard:")
+                KeyboardShortcuts.Recorder(for: .openClipboardShortcut)
+            }
         }
     }
 }

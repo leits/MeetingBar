@@ -15,8 +15,8 @@ struct JoinEventNotificationPicker: View {
     @Default(.joinEventNotificationTime) var joinEventNotificationTime
 
     func checkNotificationSettings() -> (Bool, Bool) {
-        var noAlertStyle: Bool = false
-        var notificationsDisabled: Bool = false
+        var noAlertStyle = false
+        var notificationsDisabled = false
 
         let center = UNUserNotificationCenter.current()
         let group = DispatchGroup()
@@ -24,7 +24,7 @@ struct JoinEventNotificationPicker: View {
 
         center.getNotificationSettings { notificationSettings in
             noAlertStyle = notificationSettings.alertStyle != UNAlertStyle.alert
-            notificationsDisabled = notificationSettings.authorizationStatus != UNAuthorizationStatus.authorized
+            notificationsDisabled = notificationSettings.authorizationStatus == UNAuthorizationStatus.denied
             group.leave()
         }
 

@@ -37,8 +37,11 @@ struct ServicesTab: View {
             Section {
                 Text("preferences_services_supported_links_list".loco(MeetingServices.allCases.map { $0.localizedValue }.sorted().joined(separator: ", ")))
                 HStack {
+
                     Text("preferences_services_supported_links_mailback".loco())
-                    Button("✉️", action: emailMe)
+                    Button("✉️") {
+                        Links.emailMe.openInDefaultBrowser()
+                    }
                 }
             }.foregroundColor(.gray).font(.system(size: 12)).padding(.horizontal, 10)
             Divider()
@@ -71,7 +74,7 @@ struct CreateMeetingServicePicker: View {
             Text(CreateMeetingServices.meet.localizedValue).tag(CreateMeetingServices.meet)
             Text(CreateMeetingServices.zoom.localizedValue).tag(CreateMeetingServices.zoom)
             Text(CreateMeetingServices.teams.localizedValue).tag(CreateMeetingServices.teams)
-            Text(CreateMeetingServices.hangouts.localizedValue).tag(CreateMeetingServices.hangouts)
+            Text(CreateMeetingServices.jam.rawValue).tag(CreateMeetingServices.jam)
             Text(CreateMeetingServices.gcalendar.localizedValue).tag(CreateMeetingServices.gcalendar)
             Text(CreateMeetingServices.outlook_live.localizedValue).tag(CreateMeetingServices.outlook_live)
             Text(CreateMeetingServices.outlook_office365.localizedValue).tag(CreateMeetingServices.outlook_office365)

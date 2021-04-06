@@ -137,97 +137,95 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             NSLog("No loaded calendars")
             nextEventState = .none
         }
-
-        DispatchQueue.main.async {
-            if let button = self.statusItem.button {
-                button.image = nil
-                button.title = ""
-                if title == "🏁" {
-                    switch Defaults[.eventTitleIconFormat] {
-                    case .appicon:
-                        button.image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
-                    default:
-                        button.image = NSImage(named: "iconCalendarCheckmark")
-                    }
-                    button.image?.size = NSSize(width: 16, height: 16)
-                } else if title == "MeetingBar" {
+        if let button = self.statusItem.button {
+            button.image = nil
+            button.title = ""
+            button.toolTip = nil
+            if title == "🏁" {
+                switch Defaults[.eventTitleIconFormat] {
+                case .appicon:
                     button.image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
+                default:
+                    button.image = NSImage(named: "iconCalendarCheckmark")
+                }
+                button.image?.size = NSSize(width: 16, height: 16)
+            } else if title == "MeetingBar" {
+                button.image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
+                button.image?.size = NSSize(width: 16, height: 16)
+            } else if case .afterThreshold = nextEventState {
+                switch Defaults[.eventTitleIconFormat] {
+                case .appicon:
+                    button.image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
+                default:
+                    button.image = NSImage(named: "iconCalendar")
+                }
+            }
+
+            if button.image == nil {
+                if Defaults[.eventTitleIconFormat] != EventTitleIconFormat.none {
+                    let image: NSImage
+                    if Defaults[.eventTitleIconFormat] == EventTitleIconFormat.eventtype {
+                        image = getMeetingIcon(nextEvent)
+                    } else {
+                        image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
+                    }
+
+                    button.image = image
                     button.image?.size = NSSize(width: 16, height: 16)
-                } else if case .afterThreshold = nextEventState {
-                    switch Defaults[.eventTitleIconFormat] {
-                    case .appicon:
-                        button.image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
-                    default:
-                        button.image = NSImage(named: "iconCalendar")
+                    if image.name() == "no_online_session" {
+                        button.imagePosition = .noImage
+                    } else {
+                        button.imagePosition = .imageLeft
                     }
                 }
 
-                if button.image == nil {
-                    if Defaults[.eventTitleIconFormat] != EventTitleIconFormat.none {
-                        let image: NSImage
-                        if Defaults[.eventTitleIconFormat] == EventTitleIconFormat.eventtype {
-                            image = self.getMeetingIcon(nextEvent)
-                        } else {
-                            image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
-                        }
+                // create an NSMutableAttributedString that we'll append everything to
+                let menuTitle = NSMutableAttributedString()
+                let eventStatus = getEventParticipantStatus(nextEvent)
 
-                        button.image = image
-                        button.image?.size = NSSize(width: 16, height: 16)
-                        if image.name() == "no_online_session" {
-                            button.imagePosition = .noImage
-                        } else {
-                            button.imagePosition = .imageLeft
-                        }
+                if Defaults[.eventTimeFormat] != EventTimeFormat.show_under_title || Defaults[.eventTitleFormat] == .none {
+                    var eventTitle = title
+                    if Defaults[.eventTimeFormat] == EventTimeFormat.show {
+                        eventTitle += " " + time
                     }
 
-                    // create an NSMutableAttributedString that we'll append everything to
-                    let menuTitle = NSMutableAttributedString()
-                    let eventStatus = getEventParticipantStatus(nextEvent)
-
-                    if Defaults[.eventTimeFormat] != EventTimeFormat.show_under_title || Defaults[.eventTitleFormat] == .none {
-                        var eventTitle = title
-                        if Defaults[.eventTimeFormat] == EventTimeFormat.show {
-                            eventTitle += " " + time
-                        }
-
-                        var styles = [NSAttributedString.Key: Any]()
-                        styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: 13)
+                    var styles = [NSAttributedString.Key: Any]()
+                    styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: 13)
 
 
-                        if eventStatus == .pending && Defaults[.showPendingEvents] == PendingEventsAppereance.show_inactive {
-                            styles[NSAttributedString.Key.foregroundColor] = NSColor.lightGray
-                        } else if eventStatus == .pending && Defaults[.showPendingEvents] == PendingEventsAppereance.show_underlined {
-                            styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
-                        }
-
-                        menuTitle.append(NSAttributedString(string: eventTitle, attributes: styles))
-                    } else {
-                        let paragraphStyle = NSMutableParagraphStyle()
-                        paragraphStyle.lineHeightMultiple = 0.7
-                        paragraphStyle.alignment = .center
-
-                        var styles = [NSAttributedString.Key: Any]()
-                        styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: 12)
-                        styles[NSAttributedString.Key.baselineOffset] = -3
-
-                        if eventStatus == .pending && Defaults[.showPendingEvents] == PendingEventsAppereance.show_inactive {
-                            styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
-                        } else if eventStatus == .pending && Defaults[.showPendingEvents] == PendingEventsAppereance.show_underlined {
-                            styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
-                        }
-
-                        menuTitle.append(NSAttributedString(string: title, attributes: styles))
-
-                        menuTitle.append(NSAttributedString(string: "\n" + time, attributes: [NSAttributedString.Key.font: NSFont.systemFont(ofSize: 9), NSAttributedString.Key.foregroundColor: NSColor.lightGray]))
-
-
-                        menuTitle.addAttributes([NSAttributedString.Key.paragraphStyle: paragraphStyle], range: NSRange(location: 0, length: menuTitle.length))
+                    if eventStatus == .pending && Defaults[.showPendingEvents] == PendingEventsAppereance.show_inactive {
+                        styles[NSAttributedString.Key.foregroundColor] = NSColor.lightGray
+                    } else if eventStatus == .pending && Defaults[.showPendingEvents] == PendingEventsAppereance.show_underlined {
+                        styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
                     }
 
-                    button.attributedTitle = menuTitle
-                    if nextEvent != nil {
-                        button.toolTip = nextEvent.title
+                    menuTitle.append(NSAttributedString(string: eventTitle, attributes: styles))
+                } else {
+                    let paragraphStyle = NSMutableParagraphStyle()
+                    paragraphStyle.lineHeightMultiple = 0.7
+                    paragraphStyle.alignment = .center
+
+                    var styles = [NSAttributedString.Key: Any]()
+                    styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: 12)
+                    styles[NSAttributedString.Key.baselineOffset] = -3
+
+                    if eventStatus == .pending && Defaults[.showPendingEvents] == PendingEventsAppereance.show_inactive {
+                        styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
+                    } else if eventStatus == .pending && Defaults[.showPendingEvents] == PendingEventsAppereance.show_underlined {
+                        styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
                     }
+
+                    menuTitle.append(NSAttributedString(string: title, attributes: styles))
+
+                    menuTitle.append(NSAttributedString(string: "\n" + time, attributes: [NSAttributedString.Key.font: NSFont.systemFont(ofSize: 9), NSAttributedString.Key.foregroundColor: NSColor.lightGray]))
+
+
+                    menuTitle.addAttributes([NSAttributedString.Key.paragraphStyle: paragraphStyle], range: NSRange(location: 0, length: menuTitle.length))
+                }
+
+                button.attributedTitle = menuTitle
+                if nextEvent != nil {
+                    button.toolTip = nextEvent.title
                 }
             }
         }
@@ -276,6 +274,12 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             }
         }
 
+        let openLinkFromClipboardItem = NSMenuItem()
+        openLinkFromClipboardItem.title = "Open meeting from clipboard"
+        openLinkFromClipboardItem.action = #selector(AppDelegate.openLinkFromClipboard)
+        openLinkFromClipboardItem.keyEquivalent = ""
+        openLinkFromClipboardItem.setShortcut(for: .openClipboardShortcut)
+        self.statusItemMenu.addItem(openLinkFromClipboardItem)
 
         let createEventItem = NSMenuItem()
         createEventItem.title = "status_bar_section_join_create_meeting".loco()
@@ -347,172 +351,174 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             item.isEnabled = false
         }
         for event in sortedEvents {
-            createEventItem(event: event)
+            createEventItem(event: event, dateSection: date)
         }
     }
+
+
+    func getMeetingIconForLink(_ result: MeetingLink?) -> NSImage {
+            var image: NSImage? = NSImage(named: "no_online_session")
+            image!.size = NSSize(width: 16, height: 16)
+
+            switch result?.service {
+            // tested and verified
+            case .some(.teams):
+                image = NSImage(named: "ms_teams_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.meet):
+                image = NSImage(named: "google_meet_icon")!
+                image!.size = NSSize(width: 16, height: 13.2)
+
+            // tested and verified -> deprecated, can be removed because hangouts was replaced by google meet
+            case .some(.hangouts):
+                image = NSImage(named: "google_hangouts_icon")!
+                image!.size = NSSize(width: 16, height: 17.8)
+
+            // tested and verified
+            case .some(.zoom), .some(.zoomgov), .some(.zoom_native):
+                image = NSImage(named: "zoom_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.webex):
+                image = NSImage(named: "webex_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.jitsi):
+                image = NSImage(named: "jitsi_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.chime):
+                image = NSImage(named: "amazon_chime_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            case .some(.ringcentral):
+                image = NSImage(named: "online_meeting_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.gotomeeting):
+                image = NSImage(named: "gotomeeting_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.gotowebinar):
+                image = NSImage(named: "gotowebinar_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            case .some(.bluejeans):
+                image = NSImage(named: "online_meeting_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.eight_x_eight):
+                image = NSImage(named: "8x8_icon")!
+                image!.size = NSSize(width: 16, height: 8)
+
+            // tested and verified
+            case .some(.demio):
+                image = NSImage(named: "demio_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.join_me):
+                image = NSImage(named: "joinme_icon")!
+                image!.size = NSSize(width: 16, height: 10)
+
+            // tested and verified
+            case .some(.whereby):
+                image = NSImage(named: "whereby_icon")!
+                image!.size = NSSize(width: 16, height: 18)
+
+            // tested and verified
+            case .some(.uberconference):
+                image = NSImage(named: "uberconference_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.blizz), .some(.teamviewer_meeting):
+                image = NSImage(named: "teamviewer_meeting_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.vsee):
+                image = NSImage(named: "vsee_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.starleaf):
+                image = NSImage(named: "starleaf_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.duo):
+                image = NSImage(named: "google_duo_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.voov):
+                image = NSImage(named: "voov_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.skype):
+                image = NSImage(named: "skype_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.skype4biz), .some(.skype4biz_selfhosted):
+                image = NSImage(named: "skype_business_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.lifesize):
+                image = NSImage(named: "lifesize_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.facebook_workspace):
+                image = NSImage(named: "facebook_workplace_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.youtube):
+                image = NSImage(named: "youtube_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .none:
+                image = NSImage(named: "no_online_session")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            case .some(.vonageMeetings):
+                image = NSImage(named: "online_meeting_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            case .some(.meetStream):
+                image = NSImage(named: "online_meeting_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            default:
+                break
+            }
+
+            return image!
+        }
 
     /**
      * try  to get the correct image for the specific
      */
     func getMeetingIcon(_ event: EKEvent) -> NSImage {
-        var image: NSImage? = NSImage(named: "no_online_session")
-        image!.size = NSSize(width: 16, height: 16)
-
         let result = getMeetingLink(event)
-        switch result?.service {
-        // tested and verified
-        case .some(.teams):
-            image = NSImage(named: "ms_teams_icon")!
-            image!.size = NSSize(width: 16, height: 16)
 
-        // tested and verified
-        case .some(.meet):
-            image = NSImage(named: "google_meet_icon")!
-            image!.size = NSSize(width: 16, height: 13.2)
-
-        // tested and verified -> deprecated, can be removed because hangouts was replaced by google meet
-        case .some(.hangouts):
-            image = NSImage(named: "google_hangouts_icon")!
-            image!.size = NSSize(width: 16, height: 17.8)
-
-        // tested and verified
-        case .some(.zoom), .some(.zoomgov), .some(.zoom_native):
-            image = NSImage(named: "zoom_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.webex):
-            image = NSImage(named: "webex_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.jitsi):
-            image = NSImage(named: "jitsi_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.chime):
-            image = NSImage(named: "amazon_chime_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        case .some(.ringcentral):
-            image = NSImage(named: "online_meeting_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.gotomeeting):
-            image = NSImage(named: "gotomeeting_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.gotowebinar):
-            image = NSImage(named: "gotowebinar_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        case .some(.bluejeans):
-            image = NSImage(named: "online_meeting_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.eight_x_eight):
-            image = NSImage(named: "8x8_icon")!
-            image!.size = NSSize(width: 16, height: 8)
-
-        // tested and verified
-        case .some(.demio):
-            image = NSImage(named: "demio_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.join_me):
-            image = NSImage(named: "joinme_icon")!
-            image!.size = NSSize(width: 16, height: 10)
-
-        // tested and verified
-        case .some(.whereby):
-            image = NSImage(named: "whereby_icon")!
-            image!.size = NSSize(width: 16, height: 18)
-
-        // tested and verified
-        case .some(.uberconference):
-            image = NSImage(named: "uberconference_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.blizz), .some(.teamviewer_meeting):
-            image = NSImage(named: "teamviewer_meeting_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.vsee):
-            image = NSImage(named: "vsee_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.starleaf):
-            image = NSImage(named: "starleaf_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.duo):
-            image = NSImage(named: "google_duo_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.voov):
-            image = NSImage(named: "voov_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.skype):
-            image = NSImage(named: "skype_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.skype4biz), .some(.skype4biz_selfhosted):
-            image = NSImage(named: "skype_business_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.lifesize):
-            image = NSImage(named: "lifesize_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.facebook_workspace):
-            image = NSImage(named: "facebook_workplace_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.youtube):
-            image = NSImage(named: "youtube_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .none:
-            image = NSImage(named: "no_online_session")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        case .some(.vonageMeetings):
-            image = NSImage(named: "online_meeting_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        case .some(.meetStream):
-            image = NSImage(named: "online_meeting_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        case .some(.discord):
-            image = NSImage(named: "discord_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        default:
-            break
-        }
-
-        return image!
+        return getMeetingIconForLink(result)
     }
 
-    func createEventItem(event: EKEvent) {
+    func createEventItem(event: EKEvent, dateSection: Date) {
         let eventParticipantStatus = getEventParticipantStatus(event)
         let eventStatus = event.status
 
@@ -533,7 +539,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
         let eventTitle: String
 
         if Defaults[.shortenEventTitle] {
-            eventTitle = shortenTitleForMenu(event: event)
+            eventTitle = shortenTitleForMenu(title: event.title)
         } else {
             eventTitle = String(event.title)
         }
@@ -789,12 +795,35 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             // Open in App
             let openItem = eventMenu.addItem(withTitle: "status_bar_submenu_open_in_calendar".loco(), action: #selector(AppDelegate.openEventInCalendar), keyEquivalent: "")
             openItem.representedObject = event.eventIdentifier
+
+            // Open in fanctastical if fantastical is installed
+            if isFantasticalInstalled() {
+                let fantasticalItem = eventMenu.addItem(withTitle: "Open in Fantastical", action: #selector(AppDelegate.openEventInFantastical), keyEquivalent: "")
+                fantasticalItem.representedObject = EventWithDate(event: event, dateSection: dateSection)
+            }
         } else {
             eventItem.toolTip = event.title
         }
     }
 
+    /**
+     * checks if fantastical is installed
+     */
+    func isFantasticalInstalled () -> Bool {
+        NSWorkspace.shared.urlForApplication(withBundleIdentifier: "com.flexibits.fantastical2.mac") != nil
+    }
+
+
     func createPreferencesSection() {
+        if removePatchVerion(Defaults[.appVersion]) > removePatchVerion(Defaults[.lastRevisedVersionInChangelog]) {
+            let changelogItem = self.statusItemMenu.addItem(
+                withTitle: "What's new?",
+                action: #selector(AppDelegate.openChangelogWindow),
+                keyEquivalent: ""
+            )
+            changelogItem.image = NSImage(named: NSImage.statusAvailableName)
+        }
+
         self.statusItemMenu.addItem(
             withTitle: "status_bar_preferences".loco(),
             action: #selector(AppDelegate.openPrefecencesWindow),
@@ -809,8 +838,9 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
     }
 }
 
-func shortenTitleForSystembar(event: EKEvent) -> String {
-    var eventTitle = String(event.title ?? "status_bar_no_title".loco()).trimmingCharacters(in: TitleTruncationRules.excludeAtEnds)
+
+func shortenTitleForSystembar(title: String?) -> String {
+    var eventTitle = String(title ?? "status_bar_no_title".loco()).trimmingCharacters(in: TitleTruncationRules.excludeAtEnds)
     if eventTitle.count > Defaults[.statusbarEventTitleLength] {
         let index = eventTitle.index(eventTitle.startIndex, offsetBy: Defaults[.statusbarEventTitleLength] - 1)
         eventTitle = String(eventTitle[...index]).trimmingCharacters(in: TitleTruncationRules.excludeAtEnds)
@@ -820,8 +850,8 @@ func shortenTitleForSystembar(event: EKEvent) -> String {
     return eventTitle
 }
 
-func shortenTitleForMenu(event: EKEvent) -> String {
-    var eventTitle = String(event.title ?? "No title").trimmingCharacters(in: TitleTruncationRules.excludeAtEnds)
+func shortenTitleForMenu(title: String?) -> String {
+    var eventTitle = String(title ?? "No title").trimmingCharacters(in: TitleTruncationRules.excludeAtEnds)
     if eventTitle.count > Int(Defaults[.menuEventTitleLength]) {
         let index = eventTitle.index(eventTitle.startIndex, offsetBy: Int(Defaults[.menuEventTitleLength]) - 1)
         eventTitle = String(eventTitle[...index]).trimmingCharacters(in: TitleTruncationRules.excludeAtEnds)
@@ -838,7 +868,7 @@ func createEventStatusString(_ event: EKEvent) -> (String, String) {
     var eventTitle: String
     switch Defaults[.eventTitleFormat] {
     case .show:
-        eventTitle = shortenTitleForSystembar(event: event)
+        eventTitle = shortenTitleForSystembar(title: event.title)
     case .dot:
         eventTitle = "•"
     case .none:
@@ -873,88 +903,4 @@ func createEventStatusString(_ event: EKEvent) -> (String, String) {
         eventTime = "status_bar_event_status_in".loco(formattedTimeLeft)
     }
     return (eventTitle, eventTime)
-}
-
-func openEvent(_ event: EKEvent) {
-    let eventTitle = event.title ?? "status_bar_no_title".loco()
-    if let meeting = getMeetingLink(event) {
-        if Defaults[.runJoinEventScript], Defaults[.joinEventScriptLocation] != nil {
-            if let url = Defaults[.joinEventScriptLocation]?.appendingPathComponent("joinEventScript.scpt") {
-                print("URL: \(url)")
-                let task = try! NSUserAppleScriptTask(url: url)
-                task.execute { error in
-                    if let error = error {
-                        sendNotification("status_bar_error_apple_script_title".loco(), error.localizedDescription)
-                    }
-                }
-            }
-        }
-        openMeetingURL(meeting.service, meeting.url)
-    } else {
-        sendNotification("status_bar_error_link_missed_title".loco(eventTitle), "status_bar_error_link_missed_message".loco())
-    }
-}
-
-func getEventParticipantStatus(_ event: EKEvent) -> EKParticipantStatus? {
-    if event.hasAttendees {
-        if let attendees = event.attendees {
-            if let currentUser = attendees.first(where: { $0.isCurrentUser }) {
-                return currentUser.participantStatus
-            }
-        }
-    }
-    return EKParticipantStatus.unknown
-}
-
-
-func openMeetingURL(_ service: MeetingServices?, _ url: URL) {
-    switch service {
-    case .meet:
-        let browser = Defaults[.browserForMeetLinks]
-        url.openIn(browser: browser)
-
-    case .teams:
-        if Defaults[.useAppForTeamsLinks] {
-            var teamsAppURL = URLComponents(url: url, resolvingAgainstBaseURL: false)!
-            teamsAppURL.scheme = "msteams"
-            let result = teamsAppURL.url!.openInDefaultBrowser()
-            if !result {
-                sendNotification("status_bar_error_team_link_title".loco(), "status_bar_error_team_link_message".loco())
-                url.openInDefaultBrowser()
-            }
-        } else {
-            url.openInDefaultBrowser()
-        }
-    case .zoom:
-        if Defaults[.useAppForZoomLinks] {
-            let urlString = url.absoluteString.replacingOccurrences(of: "?", with: "&").replacingOccurrences(of: "/j/", with: "/join?confno=")
-            var zoomAppUrl = URLComponents(url: URL(string: urlString)!, resolvingAgainstBaseURL: false)!
-            zoomAppUrl.scheme = "zoommtg"
-            let result = zoomAppUrl.url!.openInDefaultBrowser()
-            if !result {
-                sendNotification("status_bar_error_zoom_app_link_title".loco(), "status_bar_error_zoom_app_link_message".loco())
-                url.openInDefaultBrowser()
-            }
-        } else {
-            url.openInDefaultBrowser()
-        }
-    case .zoom_native:
-        let result = url.openInDefaultBrowser()
-        if !result {
-            sendNotification("status_bar_error_zoom_native_link_title".loco(), "status_bar_error_zoom_native_link_message".loco())
-
-            let urlString = url.absoluteString.replacingFirstOccurrence(of: "&", with: "?").replacingOccurrences(of: "/join?confno=", with: "/j/")
-            var zoomBrowserUrl = URLComponents(url: URL(string: urlString)!, resolvingAgainstBaseURL: false)!
-            zoomBrowserUrl.scheme = "https"
-            zoomBrowserUrl.url!.openInDefaultBrowser()
-        }
-    case .facetime:
-        NSWorkspace.shared.open(URL(string: "facetime://" + url.absoluteString)!)
-    case .facetimeaudio:
-        NSWorkspace.shared.open(URL(string: "facetime-audio://" + url.absoluteString)!)
-    case .phone:
-        NSWorkspace.shared.open(URL(string: "tel://" + url.absoluteString)!)
-    default:
-        url.openInDefaultBrowser()
-    }
 }
