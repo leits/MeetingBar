@@ -18,8 +18,11 @@
 "next_meeting_empty_title" = "Нет событий на сегодня";
 "next_meeting_empty_message" = "Ура!! Время для какао";
 
-"preferences_window_title" = "MeetingBar Настройки";
-"onboarding_window_title" = "Добро пожаловать в MeetingBar!";
+// MARK: - Window titles
+
+"window_title_preferences" = "MeetingBar Настройки";
+"window_title_onboarding" = "Добро пожаловать в MeetingBar!";
+"windows_title_changelog" = "Список изменений";
 
 // MARK: - Preferences tabs
 
@@ -234,7 +237,7 @@
 
 // MARK: - Constants
 "constants_create_meeting_service_meet" = "Google Meet";
-"constants_create_meeting_service_hangouts" = "Google Hangouts";
+"constants_create_meeting_service_jam" = "Jam";
 "constants_create_meeting_service_zoom" = "Zoom";
 "constants_create_meeting_service_teams" = "Microsoft Teams";
 "constants_create_meeting_service_gcalendar" = "Google Calendar";

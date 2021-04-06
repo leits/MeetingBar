@@ -18,8 +18,11 @@
 "next_meeting_empty_title" = "There are no next meetings today";
 "next_meeting_empty_message" = "Woohoo! It's time to make cocoa";
 
-"preferences_window_title" = "MeetingBar Preferences";
-"onboarding_window_title" = "Welcome to MeetingBar!";
+// MARK: - Window titles
+
+"window_title_preferences" = "MeetingBar Preferences";
+"window_title_onboarding" = "Welcome to MeetingBar!";
+"windows_title_changelog" = "MeetingBar What's New";
 
 // MARK: - Preferences tabs
 
@@ -234,7 +237,7 @@
 
 // MARK: - Constants
 "constants_create_meeting_service_meet" = "Google Meet";
-"constants_create_meeting_service_hangouts" = "Google Hangouts";
+"constants_create_meeting_service_jam" = "Jam";
 "constants_create_meeting_service_zoom" = "Zoom";
 "constants_create_meeting_service_teams" = "Microsoft Teams";
 "constants_create_meeting_service_gcalendar" = "Google Calendar";

@@ -85,7 +85,7 @@ enum CreateMeetingServices: String, Codable, CaseIterable {
     var localizedValue: String {
         switch self {
         case .meet: return "constants_create_meeting_service_meet".loco()
-        case .hangouts: return "constants_create_meeting_service_hangouts".loco()
+        case .jam: return "constants_create_meeting_service_jam".loco()
         case .zoom: return "constants_create_meeting_service_zoom".loco()
         case .teams: return "constants_create_meeting_service_teams".loco()
         case .gcalendar: return "constants_create_meeting_service_gcalendar".loco()
@@ -331,8 +331,8 @@ enum Browser: String, Codable, CaseIterable {
 }
 
 
-struct windowTitles {
-    static let onboarding = "Welcome to MeetingBar!"
-    static let preferences = "MeetingBar Preferences"
-    static let changelog = "MeetingBar What's New"
+struct WindowTitles {
+    static let onboarding = "window_title_onboarding".loco()
+    static let preferences = "window_title_preferences".loco()
+    static let changelog = "windows_title_changelog".loco()
 }

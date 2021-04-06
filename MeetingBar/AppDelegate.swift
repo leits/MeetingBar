@@ -336,9 +336,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     func windowClosed(notification: NSNotification) {
         let window = notification.object as? NSWindow
         if let windowTitle = window?.title {
-            if windowTitle == windowTitles.onboarding, !Defaults[.onboardingCompleted] {
+            if windowTitle == WindowTitles.onboarding, !Defaults[.onboardingCompleted] {
                 NSApplication.shared.terminate(self)
-            } else if windowTitle == windowTitles.changelog {
+            } else if windowTitle == WindowTitles.changelog {
                 Defaults[.lastRevisedVersionInChangelog] = Defaults[.appVersion]
                 self.statusBarItem.updateMenu()
             }
@@ -523,7 +523,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             backing: .buffered,
             defer: false
         )
-        changelogWindow.title = windowTitles.changelog
+        changelogWindow.title = WindowTitles.changelog
         changelogWindow.contentView = NSHostingView(rootView: contentView)
         changelogWindow.makeKeyAndOrderFront(nil)
         // allow the changelof window can be focused automatically when opened
@@ -550,7 +550,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             defer: false
         )
 
-        preferencesWindow.title = windowTitles.preferences
+        preferencesWindow.title = WindowTitles.preferences
         preferencesWindow.contentView = NSHostingView(rootView: contentView)
         preferencesWindow.makeKeyAndOrderFront(nil)
         // allow the preference window can be focused automatically when opened
@@ -577,7 +577,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             defer: false
         )
 
-        onboardingWindow.title = windowTitles.onboarding
+        onboardingWindow.title = WindowTitles.onboarding
         onboardingWindow.contentView = NSHostingView(rootView: contentView)
         let controller = NSWindowController(window: onboardingWindow)
         controller.showWindow(self)
