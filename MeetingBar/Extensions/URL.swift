@@ -9,7 +9,6 @@
 import AppKit
 
 extension URL {
-
     /**
      * opens the url in the browser instance.
      */
@@ -20,7 +19,6 @@ extension URL {
         if browserPath.isEmpty {
             openInDefaultBrowser()
         } else {
-
             let configuration = NSWorkspace.OpenConfiguration()
             configuration.activates = true
             configuration.addsToRecentItems = true
@@ -35,7 +33,6 @@ extension URL {
                 }
                 NSLog("Opening \(self) in \(browserName)")
             }
-
         }
     }
 

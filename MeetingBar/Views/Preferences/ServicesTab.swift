@@ -13,7 +13,6 @@ import Defaults
 var systemDefaultBrowser = Browser(name: "Default Browser", path: "")
 
 struct ServicesTab: View {
-
     @Default(.browserForMeetLinks) var browserForMeetLinks
     @Default(.browserForCreateMeeting) var browserForCreateMeeting
     @Default(.defaultBrowser) var defaultBrowser
@@ -51,10 +50,8 @@ struct ServicesTab: View {
                     Text("Default Browser").tag(false)
                     Text("Teams app").tag(true)
                 }
-
-
             }.padding(.horizontal, 10)
-            
+
             Section {
                 Text("Supported links for services:\n\(MeetingServices.allCases.map { $0.rawValue }.joined(separator: ", "))")
                 HStack {

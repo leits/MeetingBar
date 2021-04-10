@@ -208,7 +208,7 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?
         } else {
             url.openIn(browser: browser ?? systemDefaultBrowser)
         }
-        
+
     case .zoom:
         if Defaults[.useAppForZoomLinks] {
             let urlString = url.absoluteString.replacingOccurrences(of: "?", with: "&").replacingOccurrences(of: "/j/", with: "/join?confno=")
@@ -257,7 +257,6 @@ func bundleIdentifier(forAppName appName: String) -> String? {
     if let appPath = appPath {
         let appBundle = Bundle(path: appPath)
         return appBundle?.bundleIdentifier
-
     }
     return nil
 }

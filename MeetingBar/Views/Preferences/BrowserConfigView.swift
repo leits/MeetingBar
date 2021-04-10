@@ -66,23 +66,23 @@ struct BrowserConfigView: View {
                 )
             }
 
-            HStack(alignment: .center, spacing: 20, content: {
+            HStack(alignment: .center, spacing: 20) {
                 Spacer()
                 MenuButton(
-                    label: Image(nsImage: NSImage(named: NSImage.addTemplateName)!),
-                    content: {
-                        Button("Custom browser", action: {
-                            self.showingAddBrowserModal.toggle()
-                        })
+                    label: Image(nsImage: NSImage(named: NSImage.addTemplateName)!)
+                )(
+                    Button("Custom browser")(
+                        self.showingAddBrowserModal.toggle()
+                    )
 
-                        Button(action: {
-                            self.addSystemBrowser()
-                        }) {
-                            HStack {
-                                Text("All system browser")
-                            }
+                    Button(action: {
+                        self.addSystemBrowser()
+                    }) {
+                        HStack {
+                            Text("All system browser")
                         }
-                    })
+                    }
+                )
                 .frame(width: 20, height: 20, alignment: .center)
                 .menuButtonStyle(BorderlessPullDownMenuButtonStyle())
                 .sheet(isPresented: $showingAddBrowserModal) {
@@ -104,8 +104,6 @@ struct BrowserConfigView: View {
                    presentationMode.wrappedValue.dismiss()
                 }
                 .frame(width: 20, height: 20, alignment: .trailing)
-
-
             })
             .alert(isPresented: $showingDeleteAllAlert) {
                 Alert(
@@ -117,7 +115,10 @@ struct BrowserConfigView: View {
                     secondaryButton: .cancel()
                 )
             }
-        }.padding().frame(width: 500, height: 500, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
+        }.padding()
+        .frame(width: 500,
+               height: 500,
+               alignment: .center)
     }
 
     private func generatePath (browser: Browser) -> String {
@@ -219,7 +220,7 @@ struct EditBrowserModal: View {
                 Button(action: {
                     self.presentationMode.wrappedValue.dismiss()
                     let browserConfig = Browser(name: browser.name, path: browser.path, arguments: browser.arguments)
-                    browserConfigs.removeAll(where: { $0.name == browser.name })
+                    browserConfigs.removeAll( $0.name == browser.name)
                     browserConfigs.append(browserConfig)
                     browserConfigs = browserConfigs.sorted { $0.path.fileName() < $1.path.fileName() }
                     self.browser = Browser(name: "", path: "", arguments: "", deletable: true)
