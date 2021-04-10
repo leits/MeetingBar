@@ -74,6 +74,7 @@ struct CreateMeetingServicePicker: View {
             Text(CreateMeetingServices.zoom.rawValue).tag(CreateMeetingServices.zoom)
             Text(CreateMeetingServices.teams.rawValue).tag(CreateMeetingServices.teams)
             Text(CreateMeetingServices.jam.rawValue).tag(CreateMeetingServices.jam)
+            Text(CreateMeetingServices.coscreen.rawValue).tag(CreateMeetingServices.coscreen)
             Text(CreateMeetingServices.gcalendar.rawValue).tag(CreateMeetingServices.gcalendar)
             Text(CreateMeetingServices.outlook_live.rawValue).tag(CreateMeetingServices.outlook_live)
             Text(CreateMeetingServices.outlook_office365.rawValue).tag(CreateMeetingServices.outlook_office365)

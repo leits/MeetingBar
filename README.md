@@ -74,6 +74,9 @@ v StarLeaf
 * TeamViewer Meeting
 * Google Meet Stream
 * Vonage Meetings
+* Discord
+* Jam
+* Blackboard Collaborate
 
 
 If the service you use isn't supported, add a comment [here](https://github.com/leits/MeetingBar/discussions/108).
