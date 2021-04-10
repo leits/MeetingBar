@@ -68,21 +68,14 @@ struct BrowserConfigView: View {
 
             HStack(alignment: .center, spacing: 20) {
                 Spacer()
-                MenuButton(
-                    label: Image(nsImage: NSImage(named: NSImage.addTemplateName)!)
-                )(
-                    Button("Custom browser")(
+                MenuButton(label: Image(nsImage: NSImage(named: NSImage.addTemplateName)!)) {
+                    Button("Custom browser") {
                         self.showingAddBrowserModal.toggle()
-                    )
-
-                    Button(action: {
-                        self.addSystemBrowser()
-                    }) {
-                        HStack {
-                            Text("All system browser")
-                        }
                     }
-                )
+                    Button("All system browser") {
+                        self.addSystemBrowser()
+                    }
+                }
                 .frame(width: 20, height: 20, alignment: .center)
                 .menuButtonStyle(BorderlessPullDownMenuButtonStyle())
                 .sheet(isPresented: $showingAddBrowserModal) {
@@ -94,17 +87,16 @@ struct BrowserConfigView: View {
                 }) {
                     Image(nsImage: NSImage(named: NSImage.touchBarDeleteTemplateName)!)
                     if #available(OSX 11.0, *) {
-                     //   image.offset(x: 0.0, y: 4.0)
+                        //   image.offset(x: 0.0, y: 4.0)
                     }
                 }.buttonStyle(BorderlessButtonStyle())
 
                 Spacer()
 
                 Button("OK") {
-                   presentationMode.wrappedValue.dismiss()
-                }
-                .frame(width: 20, height: 20, alignment: .trailing)
-            })
+                    presentationMode.wrappedValue.dismiss()
+                }.frame(width: 20, height: 20, alignment: .trailing)
+            }
             .alert(isPresented: $showingDeleteAllAlert) {
                 Alert(
                     title: Text("Delete all browser configs?"),
@@ -162,96 +154,100 @@ struct BrowserConfigView: View {
     func removeBrowser(_ browser: Browser) {
         browserConfigs.removeAll { $0.name == browser.name }
     }
-}
 
-struct EditBrowserModal: View {
-    @Environment(\.presentationMode) var presentationMode
-    @Default(.browser) var browserConfigs
 
-    @Binding var browser: Browser
+    struct EditBrowserModal: View {
+        @Environment(\.presentationMode) var presentationMode
+        @Default(.browser) var browserConfigs
 
-    @State private var showingAlert = false
-    @State private var error_msg = ""
+        @Binding var browser: Browser
 
-    var body: some View {
-        VStack {
-            HStack {
-                if browser.name.isEmpty {
-                    Text("Add browser").font(.headline)
-                } else {
-                    Text("Edit browser").font(.headline)
-                }
-            }
-            Spacer()
-            HStack {
-                VStack(
-                    alignment: .leading,
-                    spacing: 15
-                ) {
-                    Text("Name")
-                    Text("Path")
-              //      Text("Arguments")
-                }
-                VStack(
-                    alignment: .leading,
-                    spacing: 10
-                ) {
-                    TextField("", text: $browser.name)
-                    TextField("", text: $browser.path)
-                //    TextField("", text: $browser.arguments)
-                }
-                VStack(
-                    alignment: .leading
-                    //spacing: 10
-                ) {
-                    Button(action: chooseApplication) {
-                        Text("Choose browser")
+        @State private var showingAlert = false
+        @State private var error_msg = ""
+
+        var body: some View {
+            VStack {
+                HStack {
+                    if browser.name.isEmpty {
+                        Text("Add browser").font(.headline)
+                    } else {
+                        Text("Edit browser").font(.headline)
                     }
                 }
-            }
-            Spacer()
-            HStack {
-                Button(action: {
-                    self.presentationMode.wrappedValue.dismiss()
-                    self.browser = Browser(name: "", path: "", arguments: "", deletable: true)
-                }) {
-                    Text("Cancel")
+                Spacer()
+                HStack {
+                    VStack(
+                        alignment: .leading,
+                        spacing: 15
+                    ) {
+                        Text("Name")
+                        Text("Path")
+                        //      Text("Arguments")
+                    }
+                    VStack(
+                        alignment: .leading,
+                        spacing: 10
+                    ) {
+                        TextField("", text: $browser.name)
+                        TextField("", text: $browser.path)
+                        //    TextField("", text: $browser.arguments)
+                    }
+                    VStack(
+                        alignment: .leading
+                        //spacing: 10
+                    ) {
+                        Button(action: chooseApplication) {
+                            Text("Choose browser")
+                        }
+                    }
                 }
-                Button(action: {
-                    self.presentationMode.wrappedValue.dismiss()
-                    let browserConfig = Browser(name: browser.name, path: browser.path, arguments: browser.arguments)
-                    browserConfigs.removeAll( $0.name == browser.name)
-                    browserConfigs.append(browserConfig)
-                    browserConfigs = browserConfigs.sorted { $0.path.fileName() < $1.path.fileName() }
-                    self.browser = Browser(name: "", path: "", arguments: "", deletable: true)
-                }) {
-                    Text("Save")
-                }.disabled(self.browser.name.isEmpty || self.browser.name.isEmpty)
+                Spacer()
+                HStack {
+                    Button(action: {
+                        self.presentationMode.wrappedValue.dismiss()
+                        self.browser = Browser(name: "", path: "", arguments: "", deletable: true)
+                    }) {
+                        Text("Cancel")
+                    }
+
+                    Button(action: {
+                        self.presentationMode.wrappedValue.dismiss()
+
+                        let browserConfig = Browser(name: browser.name, path: browser.path, arguments: browser.arguments)
+                        browserConfigs.removeAll { $0.name == browser.name }
+                        browserConfigs.append(browserConfig)
+
+                        browserConfigs = browserConfigs.sorted { $0.path.fileName() < $1.path.fileName() }
+                        self.browser = Browser(name: "", path: "", arguments: "", deletable: true)
+                    }) {
+                        Text("Save")
+                    }.disabled(self.browser.name.isEmpty || self.browser.name.isEmpty)
+                }
+            }.frame(width: 500, height: 200)
+            .padding()
+            .alert(isPresented: $showingAlert) {
+                Alert(title: Text("Can't add browser config"), message: Text(error_msg), dismissButton: .default(Text("OK")))
             }
-        }.frame(width: 500, height: 200)
-        .padding()
-        .alert(isPresented: $showingAlert) {
-            Alert(title: Text("Can't add browser config"), message: Text(error_msg), dismissButton: .default(Text("OK")))
         }
-    }
 
-    func chooseApplication() {
-        let openPanel = NSOpenPanel()
-        openPanel.canChooseFiles = true
-        openPanel.canChooseDirectories = false
-        openPanel.allowsMultipleSelection = false
-        openPanel.title = "Select a valid browser app"
-        openPanel.prompt = "Choose browser"
-        openPanel.message = "Please select a browser from any path!"
+        func chooseApplication() {
+            let openPanel = NSOpenPanel()
+            openPanel.canChooseFiles = true
+            openPanel.canChooseDirectories = false
+            openPanel.allowsMultipleSelection = false
+            openPanel.title = "Select a valid browser app"
+            openPanel.prompt = "Choose browser"
+            openPanel.message = "Please select a browser from any path!"
 
-        let appPath = try! FileManager.default.url(for: .allApplicationsDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+            let appPath = try! FileManager.default.url(for: .allApplicationsDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
 
-        openPanel.directoryURL = appPath
-        openPanel.begin { response in
-            if response == .OK {
-                self.browser.path = (openPanel.url?.path)!
-                self.browser.name = openPanel.url!.deletingPathExtension().lastPathComponent.fileName()
-                openPanel.close()
+            openPanel.directoryURL = appPath
+            openPanel.begin { response in
+                if response == .OK {
+                    self.browser.path = (openPanel.url?.path)!
+                    self.browser.name = openPanel.url!.deletingPathExtension().lastPathComponent.fileName()
+                    openPanel.close()
+                }
             }
         }
     }

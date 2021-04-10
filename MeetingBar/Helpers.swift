@@ -279,7 +279,7 @@ func addInstalledBrowser() {
         appUrls = appUrls?.sorted { $0.path.fileName() < $1.path.fileName() }
         appUrls?.forEach {
             let browser = Browser(name: $0.path.fileName(), path: $0.path)
-            if !existingBrowser.contains { $0.name == browser.path.fileName() } {
+            if !existingBrowser.contains(where: { $0.name == browser.path.fileName() }) {
                 Defaults[.browser].append(browser)
             }
         }

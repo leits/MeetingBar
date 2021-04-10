@@ -85,7 +85,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
         if let useChromeForMeetLinks = Defaults[.useChromeForMeetLinks] {
             if useChromeForMeetLinks {
-                let chromeBrowser = Defaults[.browser].first( $0.name == "Google Chrome" )
+                let chromeBrowser = Defaults[.browser].first { $0.name == "Google Chrome" }
                 Defaults[.browserForMeetLinks] = chromeBrowser!
             } else {
                 Defaults[.browserForMeetLinks] = Browser(name: "Default Browser", path: "", arguments: "", deletable: false)
@@ -148,7 +148,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             let meetingLink = detectLink(&clipboardContent)
 
             if let meetingLink = meetingLink {
-                openMeetingURL(meetingLink.service, meetingLink.url)
+                openMeetingURL(meetingLink.service, meetingLink.url, systemDefaultBrowser)
             } else {
                 let validUrl = NSURL(string: clipboardContent)
                 if validUrl != nil {
