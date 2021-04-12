@@ -735,7 +735,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                     let item = eventMenu.addItem(withTitle: "", action: nil, keyEquivalent: "")
                     let paragraphStyle = NSMutableParagraphStyle()
                     paragraphStyle.lineBreakMode = NSLineBreakMode.byWordWrapping
-                    item.attributedTitle = NSAttributedString(string: notes, attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
+                    item.attributedTitle = notes.splitWithNewLineAttributedString(with: [NSAttributedString.Key.paragraphStyle: paragraphStyle], maxWidth: 300.0)
                     eventMenu.addItem(NSMenuItem.separator())
                 }
             }
