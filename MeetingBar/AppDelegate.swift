@@ -429,6 +429,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             openMeetingURL(MeetingServices.teams, CreateMeetingLinks.teams)
         case .jam:
             openMeetingURL(MeetingServices.jam, CreateMeetingLinks.jam)
+        case .coscreen:
+            openMeetingURL(MeetingServices.coscreen, CreateMeetingLinks.coscreen)
         case .gcalendar:
             openMeetingURL(nil, CreateMeetingLinks.gcalendar)
         case .outlook_office365:

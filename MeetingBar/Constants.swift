@@ -60,6 +60,7 @@ struct LinksRegex {
     let jam = try! NSRegularExpression(pattern: #"https?://jam\.systems/[^\s]*"#)
     let discord = try! NSRegularExpression(pattern: #"(http|https|discord)://(www\.)?(canary\.)?discord(app)?\.([a-zA-Z]{2,})(.+)?"#)
     let blackboard_collab = try! NSRegularExpression(pattern: #"https?://us\.bbcollab\.com/[^\s]*"#)
+    let coscreen = try! NSRegularExpression(pattern: #"https?://join\.coscreen\.co/[^\s]*"#)
 }
 
 enum CreateMeetingLinks {
@@ -67,6 +68,7 @@ enum CreateMeetingLinks {
     static var zoom = URL(string: "https://zoom.us/start?confno=123456789&zc=0")!
     static var teams = URL(string: "https://teams.microsoft.com/l/meeting/new?subject=")!
     static var jam = URL(string: "https://jam.systems/new")!
+    static var coscreen = URL(string: "https://cs.new")!
     static var gcalendar = URL(string: "https://calendar.google.com/calendar/u/0/r/eventedit")!
     static var outlook_live = URL(string: "https://outlook.live.com/calendar/0/action/compose")!
     static var outlook_office365 = URL(string: "https://outlook.office365.com/calendar/0/action/compose")!
@@ -77,6 +79,7 @@ enum CreateMeetingServices: String, Codable, CaseIterable {
     case zoom = "Zoom"
     case teams = "Microsoft Teams"
     case jam = "Jam"
+    case coscreen = "CoScreen"
     case gcalendar = "Google Calendar"
     case outlook_live = "Outlook Live"
     case outlook_office365 = "Outlook Office365"
@@ -153,6 +156,7 @@ enum MeetingServices: String, Codable, CaseIterable {
     case jam = "Jam"
     case discord = "Discord"
     case blackboard_collab = "Blackboard Collaborate"
+    case coscreen = "CoScreen"
     case other = "Other"
 
     var localizedValue: String {

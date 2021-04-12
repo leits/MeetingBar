@@ -490,6 +490,11 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                 image!.size = NSSize(width: 16, height: 16)
 
             // tested and verified
+            case .some(.coscreen):
+                image = NSImage(named: "coscreen_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
             case .none:
                 image = NSImage(named: "no_online_session")!
                 image!.size = NSSize(width: 16, height: 16)
@@ -733,7 +738,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                     let item = eventMenu.addItem(withTitle: "", action: nil, keyEquivalent: "")
                     let paragraphStyle = NSMutableParagraphStyle()
                     paragraphStyle.lineBreakMode = NSLineBreakMode.byWordWrapping
-                    item.attributedTitle = NSAttributedString(string: notes, attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
+                    item.attributedTitle = notes.splitWithNewLineAttributedString(with: [NSAttributedString.Key.paragraphStyle: paragraphStyle], maxWidth: 300.0)
                     eventMenu.addItem(NSMenuItem.separator())
                 }
             }

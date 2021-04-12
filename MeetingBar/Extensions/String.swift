@@ -99,3 +99,46 @@ extension String {
         I18N.instance.localizedString(for: self, firstArg, secondArg, thirdArg)
     }
 }
+
+extension String {
+    func splitWithNewLineString(with attributes: [NSAttributedString.Key: Any], maxWidth: CGFloat) -> String {
+        let words = self.split(separator: " ").map { String($0) }
+        var lineWidth: CGFloat = 0.0
+        var thisLine = ""
+        var lines: [String] = []
+
+        func width(for string: String) -> CGFloat {
+            string.boundingRect(with: NSSize.zero, options: [ .usesLineFragmentOrigin, .usesFontLeading], attributes: attributes).width
+        }
+
+        func addToAllLines(_ text: String) {
+            lines.append(text)
+            thisLine = ""
+            lineWidth = 0.0
+        }
+
+        for (idx, word) in words.enumerated() {
+            thisLine = thisLine.appending("\(word) ")
+
+            lineWidth = width(for: thisLine)
+
+            let isLastWord = idx + 1 >= words.count
+            if isLastWord {
+                addToAllLines(thisLine)
+            } else {
+                let nextWord = words[idx + 1]
+                if lineWidth + width(for: nextWord) >= maxWidth {
+                    addToAllLines(thisLine)
+                }
+            }
+        }
+
+        return lines.joined(separator: "\n")
+    }
+
+    func splitWithNewLineAttributedString(with attributes: [NSAttributedString.Key: Any], maxWidth: CGFloat) -> NSAttributedString {
+        let output = self.splitWithNewLineString(with: attributes, maxWidth: maxWidth)
+        let attributedString = NSAttributedString(string: output, attributes: attributes)
+        return attributedString
+    }
+}
