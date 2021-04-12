@@ -14,7 +14,7 @@ extension URL {
             self.openInDefaultBrowser()
             return
         }
-        let browserName = browser.rawValue
+        let browserName = browser.localizedValue
 
         let configuration = NSWorkspace.OpenConfiguration()
         NSWorkspace.shared.open([self], withApplicationAt: browserURL, configuration: configuration) { app, error in

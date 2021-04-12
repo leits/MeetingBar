@@ -45,10 +45,11 @@
 "preferences_general_shortcut_open_menu" = "Открыть меню:";
 "preferences_general_shortcut_create_meeting" = "Создать событие:";
 "preferences_general_shortcut_join_next" = "Присоединиться к следующему событию:";
+"preferences_general_shortcut_join_from_clipboard" = "Присоединиться к событию из буфера обмена:";
 "preferences_general_meeting_bar_description" = "MeetingBar - это приложение с открытым исходным кодом, созданное Andrii Leitsius.\nПриложение призвано сделать ваши онлайн-встречи более спокойными и легкими.";
 "preferences_general_external_patronage" = "Patronage";
 "preferences_general_external_gitHub" = "GitHub";
-"preferences_general_external_contact" = "Contact";
+"preferences_general_external_contact" = "Связь";
 "preferences_general_patron_title" = "Become a Patron";
 "preferences_general_patron_three_months" = "3 Месяца - 2.99 USD";
 "preferences_general_patron_six_months" = "6 Месяцев - 5.99 USD";
@@ -161,6 +162,7 @@
 "status_bar_section_tomorrow" = "Завтра";
 "status_bar_empty_calendar_message" = "Выберите календари в настройках,\nчтобы увидеть свои события";
 "status_bar_section_join_next_meeting" = "Присоединяйтесь к следующему событию";
+"status_bar_section_join_from_clipboard" = "Присоединиться к событию из буфера обмена";
 "status_bar_section_join_create_meeting" = "Создать событие";
 "status_bar_section_bookmarks_title" = "Закладки";
 "status_bar_section_bookmarks_menu" = "Меню закладок";
@@ -238,6 +240,7 @@
 // MARK: - Constants
 "constants_create_meeting_service_meet" = "Google Meet";
 "constants_create_meeting_service_jam" = "Jam";
+"constants_create_meeting_service_coscreen" = "CoScreen";
 "constants_create_meeting_service_zoom" = "Zoom";
 "constants_create_meeting_service_teams" = "Microsoft Teams";
 "constants_create_meeting_service_gcalendar" = "Google Calendar";
@@ -284,6 +287,7 @@
 "constants_meeting_service_jam" = "Jam";
 "constants_meeting_service_discord" = "Discord";
 "constants_meeting_service_blackboard_collab" = "Blackboard Collaborate";
+"constants_meeting_service_coscreen" = "CoScreen";
 "constants_meeting_service_other" = "Другое";
 
 "constants_browser_brave" = "Brave";

@@ -45,6 +45,7 @@
 "preferences_general_shortcut_open_menu" = "Open menu:";
 "preferences_general_shortcut_create_meeting" = "Create meeting:";
 "preferences_general_shortcut_join_next" = "Join next event meeting:";
+"preferences_general_shortcut_join_from_clipboard" = "Join meeting from clipboard:";
 "preferences_general_meeting_bar_description" = "MeetingBar is open-source app created by Andrii Leitsius\nThe app aims to make your experience with online meetings smoother and easier";
 "preferences_general_external_patronage" = "Patronage";
 "preferences_general_external_gitHub" = "GitHub";
@@ -161,6 +162,7 @@
 "status_bar_section_tomorrow" = "Tomorrow";
 "status_bar_empty_calendar_message" = "Select calendars in preferences\nto see your meetings";
 "status_bar_section_join_next_meeting" = "Join next event meeting";
+"status_bar_section_join_from_clipboard" = "Open meeting from clipboard";
 "status_bar_section_join_create_meeting" = "Create meeting";
 "status_bar_section_bookmarks_title" = "Bookmarks";
 "status_bar_section_bookmarks_menu" = "Bookmarks menu";
@@ -238,6 +240,7 @@
 // MARK: - Constants
 "constants_create_meeting_service_meet" = "Google Meet";
 "constants_create_meeting_service_jam" = "Jam";
+"constants_create_meeting_service_coscreen" = "CoScreen";
 "constants_create_meeting_service_zoom" = "Zoom";
 "constants_create_meeting_service_teams" = "Microsoft Teams";
 "constants_create_meeting_service_gcalendar" = "Google Calendar";
@@ -284,6 +287,7 @@
 "constants_meeting_service_jam" = "Jam";
 "constants_meeting_service_discord" = "Discord";
 "constants_meeting_service_blackboard_collab" = "Blackboard Collaborate";
+"constants_meeting_service_coscreen" = "CoScreen";
 "constants_meeting_service_other" = "Other";
 
 "constants_browser_brave" = "Brave";

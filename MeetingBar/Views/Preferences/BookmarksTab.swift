@@ -106,13 +106,13 @@ struct AddBookmarkModal: View {
                     TextField("", text: $name)
                     TextField("", text: $url)
                     Picker(selection: $service, label: Text("")) {
-                        Text(MeetingServices.teams.rawValue).tag(MeetingServices.teams)
-                        Text(MeetingServices.zoom.rawValue).tag(MeetingServices.zoom)
-                        Text(MeetingServices.meet.rawValue).tag(MeetingServices.meet)
-                        Text(MeetingServices.facetime.rawValue).tag(MeetingServices.facetime)
-                        Text(MeetingServices.facetimeaudio.rawValue).tag(MeetingServices.facetimeaudio)
-                        Text(MeetingServices.phone.rawValue).tag(MeetingServices.phone)
-                        Text(MeetingServices.other.rawValue).tag(MeetingServices.other)
+                        Text(MeetingServices.teams.localizedValue).tag(MeetingServices.teams)
+                        Text(MeetingServices.zoom.localizedValue).tag(MeetingServices.zoom)
+                        Text(MeetingServices.meet.localizedValue).tag(MeetingServices.meet)
+                        Text(MeetingServices.facetime.localizedValue).tag(MeetingServices.facetime)
+                        Text(MeetingServices.facetimeaudio.localizedValue).tag(MeetingServices.facetimeaudio)
+                        Text(MeetingServices.phone.localizedValue).tag(MeetingServices.phone)
+                        Text(MeetingServices.other.localizedValue).tag(MeetingServices.other)
                     }.labelsHidden()
                 }
             }

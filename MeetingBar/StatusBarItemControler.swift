@@ -275,7 +275,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
         }
 
         let openLinkFromClipboardItem = NSMenuItem()
-        openLinkFromClipboardItem.title = "Open meeting from clipboard"
+        openLinkFromClipboardItem.title = "status_bar_section_join_from_clipboard".loco()
         openLinkFromClipboardItem.action = #selector(AppDelegate.openLinkFromClipboard)
         openLinkFromClipboardItem.keyEquivalent = ""
         openLinkFromClipboardItem.setShortcut(for: .openClipboardShortcut)

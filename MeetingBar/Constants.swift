@@ -89,12 +89,14 @@ enum CreateMeetingServices: String, Codable, CaseIterable {
         switch self {
         case .meet:
             return "constants_create_meeting_service_meet".loco()
-        case .jam:
-            return "constants_create_meeting_service_jam".loco()
         case .zoom:
             return "constants_create_meeting_service_zoom".loco()
         case .teams:
             return "constants_create_meeting_service_teams".loco()
+        case .jam:
+            return "constants_create_meeting_service_jam".loco()
+        case .coscreen:
+            return "constants_create_meeting_service_coscreen".loco()
         case .gcalendar:
             return "constants_create_meeting_service_gcalendar".loco()
         case .outlook_live:
@@ -239,6 +241,8 @@ enum MeetingServices: String, Codable, CaseIterable {
             return "constants_meeting_service_discord".loco()
         case .blackboard_collab:
             return "constants_meeting_service_blackboard_collab".loco()
+        case .coscreen:
+            return "constants_meeting_service_coscreen".loco()
         case .other:
             return "constants_meeting_service_other".loco()
         }
