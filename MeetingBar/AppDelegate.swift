@@ -363,8 +363,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     }
 
     @objc
-    private func updateMenuBar(){
-
+    private func updateMenuBar() {
         NSLog("Firing reccuring updateStatusBarMenu")
         DispatchQueue.main.async {
             self.statusBarItem.updateMenu()
@@ -374,7 +373,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     private func scheduleUpdateEvents() {
         let timer = Timer.scheduledTimer(timeInterval: 60 * 5, target: self, selector: #selector(updateMenuBar), userInfo: nil, repeats: true)
         RunLoop.current.add(timer, forMode: .common)
-
     }
 
     /**
