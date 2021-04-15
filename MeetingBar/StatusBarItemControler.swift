@@ -500,6 +500,10 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                 image = NSImage(named: "online_meeting_icon")!
                 image!.size = NSSize(width: 16, height: 16)
 
+            case .some(.url):
+                image = NSImage(named: NSImage.touchBarOpenInBrowserTemplateName)!
+                image!.size = NSSize(width: 16, height: 16)
+
             default:
                 break
             }
@@ -511,7 +515,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
      * try  to get the correct image for the specific
      */
     func getMeetingIcon(_ event: EKEvent) -> NSImage {
-        let result = getMeetingLink(event)
+        let result = getMeetingLink(event, acceptAnyLink: Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.hide_without_any_link || Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show_inactive_without_any_link)
 
         return getMeetingIconForLink(result)
     }
@@ -590,6 +594,22 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                 styles[NSAttributedString.Key.strikethroughStyle] = NSUnderlineStyle.thick.rawValue
             }
             shouldShowAsActive = false
+        }
+
+        if !event.isAllDay && Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show_inactive_without_meeting_link {
+            let meetingLink = getMeetingLink(event, acceptAnyLink: false)
+            if meetingLink == nil {
+                styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
+                shouldShowAsActive = false
+            }
+        }
+
+        if !event.isAllDay && Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show_inactive_without_any_link {
+            let meetingLink = getMeetingLink(event, acceptAnyLink: true)
+            if meetingLink == nil {
+                styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
+                shouldShowAsActive = false
+            }
         }
 
         if eventParticipantStatus == .pending {

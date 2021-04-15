@@ -127,7 +127,7 @@ func detectLink(_ field: inout String) -> MeetingLink? {
  * this method will collect text from the location, url and notes field of an event and try to find a known meeting url link.
  * As meeting links can be part of a outlook safe url, we will extract the original link from outlook safe links.
  */
-func getMeetingLink(_ event: EKEvent) -> MeetingLink? {
+func getMeetingLink(_ event: EKEvent, acceptAnyLink: Bool) -> MeetingLink? {
     var linkFields: [String] = []
 
     if let location = event.location {
@@ -142,24 +142,53 @@ func getMeetingLink(_ event: EKEvent) -> MeetingLink? {
         linkFields.append(notes)
     }
 
+
     for var field in linkFields {
         var meetingLink = detectLink(&field)
         if meetingLink != nil {
             if meetingLink?.service == .meet,
                let account = getGmailAccount(event),
                let urlEncodedAccount = account.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
-            let url = URL(string: (meetingLink?.url.absoluteString)! + "?authuser=\(urlEncodedAccount)")!
-                meetingLink?.url = url
+                let url = URL(string: (meetingLink?.url.absoluteString)! + "?authuser=\(urlEncodedAccount)")!
+                    meetingLink?.url = url
             }
             return meetingLink
         }
     }
+
+    if acceptAnyLink {
+        for var field in linkFields {
+            let links = detectLinks(text: field)
+            if !links.isEmpty {
+                return MeetingLink(service: MeetingServices.url, url: links[0])
+            }
+        }
+    }
+
+
+
     return nil
 }
 
+func detectLinks(text: String) -> [URL] {
+    let types: NSTextCheckingResult.CheckingType = .link
+
+    do {
+        let detector = try NSDataDetector(types: types.rawValue)
+
+        let matches = detector.matches(in: text, options: .reportCompletion, range: NSRange(location: 0, length: text.count))
+        return matches.compactMap { $0.url }
+    } catch {
+        debugPrint(error.localizedDescription)
+    }
+
+    return []
+}
+
+
 func openEvent(_ event: EKEvent) {
     let eventTitle = event.title ?? "No title"
-    if let meeting = getMeetingLink(event) {
+    if let meeting = getMeetingLink(event, acceptAnyLink: Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.hide_without_any_link || Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show_inactive_without_any_link) {
         if Defaults[.runJoinEventScript], Defaults[.joinEventScriptLocation] != nil {
             if let url = Defaults[.joinEventScriptLocation]?.appendingPathComponent("joinEventScript.scpt") {
                 print("URL: \(url)")

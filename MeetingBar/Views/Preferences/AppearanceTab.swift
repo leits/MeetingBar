@@ -137,6 +137,7 @@ struct EventsSection: View {
     @Default(.personalEventsAppereance) var personalEventsAppereance
     @Default(.pastEventsAppereance) var pastEventsAppereance
     @Default(.allDayEvents) var allDayEvents
+    @Default(.nonAllDayEvents) var nonAllDayEvents
     @Default(.showPendingEvents) var showPendingEvents
     @Default(.showEventsForPeriod) var showEventsForPeriod
 
@@ -147,6 +148,16 @@ struct EventsSection: View {
                 Picker("Show events for", selection: $showEventsForPeriod) {
                     Text("today").tag(ShowEventsForPeriod.today)
                     Text("today and tomorrow").tag(ShowEventsForPeriod.today_n_tomorrow)
+                }
+            }
+
+            HStack {
+                Picker("Non all day events:", selection: $nonAllDayEvents) {
+                    Text("show").tag(NonAlldayEventsAppereance.show)
+                    Text("show as inactive without any link").tag(NonAlldayEventsAppereance.show_inactive_without_any_link)
+                    Text("show as inactive without meeting link").tag(NonAlldayEventsAppereance.show_inactive_without_meeting_link)
+                    Text("hide all without any link").tag(NonAlldayEventsAppereance.hide_without_any_link)
+                    Text("hide all without meeting link").tag(NonAlldayEventsAppereance.hide_without_meeting_link)
                 }
                 Picker("All day events:", selection: $allDayEvents) {
                     Text("show").tag(AlldayEventsAppereance.show)
