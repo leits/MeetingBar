@@ -350,35 +350,31 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     }
 
     private func scheduleUpdateStatusBarTitle() {
-        let activity = NSBackgroundActivityScheduler(identifier: "leits.MeetingBar.updatestatusbartitle")
+        let timer = Timer.scheduledTimer(timeInterval: 15, target: self, selector: #selector(updateStatusbar), userInfo: nil, repeats: true)
+        RunLoop.current.add(timer, forMode: .common)
+    }
 
-        activity.repeats = true
-        activity.interval = 15
-        activity.qualityOfService = QualityOfService.userInteractive
+    @objc
+    private func updateStatusbar() {
+        NSLog("Firing reccuring updateStatusBarTitle")
+        DispatchQueue.main.async {
+            self.statusBarItem.updateTitle()
+        }
+    }
 
-        activity.schedule { (completion: @escaping NSBackgroundActivityScheduler.CompletionHandler) in
-            NSLog("Firing reccuring updateStatusBarTitle")
-            DispatchQueue.main.async {
-                self.statusBarItem.updateTitle()
-            }
-            completion(NSBackgroundActivityScheduler.Result.finished)
+    @objc
+    private func updateMenuBar(){
+
+        NSLog("Firing reccuring updateStatusBarMenu")
+        DispatchQueue.main.async {
+            self.statusBarItem.updateMenu()
         }
     }
 
     private func scheduleUpdateEvents() {
-        let activity = NSBackgroundActivityScheduler(identifier: "leits.MeetingBar.updateevents")
+        let timer = Timer.scheduledTimer(timeInterval: 60 * 5, target: self, selector: #selector(updateMenuBar), userInfo: nil, repeats: true)
+        RunLoop.current.add(timer, forMode: .common)
 
-        activity.repeats = true
-        activity.interval = 60 * 5
-        activity.qualityOfService = QualityOfService.userInteractive
-
-        activity.schedule { (completion: @escaping NSBackgroundActivityScheduler.CompletionHandler) in
-            NSLog("Firing reccuring updateStatusBarMenu")
-            DispatchQueue.main.async {
-                self.statusBarItem.updateMenu()
-            }
-            completion(NSBackgroundActivityScheduler.Result.finished)
-        }
     }
 
     /**
