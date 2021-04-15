@@ -271,7 +271,7 @@ func bundleIdentifier(forAppName appName: String) -> String? {
  * adds the default browsers for the browser dialog
  */
 func addInstalledBrowser() {
-    let existingBrowser = Defaults[.browser]
+    let existingBrowsers = Defaults[.browsers]
 
     var appUrls = LSCopyApplicationURLsForURL(URL(string: "https:")! as CFURL, .all)?.takeRetainedValue() as? [URL]
 
@@ -279,8 +279,8 @@ func addInstalledBrowser() {
         appUrls = appUrls?.sorted { $0.path.fileName() < $1.path.fileName() }
         appUrls?.forEach {
             let browser = Browser(name: $0.path.fileName(), path: $0.path)
-            if !existingBrowser.contains(where: { $0.name == browser.path.fileName() }) {
-                Defaults[.browser].append(browser)
+            if !existingBrowsers.contains(where: { $0.name == browser.path.fileName() }) {
+                Defaults[.browsers].append(browser)
             }
         }
     }

@@ -20,7 +20,7 @@ struct ServicesTab: View {
     @Default(.useAppForTeamsLinks) var useAppForTeamsLinks
     @Default(.createMeetingServiceUrl) var createMeetingServiceUrl
     @Default(.createMeetingService) var createMeetingService
-    @Default(.browser) var allBrowser
+    @Default(.browsers) var allBrowser
 
     @State var showBrowserConfiguration = false
 

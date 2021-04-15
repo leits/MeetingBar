@@ -14,7 +14,7 @@ import KeyboardShortcuts
 struct BrowserConfigView: View {
     @Environment(\.presentationMode) var presentationMode
 
-    @Default(.browser) var browserConfigs
+    @Default(.browsers) var browserConfigs
 
     @State var showingAddBrowserModal = false
     @State var showingEditBrowserModal = false
@@ -27,7 +27,6 @@ struct BrowserConfigView: View {
             List {
                 ForEach(browserConfigs, id: \.self) { browser in
                     HStack {
-                        Image(nsImage: NSImage(named: NSImage.listViewTemplateName)!).foregroundColor(.gray)
 
                         VStack(alignment: .leading) {
                             Text("\(browser.name)")
@@ -50,14 +49,14 @@ struct BrowserConfigView: View {
                             Image(nsImage: NSImage(named: NSImage.stopProgressFreestandingTemplateName)!)
                         }.buttonStyle(PlainButtonStyle())
                     }.padding(3)
-                }.onMove(perform: moveBrowser)
+                }
             }
             .sheet(isPresented: $showingEditBrowserModal) {
                 EditBrowserModal(browser: self.$browser)
             }
             .alert(isPresented: $showingAlert) {
                 Alert(
-                    title: Text("Delete browser?"),
+                    title: Text("Delete browser configuration?"),
                     message: Text("Do you want to delete the browser configuration \(self.browser.name)?"),
                     primaryButton: .default(Text("Delete")) {
                         self.removeBrowser(self.browser)
@@ -86,9 +85,6 @@ struct BrowserConfigView: View {
                     self.showingDeleteAllAlert = true
                 }) {
                     Image(nsImage: NSImage(named: NSImage.touchBarDeleteTemplateName)!)
-                    if #available(OSX 11.0, *) {
-                        //   image.offset(x: 0.0, y: 4.0)
-                    }
                 }.buttonStyle(BorderlessButtonStyle())
 
                 Spacer()
@@ -128,14 +124,9 @@ struct BrowserConfigView: View {
     }
 
     private func getPencilImage() -> NSImage {
-        let pencilImage = NSImage(named: "pencil")
+        let pencilImage = NSImage(named: NSImage.touchBarComposeTemplateName)
         pencilImage!.size = NSSize(width: 16, height: 16)
         return pencilImage!
-    }
-
-    // allow to change the order of bookmarks
-    private func moveBrowser(source: IndexSet, destination: Int) {
-        browserConfigs.move(fromOffsets: source, toOffset: destination)
     }
 
     // allow to change the order of bookmarks
@@ -145,7 +136,7 @@ struct BrowserConfigView: View {
 
     // allow to change the order of bookmarks
     private func removeAllBrowser() {
-        Defaults[.browser] = []
+        Defaults[.browsers] = []
     }
 
     /**
@@ -158,7 +149,7 @@ struct BrowserConfigView: View {
 
     struct EditBrowserModal: View {
         @Environment(\.presentationMode) var presentationMode
-        @Default(.browser) var browserConfigs
+        @Default(.browsers) var browserConfigs
 
         @Binding var browser: Browser
 
@@ -182,7 +173,6 @@ struct BrowserConfigView: View {
                     ) {
                         Text("Name")
                         Text("Path")
-                        //      Text("Arguments")
                     }
                     VStack(
                         alignment: .leading,
@@ -190,13 +180,11 @@ struct BrowserConfigView: View {
                     ) {
                         TextField("", text: $browser.name)
                         TextField("", text: $browser.path)
-                        //    TextField("", text: $browser.arguments)
                     }
                     VStack(
                         alignment: .leading
-                        //spacing: 10
                     ) {
-                        Button(action: chooseApplication) {
+                        Button(action: chooseBrowser) {
                             Text("Choose browser")
                         }
                     }
@@ -210,16 +198,7 @@ struct BrowserConfigView: View {
                         Text("Cancel")
                     }
 
-                    Button(action: {
-                        self.presentationMode.wrappedValue.dismiss()
-
-                        let browserConfig = Browser(name: browser.name, path: browser.path, arguments: browser.arguments)
-                        browserConfigs.removeAll { $0.name == browser.name }
-                        browserConfigs.append(browserConfig)
-
-                        browserConfigs = browserConfigs.sorted { $0.path.fileName() < $1.path.fileName() }
-                        self.browser = Browser(name: "", path: "", arguments: "", deletable: true)
-                    }) {
+                    Button(action: saveBrowser){
                         Text("Save")
                     }.disabled(self.browser.name.isEmpty || self.browser.name.isEmpty)
                 }
@@ -230,7 +209,24 @@ struct BrowserConfigView: View {
             }
         }
 
-        func chooseApplication() {
+        /**
+         * saves the browser to the browsers configuration.
+         */
+        func saveBrowser(){
+            self.presentationMode.wrappedValue.dismiss()
+
+            let browserConfig = Browser(name: browser.name, path: browser.path, arguments: browser.arguments)
+            browserConfigs.removeAll { $0.name == browser.name }
+            browserConfigs.append(browserConfig)
+
+            browserConfigs = browserConfigs.sorted { $0.path.fileName() < $1.path.fileName() }
+            self.browser = Browser(name: "", path: "", arguments: "", deletable: true)
+        }
+
+        /**
+         * opens a file chooser for the user to select a new browser to be added.
+         */
+        func chooseBrowser() {
             let openPanel = NSOpenPanel()
             openPanel.canChooseFiles = true
             openPanel.canChooseDirectories = false

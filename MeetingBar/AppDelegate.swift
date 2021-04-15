@@ -85,7 +85,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
         if let useChromeForMeetLinks = Defaults[.useChromeForMeetLinks] {
             if useChromeForMeetLinks {
-                let chromeBrowser = Defaults[.browser].first { $0.name == "Google Chrome" }
+                let chromeBrowser = Defaults[.browsers].first { $0.name == "Google Chrome" }
                 Defaults[.browserForMeetLinks] = chromeBrowser!
             } else {
                 Defaults[.browserForMeetLinks] = Browser(name: "Default Browser", path: "", arguments: "", deletable: false)
@@ -176,7 +176,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         scheduleUpdateStatusBarTitle()
         scheduleUpdateEvents()
 
-        if Defaults[.browser].isEmpty {
+        if Defaults[.browsers].isEmpty {
             addInstalledBrowser()
         }
 

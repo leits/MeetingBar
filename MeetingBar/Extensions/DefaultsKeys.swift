@@ -62,7 +62,7 @@ extension Defaults.Keys {
     static let bookmarks = Key<[Bookmark]>("bookmarks", default: [])
 
     // all browser configurations
-    static let browser = Key<[Browser]>("browser", default: [])
+    static let browsers = Key<[Browser]>("browsers", default: [])
 
     // default browser for meeting links
     static let defaultBrowser = Key<Browser>("defaultBrowser", default: Browser(name: "Default Browser", path: "", arguments: "", deletable: false))
