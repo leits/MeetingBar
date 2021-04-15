@@ -18,6 +18,7 @@ Integrated with 20+ meeting services so you can quickly join meetings from event
   * show or hide events without guests
   * show or hide meeting type icons 
 * Show events from all your macos calendars incl. notes, location and attendees
+* Open the event in macos calendar or Fantastical 3 (if the app is installed)
 * Join the next onlinemeeting with a single shortcut
 * Select for specific services like zoom or ms teams to start the meeting in the installed app or browser
 * Attend an online meeting using one click
@@ -73,6 +74,9 @@ v StarLeaf
 * TeamViewer Meeting
 * Google Meet Stream
 * Vonage Meetings
+* Discord
+* Jam
+* Blackboard Collaborate
 
 
 If the service you use isn't supported, add a comment [here](https://github.com/leits/MeetingBar/discussions/108).
