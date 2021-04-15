@@ -178,7 +178,7 @@ func openEvent(_ event: EKEvent) {
                 }
             }
         }
-        openMeetingURL(meeting.service, meeting.url, systemDefaultBrowser)
+        openMeetingURL(meeting.service, meeting.url, nil)
     } else {
         sendNotification("Epp! Can't join the \(eventTitle)", "Link not found, or your meeting service is not yet supported")
     }
@@ -245,7 +245,7 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?
         NSWorkspace.shared.open(URL(string: "tel://" + url.absoluteString)!)
 
     default:
-        url.openIn(browser: browser!)
+        url.openIn(browser: browser ?? systemDefaultBrowser)
     }
 }
 

@@ -27,12 +27,10 @@ struct StatusBarSection: View {
     @Default(.eventTitleIconFormat) var eventTitleIconFormat
     @Default(.eventTitleFormat) var eventTitleFormat
     @Default(.eventTimeFormat) var eventTimeFormat
-    
     @Default(.statusbarEventTitleLength) var statusbarEventTitleLength
-    
     @Default(.showEventMaxTimeUntilEventThreshold) var showEventMaxTimeUntilEventThreshold
     @Default(.showEventMaxTimeUntilEventEnabled) var showEventMaxTimeUntilEventEnabled
-    
+
     var body: some View {
         Text("Status bar").font(.headline).bold()
         Section {
@@ -43,19 +41,19 @@ struct StatusBarSection: View {
                             .frame(width: 16.0, height: 16.0)
                         Text("\u{00A0}Calendar icon")
                     }.tag(EventTitleIconFormat.calendar)
-                    
+
                     HStack {
                         Image(nsImage: getImage(iconName: EventTitleIconFormat.appicon.rawValue)).resizable()
                             .frame(width: 16.0, height: 16.0)
                         Text("\u{00A0}App icon")
                     }.tag(EventTitleIconFormat.appicon)
-                    
+
                     HStack {
                         Image(nsImage: getImage(iconName: EventTitleIconFormat.eventtype.rawValue)).resizable()
                             .frame(width: 16.0, height: 16.0)
                         Text("\u{00A0}Event specific icon (e.g. MS Teams)")
                     }.tag(EventTitleIconFormat.eventtype)
-                    
+
                     HStack {
                         Image(nsImage: getImage(iconName: EventTitleIconFormat.none.rawValue)).resizable()
                             .frame(width: 16.0, height: 16.0)
@@ -63,7 +61,7 @@ struct StatusBarSection: View {
                     }.tag(EventTitleIconFormat.none)
                 }
             }
-            
+
             HStack {
                 Picker("Title", selection: $eventTitleFormat) {
                     Text("event title").tag(EventTitleFormat.show)
@@ -83,7 +81,7 @@ struct StatusBarSection: View {
                     Text("hide").tag(EventTimeFormat.hide)
                 }
             }
-            
+
             HStack {
                 Toggle("", isOn: $showEventMaxTimeUntilEventEnabled).labelsHidden()
                 Stepper("Show only next event starting within \(showEventMaxTimeUntilEventThreshold) minutes", value: $showEventMaxTimeUntilEventThreshold, in: 5...120, step: 5)
@@ -91,7 +89,7 @@ struct StatusBarSection: View {
             }
         }.padding(.horizontal, 10)
     }
-    
+
     func getImage(iconName: String) -> NSImage {
         let icon = NSImage(named: iconName)
         icon!.size = NSSize(width: 16, height: 16)
@@ -106,7 +104,7 @@ struct MenuSection: View {
     @Default(.showEventEndTime) var showEventEndTime
     @Default(.showEventDetails) var showEventDetails
     @Default(.showMeetingServiceIcon) var showMeetingServiceIcon
-    
+
     var body: some View {
         Text("Menu").font(.headline).bold()
         Section {
@@ -139,7 +137,7 @@ struct EventsSection: View {
     @Default(.allDayEvents) var allDayEvents
     @Default(.showPendingEvents) var showPendingEvents
     @Default(.showEventsForPeriod) var showEventsForPeriod
-    
+
     var body: some View {
         Text("Events").font(.headline).bold()
         Section {
@@ -154,7 +152,7 @@ struct EventsSection: View {
                     Text("hide").tag(AlldayEventsAppereance.hide)
                 }
             }
-            
+
             HStack {
                 Picker("Events without guests:", selection: $personalEventsAppereance) {
                     Text("show").tag(PastEventsAppereance.show_active)
@@ -174,7 +172,7 @@ struct EventsSection: View {
                     Text("show as inactive").tag(PendingEventsAppereance.show_inactive)
                     Text("hide").tag(PendingEventsAppereance.hide)
                 }
-                
+
                 Picker("Declined events:", selection: $declinedEventsAppereance) {
                     Text("show with strikethrough").tag(DeclinedEventsAppereance.strikethrough)
                     Text("show as inactive").tag(DeclinedEventsAppereance.show_inactive)

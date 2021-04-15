@@ -27,7 +27,6 @@ struct BrowserConfigView: View {
             List {
                 ForEach(browserConfigs, id: \.self) { browser in
                     HStack {
-
                         VStack(alignment: .leading) {
                             Text("\(browser.name)")
                             Text(generatePath(browser: browser)).font(.system(size:11)).foregroundColor(Color.gray)
@@ -198,7 +197,7 @@ struct BrowserConfigView: View {
                         Text("Cancel")
                     }
 
-                    Button(action: saveBrowser){
+                    Button(action: saveBrowser) {
                         Text("Save")
                     }.disabled(self.browser.name.isEmpty || self.browser.name.isEmpty)
                 }
@@ -212,7 +211,7 @@ struct BrowserConfigView: View {
         /**
          * saves the browser to the browsers configuration.
          */
-        func saveBrowser(){
+        func saveBrowser() {
             self.presentationMode.wrappedValue.dismiss()
 
             let browserConfig = Browser(name: browser.name, path: browser.path, arguments: browser.arguments)
