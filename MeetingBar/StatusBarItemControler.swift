@@ -45,13 +45,12 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
         statusItemMenu.delegate = self
 
         enableButtonAction()
-        eventStore = EKEventStore();
+        eventStore = EKEventStore()
 
         var sources = eventStore.sources
-        sources.append(contentsOf: eventStore!.delegateSources);
+        sources.append(contentsOf: eventStore!.delegateSources)
 
-        eventStore = EKEventStore.init(sources: sources)
-
+        eventStore = EKEventStore(sources: sources)
     }
 
     @objc
