@@ -349,7 +349,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             item.isEnabled = false
         }
         for event in sortedEvents {
-            createEventItem(event: event)
+            createEventItem(event: event, dateSection: date)
         }
     }
 
@@ -488,6 +488,11 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                 image!.size = NSSize(width: 16, height: 16)
 
             // tested and verified
+            case .some(.coscreen):
+                image = NSImage(named: "coscreen_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
             case .none:
                 image = NSImage(named: "no_online_session")!
                 image!.size = NSSize(width: 16, height: 16)
@@ -520,7 +525,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
         return getMeetingIconForLink(result)
     }
 
-    func createEventItem(event: EKEvent) {
+    func createEventItem(event: EKEvent, dateSection: Date) {
         let eventParticipantStatus = getEventParticipantStatus(event)
         let eventStatus = event.status
 
@@ -750,7 +755,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                     let item = eventMenu.addItem(withTitle: "", action: nil, keyEquivalent: "")
                     let paragraphStyle = NSMutableParagraphStyle()
                     paragraphStyle.lineBreakMode = NSLineBreakMode.byWordWrapping
-                    item.attributedTitle = NSAttributedString(string: notes, attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
+                    item.attributedTitle = notes.splitWithNewLineAttributedString(with: [NSAttributedString.Key.paragraphStyle: paragraphStyle], maxWidth: 300.0)
                     eventMenu.addItem(NSMenuItem.separator())
                 }
             }
@@ -812,10 +817,24 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             // Open in App
             let openItem = eventMenu.addItem(withTitle: "Open in Calendar App", action: #selector(AppDelegate.openEventInCalendar), keyEquivalent: "")
             openItem.representedObject = event.eventIdentifier
+
+            // Open in fanctastical if fantastical is installed
+            if isFantasticalInstalled() {
+                let fantasticalItem = eventMenu.addItem(withTitle: "Open in Fantastical", action: #selector(AppDelegate.openEventInFantastical), keyEquivalent: "")
+                fantasticalItem.representedObject = EventWithDate(event: event, dateSection: dateSection)
+            }
         } else {
             eventItem.toolTip = event.title
         }
     }
+
+    /**
+     * checks if fantastical is installed
+     */
+    func isFantasticalInstalled () -> Bool {
+        NSWorkspace.shared.urlForApplication(withBundleIdentifier: "com.flexibits.fantastical2.mac") != nil
+    }
+
 
     func createPreferencesSection() {
         if removePatchVerion(Defaults[.appVersion]) > removePatchVerion(Defaults[.lastRevisedVersionInChangelog]) {
