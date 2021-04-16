@@ -20,7 +20,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
     var statusItemMenu: NSMenu!
     var menuIsOpen = false
 
-    let eventStore = EKEventStore()
+    var eventStore: EKEventStore!
     var calendars: [EKCalendar] = []
 
     weak var appdelegate: AppDelegate!
@@ -45,6 +45,12 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
         statusItemMenu.delegate = self
 
         enableButtonAction()
+        eventStore = EKEventStore()
+
+        var sources = eventStore.sources
+        sources.append(contentsOf: eventStore!.delegateSources)
+
+        eventStore = EKEventStore(sources: sources)
     }
 
     @objc
