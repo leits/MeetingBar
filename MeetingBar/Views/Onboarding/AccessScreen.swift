@@ -22,17 +22,17 @@ struct AccessScreen: View {
         VStack(alignment: .center) {
             Spacer()
             if accessDenied {
-                Text("Oops! It looks like you denied access to calendars.")
+                Text("access_screen_access_denied_title".loco())
                 Spacer()
-                Text("Go to")
-                Button("System Preferences", action: self.openSystemCalendarPreferences)
-                Text("and select a checkbox near MeetingBar.")
+                Text("access_screen_access_screen_access_denied_go_to_title".loco())
+                Button("access_screen_access_denied_system_preferences_button".loco(), action: self.openSystemCalendarPreferences)
+                Text("access_screen_access_denied_checkbox_title".loco())
                 Spacer()
-                Text("Then you need to launch the app manually to continue setting up.")
+                Text("access_screen_access_denied_relaunch_title".loco())
             } else {
-                Text("Requesting your access to calendars.")
+                Text("access_screen_access_granted_title".loco())
                 Text("")
-                Text("Click \"OK\" in popup window from MacOS.")
+                Text("access_screen_access_granted_click_ok_title".loco())
             }
             Spacer()
         }.padding()

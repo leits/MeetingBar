@@ -20,7 +20,7 @@ struct CalendarsTab: View {
     var body: some View {
         VStack {
             HStack {
-                Text("Select calendars to show events in status bar")
+                Text("preferences_calendars_select_calendars_title".loco())
                 Spacer()
                 Button(action: self.loadCalendarList) {
                     Image(nsImage: NSImage(named: NSImage.refreshTemplateName)!)
@@ -48,8 +48,8 @@ struct CalendarsTab: View {
                 }
             }.border(Color.gray)
             HStack {
-                Text("Don't see the calendar you need?")
-                Button("Add account") { self.showingAddAcountModal.toggle() }
+                Text("preferences_calendars_add_account_description".loco())
+                Button("preferences_calendars_add_account_button".loco()) { self.showingAddAcountModal.toggle() }
                     .sheet(isPresented: $showingAddAcountModal) {
                         AddAccountModal()
                     }
@@ -72,21 +72,14 @@ struct AddAccountModal: View {
         VStack {
             Spacer()
             VStack(alignment: .leading) {
-                Text(
-                    """
-                    To add external Calendars follow these steps:
-                    1. Open the default Calendar App
-                    2. Click 'Add Account' in the menu
-                    3. Choose and connect your account
-                    """
-                )
+                Text("preferences_calendars_add_account_modal".loco())
             }
             Spacer()
             HStack {
                 Button(action: {
                     self.presentationMode.wrappedValue.dismiss()
                 }) {
-                    Text("Close")
+                    Text("general_close".loco())
                 }
             }
         }.padding().frame(width: 400, height: 200)

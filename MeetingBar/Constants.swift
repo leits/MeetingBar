@@ -84,6 +84,29 @@ enum CreateMeetingServices: String, Codable, CaseIterable {
     case outlook_live = "Outlook Live"
     case outlook_office365 = "Outlook Office365"
     case url = "Custom url"
+
+    var localizedValue: String {
+        switch self {
+        case .meet:
+            return "constants_create_meeting_service_meet".loco()
+        case .zoom:
+            return "constants_create_meeting_service_zoom".loco()
+        case .teams:
+            return "constants_create_meeting_service_teams".loco()
+        case .jam:
+            return "constants_create_meeting_service_jam".loco()
+        case .coscreen:
+            return "constants_create_meeting_service_coscreen".loco()
+        case .gcalendar:
+            return "constants_create_meeting_service_gcalendar".loco()
+        case .outlook_live:
+            return "constants_create_meeting_service_outlook_live".loco()
+        case .outlook_office365:
+            return "constants_create_meeting_service_outlook_office365".loco()
+        case .url:
+            return "constants_create_meeting_service_url".loco()
+        }
+    }
 }
 
 enum Links {
@@ -137,6 +160,93 @@ enum MeetingServices: String, Codable, CaseIterable {
     case blackboard_collab = "Blackboard Collaborate"
     case coscreen = "CoScreen"
     case other = "Other"
+
+    var localizedValue: String {
+        switch self {
+        case .phone:
+            return "constants_meeting_service_phone".loco()
+        case .meet:
+            return "constants_meeting_service_meet".loco()
+        case .hangouts:
+            return "constants_meeting_service_hangouts".loco()
+        case .zoom:
+            return "constants_meeting_service_zoom".loco()
+        case .zoom_native:
+            return "constants_meeting_service_zoom_native".loco()
+        case .teams:
+            return "constants_meeting_service_teams".loco()
+        case .webex:
+            return "constants_meeting_service_webex".loco()
+        case .jitsi:
+            return "constants_meeting_service_jitsi".loco()
+        case .chime:
+            return "constants_meeting_service_chime".loco()
+        case .ringcentral:
+            return "constants_meeting_service_ringcentral".loco()
+        case .gotomeeting:
+            return "constants_meeting_service_gotomeeting".loco()
+        case .gotowebinar:
+            return "constants_meeting_service_gotowebinar".loco()
+        case .bluejeans:
+            return "constants_meeting_service_bluejeans".loco()
+        case .eight_x_eight:
+            return "constants_meeting_service_eight_x_eight".loco()
+        case .demio:
+            return "constants_meeting_service_demio".loco()
+        case .join_me:
+            return "constants_meeting_service_join_me".loco()
+        case .zoomgov:
+            return "constants_meeting_service_zoomgov".loco()
+        case .whereby:
+            return "constants_meeting_service_whereby".loco()
+        case .uberconference:
+            return "constants_meeting_service_uberconference".loco()
+        case .blizz:
+            return "constants_meeting_service_blizz".loco()
+        case .teamviewer_meeting:
+            return "constants_meeting_service_teamviewer_meeting".loco()
+        case .vsee:
+            return "constants_meeting_service_vsee".loco()
+        case .starleaf:
+            return "constants_meeting_service_starleaf".loco()
+        case .duo:
+            return "constants_meeting_service_duo".loco()
+        case .voov:
+            return "constants_meeting_service_voov".loco()
+        case .facebook_workspace:
+            return "constants_meeting_service_facebook_workspace".loco()
+        case .lifesize:
+            return "constants_meeting_service_lifesize".loco()
+        case .skype:
+            return "constants_meeting_service_skype".loco()
+        case .skype4biz:
+            return "constants_meeting_service_skype4biz".loco()
+        case .skype4biz_selfhosted:
+            return "constants_meeting_service_skype4biz_selfhosted".loco()
+        case .facetime:
+            return "constants_meeting_service_facetime".loco()
+        case .facetimeaudio:
+            return "constants_meeting_service_facetimeaudio".loco()
+        case .youtube:
+            return "constants_meeting_service_youtube".loco()
+        case .vonageMeetings:
+            return "constants_meeting_service_vonageMeetings".loco()
+        case .meetStream:
+            return "constants_meeting_service_meetStream".loco()
+        case .around:
+            return "constants_meeting_service_around".loco()
+        case .jam:
+            return "constants_meeting_service_jam".loco()
+        case .discord:
+            return "constants_meeting_service_discord".loco()
+        case .blackboard_collab:
+            return "constants_meeting_service_blackboard_collab".loco()
+        case .coscreen:
+            return "constants_meeting_service_coscreen".loco()
+        case .other:
+            return "constants_meeting_service_other".loco()
+        }
+    }
 }
 
 enum TimeFormat: String, Codable, CaseIterable {
@@ -215,6 +325,12 @@ public enum AutoLauncher {
     static let bundleIdentifier: String = "leits.MeetingBar.AutoLauncher"
 }
 
+enum AppLanguage: String, Codable {
+    case system = ""
+    case english = "en"
+    case russian = "ru"
+}
+
 enum Browser: String, Codable, CaseIterable {
     case chrome = "Google Chrome"
     case firefox = "Firefox"
@@ -256,11 +372,34 @@ enum Browser: String, Codable, CaseIterable {
             return nil
         }
     }
+
+    var localizedValue: String {
+        switch self {
+        case .brave:
+            return "constants_browser_brave".loco()
+        case .chrome:
+            return "constants_browser_chrome".loco()
+        case .chromium:
+            return "constants_browser_chromium".loco()
+        case .edge:
+            return "constants_browser_edge".loco()
+        case .firefox:
+            return "constants_browser_firefox".loco()
+        case .opera:
+            return "constants_browser_opera".loco()
+        case .vivaldi:
+            return "constants_browser_vivaldi".loco()
+        case .safari:
+            return "constants_browser_safari".loco()
+        case .defaultBrowser:
+            return "constants_browser_defaultBrowser".loco()
+        }
+    }
 }
 
 
-struct windowTitles {
-    static let onboarding = "Welcome to MeetingBar!"
-    static let preferences = "MeetingBar Preferences"
-    static let changelog = "MeetingBar What's New"
+struct WindowTitles {
+    static let onboarding = "window_title_onboarding".loco()
+    static let preferences = "window_title_preferences".loco()
+    static let changelog = "windows_title_changelog".loco()
 }

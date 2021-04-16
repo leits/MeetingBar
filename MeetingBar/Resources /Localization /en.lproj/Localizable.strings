@@ -1,0 +1,335 @@
+/* 
+  Localizable.strings
+  MeetingBar
+
+  Created by Sergey Ryazanov on 19.03.2021.
+  Copyright © 2021 Andrii Leitsius. All rights reserved.
+*/
+
+"general_ok" = "OK";
+"general_cancel" = "Cancel";
+"general_close" = "Close";
+"general_add" = "Add";
+"general_delete" = "Delete";
+"general_save" = "Save";
+
+"create_meeting_error_title" = "Cannot create new meeting";
+"create_meeting_error_message" = "Custom url \"%@\" is missing or invalid. Please enter a value in the app preferences.";
+"next_meeting_empty_title" = "There are no next meetings today";
+"next_meeting_empty_message" = "Woohoo! It's time to make cocoa";
+
+// MARK: - Window titles
+
+"window_title_preferences" = "MeetingBar Preferences";
+"window_title_onboarding" = "Welcome to MeetingBar!";
+"windows_title_changelog" = "MeetingBar What's New";
+
+// MARK: - Preferences tabs
+
+"preferences_tab_general" = "General";
+"preferences_tab_appearance" = "Appearance";
+"preferences_tab_services" = "Services";
+"preferences_tab_bookmarks" = "Bookmarks";
+"preferences_tab_calendars" = "Calendars";
+"preferences_tab_advanced" = "Advanced";
+
+// MARK: - Preferences General
+
+"preferences_general_option_login_launch" = "Launch at Login";
+"preferences_general_option_preferred_language_title" = "Preferred language:";
+"preferences_general_option_preferred_language_tip" = "⚠️ Application reload required";
+"preferences_general_option_preferred_language_system_value" = "System";
+"preferences_general_option_preferred_language_english_value" = "English";
+"preferences_general_option_preferred_language_russian_value" = "Русский";
+"preferences_general_option_shortcuts" = "Shortcuts";
+"preferences_general_shortcut_open_menu" = "Open menu:";
+"preferences_general_shortcut_create_meeting" = "Create meeting:";
+"preferences_general_shortcut_join_next" = "Join next event meeting:";
+"preferences_general_shortcut_join_from_clipboard" = "Join meeting from clipboard:";
+"preferences_general_meeting_bar_description" = "MeetingBar is open-source app created by Andrii Leitsius\nThe app aims to make your experience with online meetings smoother and easier";
+"preferences_general_external_patronage" = "Patronage";
+"preferences_general_external_gitHub" = "GitHub";
+"preferences_general_external_contact" = "Contact";
+"preferences_general_patron_title" = "Become a Patron";
+"preferences_general_patron_three_months" = "3 Month - 2.99 USD";
+"preferences_general_patron_six_months" = "6 Month - 5.99 USD";
+"preferences_general_patron_twelve_months" = "12 Month - 11.99 USD";
+"preferences_general_patron_description" = "These one-time purchases do not auto-renew.";
+"preferences_general_patron_thank_for_purchase" = "Thanks! You support MeetingBar for %d Month! 🎉";
+"preferences_general_patron_restore_purchases" = "Restore Purchases";
+"preferences_general_feedback_title" = "If you have any questions or feedback,\nfeel free to contact me:";
+"preferences_general_feedback_email" = "email";
+"preferences_general_feedback_twitter" = "twitter";
+"preferences_general_feedback_telegram" = "telegram";
+
+// MARK: - Preferences Appearance
+
+"preferences_appearance_events_title" = "Events";
+"preferences_appearance_events_show_events_for_title" = "Show events for";
+"preferences_appearance_events_show_events_for_today_value" = "today";
+"preferences_appearance_events_show_events_for_today_tomorrow_value" = "today and tomorrow";
+"preferences_appearance_events_all_day_title" = "All day events:";
+"preferences_appearance_events_without_guest_title" = "Events without guests:";
+"preferences_appearance_events_past_title" = "Past events:";
+"preferences_appearance_events_pending_title" = "Pending events";
+"preferences_appearance_events_declined_title" = "Declined events:";
+"preferences_appearance_events_value_show" = "show";
+"preferences_appearance_events_value_hide" = "hide";
+"preferences_appearance_events_value_as_inactive" = "show as inactive";
+"preferences_appearance_events_value_as_underlined" = "show as underlined";
+"preferences_appearance_events_value_with_strikethrough" = "show with strikethrough";
+"preferences_appearance_events_value_only_with_link" = "show only with meeting link";
+"preferences_appearance_status_bar_title" = "Status bar";
+"preferences_appearance_status_bar_icon_title" = "Icon";
+"preferences_appearance_status_bar_icon_app_icon_value" = "\U00A0App icon";
+"preferences_appearance_status_bar_icon_calendar_icon_value" = "\U00A0Calendar icon";
+"preferences_appearance_status_bar_icon_specific_icon_value" = "\U00A0Event specific icon (e.g. MS Teams)";
+"preferences_appearance_status_bar_icon_no_icon_value" = "\U00A0No icon";
+"preferences_appearance_status_bar_title_title" = "Title";
+"preferences_appearance_status_bar_title_event_title_value" = "event title";
+"preferences_appearance_status_bar_title_dot_value" = "dot (•)";
+"preferences_appearance_status_bar_title_hide_value" = "hide";
+"preferences_appearance_status_bar_title_shorten_stepper" = "shorten to %d chars";
+"preferences_appearance_status_bar_time_title" = "Time";
+"preferences_appearance_status_bar_time_show_value" = "show";
+"preferences_appearance_status_bar_time_show_under_title_value" = "show under title";
+"preferences_appearance_status_bar_time_hide_value" = "hide";
+"preferences_appearance_status_bar_next_event" = "Show only next event starting within %d minutes";
+"preferences_appearance_menu_title" = "Menu";
+"preferences_appearance_menu_shorten_event_title_toggle" = "Shorten event title to";
+"preferences_appearance_menu_shorten_event_title_stepper" = "%d chars";
+"preferences_appearance_menu_time_format_title" = "Time format:";
+"preferences_appearance_menu_time_format_12_hour_value" = "12-hour (AM/PM)";
+"preferences_appearance_menu_time_format_24_hour_value" = "24-hour";
+"preferences_appearance_menu_show_event_title" = "Show event:";
+"preferences_appearance_menu_show_event_end_time_value" = "end time";
+"preferences_appearance_menu_show_event_icon_value" = "icon";
+"preferences_appearance_menu_show_event_details_value" = "details as submenu";
+
+// MARK: - Preferences Services
+
+"preferences_services_link_meet_title" = "Open Meet links in";
+"preferences_services_link_zoom_title" = "Open Zoom links in";
+"preferences_services_link_team_title" = "Open Teams links in";
+"preferences_services_link_default_browser_value" = "Default Browser";
+"preferences_services_link_zoom_value" = "Zoom app";
+"preferences_services_link_teams_value" = "Teams app";
+"preferences_services_supported_links_list" = "Supported links for services:\n%@";
+"preferences_services_supported_links_mailback" = "If the service you use isn't supported, email me";
+"preferences_services_create_meeting_title" = "Create meetings via";
+"preferences_services_create_meeting_custom_url_value" = "Custom url";
+"preferences_services_create_meeting_custom_url_placeholder" = "Please enter a valid url (with the url scheme, e.g. https://)";
+"preferences_services_google_meet_tip" = "Tip: Google Meet supports choosing account via parameter, e.g. https://meet.google.com/new?authuser=1";
+
+// MARK: - Preferences Bookmarks
+
+"preferences_bookmarks_delete_bookmark_title" = "Delete bookmark?";
+"preferences_bookmarks_delete_bookmark_message" = "Do you want to delete bookmark %@?";
+"preferences_bookmarks_add_bookmark_button" = "Add bookmark";
+"preferences_bookmarks_new_bookmark_title" = "New bookmark";
+"preferences_bookmarks_new_bookmark_name" = "Name";
+"preferences_bookmarks_new_bookmark_link_phone" = "Link/Phone";
+"preferences_bookmarks_new_bookmark_service" = "Service";
+"preferences_bookmarks_new_bookmark_already_exist" = "A bookmark with this link/phone already exists with the name %@:\n%@";
+"preferences_bookmarks_new_bookmark_error_title" = "Can't add bookmark";
+
+// MARK: - Preferences Calendars
+
+"preferences_calendars_select_calendars_title" = "Select calendars to show events in status bar";
+"preferences_calendars_add_account_description" = "Don't see the calendar you need?";
+"preferences_calendars_add_account_button" = "Add account";
+"preferences_calendars_add_account_modal" = "To add external Calendars follow these steps:\n1. Open the default Calendar App\n2. Click 'Add Account' in the menu\n3. Choose and connect your account";
+
+// MARK: - Preferences Advanced
+
+"preferences_advanced_setting_warning" = "⚠️ Use these settings only if you understand what they do";
+"preferences_advanced_apple_script_checkmark" = "Run AppleScript when joining to meeting";
+"preferences_advanced_apple_script_placeholder" = "# write your script here\ntell application \"Music\" to pause";
+"preferences_advanced_save_script_button" = "Save script";
+"preferences_advanced_wrong_location_title" = "Wrong location";
+"preferences_advanced_wrong_location_message" = "Please select the User > Library > Application Scripts > leits.MeetingBar folder";
+"preferences_advanced_wrong_location_button" = "Got it!";
+"preferences_advanced_regex_title" = "Custom regexes for meeting link";
+"preferences_advanced_regex_add_button" = "Add regex";
+"preferences_advanced_regex_edit_button" = "edit";
+"preferences_advanced_regex_delete_button" = "x";
+"preferences_advanced_regex_new_title" = "Enter regex";
+"preferences_advanced_regex_new_cant_save_title" = "Can't save regex";
+
+// MARK: - Status bar
+
+"status_bar_section_today" = "Today";
+"status_bar_section_tomorrow" = "Tomorrow";
+"status_bar_empty_calendar_message" = "Select calendars in preferences\nto see your meetings";
+"status_bar_section_join_next_meeting" = "Join next event meeting";
+"status_bar_section_join_from_clipboard" = "Open meeting from clipboard";
+"status_bar_section_join_create_meeting" = "Create meeting";
+"status_bar_section_bookmarks_title" = "Bookmarks";
+"status_bar_section_bookmarks_menu" = "Bookmarks menu";
+"status_bar_section_date_nothing" = "Nothing for %@";
+"status_bar_event_start_time_all_day" = "All day";
+"status_bar_submenu_calendar_title" = "Calendar: %@";
+"status_bar_submenu_duration_all_day" = "%@ - %@ (%@ minutes)";
+"status_bar_submenu_status_title" = "Status: %@";
+"status_bar_submenu_status_accepted" = " 👍 Accepted";
+"status_bar_submenu_status_canceled" = " 👎 Canceled";
+"status_bar_submenu_status_tentative" = " ☝️ Tentative";
+"status_bar_submenu_status_pending" = " ⏳ Pending";
+"status_bar_submenu_status_unknown" = " ❔ Unknown";
+"status_bar_submenu_status_default_extended" = " ❔ (%@)";
+"status_bar_submenu_status_default_simple" = " ❔ (Unknown)";
+"status_bar_submenu_location_title" = "Location:";
+"status_bar_submenu_organizer_title" = "Organizer:";
+"status_bar_submenu_notes_title" = "Notes:";
+"status_bar_submenu_attendees_title" = "Attendees (%d)";
+"status_bar_submenu_attendees_no_name" = "No name attendee";
+"status_bar_submenu_attendees_you" = "%@ (you)";
+"status_bar_submenu_attendees_status_tentative" = " [tentative]";
+"status_bar_submenu_attendees_status_unknown" = " [?]";
+"status_bar_submenu_open_in_calendar" = "Open in Calendar App";
+"status_bar_preferences" = "Preferences";
+"status_bar_quit" = "Quit MeetingBar";
+"status_bar_no_title" = "No title";
+"status_bar_event_status_now" = "now (%@ left)";
+"status_bar_event_status_in" = "in %@";
+"status_bar_error_apple_script_title" = "AppleScript return error";
+"status_bar_error_link_missed_title" = "Epp! Can't join the %@";
+"status_bar_error_link_missed_message" = "Link not found, or your meeting service is not yet supported";
+"status_bar_error_team_link_title" = "Oops! Unable to open the link in Microsoft Teams app";
+"status_bar_error_team_link_message" = "Make sure you have Microsoft Teams app installed, or change the app in the preferences.";
+"status_bar_error_zoom_app_link_title" = "Oops! Unable to open the link in Zoom app";
+"status_bar_error_zoom_app_link_message" = "Make sure you have Zoom app installed, or change the app in the preferences.";
+"status_bar_error_zoom_native_link_title" = "Oops! Unable to open the native link in Zoom app";
+"status_bar_error_zoom_native_link_message" = "Make sure you have Zoom app installed, or change the app in the preferences.";
+
+// MARK: - Welcome screen
+
+"welcome_screen_greeting_main_title" = "Hi! MeetingBar is such a simple app that everything is almost ready.";
+"welcome_screen_greeting_additional_title" = "Let’s make it 100% yours!";
+"welcome_screen_login_launch_toggle_title" = "Launch MeetingBar at Login";
+"welcome_screen_shortcut_next_meeting_title" = "Join next event meeting with your shortcut:";
+"welcome_screen_ad_hoc_meeting_title" = "Create ad hoc meetings in ";
+"welcome_screen_shortcut_ad_hoc_meeting_title" = "with your shortcut:";
+"welcome_screen_setup_calendar_title" = "Setup calendars";
+
+// MARK: - Calendars screen
+
+"calendars_screen_select_calendar_title" = "Select at least one calendar";
+"calendars_screen_start_button" = "Start using app";
+
+// MARK: - Access screen
+
+"access_screen_access_denied_title" = "Oops! It looks like you denied access to calendars.";
+"access_screen_access_screen_access_denied_go_to_title" = "Go to";
+"access_screen_access_denied_system_preferences_button" = "System Preferences";
+"access_screen_access_denied_checkbox_title" = "and select a checkbox near MeetingBar.";
+"access_screen_access_denied_relaunch_title" = "Then you need to launch the app manually to continue setting up.";
+"access_screen_access_granted_title" = "Requesting your access to calendars.";
+"access_screen_access_granted_click_ok_title" = "Click \"OK\" in popup window from MacOS.";
+
+// MARK: - Shared
+
+"shared_send_notification_toggle" = "Send notification to join next event meeting";
+"shared_send_notification_directly_value" = "when event starts";
+"shared_send_notification_one_minute_value" = "1 minute before";
+"shared_send_notification_three_minute_value" = "3 minutes before";
+"shared_send_notification_five_minute_value" = "5 minutes before";
+"shared__send_notification_no_alert_style_tip" = "⚠️ Your macOS notification settings for MeetingBar are currently not set to alert. Please activate alerts if you want to have persistent notifications.";
+"shared_send_notification_disabled_tip" = "⚠️ Your macOS notification settings for MeetingBar are currently off. Please enable the notifications in macOS system settings to do not miss a meeting.";
+
+// MARK: - Constants
+"constants_create_meeting_service_meet" = "Google Meet";
+"constants_create_meeting_service_jam" = "Jam";
+"constants_create_meeting_service_coscreen" = "CoScreen";
+"constants_create_meeting_service_zoom" = "Zoom";
+"constants_create_meeting_service_teams" = "Microsoft Teams";
+"constants_create_meeting_service_gcalendar" = "Google Calendar";
+"constants_create_meeting_service_outlook_live" = "Outlook Live";
+"constants_create_meeting_service_outlook_office365" = "Outlook Office365";
+"constants_create_meeting_service_url" = "Custom url";
+
+"constants_meeting_service_phone" = "Phone";
+"constants_meeting_service_meet" = "Google Meet";
+"constants_meeting_service_hangouts" = "Google Hangouts";
+"constants_meeting_service_zoom" = "Zoom";
+"constants_meeting_service_zoom_native" = "Zoom native";
+"constants_meeting_service_teams" = "Microsoft Teams";
+"constants_meeting_service_webex" = "Cisco Webex";
+"constants_meeting_service_jitsi" = "Jitsi";
+"constants_meeting_service_chime" = "Amazon Chime";
+"constants_meeting_service_ringcentral" = "Ring Central";
+"constants_meeting_service_gotomeeting" = "GoToMeeting";
+"constants_meeting_service_gotowebinar" = "GoToWebinar";
+"constants_meeting_service_bluejeans" = "BlueJeans";
+"constants_meeting_service_eight_x_eight" = "8x8";
+"constants_meeting_service_demio" = "Demio";
+"constants_meeting_service_join_me" = "Join.me";
+"constants_meeting_service_zoomgov" = "ZoomGov";
+"constants_meeting_service_whereby" = "Whereby";
+"constants_meeting_service_uberconference" = "Uber Conference";
+"constants_meeting_service_blizz" = "Blizz";
+"constants_meeting_service_teamviewer_meeting" = "Teamviewer Meeting";
+"constants_meeting_service_vsee" = "VSee";
+"constants_meeting_service_starleaf" = "StarLeaf";
+"constants_meeting_service_duo" = "Google Duo";
+"constants_meeting_service_voov" = "Tencent VooV";
+"constants_meeting_service_facebook_workspace" = "Facebook Workspace";
+"constants_meeting_service_lifesize" = "Lifesize";
+"constants_meeting_service_skype" = "Skype";
+"constants_meeting_service_skype4biz" = "Skype For Business";
+"constants_meeting_service_skype4biz_selfhosted" = "Skype For Business (SH)";
+"constants_meeting_service_facetime" = "Facetime";
+"constants_meeting_service_facetimeaudio" = "Facetime Audio";
+"constants_meeting_service_youtube" = "YouTube";
+"constants_meeting_service_vonageMeetings" = "Vonage Meetings";
+"constants_meeting_service_meetStream" = "Google Meet Stream";
+"constants_meeting_service_around" = "Around";
+"constants_meeting_service_jam" = "Jam";
+"constants_meeting_service_discord" = "Discord";
+"constants_meeting_service_blackboard_collab" = "Blackboard Collaborate";
+"constants_meeting_service_coscreen" = "CoScreen";
+"constants_meeting_service_other" = "Other";
+
+"constants_browser_brave" = "Brave";
+"constants_browser_chrome" = "Google Chrome";
+"constants_browser_chromium" = "Chromium";
+"constants_browser_edge" = "Microsoft Edge";
+"constants_browser_firefox" = "Firefox";
+"constants_browser_opera" = "Opera";
+"constants_browser_vivaldi" = "Vivaldi";
+"constants_browser_safari" = "Safari";
+"constants_browser_defaultBrowser" = "Default Browser";
+
+"constants_time_format_12_h" = "12-hour";
+"constants_time_format_24_h" = "24-hour";
+
+// MARK: - Store
+
+"store_patronage_title" = "MeetingBar Patronage";
+"store_patronage_restore_success_message" = "Successfully restored";
+"store_patronage_restore_nothing_message" = "Nothing to Restore";
+"store_patronage_purchase_success_message" = "Successfully purchased. Thanks for support!";
+"store_patronage_purchase_unknown_message" = "Unknown error. Please contact support";
+"store_patronage_purchase_client_invalid_message" = "Not allowed to make the payment";
+"store_patronage_purchase_payment_invalid_message" = "The purchase identifier was invalid";
+"store_patronage_purchase_payment_not_allowed_message" = "The device is not allowed to make the payment";
+"store_patronage_purchase_store_product_not_available_message" = "The product is not available in the current storefront";
+"store_patronage_purchase_cloud_service_permission_denied_message" = "Access to cloud service information is not allowed";
+"store_patronage_purchase_cloud_service_network_connection_failed" = "Could not connect to the network";
+"store_patronage_purchase_cloud_service_revoked_message" = "User has revoked permission to use this cloud service";
+
+// MARK: - Helpres
+
+"helper_title_sample_show_title" = "An event with an excessively sizeable 55-character title";
+"helper_title_sample_show_time" = " in 1h 25m";
+"helper_title_sample_dot_time" = "• in 1h 25m";
+"helper_title_sample_offset_title" = "An event with an excessively sizeable 100-character title to show the shorten capabilities here ....";
+
+// MARK: - Notifications
+
+"notifications_event_start_soon_body" = "The event starts soon";
+
+// MARK: - Link open
+
+"link_url_cant_open_title" = "Oops! Unable to open the link in %@";
+"link_url_cant_open_message" = "Make sure you have %@ installed, or change the browser in preferences.";
