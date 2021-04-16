@@ -45,7 +45,7 @@ extension EKEventStore {
                 if Defaults[.allDayEvents] == AlldayEventsAppereance.show {
                     addEvent = true
                 } else if Defaults[.allDayEvents] == AlldayEventsAppereance.show_with_meeting_link_only {
-                    let result = getMeetingLink(calendarEvent, acceptAnyLink: false)
+                    let result = getMeetingLink(calendarEvent)
 
                     if result?.url != nil {
                         addEvent = true
