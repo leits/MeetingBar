@@ -66,7 +66,7 @@ extension Defaults.Keys {
     static let allDayEvents = Key<AlldayEventsAppereance>("allDayEvents", default: AlldayEventsAppereance.show)
 
     // show all day events - by default show all, also events without any link
-    static let nonAllDayEvents = Key<NonAlldayEventsAppereance>("nonAllDayevents", default: NonAlldayEventsAppereance.show)
+    static let nonAllDayEvents = Key<NonAlldayEventsAppereance>("nonAllDayEvents", default: NonAlldayEventsAppereance.show)
 
     // show the end time of a meeting in the meetingbar for each event entry
     static let showEventEndTime = Key<Bool>("showEventEndTime", default: true)
