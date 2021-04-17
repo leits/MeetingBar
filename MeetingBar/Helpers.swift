@@ -193,7 +193,7 @@ func detectLinks(text: String) -> [URL] {
 
 func openEvent(_ event: EKEvent) {
     let eventTitle = event.title ?? "No title"
-    if let meeting = getMeetingLink(event, acceptAnyLink: Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.hide_without_any_link || Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show_inactive_without_any_link) {
+    if let meeting = getMeetingLink(event, acceptAnyLink: Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show || Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.hide_without_any_link || Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show_inactive_without_any_link) {
         if Defaults[.runJoinEventScript], Defaults[.joinEventScriptLocation] != nil {
             if let url = Defaults[.joinEventScriptLocation]?.appendingPathComponent("joinEventScript.scpt") {
                 print("URL: \(url)")

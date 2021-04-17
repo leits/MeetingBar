@@ -528,7 +528,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
      * try  to get the correct image for the specific
      */
     func getMeetingIcon(_ event: EKEvent) -> NSImage {
-        let result = getMeetingLink(event, acceptAnyLink: Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.hide_without_any_link || Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show_inactive_without_any_link)
+        let result = getMeetingLink(event, acceptAnyLink: Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show || Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.hide_without_any_link || Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show_inactive_without_any_link)
 
         return getMeetingIconForLink(result)
     }
