@@ -1,0 +1,337 @@
+/*
+Localizable.strings
+MeetingBar
+
+Created by byron on 18.04.2021.
+Copyright © 2021 byron. All rights reserved.
+*/
+
+"general_ok" = "好的";
+"general_cancel" = "取消";
+"general_close" = "关闭";
+"general_add" = "添加";
+"general_delete" = "删除";
+"general_save" = "保存";
+
+"create_meeting_error_title" = "无法创建新会议";
+"create_meeting_error_message" = "自定义 url \"%@\" 缺失或者无效. 请在设置中输入.";
+"next_meeting_empty_title" = "今天没有下一次会议";
+"next_meeting_empty_message" = "WOOHOO！ 是时候制作可可了";
+
+// MARK: - Window titles
+
+"window_title_preferences" = "会议栏偏好";
+"window_title_onboarding" = "欢迎来到会栏！";
+"windows_title_changelog" = "会议栏是什么新的";
+
+// MARK: - Preferences tabs
+
+"preferences_tab_general" = "通用";
+"preferences_tab_appearance" = "外观";
+"preferences_tab_services" = "服务";
+"preferences_tab_bookmarks" = "书签";
+"preferences_tab_calendars" = "日历";
+"preferences_tab_advanced" = "高级";
+
+// MARK: - Preferences General
+
+"preferences_general_option_login_launch" = "在登录时发布";
+"preferences_general_option_preferred_language_title" = "首选语言：";
+"preferences_general_option_preferred_language_tip" = "⚠️申请重载需要";
+"preferences_general_option_preferred_language_system_value" = "系统";
+"preferences_general_option_preferred_language_english_value" = "英语";
+"preferences_general_option_preferred_language_russian_value" = "俄语";
+"preferences_general_option_preferred_language_chinese_simple_value" = "简体中文";
+"preferences_general_option_preferred_language_chinese_traditional_value" = "繁体中文";
+"preferences_general_option_shortcuts" = "快捷方式";
+"preferences_general_shortcut_open_menu" = "打开菜单：";
+"preferences_general_shortcut_create_meeting" = "创建会议：";
+"preferences_general_shortcut_join_next" = "加入下一次活动会议：";
+"preferences_general_shortcut_join_from_clipboard" = "加入剪贴板的会议：";
+"preferences_general_meeting_bar_description" = "会议栏是Andrii Leitsius创建的开源应用程序，Andrii Leitsius \ nthe app旨在使您的在线会议体验更顺畅，更容易";
+"preferences_general_external_patronage" = "惠顾";
+"preferences_general_external_gitHub" = "GitHub.";
+"preferences_general_external_contact" = "接触";
+"preferences_general_patron_title" = "成为赞助人";
+"preferences_general_patron_three_months" = "3个月 -  2.99美元";
+"preferences_general_patron_six_months" = "6个月 -  5.99 USD";
+"preferences_general_patron_twelve_months" = "12个月 -  11.99美元";
+"preferences_general_patron_description" = "这些一次性购买不会自动更新。";
+"preferences_general_patron_thank_for_purchase" = "谢谢！ 您支持Meetabbar％DOMEN！ 🎉";
+"preferences_general_patron_restore_purchases" = "恢复购买";
+"preferences_general_feedback_title" = "如果您有任何疑问或反馈，请随时与我联系：";
+"preferences_general_feedback_email" = "电子邮件";
+"preferences_general_feedback_twitter" = "推特";
+"preferences_general_feedback_telegram" = "电报";
+
+// MARK: - Preferences Appearance
+
+"preferences_appearance_events_title" = "活动";
+"preferences_appearance_events_show_events_for_title" = "显示活动";
+"preferences_appearance_events_show_events_for_today_value" = "今天";
+"preferences_appearance_events_show_events_for_today_tomorrow_value" = "今天和明天";
+"preferences_appearance_events_all_day_title" = "整天活动：";
+"preferences_appearance_events_without_guest_title" = "没有客人的活动：";
+"preferences_appearance_events_past_title" = "过去的事件：";
+"preferences_appearance_events_pending_title" = "待决赛";
+"preferences_appearance_events_declined_title" = "拒绝事件：";
+"preferences_appearance_events_value_show" = "表演";
+"preferences_appearance_events_value_hide" = "隐藏";
+"preferences_appearance_events_value_as_inactive" = "显示为非活动";
+"preferences_appearance_events_value_as_underlined" = "表现为下划线";
+"preferences_appearance_events_value_with_strikethrough" = "用滴塞展示";
+"preferences_appearance_events_value_only_with_link" = "仅显示会议链接";
+"preferences_appearance_status_bar_title" = "状态栏";
+"preferences_appearance_status_bar_icon_title" = "图标";
+"preferences_appearance_status_bar_icon_app_icon_value" = "\ u00a0app图标";
+"preferences_appearance_status_bar_icon_calendar_icon_value" = "\ U00A0日历图标";
+"preferences_appearance_status_bar_icon_specific_icon_value" = "\ U00A0事件特定图标（I.N. MS团队）";
+"preferences_appearance_status_bar_icon_no_icon_value" = "\ u00a0no图标";
+"preferences_appearance_status_bar_title_title" = "标题";
+"preferences_appearance_status_bar_title_event_title_value" = "活动标题";
+"preferences_appearance_status_bar_title_dot_value" = "点（•）";
+"preferences_appearance_status_bar_title_hide_value" = "隐藏";
+"preferences_appearance_status_bar_title_shorten_stepper" = "缩短为％d isc";
+"preferences_appearance_status_bar_time_title" = "时间";
+"preferences_appearance_status_bar_time_show_value" = "表演";
+"preferences_appearance_status_bar_time_show_under_title_value" = "显示下标题下";
+"preferences_appearance_status_bar_time_hide_value" = "隐藏";
+"preferences_appearance_status_bar_next_event" = "仅在％d分钟内显示下一个事件";
+"preferences_appearance_menu_title" = "菜单";
+"preferences_appearance_menu_shorten_event_title_toggle" = "缩短活动标题";
+"preferences_appearance_menu_shorten_event_title_stepper" = "％D坦克";
+"preferences_appearance_menu_time_format_title" = "时间格式：";
+"preferences_appearance_menu_time_format_12_hour_value" = "12小时（AM / PM）";
+"preferences_appearance_menu_time_format_24_hour_value" = "24小时";
+"preferences_appearance_menu_show_event_title" = "显示活动：";
+"preferences_appearance_menu_show_event_end_time_value" = "时间结束";
+"preferences_appearance_menu_show_event_icon_value" = "图标";
+"preferences_appearance_menu_show_event_details_value" = "详细信息作为子菜单";
+
+// MARK: - Preferences Services
+
+"preferences_services_link_meet_title" = "开放符合链接";
+"preferences_services_link_zoom_title" = "打开缩放链接";
+"preferences_services_link_team_title" = "开放团队链接";
+"preferences_services_link_default_browser_value" = "默认浏览器";
+"preferences_services_link_zoom_value" = "缩放应用程序";
+"preferences_services_link_teams_value" = "团队应用程序";
+"preferences_services_supported_links_list" = "支持的服务链接：\ n％@";
+"preferences_services_supported_links_mailback" = "如果不支持您使用的服务，请给我发电子邮件";
+"preferences_services_create_meeting_title" = "通过";
+"preferences_services_create_meeting_custom_url_value" = "自定义网址";
+"preferences_services_create_meeting_custom_url_placeholder" = "请输入有效的URL（具有URL方案，例如，HTTPS：//）";
+"preferences_services_google_meet_tip" = "提示：Google会议支持通过参数选择帐户，例如， https://meet.google.com/new?authuser=1";
+
+// MARK: - Preferences Bookmarks
+
+"preferences_bookmarks_delete_bookmark_title" = "删除书签？";
+"preferences_bookmarks_delete_bookmark_message" = "你想删除书签％@吗？";
+"preferences_bookmarks_add_bookmark_button" = "添加书签";
+"preferences_bookmarks_new_bookmark_title" = "新的书签";
+"preferences_bookmarks_new_bookmark_name" = "name";
+"preferences_bookmarks_new_bookmark_link_phone" = "链接/电话";
+"preferences_bookmarks_new_bookmark_service" = "服务";
+"preferences_bookmarks_new_bookmark_already_exist" = "具有此链接/电话的书签已存在名称％@：\ n％@";
+"preferences_bookmarks_new_bookmark_error_title" = "无法添加书签";
+
+// MARK: - Preferences Calendars
+
+"preferences_calendars_select_calendars_title" = "选择日历以在状态栏中显示事件";
+"preferences_calendars_add_account_description" = "看不到您需要的日历？";
+"preferences_calendars_add_account_button" = "新增帐户";
+"preferences_calendars_add_account_modal" = "要添加外部日历，请执行以下步骤：\ n1。 打开默认日历应用程序\ n2。 单击菜单中的“添加帐户”\ n3。 选择并连接您的帐户";
+
+// MARK: - Preferences Advanced
+
+"preferences_advanced_setting_warning" = "◦只有您了解他们所做的内容时才使用这些设置";
+"preferences_advanced_apple_script_checkmark" = "加入会议时运行AppleScript";
+"preferences_advanced_apple_script_placeholder" = "# 在此写脚本\ntell application \"Music\" to pause";
+"preferences_advanced_save_script_button" = "保存脚本";
+"preferences_advanced_wrong_location_title" = "错误的位置";
+"preferences_advanced_wrong_location_message" = "请选择用户>库>应用程序脚本> leits.meetingBar文件夹";
+"preferences_advanced_wrong_location_button" = "知道了！";
+"preferences_advanced_regex_title" = "用于会议链接的自定义正则表达式";
+"preferences_advanced_regex_add_button" = "添加正则表达式";
+"preferences_advanced_regex_edit_button" = "编辑";
+"preferences_advanced_regex_delete_button" = "X";
+"preferences_advanced_regex_new_title" = "输入正则表达式";
+"preferences_advanced_regex_new_cant_save_title" = "无法保存正则表达式";
+
+// MARK: - Status bar
+
+"status_bar_section_today" = "今天";
+"status_bar_section_tomorrow" = "明天";
+"status_bar_empty_calendar_message" = "选择首选项的日历\没有看到您的会议";
+"status_bar_section_join_next_meeting" = "加入下一次活动会议";
+"status_bar_section_join_from_clipboard" = "从剪贴板开放会议";
+"status_bar_section_join_create_meeting" = "创建会议";
+"status_bar_section_bookmarks_title" = "书签";
+"status_bar_section_bookmarks_menu" = "书签菜单";
+"status_bar_section_date_nothing" = "Nothing for %@";
+"status_bar_event_start_time_all_day" = "一整天";
+"status_bar_submenu_calendar_title" = "日历： ％@";
+"status_bar_submenu_duration_all_day" = "％@ - ％@ （％@ 分钟）";
+"status_bar_submenu_status_title" = "地位： ％@";
+"status_bar_submenu_status_accepted" = "👍接受";
+"status_bar_submenu_status_canceled" = "👎已取消";
+"status_bar_submenu_status_tentative" = "☝️暂定";
+"status_bar_submenu_status_pending" = "⏳挂起";
+"status_bar_submenu_status_unknown" = "❔未知";
+"status_bar_submenu_status_default_extended" = "❔ (%@)";
+"status_bar_submenu_status_default_simple" = "❔（未知）";
+"status_bar_submenu_location_title" = "地点：";
+"status_bar_submenu_organizer_title" = "组织者：";
+"status_bar_submenu_notes_title" = "笔记：";
+"status_bar_submenu_attendees_title" = "与会者（％d）";
+"status_bar_submenu_attendees_no_name" = "没有名字参加者";
+"status_bar_submenu_attendees_you" = "%@ (有)";
+"status_bar_submenu_attendees_status_tentative" = "[暂定的]";
+"status_bar_submenu_attendees_status_unknown" = "[?]";
+"status_bar_submenu_open_in_calendar" = "在日历应用程序中打开";
+"status_bar_preferences" = "首选项";
+"status_bar_quit" = "退出会议栏";
+"status_bar_no_title" = "t";
+"status_bar_event_status_now" = "现在（％@左）";
+"status_bar_event_status_in" = "在 ％@";
+"status_bar_error_apple_script_title" = "Applescript退货错误";
+"status_bar_error_link_missed_title" = "epp！ 无法加入％@";
+"status_bar_error_link_missed_message" = "未找到链接，或者您的会议服务尚不支持";
+"status_bar_error_team_link_title" = "哎呀！ 无法在Microsoft团队应用程序中打开链接";
+"status_bar_error_team_link_message" = "确保您安装了Microsoft Teams应用程序，或在首选项中更改应用程序。";
+"status_bar_error_zoom_app_link_title" = "哎呀！ 无法在缩放应用中打开链接";
+"status_bar_error_zoom_app_link_message" = "确保您安装了缩放应用程序，或在首选项中更改应用程序。";
+"status_bar_error_zoom_native_link_title" = "哎呀！ 无法在缩放应用程序中打开本机链接";
+"status_bar_error_zoom_native_link_message" = "确保您安装了缩放应用程序，或在首选项中更改应用程序。";
+
+// MARK: - Welcome screen
+
+"welcome_screen_greeting_main_title" = "你好！ MeetingBar是一个简单的应用程序，一切都几乎准备就绪。";
+"welcome_screen_greeting_additional_title" = "让我们100％你！";
+"welcome_screen_login_launch_toggle_title" = "在登录时启动会栏";
+"welcome_screen_shortcut_next_meeting_title" = "使用快捷方式加入下次活动会议：";
+"welcome_screen_ad_hoc_meeting_title" = "创建特设会议";
+"welcome_screen_shortcut_ad_hoc_meeting_title" = "用你的快捷方式：";
+"welcome_screen_setup_calendar_title" = "设置日历";
+
+// MARK: - Calendars screen
+
+"calendars_screen_select_calendar_title" = "选择至少一个日历";
+"calendars_screen_start_button" = "开始使用应用程序";
+
+// MARK: - Access screen
+
+"access_screen_access_denied_title" = "哎呀！ 看起来你否认访问日历。";
+"access_screen_access_screen_access_denied_go_to_title" = "去";
+"access_screen_access_denied_system_preferences_button" = "系统偏好";
+"access_screen_access_denied_checkbox_title" = "并在会栏附近选择一个复选框。";
+"access_screen_access_denied_relaunch_title" = "然后，您需要手动启动应用程序以继续设置。";
+"access_screen_access_granted_title" = "要求您访问日历。";
+"access_screen_access_granted_click_ok_title" = "在MacOS弹框中点击 \"OK\".";
+
+// MARK: - Shared
+
+"shared_send_notification_toggle" = "发送通知加入下一次活动会议";
+"shared_send_notification_directly_value" = "当事件开始时";
+"shared_send_notification_one_minute_value" = "前1分钟";
+"shared_send_notification_three_minute_value" = "3分钟前";
+"shared_send_notification_five_minute_value" = "前5分钟";
+"shared__send_notification_no_alert_style_tip" = "⚠️ekyeary的MacoS通知设置的Measurebar目前未设置为警报。 如果要具有持久的通知，请激活警报。";
+"shared_send_notification_disabled_tip" = "⚠️当前关闭会栏的MacOS通知设置。 请在MacOS系统设置中启用通知，不要错过会议。";
+
+// MARK: - Constants
+"constants_create_meeting_service_meet" = "Google Meet";
+"constants_create_meeting_service_jam" = "Jam";
+"constants_create_meeting_service_coscreen" = "CoScreen";
+"constants_create_meeting_service_zoom" = "Zoom";
+"constants_create_meeting_service_teams" = "Microsoft Teams";
+"constants_create_meeting_service_gcalendar" = "Google Calendar";
+"constants_create_meeting_service_outlook_live" = "Outlook Live";
+"constants_create_meeting_service_outlook_office365" = "Outlook Office365";
+"constants_create_meeting_service_url" = "自定义 url";
+
+"constants_meeting_service_phone" = "Phone";
+"constants_meeting_service_meet" = "Google Meet";
+"constants_meeting_service_hangouts" = "Google Hangouts";
+"constants_meeting_service_zoom" = "Zoom";
+"constants_meeting_service_zoom_native" = "Zoom native";
+"constants_meeting_service_teams" = "Microsoft Teams";
+"constants_meeting_service_webex" = "Cisco Webex";
+"constants_meeting_service_jitsi" = "Jitsi";
+"constants_meeting_service_chime" = "Amazon Chime";
+"constants_meeting_service_ringcentral" = "Ring Central";
+"constants_meeting_service_gotomeeting" = "GoToMeeting";
+"constants_meeting_service_gotowebinar" = "GoToWebinar";
+"constants_meeting_service_bluejeans" = "BlueJeans";
+"constants_meeting_service_eight_x_eight" = "8x8";
+"constants_meeting_service_demio" = "Demio";
+"constants_meeting_service_join_me" = "Join.me";
+"constants_meeting_service_zoomgov" = "ZoomGov";
+"constants_meeting_service_whereby" = "Whereby";
+"constants_meeting_service_uberconference" = "Uber Conference";
+"constants_meeting_service_blizz" = "Blizz";
+"constants_meeting_service_teamviewer_meeting" = "Teamviewer Meeting";
+"constants_meeting_service_vsee" = "VSee";
+"constants_meeting_service_starleaf" = "StarLeaf";
+"constants_meeting_service_duo" = "Google Duo";
+"constants_meeting_service_voov" = "Tencent VooV";
+"constants_meeting_service_facebook_workspace" = "Facebook Workspace";
+"constants_meeting_service_lifesize" = "Lifesize";
+"constants_meeting_service_skype" = "Skype";
+"constants_meeting_service_skype4biz" = "Skype For Business";
+"constants_meeting_service_skype4biz_selfhosted" = "Skype For Business (SH)";
+"constants_meeting_service_facetime" = "Facetime";
+"constants_meeting_service_facetimeaudio" = "Facetime Audio";
+"constants_meeting_service_youtube" = "YouTube";
+"constants_meeting_service_vonageMeetings" = "Vonage Meetings";
+"constants_meeting_service_meetStream" = "Google Meet Stream";
+"constants_meeting_service_around" = "Around";
+"constants_meeting_service_jam" = "Jam";
+"constants_meeting_service_discord" = "Discord";
+"constants_meeting_service_blackboard_collab" = "Blackboard Collaborate";
+"constants_meeting_service_coscreen" = "CoScreen";
+"constants_meeting_service_other" = "其他";
+
+"constants_browser_brave" = "Brave";
+"constants_browser_chrome" = "Google Chrome";
+"constants_browser_chromium" = "Chromium";
+"constants_browser_edge" = "Microsoft Edge";
+"constants_browser_firefox" = "Firefox";
+"constants_browser_opera" = "Opera";
+"constants_browser_vivaldi" = "Vivaldi";
+"constants_browser_safari" = "Safari";
+"constants_browser_defaultBrowser" = "默认浏览器";
+
+"constants_time_format_12_h" = "12小时";
+"constants_time_format_24_h" = "24小时";
+
+// MARK: - Store
+
+"store_patronage_title" = "会议栏赞助";
+"store_patronage_restore_success_message" = "成功恢复";
+"store_patronage_restore_nothing_message" = "没有什么可以恢复的";
+"store_patronage_purchase_success_message" = "成功购买。 感谢您的支持！";
+"store_patronage_purchase_unknown_message" = "未知错误。 请联系支持";
+"store_patronage_purchase_client_invalid_message" = "不允许付款";
+"store_patronage_purchase_payment_invalid_message" = "购买标识符无效";
+"store_patronage_purchase_payment_not_allowed_message" = "该设备不允许付款";
+"store_patronage_purchase_store_product_not_available_message" = "产品不在当前店面提供";
+"store_patronage_purchase_cloud_service_permission_denied_message" = "不允许访问云服务信息";
+"store_patronage_purchase_cloud_service_network_connection_failed" = "无法连接到网络";
+"store_patronage_purchase_cloud_service_revoked_message" = "用户已撤消使用此云服务的权限";
+
+// MARK: - Helpres
+
+"helper_title_sample_show_title" = "一个具有过度相当大的55个字符标题的事件";
+"helper_title_sample_show_time" = "1小时25分";
+"helper_title_sample_dot_time" = "•1小时25分";
+"helper_title_sample_offset_title" = "具有过度大量的100个字符标题的事件，可以在此显示缩短功能....";
+
+// MARK: - Notifications
+
+"notifications_event_start_soon_body" = "这个活动很快就开始了";
+
+// MARK: - Link open
+
+"link_url_cant_open_title" = "哎呀！ 无法在％@中打开链接";
+"link_url_cant_open_message" = "确保已安装％@已安装，或更改首选项中的浏览器。";

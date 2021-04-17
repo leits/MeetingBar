@@ -41,6 +41,8 @@
 "preferences_general_option_preferred_language_system_value" = "Системный";
 "preferences_general_option_preferred_language_english_value" = "English";
 "preferences_general_option_preferred_language_russian_value" = "Русский";
+"preferences_general_option_preferred_language_chinese_simple_value" = "简体中文";
+"preferences_general_option_preferred_language_chinese_traditional_value" = "繁体中文";
 "preferences_general_option_shortcuts" = "Горячие клавиши";
 "preferences_general_shortcut_open_menu" = "Открыть меню:";
 "preferences_general_shortcut_create_meeting" = "Создать событие:";

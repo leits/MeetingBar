@@ -329,6 +329,8 @@ enum AppLanguage: String, Codable {
     case system = ""
     case english = "en"
     case russian = "ru"
+    case chinese_simple = "zh-Hans"
+    case chinese_traditional = "zh-Hant"
 }
 
 enum Browser: String, Codable, CaseIterable {
