@@ -116,7 +116,7 @@ func displayAlert(title: String, text: String) {
     userAlert.messageText = title
     userAlert.informativeText = text
     userAlert.alertStyle = NSAlert.Style.informational
-    userAlert.addButton(withTitle: "OK")
+    userAlert.addButton(withTitle: "general_ok".loco())
 
     userAlert.runModal()
 }
@@ -138,7 +138,7 @@ func scheduleEventNotification(_ event: EKEvent) {
 
     let content = UNMutableNotificationContent()
     content.title = event.title
-    content.body = "The event starts soon"
+    content.body = "notifications_event_start_soon_body".loco()
     content.categoryIdentifier = "EVENT"
     content.sound = UNNotificationSound.default
     content.userInfo = ["eventID": event.eventIdentifier!]

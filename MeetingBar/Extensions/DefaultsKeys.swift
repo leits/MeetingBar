@@ -26,6 +26,7 @@ extension Defaults.Keys {
     static let joinEventNotification = Key<Bool>("joinEventNotification", default: true)
     static let joinEventNotificationTime = Key<JoinEventNotificationTime>("joinEventNotificationTime", default: .atStart)
     static let launchAtLogin = Key<Bool>("launchAtLogin", default: false)
+    static let preferredLanguage = Key<AppLanguage>("preferredLanguage", default: .system)
 
     // Status Bar Appearance
     static let showEventTitleInStatusBar = Key<Bool?>("showEventTitleInStatusBar") // Backward compatibility
@@ -86,6 +87,6 @@ extension Defaults.Keys {
     // Advanced
     static let joinEventScriptLocation = Key<URL?>("joinEventScriptLocation", default: nil)
     static let runJoinEventScript = Key<Bool>("runAppleScriptWhenJoiningEvent", default: false)
-    static let joinEventScript = Key<String>("joinEventScript", default: "# write your script here\ntell application \"Music\" to pause")
+    static let joinEventScript = Key<String>("joinEventScript", default: "preferences_advanced_apple_script_placeholder".loco())
     static let customRegexes = Key<[String]>("customRegexes", default: [])
 }
