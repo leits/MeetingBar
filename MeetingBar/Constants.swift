@@ -325,6 +325,12 @@ public enum AutoLauncher {
     static let bundleIdentifier: String = "leits.MeetingBar.AutoLauncher"
 }
 
+enum AppLanguage: String, Codable {
+    case system = ""
+    case english = "en"
+    case russian = "ru"
+}
+
 struct Browser: Encodable, Decodable, Hashable {
     var name: String
     var path: String

@@ -27,7 +27,7 @@ struct ServicesTab: View {
     var body: some View {
         VStack {
             Section {
-                Picker(selection: $defaultBrowser, label: Text("Open meeting links in").frame(width: 160, alignment: .leading)) {
+                Picker(selection: $defaultBrowser, label: Text("Open meeting links in").frame(width: 150, alignment: .leading)) {
                     Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
                     ForEach(allBrowser, id: \.self) { (browser: Browser) in
                         Text(browser.name).tag(browser)
