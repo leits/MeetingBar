@@ -46,6 +46,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     var ignoredEventIDsObserver: DefaultsObservation?
     var joinEventNotificationObserver: DefaultsObservation?
     var launchAtLoginObserver: DefaultsObservation?
+    var preferredLanguageObserver: DefaultsObservation?
     var showEventMaxTimeUntilEventThresholdObserver: DefaultsObservation?
     var showEventMaxTimeUntilEventEnabledObserver: DefaultsObservation?
 
@@ -128,6 +129,35 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
     }
 
+    /**
+     * tries to open the link from the macos system clipboard.
+     */
+    @objc
+    func openLinkFromClipboard() {
+        NSLog("Check macos clipboard for link")
+        var clipboardContent = getClipboardContent()
+        NSLog("Found \(clipboardContent) in clipboard")
+
+        if !clipboardContent.isEmpty {
+            let meetingLink = detectLink(&clipboardContent)
+
+            if let meetingLink = meetingLink {
+                openMeetingURL(meetingLink.service, meetingLink.url)
+            } else {
+                let validUrl = NSURL(string: clipboardContent)
+                if validUrl != nil {
+                    URL(string: clipboardContent)?.openInDefaultBrowser()
+                } else {
+                    sendNotification("No valid url",
+                                     "Clipboard has no meeting link, so the meeting cannot be started")
+                }
+            }
+        } else {
+            sendNotification("Clipboard is empty",
+                             "Clipboard has no content, so the meeting cannot be started...")
+        }
+    }
+
     func setup() {
         statusBarItem = StatusBarItemControler()
         statusBarItem.setAppDelegate(appdelegate: self)
@@ -139,9 +169,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
         scheduleUpdateStatusBarTitle()
         scheduleUpdateEvents()
+
         KeyboardShortcuts.onKeyUp(for: .createMeetingShortcut) {
             self.createMeeting()
         }
+
         KeyboardShortcuts.onKeyUp(for: .joinEventShortcut) {
             self.joinNextMeeting()
         }
@@ -152,8 +184,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             self.statusBarItem.statusItem.button?.performClick(nil) // ...and click
         }
 
-        NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.eventStoreChanged), name: .EKEventStoreChanged, object: statusBarItem.eventStore)
+        KeyboardShortcuts.onKeyUp(for: .openClipboardShortcut) {
+            self.openLinkFromClipboard()
+        }
 
+        NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.eventStoreChanged), name: .EKEventStoreChanged, object: statusBarItem.eventStore)
 
         showEventDetailsObserver = Defaults.observe(.showEventDetails) { change in
             NSLog("Change showEventDetails from \(change.oldValue) to \(change.newValue)")
@@ -266,6 +301,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             NSLog("Changed launchAtLogin from \(change.oldValue) to \(change.newValue)")
             SMLoginItemSetEnabled(AutoLauncher.bundleIdentifier as CFString, change.newValue)
         }
+        preferredLanguageObserver = Defaults.observe(.preferredLanguage) { change in
+            NSLog("Changed preferredLanguage from \(change.oldValue) to \(change.newValue)")
+            if I18N.instance.changeLanguage(to: change.newValue) {
+                self.statusBarItem.updateTitle()
+                self.statusBarItem.updateMenu()
+            }
+        }
         joinEventNotificationObserver = Defaults.observe(.joinEventNotification) { change in
             NSLog("Changed joinEventNotification from \(change.oldValue) to \(change.newValue)")
             if change.newValue == true {
@@ -294,13 +336,18 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     func windowClosed(notification: NSNotification) {
         let window = notification.object as? NSWindow
         if let windowTitle = window?.title {
-            if windowTitle == windowTitles.onboarding, !Defaults[.onboardingCompleted] {
+            if windowTitle == WindowTitles.onboarding, !Defaults[.onboardingCompleted] {
                 NSApplication.shared.terminate(self)
-            } else if windowTitle == windowTitles.changelog {
+            } else if windowTitle == WindowTitles.changelog {
                 Defaults[.lastRevisedVersionInChangelog] = Defaults[.appVersion]
                 self.statusBarItem.updateMenu()
             }
         }
+    }
+
+    func getClipboardContent() -> String {
+       let pasteboard = NSPasteboard.general
+        return pasteboard.string(forType: .string) ?? ""
     }
 
     @objc
@@ -311,35 +358,29 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     }
 
     private func scheduleUpdateStatusBarTitle() {
-        let activity = NSBackgroundActivityScheduler(identifier: "leits.MeetingBar.updatestatusbartitle")
+        let timer = Timer.scheduledTimer(timeInterval: 15, target: self, selector: #selector(updateStatusbar), userInfo: nil, repeats: true)
+        RunLoop.current.add(timer, forMode: .common)
+    }
 
-        activity.repeats = true
-        activity.interval = 15
-        activity.qualityOfService = QualityOfService.userInteractive
+    @objc
+    private func updateStatusbar() {
+        NSLog("Firing reccuring updateStatusBarTitle")
+        DispatchQueue.main.async {
+            self.statusBarItem.updateTitle()
+        }
+    }
 
-        activity.schedule { (completion: @escaping NSBackgroundActivityScheduler.CompletionHandler) in
-            NSLog("Firing reccuring updateStatusBarTitle")
-            DispatchQueue.main.async {
-                self.statusBarItem.updateTitle()
-            }
-            completion(NSBackgroundActivityScheduler.Result.finished)
+    @objc
+    private func updateMenuBar() {
+        NSLog("Firing reccuring updateStatusBarMenu")
+        DispatchQueue.main.async {
+            self.statusBarItem.updateMenu()
         }
     }
 
     private func scheduleUpdateEvents() {
-        let activity = NSBackgroundActivityScheduler(identifier: "leits.MeetingBar.updateevents")
-
-        activity.repeats = true
-        activity.interval = 60 * 5
-        activity.qualityOfService = QualityOfService.userInteractive
-
-        activity.schedule { (completion: @escaping NSBackgroundActivityScheduler.CompletionHandler) in
-            NSLog("Firing reccuring updateStatusBarMenu")
-            DispatchQueue.main.async {
-                self.statusBarItem.updateMenu()
-            }
-            completion(NSBackgroundActivityScheduler.Result.finished)
-        }
+        let timer = Timer.scheduledTimer(timeInterval: 60 * 5, target: self, selector: #selector(updateMenuBar), userInfo: nil, repeats: true)
+        RunLoop.current.add(timer, forMode: .common)
     }
 
     /**
@@ -378,10 +419,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             openMeetingURL(MeetingServices.meet, CreateMeetingLinks.meet)
         case .zoom:
             openMeetingURL(MeetingServices.zoom, CreateMeetingLinks.zoom)
-        case .hangouts:
-            openMeetingURL(MeetingServices.hangouts, CreateMeetingLinks.hangouts)
         case .teams:
             openMeetingURL(MeetingServices.teams, CreateMeetingLinks.teams)
+        case .jam:
+            openMeetingURL(MeetingServices.jam, CreateMeetingLinks.jam)
+        case .coscreen:
+            openMeetingURL(MeetingServices.coscreen, CreateMeetingLinks.coscreen)
         case .gcalendar:
             openMeetingURL(nil, CreateMeetingLinks.gcalendar)
         case .outlook_office365:
@@ -399,7 +442,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                     url += " "
                 }
 
-                sendNotification("Cannot create new meeeting", "Custom url \(url)is missing or invalid. Please enter a value in the app preferences.")
+                sendNotification("create_meeting_error_title".loco(), "create_meeting_error_message".loco(url))
             }
         }
     }
@@ -422,7 +465,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             openEvent(nextEvent)
         } else {
             NSLog("No next event")
-            sendNotification("There are no next meetings today", "Woohoo! It's time to make cocoa")
+            sendNotification("next_meeting_empty_title".loco(), "next_meeting_empty_message".loco())
             return
         }
     }
@@ -442,6 +485,27 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
     }
 
+    /**
+     * opens an event in the fantastical app. It uses the x-fantastical url handler which is not fully described on the fantastical website,
+     * but was confirmed in the github ticket. 
+     */
+    @objc
+    func openEventInFantastical(sender: NSMenuItem) {
+        if let eventWithDate: EventWithDate = sender.representedObject as? EventWithDate {
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd"
+
+            let queryItems = [URLQueryItem(name: "date", value: dateFormatter.string(from: eventWithDate.dateSection)), URLQueryItem(name: "title", value: eventWithDate.event.title)]
+            var fantasticalUrlComp = URLComponents()
+            fantasticalUrlComp.scheme = "x-fantastical3"
+            fantasticalUrlComp.host = "show"
+            fantasticalUrlComp.queryItems = queryItems
+
+            let fantasticalUrl = fantasticalUrlComp.url!
+            fantasticalUrl.openInDefaultBrowser()
+        }
+    }
+
     @objc
     func openChangelogWindow(_: NSStatusBarButton?) {
         NSLog("Open changelof window")
@@ -455,7 +519,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             backing: .buffered,
             defer: false
         )
-        changelogWindow.title = windowTitles.changelog
+        changelogWindow.title = WindowTitles.changelog
         changelogWindow.contentView = NSHostingView(rootView: contentView)
         changelogWindow.makeKeyAndOrderFront(nil)
         // allow the changelof window can be focused automatically when opened
@@ -481,7 +545,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             backing: .buffered,
             defer: false
         )
-        preferencesWindow.title = windowTitles.preferences
+
+        preferencesWindow.title = WindowTitles.preferences
         preferencesWindow.contentView = NSHostingView(rootView: contentView)
         preferencesWindow.makeKeyAndOrderFront(nil)
         // allow the preference window can be focused automatically when opened
@@ -507,7 +572,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             backing: .buffered,
             defer: false
         )
-        onboardingWindow.title = windowTitles.onboarding
+
+        onboardingWindow.title = WindowTitles.onboarding
         onboardingWindow.contentView = NSHostingView(rootView: contentView)
         let controller = NSWindowController(window: onboardingWindow)
         controller.showWindow(self)

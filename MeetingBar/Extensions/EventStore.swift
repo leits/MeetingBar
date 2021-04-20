@@ -67,6 +67,8 @@ extension EKEventStore {
 
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
+        formatter.locale = I18N.instance.locale
+
         let dateString = formatter.string(from: date)
         NSLog("Loaded events for date \(dateString) from calendars \(calendars.map { $0.title })")
 

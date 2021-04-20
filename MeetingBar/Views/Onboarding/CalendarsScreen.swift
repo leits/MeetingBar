@@ -20,10 +20,10 @@ struct CalendarsScreen: View {
             HStack {
                 Spacer()
                 if self.selectedCalendarIDs.isEmpty {
-                    Text("Select at least one calendar").foregroundColor(Color.gray)
+                    Text("calendars_screen_select_calendar_title".loco()).foregroundColor(Color.gray)
                 }
                 Button(action: self.close) {
-                    Text("Start using app")
+                    Text("calendars_screen_start_button".loco())
                     Image(nsImage: NSImage(named: NSImage.goForwardTemplateName)!)
                 }.disabled(self.selectedCalendarIDs.isEmpty)
             }.padding(5)
