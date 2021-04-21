@@ -37,8 +37,6 @@ struct Bookmark: Encodable, Decodable, Hashable {
  *
  */
 fileprivate func cleanupOutlookSafeLinks( text: inout String) -> String {
-    NSLog("Check text \(text) for outlook safe links")
-
     var links = UtilsRegex.outlookSafeLinkRegex.matches(in: text, range: NSRange(text.startIndex..., in: text))
     if !links.isEmpty {
         repeat {
@@ -46,14 +44,11 @@ fileprivate func cleanupOutlookSafeLinks( text: inout String) -> String {
             let safeLinks = links.map { String(text[Range($0.range, in: text)!]) }
             if !safeLinks.isEmpty {
                 let serviceUrl = (text as NSString).substring(with: urlRange)
-                NSLog("Found service url \(serviceUrl)")
                 text = text.replacingOccurrences(of: safeLinks[0], with: serviceUrl.decodeUrl()!)
             }
             links = UtilsRegex.outlookSafeLinkRegex.matches(in: text, range: NSRange(text.startIndex..., in: text))
         } while !links.isEmpty
     }
-
-    NSLog("Returning text \(text)")
     return text
 }
 
