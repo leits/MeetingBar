@@ -12,6 +12,7 @@
 "general_add" = "Add";
 "general_delete" = "Delete";
 "general_save" = "Save";
+"general_meeting" = "Meeting";
 
 "create_meeting_error_title" = "Cannot create new meeting";
 "create_meeting_error_message" = "Custom url \"%@\" is missing or invalid. Please enter a value in the app preferences.";
@@ -46,6 +47,7 @@
 "preferences_general_shortcut_create_meeting" = "Create meeting:";
 "preferences_general_shortcut_join_next" = "Join next event meeting:";
 "preferences_general_shortcut_join_from_clipboard" = "Join meeting from clipboard:";
+"preferences_general_shortcut_toggle_meeting_name_visibility" = "Toggle meeting name visibility:";
 "preferences_general_meeting_bar_description" = "MeetingBar is open-source app created by Andrii Leitsius\nThe app aims to make your experience with online meetings smoother and easier";
 "preferences_general_external_patronage" = "Patronage";
 "preferences_general_external_gitHub" = "GitHub";
@@ -187,6 +189,8 @@
 "status_bar_submenu_attendees_status_tentative" = " [tentative]";
 "status_bar_submenu_attendees_status_unknown" = " [?]";
 "status_bar_submenu_open_in_calendar" = "Open in Calendar App";
+"status_bar_show_meeting_names" = "Show meeting names";
+"status_bar_hide_meeting_names" = "Hide meeting names";
 "status_bar_preferences" = "Preferences";
 "status_bar_quit" = "Quit MeetingBar";
 "status_bar_no_title" = "No title";
