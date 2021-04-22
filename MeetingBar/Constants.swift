@@ -158,6 +158,7 @@ enum MeetingServices: String, Codable, CaseIterable {
     case jam = "Jam"
     case discord = "Discord"
     case blackboard_collab = "Blackboard Collaborate"
+    case url = "Any Link"
     case coscreen = "CoScreen"
     case other = "Other"
 
@@ -245,6 +246,8 @@ enum MeetingServices: String, Codable, CaseIterable {
             return "constants_meeting_service_coscreen".loco()
         case .other:
             return "constants_meeting_service_other".loco()
+        case .url:
+            return "constants_meeting_service_url".loco()
         }
     }
 }
@@ -289,6 +292,23 @@ enum AlldayEventsAppereance: String, Codable, CaseIterable {
     case show
     case show_with_meeting_link_only
     case hide
+}
+
+enum NonAlldayEventsAppereance: String, Codable, CaseIterable {
+    // show all non all day events - no special requirement
+    case show
+
+    // deactivates all non all day events when no meeting link is detected
+    case show_inactive_without_meeting_link
+
+    // deactivates all non all day events when no link in the event is detected
+    case show_inactive_without_any_link
+
+    // hides all non all day events when no meeting link is detected
+    case hide_without_meeting_link
+
+    // hides all non all day events when no link in the event is detected
+    case hide_without_any_link
 }
 
 enum PendingEventsAppereance: String, Codable, CaseIterable {

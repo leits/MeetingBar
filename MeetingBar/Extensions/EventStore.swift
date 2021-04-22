@@ -45,14 +45,28 @@ extension EKEventStore {
                 if Defaults[.allDayEvents] == AlldayEventsAppereance.show {
                     addEvent = true
                 } else if Defaults[.allDayEvents] == AlldayEventsAppereance.show_with_meeting_link_only {
-                    let result = getMeetingLink(calendarEvent)
+                    let result = getMeetingLink(calendarEvent, acceptAnyLink: false)
 
                     if result?.url != nil {
                         addEvent = true
                     }
                 }
             } else {
-                addEvent = true
+                if Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.hide_without_meeting_link {
+                    let result = getMeetingLink(calendarEvent, acceptAnyLink: false)
+
+                    if result?.url != nil {
+                        addEvent = true
+                    }
+                } else if Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.hide_without_any_link {
+                    let result = getMeetingLink(calendarEvent, acceptAnyLink: true)
+
+                    if result?.url != nil {
+                        addEvent = true
+                    }
+                } else {
+                    addEvent = true
+                }
             }
 
             let status = getEventParticipantStatus(calendarEvent)
@@ -104,7 +118,38 @@ extension EKEventStore {
         for event in nextEvents {
             if event.isAllDay {
                 continue
+            } else {
+                if Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show_inactive_without_meeting_link {
+                    let meetingLink = getMeetingLink(event, acceptAnyLink: false)
+                    if meetingLink == nil {
+                        continue
+                    }
+                }
+
+                if Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show_inactive_without_any_link {
+                    let meetingLink = getMeetingLink(event, acceptAnyLink: true)
+                    if meetingLink == nil {
+                        continue
+                    }
+                }
+                if Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.hide_without_meeting_link {
+                    let result = getMeetingLink(event, acceptAnyLink: false)
+
+                    if result?.url == nil {
+                        continue
+                    }
+                }
+
+                if Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.hide_without_any_link {
+                    let result = getMeetingLink(event, acceptAnyLink: true)
+
+                    if result?.url == nil {
+                        continue
+                    }
+                }
             }
+
+
             if let status = getEventParticipantStatus(event) {
                 if status == .declined { // Skip event if declined
                     continue
@@ -114,6 +159,7 @@ extension EKEventStore {
                     continue
                 }
             }
+
             if event.status == .canceled {
                 continue
             } else {
