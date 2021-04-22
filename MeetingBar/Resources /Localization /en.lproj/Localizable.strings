@@ -68,6 +68,11 @@
 "preferences_appearance_events_show_events_for_title" = "Show events for";
 "preferences_appearance_events_show_events_for_today_value" = "today";
 "preferences_appearance_events_show_events_for_today_tomorrow_value" = "today and tomorrow";
+"preferences_appearance_events_non_all_day_title" = "Non all day events";
+"preferences_appearance_events_value_inactive_without_link" = "show as inactive without any link";
+"preferences_appearance_events_value_inactive_without_meeting_link" = "show as inactive without meeting link";
+"preferences_appearance_events_value_hide_without_link" = "hide all without any link";
+"preferences_appearance_events_value_hide_without_meeting_link" = "hide all without meeting link";
 "preferences_appearance_events_all_day_title" = "All day events:";
 "preferences_appearance_events_without_guest_title" = "Events without guests:";
 "preferences_appearance_events_past_title" = "Past events:";
@@ -289,6 +294,7 @@
 "constants_meeting_service_blackboard_collab" = "Blackboard Collaborate";
 "constants_meeting_service_coscreen" = "CoScreen";
 "constants_meeting_service_other" = "Other";
+"constants_meeting_service_url" = "URL";
 
 "constants_browser_brave" = "Brave";
 "constants_browser_chrome" = "Google Chrome";
