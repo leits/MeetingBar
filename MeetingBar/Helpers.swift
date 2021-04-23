@@ -157,7 +157,7 @@ func getMeetingLink(_ event: EKEvent, acceptAnyLink: Bool) -> MeetingLink? {
     }
 
     if acceptAnyLink {
-        for var field in linkFields {
+        for field in linkFields {
             let links = detectLinks(text: field)
             if !links.isEmpty {
                 return MeetingLink(service: MeetingServices.url, url: links[0])

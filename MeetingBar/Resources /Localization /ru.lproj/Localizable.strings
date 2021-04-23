@@ -38,7 +38,6 @@
 
 "preferences_general_option_login_launch" = "Запускать при входе в систему";
 "preferences_general_option_preferred_language_title" = "Предпочтительный язык:";
-"preferences_general_option_preferred_language_tip" = "⚠️ Требуется перезагрузка приложения";
 "preferences_general_option_preferred_language_system_value" = "Системный";
 "preferences_general_option_preferred_language_english_value" = "English";
 "preferences_general_option_preferred_language_russian_value" = "Русский";
