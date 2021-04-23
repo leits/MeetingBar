@@ -37,7 +37,6 @@
 
 "preferences_general_option_login_launch" = "Launch at Login";
 "preferences_general_option_preferred_language_title" = "Preferred language:";
-"preferences_general_option_preferred_language_tip" = "⚠️ Application reload required";
 "preferences_general_option_preferred_language_system_value" = "System";
 "preferences_general_option_preferred_language_english_value" = "English";
 "preferences_general_option_preferred_language_russian_value" = "Русский";

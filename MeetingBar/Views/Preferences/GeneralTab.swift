@@ -13,14 +13,20 @@ import KeyboardShortcuts
 
 struct GeneralTab: View {
     @Default(.launchAtLogin) var launchAtLogin
+    @Default(.preferredLanguage) var preferredLanguage
 
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
             Spacer()
-            Section {
+            HStack {
                 Toggle("preferences_general_option_login_launch".loco(), isOn: $launchAtLogin)
+                Spacer()
+                Picker("preferences_general_option_preferred_language_title".loco(), selection: $preferredLanguage) {
+                    Text("preferences_general_option_preferred_language_system_value".loco()).tag(AppLanguage.system)
+                    Text("preferences_general_option_preferred_language_english_value".loco()).tag(AppLanguage.english)
+                    Text("preferences_general_option_preferred_language_russian_value".loco()).tag(AppLanguage.russian)
+                }.frame(width: 250)
             }
-            PreferredLanguageSection()
             Divider()
             Section {
                 JoinEventNotificationPicker()
@@ -34,26 +40,10 @@ struct GeneralTab: View {
     }
 }
 
-struct PreferredLanguageSection: View {
-    @Default(.preferredLanguage) var preferredLanguage
-
-    var body: some View {
-        HStack {
-            Picker("preferences_general_option_preferred_language_title".loco(), selection: $preferredLanguage) {
-                Text("preferences_general_option_preferred_language_system_value".loco()).tag(AppLanguage.system)
-                Text("preferences_general_option_preferred_language_english_value".loco()).tag(AppLanguage.english)
-                Text("preferences_general_option_preferred_language_russian_value".loco()).tag(AppLanguage.russian)
-            }
-            Text("preferences_general_option_preferred_language_tip".loco()).foregroundColor(Color.gray).font(.system(size: 12))
-        }
-    }
-}
-
 struct ShortcutsSection: View {
     var body: some View {
+        Text("preferences_general_option_shortcuts".loco()).font(.headline).bold()
         HStack {
-            Text("preferences_general_option_shortcuts".loco()).font(.headline).bold()
-            Spacer()
             VStack {
                 Text("preferences_general_shortcut_open_menu".loco())
                 KeyboardShortcuts.Recorder(for: .openMenuShortcut)
