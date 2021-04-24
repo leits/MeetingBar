@@ -38,6 +38,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
     var shortenEventTitleObserver: DefaultsObservation?
     var menuEventTitleLengthObserver: DefaultsObservation?
+    var meetingNameVisibilityObserver: DefaultsObservation?
     var showEventEndTimeObserver: DefaultsObservation?
     var pastEventsAppereanceObserver: DefaultsObservation?
     var disablePastEventObserver: DefaultsObservation?
@@ -160,6 +161,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
     }
 
+    @objc
+    func toggleMeetingNameVisibility() {
+        Defaults[.hideMeetingNames].toggle()
+    }
+
     func setup() {
         statusBarItem = StatusBarItemControler()
         statusBarItem.setAppDelegate(appdelegate: self)
@@ -190,6 +196,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             self.openLinkFromClipboard()
         }
 
+        KeyboardShortcuts.onKeyUp(for: .toggleMeetingNameVisibilityShortcut) {
+            Defaults[.hideMeetingNames].toggle()
+        }
+
         NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.eventStoreChanged), name: .EKEventStoreChanged, object: statusBarItem.eventStore)
 
         showEventDetailsObserver = Defaults.observe(.showEventDetails) { change in
@@ -211,6 +221,20 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             NSLog("Change menuEventTitleLengthObserver from \(change.oldValue) to \(change.newValue)")
             if change.oldValue != change.newValue {
                 self.statusBarItem.updateMenu()
+            }
+        }
+
+        meetingNameVisibilityObserver = Defaults.observe(.hideMeetingNames) { change in
+            NSLog("Change hideMeetingNames from \(change.oldValue) to \(change.newValue)")
+            if change.oldValue != change.newValue {
+                self.statusBarItem.updateMenu()
+                self.statusBarItem.updateTitle()
+
+                // Reschedule next notification with updated event name visibility
+                UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+                if let nextEvent = self.statusBarItem.eventStore.getNextEvent(calendars: self.statusBarItem.calendars) {
+                    scheduleEventNotification(nextEvent)
+                }
             }
         }
 
@@ -563,7 +587,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             preferencesWindow.close()
         }
         preferencesWindow = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 700, height: 610),
+            contentRect: NSRect(x: 0, y: 0, width: 850, height: 610),
             styleMask: [.closable, .titled, .resizable],
             backing: .buffered,
             defer: false

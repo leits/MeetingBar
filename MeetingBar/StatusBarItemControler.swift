@@ -861,6 +861,16 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             keyEquivalent: ","
         )
 
+        let toggleMeetingNameVisibilityItem = NSMenuItem()
+        if Defaults[.hideMeetingNames] {
+            toggleMeetingNameVisibilityItem.title = "status_bar_show_meeting_names".loco()
+        } else {
+            toggleMeetingNameVisibilityItem.title = "status_bar_hide_meeting_names".loco()
+        }
+        toggleMeetingNameVisibilityItem.action = #selector(AppDelegate.toggleMeetingNameVisibility)
+        toggleMeetingNameVisibilityItem.setShortcut(for: .toggleMeetingNameVisibilityShortcut)
+        self.statusItemMenu.addItem(toggleMeetingNameVisibilityItem)
+
         self.statusItemMenu.addItem(
             withTitle: "status_bar_quit".loco(),
             action: #selector(AppDelegate.quit),
@@ -899,7 +909,11 @@ func createEventStatusString(_ event: EKEvent) -> (String, String) {
     var eventTitle: String
     switch Defaults[.eventTitleFormat] {
     case .show:
-        eventTitle = shortenTitleForSystembar(title: event.title)
+        if Defaults[.hideMeetingNames] {
+            eventTitle = "general_meeting".loco()
+        } else {
+            eventTitle = shortenTitleForSystembar(title: event.title)
+        }
     case .dot:
         eventTitle = "•"
     case .none:

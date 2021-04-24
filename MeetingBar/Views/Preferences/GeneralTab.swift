@@ -60,6 +60,10 @@ struct ShortcutsSection: View {
                 Text("preferences_general_shortcut_join_from_clipboard".loco())
                 KeyboardShortcuts.Recorder(for: .openClipboardShortcut)
             }
+            VStack {
+                Text("preferences_general_shortcut_toggle_meeting_name_visibility".loco())
+                KeyboardShortcuts.Recorder(for: .toggleMeetingNameVisibilityShortcut)
+            }
         }
     }
 }
