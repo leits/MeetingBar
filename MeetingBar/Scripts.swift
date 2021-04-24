@@ -17,7 +17,6 @@ struct Event: Encodable, Decodable, Hashable {
 }
 
 class Scripts: NSObject {
-
     var eventStore: EKEventStore
 
     override
@@ -60,7 +59,6 @@ class Scripts: NSObject {
      */
     @objc
     private func runScriptsForMeetingStart() {
-
         // only run if the user has activated it.
         if !Defaults[.runAutomaticEventScript] {
             return
@@ -191,7 +189,7 @@ class Scripts: NSObject {
      * runs the apple script with a sample event for enduser testing from the preferences dialog.
      * This method will create an in memory event and use the parameter to execute the apple script.
      */
-    public func runAppleScriptForSampleEvent () {
+    public func runAppleScriptForSampleEvent() {
         let sampleEvent = EKEvent()
         sampleEvent.title = "Sample meeting title"
         sampleEvent.isAllDay = false

@@ -74,7 +74,7 @@ struct ScriptSection: View {
      * triggers a sample script
      */
     func runSampleScript() {
-        let scripts = Scripts();
+        let scripts = Scripts()
         scripts.runAppleScriptForSampleEvent()
     }
 
