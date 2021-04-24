@@ -20,30 +20,30 @@ struct WelcomeScreen: View {
             VStack {
                 VStack {
                     Spacer()
-                    Text("Hi! MeetingBar is such a simple app that everything is almost ready.")
-                    Text("Let’s make it 100% yours!")
+                    Text("welcome_screen_greeting_main_title".loco())
+                    Text("welcome_screen_greeting_additional_title".loco())
                     Spacer()
                 }
                 Divider()
                 HStack {
-                    Toggle("Launch MeetingBar at Login", isOn: $launchAtLogin)
+                    Toggle("welcome_screen_login_launch_toggle_title".loco(), isOn: $launchAtLogin)
                     Spacer()
                 }.padding(10)
                 Divider()
                 HStack {
-                    Text("Join next event meeting with your shortcut:")
+                    Text("welcome_screen_shortcut_next_meeting_title".loco())
                     KeyboardShortcuts.Recorder(for: .joinEventShortcut)
                     Spacer()
                 }.padding(5)
                 HStack {
-                    Text("Create ad hoc meetings in ")
+                    Text("welcome_screen_ad_hoc_meeting_title".loco())
                     HStack {
                         CreateMeetingServicePicker()
                     }.frame(width: 145)
                     Spacer()
                 }.padding(5)
                 HStack {
-                    Text("with your shortcut:")
+                    Text("welcome_screen_shortcut_ad_hoc_meeting_title".loco())
                     KeyboardShortcuts.Recorder(for: .createMeetingShortcut)
                     Spacer()
                 }.padding(5)
@@ -56,7 +56,7 @@ struct WelcomeScreen: View {
             HStack {
                 Spacer()
                 Button(action: { self.viewRouter.currentScreen = .access }) {
-                    Text("Setup calendars")
+                    Text("welcome_screen_setup_calendar_title".loco())
                     Image(nsImage: NSImage(named: NSImage.goForwardTemplateName)!)
                 }
             }.padding(5)

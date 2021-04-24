@@ -49,18 +49,15 @@ func registerNotificationCategories() {
     }
 }
 
-func sendNotification(title: String, text: String, subtitle: String = "") {
+func sendUserNotification(_ title: String, _ text: String) {
     requestNotificationAuthorization() // By the apple best practices
 
-    NSLog("Send notification: \(title) - \(text) - \(subtitle)")
+    NSLog("Send notification: \(title) - \(text)")
     let center = UNUserNotificationCenter.current()
 
     let content = UNMutableNotificationContent()
     content.title = title
     content.body = text
-    if !subtitle.isEmpty {
-        content.subtitle = subtitle
-    }
 
     let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
 
@@ -88,7 +85,7 @@ func notificationsEnabled() -> Bool {
 
     center.getNotificationSettings { notificationSettings in
         correctAlertStyle = notificationSettings.alertStyle == UNAlertStyle.alert || notificationSettings.alertStyle == UNAlertStyle.banner
-        notificationsEnabled = notificationSettings.authorizationStatus == UNAuthorizationStatus.authorized
+        notificationsEnabled = notificationSettings.authorizationStatus != UNAuthorizationStatus.denied
         group.leave()
     }
 
@@ -103,7 +100,7 @@ func sendNotification(_ title: String, _ text: String) {
     requestNotificationAuthorization() // By the apple best practices
 
     if notificationsEnabled() {
-        sendNotification(title, text)
+        sendUserNotification(title, text)
     } else {
         displayAlert(title: title, text: text)
     }
@@ -119,7 +116,7 @@ func displayAlert(title: String, text: String) {
     userAlert.messageText = title
     userAlert.informativeText = text
     userAlert.alertStyle = NSAlert.Style.informational
-    userAlert.addButton(withTitle: "OK")
+    userAlert.addButton(withTitle: "general_ok".loco())
 
     userAlert.runModal()
 }
@@ -135,11 +132,13 @@ func scheduleEventNotification(_ event: EKEvent) {
         return
     }
 
+    removePendingNotificationRequests()
+
     let center = UNUserNotificationCenter.current()
 
     let content = UNMutableNotificationContent()
     content.title = event.title
-    content.body = "The event starts soon"
+    content.body = "notifications_event_start_soon_body".loco()
     content.categoryIdentifier = "EVENT"
     content.sound = UNNotificationSound.default
     content.userInfo = ["eventID": event.eventIdentifier!]
@@ -154,4 +153,9 @@ func scheduleEventNotification(_ event: EKEvent) {
             NSLog("%@", "request \(request) was added")
         }
     }
+}
+
+func removePendingNotificationRequests() {
+    let center = UNUserNotificationCenter.current()
+    center.removeAllPendingNotificationRequests()
 }

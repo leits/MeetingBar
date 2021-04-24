@@ -18,6 +18,15 @@
           "revision": "81e72f4787f2d642d788594834f42431f079e505",
           "version": "0.6.0"
         }
+      },
+      {
+        "package": "SwiftyStoreKit",
+        "repositoryURL": "https://github.com/bizz84/SwiftyStoreKit.git",
+        "state": {
+          "branch": null,
+          "revision": "3b54c8eac2840b0cdd576634e83d9ebeb70f847c",
+          "version": "0.16.3"
+        }
       }
     ]
   },

@@ -20,7 +20,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
     var statusItemMenu: NSMenu!
     var menuIsOpen = false
 
-    let eventStore = EKEventStore()
+    var eventStore: EKEventStore!
     var calendars: [EKCalendar] = []
 
     weak var appdelegate: AppDelegate!
@@ -45,6 +45,12 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
         statusItemMenu.delegate = self
 
         enableButtonAction()
+        eventStore = EKEventStore()
+
+        var sources = eventStore.sources
+        sources.append(contentsOf: eventStore!.delegateSources)
+
+        eventStore = EKEventStore(sources: sources)
     }
 
     @objc
@@ -90,106 +96,142 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
     }
 
     func updateTitle() {
+        enum NextEventState {
+            case none
+            case afterThreshold(EKEvent)
+            case nextEvent(EKEvent)
+        }
+
         var title = "MeetingBar"
         var time = ""
         var nextEvent: EKEvent!
+        let nextEventState: NextEventState
         if !calendars.isEmpty {
             nextEvent = eventStore.getNextEvent(calendars: calendars)
-            if let nextEvent = nextEvent {
-                (title, time) = createEventStatusString(nextEvent)
-                if Defaults[.joinEventNotification] {
-                    scheduleEventNotification(nextEvent)
+            nextEventState = {
+                guard let nextEvent = nextEvent else {
+                    return .none
                 }
-            } else {
+                guard Defaults[.showEventMaxTimeUntilEventEnabled] else {
+                    return .nextEvent(nextEvent)
+                }
+                // Positive, if in the future. Negative, if already started.
+                // Current or past events therefore don't get ignored.
+                let timeUntilStart = nextEvent.startDate.timeIntervalSinceNow
+                let thresholdInSeconds = TimeInterval(Defaults[.showEventMaxTimeUntilEventThreshold] * 60)
+                return timeUntilStart < thresholdInSeconds ? .nextEvent(nextEvent) : .afterThreshold(nextEvent)
+            }()
+            switch nextEventState {
+            case .none:
+                if Defaults[.joinEventNotification] {
+                    removePendingNotificationRequests()
+                }
                 title = "🏁"
+            case .nextEvent(let event):
+                (title, time) = createEventStatusString(event)
+                if Defaults[.joinEventNotification] {
+                    scheduleEventNotification(event)
+                }
+            case .afterThreshold(let event):
+                // Not sure, what the title should be in this case.
+                title = "⏰"
+                if Defaults[.joinEventNotification] {
+                    scheduleEventNotification(event)
+                }
             }
         } else {
             NSLog("No loaded calendars")
+            nextEventState = .none
         }
-
-        DispatchQueue.main.async {
-            if let button = self.statusItem.button {
-                button.image = nil
-                button.title = ""
-                if title == "🏁" {
-                    switch Defaults[.eventTitleIconFormat] {
-                    case .appicon:
-                        button.image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
-                    default:
-                        button.image = NSImage(named: "iconCalendarCheckmark")
-                    }
-                    button.image?.size = NSSize(width: 16, height: 16)
-                } else if title == "MeetingBar" {
+        if let button = self.statusItem.button {
+            button.image = nil
+            button.title = ""
+            button.toolTip = nil
+            if title == "🏁" {
+                switch Defaults[.eventTitleIconFormat] {
+                case .appicon:
                     button.image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
+                default:
+                    button.image = NSImage(named: "iconCalendarCheckmark")
+                }
+                button.image?.size = NSSize(width: 16, height: 16)
+            } else if title == "MeetingBar" {
+                button.image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
+                button.image?.size = NSSize(width: 16, height: 16)
+            } else if case .afterThreshold = nextEventState {
+                switch Defaults[.eventTitleIconFormat] {
+                case .appicon:
+                    button.image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
+                default:
+                    button.image = NSImage(named: "iconCalendar")
+                }
+            }
+
+            if button.image == nil {
+                if Defaults[.eventTitleIconFormat] != EventTitleIconFormat.none {
+                    let image: NSImage
+                    if Defaults[.eventTitleIconFormat] == EventTitleIconFormat.eventtype {
+                        image = getMeetingIcon(nextEvent)
+                    } else {
+                        image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
+                    }
+
+                    button.image = image
                     button.image?.size = NSSize(width: 16, height: 16)
+                    if image.name() == "no_online_session" {
+                        button.imagePosition = .noImage
+                    } else {
+                        button.imagePosition = .imageLeft
+                    }
                 }
 
-                if button.image == nil {
-                    if Defaults[.eventTitleIconFormat] != EventTitleIconFormat.none {
-                        let image: NSImage
-                        if Defaults[.eventTitleIconFormat] == EventTitleIconFormat.eventtype {
-                            image = self.getMeetingIcon(nextEvent)
-                        } else {
-                            image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
-                        }
+                // create an NSMutableAttributedString that we'll append everything to
+                let menuTitle = NSMutableAttributedString()
+                let eventStatus = getEventParticipantStatus(nextEvent)
 
-                        button.image = image
-                        button.image?.size = NSSize(width: 16, height: 16)
-                        if image.name() == "no_online_session" {
-                            button.imagePosition = .noImage
-                        } else {
-                            button.imagePosition = .imageLeft
-                        }
+                if Defaults[.eventTimeFormat] != EventTimeFormat.show_under_title || Defaults[.eventTitleFormat] == .none {
+                    var eventTitle = title
+                    if Defaults[.eventTimeFormat] == EventTimeFormat.show {
+                        eventTitle += " " + time
                     }
 
-                    // create an NSMutableAttributedString that we'll append everything to
-                    let menuTitle = NSMutableAttributedString()
-                    let eventStatus = getEventParticipantStatus(nextEvent)
-
-                    if Defaults[.eventTimeFormat] != EventTimeFormat.show_under_title || Defaults[.eventTitleFormat] == .none {
-                        var eventTitle = title
-                        if Defaults[.eventTimeFormat] == EventTimeFormat.show {
-                            eventTitle += " " + time
-                        }
-
-                        var styles = [NSAttributedString.Key: Any]()
-                        styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: 13)
+                    var styles = [NSAttributedString.Key: Any]()
+                    styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: 13)
 
 
-                        if eventStatus == .pending && Defaults[.showPendingEvents] == PendingEventsAppereance.show_inactive {
-                            styles[NSAttributedString.Key.foregroundColor] = NSColor.lightGray
-                        } else if eventStatus == .pending && Defaults[.showPendingEvents] == PendingEventsAppereance.show_underlined {
-                            styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
-                        }
-
-                        menuTitle.append(NSAttributedString(string: eventTitle, attributes: styles))
-                    } else {
-                        let paragraphStyle = NSMutableParagraphStyle()
-                        paragraphStyle.lineHeightMultiple = 0.7
-                        paragraphStyle.alignment = .center
-
-                        var styles = [NSAttributedString.Key: Any]()
-                        styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: 12)
-                        styles[NSAttributedString.Key.baselineOffset] = -3
-
-                        if eventStatus == .pending && Defaults[.showPendingEvents] == PendingEventsAppereance.show_inactive {
-                            styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
-                        } else if eventStatus == .pending && Defaults[.showPendingEvents] == PendingEventsAppereance.show_underlined {
-                            styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
-                        }
-
-                        menuTitle.append(NSAttributedString(string: title, attributes: styles))
-
-                        menuTitle.append(NSAttributedString(string: "\n" + time, attributes: [NSAttributedString.Key.font: NSFont.systemFont(ofSize: 9), NSAttributedString.Key.foregroundColor: NSColor.lightGray]))
-
-
-                        menuTitle.addAttributes([NSAttributedString.Key.paragraphStyle: paragraphStyle], range: NSRange(location: 0, length: menuTitle.length))
+                    if eventStatus == .pending && Defaults[.showPendingEvents] == PendingEventsAppereance.show_inactive {
+                        styles[NSAttributedString.Key.foregroundColor] = NSColor.lightGray
+                    } else if eventStatus == .pending && Defaults[.showPendingEvents] == PendingEventsAppereance.show_underlined {
+                        styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
                     }
 
-                    button.attributedTitle = menuTitle
-                    if nextEvent != nil {
-                        button.toolTip = nextEvent.title
+                    menuTitle.append(NSAttributedString(string: eventTitle, attributes: styles))
+                } else {
+                    let paragraphStyle = NSMutableParagraphStyle()
+                    paragraphStyle.lineHeightMultiple = 0.7
+                    paragraphStyle.alignment = .center
+
+                    var styles = [NSAttributedString.Key: Any]()
+                    styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: 12)
+                    styles[NSAttributedString.Key.baselineOffset] = -3
+
+                    if eventStatus == .pending && Defaults[.showPendingEvents] == PendingEventsAppereance.show_inactive {
+                        styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
+                    } else if eventStatus == .pending && Defaults[.showPendingEvents] == PendingEventsAppereance.show_underlined {
+                        styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
                     }
+
+                    menuTitle.append(NSAttributedString(string: title, attributes: styles))
+
+                    menuTitle.append(NSAttributedString(string: "\n" + time, attributes: [NSAttributedString.Key.font: NSFont.systemFont(ofSize: 9), NSAttributedString.Key.foregroundColor: NSColor.lightGray]))
+
+
+                    menuTitle.addAttributes([NSAttributedString.Key.paragraphStyle: paragraphStyle], range: NSRange(location: 0, length: menuTitle.length))
+                }
+
+                button.attributedTitle = menuTitle
+                if nextEvent != nil {
+                    button.toolTip = nextEvent.title
                 }
             }
         }
@@ -203,15 +245,15 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             let today = Date()
             switch Defaults[.showEventsForPeriod] {
             case .today:
-                self.createDateSection(date: today, title: "Today")
+                self.createDateSection(date: today, title: "status_bar_section_today".loco())
             case .today_n_tomorrow:
                 let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today)!
-                self.createDateSection(date: today, title: "Today")
+                self.createDateSection(date: today, title: "status_bar_section_today".loco())
                 self.statusItemMenu.addItem(NSMenuItem.separator())
-                self.createDateSection(date: tomorrow, title: "Tomorrow")
+                self.createDateSection(date: tomorrow, title: "status_bar_section_tomorrow".loco())
             }
         } else {
-            let text = "Select calendars in preferences\nto see your meetings"
+            let text = "status_bar_empty_calendar_message".loco()
             let item = self.statusItemMenu.addItem(withTitle: "", action: nil, keyEquivalent: "")
             let paragraphStyle = NSMutableParagraphStyle()
             paragraphStyle.lineBreakMode = NSLineBreakMode.byWordWrapping
@@ -230,7 +272,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             let nextEvent = eventStore.getNextEvent(calendars: calendars)
             if nextEvent != nil {
                 let joinItem = self.statusItemMenu.addItem(
-                    withTitle: "Join next event meeting",
+                    withTitle: "status_bar_section_join_next_meeting".loco(),
                     action: #selector(AppDelegate.joinNextMeeting),
                     keyEquivalent: ""
                 )
@@ -238,9 +280,15 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             }
         }
 
+        let openLinkFromClipboardItem = NSMenuItem()
+        openLinkFromClipboardItem.title = "status_bar_section_join_from_clipboard".loco()
+        openLinkFromClipboardItem.action = #selector(AppDelegate.openLinkFromClipboard)
+        openLinkFromClipboardItem.keyEquivalent = ""
+        openLinkFromClipboardItem.setShortcut(for: .openClipboardShortcut)
+        self.statusItemMenu.addItem(openLinkFromClipboardItem)
 
         let createEventItem = NSMenuItem()
-        createEventItem.title = "Create meeting"
+        createEventItem.title = "status_bar_section_join_create_meeting".loco()
         createEventItem.action = #selector(AppDelegate.createMeeting)
         createEventItem.keyEquivalent = ""
         createEventItem.setShortcut(for: .createMeetingShortcut)
@@ -251,7 +299,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             self.statusItemMenu.addItem(NSMenuItem.separator())
 
             let bookmarksItem = self.statusItemMenu.addItem(
-                withTitle: "Bookmarks",
+                withTitle: "status_bar_section_bookmarks_title".loco(),
                 action: nil,
                 keyEquivalent: ""
             )
@@ -259,10 +307,10 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             var bookmarksMenu: NSMenu
 
             if Defaults[.bookmarks].count > 3 {
-                bookmarksMenu = NSMenu(title: "Bookmarks menu")
+                bookmarksMenu = NSMenu(title: "status_bar_section_bookmarks_menu".loco())
                 bookmarksItem.submenu = bookmarksMenu
             } else {
-                bookmarksItem.attributedTitle = NSAttributedString(string: "Bookmarks", attributes: [NSAttributedString.Key.font: NSFont.boldSystemFont(ofSize: 13)])
+                bookmarksItem.attributedTitle = NSAttributedString(string: "status_bar_section_bookmarks_title".loco(), attributes: [NSAttributedString.Key.font: NSFont.boldSystemFont(ofSize: 13)])
                 bookmarksItem.isEnabled = false
                 bookmarksMenu = self.statusItemMenu
             }
@@ -284,6 +332,8 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
         // Header
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "E, d MMM"
+        dateFormatter.locale = I18N.instance.locale
+
         let dateString = dateFormatter.string(from: date)
         let dateTitle = "\(title) (\(dateString)):"
         let titleItem = self.statusItemMenu.addItem(
@@ -300,167 +350,190 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
         }
         if sortedEvents.isEmpty {
             let item = self.statusItemMenu.addItem(
-                withTitle: "Nothing for \(title.lowercased())",
+                withTitle: "status_bar_section_date_nothing".loco(title.lowercased()),
                 action: nil,
                 keyEquivalent: ""
             )
             item.isEnabled = false
         }
         for event in sortedEvents {
-            createEventItem(event: event)
+            createEventItem(event: event, dateSection: date)
         }
     }
+
+
+    func getMeetingIconForLink(_ result: MeetingLink?) -> NSImage {
+            var image: NSImage? = NSImage(named: "no_online_session")
+            image!.size = NSSize(width: 16, height: 16)
+
+            switch result?.service {
+            // tested and verified
+            case .some(.teams):
+                image = NSImage(named: "ms_teams_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.meet):
+                image = NSImage(named: "google_meet_icon")!
+                image!.size = NSSize(width: 16, height: 13.2)
+
+            // tested and verified -> deprecated, can be removed because hangouts was replaced by google meet
+            case .some(.hangouts):
+                image = NSImage(named: "google_hangouts_icon")!
+                image!.size = NSSize(width: 16, height: 17.8)
+
+            // tested and verified
+            case .some(.zoom), .some(.zoomgov), .some(.zoom_native):
+                image = NSImage(named: "zoom_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.webex):
+                image = NSImage(named: "webex_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.jitsi):
+                image = NSImage(named: "jitsi_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.chime):
+                image = NSImage(named: "amazon_chime_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            case .some(.ringcentral):
+                image = NSImage(named: "online_meeting_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.gotomeeting):
+                image = NSImage(named: "gotomeeting_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.gotowebinar):
+                image = NSImage(named: "gotowebinar_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            case .some(.bluejeans):
+                image = NSImage(named: "online_meeting_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.eight_x_eight):
+                image = NSImage(named: "8x8_icon")!
+                image!.size = NSSize(width: 16, height: 8)
+
+            // tested and verified
+            case .some(.demio):
+                image = NSImage(named: "demio_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.join_me):
+                image = NSImage(named: "joinme_icon")!
+                image!.size = NSSize(width: 16, height: 10)
+
+            // tested and verified
+            case .some(.whereby):
+                image = NSImage(named: "whereby_icon")!
+                image!.size = NSSize(width: 16, height: 18)
+
+            // tested and verified
+            case .some(.uberconference):
+                image = NSImage(named: "uberconference_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.blizz), .some(.teamviewer_meeting):
+                image = NSImage(named: "teamviewer_meeting_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.vsee):
+                image = NSImage(named: "vsee_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.starleaf):
+                image = NSImage(named: "starleaf_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.duo):
+                image = NSImage(named: "google_duo_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.voov):
+                image = NSImage(named: "voov_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.skype):
+                image = NSImage(named: "skype_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.skype4biz), .some(.skype4biz_selfhosted):
+                image = NSImage(named: "skype_business_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.lifesize):
+                image = NSImage(named: "lifesize_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.facebook_workspace):
+                image = NSImage(named: "facebook_workplace_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.youtube):
+                image = NSImage(named: "youtube_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .some(.coscreen):
+                image = NSImage(named: "coscreen_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
+            case .none:
+                image = NSImage(named: "no_online_session")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            case .some(.vonageMeetings):
+                image = NSImage(named: "online_meeting_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            case .some(.meetStream):
+                image = NSImage(named: "online_meeting_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            case .some(.url):
+                image = NSImage(named: NSImage.touchBarOpenInBrowserTemplateName)!
+                image!.size = NSSize(width: 16, height: 16)
+
+            default:
+                break
+            }
+
+            return image!
+        }
 
     /**
      * try  to get the correct image for the specific
      */
     func getMeetingIcon(_ event: EKEvent) -> NSImage {
-        var image: NSImage? = NSImage(named: "no_online_session")
-        image!.size = NSSize(width: 16, height: 16)
+        let result = getMeetingLink(event, acceptAnyLink: Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show || Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.hide_without_any_link || Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show_inactive_without_any_link)
 
-        let result = getMeetingLink(event)
-        switch result?.service {
-        // tested and verified
-        case .some(.teams):
-            image = NSImage(named: "ms_teams_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.meet):
-            image = NSImage(named: "google_meet_icon")!
-            image!.size = NSSize(width: 16, height: 13.2)
-
-        // tested and verified -> deprecated, can be removed because hangouts was replaced by google meet
-        case .some(.hangouts):
-            image = NSImage(named: "google_hangouts_icon")!
-            image!.size = NSSize(width: 16, height: 17.8)
-
-        // tested and verified
-        case .some(.zoom), .some(.zoomgov), .some(.zoom_native):
-            image = NSImage(named: "zoom_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.webex):
-            image = NSImage(named: "webex_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.jitsi):
-            image = NSImage(named: "jitsi_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.chime):
-            image = NSImage(named: "amazon_chime_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        case .some(.ringcentral):
-            image = NSImage(named: "online_meeting_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.gotomeeting):
-            image = NSImage(named: "gotomeeting_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.gotowebinar):
-            image = NSImage(named: "gotowebinar_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        case .some(.bluejeans):
-            image = NSImage(named: "online_meeting_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.eight_x_eight):
-            image = NSImage(named: "8x8_icon")!
-            image!.size = NSSize(width: 16, height: 8)
-
-        // tested and verified
-        case .some(.demio):
-            image = NSImage(named: "demio_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.join_me):
-            image = NSImage(named: "joinme_icon")!
-            image!.size = NSSize(width: 16, height: 10)
-
-        // tested and verified
-        case .some(.whereby):
-            image = NSImage(named: "whereby_icon")!
-            image!.size = NSSize(width: 16, height: 18)
-
-        // tested and verified
-        case .some(.uberconference):
-            image = NSImage(named: "uberconference_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.blizz), .some(.teamviewer_meeting):
-            image = NSImage(named: "teamviewer_meeting_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.vsee):
-            image = NSImage(named: "vsee_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.starleaf):
-            image = NSImage(named: "starleaf_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.duo):
-            image = NSImage(named: "google_duo_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.voov):
-            image = NSImage(named: "voov_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.skype):
-            image = NSImage(named: "skype_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.skype4biz), .some(.skype4biz_selfhosted):
-            image = NSImage(named: "skype_business_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.lifesize):
-            image = NSImage(named: "lifesize_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.facebook_workspace):
-            image = NSImage(named: "facebook_workplace_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.youtube):
-            image = NSImage(named: "youtube_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .none:
-            image = NSImage(named: "no_online_session")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        default:
-            break
-        }
-
-        return image!
+        return getMeetingIconForLink(result)
     }
 
-    func createEventItem(event: EKEvent) {
+    func createEventItem(event: EKEvent, dateSection: Date) {
         let eventParticipantStatus = getEventParticipantStatus(event)
         let eventStatus = event.status
 
@@ -481,12 +554,13 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
         let eventTitle: String
 
         if Defaults[.shortenEventTitle] {
-            eventTitle = shortenTitleForMenu(event: event)
+            eventTitle = shortenTitleForMenu(title: event.title)
         } else {
             eventTitle = String(event.title)
         }
 
         let eventTimeFormatter = DateFormatter()
+        eventTimeFormatter.locale = I18N.instance.locale
 
         switch Defaults[.timeFormat] {
         case .am_pm:
@@ -498,7 +572,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
         var eventStartTime = ""
         var eventEndTime = ""
         if event.isAllDay {
-            eventStartTime = "All day"
+            eventStartTime = "status_bar_event_start_time_all_day".loco()
             eventEndTime = "\t"
         } else {
             eventStartTime = eventTimeFormatter.string(from: event.startDate)
@@ -508,9 +582,9 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
 
         let itemTitle: String
         if Defaults[.showEventEndTime] {
-            itemTitle = "\(eventStartTime)\t \(eventEndTime) \t  \(eventTitle)"
+            itemTitle = "\(eventStartTime) \t \(eventEndTime) \t \(eventTitle)"
         } else {
-            itemTitle = "\(eventStartTime)\t  \(eventTitle)"
+            itemTitle = "\(eventStartTime) \t \(eventTitle)"
         }
 
         // Event Item
@@ -534,6 +608,22 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                 styles[NSAttributedString.Key.strikethroughStyle] = NSUnderlineStyle.thick.rawValue
             }
             shouldShowAsActive = false
+        }
+
+        if !event.isAllDay && Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show_inactive_without_meeting_link {
+            let meetingLink = getMeetingLink(event, acceptAnyLink: false)
+            if meetingLink == nil {
+                styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
+                shouldShowAsActive = false
+            }
+        }
+
+        if !event.isAllDay && Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show_inactive_without_any_link {
+            let meetingLink = getMeetingLink(event, acceptAnyLink: true)
+            if meetingLink == nil {
+                styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
+                shouldShowAsActive = false
+            }
         }
 
         if eventParticipantStatus == .pending {
@@ -613,7 +703,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
 
             // Calendar
             if Defaults[.selectedCalendarIDs].count > 1 {
-                eventMenu.addItem(withTitle: "Calendar: \(event.calendar.title)", action: nil, keyEquivalent: "")
+                eventMenu.addItem(withTitle: "status_bar_submenu_calendar_title".loco(event.calendar.title), action: nil, keyEquivalent: "")
                 eventMenu.addItem(NSMenuItem.separator())
             }
 
@@ -621,7 +711,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             if !event.isAllDay {
                 let eventEndTime = eventTimeFormatter.string(from: event.endDate)
                 let eventDurationMinutes = String(Int(event.endDate.timeIntervalSince(event.startDate) / 60))
-                let durationTitle = "\(eventStartTime) - \(eventEndTime) (\(eventDurationMinutes) minutes)"
+                let durationTitle = "status_bar_submenu_duration_all_day".loco(eventStartTime, eventEndTime, eventDurationMinutes)
                 eventMenu.addItem(withTitle: durationTitle, action: nil, keyEquivalent: "")
                 eventMenu.addItem(NSMenuItem.separator())
             }
@@ -631,36 +721,36 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                 var status: String
                 switch eventParticipantStatus {
                 case .accepted:
-                    status = " 👍 Accepted"
+                    status = "status_bar_submenu_status_accepted".loco()
                 case .declined:
-                    status = " 👎 Canceled"
+                    status = "status_bar_submenu_status_canceled".loco()
                 case .tentative:
-                    status = " ☝️ Tentative"
+                    status = "status_bar_submenu_status_tentative".loco()
                 case .pending:
-                    status = " ⏳ Pending"
+                    status = "status_bar_submenu_status_pending".loco()
                 case .unknown:
-                    status = " ❔ Unknown"
+                    status = "status_bar_submenu_status_unknown".loco()
                 default:
                     if let eventStatus = eventParticipantStatus {
-                        status = " ❔ (\(String(describing: eventStatus)))"
+                        status = "status_bar_submenu_status_default_extended".loco(String(describing: eventStatus))
                     } else {
-                        status = " ❔ (Unknown)"
+                        status = "status_bar_submenu_status_default_simple".loco()
                     }
                 }
-                eventMenu.addItem(withTitle: "Status: \(status)", action: nil, keyEquivalent: "")
+                eventMenu.addItem(withTitle: "status_bar_submenu_status_title".loco(status), action: nil, keyEquivalent: "")
                 eventMenu.addItem(NSMenuItem.separator())
             }
 
             // Location
             if let location = event.location {
-                eventMenu.addItem(withTitle: "Location:", action: nil, keyEquivalent: "")
+                eventMenu.addItem(withTitle: "status_bar_submenu_location_title".loco(), action: nil, keyEquivalent: "")
                 eventMenu.addItem(withTitle: "\(location)", action: nil, keyEquivalent: "")
                 eventMenu.addItem(NSMenuItem.separator())
             }
 
             // Organizer
             if let eventOrganizer = event.organizer {
-                eventMenu.addItem(withTitle: "Organizer:", action: nil, keyEquivalent: "")
+                eventMenu.addItem(withTitle: "status_bar_submenu_organizer_title".loco(), action: nil, keyEquivalent: "")
                 let organizerName = eventOrganizer.name ?? ""
                 eventMenu.addItem(withTitle: "\(organizerName)", action: nil, keyEquivalent: "")
                 eventMenu.addItem(NSMenuItem.separator())
@@ -670,11 +760,11 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             if event.hasNotes {
                 let notes = cleanUpNotes(event.notes ?? "")
                 if !notes.isEmpty {
-                    eventMenu.addItem(withTitle: "Notes:", action: nil, keyEquivalent: "")
+                    eventMenu.addItem(withTitle: "status_bar_submenu_notes_title".loco(), action: nil, keyEquivalent: "")
                     let item = eventMenu.addItem(withTitle: "", action: nil, keyEquivalent: "")
                     let paragraphStyle = NSMutableParagraphStyle()
                     paragraphStyle.lineBreakMode = NSLineBreakMode.byWordWrapping
-                    item.attributedTitle = NSAttributedString(string: notes, attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
+                    item.attributedTitle = notes.splitWithNewLineAttributedString(with: [NSAttributedString.Key.paragraphStyle: paragraphStyle], maxWidth: 300.0)
                     eventMenu.addItem(NSMenuItem.separator())
                 }
             }
@@ -692,17 +782,17 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                         return $0.participantStatus.rawValue < $1.participantStatus.rawValue
                     }
                 }
-                eventMenu.addItem(withTitle: "Attendees (\(count)):", action: nil, keyEquivalent: "")
+                eventMenu.addItem(withTitle: "status_bar_submenu_attendees_title".loco(count), action: nil, keyEquivalent: "")
                 for attendee in sortedAttendees {
                     if attendee.participantType != .person {
                         continue
                     }
                     var attributes: [NSAttributedString.Key: Any] = [:]
 
-                    var name = attendee.name ?? "No name attendee"
+                    var name = attendee.name ?? "status_bar_submenu_attendees_no_name".loco()
 
                     if attendee.isCurrentUser {
-                        name = "\(name) (you)"
+                        name = "status_bar_submenu_attendees_you".loco(name)
                     }
 
                     var roleMark: String
@@ -719,9 +809,9 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                         status = ""
                         attributes[NSAttributedString.Key.strikethroughStyle] = NSUnderlineStyle.thick.rawValue
                     case .tentative:
-                        status = " [tentative]"
+                        status = "status_bar_submenu_attendees_status_tentative".loco()
                     case .pending:
-                        status = " [?]"
+                        status = "status_bar_submenu_attendees_status_unknown".loco()
                     default:
                         status = ""
                     }
@@ -734,30 +824,54 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             }
 
             // Open in App
-            let openItem = eventMenu.addItem(withTitle: "Open in Calendar App", action: #selector(AppDelegate.openEventInCalendar), keyEquivalent: "")
+            let openItem = eventMenu.addItem(withTitle: "status_bar_submenu_open_in_calendar".loco(), action: #selector(AppDelegate.openEventInCalendar), keyEquivalent: "")
             openItem.representedObject = event.eventIdentifier
+
+            // Open in fanctastical if fantastical is installed
+            if isFantasticalInstalled() {
+                let fantasticalItem = eventMenu.addItem(withTitle: "Open in Fantastical", action: #selector(AppDelegate.openEventInFantastical), keyEquivalent: "")
+                fantasticalItem.representedObject = EventWithDate(event: event, dateSection: dateSection)
+            }
         } else {
             eventItem.toolTip = event.title
         }
     }
 
+    /**
+     * checks if fantastical is installed
+     */
+    func isFantasticalInstalled () -> Bool {
+        NSWorkspace.shared.urlForApplication(withBundleIdentifier: "com.flexibits.fantastical2.mac") != nil
+    }
+
+
     func createPreferencesSection() {
+        if removePatchVerion(Defaults[.appVersion]) > removePatchVerion(Defaults[.lastRevisedVersionInChangelog]) {
+            let changelogItem = self.statusItemMenu.addItem(
+                withTitle: "What's new?",
+                action: #selector(AppDelegate.openChangelogWindow),
+                keyEquivalent: ""
+            )
+            changelogItem.image = NSImage(named: NSImage.statusAvailableName)
+        }
+
         self.statusItemMenu.addItem(
-            withTitle: "Preferences",
+            withTitle: "status_bar_preferences".loco(),
             action: #selector(AppDelegate.openPrefecencesWindow),
             keyEquivalent: ","
         )
 
         self.statusItemMenu.addItem(
-            withTitle: "Quit MeetingBar",
+            withTitle: "status_bar_quit".loco(),
             action: #selector(AppDelegate.quit),
             keyEquivalent: "q"
         )
     }
 }
 
-func shortenTitleForSystembar(event: EKEvent) -> String {
-    var eventTitle = String(event.title ?? "No title").trimmingCharacters(in: TitleTruncationRules.excludeAtEnds)
+
+func shortenTitleForSystembar(title: String?) -> String {
+    var eventTitle = String(title ?? "status_bar_no_title".loco()).trimmingCharacters(in: TitleTruncationRules.excludeAtEnds)
     if eventTitle.count > Defaults[.statusbarEventTitleLength] {
         let index = eventTitle.index(eventTitle.startIndex, offsetBy: Defaults[.statusbarEventTitleLength] - 1)
         eventTitle = String(eventTitle[...index]).trimmingCharacters(in: TitleTruncationRules.excludeAtEnds)
@@ -767,8 +881,8 @@ func shortenTitleForSystembar(event: EKEvent) -> String {
     return eventTitle
 }
 
-func shortenTitleForMenu(event: EKEvent) -> String {
-    var eventTitle = String(event.title ?? "No title").trimmingCharacters(in: TitleTruncationRules.excludeAtEnds)
+func shortenTitleForMenu(title: String?) -> String {
+    var eventTitle = String(title ?? "No title").trimmingCharacters(in: TitleTruncationRules.excludeAtEnds)
     if eventTitle.count > Int(Defaults[.menuEventTitleLength]) {
         let index = eventTitle.index(eventTitle.startIndex, offsetBy: Int(Defaults[.menuEventTitleLength]) - 1)
         eventTitle = String(eventTitle[...index]).trimmingCharacters(in: TitleTruncationRules.excludeAtEnds)
@@ -785,7 +899,7 @@ func createEventStatusString(_ event: EKEvent) -> (String, String) {
     var eventTitle: String
     switch Defaults[.eventTitleFormat] {
     case .show:
-        eventTitle = shortenTitleForSystembar(event: event)
+        eventTitle = shortenTitleForSystembar(title: event.title)
     case .dot:
         eventTitle = "•"
     case .none:
@@ -794,9 +908,13 @@ func createEventStatusString(_ event: EKEvent) -> (String, String) {
 
     var isActiveEvent: Bool
 
+    var calendar = Calendar.current
+    calendar.locale = I18N.instance.locale
+
     let formatter = DateComponentsFormatter()
     formatter.unitsStyle = .abbreviated
     formatter.allowedUnits = [.minute, .hour, .day]
+    formatter.calendar = calendar
 
     var eventDate: Date
     let now = Date()
@@ -811,108 +929,9 @@ func createEventStatusString(_ event: EKEvent) -> (String, String) {
     let formattedTimeLeft = formatter.string(from: now, to: eventDate)!
 
     if isActiveEvent {
-        eventTime = "now (\(formattedTimeLeft) left)"
+        eventTime = "status_bar_event_status_now".loco(formattedTimeLeft)
     } else {
-        eventTime = "in \(formattedTimeLeft)"
+        eventTime = "status_bar_event_status_in".loco(formattedTimeLeft)
     }
     return (eventTitle, eventTime)
-}
-
-func openEvent(_ event: EKEvent) {
-    let eventTitle = event.title ?? "No title"
-    if let (service, url) = getMeetingLink(event) {
-        if Defaults[.runJoinEventScript], Defaults[.joinEventScriptLocation] != nil {
-            if let url = Defaults[.joinEventScriptLocation]?.appendingPathComponent("joinEventScript.scpt") {
-                print("URL: \(url)")
-                let task = try! NSUserAppleScriptTask(url: url)
-                task.execute { error in
-                    if let error = error {
-                        sendNotification(title: "AppleScript return error", text: error.localizedDescription)
-                    }
-                }
-            }
-        }
-        openMeetingURL(service, url)
-    } else {
-        sendNotification(title: "Epp! Can't join the \(eventTitle)", text: "Link not found, or your meeting service is not yet supported")
-    }
-}
-
-func getEventParticipantStatus(_ event: EKEvent) -> EKParticipantStatus? {
-    if event.hasAttendees {
-        if let attendees = event.attendees {
-            if let currentUser = attendees.first(where: { $0.isCurrentUser }) {
-                return currentUser.participantStatus
-            }
-        }
-    }
-    return EKParticipantStatus.unknown
-}
-
-
-func openMeetingURL(_ service: MeetingServices?, _ url: URL) {
-    switch service {
-    case .meet:
-        switch Defaults[.browserForMeetLinks] {
-        case .chrome:
-            openLinkInChrome(url)
-        case .chromium:
-            openLinkInChromium(url)
-        case .firefox:
-            openLinkInFirefox(url)
-        case .edge:
-            openLinkInEdge(url)
-        case .brave:
-            openLinkInBrave(url)
-        case .vivaldi:
-            openLinkInVivaldi(url)
-        case .opera:
-            openLinkInOpera(url)
-        default:
-            _ = openLinkInDefaultBrowser(url)
-        }
-    case .teams:
-        if Defaults[.useAppForTeamsLinks] {
-            var teamsAppURL = URLComponents(url: url, resolvingAgainstBaseURL: false)!
-            teamsAppURL.scheme = "msteams"
-            let result = openLinkInDefaultBrowser(teamsAppURL.url!)
-            if !result {
-                sendNotification(title: "Oops! Unable to open the link in Microsoft Teams app", text: "Make sure you have Microsoft Teams app installed, or change the app in the preferences.")
-                _ = openLinkInDefaultBrowser(url)
-            }
-        } else {
-            _ = openLinkInDefaultBrowser(url)
-        }
-    case .zoom:
-        if Defaults[.useAppForZoomLinks] {
-            let urlString = url.absoluteString.replacingOccurrences(of: "?", with: "&").replacingOccurrences(of: "/j/", with: "/join?confno=")
-            var zoomAppUrl = URLComponents(url: URL(string: urlString)!, resolvingAgainstBaseURL: false)!
-            zoomAppUrl.scheme = "zoommtg"
-            let result = openLinkInDefaultBrowser(zoomAppUrl.url!)
-            if !result {
-                sendNotification(title: "Oops! Unable to open the link in Zoom app", text: "Make sure you have Zoom app installed, or change the app in the preferences.")
-                _ = openLinkInDefaultBrowser(url)
-            }
-        } else {
-            _ = openLinkInDefaultBrowser(url)
-        }
-    case .zoom_native:
-        let result = openLinkInDefaultBrowser(url)
-        if !result {
-            sendNotification(title: "Oops! Unable to open the native link in Zoom app", text: "Make sure you have Zoom app installed, or change the app in the preferences.", subtitle: url.absoluteString)
-
-            let urlString = url.absoluteString.replacingFirstOccurrence(of: "&", with: "?").replacingOccurrences(of: "/join?confno=", with: "/j/")
-            var zoomBrowserUrl = URLComponents(url: URL(string: urlString)!, resolvingAgainstBaseURL: false)!
-            zoomBrowserUrl.scheme = "https"
-            _ = openLinkInDefaultBrowser(zoomBrowserUrl.url!)
-        }
-    case .facetime:
-        NSWorkspace.shared.open(URL(string: "facetime://" + url.absoluteString)!)
-    case .facetimeaudio:
-        NSWorkspace.shared.open(URL(string: "facetime-audio://" + url.absoluteString)!)
-    case .phone:
-        NSWorkspace.shared.open(URL(string: "tel://" + url.absoluteString)!)
-    default:
-        _ = openLinkInDefaultBrowser(url)
-    }
 }

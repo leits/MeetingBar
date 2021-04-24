@@ -10,8 +10,6 @@ Integrated with 20+ meeting services so you can quickly join meetings from event
 <a href="https://www.producthunt.com/posts/meetingbar?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-meetingbar" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=203807&theme=light" alt="MeetingBar - Join your next meeting from your menu bar | Product Hunt Embed" style="width: 250px; height: 54px;" width="250px" height="54px" /></a>
 [![Download on the Mac App Store](mas_badge.png)](https://apps.apple.com/us/app/id1532419400)
 
-[![MeetingBar on XS:Code](https://xscode.com/assets/promo-banner.svg)](https://xscode.com/leits/MeetingBar)
-
 ## Features
 
 * Show the next meeting in the system menubar
@@ -20,6 +18,7 @@ Integrated with 20+ meeting services so you can quickly join meetings from event
   * show or hide events without guests
   * show or hide meeting type icons 
 * Show events from all your macos calendars incl. notes, location and attendees
+* Open the event in macos calendar or Fantastical 3 (if the app is installed)
 * Join the next onlinemeeting with a single shortcut
 * Select for specific services like zoom or ms teams to start the meeting in the installed app or browser
 * Attend an online meeting using one click
@@ -37,7 +36,7 @@ Integrated with 20+ meeting services so you can quickly join meetings from event
   * Manual download the [latest version](https://github.com/leits/MeetingBar/releases/latest/download/MeetingBar.dmg)
 2. Make sure your calendar synchronized to macOS calendar or [add a calendar account](https://support.apple.com/guide/calendar/add-or-delete-calendar-accounts-icl4308d6701/mac).
 3. Open the app and go through the onboarding.
-3. Never miss your next meeting again :tada:
+4. Never miss your next meeting again :tada:
 
 If you have some installation problems or some other questions please check the [FAQ](../../wiki/FAQ) or [add an issue](https://github.com/leits/MeetingBar/issues/new).
 
@@ -69,6 +68,16 @@ v StarLeaf
 * Skype For Bussines
 * Lifesize
 * Facebook Workspace
+* Facetime scheme
+* Telephone scheme
+* Youtube
+* TeamViewer Meeting
+* Google Meet Stream
+* Vonage Meetings
+* Discord
+* Jam
+* Blackboard Collaborate
+
 
 If the service you use isn't supported, add a comment [here](https://github.com/leits/MeetingBar/discussions/108).
 
@@ -82,9 +91,11 @@ If the service you use isn't supported, add a comment [here](https://github.com/
 
 Read more [here](CONTRIBUTING.md) about how to contribute to MeetingBar.
 
-## Support the creator
+## Support the project
 
-❤️ Love this project? Support on [Patreon](https://www.patreon.com/meetingbar)
+❤️ Love this project?
+
+Support on [Patreon](https://www.patreon.com/meetingbar) or via in-app purchases.
 
 ## Credits
 
@@ -93,9 +104,28 @@ MeetingBar is **stable** and in **active development** by [leits](https://github
 MeetingBar also uses these resources:
 * [KeyboardShortcuts](https://github.com/sindresorhus/KeyboardShortcuts) for managing global keyboard shortcuts
 * [Defaults](https://github.com/sindresorhus/Defaults) for managing user settings
+* [SwiftyStoreKit](https://github.com/bizz84/SwiftyStoreKit) for patronage via in-app purchases
 
 App logo made by [Miroslav Rajkovic](https://www.rajkovic.co/).
 
-If you encounter any bugs or have a feature request, [add an issue](https://github.com/leits/MeetingBar/issues/new).
+## Contributors ✨
 
-Thanks! :wave:
+Thanks goes to these wonderful people:
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tr>
+    <td align="center"><a href="https://github.com/leits"><img src="https://avatars.githubusercontent.com/u/12017826?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Andrii Leitsius</b></sub></a><br /><a href="https://github.com/leits/MeetingBar/commits?author=leits" title="Code">💻</a> <a href="#maintenance-leits" title="Maintenance">🚧</a></td>
+    <td align="center"><a href="https://github.com/jgoldhammer"><img src="https://avatars.githubusercontent.com/u/3872101?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Jens Goldhammer</b></sub></a><br /><a href="https://github.com/leits/MeetingBar/commits?author=jgoldhammer" title="Code">💻</a> <a href="#maintenance-jgoldhammer" title="Maintenance">🚧</a></td>
+    <td align="center"><a href="https://github.com/0bmxa"><img src="https://avatars.githubusercontent.com/u/15385891?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Max</b></sub></a><br /><a href="https://github.com/leits/MeetingBar/commits?author=0bmxa" title="Code">💻</a></td>
+  </tr>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+If you encounter any bugs or have a feature request, [add an issue](https://github.com/leits/MeetingBar/issues/new).

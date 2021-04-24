@@ -19,7 +19,7 @@ struct AdvancedTab: View {
             Divider()
             HStack {
                 Spacer()
-                Text("⚠️ Use these settings only if you understand what they do")
+                Text("preferences_advanced_setting_warning".loco())
                 Spacer()
             }
         }.padding()
@@ -52,31 +52,30 @@ struct ScriptSection: View {
                     Text("Test")
                 }
             }
-
-            Divider()
-
             HStack {
-                Toggle("Run AppleScript when you actively join a meeting", isOn: $runJoinEventScript)
+                Toggle("preferences_advanced_apple_script_checkmark".loco(), isOn: $runJoinEventScript)
                 Spacer()
                 if script != joinEventScript {
                     Button(action: saveScript) {
-                        Text("Save script")
+                        Text("preferences_advanced_save_script_button".loco())
                     }
                 }
-            }.frame(height: 15)
-        }
-
-        NSScrollableTextViewWrapper(text: $script).padding(.leading, 19)
-            .alert(isPresented: $showingAlert) {
-                Alert(title: Text("Wrong location"), message: Text("Please select the User > Library > Application Scripts > leits.MeetingBar folder"), dismissButton: .default(Text("Got it!")))
             }
-    }
 
+            NSScrollableTextViewWrapper(text: $script).padding(.leading, 19)
+                .alert(isPresented: $showingAlert) {
+                    Alert(title: Text("preferences_advanced_wrong_location_title".loco()),
+                          message: Text("preferences_advanced_wrong_location_message".loco()),
+                          dismissButton: .default(Text("preferences_advanced_wrong_location_button".loco())))
+                }
+        }
+    }
     /**
      * triggers a sample script
      */
     func runSampleScript() {
-        runAppleScriptForSampleEvent()
+        let scripts = Scripts();
+        scripts.runAppleScriptForSampleEvent()
     }
 
     func saveScript() {
@@ -85,8 +84,8 @@ struct ScriptSection: View {
         openPanel.canChooseDirectories = true
         openPanel.allowedFileTypes = ["none"]
         openPanel.allowsOtherFileTypes = false
-        openPanel.prompt = "Save script"
-        openPanel.message = "Please select only User > Library > Application Scripts > leits.MeetingBar folder"
+        openPanel.prompt = "preferences_advanced_save_script_button".loco()
+        openPanel.message = "preferences_advanced_wrong_location_message".loco()
         let scriptPath = try! FileManager.default.url(for: .applicationScriptsDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
         openPanel.directoryURL = scriptPath
         openPanel.begin { response in
@@ -172,17 +171,17 @@ struct RegexesSection: View {
     var body: some View {
         Section {
             HStack {
-                Text("Custom regexes for meeting link")
+                Text("preferences_advanced_regex_title".loco())
                 Spacer()
-                Button("Add regex") { openEditRegexModal("") }
+                Button("preferences_advanced_regex_add_button".loco()) { openEditRegexModal("") }
             }
             List {
                 ForEach(customRegexes, id: \.self) { regex in
                     HStack {
                         Text(regex)
                         Spacer()
-                        Button("edit") { openEditRegexModal(regex) }
-                        Button("x") { removeRegex(regex) }
+                        Button("preferences_advanced_regex_edit_button".loco()) { openEditRegexModal(regex) }
+                        Button("preferences_advanced_regex_delete_button".loco()) { removeRegex(regex) }
                     }
                 }
             }
@@ -223,22 +222,22 @@ struct EditRegexModal: View {
     var body: some View {
         VStack {
             Spacer()
-            TextField("Enter regex", text: $new_regex)
+            TextField("preferences_advanced_regex_new_title".loco(), text: $new_regex)
             Spacer()
             HStack {
                 Button(action: cancel) {
-                    Text("Cancel")
+                    Text("general_cancel".loco())
                 }
                 Spacer()
                 Button(action: save) {
-                    Text("Save")
+                    Text("general_save".loco())
                 }.disabled(new_regex.isEmpty)
             }
         }.padding()
         .frame(width: 500, height: 150)
         .onAppear { self.new_regex = self.regex }
         .alert(isPresented: $showingAlert) {
-            Alert(title: Text("Can't save regex"), message: Text(error_msg), dismissButton: .default(Text("OK")))
+            Alert(title: Text("preferences_advanced_regex_new_cant_save_title".loco()), message: Text(error_msg), dismissButton: .default(Text("general_ok".loco())))
         }
     }
 

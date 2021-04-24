@@ -1,0 +1,44 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "leits",
+      "name": "Andrii Leitsius",
+      "avatar_url": "https://avatars.githubusercontent.com/u/12017826?v=4",
+      "profile": "https://github.com/leits",
+      "contributions": [
+        "code",
+        "maintenance"
+      ]
+    },
+    {
+      "login": "jgoldhammer",
+      "name": "Jens Goldhammer",
+      "avatar_url": "https://avatars.githubusercontent.com/u/3872101?v=4",
+      "profile": "https://github.com/jgoldhammer",
+      "contributions": [
+        "code",
+        "maintenance"
+      ]
+    },
+    {
+      "login": "0bmxa",
+      "name": "Max",
+      "avatar_url": "https://avatars.githubusercontent.com/u/15385891?v=4",
+      "profile": "https://github.com/0bmxa",
+      "contributions": [
+        "code"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "MeetingBar",
+  "projectOwner": "leits",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true
+}
