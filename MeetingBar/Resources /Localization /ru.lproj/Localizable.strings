@@ -37,7 +37,6 @@
 
 "preferences_general_option_login_launch" = "Запускать при входе в систему";
 "preferences_general_option_preferred_language_title" = "Предпочтительный язык:";
-"preferences_general_option_preferred_language_tip" = "⚠️ Требуется перезагрузка приложения";
 "preferences_general_option_preferred_language_system_value" = "Системный";
 "preferences_general_option_preferred_language_english_value" = "English";
 "preferences_general_option_preferred_language_russian_value" = "Русский";
@@ -73,6 +72,11 @@
 "preferences_appearance_events_past_title" = "Прошедшие события:";
 "preferences_appearance_events_pending_title" = "Ожидающие события";
 "preferences_appearance_events_declined_title" = "Отклоненные события:";
+"preferences_appearance_events_non_all_day_title" = " Не весь день";
+"preferences_appearance_events_value_inactive_without_link" = "показать неактивным без какой-либо ссылки";
+"preferences_appearance_events_value_inactive_without_meeting_link" = "показать неактивным без ссылки на встречу";
+"preferences_appearance_events_value_hide_without_link" = "скрыть без какой-либо ссылкиk";
+"preferences_appearance_events_value_hide_without_meeting_link" = "скрыть без ссылки на встречу";
 "preferences_appearance_events_value_show" = "показать";
 "preferences_appearance_events_value_hide" = "скрыть";
 "preferences_appearance_events_value_as_inactive" = "показать неактивным";
@@ -289,6 +293,7 @@
 "constants_meeting_service_blackboard_collab" = "Blackboard Collaborate";
 "constants_meeting_service_coscreen" = "CoScreen";
 "constants_meeting_service_other" = "Другое";
+"constants_meeting_service_url" = "URL-АДРЕС";
 
 "constants_browser_brave" = "Brave";
 "constants_browser_chrome" = "Google Chrome";
