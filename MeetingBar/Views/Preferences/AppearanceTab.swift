@@ -89,7 +89,7 @@ struct StatusBarSection: View {
 
             HStack {
                 Toggle("", isOn: $showEventMaxTimeUntilEventEnabled).labelsHidden()
-                Stepper("preferences_appearance_status_bar_next_event".loco(showEventMaxTimeUntilEventThreshold), value: $showEventMaxTimeUntilEventThreshold, in: 5...120, step: 5)
+                Stepper("preferences_appearance_status_bar_next_event".loco(showEventMaxTimeUntilEventThreshold), value: $showEventMaxTimeUntilEventThreshold, in: 5...720, step: 5)
                     .disabled(!showEventMaxTimeUntilEventEnabled)
             }
         }.padding(.horizontal, 10)
