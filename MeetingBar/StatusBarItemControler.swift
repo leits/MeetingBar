@@ -280,13 +280,6 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             }
         }
 
-        let openLinkFromClipboardItem = NSMenuItem()
-        openLinkFromClipboardItem.title = "status_bar_section_join_from_clipboard".loco()
-        openLinkFromClipboardItem.action = #selector(AppDelegate.openLinkFromClipboard)
-        openLinkFromClipboardItem.keyEquivalent = ""
-        openLinkFromClipboardItem.setShortcut(for: .openClipboardShortcut)
-        self.statusItemMenu.addItem(openLinkFromClipboardItem)
-
         let createEventItem = NSMenuItem()
         createEventItem.title = "status_bar_section_join_create_meeting".loco()
         createEventItem.action = #selector(AppDelegate.createMeeting)
@@ -294,6 +287,32 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
         createEventItem.setShortcut(for: .createMeetingShortcut)
 
         self.statusItemMenu.addItem(createEventItem)
+
+        let quickActionsItem = self.statusItemMenu.addItem(
+            withTitle: "Quick Actions",
+            action: nil,
+            keyEquivalent: ""
+        )
+        quickActionsItem.isEnabled = true
+
+        quickActionsItem.submenu = NSMenu(title: "Quick Actions")
+
+        let openLinkFromClipboardItem = NSMenuItem()
+        openLinkFromClipboardItem.title = "status_bar_section_join_from_clipboard".loco()
+        openLinkFromClipboardItem.action = #selector(AppDelegate.openLinkFromClipboard)
+        openLinkFromClipboardItem.keyEquivalent = ""
+        openLinkFromClipboardItem.setShortcut(for: .openClipboardShortcut)
+        quickActionsItem.submenu!.addItem(openLinkFromClipboardItem)
+
+        let toggleMeetingNameVisibilityItem = NSMenuItem()
+        if Defaults[.hideMeetingNames] {
+            toggleMeetingNameVisibilityItem.title = "status_bar_show_meeting_names".loco()
+        } else {
+            toggleMeetingNameVisibilityItem.title = "status_bar_hide_meeting_names".loco()
+        }
+        toggleMeetingNameVisibilityItem.action = #selector(AppDelegate.toggleMeetingNameVisibility)
+        toggleMeetingNameVisibilityItem.setShortcut(for: .toggleMeetingNameVisibilityShortcut)
+        quickActionsItem.submenu!.addItem(toggleMeetingNameVisibilityItem)
 
         if !Defaults[.bookmarks].isEmpty {
             self.statusItemMenu.addItem(NSMenuItem.separator())
@@ -860,16 +879,6 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             action: #selector(AppDelegate.openPrefecencesWindow),
             keyEquivalent: ","
         )
-
-        let toggleMeetingNameVisibilityItem = NSMenuItem()
-        if Defaults[.hideMeetingNames] {
-            toggleMeetingNameVisibilityItem.title = "status_bar_show_meeting_names".loco()
-        } else {
-            toggleMeetingNameVisibilityItem.title = "status_bar_hide_meeting_names".loco()
-        }
-        toggleMeetingNameVisibilityItem.action = #selector(AppDelegate.toggleMeetingNameVisibility)
-        toggleMeetingNameVisibilityItem.setShortcut(for: .toggleMeetingNameVisibilityShortcut)
-        self.statusItemMenu.addItem(toggleMeetingNameVisibilityItem)
 
         self.statusItemMenu.addItem(
             withTitle: "status_bar_quit".loco(),
