@@ -66,7 +66,7 @@ struct BrowserConfigView: View {
 
             HStack(alignment: .center, spacing: 20) {
                 Spacer()
-                MenuButton(label: Image(nsImage: NSImage(named: NSImage.addTemplateName)!)) {
+                MenuButton(label: Text("Add")) {
                     Button("Custom browser") {
                         self.showingAddBrowserModal.toggle()
                     }
@@ -74,7 +74,7 @@ struct BrowserConfigView: View {
                         self.addSystemBrowser()
                     }
                 }
-                .frame(width: 20, height: 20, alignment: .center)
+                .frame(width: 40, height: 20, alignment: .center)
                 .menuButtonStyle(BorderlessPullDownMenuButtonStyle())
                 .sheet(isPresented: $showingAddBrowserModal) {
                     EditBrowserModal(browser: $browser)
