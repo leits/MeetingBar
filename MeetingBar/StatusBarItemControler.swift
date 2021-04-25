@@ -262,6 +262,12 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
         }
         self.statusItemMenu.addItem(NSMenuItem.separator())
         self.createJoinSection()
+
+        if !Defaults[.bookmarks].isEmpty {
+            self.statusItemMenu.addItem(NSMenuItem.separator())
+
+            self.createBookmarksSection()
+        }
         self.statusItemMenu.addItem(NSMenuItem.separator())
 
         self.createPreferencesSection()
@@ -313,35 +319,33 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
         toggleMeetingNameVisibilityItem.action = #selector(AppDelegate.toggleMeetingNameVisibility)
         toggleMeetingNameVisibilityItem.setShortcut(for: .toggleMeetingNameVisibilityShortcut)
         quickActionsItem.submenu!.addItem(toggleMeetingNameVisibilityItem)
+    }
+    
+    func createBookmarksSection() {
+        let bookmarksItem = self.statusItemMenu.addItem(
+            withTitle: "status_bar_section_bookmarks_title".loco(),
+            action: nil,
+            keyEquivalent: ""
+        )
 
-        if !Defaults[.bookmarks].isEmpty {
-            self.statusItemMenu.addItem(NSMenuItem.separator())
+        var bookmarksMenu: NSMenu
 
-            let bookmarksItem = self.statusItemMenu.addItem(
-                withTitle: "status_bar_section_bookmarks_title".loco(),
-                action: nil,
-                keyEquivalent: ""
-            )
+        if Defaults[.bookmarks].count > 3 {
+            bookmarksMenu = NSMenu(title: "status_bar_section_bookmarks_menu".loco())
+            bookmarksItem.submenu = bookmarksMenu
+        } else {
+            bookmarksItem.attributedTitle = NSAttributedString(string: "status_bar_section_bookmarks_title".loco(), attributes: [NSAttributedString.Key.font: NSFont.boldSystemFont(ofSize: 13)])
+            bookmarksItem.isEnabled = false
+            bookmarksMenu = self.statusItemMenu
+        }
 
-            var bookmarksMenu: NSMenu
+        for bookmark in Defaults[.bookmarks] {
+            let bookmarkItem = bookmarksMenu.addItem(
+                withTitle: bookmark.name,
+                action: #selector(AppDelegate.joinBookmark),
+                keyEquivalent: "")
 
-            if Defaults[.bookmarks].count > 3 {
-                bookmarksMenu = NSMenu(title: "status_bar_section_bookmarks_menu".loco())
-                bookmarksItem.submenu = bookmarksMenu
-            } else {
-                bookmarksItem.attributedTitle = NSAttributedString(string: "status_bar_section_bookmarks_title".loco(), attributes: [NSAttributedString.Key.font: NSFont.boldSystemFont(ofSize: 13)])
-                bookmarksItem.isEnabled = false
-                bookmarksMenu = self.statusItemMenu
-            }
-
-            for bookmark in Defaults[.bookmarks] {
-                let bookmarkItem = bookmarksMenu.addItem(
-                    withTitle: bookmark.name,
-                    action: #selector(AppDelegate.joinBookmark),
-                    keyEquivalent: "")
-
-                bookmarkItem.representedObject = bookmark
-            }
+            bookmarkItem.representedObject = bookmark
         }
     }
 
