@@ -52,7 +52,15 @@ struct ServicesTab: View {
             }.padding(.horizontal, 10)
 
             Section {
-                Text("preferences_services_supported_links_list".loco(MeetingServices.allCases.map { $0.localizedValue }.sorted().joined(separator: ", ")))
+                // Move other to end of list
+                let services = MeetingServices.allCases.sorted(by: { lhs, rhs in
+                    if lhs == .other { return false }
+                    if rhs == .other { return true }
+                    return lhs.localizedValue < rhs.localizedValue
+                })
+                .map({ $0.localizedValue })
+                .joined(separator: ", ")
+                Text("preferences_services_supported_links_list".loco(services))
                 HStack {
                     Text("preferences_services_supported_links_mailback".loco())
                     Button("✉️") {
