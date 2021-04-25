@@ -10,21 +10,37 @@ import SwiftUI
 
 import Defaults
 
+var systemDefaultBrowser = Browser(name: "Default Browser", path: "")
+
 struct ServicesTab: View {
     @Default(.browserForMeetLinks) var browserForMeetLinks
+    @Default(.browserForCreateMeeting) var browserForCreateMeeting
+    @Default(.defaultBrowser) var defaultBrowser
     @Default(.useAppForZoomLinks) var useAppForZoomLinks
     @Default(.useAppForTeamsLinks) var useAppForTeamsLinks
     @Default(.createMeetingServiceUrl) var createMeetingServiceUrl
     @Default(.createMeetingService) var createMeetingService
+    @Default(.browsers) var allBrowser
+
+    @State var showBrowserConfiguration = false
 
     var body: some View {
         VStack {
             Section {
-                Picker(selection: $browserForMeetLinks, label: Text("preferences_services_link_meet_title".loco()).frame(width: 150, alignment: .leading)) {
-                    ForEach(Browser.allCases, id: \.self) { (browser: Browser) in
-                        Text(browser.localizedValue).tag(browser)
+                Picker(selection: $defaultBrowser, label: Text("Open meeting links in").frame(width: 150, alignment: .leading)) {
+                    Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
+                    ForEach(allBrowser, id: \.self) { (browser: Browser) in
+                        Text(browser.name).tag(browser)
                     }
                 }
+
+                Picker(selection: $browserForMeetLinks, label: Text("preferences_services_link_meet_title".loco()).frame(width: 150, alignment: .leading)) {
+                    Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
+                    ForEach(allBrowser, id: \.self) { (browser: Browser) in
+                        Text(browser.name).tag(browser)
+                    }
+                }
+
                 Picker(selection: $useAppForZoomLinks, label: Text("preferences_services_link_zoom_title".loco()).frame(width: 150, alignment: .leading)) {
                     Text("preferences_services_link_default_browser_value".loco()).tag(false)
                     Text("preferences_services_link_zoom_value".loco()).tag(true)
@@ -34,6 +50,7 @@ struct ServicesTab: View {
                     Text("preferences_services_link_teams_value".loco()).tag(true)
                 }
             }.padding(.horizontal, 10)
+
             Section {
                 Text("preferences_services_supported_links_list".loco(MeetingServices.allCases.map { $0.localizedValue }.sorted().joined(separator: ", ")))
                 HStack {
@@ -43,6 +60,7 @@ struct ServicesTab: View {
                     }
                 }
             }.foregroundColor(.gray).font(.system(size: 12)).padding(.horizontal, 10)
+
             Divider()
             VStack {
                 HStack {
@@ -59,9 +77,31 @@ struct ServicesTab: View {
                         Text("preferences_services_google_meet_tip".loco()).foregroundColor(.gray).font(.system(size: 12))
                     }
                 }
-            }
+                HStack {
+                    Picker(selection: $browserForCreateMeeting, label: Text("Use browser").frame(width: 150, alignment: .leading)) {
+                        Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
+                        ForEach(allBrowser, id: \.self) { (browser: Browser) in
+                            Text(browser.name).tag(browser)
+                        }
+                    }
+                }.padding(.horizontal, 10)
+            }.padding()
+
+            Divider()
+
+            VStack {
+                Button(action: clickConfigureBrowser) {
+                    Text("Configure browsers")
+                }.sheet(isPresented: $showBrowserConfiguration) {
+                    BrowserConfigView()
+                }
+            }.padding()
             Spacer()
         }.padding()
+    }
+
+    func clickConfigureBrowser() {
+        self.showBrowserConfiguration.toggle()
     }
 }
 

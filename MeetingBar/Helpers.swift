@@ -8,6 +8,8 @@
 import Cocoa
 import EventKit
 import Defaults
+import AppKit
+
 
 struct EventWithDate {
     let event: EKEvent
@@ -200,7 +202,7 @@ func openEvent(_ event: EKEvent) {
                 }
             }
         }
-        openMeetingURL(meeting.service, meeting.url)
+        openMeetingURL(meeting.service, meeting.url, nil)
     } else {
         sendNotification("Epp! Can't join the \(eventTitle)", "Link not found, or your meeting service is not yet supported")
     }
@@ -218,11 +220,10 @@ func getEventParticipantStatus(_ event: EKEvent) -> EKParticipantStatus? {
 }
 
 
-func openMeetingURL(_ service: MeetingServices?, _ url: URL) {
+func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?) {
     switch service {
     case .meet:
-        let browser = Defaults[.browserForMeetLinks]
-        url.openIn(browser: browser)
+        url.openIn(browser: browser ?? Defaults[.browserForMeetLinks])
 
     case .teams:
         if Defaults[.useAppForTeamsLinks] {
@@ -234,8 +235,9 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL) {
                 url.openInDefaultBrowser()
             }
         } else {
-            url.openInDefaultBrowser()
+            url.openIn(browser: browser ?? systemDefaultBrowser)
         }
+
     case .zoom:
         if Defaults[.useAppForZoomLinks] {
             let urlString = url.absoluteString.replacingOccurrences(of: "?", with: "&").replacingOccurrences(of: "/j/", with: "/join?confno=")
@@ -247,7 +249,7 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL) {
                 url.openInDefaultBrowser()
             }
         } else {
-            url.openInDefaultBrowser()
+            url.openIn(browser: browser ?? systemDefaultBrowser)
         }
     case .zoom_native:
         let result = url.openInDefaultBrowser()
@@ -265,8 +267,9 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL) {
         NSWorkspace.shared.open(URL(string: "facetime-audio://" + url.absoluteString)!)
     case .phone:
         NSWorkspace.shared.open(URL(string: "tel://" + url.absoluteString)!)
+
     default:
-        url.openInDefaultBrowser()
+        url.openIn(browser: browser ?? systemDefaultBrowser)
     }
 }
 
@@ -275,4 +278,34 @@ func removePatchVerion(_ version: String) -> String {
     let major = versionArray[0]
     let minor = versionArray[1]
     return "\(major).\(minor)"
+}
+
+func bundleIdentifier(forAppName appName: String) -> String? {
+    let workspace = NSWorkspace.shared
+    let appPath = workspace.fullPath(forApplication: appName)
+    if let appPath = appPath {
+        let appBundle = Bundle(path: appPath)
+        return appBundle?.bundleIdentifier
+    }
+    return nil
+}
+
+
+/**
+ * adds the default browsers for the browser dialog
+ */
+func addInstalledBrowser() {
+    let existingBrowsers = Defaults[.browsers]
+
+    var appUrls = LSCopyApplicationURLsForURL(URL(string: "https:")! as CFURL, .all)?.takeRetainedValue() as? [URL]
+
+    if !appUrls!.isEmpty {
+        appUrls = appUrls?.sorted { $0.path.fileName() < $1.path.fileName() }
+        appUrls?.forEach {
+            let browser = Browser(name: $0.path.fileName(), path: $0.path)
+            if !existingBrowsers.contains(where: { $0.name == browser.path.fileName() }) {
+                Defaults[.browsers].append(browser)
+            }
+        }
+    }
 }

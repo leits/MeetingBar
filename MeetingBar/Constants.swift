@@ -351,74 +351,14 @@ enum AppLanguage: String, Codable {
     case russian = "ru"
 }
 
-enum Browser: String, Codable, CaseIterable {
-    case chrome = "Google Chrome"
-    case firefox = "Firefox"
-    case safari = "Safari"
-    case chromium = "Chromium"
-    case brave = "Brave"
-    case edge = "Microsoft Edge"
-    case opera = "Opera"
-    case vivaldi = "Vivaldi"
-    case defaultBrowser = "Default Browser"
-
-    var url: URL? {
-        switch self {
-        case .chrome:
-            return URL(fileURLWithPath: "/Applications/Google Chrome.app")
-
-        case .firefox:
-            return URL(fileURLWithPath: "/Applications/Firefox.app")
-
-        case .safari:
-            return URL(fileURLWithPath: "/Applications/Safari.app")
-
-        case .chromium:
-            return URL(fileURLWithPath: "/Applications/Chromium.app")
-
-        case .brave:
-            return URL(fileURLWithPath: "/Applications/Brave Browser.app")
-
-        case .edge:
-            return URL(fileURLWithPath: "/Applications/Microsoft Edge.app")
-
-        case .opera:
-            return URL(fileURLWithPath: "/Applications/Opera.app")
-
-        case .vivaldi:
-            return URL(fileURLWithPath: "/Applications/Vivaldi.app")
-
-        default:
-            return nil
-        }
-    }
-
-    var localizedValue: String {
-        switch self {
-        case .brave:
-            return "constants_browser_brave".loco()
-        case .chrome:
-            return "constants_browser_chrome".loco()
-        case .chromium:
-            return "constants_browser_chromium".loco()
-        case .edge:
-            return "constants_browser_edge".loco()
-        case .firefox:
-            return "constants_browser_firefox".loco()
-        case .opera:
-            return "constants_browser_opera".loco()
-        case .vivaldi:
-            return "constants_browser_vivaldi".loco()
-        case .safari:
-            return "constants_browser_safari".loco()
-        case .defaultBrowser:
-            return "constants_browser_defaultBrowser".loco()
-        }
-    }
+struct Browser: Encodable, Decodable, Hashable {
+    var name: String
+    var path: String
+    var arguments: String = ""
+    var deletable = true
 }
 
-
-struct WindowTitles {
+ struct WindowTitles {
     static let onboarding = "window_title_onboarding".loco()
     static let preferences = "window_title_preferences".loco()
     static let changelog = "windows_title_changelog".loco()

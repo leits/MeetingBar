@@ -69,11 +69,19 @@ extension String {
             html: data,
             options: [.documentType: NSAttributedString.DocumentType.html],
             documentAttributes: nil
-        ) {
+           ) {
             return attributedSelf.string
         }
         return self
     }
+
+    func fileName() -> String {
+        URL(fileURLWithPath: self).deletingPathExtension().lastPathComponent
+    }
+
+    func fileExtension() -> String {
+        URL(fileURLWithPath: self).pathExtension
+	}
 
     func encodeUrl() -> String? {
         self.addingPercentEncoding( withAllowedCharacters: NSCharacterSet.urlQueryAllowed)

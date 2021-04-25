@@ -88,7 +88,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             Defaults[.titleLength] = nil
         }
         if let useChromeForMeetLinks = Defaults[.useChromeForMeetLinks] {
-            Defaults[.browserForMeetLinks] = useChromeForMeetLinks ? .chrome : .defaultBrowser
+            if useChromeForMeetLinks {
+                let chromeBrowser = Defaults[.browsers].first { $0.name == "Google Chrome" }
+                Defaults[.browserForMeetLinks] = chromeBrowser!
+            } else {
+                Defaults[.browserForMeetLinks] = Browser(name: "Default Browser", path: "", arguments: "", deletable: false)
+            }
+
+
             Defaults[.useChromeForMeetLinks] = nil
         }
 
@@ -145,7 +152,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             let meetingLink = detectLink(&clipboardContent)
 
             if let meetingLink = meetingLink {
-                openMeetingURL(meetingLink.service, meetingLink.url)
+                openMeetingURL(meetingLink.service, meetingLink.url, systemDefaultBrowser)
             } else {
                 let validUrl = NSURL(string: clipboardContent)
                 if validUrl != nil {
@@ -177,6 +184,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
         scheduleUpdateStatusBarTitle()
         scheduleUpdateEvents()
+
+        if Defaults[.browsers].isEmpty {
+            addInstalledBrowser()
+        }
+
 
         KeyboardShortcuts.onKeyUp(for: .createMeetingShortcut) {
             self.createMeeting()
@@ -461,29 +473,31 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     @objc
     func createMeeting(_: Any? = nil) {
         NSLog("Create meeting in \(Defaults[.createMeetingService].rawValue)")
+        let browser: Browser = Defaults[.browserForCreateMeeting]
+
         switch Defaults[.createMeetingService] {
         case .meet:
-            openMeetingURL(MeetingServices.meet, CreateMeetingLinks.meet)
+            openMeetingURL(MeetingServices.meet, CreateMeetingLinks.meet, browser)
         case .zoom:
-            openMeetingURL(MeetingServices.zoom, CreateMeetingLinks.zoom)
+            openMeetingURL(MeetingServices.zoom, CreateMeetingLinks.zoom, browser)
         case .teams:
-            openMeetingURL(MeetingServices.teams, CreateMeetingLinks.teams)
+            openMeetingURL(MeetingServices.teams, CreateMeetingLinks.teams, browser)
         case .jam:
-            openMeetingURL(MeetingServices.jam, CreateMeetingLinks.jam)
+            openMeetingURL(MeetingServices.jam, CreateMeetingLinks.jam, browser)
         case .coscreen:
-            openMeetingURL(MeetingServices.coscreen, CreateMeetingLinks.coscreen)
+            openMeetingURL(MeetingServices.coscreen, CreateMeetingLinks.coscreen, browser)
         case .gcalendar:
-            openMeetingURL(nil, CreateMeetingLinks.gcalendar)
+            openMeetingURL(nil, CreateMeetingLinks.gcalendar, browser)
         case .outlook_office365:
-            openMeetingURL(nil, CreateMeetingLinks.outlook_office365)
+            openMeetingURL(nil, CreateMeetingLinks.outlook_office365, browser)
         case .outlook_live:
-            openMeetingURL(nil, CreateMeetingLinks.outlook_live)
+            openMeetingURL(nil, CreateMeetingLinks.outlook_live, browser)
         case .url:
             var url: String = Defaults[.createMeetingServiceUrl]
             let checkedUrl = NSURL(string: url)
 
             if !url.isEmpty && checkedUrl != nil {
-                openMeetingURL(nil, URL(string: url)!)
+                openMeetingURL(nil, URL(string: url)!, browser)
             } else {
                 if !url.isEmpty {
                     url += " "
@@ -496,12 +510,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
     @objc
     func joinBookmark(sender: NSMenuItem) {
-        NSLog("Join bookmark")
+        NSLog("Called to join bookmark")
         if let bookmark: Bookmark = sender.representedObject as? Bookmark {
             guard let url = URL(string: bookmark.url) else {
                 return
             }
-            openMeetingURL(bookmark.service, url)
+            NSLog("Bookmark url: \(bookmark.url)")
+            openMeetingURL(bookmark.service, url, systemDefaultBrowser)
         }
     }
 

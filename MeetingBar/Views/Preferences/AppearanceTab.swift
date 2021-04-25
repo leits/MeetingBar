@@ -27,9 +27,7 @@ struct StatusBarSection: View {
     @Default(.eventTitleIconFormat) var eventTitleIconFormat
     @Default(.eventTitleFormat) var eventTitleFormat
     @Default(.eventTimeFormat) var eventTimeFormat
-
     @Default(.statusbarEventTitleLength) var statusbarEventTitleLength
-
     @Default(.showEventMaxTimeUntilEventThreshold) var showEventMaxTimeUntilEventThreshold
     @Default(.showEventMaxTimeUntilEventEnabled) var showEventMaxTimeUntilEventEnabled
 
