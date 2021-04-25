@@ -137,7 +137,11 @@ func scheduleEventNotification(_ event: EKEvent) {
     let center = UNUserNotificationCenter.current()
 
     let content = UNMutableNotificationContent()
-    content.title = event.title
+    if Defaults[.hideMeetingNames] {
+        content.title = "general_meeting".loco()
+    } else {
+        content.title = event.title
+    }
     content.body = "notifications_event_start_soon_body".loco()
     content.categoryIdentifier = "EVENT"
     content.sound = UNNotificationSound.default

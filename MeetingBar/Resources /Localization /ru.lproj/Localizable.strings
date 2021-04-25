@@ -12,6 +12,7 @@
 "general_add" = "Добавить";
 "general_delete" = "Удалить";
 "general_save" = "Сохранить";
+"general_meeting" = "событие";
 
 "create_meeting_error_title" = "Невозможно создать новое событие";
 "create_meeting_error_message" = "Пользовательский URL \"%@\" отсутствует или недействителен. Пожалуйста, исправьте url в настройках приложения.";
@@ -45,6 +46,7 @@
 "preferences_general_shortcut_create_meeting" = "Создать событие:";
 "preferences_general_shortcut_join_next" = "Присоединиться к следующему событию:";
 "preferences_general_shortcut_join_from_clipboard" = "Присоединиться к событию из буфера обмена:";
+"preferences_general_shortcut_toggle_meeting_name_visibility" = "Переключить видимость названия события:";
 "preferences_general_meeting_bar_description" = "MeetingBar - это приложение с открытым исходным кодом, созданное Andrii Leitsius.\nПриложение призвано сделать ваши онлайн-встречи более спокойными и легкими.";
 "preferences_general_external_patronage" = "Patronage";
 "preferences_general_external_gitHub" = "GitHub";
@@ -191,6 +193,8 @@
 "status_bar_submenu_attendees_status_tentative" = " [Возможно]";
 "status_bar_submenu_attendees_status_unknown" = " [?]";
 "status_bar_submenu_open_in_calendar" = "Открыть в приложении \"Календарь\"";
+"status_bar_show_meeting_names" = "Показать названия событий";
+"status_bar_hide_meeting_names" = "Скрыть названия событий";
 "status_bar_preferences" = "Настройки";
 "status_bar_quit" = "Выйти из MeetingBar";
 "status_bar_no_title" = "Без названия";
