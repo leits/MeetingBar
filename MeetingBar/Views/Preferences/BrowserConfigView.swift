@@ -29,7 +29,7 @@ struct BrowserConfigView: View {
                     HStack {
                         VStack(alignment: .leading) {
                             Text("\(browser.name)")
-                            Text(generatePath(browser: browser)).font(.system(size:11)).foregroundColor(Color.gray)
+                            Text(generatePath(browser: browser)).font(.system(size: 11)).foregroundColor(Color.gray)
                         }
 
                         Spacer()
