@@ -109,6 +109,7 @@ struct MenuSection: View {
     @Default(.showEventEndTime) var showEventEndTime
     @Default(.showEventDetails) var showEventDetails
     @Default(.showMeetingServiceIcon) var showMeetingServiceIcon
+    @Default(.isMouseClickSwap) var isMouseClickSwap
 
     var body: some View {
         Text("preferences_appearance_menu_title".loco()).font(.headline).bold()
@@ -130,6 +131,7 @@ struct MenuSection: View {
                     Toggle("preferences_appearance_menu_show_event_icon_value".loco(), isOn: $showMeetingServiceIcon)
                     Toggle("preferences_appearance_menu_show_event_details_value".loco(), isOn: $showEventDetails)
                 }
+                Toggle("preferences_appearance_menu_swap_mouse_click".loco(), isOn: $isMouseClickSwap)
             }
         }.padding(.horizontal, 10)
     }

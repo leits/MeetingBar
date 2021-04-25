@@ -29,7 +29,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
         let button: NSStatusBarButton = self.statusItem.button!
         button.target = self
         button.action = #selector(self.statusMenuBarAction)
-        button.sendAction(on: [NSEvent.EventTypeMask.rightMouseDown, NSEvent.EventTypeMask.leftMouseUp, NSEvent.EventTypeMask.leftMouseDown])
+        button.sendAction(on: [NSEvent.EventTypeMask.rightMouseDown, NSEvent.EventTypeMask.rightMouseUp, NSEvent.EventTypeMask.leftMouseUp, NSEvent.EventTypeMask.leftMouseDown])
         self.menuIsOpen = false
     }
 
@@ -73,14 +73,21 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             let event = NSApp.currentEvent!
             NSLog("Event occured \(event.type.rawValue)")
 
-            // Right button click
-            if event.type == NSEvent.EventType.rightMouseUp {
-                self.appdelegate.joinNextMeeting()
-            } else if event.type == NSEvent.EventType.leftMouseDown || event.type == NSEvent.EventType.leftMouseUp {
-                // show the menu as normal
-                self.statusItem.menu = self.statusItemMenu
-                self.statusItem.button?.performClick(nil) // ...and click
-
+            let isRightClick = (event.type == NSEvent.EventType.rightMouseUp) || (event.type == NSEvent.EventType.rightMouseDown)
+            if Defaults[.isMouseClickSwap] {
+                if isRightClick {
+                    self.statusItem.menu = self.statusItemMenu
+                    self.statusItem.button?.performClick(nil)
+                } else {
+                    self.appdelegate.joinNextMeeting()
+                }
+            } else {
+                if isRightClick {
+                    self.appdelegate.joinNextMeeting()
+                } else if event.type == NSEvent.EventType.leftMouseDown || event.type == NSEvent.EventType.leftMouseUp {
+                    self.statusItem.menu = self.statusItemMenu
+                    self.statusItem.button?.performClick(nil)
+                }
             }
         }
     }

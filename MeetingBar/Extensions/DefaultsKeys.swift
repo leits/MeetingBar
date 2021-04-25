@@ -44,6 +44,7 @@ extension Defaults.Keys {
 
     static let showEventDetails = Key<Bool>("showEventDetails", default: false)
     static let showMeetingServiceIcon = Key<Bool>("showMeetingServiceIcon", default: true)
+    static let isMouseClickSwap = Key<Bool>("isMouseClickSwap", default: false)
 
     static let declinedEventsAppereance = Key<DeclinedEventsAppereance>("declinedEventsAppereance", default: .strikethrough)
     static let pastEventsAppereance = Key<PastEventsAppereance>("pastEventsAppereance", default: .show_inactive)

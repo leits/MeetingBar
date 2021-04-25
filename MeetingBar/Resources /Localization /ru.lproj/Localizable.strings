@@ -105,6 +105,7 @@
 "preferences_appearance_menu_show_event_end_time_value" = "время окончания";
 "preferences_appearance_menu_show_event_icon_value" = "иконку";
 "preferences_appearance_menu_show_event_details_value" = "инфо в подменю";
+"preferences_appearance_menu_swap_mouse_click" = "Сменить левый/правый клик на меню";
 
 // MARK: - Preferences Services
 
