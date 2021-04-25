@@ -38,7 +38,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
     var shortenEventTitleObserver: DefaultsObservation?
     var menuEventTitleLengthObserver: DefaultsObservation?
-    var meetingNameVisibilityObserver: DefaultsObservation?
+    var meetingTitleVisibilityObserver: DefaultsObservation?
     var showEventEndTimeObserver: DefaultsObservation?
     var pastEventsAppereanceObserver: DefaultsObservation?
     var disablePastEventObserver: DefaultsObservation?
@@ -169,8 +169,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     }
 
     @objc
-    func toggleMeetingNameVisibility() {
-        Defaults[.hideMeetingNames].toggle()
+    func toggleMeetingTitleVisibility() {
+        Defaults[.hideMeetingTitle].toggle()
     }
 
     func setup() {
@@ -208,8 +208,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             self.openLinkFromClipboard()
         }
 
-        KeyboardShortcuts.onKeyUp(for: .toggleMeetingNameVisibilityShortcut) {
-            Defaults[.hideMeetingNames].toggle()
+        KeyboardShortcuts.onKeyUp(for: .toggleMeetingTitleVisibilityShortcut) {
+            Defaults[.hideMeetingTitle].toggle()
         }
 
         NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.eventStoreChanged), name: .EKEventStoreChanged, object: statusBarItem.eventStore)
@@ -236,8 +236,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             }
         }
 
-        meetingNameVisibilityObserver = Defaults.observe(.hideMeetingNames) { change in
-            NSLog("Change hideMeetingNames from \(change.oldValue) to \(change.newValue)")
+        meetingTitleVisibilityObserver = Defaults.observe(.hideMeetingTitle) { change in
+            NSLog("Change hideMeetingTitle from \(change.oldValue) to \(change.newValue)")
             if change.oldValue != change.newValue {
                 self.statusBarItem.updateMenu()
                 self.statusBarItem.updateTitle()
@@ -330,6 +330,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         eventTitleFormatObserver = Defaults.observe(.eventTitleFormat) { change in
             NSLog("Changed eventTitleFormat from \(String(describing: change.oldValue)) to \(String(describing: change.newValue))")
             self.statusBarItem.updateTitle()
+            self.statusBarItem.updateMenu()
         }
 
         eventTitleIconFormatObserver = Defaults.observe(.eventTitleIconFormat) { change in

@@ -37,7 +37,7 @@ extension Defaults.Keys {
     static let titleLength = Key<Double?>("titleLength", default: nil) // Backward compatibility
     static let statusbarEventTitleLength = Key<Int>("statusbarEventTitleLength", default: statusbarEventTitleLengthLimits.max)
 
-    static let hideMeetingNames = Key<Bool>("hideMeetingNames", default: false)
+    static let hideMeetingTitle = Key<Bool>("hideMeetingTitle", default: false)
 
     // Menu Appearance
     // if the event title in the menu should be shortened or not -> the length will be stored in field menuEventTitleLength

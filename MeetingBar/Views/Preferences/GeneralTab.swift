@@ -91,7 +91,7 @@ struct ShortcutsModal: View {
                 HStack {
                     Text("preferences_general_shortcut_toggle_meeting_name_visibility".loco())
                     Spacer()
-                    KeyboardShortcuts.Recorder(for: .toggleMeetingNameVisibilityShortcut)
+                    KeyboardShortcuts.Recorder(for: .toggleMeetingTitleVisibilityShortcut)
                 }
             }
             HStack {

@@ -310,15 +310,17 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
         openLinkFromClipboardItem.setShortcut(for: .openClipboardShortcut)
         quickActionsItem.submenu!.addItem(openLinkFromClipboardItem)
 
-        let toggleMeetingNameVisibilityItem = NSMenuItem()
-        if Defaults[.hideMeetingNames] {
-            toggleMeetingNameVisibilityItem.title = "status_bar_show_meeting_names".loco()
-        } else {
-            toggleMeetingNameVisibilityItem.title = "status_bar_hide_meeting_names".loco()
+        if Defaults[.eventTitleFormat] == .show {
+            let toggleMeetingTitleVisibilityItem = NSMenuItem()
+            if Defaults[.hideMeetingTitle] {
+                toggleMeetingTitleVisibilityItem.title = "status_bar_show_meeting_names".loco()
+            } else {
+                toggleMeetingTitleVisibilityItem.title = "status_bar_hide_meeting_names".loco()
+            }
+            toggleMeetingTitleVisibilityItem.action = #selector(AppDelegate.toggleMeetingTitleVisibility)
+            toggleMeetingTitleVisibilityItem.setShortcut(for: .toggleMeetingTitleVisibilityShortcut)
+            quickActionsItem.submenu!.addItem(toggleMeetingTitleVisibilityItem)
         }
-        toggleMeetingNameVisibilityItem.action = #selector(AppDelegate.toggleMeetingNameVisibility)
-        toggleMeetingNameVisibilityItem.setShortcut(for: .toggleMeetingNameVisibilityShortcut)
-        quickActionsItem.submenu!.addItem(toggleMeetingNameVisibilityItem)
     }
 
     func createBookmarksSection() {
@@ -922,7 +924,7 @@ func createEventStatusString(_ event: EKEvent) -> (String, String) {
     var eventTitle: String
     switch Defaults[.eventTitleFormat] {
     case .show:
-        if Defaults[.hideMeetingNames] {
+        if Defaults[.hideMeetingTitle] {
             eventTitle = "general_meeting".loco()
         } else {
             eventTitle = shortenTitleForSystembar(title: event.title)
