@@ -19,7 +19,6 @@ struct BrowserConfigView: View {
     @State var showingAddBrowserModal = false
     @State var showingEditBrowserModal = false
     @State private var showingAlert = false
-    @State private var showingDeleteAllAlert = false
     @State private var browser = Browser(name: "", path: "", arguments: "", deletable: true)
 
     var body: some View {
@@ -80,27 +79,11 @@ struct BrowserConfigView: View {
                     EditBrowserModal(browser: $browser)
                 }
 
-                Button(action: {
-                    self.showingDeleteAllAlert = true
-                }) {
-                    Image(nsImage: NSImage(named: NSImage.touchBarDeleteTemplateName)!)
-                }.buttonStyle(BorderlessButtonStyle())
-
                 Spacer()
 
                 Button("OK") {
                     presentationMode.wrappedValue.dismiss()
                 }.frame(width: 20, height: 20, alignment: .trailing)
-            }
-            .alert(isPresented: $showingDeleteAllAlert) {
-                Alert(
-                    title: Text("Delete all browser configs?"),
-                    message: Text("Do you want to delete all browser configs?"),
-                    primaryButton: .default(Text("Delete all")) {
-                        self.removeAllBrowser()
-                    },
-                    secondaryButton: .cancel()
-                )
             }
         }.padding()
         .frame(width: 500,
@@ -131,11 +114,6 @@ struct BrowserConfigView: View {
     // allow to change the order of bookmarks
     private func addSystemBrowser() {
         addInstalledBrowser()
-    }
-
-    // allow to change the order of bookmarks
-    private func removeAllBrowser() {
-        Defaults[.browsers] = []
     }
 
     /**
