@@ -358,6 +358,18 @@ struct Browser: Encodable, Decodable, Hashable {
     var deletable = true
 }
 
+enum DeprecatedBrowser: String, Codable, CaseIterable {
+    case chrome = "Google Chrome"
+    case firefox = "Firefox"
+    case safari = "Safari"
+    case chromium = "Chromium"
+    case brave = "Brave"
+    case edge = "Microsoft Edge"
+    case opera = "Opera"
+    case vivaldi = "Vivaldi"
+    case defaultBrowser = "Default Browser"
+}
+
  struct WindowTitles {
     static let onboarding = "window_title_onboarding".loco()
     static let preferences = "window_title_preferences".loco()

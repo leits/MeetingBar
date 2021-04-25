@@ -223,7 +223,7 @@ func getEventParticipantStatus(_ event: EKEvent) -> EKParticipantStatus? {
 func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?) {
     switch service {
     case .meet:
-        url.openIn(browser: browser ?? Defaults[.browserForMeetLinks])
+        url.openIn(browser: browser ?? Defaults[.meetBrowser])
 
     case .teams:
         if Defaults[.useAppForTeamsLinks] {

@@ -89,14 +89,34 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
         if let useChromeForMeetLinks = Defaults[.useChromeForMeetLinks] {
             if useChromeForMeetLinks {
-                let chromeBrowser = Defaults[.browsers].first { $0.name == "Google Chrome" }
-                Defaults[.browserForMeetLinks] = chromeBrowser!
+                Defaults[.meetBrowser] = Browser(name: "Google Chrome", path: "/Applications/Google Chrome.app", arguments: "", deletable: true)
             } else {
-                Defaults[.browserForMeetLinks] = Browser(name: "Default Browser", path: "", arguments: "", deletable: false)
+                Defaults[.meetBrowser] = Browser(name: "Default Browser", path: "", arguments: "", deletable: false)
             }
-
-
             Defaults[.useChromeForMeetLinks] = nil
+        }
+        if let browserForMeetLinks = Defaults[.browserForMeetLinks] {
+            switch browserForMeetLinks {
+            case .chrome:
+                Defaults[.meetBrowser] = Browser(name: "Google Chrome", path: "/Applications/Google Chrome.app", arguments: "", deletable: true)
+            case .firefox:
+                Defaults[.meetBrowser] = Browser(name: "Firefox", path: "/Applications/Firefox.app", arguments: "", deletable: true)
+            case .safari:
+                Defaults[.meetBrowser] = Browser(name: "Safari", path: "/Applications/Safari.app", arguments: "", deletable: true)
+            case .chromium:
+                Defaults[.meetBrowser] = Browser(name: "Chromium", path: "/Applications/Chromium.app", arguments: "", deletable: true)
+            case .brave:
+                Defaults[.meetBrowser] = Browser(name: "Brave", path: "/Applications/Brave Browser.app", arguments: "", deletable: true)
+            case .edge:
+                Defaults[.meetBrowser] = Browser(name: "Microsoft Edge", path: "/Applications/Microsoft Edge.app", arguments: "", deletable: true)
+            case .opera:
+                Defaults[.meetBrowser] = Browser(name: "Opera", path: "/Applications/Opera.app", arguments: "", deletable: true)
+            case .vivaldi:
+                Defaults[.meetBrowser] = Browser(name: "Vivaldi", path: "/Applications/Vivaldi.app", arguments: "", deletable: true)
+            default:
+                Defaults[.meetBrowser] = Browser(name: "Default Browser", path: "", arguments: "", deletable: false)
+            }
+            Defaults[.browserForMeetLinks] = nil
         }
 
         // AppStore sync

@@ -13,7 +13,7 @@ import Defaults
 var systemDefaultBrowser = Browser(name: "Default Browser", path: "")
 
 struct ServicesTab: View {
-    @Default(.browserForMeetLinks) var browserForMeetLinks
+    @Default(.meetBrowser) var meetBrowser
     @Default(.browserForCreateMeeting) var browserForCreateMeeting
     @Default(.defaultBrowser) var defaultBrowser
     @Default(.useAppForZoomLinks) var useAppForZoomLinks
@@ -34,7 +34,7 @@ struct ServicesTab: View {
                     }
                 }
 
-                Picker(selection: $browserForMeetLinks, label: Text("preferences_services_link_meet_title".loco()).frame(width: 150, alignment: .leading)) {
+                Picker(selection: $meetBrowser, label: Text("preferences_services_link_meet_title".loco()).frame(width: 150, alignment: .leading)) {
                     Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
                     ForEach(allBrowser, id: \.self) { (browser: Browser) in
                         Text(browser.name).tag(browser)
