@@ -42,11 +42,12 @@
 "preferences_general_option_preferred_language_english_value" = "English";
 "preferences_general_option_preferred_language_russian_value" = "Русский";
 "preferences_general_option_shortcuts" = "Shortcuts";
+"preferences_general_all_shortcut" = "All Shortcuts";
 "preferences_general_shortcut_open_menu" = "Open menu:";
 "preferences_general_shortcut_create_meeting" = "Create meeting:";
-"preferences_general_shortcut_join_next" = "Join next event meeting:";
+"preferences_general_shortcut_join_next" = "Join next meeting:";
 "preferences_general_shortcut_join_from_clipboard" = "Join meeting from clipboard:";
-"preferences_general_shortcut_toggle_meeting_name_visibility" = "Toggle meeting name visibility:";
+"preferences_general_shortcut_toggle_meeting_name_visibility" = "Toggle title visibility in status bar:";
 "preferences_general_meeting_bar_description" = "MeetingBar is open-source app created by Andrii Leitsius\nThe app aims to make your experience with online meetings smoother and easier";
 "preferences_general_external_patronage" = "Patronage";
 "preferences_general_external_gitHub" = "GitHub";

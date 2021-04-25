@@ -602,7 +602,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             preferencesWindow.close()
         }
         preferencesWindow = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 850, height: 610),
+            contentRect: NSRect(x: 0, y: 0, width: 700, height: 610),
             styleMask: [.closable, .titled, .resizable],
             backing: .buffered,
             defer: false

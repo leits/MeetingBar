@@ -33,7 +33,6 @@ struct GeneralTab: View {
             }
             Divider()
             ShortcutsSection()
-            Spacer()
             Divider()
             PatronageAppSection()
         }.padding()
@@ -41,30 +40,69 @@ struct GeneralTab: View {
 }
 
 struct ShortcutsSection: View {
+    @State var showingModal = false
+
     var body: some View {
-        Text("preferences_general_option_shortcuts".loco()).font(.headline).bold()
         HStack {
-            VStack {
-                Text("preferences_general_shortcut_open_menu".loco())
-                KeyboardShortcuts.Recorder(for: .openMenuShortcut)
-            }
-            VStack {
-                Text("preferences_general_shortcut_create_meeting".loco())
-                KeyboardShortcuts.Recorder(for: .createMeetingShortcut)
-            }
-            VStack {
-                Text("preferences_general_shortcut_join_next".loco())
-                KeyboardShortcuts.Recorder(for: .joinEventShortcut)
-            }
-            VStack {
-                Text("preferences_general_shortcut_join_from_clipboard".loco())
-                KeyboardShortcuts.Recorder(for: .openClipboardShortcut)
-            }
-            VStack {
-                Text("preferences_general_shortcut_toggle_meeting_name_visibility".loco())
-                KeyboardShortcuts.Recorder(for: .toggleMeetingNameVisibilityShortcut)
+            Text("preferences_general_shortcut_create_meeting".loco())
+            KeyboardShortcuts.Recorder(for: .createMeetingShortcut)
+
+            Text("preferences_general_shortcut_join_next".loco())
+            KeyboardShortcuts.Recorder(for: .joinEventShortcut)
+
+            Spacer()
+
+            Button(action: { self.showingModal.toggle() }) {
+                Text("preferences_general_all_shortcut".loco())
+            }.sheet(isPresented: $showingModal) {
+                ShortcutsModal()
             }
         }
+    }
+}
+
+struct ShortcutsModal: View {
+    @Environment(\.presentationMode) var presentationMode
+
+    var body: some View {
+        VStack {
+            Text("preferences_general_option_shortcuts".loco()).font(.headline).bold()
+            List {
+                HStack {
+                    Text("preferences_general_shortcut_open_menu".loco())
+                    Spacer()
+                    KeyboardShortcuts.Recorder(for: .openMenuShortcut)
+                }
+                HStack {
+                    Text("preferences_general_shortcut_create_meeting".loco())
+                    Spacer()
+                    KeyboardShortcuts.Recorder(for: .createMeetingShortcut)
+                }
+                HStack {
+                    Text("preferences_general_shortcut_join_next".loco())
+                    Spacer()
+                    KeyboardShortcuts.Recorder(for: .joinEventShortcut)
+                }
+                HStack {
+                    Text("preferences_general_shortcut_join_from_clipboard".loco())
+                    Spacer()
+                    KeyboardShortcuts.Recorder(for: .openClipboardShortcut)
+                }
+                HStack {
+                    Text("preferences_general_shortcut_toggle_meeting_name_visibility".loco())
+                    Spacer()
+                    KeyboardShortcuts.Recorder(for: .toggleMeetingNameVisibilityShortcut)
+                }
+            }
+            HStack {
+                Spacer()
+                Button(action: {
+                    self.presentationMode.wrappedValue.dismiss()
+                }) {
+                    Text("general_close".loco())
+                }
+            }
+        }.padding().frame(width: 420, height: 300)
     }
 }
 

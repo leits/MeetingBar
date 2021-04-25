@@ -320,7 +320,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
         toggleMeetingNameVisibilityItem.setShortcut(for: .toggleMeetingNameVisibilityShortcut)
         quickActionsItem.submenu!.addItem(toggleMeetingNameVisibilityItem)
     }
-    
+
     func createBookmarksSection() {
         let bookmarksItem = self.statusItemMenu.addItem(
             withTitle: "status_bar_section_bookmarks_title".loco(),
