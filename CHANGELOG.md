@@ -1,11 +1,12 @@
 # Changelog for Meetingbar
 
 ## Next version (WIP)
+* browser management 
 
 ## Version 3.2.1
 > (released 30th Mar 2021)
 
-Fixed showing the "What's New" at the first opening.
+* Fixed showing the "What's New" at the first opening.
 
 ## Version 3.2.0
 > (released 25th Mar 2021)

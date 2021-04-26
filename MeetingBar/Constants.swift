@@ -158,6 +158,7 @@ enum MeetingServices: String, Codable, CaseIterable {
     case jam = "Jam"
     case discord = "Discord"
     case blackboard_collab = "Blackboard Collaborate"
+    case url = "Any Link"
     case coscreen = "CoScreen"
     case other = "Other"
 
@@ -245,6 +246,8 @@ enum MeetingServices: String, Codable, CaseIterable {
             return "constants_meeting_service_coscreen".loco()
         case .other:
             return "constants_meeting_service_other".loco()
+        case .url:
+            return "constants_meeting_service_url".loco()
         }
     }
 }
@@ -291,6 +294,23 @@ enum AlldayEventsAppereance: String, Codable, CaseIterable {
     case hide
 }
 
+enum NonAlldayEventsAppereance: String, Codable, CaseIterable {
+    // show all non all day events - no special requirement
+    case show
+
+    // deactivates all non all day events when no meeting link is detected
+    case show_inactive_without_meeting_link
+
+    // deactivates all non all day events when no link in the event is detected
+    case show_inactive_without_any_link
+
+    // hides all non all day events when no meeting link is detected
+    case hide_without_meeting_link
+
+    // hides all non all day events when no link in the event is detected
+    case hide_without_any_link
+}
+
 enum PendingEventsAppereance: String, Codable, CaseIterable {
     case show
     case show_inactive
@@ -331,7 +351,14 @@ enum AppLanguage: String, Codable {
     case russian = "ru"
 }
 
-enum Browser: String, Codable, CaseIterable {
+struct Browser: Encodable, Decodable, Hashable {
+    var name: String
+    var path: String
+    var arguments: String = ""
+    var deletable = true
+}
+
+enum DeprecatedBrowser: String, Codable, CaseIterable {
     case chrome = "Google Chrome"
     case firefox = "Firefox"
     case safari = "Safari"
@@ -341,64 +368,9 @@ enum Browser: String, Codable, CaseIterable {
     case opera = "Opera"
     case vivaldi = "Vivaldi"
     case defaultBrowser = "Default Browser"
-
-    var url: URL? {
-        switch self {
-        case .chrome:
-            return URL(fileURLWithPath: "/Applications/Google Chrome.app")
-
-        case .firefox:
-            return URL(fileURLWithPath: "/Applications/Firefox.app")
-
-        case .safari:
-            return URL(fileURLWithPath: "/Applications/Safari.app")
-
-        case .chromium:
-            return URL(fileURLWithPath: "/Applications/Chromium.app")
-
-        case .brave:
-            return URL(fileURLWithPath: "/Applications/Brave Browser.app")
-
-        case .edge:
-            return URL(fileURLWithPath: "/Applications/Microsoft Edge.app")
-
-        case .opera:
-            return URL(fileURLWithPath: "/Applications/Opera.app")
-
-        case .vivaldi:
-            return URL(fileURLWithPath: "/Applications/Vivaldi.app")
-
-        default:
-            return nil
-        }
-    }
-
-    var localizedValue: String {
-        switch self {
-        case .brave:
-            return "constants_browser_brave".loco()
-        case .chrome:
-            return "constants_browser_chrome".loco()
-        case .chromium:
-            return "constants_browser_chromium".loco()
-        case .edge:
-            return "constants_browser_edge".loco()
-        case .firefox:
-            return "constants_browser_firefox".loco()
-        case .opera:
-            return "constants_browser_opera".loco()
-        case .vivaldi:
-            return "constants_browser_vivaldi".loco()
-        case .safari:
-            return "constants_browser_safari".loco()
-        case .defaultBrowser:
-            return "constants_browser_defaultBrowser".loco()
-        }
-    }
 }
 
-
-struct WindowTitles {
+ struct WindowTitles {
     static let onboarding = "window_title_onboarding".loco()
     static let preferences = "window_title_preferences".loco()
     static let changelog = "windows_title_changelog".loco()

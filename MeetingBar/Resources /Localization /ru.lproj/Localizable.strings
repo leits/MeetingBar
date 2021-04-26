@@ -12,6 +12,7 @@
 "general_add" = "Добавить";
 "general_delete" = "Удалить";
 "general_save" = "Сохранить";
+"general_meeting" = "событие";
 
 "create_meeting_error_title" = "Невозможно создать новое событие";
 "create_meeting_error_message" = "Пользовательский URL \"%@\" отсутствует или недействителен. Пожалуйста, исправьте url в настройках приложения.";
@@ -37,15 +38,16 @@
 
 "preferences_general_option_login_launch" = "Запускать при входе в систему";
 "preferences_general_option_preferred_language_title" = "Предпочтительный язык:";
-"preferences_general_option_preferred_language_tip" = "⚠️ Требуется перезагрузка приложения";
 "preferences_general_option_preferred_language_system_value" = "Системный";
 "preferences_general_option_preferred_language_english_value" = "English";
 "preferences_general_option_preferred_language_russian_value" = "Русский";
 "preferences_general_option_shortcuts" = "Горячие клавиши";
+"preferences_general_all_shortcut" = "Все горячие клавиши";
 "preferences_general_shortcut_open_menu" = "Открыть меню:";
 "preferences_general_shortcut_create_meeting" = "Создать событие:";
 "preferences_general_shortcut_join_next" = "Присоединиться к следующему событию:";
 "preferences_general_shortcut_join_from_clipboard" = "Присоединиться к событию из буфера обмена:";
+"preferences_general_shortcut_toggle_meeting_name_visibility" = "Переключить видимость названия события в статус баре:";
 "preferences_general_meeting_bar_description" = "MeetingBar - это приложение с открытым исходным кодом, созданное Andrii Leitsius.\nПриложение призвано сделать ваши онлайн-встречи более спокойными и легкими.";
 "preferences_general_external_patronage" = "Patronage";
 "preferences_general_external_gitHub" = "GitHub";
@@ -73,6 +75,11 @@
 "preferences_appearance_events_past_title" = "Прошедшие события:";
 "preferences_appearance_events_pending_title" = "Ожидающие события";
 "preferences_appearance_events_declined_title" = "Отклоненные события:";
+"preferences_appearance_events_non_all_day_title" = " Не весь день";
+"preferences_appearance_events_value_inactive_without_link" = "показать неактивным без какой-либо ссылки";
+"preferences_appearance_events_value_inactive_without_meeting_link" = "показать неактивным без ссылки на встречу";
+"preferences_appearance_events_value_hide_without_link" = "скрыть без какой-либо ссылкиk";
+"preferences_appearance_events_value_hide_without_meeting_link" = "скрыть без ссылки на встречу";
 "preferences_appearance_events_value_show" = "показать";
 "preferences_appearance_events_value_hide" = "скрыть";
 "preferences_appearance_events_value_as_inactive" = "показать неактивным";
@@ -188,6 +195,8 @@
 "status_bar_submenu_attendees_status_tentative" = " [Возможно]";
 "status_bar_submenu_attendees_status_unknown" = " [?]";
 "status_bar_submenu_open_in_calendar" = "Открыть в приложении \"Календарь\"";
+"status_bar_show_meeting_names" = "Показать названия событий";
+"status_bar_hide_meeting_names" = "Скрыть названия событий";
 "status_bar_preferences" = "Настройки";
 "status_bar_quit" = "Выйти из MeetingBar";
 "status_bar_no_title" = "Без названия";
@@ -290,6 +299,7 @@
 "constants_meeting_service_blackboard_collab" = "Blackboard Collaborate";
 "constants_meeting_service_coscreen" = "CoScreen";
 "constants_meeting_service_other" = "Другое";
+"constants_meeting_service_url" = "URL-АДРЕС";
 
 "constants_browser_brave" = "Brave";
 "constants_browser_chrome" = "Google Chrome";

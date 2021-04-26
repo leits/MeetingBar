@@ -12,6 +12,7 @@
 "general_add" = "Add";
 "general_delete" = "Delete";
 "general_save" = "Save";
+"general_meeting" = "Meeting";
 
 "create_meeting_error_title" = "Cannot create new meeting";
 "create_meeting_error_message" = "Custom url \"%@\" is missing or invalid. Please enter a value in the app preferences.";
@@ -37,15 +38,16 @@
 
 "preferences_general_option_login_launch" = "Launch at Login";
 "preferences_general_option_preferred_language_title" = "Preferred language:";
-"preferences_general_option_preferred_language_tip" = "⚠️ Application reload required";
 "preferences_general_option_preferred_language_system_value" = "System";
 "preferences_general_option_preferred_language_english_value" = "English";
 "preferences_general_option_preferred_language_russian_value" = "Русский";
 "preferences_general_option_shortcuts" = "Shortcuts";
+"preferences_general_all_shortcut" = "All Shortcuts";
 "preferences_general_shortcut_open_menu" = "Open menu:";
 "preferences_general_shortcut_create_meeting" = "Create meeting:";
-"preferences_general_shortcut_join_next" = "Join next event meeting:";
+"preferences_general_shortcut_join_next" = "Join next meeting:";
 "preferences_general_shortcut_join_from_clipboard" = "Join meeting from clipboard:";
+"preferences_general_shortcut_toggle_meeting_name_visibility" = "Toggle title visibility in status bar:";
 "preferences_general_meeting_bar_description" = "MeetingBar is open-source app created by Andrii Leitsius\nThe app aims to make your experience with online meetings smoother and easier";
 "preferences_general_external_patronage" = "Patronage";
 "preferences_general_external_gitHub" = "GitHub";
@@ -68,6 +70,11 @@
 "preferences_appearance_events_show_events_for_title" = "Show events for";
 "preferences_appearance_events_show_events_for_today_value" = "today";
 "preferences_appearance_events_show_events_for_today_tomorrow_value" = "today and tomorrow";
+"preferences_appearance_events_non_all_day_title" = "Non all day events";
+"preferences_appearance_events_value_inactive_without_link" = "show as inactive without any link";
+"preferences_appearance_events_value_inactive_without_meeting_link" = "show as inactive without meeting link";
+"preferences_appearance_events_value_hide_without_link" = "hide all without any link";
+"preferences_appearance_events_value_hide_without_meeting_link" = "hide all without meeting link";
 "preferences_appearance_events_all_day_title" = "All day events:";
 "preferences_appearance_events_without_guest_title" = "Events without guests:";
 "preferences_appearance_events_past_title" = "Past events:";
@@ -188,6 +195,8 @@
 "status_bar_submenu_attendees_status_tentative" = " [tentative]";
 "status_bar_submenu_attendees_status_unknown" = " [?]";
 "status_bar_submenu_open_in_calendar" = "Open in Calendar App";
+"status_bar_show_meeting_names" = "Show meeting title";
+"status_bar_hide_meeting_names" = "Hide meeting title";
 "status_bar_preferences" = "Preferences";
 "status_bar_quit" = "Quit MeetingBar";
 "status_bar_no_title" = "No title";
@@ -290,6 +299,7 @@
 "constants_meeting_service_blackboard_collab" = "Blackboard Collaborate";
 "constants_meeting_service_coscreen" = "CoScreen";
 "constants_meeting_service_other" = "Other";
+"constants_meeting_service_url" = "URL";
 
 "constants_browser_brave" = "Brave";
 "constants_browser_chrome" = "Google Chrome";

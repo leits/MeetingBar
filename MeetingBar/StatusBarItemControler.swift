@@ -268,6 +268,12 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
         }
         self.statusItemMenu.addItem(NSMenuItem.separator())
         self.createJoinSection()
+
+        if !Defaults[.bookmarks].isEmpty {
+            self.statusItemMenu.addItem(NSMenuItem.separator())
+
+            self.createBookmarksSection()
+        }
         self.statusItemMenu.addItem(NSMenuItem.separator())
 
         self.createPreferencesSection()
@@ -286,13 +292,6 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             }
         }
 
-        let openLinkFromClipboardItem = NSMenuItem()
-        openLinkFromClipboardItem.title = "status_bar_section_join_from_clipboard".loco()
-        openLinkFromClipboardItem.action = #selector(AppDelegate.openLinkFromClipboard)
-        openLinkFromClipboardItem.keyEquivalent = ""
-        openLinkFromClipboardItem.setShortcut(for: .openClipboardShortcut)
-        self.statusItemMenu.addItem(openLinkFromClipboardItem)
-
         let createEventItem = NSMenuItem()
         createEventItem.title = "status_bar_section_join_create_meeting".loco()
         createEventItem.action = #selector(AppDelegate.createMeeting)
@@ -301,34 +300,60 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
 
         self.statusItemMenu.addItem(createEventItem)
 
-        if !Defaults[.bookmarks].isEmpty {
-            self.statusItemMenu.addItem(NSMenuItem.separator())
+        let quickActionsItem = self.statusItemMenu.addItem(
+            withTitle: "Quick Actions",
+            action: nil,
+            keyEquivalent: ""
+        )
+        quickActionsItem.isEnabled = true
 
-            let bookmarksItem = self.statusItemMenu.addItem(
-                withTitle: "status_bar_section_bookmarks_title".loco(),
-                action: nil,
-                keyEquivalent: ""
-            )
+        quickActionsItem.submenu = NSMenu(title: "Quick Actions")
 
-            var bookmarksMenu: NSMenu
+        let openLinkFromClipboardItem = NSMenuItem()
+        openLinkFromClipboardItem.title = "status_bar_section_join_from_clipboard".loco()
+        openLinkFromClipboardItem.action = #selector(AppDelegate.openLinkFromClipboard)
+        openLinkFromClipboardItem.keyEquivalent = ""
+        openLinkFromClipboardItem.setShortcut(for: .openClipboardShortcut)
+        quickActionsItem.submenu!.addItem(openLinkFromClipboardItem)
 
-            if Defaults[.bookmarks].count > 3 {
-                bookmarksMenu = NSMenu(title: "status_bar_section_bookmarks_menu".loco())
-                bookmarksItem.submenu = bookmarksMenu
+        if Defaults[.eventTitleFormat] == .show {
+            let toggleMeetingTitleVisibilityItem = NSMenuItem()
+            if Defaults[.hideMeetingTitle] {
+                toggleMeetingTitleVisibilityItem.title = "status_bar_show_meeting_names".loco()
             } else {
-                bookmarksItem.attributedTitle = NSAttributedString(string: "status_bar_section_bookmarks_title".loco(), attributes: [NSAttributedString.Key.font: NSFont.boldSystemFont(ofSize: 13)])
-                bookmarksItem.isEnabled = false
-                bookmarksMenu = self.statusItemMenu
+                toggleMeetingTitleVisibilityItem.title = "status_bar_hide_meeting_names".loco()
             }
+            toggleMeetingTitleVisibilityItem.action = #selector(AppDelegate.toggleMeetingTitleVisibility)
+            toggleMeetingTitleVisibilityItem.setShortcut(for: .toggleMeetingTitleVisibilityShortcut)
+            quickActionsItem.submenu!.addItem(toggleMeetingTitleVisibilityItem)
+        }
+    }
 
-            for bookmark in Defaults[.bookmarks] {
-                let bookmarkItem = bookmarksMenu.addItem(
-                    withTitle: bookmark.name,
-                    action: #selector(AppDelegate.joinBookmark),
-                    keyEquivalent: "")
+    func createBookmarksSection() {
+        let bookmarksItem = self.statusItemMenu.addItem(
+            withTitle: "status_bar_section_bookmarks_title".loco(),
+            action: nil,
+            keyEquivalent: ""
+        )
 
-                bookmarkItem.representedObject = bookmark
-            }
+        var bookmarksMenu: NSMenu
+
+        if Defaults[.bookmarks].count > 3 {
+            bookmarksMenu = NSMenu(title: "status_bar_section_bookmarks_menu".loco())
+            bookmarksItem.submenu = bookmarksMenu
+        } else {
+            bookmarksItem.attributedTitle = NSAttributedString(string: "status_bar_section_bookmarks_title".loco(), attributes: [NSAttributedString.Key.font: NSFont.boldSystemFont(ofSize: 13)])
+            bookmarksItem.isEnabled = false
+            bookmarksMenu = self.statusItemMenu
+        }
+
+        for bookmark in Defaults[.bookmarks] {
+            let bookmarkItem = bookmarksMenu.addItem(
+                withTitle: bookmark.name,
+                action: #selector(AppDelegate.joinBookmark),
+                keyEquivalent: "")
+
+            bookmarkItem.representedObject = bookmark
         }
     }
 
@@ -519,6 +544,10 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                 image = NSImage(named: "online_meeting_icon")!
                 image!.size = NSSize(width: 16, height: 16)
 
+            case .some(.url):
+                image = NSImage(named: NSImage.touchBarOpenInBrowserTemplateName)!
+                image!.size = NSSize(width: 16, height: 16)
+
             default:
                 break
             }
@@ -530,7 +559,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
      * try  to get the correct image for the specific
      */
     func getMeetingIcon(_ event: EKEvent) -> NSImage {
-        let result = getMeetingLink(event)
+        let result = getMeetingLink(event, acceptAnyLink: Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show || Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.hide_without_any_link || Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show_inactive_without_any_link)
 
         return getMeetingIconForLink(result)
     }
@@ -610,6 +639,22 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                 styles[NSAttributedString.Key.strikethroughStyle] = NSUnderlineStyle.thick.rawValue
             }
             shouldShowAsActive = false
+        }
+
+        if !event.isAllDay && Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show_inactive_without_meeting_link {
+            let meetingLink = getMeetingLink(event, acceptAnyLink: false)
+            if meetingLink == nil {
+                styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
+                shouldShowAsActive = false
+            }
+        }
+
+        if !event.isAllDay && Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show_inactive_without_any_link {
+            let meetingLink = getMeetingLink(event, acceptAnyLink: true)
+            if meetingLink == nil {
+                styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
+                shouldShowAsActive = false
+            }
         }
 
         if eventParticipantStatus == .pending {
@@ -885,7 +930,11 @@ func createEventStatusString(_ event: EKEvent) -> (String, String) {
     var eventTitle: String
     switch Defaults[.eventTitleFormat] {
     case .show:
-        eventTitle = shortenTitleForSystembar(title: event.title)
+        if Defaults[.hideMeetingTitle] {
+            eventTitle = "general_meeting".loco()
+        } else {
+            eventTitle = shortenTitleForSystembar(title: event.title)
+        }
     case .dot:
         eventTitle = "•"
     case .none:

@@ -13,64 +13,96 @@ import KeyboardShortcuts
 
 struct GeneralTab: View {
     @Default(.launchAtLogin) var launchAtLogin
+    @Default(.preferredLanguage) var preferredLanguage
 
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
             Spacer()
-            Section {
+            HStack {
                 Toggle("preferences_general_option_login_launch".loco(), isOn: $launchAtLogin)
+                Spacer()
+                Picker("preferences_general_option_preferred_language_title".loco(), selection: $preferredLanguage) {
+                    Text("preferences_general_option_preferred_language_system_value".loco()).tag(AppLanguage.system)
+                    Text("preferences_general_option_preferred_language_english_value".loco()).tag(AppLanguage.english)
+                    Text("preferences_general_option_preferred_language_russian_value".loco()).tag(AppLanguage.russian)
+                }.frame(width: 250)
             }
-            PreferredLanguageSection()
             Divider()
             Section {
                 JoinEventNotificationPicker()
             }
             Divider()
             ShortcutsSection()
-            Spacer()
             Divider()
             PatronageAppSection()
         }.padding()
     }
 }
 
-struct PreferredLanguageSection: View {
-    @Default(.preferredLanguage) var preferredLanguage
+struct ShortcutsSection: View {
+    @State var showingModal = false
 
     var body: some View {
         HStack {
-            Picker("preferences_general_option_preferred_language_title".loco(), selection: $preferredLanguage) {
-                Text("preferences_general_option_preferred_language_system_value".loco()).tag(AppLanguage.system)
-                Text("preferences_general_option_preferred_language_english_value".loco()).tag(AppLanguage.english)
-                Text("preferences_general_option_preferred_language_russian_value".loco()).tag(AppLanguage.russian)
+            Text("preferences_general_shortcut_create_meeting".loco())
+            KeyboardShortcuts.Recorder(for: .createMeetingShortcut)
+
+            Text("preferences_general_shortcut_join_next".loco())
+            KeyboardShortcuts.Recorder(for: .joinEventShortcut)
+
+            Spacer()
+
+            Button(action: { self.showingModal.toggle() }) {
+                Text("preferences_general_all_shortcut".loco())
+            }.sheet(isPresented: $showingModal) {
+                ShortcutsModal()
             }
-            Text("preferences_general_option_preferred_language_tip".loco()).foregroundColor(Color.gray).font(.system(size: 12))
         }
     }
 }
 
-struct ShortcutsSection: View {
+struct ShortcutsModal: View {
+    @Environment(\.presentationMode) var presentationMode
+
     var body: some View {
-        HStack {
+        VStack {
             Text("preferences_general_option_shortcuts".loco()).font(.headline).bold()
-            Spacer()
-            VStack {
-                Text("preferences_general_shortcut_open_menu".loco())
-                KeyboardShortcuts.Recorder(for: .openMenuShortcut)
+            List {
+                HStack {
+                    Text("preferences_general_shortcut_open_menu".loco())
+                    Spacer()
+                    KeyboardShortcuts.Recorder(for: .openMenuShortcut)
+                }
+                HStack {
+                    Text("preferences_general_shortcut_create_meeting".loco())
+                    Spacer()
+                    KeyboardShortcuts.Recorder(for: .createMeetingShortcut)
+                }
+                HStack {
+                    Text("preferences_general_shortcut_join_next".loco())
+                    Spacer()
+                    KeyboardShortcuts.Recorder(for: .joinEventShortcut)
+                }
+                HStack {
+                    Text("preferences_general_shortcut_join_from_clipboard".loco())
+                    Spacer()
+                    KeyboardShortcuts.Recorder(for: .openClipboardShortcut)
+                }
+                HStack {
+                    Text("preferences_general_shortcut_toggle_meeting_name_visibility".loco())
+                    Spacer()
+                    KeyboardShortcuts.Recorder(for: .toggleMeetingTitleVisibilityShortcut)
+                }
             }
-            VStack {
-                Text("preferences_general_shortcut_create_meeting".loco())
-                KeyboardShortcuts.Recorder(for: .createMeetingShortcut)
+            HStack {
+                Spacer()
+                Button(action: {
+                    self.presentationMode.wrappedValue.dismiss()
+                }) {
+                    Text("general_close".loco())
+                }
             }
-            VStack {
-                Text("preferences_general_shortcut_join_next".loco())
-                KeyboardShortcuts.Recorder(for: .joinEventShortcut)
-            }
-            VStack {
-                Text("preferences_general_shortcut_join_from_clipboard".loco())
-                KeyboardShortcuts.Recorder(for: .openClipboardShortcut)
-            }
-        }
+        }.padding().frame(width: 420, height: 300)
     }
 }
 
