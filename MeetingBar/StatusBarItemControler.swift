@@ -73,18 +73,17 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             let event = NSApp.currentEvent!
             NSLog("Event occured \(event.type.rawValue)")
 
-            let isRightClick = (event.type == NSEvent.EventType.rightMouseUp) || (event.type == NSEvent.EventType.rightMouseDown)
             if Defaults[.isMouseClickSwap] {
-                if isRightClick {
+                if event.type == NSEvent.EventType.rightMouseDown {
                     self.statusItem.menu = self.statusItemMenu
                     self.statusItem.button?.performClick(nil)
-                } else {
+                } else if event.type == NSEvent.EventType.leftMouseUp {
                     self.appdelegate.joinNextMeeting()
                 }
             } else {
-                if isRightClick {
+                if event.type == NSEvent.EventType.rightMouseUp {
                     self.appdelegate.joinNextMeeting()
-                } else if event.type == NSEvent.EventType.leftMouseDown || event.type == NSEvent.EventType.leftMouseUp {
+                } else if event.type == NSEvent.EventType.leftMouseDown {
                     self.statusItem.menu = self.statusItemMenu
                     self.statusItem.button?.performClick(nil)
                 }
