@@ -113,7 +113,7 @@ extension EKEventStore {
         }
 
         // If the current event is still going on,
-        // but the next event is closer than 10 minutes later
+        // but the next event is closer than 13 minutes later
         // then show the next event
         for event in nextEvents {
             if event.isAllDay {
@@ -167,7 +167,7 @@ extension EKEventStore {
                     nextEvent = event
                     continue
                 } else {
-                    let soon = now.addingTimeInterval(900) // 15 min from now
+                    let soon = now.addingTimeInterval(780) // 13 min from now
                     if event.startDate < soon {
                         nextEvent = event
                     } else {
