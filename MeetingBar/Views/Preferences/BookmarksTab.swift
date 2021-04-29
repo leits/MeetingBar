@@ -21,6 +21,9 @@ struct BookmarksTab: View {
     var body: some View {
         VStack(alignment: .leading) {
             List {
+                if self.bookmarks.isEmpty {
+                    Text("You don't have any bookmarks yet").foregroundColor(Color.gray)
+                }
                 ForEach(bookmarks, id: \.self) { bookmark in
                     HStack {
                         Image(nsImage: NSImage(named: NSImage.listViewTemplateName)!).foregroundColor(.gray)

@@ -127,7 +127,7 @@
 "preferences_services_create_meeting_title" = "Создавать события через";
 "preferences_services_create_meeting_custom_url_value" = "Пользовательский URL";
 "preferences_services_create_meeting_custom_url_placeholder" = "Введите действительный URL (со схемой URL, например https://)";
-"preferences_services_google_meet_tip" = "Подсказка: Google Meet поддерживает выбор учетной записи с помощью параметра, например: https://meet.google.com/new?authuser=1";
+"preferences_services_google_meet_tip" = "Подсказка: Meet поддерживает выбор учетной записи с помощью параметра, например: https://meet.google.com/new?authuser=1";
 
 // MARK: - Preferences Bookmarks
 

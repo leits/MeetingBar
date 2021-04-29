@@ -127,7 +127,7 @@
 "preferences_services_create_meeting_title" = "Create meetings via";
 "preferences_services_create_meeting_custom_url_value" = "Custom url";
 "preferences_services_create_meeting_custom_url_placeholder" = "Please enter a valid url (with the url scheme, e.g. https://)";
-"preferences_services_google_meet_tip" = "Tip: Google Meet supports choosing account via parameter, e.g. https://meet.google.com/new?authuser=1";
+"preferences_services_google_meet_tip" = "Tip: Meet supports choosing account via parameter, e.g. https://meet.google.com/new?authuser=1";
 
 // MARK: - Preferences Bookmarks
 

@@ -66,10 +66,10 @@ struct BrowserConfigView: View {
             HStack(alignment: .center, spacing: 20) {
                 Spacer()
                 MenuButton(label: Text("Add")) {
-                    Button("Custom browser") {
+                    Button("Browser") {
                         self.showingAddBrowserModal.toggle()
                     }
-                    Button("All system browser") {
+                    Button("All system browsers") {
                         self.addSystemBrowser()
                     }
                 }
