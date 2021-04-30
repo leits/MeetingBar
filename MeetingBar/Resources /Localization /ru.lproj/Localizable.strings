@@ -266,7 +266,7 @@
 "shared_send_notification_one_minute_value" = "за 1 минуту до";
 "shared_send_notification_three_minute_value" = "за 3 минуты до";
 "shared_send_notification_five_minute_value" = "за 5 минут до";
-"shared__send_notification_no_alert_style_tip" = "⚠️ Системные настройки уведомлений для Meetingbar в настоящее время не настроены на \"Оповещения (Alert)\". Пожалуйста, включите \"Оповещения (Alert)\", если вы хотите получать уведомления.";
+"shared_send_notification_no_alert_style_tip" = "⚠️ Системные настройки уведомлений для Meetingbar в настоящее время не настроены на \"Оповещения (Alert)\". Пожалуйста, включите \"Оповещения (Alert)\", если вы хотите получать уведомления.";
 "shared_send_notification_disabled_tip" = "⚠️ Системные настройки уведомлений для Meetingbar в настоящее время выключены. Пожалуйста, включите уведомления в системных настройках, чтобы не пропустить события.";
 
 // MARK: - Constants
@@ -333,9 +333,6 @@
 "constants_browser_safari" = "Safari";
 "constants_browser_defaultBrowser" = "Браузер по умолчанию";
 
-"constants_time_format_12_h" = "12-часовой";
-"constants_time_format_24_h" = "24-часовой";
-
 // MARK: - Store
 
 "store_patronage_title" = "MeetingBar Patronage";
@@ -350,13 +347,6 @@
 "store_patronage_purchase_cloud_service_permission_denied_message" = "Доступ к информации облачного сервиса запрещен";
 "store_patronage_purchase_cloud_service_network_connection_failed" = "Не удалось подключиться к сети";
 "store_patronage_purchase_cloud_service_revoked_message" = "Пользователь отозвал разрешение на использование этой облачной службы";
-
-// MARK: - Helpres
-
-"helper_title_sample_show_title" = "Событие с чрезмерно большим заголовком из 55-символов.";
-"helper_title_sample_show_time" = " через 1ч 25м";
-"helper_title_sample_dot_time" = "• через 1ч 25м";
-"helper_title_sample_offset_title" = "Событие с чрезмерно большим заголовком из 100 - символов, чтобы показать возможности сокращения ....";
 
 // MARK: - Notifications
 

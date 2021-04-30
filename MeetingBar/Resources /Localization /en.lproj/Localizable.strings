@@ -266,7 +266,7 @@
 "shared_send_notification_one_minute_value" = "1 minute before";
 "shared_send_notification_three_minute_value" = "3 minutes before";
 "shared_send_notification_five_minute_value" = "5 minutes before";
-"shared__send_notification_no_alert_style_tip" = "⚠️ Your macOS notification settings for MeetingBar are currently not set to alert. Please activate alerts if you want to have persistent notifications.";
+"shared_send_notification_no_alert_style_tip" = "⚠️ Your macOS notification settings for MeetingBar are currently not set to alert. Please activate alerts if you want to have persistent notifications.";
 "shared_send_notification_disabled_tip" = "⚠️ Your macOS notification settings for MeetingBar are currently off. Please enable the notifications in macOS system settings to do not miss a meeting.";
 
 // MARK: - Constants
@@ -333,9 +333,6 @@
 "constants_browser_safari" = "Safari";
 "constants_browser_defaultBrowser" = "Default Browser";
 
-"constants_time_format_12_h" = "12-hour";
-"constants_time_format_24_h" = "24-hour";
-
 // MARK: - Store
 
 "store_patronage_title" = "MeetingBar Patronage";
@@ -350,13 +347,6 @@
 "store_patronage_purchase_cloud_service_permission_denied_message" = "Access to cloud service information is not allowed";
 "store_patronage_purchase_cloud_service_network_connection_failed" = "Could not connect to the network";
 "store_patronage_purchase_cloud_service_revoked_message" = "User has revoked permission to use this cloud service";
-
-// MARK: - Helpres
-
-"helper_title_sample_show_title" = "An event with an excessively sizeable 55-character title";
-"helper_title_sample_show_time" = " in 1h 25m";
-"helper_title_sample_dot_time" = "• in 1h 25m";
-"helper_title_sample_offset_title" = "An event with an excessively sizeable 100-character title to show the shorten capabilities here ....";
 
 // MARK: - Notifications
 
