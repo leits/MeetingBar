@@ -1,7 +1,7 @@
 # Changelog for Meetingbar
 
 ## Version 3.3.0 (WIP)
-* Fixed time stucking ⏱️
+* Fixed bug with timer freeze ⏱️
 * Browser management 🧰
 * Quick Actions ⚡
   * Show/hide meeting title in status bar

@@ -28,7 +28,7 @@ struct ChangelogView: View {
                 }
                 if lastRevisedVersionInChangelog < "3.3.0" {
                     Section(header: Text("Version 3.3.0")) {
-                        Text("⏱️ Fixed time stucking")
+                        Text("⏱️ Fixed bug with timer freeze")
                         Text("🧰 Browser management")
                         Text("⚡ Quick Actions: ")
                         Text("  - Show/hide meeting title in status bar")
