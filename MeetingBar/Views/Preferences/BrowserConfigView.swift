@@ -73,8 +73,7 @@ struct BrowserConfigView: View {
                         self.addSystemBrowser()
                     }
                 }
-                .frame(width: 40, height: 20, alignment: .center)
-                .menuButtonStyle(BorderlessPullDownMenuButtonStyle())
+                .frame(width: 100, height: 20, alignment: .center)
                 .sheet(isPresented: $showingAddBrowserModal) {
                     EditBrowserModal(browser: $browser)
                 }
