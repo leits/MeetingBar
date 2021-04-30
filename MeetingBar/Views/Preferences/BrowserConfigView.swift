@@ -54,9 +54,9 @@ struct BrowserConfigView: View {
             }
             .alert(isPresented: $showingAlert) {
                 Alert(
-                    title: Text("Delete browser configuration?"),
-                    message: Text("Do you want to delete the browser configuration \(self.browser.name)?"),
-                    primaryButton: .default(Text("Delete")) {
+                    title: Text("preferences_configure_browsers_delete_alert_title".loco()),
+                    message: Text("preferences_configure_browsers_delete_alert_message".loco(self.browser.name)),
+                    primaryButton: .default(Text("general_delete".loco())) {
                         self.removeBrowser(self.browser)
                     },
                     secondaryButton: .cancel()
@@ -65,11 +65,11 @@ struct BrowserConfigView: View {
 
             HStack(alignment: .center, spacing: 20) {
                 Spacer()
-                MenuButton(label: Text("Add")) {
-                    Button("Browser") {
+                MenuButton(label: Text("general_add".loco())) {
+                    Button("preferences_configure_browsers_add_button_browser_title".loco()) {
                         self.showingAddBrowserModal.toggle()
                     }
-                    Button("All system browsers") {
+                    Button("preferences_configure_browsers_add_button_all_system_title".loco()) {
                         self.addSystemBrowser()
                     }
                 }
@@ -81,7 +81,7 @@ struct BrowserConfigView: View {
 
                 Spacer()
 
-                Button("OK") {
+                Button("general_ok".loco()) {
                     presentationMode.wrappedValue.dismiss()
                 }.frame(width: 20, height: 20, alignment: .trailing)
             }
@@ -137,9 +137,9 @@ struct BrowserConfigView: View {
             VStack {
                 HStack {
                     if browser.name.isEmpty {
-                        Text("Add browser").font(.headline)
+                        Text("preferences_configure_browsers_modal_add_browser_title".loco()).font(.headline)
                     } else {
-                        Text("Edit browser").font(.headline)
+                        Text("preferences_configure_browsers_modal_edit_browser_title".loco()).font(.headline)
                     }
                 }
                 Spacer()
@@ -148,8 +148,8 @@ struct BrowserConfigView: View {
                         alignment: .leading,
                         spacing: 15
                     ) {
-                        Text("Name")
-                        Text("Path")
+                        Text("preferences_configure_browsers_modal_add_browser_name".loco())
+                        Text("preferences_configure_browsers_modal_add_browser_path".loco())
                     }
                     VStack(
                         alignment: .leading,
@@ -162,7 +162,7 @@ struct BrowserConfigView: View {
                         alignment: .leading
                     ) {
                         Button(action: chooseBrowser) {
-                            Text("Choose browser")
+                            Text("preferences_configure_browsers_modal_add_browser_choose_browser_button_title".loco())
                         }
                     }
                 }
@@ -172,17 +172,17 @@ struct BrowserConfigView: View {
                         self.presentationMode.wrappedValue.dismiss()
                         self.browser = Browser(name: "", path: "", arguments: "", deletable: true)
                     }) {
-                        Text("Cancel")
+                        Text("general_cancel".loco())
                     }
 
                     Button(action: saveBrowser) {
-                        Text("Save")
+                        Text("general_save".loco())
                     }.disabled(self.browser.name.isEmpty || self.browser.name.isEmpty)
                 }
             }.frame(width: 500, height: 200)
             .padding()
             .alert(isPresented: $showingAlert) {
-                Alert(title: Text("Can't add browser config"), message: Text(error_msg), dismissButton: .default(Text("OK")))
+                Alert(title: Text("preferences_configure_browsers_modal_alert_title".loco()), message: Text(error_msg), dismissButton: .default(Text("general_ok".loco())))
             }
         }
 
@@ -208,9 +208,9 @@ struct BrowserConfigView: View {
             openPanel.canChooseFiles = true
             openPanel.canChooseDirectories = false
             openPanel.allowsMultipleSelection = false
-            openPanel.title = "Select a valid browser app"
-            openPanel.prompt = "Choose browser"
-            openPanel.message = "Please select a browser from any path!"
+            openPanel.title = "preferences_configure_browsers_choose_broser_panel_title".loco()
+            openPanel.prompt = "preferences_configure_browsers_choose_broser_panel_prompt".loco()
+            openPanel.message = "preferences_configure_browsers_choose_broser_panel_message".loco()
 
             let appPath = try! FileManager.default.url(for: .allApplicationsDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
 

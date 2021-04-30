@@ -295,13 +295,13 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
         self.statusItemMenu.addItem(createEventItem)
 
         let quickActionsItem = self.statusItemMenu.addItem(
-            withTitle: "Quick Actions",
+            withTitle: "status_bar_quick_actions".loco(),
             action: nil,
             keyEquivalent: ""
         )
         quickActionsItem.isEnabled = true
 
-        quickActionsItem.submenu = NSMenu(title: "Quick Actions")
+        quickActionsItem.submenu = NSMenu(title: "status_bar_quick_actions".loco())
 
         let openLinkFromClipboardItem = NSMenuItem()
         openLinkFromClipboardItem.title = "status_bar_section_join_from_clipboard".loco()
@@ -854,7 +854,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
 
             // Open in fanctastical if fantastical is installed
             if isFantasticalInstalled() {
-                let fantasticalItem = eventMenu.addItem(withTitle: "Open in Fantastical", action: #selector(AppDelegate.openEventInFantastical), keyEquivalent: "")
+                let fantasticalItem = eventMenu.addItem(withTitle: "status_bar_submenu_open_in_fantastical".loco(), action: #selector(AppDelegate.openEventInFantastical), keyEquivalent: "")
                 fantasticalItem.representedObject = EventWithDate(event: event, dateSection: dateSection)
             }
         } else {
@@ -873,7 +873,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
     func createPreferencesSection() {
         if removePatchVerion(Defaults[.appVersion]) > removePatchVerion(Defaults[.lastRevisedVersionInChangelog]) {
             let changelogItem = self.statusItemMenu.addItem(
-                withTitle: "What's new?",
+                withTitle: "status_bar_whats_new".loco(),
                 action: #selector(AppDelegate.openChangelogWindow),
                 keyEquivalent: ""
             )
@@ -907,7 +907,7 @@ func shortenTitleForSystembar(title: String?) -> String {
 }
 
 func shortenTitleForMenu(title: String?) -> String {
-    var eventTitle = String(title ?? "No title").trimmingCharacters(in: TitleTruncationRules.excludeAtEnds)
+    var eventTitle = String(title ?? "status_bar_no_title".loco()).trimmingCharacters(in: TitleTruncationRules.excludeAtEnds)
     if eventTitle.count > Int(Defaults[.menuEventTitleLength]) {
         let index = eventTitle.index(eventTitle.startIndex, offsetBy: Int(Defaults[.menuEventTitleLength]) - 1)
         eventTitle = String(eventTitle[...index]).trimmingCharacters(in: TitleTruncationRules.excludeAtEnds)

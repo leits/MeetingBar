@@ -27,7 +27,7 @@ extension URL {
             NSWorkspace.shared.open([self], withApplicationAt: URL(fileURLWithPath: browserPath), configuration: configuration) { app, error in
                 guard app != nil else {
                     NSLog("Can't open \(self) in \(browserName): \(String(describing: error?.localizedDescription))")
-                    sendNotification("Oops! Unable to open the link in \(browserName)", "Make sure you have \(browserName) installed, or change the browser in preferences.")
+                    sendNotification("link_url_cant_open_title".loco(browserName), "link_url_cant_open_message".loco(browserName))
                     self.openInDefaultBrowser()
                     return
                 }

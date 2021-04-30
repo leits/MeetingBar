@@ -27,7 +27,7 @@ struct ServicesTab: View {
     var body: some View {
         VStack {
             Section {
-                Picker(selection: $defaultBrowser, label: Text("Open meeting links in").frame(width: 200, alignment: .leading)) {
+                Picker(selection: $defaultBrowser, label: Text("preferences_services_link_meeting_title".loco()).frame(width: 200, alignment: .leading)) {
                     Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
                     ForEach(allBrowser, id: \.self) { (browser: Browser) in
                         Text(browser.name).tag(browser)
@@ -91,7 +91,7 @@ struct ServicesTab: View {
                     }
                 }
                 HStack {
-                    Picker(selection: $browserForCreateMeeting, label: Text("Use browser").frame(width: 150, alignment: .leading)) {
+                    Picker(selection: $browserForCreateMeeting, label: Text("preferences_services_create_meeting_browser_title".loco()).frame(width: 150, alignment: .leading)) {
                         Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
                         ForEach(allBrowser, id: \.self) { (browser: Browser) in
                             Text(browser.name).tag(browser)
@@ -104,7 +104,7 @@ struct ServicesTab: View {
 
             VStack {
                 Button(action: clickConfigureBrowser) {
-                    Text("Configure browsers")
+                    Text("preferences_configure_browsers_button".loco())
                 }.sheet(isPresented: $showBrowserConfiguration) {
                     BrowserConfigView()
                 }
