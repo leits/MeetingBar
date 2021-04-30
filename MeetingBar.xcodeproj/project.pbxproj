@@ -37,6 +37,8 @@
 		14BAC84225C4AF1100C8A852 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 14BAC84125C4AF1000C8A852 /* StoreKit.framework */; };
 		14C59B8525CF45340019C9E4 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14C59B8425CF45340019C9E4 /* Store.swift */; };
 		14E4110E246F2F9200F73ACF /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14E4110D246F2F9200F73ACF /* Preferences.swift */; };
+		1BF338B5263BE92100E5A62A /* UserActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BF338B4263BE92100E5A62A /* UserActions.swift */; };
+		1BF338B8263C0D5E00E5A62A /* View+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BF338B7263C0D5E00E5A62A /* View+Ext.swift */; };
 		1BF37A9A2604C8960053D53C /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1BF37A9C2604C8960053D53C /* Localizable.strings */; };
 		1BF37AA52604F7E00053D53C /* I18N.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BF37AA42604F7E00053D53C /* I18N.swift */; };
 		40DC7043250E5B9C00217DD9 /* AutoLauncherAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40DC7042250E5B9C00217DD9 /* AutoLauncherAppDelegate.swift */; };
@@ -106,6 +108,8 @@
 		14C59B8425CF45340019C9E4 /* Store.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
 		14E4110D246F2F9200F73ACF /* Preferences.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
 		14E8DD85262A476600952FC2 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/Localizable.strings; sourceTree = "<group>"; };
+		1BF338B4263BE92100E5A62A /* UserActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserActions.swift; sourceTree = "<group>"; };
+		1BF338B7263C0D5E00E5A62A /* View+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Ext.swift"; sourceTree = "<group>"; };
 		1BF37A9B2604C8960053D53C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		1BF37AA02604C8A50053D53C /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 		1BF37AA42604F7E00053D53C /* I18N.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = I18N.swift; sourceTree = "<group>"; };
@@ -203,6 +207,7 @@
 				144C01802462D0C5000C9FFC /* Assets.xcassets */,
 				144C01892462D0C5000C9FFC /* MeetingBar.entitlements */,
 				1BF37AA42604F7E00053D53C /* I18N.swift */,
+				1BF338B4263BE92100E5A62A /* UserActions.swift */,
 			);
 			path = MeetingBar;
 			sourceTree = "<group>";
@@ -218,6 +223,7 @@
 		1452C9AD25AF5B1000C46CDF /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				1BF338B6263C0D5000E5A62A /* Extensions */,
 				1435E44A260954660071B188 /* Changelog */,
 				1452C9B225AF5C6F00C46CDF /* Preferences */,
 				1452C9B325AF5C7D00C46CDF /* Onboarding */,
@@ -269,6 +275,14 @@
 				140D843E2493B7CB0055E1CE /* DefaultsKeys.swift */,
 				E249D533259BBC3800429BF1 /* String.swift */,
 				A7B68FA225CDE9E200CA3A68 /* URL.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		1BF338B6263C0D5000E5A62A /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				1BF338B7263C0D5E00E5A62A /* View+Ext.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -463,6 +477,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1BF338B8263C0D5E00E5A62A /* View+Ext.swift in Sources */,
 				1452C9D825AF889A00C46CDF /* WelcomeScreen.swift in Sources */,
 				1452C9BC25AF5D8700C46CDF /* Shared.swift in Sources */,
 				1435E44C260954D00071B188 /* Changelog.swift in Sources */,
@@ -476,6 +491,7 @@
 				E249D534259BBC3800429BF1 /* String.swift in Sources */,
 				140D843A2493A6240055E1CE /* Helpers.swift in Sources */,
 				144C017D2462D0C3000C9FFC /* AppDelegate.swift in Sources */,
+				1BF338B5263BE92100E5A62A /* UserActions.swift in Sources */,
 				1452C9C225AF854000C46CDF /* AppearanceTab.swift in Sources */,
 				1452C9B525AF5CE700C46CDF /* GeneralTab.swift in Sources */,
 				148E47E824F400C400399929 /* Onboarding.swift in Sources */,

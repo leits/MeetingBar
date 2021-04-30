@@ -28,7 +28,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
     func enableButtonAction() {
         let button: NSStatusBarButton = self.statusItem.button!
         button.target = self
-        button.action = #selector(self.statusMenuBarAction)
+        button.action = #selector(self.statusMenuBarAction(_:))
         button.sendAction(on: [NSEvent.EventTypeMask.rightMouseDown, NSEvent.EventTypeMask.rightMouseUp, NSEvent.EventTypeMask.leftMouseUp, NSEvent.EventTypeMask.leftMouseDown])
         self.menuIsOpen = false
     }
@@ -65,30 +65,6 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
         // remove menu when closed so we can override left click behavior
         self.statusItem.menu = nil
         self.menuIsOpen = false
-    }
-
-    @objc
-    func statusMenuBarAction(sender: NSStatusItem) {
-        if !self.menuIsOpen && self.statusItem.menu == nil {
-            let event = NSApp.currentEvent!
-            NSLog("Event occured \(event.type.rawValue)")
-
-            if Defaults[.isMouseClickSwap] {
-                if event.type == NSEvent.EventType.rightMouseDown {
-                    self.statusItem.menu = self.statusItemMenu
-                    self.statusItem.button?.performClick(nil)
-                } else if event.type == NSEvent.EventType.leftMouseUp {
-                    self.appdelegate.joinNextMeeting()
-                }
-            } else {
-                if event.type == NSEvent.EventType.rightMouseUp {
-                    self.appdelegate.joinNextMeeting()
-                } else if event.type == NSEvent.EventType.leftMouseDown {
-                    self.statusItem.menu = self.statusItemMenu
-                    self.statusItem.button?.performClick(nil)
-                }
-            }
-        }
     }
 
     func setAppDelegate(appdelegate: AppDelegate) {
@@ -283,18 +259,20 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
         if !calendars.isEmpty {
             let nextEvent = eventStore.getNextEvent(calendars: calendars)
             if nextEvent != nil {
+                let joinNextMeeting = UserActions.instance.joinNextMeeting
                 let joinItem = self.statusItemMenu.addItem(
-                    withTitle: "status_bar_section_join_next_meeting".loco(),
-                    action: #selector(AppDelegate.joinNextMeeting),
+                    withTitle: joinNextMeeting.localizedName,
+                    action: joinNextMeeting.action,
                     keyEquivalent: ""
                 )
                 joinItem.setShortcut(for: .joinEventShortcut)
             }
         }
 
+        let createMeeting = UserActions.instance.createMeeting
         let createEventItem = NSMenuItem()
-        createEventItem.title = "status_bar_section_join_create_meeting".loco()
-        createEventItem.action = #selector(AppDelegate.createMeeting)
+        createEventItem.title = createMeeting.localizedName
+        createEventItem.action = createMeeting.action
         createEventItem.keyEquivalent = ""
         createEventItem.setShortcut(for: .createMeetingShortcut)
 
@@ -309,9 +287,10 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
 
         quickActionsItem.submenu = NSMenu(title: "Quick Actions")
 
+        let joinFromClipboard = UserActions.instance.joinFromClipboard
         let openLinkFromClipboardItem = NSMenuItem()
-        openLinkFromClipboardItem.title = "status_bar_section_join_from_clipboard".loco()
-        openLinkFromClipboardItem.action = #selector(AppDelegate.openLinkFromClipboard)
+        openLinkFromClipboardItem.title = joinFromClipboard.localizedName
+        openLinkFromClipboardItem.action = joinFromClipboard.action
         openLinkFromClipboardItem.keyEquivalent = ""
         openLinkFromClipboardItem.setShortcut(for: .openClipboardShortcut)
         quickActionsItem.submenu!.addItem(openLinkFromClipboardItem)
@@ -323,7 +302,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             } else {
                 toggleMeetingTitleVisibilityItem.title = "status_bar_hide_meeting_names".loco()
             }
-            toggleMeetingTitleVisibilityItem.action = #selector(AppDelegate.toggleMeetingTitleVisibility)
+            toggleMeetingTitleVisibilityItem.action = UserActions.instance.toggleMeetingNameVisibility.action
             toggleMeetingTitleVisibilityItem.setShortcut(for: .toggleMeetingTitleVisibilityShortcut)
             quickActionsItem.submenu!.addItem(toggleMeetingTitleVisibilityItem)
         }
@@ -897,6 +876,13 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             action: #selector(AppDelegate.quit),
             keyEquivalent: "q"
         )
+    }
+
+    // MARK: - Actions
+
+    @objc
+    private func statusMenuBarAction(_ sender: NSStatusItem) {
+        self.appdelegate.statusMenuBarAction()
     }
 }
 
