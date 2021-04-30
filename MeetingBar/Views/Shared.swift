@@ -67,6 +67,7 @@ struct LaunchAtLoginANDPreferredLanguagePicker: View {
             Picker("preferences_general_option_preferred_language_title".loco(), selection: $preferredLanguage) {
                 Text("preferences_general_option_preferred_language_system_value".loco()).tag(AppLanguage.system)
                 Text("preferences_general_option_preferred_language_english_value".loco()).tag(AppLanguage.english)
+                Text("preferences_general_option_preferred_language_ukrainian_value".loco()).tag(AppLanguage.ukrainian)
                 Text("preferences_general_option_preferred_language_russian_value".loco()).tag(AppLanguage.russian)
             }.frame(width: 250)
         }

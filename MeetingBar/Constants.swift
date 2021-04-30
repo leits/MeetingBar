@@ -342,6 +342,7 @@ public enum AutoLauncher {
 enum AppLanguage: String, Codable {
     case system = ""
     case english = "en"
+    case ukrainian = "ua"
     case russian = "ru"
 }
 
