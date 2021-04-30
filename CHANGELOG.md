@@ -4,10 +4,10 @@
 * Fixed time stucking ⏱️
 * Browser management 🧰
 * Quick Actions ⚡
-  * Show/hide meeting title
+  * Show/hide meeting title in status bar
   * Open meeting from clipboard
 * Customizable appereance for events without meeting links
-* Localization on ukrainian and russian
+* Localization (Ukrainian and Russian)
 * Create meetings in Jam
 * Integration with CoScreen
 * Open event in Fantastical from event submenu
