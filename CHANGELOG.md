@@ -9,7 +9,6 @@
 * Customizable appereance for events without meeting links
 * Localization (Ukrainian and Russian)
 * Create meetings in Jam
-* Integration with CoScreen
 * Open event in Fantastical from event submenu
 * Integration with subscribed calendars
 
