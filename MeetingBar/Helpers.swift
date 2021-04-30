@@ -129,7 +129,7 @@ func detectLink(_ field: inout String) -> MeetingLink? {
  * this method will collect text from the location, url and notes field of an event and try to find a known meeting url link.
  * As meeting links can be part of a outlook safe url, we will extract the original link from outlook safe links.
  */
-func getMeetingLink(_ event: EKEvent, acceptAnyLink: Bool) -> MeetingLink? {
+func getMeetingLink(_ event: EKEvent) -> MeetingLink? {
     var linkFields: [String] = []
 
     if let location = event.location {
@@ -158,17 +158,6 @@ func getMeetingLink(_ event: EKEvent, acceptAnyLink: Bool) -> MeetingLink? {
         }
     }
 
-    if acceptAnyLink {
-        for field in linkFields {
-            let links = detectLinks(text: field)
-            if !links.isEmpty {
-                return MeetingLink(service: MeetingServices.url, url: links[0])
-            }
-        }
-    }
-
-
-
     return nil
 }
 
@@ -190,7 +179,7 @@ func detectLinks(text: String) -> [URL] {
 
 func openEvent(_ event: EKEvent) {
     let eventTitle = event.title ?? "status_bar_no_title".loco()
-    if let meeting = getMeetingLink(event, acceptAnyLink: Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show || Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.hide_without_any_link || Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show_inactive_without_any_link) {
+    if let meeting = getMeetingLink(event) {
         if Defaults[.runJoinEventScript], Defaults[.joinEventScriptLocation] != nil {
             if let url = Defaults[.joinEventScriptLocation]?.appendingPathComponent("joinEventScript.scpt") {
                 print("URL: \(url)")

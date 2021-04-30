@@ -71,9 +71,7 @@
 "preferences_appearance_events_show_events_for_today_value" = "сьогодні";
 "preferences_appearance_events_show_events_for_today_tomorrow_value" = "сьогодні та завтра";
 "preferences_appearance_events_non_all_day_title" = "Події не на весь день:";
-"preferences_appearance_events_value_inactive_without_link" = "показати як неактивні, якщо немає будь-якого посилання";
 "preferences_appearance_events_value_inactive_without_meeting_link" = "показати як неактивні, якщо немає посилання на зустріч";
-"preferences_appearance_events_value_hide_without_link" = "приховати, якщо немає будь-якого посилання";
 "preferences_appearance_events_value_hide_without_meeting_link" = "приховати, якщо немає посилання на зустріч";
 "preferences_appearance_events_all_day_title" = "Події на весь день:";
 "preferences_appearance_events_without_guest_title" = "Події без учасників:";

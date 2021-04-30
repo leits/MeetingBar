@@ -301,14 +301,8 @@ enum NonAlldayEventsAppereance: String, Codable, CaseIterable {
     // deactivates all non all day events when no meeting link is detected
     case show_inactive_without_meeting_link
 
-    // deactivates all non all day events when no link in the event is detected
-    case show_inactive_without_any_link
-
     // hides all non all day events when no meeting link is detected
     case hide_without_meeting_link
-
-    // hides all non all day events when no link in the event is detected
-    case hide_without_any_link
 }
 
 enum PendingEventsAppereance: String, Codable, CaseIterable {
