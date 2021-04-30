@@ -650,7 +650,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             onboardingWindow.close()
         }
         onboardingWindow = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 520, height: 400),
+            contentRect: NSRect(x: 0, y: 0, width: 660, height: 450),
             styleMask: [.closable, .titled],
             backing: .buffered,
             defer: false

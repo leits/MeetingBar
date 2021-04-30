@@ -41,7 +41,7 @@ struct JoinEventNotificationPicker: View {
                 Text("shared_send_notification_one_minute_value".loco()).tag(JoinEventNotificationTime.minuteBefore)
                 Text("shared_send_notification_three_minute_value".loco()).tag(JoinEventNotificationTime.threeMinuteBefore)
                 Text("shared_send_notification_five_minute_value".loco()).tag(JoinEventNotificationTime.fiveMinuteBefore)
-            }.frame(width: 150, alignment: .leading).labelsHidden().disabled(!joinEventNotification)
+            }.frame(width: 220, alignment: .leading).labelsHidden().disabled(!joinEventNotification)
         }
         let (noAlertStyle, disabled) = checkNotificationSettings()
 
@@ -51,6 +51,24 @@ struct JoinEventNotificationPicker: View {
 
         if disabled && joinEventNotification {
             Text("shared_send_notification_disabled_tip".loco()).foregroundColor(Color.gray).font(.system(size: 12))
+        }
+    }
+}
+
+
+struct LaunchAtLoginANDPreferredLanguagePicker: View {
+    @Default(.launchAtLogin) var launchAtLogin
+    @Default(.preferredLanguage) var preferredLanguage
+
+    var body: some View {
+        HStack {
+            Toggle("preferences_general_option_login_launch".loco(), isOn: $launchAtLogin)
+            Spacer()
+            Picker("preferences_general_option_preferred_language_title".loco(), selection: $preferredLanguage) {
+                Text("preferences_general_option_preferred_language_system_value".loco()).tag(AppLanguage.system)
+                Text("preferences_general_option_preferred_language_english_value".loco()).tag(AppLanguage.english)
+                Text("preferences_general_option_preferred_language_russian_value".loco()).tag(AppLanguage.russian)
+            }.frame(width: 250)
         }
     }
 }

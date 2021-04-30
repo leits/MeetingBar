@@ -13,24 +13,13 @@ import KeyboardShortcuts
 
 struct GeneralTab: View {
     @Default(.launchAtLogin) var launchAtLogin
-    @Default(.preferredLanguage) var preferredLanguage
 
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
             Spacer()
-            HStack {
-                Toggle("preferences_general_option_login_launch".loco(), isOn: $launchAtLogin)
-                Spacer()
-                Picker("preferences_general_option_preferred_language_title".loco(), selection: $preferredLanguage) {
-                    Text("preferences_general_option_preferred_language_system_value".loco()).tag(AppLanguage.system)
-                    Text("preferences_general_option_preferred_language_english_value".loco()).tag(AppLanguage.english)
-                    Text("preferences_general_option_preferred_language_russian_value".loco()).tag(AppLanguage.russian)
-                }.frame(width: 250)
-            }
+            LaunchAtLoginANDPreferredLanguagePicker()
             Divider()
-            Section {
-                JoinEventNotificationPicker()
-            }
+            JoinEventNotificationPicker()
             Divider()
             ShortcutsSection()
             Divider()
