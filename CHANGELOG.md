@@ -1,7 +1,17 @@
 # Changelog for Meetingbar
 
-## Next version (WIP)
-* browser management 
+## Version 3.3.0 (WIP)
+* Fixed time stucking ⏱️
+* Browser management 🧰
+* Quick Actions ⚡
+  * Show/hide meeting title
+  * Open meeting from clipboard
+* Customizable appereance for events without meeting links
+* Localization on ukrainian and russian
+* Create meetings in Jam
+* Integration with CoScreen
+* Open event in Fantastical from event submenu
+* Integration with subscribed calendars
 
 ## Version 3.2.1
 > (released 30th Mar 2021)
