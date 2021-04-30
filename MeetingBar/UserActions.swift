@@ -10,17 +10,18 @@ import Foundation
 import AppKit
 
 final class UserActions {
-
     struct Action: Hashable, Codable {
         let localizedKey: String
         let action: Selector
 
         var localizedName: String {
-            return self.localizedKey.loco()
+            self.localizedKey.loco()
         }
 
         func performAction() {
-            guard let appDelegate = NSApplication.shared.delegate as? AppDelegate else { return }
+            guard let appDelegate = NSApplication.shared.delegate as? AppDelegate else {
+                return
+            }
             appDelegate.perform(self.action)
         }
 
@@ -65,7 +66,7 @@ final class UserActions {
     let toggleMeetingNameVisibility: Action
 
     var allActions: [Action] {
-        return [
+        [
             self.createMeeting,
             self.joinNextMeeting,
             self.joinFromClipboard,
