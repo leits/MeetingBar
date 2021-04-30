@@ -438,7 +438,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     }
 
     private func scheduleUpdateStatusBarTitle() {
-        let timer = Timer.scheduledTimer(timeInterval: 15, target: self, selector: #selector(updateStatusbar), userInfo: nil, repeats: true)
+        let timer = Timer(timeInterval: 15, target: self, selector: #selector(updateStatusbar), userInfo: nil, repeats: true)
         RunLoop.current.add(timer, forMode: .common)
     }
 
@@ -459,7 +459,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     }
 
     private func scheduleUpdateEvents() {
-        let timer = Timer.scheduledTimer(timeInterval: 60 * 5, target: self, selector: #selector(updateMenuBar), userInfo: nil, repeats: true)
+        let timer = Timer(timeInterval: 60 * 5, target: self, selector: #selector(updateMenuBar), userInfo: nil, repeats: true)
         RunLoop.current.add(timer, forMode: .common)
     }
 
