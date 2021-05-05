@@ -779,9 +779,8 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                 if !notes.isEmpty {
                     eventMenu.addItem(withTitle: "status_bar_submenu_notes_title".loco(), action: nil, keyEquivalent: "")
                     let item = eventMenu.addItem(withTitle: "", action: nil, keyEquivalent: "")
-                    let paragraphStyle = NSMutableParagraphStyle()
-                    paragraphStyle.lineBreakMode = NSLineBreakMode.byWordWrapping
-                    item.attributedTitle = notes.splitWithNewLineAttributedString(with: [NSAttributedString.Key.paragraphStyle: paragraphStyle], maxWidth: 300.0)
+                    item.view = getNotesView(notes: notes)
+
                     eventMenu.addItem(NSMenuItem.separator())
                 }
             }
@@ -852,6 +851,36 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
         } else {
             eventItem.toolTip = event.title
         }
+    }
+
+    private func getNotesView(notes: String) -> NSView {
+        // Create views
+        let paddingView = NSView()
+        let textView = NSTextView()
+        paddingView.addSubview(textView)
+
+        // Text styling
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineBreakMode = NSLineBreakMode.byWordWrapping
+        textView.textStorage?.setAttributedString(notes.splitWithNewLineAttributedString(with: [NSAttributedString.Key.paragraphStyle: paragraphStyle], maxWidth: 300.0).withLinksEnabled())
+        textView.backgroundColor = .clear
+        textView.textColor = .lightGray
+
+        // Adjust frame layout for padding
+        if let textContainer = textView.textContainer {
+            textView.layoutManager?.ensureLayout(for: textContainer)
+            if let frame = textView.layoutManager?.usedRect(for: textContainer) {
+                textView.frame = NSRect(x: 10.0, y: 0.0, width: frame.width, height: frame.height)
+                paddingView.frame = NSRect(x: 0.0, y: 0.0, width: frame.width + 10, height: frame.height)
+            } else {
+                // Backup layout if we couldn't calculate frame
+                textView.autoresizingMask = [.width, .height]
+            }
+        } else {
+            // Backup layout if we couldn't calculate frame
+            textView.autoresizingMask = [.width, .height]
+        }
+        return paddingView
     }
 
     /**
