@@ -11,7 +11,7 @@ class StringExtensionsTests: XCTestCase {
         let expectedRange = NSRange(location: 0, length: testString.string.utf16.count)
         let resultString = testString.withLinksEnabled()
 
-        resultString.enumerateAttributes(in: expectedRange) { (attrDict, range, shouldStop) in
+        resultString.enumerateAttributes(in: expectedRange) { attrDict, range, _ in
             if let linkAttr = attrDict[.link] as? URL {
                 XCTAssert(expectedRange.intersection(range)?.length ?? 0 > 0)
                 XCTAssert(linkAttr.absoluteString == urlString)
@@ -25,7 +25,7 @@ class StringExtensionsTests: XCTestCase {
         let expectedRange = NSRange(location: 0, length: testString.string.utf16.count)
         let resultString = testString.withLinksEnabled()
 
-        resultString.enumerateAttributes(in: expectedRange) { (attrDict, range, shouldStop) in
+        resultString.enumerateAttributes(in: expectedRange) { attrDict, range, _ in
             if let linkAttr = attrDict[.link] as? URL {
                 XCTAssert(expectedRange.intersection(range)?.length ?? 0 > 0)
                 XCTAssert(linkAttr.absoluteString == urlString)
@@ -39,7 +39,7 @@ class StringExtensionsTests: XCTestCase {
         let expectedRange = NSRange(location: 0, length: testString.string.utf16.count)
         let resultString = testString.withLinksEnabled()
 
-        resultString.enumerateAttributes(in: expectedRange) { (attrDict, range, shouldStop) in
+        resultString.enumerateAttributes(in: expectedRange) { attrDict, range, _ in
             if let linkAttr = attrDict[.link] as? URL {
                 XCTAssert(expectedRange.intersection(range)?.length ?? 0 > 0)
                 XCTAssert(linkAttr.absoluteString == urlString)
@@ -53,7 +53,7 @@ class StringExtensionsTests: XCTestCase {
         let expectedRange = NSRange(location: 0, length: testString.string.utf16.count)
         let resultString = testString.withLinksEnabled()
 
-        resultString.enumerateAttributes(in: expectedRange) { (attrDict, range, shouldStop) in
+        resultString.enumerateAttributes(in: expectedRange) { attrDict, range, _ in
             if let linkAttr = attrDict[.link] as? URL {
                 XCTAssert(expectedRange.intersection(range)?.length ?? 0 > 0)
                 XCTAssert(linkAttr.absoluteString == urlString)
@@ -67,7 +67,7 @@ class StringExtensionsTests: XCTestCase {
         let expectedRange = NSRange(location: 0, length: testString.string.utf16.count)
         let resultString = testString.withLinksEnabled()
 
-        resultString.enumerateAttributes(in: expectedRange) { (attrDict, range, shouldStop) in
+        resultString.enumerateAttributes(in: expectedRange) { attrDict, range, _ in
             if let linkAttr = attrDict[.link] as? URL {
                 XCTAssert(expectedRange.intersection(range)?.length ?? 0 > 0)
                 XCTAssert(linkAttr.absoluteString == urlString)
@@ -81,7 +81,7 @@ class StringExtensionsTests: XCTestCase {
         let expectedRange = NSRange(location: 0, length: testString.string.utf16.count)
         let resultString = testString.withLinksEnabled()
 
-        resultString.enumerateAttributes(in: expectedRange) { (attrDict, range, shouldStop) in
+        resultString.enumerateAttributes(in: expectedRange) { attrDict, range, _ in
             if let linkAttr = attrDict[.link] as? URL {
                 XCTAssert(expectedRange.intersection(range)?.length ?? 0 > 0)
                 XCTAssert(linkAttr.absoluteString == urlString)
@@ -95,7 +95,7 @@ class StringExtensionsTests: XCTestCase {
         let expectedRange = NSRange(location: 0, length: testString.string.utf16.count)
         let resultString = testString.withLinksEnabled()
 
-        resultString.enumerateAttributes(in: expectedRange) { (attrDict, range, shouldStop) in
+        resultString.enumerateAttributes(in: expectedRange) { attrDict, range, _ in
             if let linkAttr = attrDict[.link] as? URL {
                 XCTAssert(expectedRange.intersection(range)?.length ?? 0 > 0)
                 XCTAssert(linkAttr.absoluteString == urlString)
@@ -109,7 +109,7 @@ class StringExtensionsTests: XCTestCase {
         let expectedRange = NSRange(location: 0, length: testString.string.utf16.count)
         let resultString = testString.withLinksEnabled()
 
-        resultString.enumerateAttributes(in: expectedRange) { (attrDict, range, shouldStop) in
+        resultString.enumerateAttributes(in: expectedRange) { attrDict, range, _ in
             if let linkAttr = attrDict[.link] as? URL {
                 XCTAssert(expectedRange.intersection(range)?.length ?? 0 > 0)
                 XCTAssert(linkAttr.absoluteString == urlString)
@@ -123,7 +123,7 @@ class StringExtensionsTests: XCTestCase {
         let expectedRange = NSRange(location: 0, length: testString.string.utf16.count)
         let resultString = testString.withLinksEnabled()
 
-        resultString.enumerateAttributes(in: expectedRange) { (attrDict, range, shouldStop) in
+        resultString.enumerateAttributes(in: expectedRange) { attrDict, range, _ in
             if let linkAttr = attrDict[.link] as? URL {
                 XCTAssert(expectedRange.intersection(range)?.length ?? 0 > 0)
                 XCTAssert(linkAttr.absoluteString == urlString)
@@ -137,7 +137,7 @@ class StringExtensionsTests: XCTestCase {
         let expectedRange = NSRange(location: 0, length: testString.string.utf16.count)
         let resultString = testString.withLinksEnabled()
 
-        resultString.enumerateAttributes(in: expectedRange) { (attrDict, range, shouldStop) in
+        resultString.enumerateAttributes(in: expectedRange) { attrDict, range, _ in
             if let linkAttr = attrDict[.link] as? URL {
                 XCTAssert(expectedRange.intersection(range)?.length ?? 0 > 0)
                 XCTAssert(linkAttr.absoluteString == urlString)
@@ -151,7 +151,7 @@ class StringExtensionsTests: XCTestCase {
         let expectedRange = NSRange(location: 0, length: testString.string.utf16.count)
         let resultString = testString.withLinksEnabled()
 
-        resultString.enumerateAttributes(in: expectedRange) { (attrDict, range, shouldStop) in
+        resultString.enumerateAttributes(in: expectedRange) { attrDict, range, _ in
             if let linkAttr = attrDict[.link] as? URL {
                 XCTAssert(expectedRange.intersection(range)?.length ?? 0 > 0)
                 XCTAssert(linkAttr.absoluteString == urlString)

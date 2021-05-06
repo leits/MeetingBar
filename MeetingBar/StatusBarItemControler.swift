@@ -869,7 +869,8 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                     NSAttributedString.Key.font: NSFont.systemFont(ofSize: 14)
                 ],
                 maxWidth: 300.0
-            ).withLinksEnabled()
+            )
+            .withLinksEnabled()
         )
         textView.backgroundColor = .clear
         textView.textColor = .textColor
