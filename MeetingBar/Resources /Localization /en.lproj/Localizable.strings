@@ -36,7 +36,7 @@
 
 // MARK: - Preferences General
 
-"preferences_general_option_login_launch" = "Launch at Login";
+"preferences_general_option_login_launch" = "Launch at login";
 "preferences_general_option_preferred_language_title" = "Preferred language:";
 "preferences_general_option_preferred_language_system_value" = "System";
 "preferences_general_option_preferred_language_english_value" = "English";
@@ -49,7 +49,7 @@
 "preferences_general_shortcut_join_next" = "Join next meeting:";
 "preferences_general_shortcut_join_from_clipboard" = "Join meeting from clipboard:";
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "Toggle title visibility in status bar:";
-"preferences_general_meeting_bar_description" = "MeetingBar is open-source app created by Andrii Leitsius\nThe app aims to make your experience with online meetings smoother and easier";
+"preferences_general_meeting_bar_description" = "MeetingBar is an open-source app created by Andrii Leitsius\nThe app aims to make your experience with online meetings smoother and easier";
 "preferences_general_external_patronage" = "Patronage";
 "preferences_general_external_gitHub" = "GitHub";
 "preferences_general_external_contact" = "Contact";
@@ -71,10 +71,10 @@
 "preferences_appearance_events_show_events_for_title" = "Show events for";
 "preferences_appearance_events_show_events_for_today_value" = "today";
 "preferences_appearance_events_show_events_for_today_tomorrow_value" = "today and tomorrow";
-"preferences_appearance_events_non_all_day_title" = "Non all day events:";
-"preferences_appearance_events_value_inactive_without_meeting_link" = "show as inactive without meeting link";
-"preferences_appearance_events_value_hide_without_link" = "hide all without any link";
-"preferences_appearance_events_all_day_title" = "All day events:";
+"preferences_appearance_events_non_all_day_title" = "Other events:";
+"preferences_appearance_events_value_inactive_without_meeting_link" = "show those without meeting links as inactive";
+"preferences_appearance_events_value_hide_without_link" = "hide all without meeting links";
+"preferences_appearance_events_all_day_title" = "All-day events:";
 "preferences_appearance_events_without_guest_title" = "Events without guests:";
 "preferences_appearance_events_past_title" = "Past events:";
 "preferences_appearance_events_pending_title" = "Pending events";
@@ -84,7 +84,7 @@
 "preferences_appearance_events_value_as_inactive" = "show as inactive";
 "preferences_appearance_events_value_as_underlined" = "show as underlined";
 "preferences_appearance_events_value_with_strikethrough" = "show with strikethrough";
-"preferences_appearance_events_value_only_with_link" = "show only with meeting link";
+"preferences_appearance_events_value_only_with_link" = "show only those with meeting links";
 "preferences_appearance_status_bar_title" = "Status bar";
 "preferences_appearance_status_bar_icon_title" = "Icon";
 "preferences_appearance_status_bar_icon_app_icon_value" = "\U00A0App icon";
@@ -95,7 +95,7 @@
 "preferences_appearance_status_bar_title_event_title_value" = "event title";
 "preferences_appearance_status_bar_title_dot_value" = "dot (•)";
 "preferences_appearance_status_bar_title_hide_value" = "hide";
-"preferences_appearance_status_bar_title_shorten_stepper" = "shorten to %d chars";
+"preferences_appearance_status_bar_title_shorten_stepper" = "shorten to %d characters";
 "preferences_appearance_status_bar_time_title" = "Time";
 "preferences_appearance_status_bar_time_show_value" = "show";
 "preferences_appearance_status_bar_time_show_under_title_value" = "show under title";
@@ -103,7 +103,7 @@
 "preferences_appearance_status_bar_next_event" = "Show only next event starting within %d minutes";
 "preferences_appearance_menu_title" = "Menu";
 "preferences_appearance_menu_shorten_event_title_toggle" = "Shorten event title to";
-"preferences_appearance_menu_shorten_event_title_stepper" = "%d chars";
+"preferences_appearance_menu_shorten_event_title_stepper" = "%d characters";
 "preferences_appearance_menu_time_format_title" = "Time format:";
 "preferences_appearance_menu_time_format_12_hour_value" = "12-hour (AM/PM)";
 "preferences_appearance_menu_time_format_24_hour_value" = "24-hour";
