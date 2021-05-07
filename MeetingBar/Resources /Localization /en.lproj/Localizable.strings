@@ -73,7 +73,7 @@
 "preferences_appearance_events_show_events_for_today_tomorrow_value" = "today and tomorrow";
 "preferences_appearance_events_non_all_day_title" = "Other events:";
 "preferences_appearance_events_value_inactive_without_meeting_link" = "show those without meeting links as inactive";
-"preferences_appearance_events_value_hide_without_link" = "hide all without meeting links";
+"preferences_appearance_events_value_hide_without_meeting_link" = "hide all without meeting links";
 "preferences_appearance_events_all_day_title" = "All-day events:";
 "preferences_appearance_events_without_guest_title" = "Events without guests:";
 "preferences_appearance_events_past_title" = "Past events:";
