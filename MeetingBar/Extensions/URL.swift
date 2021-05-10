@@ -22,7 +22,6 @@ extension URL {
             let configuration = NSWorkspace.OpenConfiguration()
             configuration.activates = true
             configuration.addsToRecentItems = true
-            configuration.createsNewApplicationInstance = true
 
             NSWorkspace.shared.open([self], withApplicationAt: URL(fileURLWithPath: browserPath), configuration: configuration) { app, error in
                 guard app != nil else {
