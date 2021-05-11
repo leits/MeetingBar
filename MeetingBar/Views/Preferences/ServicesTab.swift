@@ -27,25 +27,25 @@ struct ServicesTab: View {
     var body: some View {
         VStack {
             Section {
-                Picker(selection: $defaultBrowser, label: Text("Open meeting links in").frame(width: 150, alignment: .leading)) {
+                Picker(selection: $defaultBrowser, label: Text("preferences_services_link_meeting_title".loco()).frame(width: 200, alignment: .leading)) {
                     Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
                     ForEach(allBrowser, id: \.self) { (browser: Browser) in
                         Text(browser.name).tag(browser)
                     }
                 }
 
-                Picker(selection: $meetBrowser, label: Text("preferences_services_link_meet_title".loco()).frame(width: 150, alignment: .leading)) {
+                Picker(selection: $meetBrowser, label: Text("preferences_services_link_meet_title".loco()).frame(width: 200, alignment: .leading)) {
                     Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
                     ForEach(allBrowser, id: \.self) { (browser: Browser) in
                         Text(browser.name).tag(browser)
                     }
                 }
 
-                Picker(selection: $useAppForZoomLinks, label: Text("preferences_services_link_zoom_title".loco()).frame(width: 150, alignment: .leading)) {
+                Picker(selection: $useAppForZoomLinks, label: Text("preferences_services_link_zoom_title".loco()).frame(width: 200, alignment: .leading)) {
                     Text("preferences_services_link_default_browser_value".loco()).tag(false)
                     Text("preferences_services_link_zoom_value".loco()).tag(true)
                 }
-                Picker(selection: $useAppForTeamsLinks, label: Text("preferences_services_link_team_title".loco()).frame(width: 150, alignment: .leading)) {
+                Picker(selection: $useAppForTeamsLinks, label: Text("preferences_services_link_team_title".loco()).frame(width: 200, alignment: .leading)) {
                     Text("preferences_services_link_default_browser_value".loco()).tag(false)
                     Text("preferences_services_link_teams_value".loco()).tag(true)
                 }
@@ -91,7 +91,7 @@ struct ServicesTab: View {
                     }
                 }
                 HStack {
-                    Picker(selection: $browserForCreateMeeting, label: Text("Use browser").frame(width: 150, alignment: .leading)) {
+                    Picker(selection: $browserForCreateMeeting, label: Text("preferences_services_create_meeting_browser_title".loco()).frame(width: 150, alignment: .leading)) {
                         Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
                         ForEach(allBrowser, id: \.self) { (browser: Browser) in
                             Text(browser.name).tag(browser)
@@ -104,7 +104,7 @@ struct ServicesTab: View {
 
             VStack {
                 Button(action: clickConfigureBrowser) {
-                    Text("Configure browsers")
+                    Text("preferences_configure_browsers_button".loco())
                 }.sheet(isPresented: $showBrowserConfiguration) {
                     BrowserConfigView()
                 }

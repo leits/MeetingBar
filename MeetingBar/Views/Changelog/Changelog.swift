@@ -26,6 +26,20 @@ struct ChangelogView: View {
                         Text("and small bug fixes")
                     }
                 }
+                if lastRevisedVersionInChangelog < "3.3.0" {
+                    Section(header: Text("Version 3.3.0")) {
+                        Text("⏱️ Fixed bug with timer freeze")
+                        Text("🧰 Browser management")
+                        Text("⚡ Quick Actions: ")
+                        Text("  - Show/hide meeting title in status bar")
+                        Text("  - Open meeting from clipboard")
+                        Text("• Customizable appereance for events without meeting links")
+                        Text("• Localization")
+                        Text("• Create meetings in Jam")
+                        Text("• Open event in Fantastical from event submenu")
+                        Text("• Integration with subscribed calendars")
+                    }
+                }
             }.listStyle(SidebarListStyle())
             Button("Close", action: close)
         }.padding()

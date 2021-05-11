@@ -181,18 +181,16 @@ struct EventsSection: View {
             }
 
             HStack {
-                Picker("Non all day events:", selection: $nonAllDayEvents) {
-                    Text("preferences_appearance_events_value_show".loco()).tag(NonAlldayEventsAppereance.show)
-                    Text("preferences_appearance_events_value_inactive_without_link".loco()).tag(NonAlldayEventsAppereance.show_inactive_without_any_link)
-                    Text("preferences_appearance_events_value_inactive_without_meeting_link".loco()).tag(NonAlldayEventsAppereance.show_inactive_without_meeting_link)
-                    Text("preferences_appearance_events_value_hide_without_link".loco()).tag(NonAlldayEventsAppereance.hide_without_any_link)
-                    Text("preferences_appearance_events_value_hide_without_meeting_link".loco()).tag(NonAlldayEventsAppereance.hide_without_meeting_link)
-                }
-
                 Picker("preferences_appearance_events_all_day_title".loco(), selection: $allDayEvents) {
                     Text("preferences_appearance_events_value_show".loco()).tag(AlldayEventsAppereance.show)
                     Text("preferences_appearance_events_value_only_with_link".loco()).tag(AlldayEventsAppereance.show_with_meeting_link_only)
                     Text("preferences_appearance_events_value_hide".loco()).tag(AlldayEventsAppereance.hide)
+                }
+
+                Picker("preferences_appearance_events_non_all_day_title".loco(), selection: $nonAllDayEvents) {
+                    Text("preferences_appearance_events_value_show".loco()).tag(NonAlldayEventsAppereance.show)
+                    Text("preferences_appearance_events_value_inactive_without_meeting_link".loco()).tag(NonAlldayEventsAppereance.show_inactive_without_meeting_link)
+                    Text("preferences_appearance_events_value_hide_without_meeting_link".loco()).tag(NonAlldayEventsAppereance.hide_without_meeting_link)
                 }
             }
 

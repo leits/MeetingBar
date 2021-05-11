@@ -22,7 +22,7 @@ struct BookmarksTab: View {
         VStack(alignment: .leading) {
             List {
                 if self.bookmarks.isEmpty {
-                    Text("You don't have any bookmarks yet").foregroundColor(Color.gray)
+                    Text("preferences_bookmarks_no_bookmarks_placeholder".loco()).foregroundColor(Color.gray)
                 }
                 ForEach(bookmarks, id: \.self) { bookmark in
                     HStack {

@@ -20,7 +20,7 @@ struct TitleTruncationRules {
 struct LinksRegex {
     let meet = try! NSRegularExpression(pattern: #"https?://meet.google.com/[a-z-]+"#)
     let hangouts = try! NSRegularExpression(pattern: #"https?://hangouts.google.com/[^\s]*"#)
-    let zoom = try! NSRegularExpression(pattern: #"https?:\/\/(?:[a-z0-9-.]+)?zoom.(?:us|com.cn)\/(?:j|my)\/[0-9a-zA-Z?=.]*"#)
+    let zoom = try! NSRegularExpression(pattern: #"https?:\/\/(?:[a-zA-Z0-9-.]+)?zoom.(?:us|com.cn)\/(?:j|my)\/[0-9a-zA-Z?=.]*"#)
 
 
     /**
@@ -301,14 +301,8 @@ enum NonAlldayEventsAppereance: String, Codable, CaseIterable {
     // deactivates all non all day events when no meeting link is detected
     case show_inactive_without_meeting_link
 
-    // deactivates all non all day events when no link in the event is detected
-    case show_inactive_without_any_link
-
     // hides all non all day events when no meeting link is detected
     case hide_without_meeting_link
-
-    // hides all non all day events when no link in the event is detected
-    case hide_without_any_link
 }
 
 enum PendingEventsAppereance: String, Codable, CaseIterable {
@@ -348,6 +342,7 @@ public enum AutoLauncher {
 enum AppLanguage: String, Codable {
     case system = ""
     case english = "en"
+    case ukrainian = "ua"
     case russian = "ru"
 }
 

@@ -18,40 +18,30 @@ struct WelcomeScreen: View {
     var body: some View {
         VStack {
             VStack {
-                VStack {
-                    Spacer()
-                    Text("welcome_screen_greeting_main_title".loco())
-                    Text("welcome_screen_greeting_additional_title".loco())
-                    Spacer()
-                }
-                Divider()
-                HStack {
-                    Toggle("welcome_screen_login_launch_toggle_title".loco(), isOn: $launchAtLogin)
-                    Spacer()
-                }.padding(10)
-                Divider()
-                HStack {
-                    Text("welcome_screen_shortcut_next_meeting_title".loco())
-                    KeyboardShortcuts.Recorder(for: .joinEventShortcut)
-                    Spacer()
-                }.padding(5)
-                HStack {
-                    Text("welcome_screen_ad_hoc_meeting_title".loco())
-                    HStack {
-                        CreateMeetingServicePicker()
-                    }.frame(width: 145)
-                    Spacer()
-                }.padding(5)
-                HStack {
-                    Text("welcome_screen_shortcut_ad_hoc_meeting_title".loco())
-                    KeyboardShortcuts.Recorder(for: .createMeetingShortcut)
-                    Spacer()
-                }.padding(5)
                 Spacer()
-                JoinEventNotificationPicker()
+                Text("welcome_screen_greeting_main_title".loco())
+                Text("welcome_screen_greeting_additional_title".loco())
                 Spacer()
             }
-            Spacer()
+            Divider()
+            LaunchAtLoginANDPreferredLanguagePicker().padding(5)
+            Divider()
+            HStack {
+                Text("welcome_screen_shortcut_next_meeting_title".loco())
+                KeyboardShortcuts.Recorder(for: .joinEventShortcut)
+                Spacer()
+            }.padding(5)
+            HStack {
+                Text("welcome_screen_ad_hoc_meeting_title".loco())
+                HStack {
+                    CreateMeetingServicePicker()
+                }.frame(width: 145)
+                Text("welcome_screen_shortcut_ad_hoc_meeting_title".loco())
+                KeyboardShortcuts.Recorder(for: .createMeetingShortcut)
+                Spacer()
+            }.padding(5)
+            Divider()
+            JoinEventNotificationPicker().padding(5)
             Divider()
             HStack {
                 Spacer()

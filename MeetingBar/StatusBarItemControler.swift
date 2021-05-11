@@ -279,13 +279,13 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
         self.statusItemMenu.addItem(createEventItem)
 
         let quickActionsItem = self.statusItemMenu.addItem(
-            withTitle: "Quick Actions",
+            withTitle: "status_bar_quick_actions".loco(),
             action: nil,
             keyEquivalent: ""
         )
         quickActionsItem.isEnabled = true
 
-        quickActionsItem.submenu = NSMenu(title: "Quick Actions")
+        quickActionsItem.submenu = NSMenu(title: "status_bar_quick_actions".loco())
 
         let joinFromClipboard = UserActions.instance.joinFromClipboard
         let openLinkFromClipboardItem = NSMenuItem()
@@ -538,7 +538,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
      * try  to get the correct image for the specific
      */
     func getMeetingIcon(_ event: EKEvent) -> NSImage {
-        let result = getMeetingLink(event, acceptAnyLink: Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show || Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.hide_without_any_link || Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show_inactive_without_any_link)
+        let result = getMeetingLink(event)
 
         return getMeetingIconForLink(result)
     }
@@ -621,15 +621,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
         }
 
         if !event.isAllDay && Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show_inactive_without_meeting_link {
-            let meetingLink = getMeetingLink(event, acceptAnyLink: false)
-            if meetingLink == nil {
-                styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
-                shouldShowAsActive = false
-            }
-        }
-
-        if !event.isAllDay && Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show_inactive_without_any_link {
-            let meetingLink = getMeetingLink(event, acceptAnyLink: true)
+            let meetingLink = getMeetingLink(event)
             if meetingLink == nil {
                 styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
                 shouldShowAsActive = false
@@ -772,9 +764,8 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                 if !notes.isEmpty {
                     eventMenu.addItem(withTitle: "status_bar_submenu_notes_title".loco(), action: nil, keyEquivalent: "")
                     let item = eventMenu.addItem(withTitle: "", action: nil, keyEquivalent: "")
-                    let paragraphStyle = NSMutableParagraphStyle()
-                    paragraphStyle.lineBreakMode = NSLineBreakMode.byWordWrapping
-                    item.attributedTitle = notes.splitWithNewLineAttributedString(with: [NSAttributedString.Key.paragraphStyle: paragraphStyle], maxWidth: 300.0)
+                    item.view = getNotesView(notes: notes)
+
                     eventMenu.addItem(NSMenuItem.separator())
                 }
             }
@@ -839,12 +830,53 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
 
             // Open in fanctastical if fantastical is installed
             if isFantasticalInstalled() {
-                let fantasticalItem = eventMenu.addItem(withTitle: "Open in Fantastical", action: #selector(AppDelegate.openEventInFantastical), keyEquivalent: "")
+                let fantasticalItem = eventMenu.addItem(withTitle: "status_bar_submenu_open_in_fantastical".loco(), action: #selector(AppDelegate.openEventInFantastical), keyEquivalent: "")
                 fantasticalItem.representedObject = EventWithDate(event: event, dateSection: dateSection)
             }
         } else {
             eventItem.toolTip = event.title
         }
+    }
+
+    private func getNotesView(notes: String) -> NSView {
+        // Create views
+        let paddingView = NSView()
+        let textView = NSTextView()
+        paddingView.addSubview(textView)
+
+        // Text styling
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineBreakMode = NSLineBreakMode.byWordWrapping
+        textView.textStorage?.setAttributedString(
+            notes.splitWithNewLineAttributedString(
+                with: [
+                    NSAttributedString.Key.paragraphStyle: paragraphStyle,
+                    NSAttributedString.Key.font: NSFont.systemFont(ofSize: 14)
+                ],
+                maxWidth: 300.0
+            )
+            .withLinksEnabled()
+        )
+        textView.backgroundColor = .clear
+        textView.textColor = .textColor
+
+        // Adjust frame layout for padding
+        if let textContainer = textView.textContainer {
+            textView.layoutManager?.ensureLayout(for: textContainer)
+            if let frame = textView.layoutManager?.usedRect(for: textContainer) {
+                // There's 10pt of padding seemingly built into the left side,
+                // no such thing on the right so we go 20pt to match the left side
+                textView.frame = NSRect(x: 10.0, y: 0.0, width: frame.width, height: frame.height)
+                paddingView.frame = NSRect(x: 0.0, y: 0.0, width: frame.width + 20, height: frame.height)
+            } else {
+                // Backup layout if we couldn't calculate frame
+                textView.autoresizingMask = [.width, .height]
+            }
+        } else {
+            // Backup layout if we couldn't calculate frame
+            textView.autoresizingMask = [.width, .height]
+        }
+        return paddingView
     }
 
     /**
@@ -858,7 +890,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
     func createPreferencesSection() {
         if removePatchVerion(Defaults[.appVersion]) > removePatchVerion(Defaults[.lastRevisedVersionInChangelog]) {
             let changelogItem = self.statusItemMenu.addItem(
-                withTitle: "What's new?",
+                withTitle: "status_bar_whats_new".loco(),
                 action: #selector(AppDelegate.openChangelogWindow),
                 keyEquivalent: ""
             )
@@ -899,7 +931,7 @@ func shortenTitleForSystembar(title: String?) -> String {
 }
 
 func shortenTitleForMenu(title: String?) -> String {
-    var eventTitle = String(title ?? "No title").trimmingCharacters(in: TitleTruncationRules.excludeAtEnds)
+    var eventTitle = String(title ?? "status_bar_no_title".loco()).trimmingCharacters(in: TitleTruncationRules.excludeAtEnds)
     if eventTitle.count > Int(Defaults[.menuEventTitleLength]) {
         let index = eventTitle.index(eventTitle.startIndex, offsetBy: Int(Defaults[.menuEventTitleLength]) - 1)
         eventTitle = String(eventTitle[...index]).trimmingCharacters(in: TitleTruncationRules.excludeAtEnds)
