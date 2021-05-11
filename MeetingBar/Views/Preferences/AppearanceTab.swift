@@ -107,6 +107,7 @@ struct MenuSection: View {
     @Default(.showEventEndTime) var showEventEndTime
     @Default(.showEventDetails) var showEventDetails
     @Default(.showMeetingServiceIcon) var showMeetingServiceIcon
+    @Default(.isMouseClickSwap) var isMouseClickSwap
 
     var body: some View {
         Text("preferences_appearance_menu_title".loco()).font(.headline).bold()
@@ -128,8 +129,35 @@ struct MenuSection: View {
                     Toggle("preferences_appearance_menu_show_event_icon_value".loco(), isOn: $showMeetingServiceIcon)
                     Toggle("preferences_appearance_menu_show_event_details_value".loco(), isOn: $showEventDetails)
                 }
+                VStack(alignment: .leading, spacing: 5.0) {
+                    Toggle("preferences_appearance_menu_swap_mouse_click", isOn: $isMouseClickSwap)
+                    HStack {
+                        Text("preferences_appearance_menu_left_click_title".loco()).isHidden(isMouseClickSwap, remove: true)
+                        Text("preferences_appearance_menu_open_menu_click_title".loco()).isHidden(isMouseClickSwap, remove: true)
+                        AdditionalClickActionPicker(pickerTitle: "preferences_appearance_menu_left_click_title".loco()).isHidden(!isMouseClickSwap, remove: true)
+                    }
+                    HStack {
+                        Text("preferences_appearance_menu_right_click_title".loco()).isHidden(!isMouseClickSwap, remove: true)
+                        Text("preferences_appearance_menu_open_menu_click_title".loco()).isHidden(!isMouseClickSwap, remove: true)
+                        AdditionalClickActionPicker(pickerTitle: "preferences_appearance_menu_right_click_title".loco()).isHidden(isMouseClickSwap, remove: true)
+                    }
+                }
             }
         }.padding(.horizontal, 10)
+    }
+}
+
+struct AdditionalClickActionPicker: View {
+    @Default(.additionalClickAction) var additionalClickAction
+
+    var pickerTitle: String
+
+    var body: some View {
+        Picker(self.pickerTitle, selection: $additionalClickAction) {
+            ForEach(UserActions.instance.allActions, id: \.self) {
+                Text($0.localizedName).tag($0)
+            }
+        }
     }
 }
 

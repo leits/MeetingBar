@@ -159,39 +159,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
     }
 
-    /**
-     * tries to open the link from the macos system clipboard.
-     */
-    @objc
-    func openLinkFromClipboard() {
-        NSLog("Check macos clipboard for link")
-        var clipboardContent = getClipboardContent()
-        NSLog("Found \(clipboardContent) in clipboard")
-
-        if !clipboardContent.isEmpty {
-            let meetingLink = detectLink(&clipboardContent)
-
-            if let meetingLink = meetingLink {
-                openMeetingURL(meetingLink.service, meetingLink.url, systemDefaultBrowser)
-            } else {
-                let validUrl = NSURL(string: clipboardContent)
-                if validUrl != nil {
-                    URL(string: clipboardContent)?.openInDefaultBrowser()
-                } else {
-                    sendNotification("No valid url",
-                                     "Clipboard has no meeting link, so the meeting cannot be started")
-                }
-            }
-        } else {
-            sendNotification("Clipboard is empty",
-                             "Clipboard has no content, so the meeting cannot be started...")
-        }
-    }
-
-    @objc
-    func toggleMeetingTitleVisibility() {
-        Defaults[.hideMeetingTitle].toggle()
-    }
+    // MARK: - Setup
 
     func setup() {
         statusBarItem = StatusBarItemControler()
@@ -412,29 +380,76 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
     }
 
+    // MARK: - Actions
+
     @objc
-    func windowClosed(notification: NSNotification) {
-        let window = notification.object as? NSWindow
-        if let windowTitle = window?.title {
-            if windowTitle == WindowTitles.onboarding, !Defaults[.onboardingCompleted] {
-                NSApplication.shared.terminate(self)
-            } else if windowTitle == WindowTitles.changelog {
-                Defaults[.lastRevisedVersionInChangelog] = Defaults[.appVersion]
-                self.statusBarItem.updateMenu()
+    func statusMenuBarAction() {
+        if !self.statusBarItem.menuIsOpen && self.statusBarItem.statusItem.menu == nil {
+            let event = NSApp.currentEvent!
+            NSLog("Event occured \(event.type.rawValue)")
+
+            func openMenu() {
+                self.statusBarItem.statusItem.menu = self.statusBarItem.statusItemMenu
+                self.statusBarItem.statusItem.button?.performClick(nil)
+            }
+
+            func callAdditionalClick() {
+                Defaults[.additionalClickAction].performAction()
+            }
+
+            if Defaults[.isMouseClickSwap] {
+                if event.type == NSEvent.EventType.rightMouseDown {
+                    openMenu()
+                } else if event.type == NSEvent.EventType.leftMouseUp {
+                    callAdditionalClick()
+                }
+            } else {
+                if event.type == NSEvent.EventType.rightMouseUp {
+                    callAdditionalClick()
+                } else if event.type == NSEvent.EventType.leftMouseDown {
+                    openMenu()
+                }
             }
         }
     }
 
+    /**
+     * tries to open the link from the macos system clipboard.
+     */
+    @objc
+    func openLinkFromClipboard() {
+        NSLog("Check macos clipboard for link")
+        var clipboardContent = getClipboardContent()
+        NSLog("Found \(clipboardContent) in clipboard")
+
+        if !clipboardContent.isEmpty {
+            let meetingLink = detectLink(&clipboardContent)
+
+            if let meetingLink = meetingLink {
+                openMeetingURL(meetingLink.service, meetingLink.url, systemDefaultBrowser)
+            } else {
+                let validUrl = NSURL(string: clipboardContent)
+                if validUrl != nil {
+                    URL(string: clipboardContent)?.openInDefaultBrowser()
+                } else {
+                    sendNotification("No valid url",
+                                     "Clipboard has no meeting link, so the meeting cannot be started")
+                }
+            }
+        } else {
+            sendNotification("Clipboard is empty",
+                             "Clipboard has no content, so the meeting cannot be started...")
+        }
+    }
+
     func getClipboardContent() -> String {
-       let pasteboard = NSPasteboard.general
+        let pasteboard = NSPasteboard.general
         return pasteboard.string(forType: .string) ?? ""
     }
 
     @objc
-    func eventStoreChanged(_ notification: NSNotification) {
-        NSLog("Store changed. Update status bar menu.")
-        statusBarItem.updateTitle()
-        statusBarItem.updateMenu()
+    func toggleMeetingTitleVisibility() {
+        Defaults[.hideMeetingTitle].toggle()
     }
 
     private func scheduleUpdateStatusBarTitle() {
@@ -492,7 +507,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     }
 
     @objc
-    func createMeeting(_: Any? = nil) {
+    func createMeeting() {
         NSLog("Create meeting in \(Defaults[.createMeetingService].rawValue)")
         let browser: Browser = Defaults[.browserForCreateMeeting]
 
@@ -542,7 +557,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     }
 
     @objc
-    func joinNextMeeting(_: NSStatusBarButton? = nil) {
+    func joinNextMeeting() {
         if let nextEvent = statusBarItem.eventStore.getNextEvent(calendars: statusBarItem.calendars) {
             NSLog("Join next event")
             openEvent(nextEvent)
@@ -670,5 +685,27 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     func quit(_: NSStatusBarButton) {
         NSLog("User click Quit")
         NSApplication.shared.terminate(self)
+    }
+
+    // MARK: - Notifications
+
+    @objc
+    func windowClosed(notification: NSNotification) {
+        let window = notification.object as? NSWindow
+        if let windowTitle = window?.title {
+            if windowTitle == WindowTitles.onboarding, !Defaults[.onboardingCompleted] {
+                NSApplication.shared.terminate(self)
+            } else if windowTitle == WindowTitles.changelog {
+                Defaults[.lastRevisedVersionInChangelog] = Defaults[.appVersion]
+                self.statusBarItem.updateMenu()
+            }
+        }
+    }
+
+    @objc
+    func eventStoreChanged(_ notification: NSNotification) {
+        NSLog("Store changed. Update status bar menu.")
+        statusBarItem.updateTitle()
+        statusBarItem.updateMenu()
     }
 }

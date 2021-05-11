@@ -111,6 +111,10 @@
 "preferences_appearance_menu_show_event_end_time_value" = "end time";
 "preferences_appearance_menu_show_event_icon_value" = "icon";
 "preferences_appearance_menu_show_event_details_value" = "details as submenu";
+"preferences_appearance_menu_swap_mouse_click" = "Swap left/right click on menu";
+"preferences_appearance_menu_open_menu_click_title" = "Open menu";
+"preferences_appearance_menu_left_click_title" = "Left click:";
+"preferences_appearance_menu_right_click_title" = "Right click:";
 
 // MARK: - Preferences Services
 

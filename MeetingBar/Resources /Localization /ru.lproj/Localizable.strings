@@ -1,11 +1,8 @@
-/* 
-  Localizable.strings
-  MeetingBar
-
-  Created by Sergey Ryazanov on 19.03.2021.
-  Copyright © 2021 Andrii Leitsius. All rights reserved.
-*/
-
+// Localizable.strings
+//   MeetingBar
+// 
+//   Created by Sergey Ryazanov on 19.03.2021.
+//   Copyright © 2021 Andrii Leitsius. All rights reserved.
 "general_ok" = "OK";
 "general_cancel" = "Отмена";
 "general_close" = "Закрыть";
@@ -13,20 +10,17 @@
 "general_delete" = "Удалить";
 "general_save" = "Сохранить";
 "general_meeting" = "событие";
-
 "create_meeting_error_title" = "Невозможно создать новое событие";
 "create_meeting_error_message" = "Пользовательский URL \"%@\" отсутствует или недействителен. Пожалуйста, исправьте url в настройках приложения.";
 "next_meeting_empty_title" = "Нет событий на сегодня";
 "next_meeting_empty_message" = "Ура!! Время для какао";
 
 // MARK: - Window titles
-
 "window_title_preferences" = "MeetingBar Настройки";
 "window_title_onboarding" = "Добро пожаловать в MeetingBar!";
 "windows_title_changelog" = "Список изменений";
 
 // MARK: - Preferences tabs
-
 "preferences_tab_general" = "Основные";
 "preferences_tab_appearance" = "Внешний вид";
 "preferences_tab_services" = "Сервисы";
@@ -35,7 +29,6 @@
 "preferences_tab_advanced" = "Дополнительное";
 
 // MARK: - Preferences General
-
 "preferences_general_option_login_launch" = "Запускать при входе в систему";
 "preferences_general_option_preferred_language_title" = "Предпочтительный язык:";
 "preferences_general_option_preferred_language_system_value" = "Системный";
@@ -66,7 +59,6 @@
 "preferences_general_feedback_telegram" = "telegram";
 
 // MARK: - Preferences Appearance
-
 "preferences_appearance_events_title" = "События";
 "preferences_appearance_events_show_events_for_title" = "Показывать события за";
 "preferences_appearance_events_show_events_for_today_value" = "сегодня";
@@ -111,9 +103,9 @@
 "preferences_appearance_menu_show_event_end_time_value" = "время окончания";
 "preferences_appearance_menu_show_event_icon_value" = "иконку";
 "preferences_appearance_menu_show_event_details_value" = "инфо в подменю";
+"preferences_appearance_menu_swap_mouse_click" = "Сменить левый/правый клик на меню";
 
 // MARK: - Preferences Services
-
 "preferences_services_link_meeting_title" = "Все ссылки";
 "preferences_services_link_meet_title" = "Meet ссылки";
 "preferences_services_link_zoom_title" = "Zoom ссылки";
@@ -130,7 +122,6 @@
 "preferences_services_create_meeting_browser_title" = "Использовать браузер";
 
 // MARK: - Preferences Services Browsers Configuration
-
 "preferences_configure_browsers_button" = "Настроить браузеры";
 "preferences_configure_browsers_delete_alert_title" = "Удалить конфигурацию браузера?";
 "preferences_configure_browsers_delete_alert_message" = "Вы хотите удалить конфигурацию браузера% @?";
@@ -147,7 +138,6 @@
 "preferences_configure_browsers_choose_broser_panel_message" = "Выберите браузер с любым расположением!";
 
 // MARK: - Preferences Bookmarks
-
 "preferences_bookmarks_no_bookmarks_placeholder" = "У вас еще нет закладок";
 "preferences_bookmarks_delete_bookmark_title" = "Удалить закладку?";
 "preferences_bookmarks_delete_bookmark_message" = "Вы хотите удалить закладку %@?";
@@ -160,14 +150,12 @@
 "preferences_bookmarks_new_bookmark_error_title" = "Невозможно добавить закладку";
 
 // MARK: - Preferences Calendars
-
 "preferences_calendars_select_calendars_title" = "Выберите календари для отображения событий в строке состояния";
 "preferences_calendars_add_account_description" = "Не видите нужный календарь?";
 "preferences_calendars_add_account_button" = "Добавить аккаунт";
 "preferences_calendars_add_account_modal" = "Чтобы добавить внешние календари, выполните следующие действия:\n1. Откройте стандартное приложение Календарь\n2. Нажмите 'Добавить аккаунт' в меню\n3. Выберите и подключите свой аккаунт";
 
 // MARK: - Preferences Advanced
-
 "preferences_advanced_setting_warning" = "⚠️ Используйте эти настройки, только если понимаете, что они делают.";
 "preferences_advanced_apple_script_checkmark" = "Выполнить AppleScript при присоединении к событию";
 "preferences_advanced_apple_script_placeholder" = "# напишите здесь свой скрипт\ntell application \"Music\" to pause";
@@ -183,7 +171,6 @@
 "preferences_advanced_regex_new_cant_save_title" = "Не удается сохранить regex";
 
 // MARK: - Status bar
-
 "status_bar_section_today" = "Сегодня";
 "status_bar_section_tomorrow" = "Завтра";
 "status_bar_empty_calendar_message" = "Выберите календари в настройках,\nчтобы увидеть свои события";
@@ -234,7 +221,6 @@
 "status_bar_error_zoom_native_link_message" = "Убедитесь, что у вас установлено приложение Zoom, или измените приложение в настройках.";
 
 // MARK: - Welcome screen
-
 "welcome_screen_greeting_main_title" = "Здравствуй! MeetingBar - настолько простое приложение, что все почти готово.";
 "welcome_screen_greeting_additional_title" = "Сделаем это на 100% вашим!";
 "welcome_screen_login_launch_toggle_title" = "Запускать MeetingBar при входе в систему";
@@ -244,12 +230,10 @@
 "welcome_screen_setup_calendar_title" = "Настроить календари";
 
 // MARK: - Calendars screen
-
 "calendars_screen_select_calendar_title" = "Выберите хотя бы один календарь";
 "calendars_screen_start_button" = "Начать использовать приложение";
 
 // MARK: - Access screen
-
 "access_screen_access_denied_title" = "Ой! Похоже, вам отказано в доступе к календарям.";
 "access_screen_access_screen_access_denied_go_to_title" = "Откройте";
 "access_screen_access_denied_system_preferences_button" = "Системные настройки (System Preferences)";
@@ -259,7 +243,6 @@
 "access_screen_access_granted_click_ok_title" = "Нажмите \"ОК\" в появившемся системном диалоге.";
 
 // MARK: - Shared
-
 "shared_send_notification_toggle" = "Уведомление о предстоящем мероприятнии";
 "shared_send_notification_directly_value" = "непосредственно";
 "shared_send_notification_one_minute_value" = "за 1 минуту до";
@@ -278,7 +261,6 @@
 "constants_create_meeting_service_outlook_live" = "Outlook Live";
 "constants_create_meeting_service_outlook_office365" = "Outlook Office365";
 "constants_create_meeting_service_url" = "Пользовательский URL";
-
 "constants_meeting_service_phone" = "Телефон";
 "constants_meeting_service_meet" = "Google Meet";
 "constants_meeting_service_hangouts" = "Google Hangouts";
@@ -321,7 +303,6 @@
 "constants_meeting_service_coscreen" = "CoScreen";
 "constants_meeting_service_other" = "Другое";
 "constants_meeting_service_url" = "URL-АДРЕС";
-
 "constants_browser_brave" = "Brave";
 "constants_browser_chrome" = "Google Chrome";
 "constants_browser_chromium" = "Chromium";
@@ -333,7 +314,6 @@
 "constants_browser_defaultBrowser" = "Браузер по умолчанию";
 
 // MARK: - Store
-
 "store_patronage_title" = "MeetingBar Patronage";
 "store_patronage_restore_success_message" = "Успешно";
 "store_patronage_restore_nothing_message" = "Нечего восстанавливать";
@@ -348,10 +328,11 @@
 "store_patronage_purchase_cloud_service_revoked_message" = "Пользователь отозвал разрешение на использование этой облачной службы";
 
 // MARK: - Notifications
-
 "notifications_event_start_soon_body" = "Событие скоро начнется";
 
 // MARK: - Link open
-
 "link_url_cant_open_title" = "Ой! Невозможно открыть ссылку в %@";
 "link_url_cant_open_message" = "Убедитесь, что у вас установлен %@, или измените браузер в настройках.";
+"preferences_appearance_menu_open_menu_click_title" = "Открыть меню";
+"preferences_appearance_menu_left_click_title" = "Левый клик:";
+"preferences_appearance_menu_right_click_title" = "Правый клик:";
