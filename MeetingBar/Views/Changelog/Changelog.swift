@@ -40,6 +40,13 @@ struct ChangelogView: View {
                         Text("• Integration with subscribed calendars")
                     }
                 }
+                if lastRevisedVersionInChangelog < "3.4.0" {
+                    Section(header: Text("Version 3.4.0")) {
+                        Text("📋 New view of notes in the event submenu with selectable text and clickable links.")
+                        Text("🧭 Fixed a bug with opening meetings in a new browser instance")
+                        Text("and small bug fixes")
+                    }
+                }
             }.listStyle(SidebarListStyle())
             Button("Close", action: close)
         }.padding()
