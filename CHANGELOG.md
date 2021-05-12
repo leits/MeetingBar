@@ -1,6 +1,18 @@
 # Changelog for Meetingbar
 
-## Version 3.3.0 (WIP)
+
+## Version 3.5.0 (WIP)
+> unreleased
+
+## Version 3.4.0
+> (released 12th May 2021)
+* 📋 New view of notes in the event submenu with selectable text and clickable links
+* 🧭 Fixed a bug with opening meetings in a new browser instance
+and small bug fixes
+
+## Version 3.3.0
+> (released 1st May 2021)
+
 * Fixed bug with timer freeze ⏱️
 * Browser management 🧰
 * Quick Actions ⚡
