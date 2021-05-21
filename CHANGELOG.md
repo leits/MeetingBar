@@ -4,6 +4,8 @@
 ## Version 3.5.0 (WIP)
 > unreleased
 
+* Fixed opening ZoomGov links in the native app
+
 ## Version 3.4.0
 > (released 12th May 2021)
 * 📋 New view of notes in the event submenu with selectable text and clickable links
