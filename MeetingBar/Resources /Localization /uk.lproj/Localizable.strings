@@ -42,6 +42,7 @@
 "preferences_general_option_preferred_language_english_value" = "English";
 "preferences_general_option_preferred_language_ukrainian_value" = "Українська";
 "preferences_general_option_preferred_language_russian_value" = "Російська";
+"preferences_general_option_preferred_language_croatian_value" = "Hrvatski";
 "preferences_general_option_shortcuts" = "Скорочення";
 "preferences_general_all_shortcut" = "Усі скорочення";
 "preferences_general_shortcut_open_menu" = "Відкрити меню:";
@@ -145,7 +146,6 @@
 "preferences_configure_browsers_choose_broser_panel_title" = "Виберіть коректний браузер";
 "preferences_configure_browsers_choose_broser_panel_prompt" = "Виберіть браузер";
 "preferences_configure_browsers_choose_broser_panel_message" = "Виберіть браузер із будь-яким розташуванням!";
-
 
 // MARK: - Preferences Bookmarks
 
