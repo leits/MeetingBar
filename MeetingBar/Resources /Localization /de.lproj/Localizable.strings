@@ -1,0 +1,237 @@
+
+
+"link_url_cant_open_message" = "Stellen Sie sicher, dass Sie %@ installiert haben, oder ändern Sie den Browser in den Voreinstellungen.";
+"preferences_general_meeting_bar_description" = "MeetingBar ist eine quelloffene Anwendung, die von Andrii Leitsius entwickelt wurde.\nDie Anwendung zielt darauf ab, Ihre Erfahrung mit Online-Konferenzen reibungsloser und einfacher zu machen";
+
+// MARK: - Notifications
+
+"notifications_event_start_soon_body" = "Die Veranstaltung beginnt bald";
+"store_patronage_purchase_cloud_service_network_connection_failed" = "Es konnte keine Verbindung zum Netzwerk hergestellt werden";
+"store_patronage_purchase_cloud_service_permission_denied_message" = "Der Zugriff auf Cloud-Service-Informationen ist nicht erlaubt";
+"store_patronage_purchase_store_product_not_available_message" = "Das Produkt ist im aktuellen Schaufenster nicht verfügbar";
+"store_patronage_purchase_payment_not_allowed_message" = "Das Gerät darf die Zahlung nicht durchführen";
+"store_patronage_purchase_payment_invalid_message" = "Der Kaufbezeichner war ungültig";
+"store_patronage_purchase_client_invalid_message" = "Nicht erlaubt, die Zahlung vorzunehmen";
+"store_patronage_purchase_unknown_message" = "Unbekannter Fehler. Bitte kontaktieren Sie den Support";
+"store_patronage_purchase_success_message" = "Erfolgreich gekauft. Danke für die Unterstützung!";
+"store_patronage_restore_nothing_message" = "Nichts zum Wiederherstellen";
+"store_patronage_restore_success_message" = "Erfolgreich wiederhergestellt";
+"constants_meeting_service_url" = "URL";
+"constants_meeting_service_other" = "Andere";
+"constants_browser_brave" = "Brave";
+"preferences_configure_browsers_choose_broser_panel_message" = "Wählen Sie einen Browser aus einem beliebigen Pfad!";
+"preferences_configure_browsers_choose_broser_panel_prompt" = "Browser auswählen";
+"preferences_configure_browsers_choose_broser_panel_title" = "Wählen Sie einen gültigen Browser aus";
+"preferences_configure_browsers_modal_alert_title" = "Browserkonfiguration kann nicht hinzugefügt werden";
+"preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "Browser auswählen";
+"preferences_configure_browsers_modal_add_browser_path" = "Pfad";
+"preferences_configure_browsers_modal_add_browser_name" = "Name";
+"preferences_configure_browsers_modal_edit_browser_title" = "Browser bearbeiten";
+"preferences_configure_browsers_modal_add_browser_title" = "Browser hinzufügen";
+"preferences_configure_browsers_add_button_all_system_title" = "Alle Systembrowser";
+"preferences_configure_browsers_add_button_browser_title" = "Browser";
+"preferences_configure_browsers_delete_alert_title" = "Browserkonfiguration löschen?";
+"preferences_configure_browsers_delete_alert_message" = "Möchten Sie die Browserkonfiguration %@ löschen?";
+
+// MARK: - Preferences Services Browsers Configuration
+
+"preferences_configure_browsers_button" = "Browser konfigurieren";
+"preferences_services_create_meeting_browser_title" = "Browser verwenden";
+"preferences_services_link_default_browser_value" = "Standard-Browser";
+"constants_browser_defaultBrowser" = "Standard-Browser";
+
+// MARK: - Link open
+
+"link_url_cant_open_title" = "Hoppla! Kann den Link in %@ nicht öffnen";
+"preferences_appearance_status_bar_title_event_title_value" = "Ereignistitel";
+"preferences_appearance_menu_title" = "Menü";
+"preferences_appearance_status_bar_next_event" = "Nur nächstes Ereignis anzeigen, das innerhalb von %d Minuten beginnt";
+"preferences_appearance_status_bar_time_hide_value" = "ausblenden";
+"preferences_appearance_status_bar_time_show_under_title_value" = "unter Titel anzeigen";
+"preferences_appearance_status_bar_time_show_value" = "anzeigen";
+"preferences_appearance_status_bar_time_title" = "Uhrzeit";
+"preferences_appearance_status_bar_title_shorten_stepper" = "auf %d Zeichen kürzen";
+"preferences_appearance_status_bar_title_hide_value" = "ausblenden";
+"preferences_appearance_status_bar_title_dot_value" = "Punkt (•)";
+"preferences_appearance_status_bar_title_title" = "Titel";
+"preferences_appearance_status_bar_icon_no_icon_value" = " Kein Symbol";
+"preferences_appearance_status_bar_icon_specific_icon_value" = " Ereignisspezifisches Symbol (z. B. MS Teams)";
+"preferences_appearance_status_bar_icon_calendar_icon_value" = " Kalendersymbol";
+"preferences_appearance_status_bar_icon_app_icon_value" = " Anwendungssymbol";
+"preferences_appearance_status_bar_icon_title" = "Symbol";
+"preferences_appearance_status_bar_title" = "Statusleiste";
+"preferences_appearance_events_value_with_strikethrough" = "durchgestrichen anzeigen";
+"preferences_appearance_events_value_as_underlined" = "unterstrichen anzeigen";
+"preferences_appearance_events_value_as_inactive" = "als inaktiv anzeigen";
+"preferences_appearance_events_value_hide" = "ausblenden";
+"preferences_appearance_events_value_show" = "anzeigen";
+"preferences_appearance_events_declined_title" = "Abgelehnte Ereignisse:";
+"preferences_appearance_events_pending_title" = "Anstehende Ereignisse";
+"preferences_appearance_events_past_title" = "Vergangene Ereignisse:";
+"preferences_appearance_events_without_guest_title" = "Ereignisse ohne Gäste:";
+"preferences_appearance_events_all_day_title" = "Ganztägige Ereignisse:";
+"preferences_appearance_events_value_hide_without_meeting_link" = "alle ohne Konferenzlinks ausblenden";
+"preferences_appearance_events_value_inactive_without_meeting_link" = "diejenigen ohne Konferenzlinks als inaktiv anzeigen";
+"preferences_appearance_events_non_all_day_title" = "Andere Ereignisse:";
+"preferences_appearance_events_show_events_for_today_tomorrow_value" = "heute und morgen";
+"preferences_appearance_events_show_events_for_today_value" = "heute";
+"preferences_appearance_events_show_events_for_title" = "Ereignisse anzeigen für";
+
+// MARK: - Preferences Appearance
+
+"preferences_appearance_events_title" = "Ereignisse";
+"preferences_general_feedback_telegram" = "Telegram";
+"preferences_general_feedback_twitter" = "Twitter";
+"preferences_general_feedback_title" = "Wenn Sie Fragen oder Kommentare haben,\nkönnen Sie mich gerne kontaktieren:";
+"preferences_general_patron_restore_purchases" = "Käufe wiederherstellen";
+"preferences_general_patron_thank_for_purchase" = "Danke! Sie unterstützen MeetingBar seit %d Monat(en)! 🎉";
+"preferences_general_patron_description" = "Diese einmaligen Käufe verlängern sich nicht automatisch.";
+"preferences_services_supported_links_mailback" = "Wenn der von Ihnen verwendete Dienst nicht unterstützt wird, senden Sie mir eine E-Mail";
+"preferences_general_feedback_email" = "E-Mail";
+"preferences_general_patron_twelve_months" = "12 Monate – 11,99 USD";
+"preferences_general_patron_six_months" = "6 Monate – 5,99 USD";
+"preferences_general_patron_three_months" = "3 Monate – 2,99 USD";
+"preferences_general_external_contact" = "Kontakt";
+"preferences_general_external_gitHub" = "GitHub";
+"preferences_general_shortcut_create_meeting" = "Konferenz erstellen:";
+"preferences_general_shortcut_open_menu" = "Menü öffnen:";
+"preferences_general_all_shortcut" = "Alle Verknüpfungen";
+"preferences_general_option_shortcuts" = "Verknüpfungen";
+"preferences_general_option_preferred_language_russian_value" = "Русский";
+"preferences_general_option_preferred_language_ukrainian_value" = "Українська";
+"preferences_general_option_preferred_language_english_value" = "English";
+"preferences_general_option_preferred_language_system_value" = "System";
+"preferences_general_option_preferred_language_title" = "Bevorzugte Sprache:";
+
+// MARK: - Preferences General
+
+"preferences_general_option_login_launch" = "Bei Anmeldung starten";
+"preferences_tab_advanced" = "Erweitert";
+"preferences_tab_calendars" = "Kalender";
+"preferences_tab_bookmarks" = "Lesezeichen";
+"preferences_tab_services" = "Dienste";
+"preferences_tab_appearance" = "Aussehen";
+
+// MARK: - Preferences tabs
+
+"preferences_tab_general" = "Allgemein";
+"windows_title_changelog" = "MeetingBar Was ist neu";
+"window_title_onboarding" = "Willkommen bei MeetingBar!";
+
+// MARK: - Window titles
+
+"window_title_preferences" = "MeetingBar-Einstellungen";
+"next_meeting_empty_message" = "Juhu! Es ist Zeit, Kakao zu machen";
+"next_meeting_empty_title" = "Heute finden keine weiteren Sitzungen statt";
+"create_meeting_error_message" = "Benutzerdefinierte URL „%@“ fehlt oder ist ungültig. Bitte geben Sie einen Wert in den Anwendungseinstellungen ein.";
+"create_meeting_error_title" = "Kann keine neue Konferenz erstellen";
+"general_meeting" = "Konferenz";
+"general_save" = "Speichern";
+"general_delete" = "Löschen";
+"general_add" = "Hinzufügen";
+"general_close" = "Schließen";
+"general_cancel" = "Abbrechen";
+"general_ok" = "OK";
+"status_bar_no_title" = "Kein Titel";
+"status_bar_quit" = "MeetingBar beenden";
+"status_bar_preferences" = "Einstellungen";
+"status_bar_whats_new" = "Was ist neu?";
+"status_bar_hide_meeting_names" = "Konferenztitel ausblenden";
+"status_bar_show_meeting_names" = "Konferenztitel anzeigen";
+"status_bar_quick_actions" = "Schnellaktionen";
+"status_bar_submenu_open_in_fantastical" = "Fantastical öffnen";
+"status_bar_submenu_open_in_calendar" = "In Kalender-Anwendung öffnen";
+"status_bar_submenu_attendees_status_unknown" = " [?]";
+"status_bar_submenu_attendees_status_tentative" = " [Versuch]";
+"status_bar_submenu_attendees_you" = "%@ (Sie)";
+"status_bar_submenu_attendees_no_name" = "Teilnehmer/in ohne Namen";
+"status_bar_submenu_attendees_title" = "Teilnehmer/innen (%d)";
+"status_bar_submenu_organizer_title" = "Veranstalter/in:";
+"status_bar_submenu_notes_title" = "Notizen:";
+"status_bar_submenu_location_title" = "Ort:";
+"status_bar_submenu_status_default_simple" = " ❔ (Unbekannt)";
+"status_bar_submenu_status_default_extended" = " ❔ (%@)";
+"status_bar_submenu_status_unknown" = " ❔ Unbekannt";
+"status_bar_submenu_status_pending" = " ⏳ Ausstehend";
+"status_bar_submenu_status_tentative" = " ☝️ Versuch";
+"status_bar_submenu_status_canceled" = " 👎 Abgebrochen";
+"status_bar_submenu_status_accepted" = " 👍 Akzeptiert";
+"status_bar_submenu_status_title" = "Status: %@";
+"status_bar_submenu_duration_all_day" = "%@ - %@ (%@ Minuten)";
+"status_bar_submenu_calendar_title" = "Kalender: %@";
+"status_bar_event_start_time_all_day" = "Den ganzen Tag";
+"status_bar_section_date_nothing" = "Nichts für %@";
+"status_bar_section_bookmarks_menu" = "Lesezeichenmenü";
+"status_bar_section_bookmarks_title" = "Lesezeichen";
+"status_bar_section_join_create_meeting" = "Konferenz erstellen";
+"status_bar_section_join_from_clipboard" = "Konferenz aus Zwischenablage öffnen";
+"status_bar_section_join_next_meeting" = "Konferenz des nächsten Ereignisses beitretten";
+"status_bar_empty_calendar_message" = "Wählen Sie Kalender in den Einstellungen,\num Ihre Besprechungen zu sehen";
+"status_bar_section_tomorrow" = "Morgen";
+
+// MARK: - Status bar
+
+"status_bar_section_today" = "Heute";
+"preferences_advanced_regex_new_cant_save_title" = "Regex kann nicht gespeichert werden";
+"preferences_advanced_regex_new_title" = "Regex eingeben";
+"preferences_advanced_regex_delete_button" = "x";
+"preferences_advanced_regex_edit_button" = "bearbeiten";
+"preferences_advanced_regex_add_button" = "Regex hinzufügen";
+"preferences_advanced_regex_title" = "Benutzerdefinierte Regexe für Konferenzlink";
+"preferences_advanced_wrong_location_button" = "Verstanden!";
+"preferences_advanced_wrong_location_message" = "Bitte wählen Sie den Ordner Benutzer > Bibliothek > Anwendungsskripte > leits.MeetingBar";
+"preferences_advanced_wrong_location_title" = "Falscher Ort";
+"preferences_advanced_save_script_button" = "Skript speichern";
+"preferences_advanced_apple_script_placeholder" = "# schreiben Sie Ihr Skript hier\nAnwendung „Musik“ zum Anhalten auffordern";
+"preferences_advanced_apple_script_checkmark" = "AppleScript beim Beitritt zu einer Konferenz ausführen";
+
+// MARK: - Preferences Advanced
+
+"preferences_advanced_setting_warning" = "⚠️ Verwenden Sie diese Einstellungen nur, wenn Sie verstehen, was sie bewirken";
+"preferences_calendars_add_account_modal" = "Gehen Sie wie folgt vor, um externe Kalender hinzuzufügen:\n1. Öffnen Sie die Standard-Kalender-Anwendung\n2. Klicken Sie im Menü auf „Konto hinzufügen“\n3. Wählen und verbinden Sie Ihr Konto";
+"preferences_calendars_add_account_button" = "Konto hinzufügen";
+"preferences_calendars_add_account_description" = "Sie sehen den gewünschten Kalender nicht?";
+
+// MARK: - Preferences Calendars
+
+"preferences_calendars_select_calendars_title" = "Kalender auswählen, um Ereignisse in der Statusleiste anzuzeigen";
+"preferences_bookmarks_new_bookmark_error_title" = "Lesezeichen kann nicht hinzugefügt werden";
+"preferences_bookmarks_new_bookmark_already_exist" = "Es existiert bereits ein Lesezeichen mit diesem Link/Telefon mit dem Namen %@:\n%@";
+"preferences_bookmarks_new_bookmark_service" = "Dienst";
+"preferences_bookmarks_new_bookmark_link_phone" = "Link/Telefon";
+"preferences_bookmarks_new_bookmark_name" = "Name";
+"preferences_bookmarks_new_bookmark_title" = "Neues Lesezeichen";
+"preferences_bookmarks_add_bookmark_button" = "Lesezeichen hinzufügen";
+"preferences_bookmarks_delete_bookmark_message" = "Wollen Sie das Lesezeichen %@ löschen?";
+"preferences_bookmarks_delete_bookmark_title" = "Lesezeichen löschen?";
+
+// MARK: - Preferences Bookmarks
+
+"preferences_bookmarks_no_bookmarks_placeholder" = "Sie haben noch keine Lesezeichen";
+"preferences_services_google_meet_tip" = "Tipp: Meet unterstützt die Auswahl des Kontos über Parameter, z. B. https://meet.google.com/new?authuser=1";
+"preferences_services_create_meeting_custom_url_placeholder" = "Bitte geben Sie eine gültige URL ein (mit dem URL-Schema, z. B. https://)";
+"preferences_services_create_meeting_custom_url_value" = "Benutzerdefinierte URL";
+"preferences_services_create_meeting_title" = "Konferenzen erstellen über";
+"preferences_services_supported_links_list" = "Unterstützte Links für Dienste:\n%@";
+"preferences_services_link_teams_value" = "Teams-Anwendung";
+"preferences_services_link_zoom_value" = "Zoom-Anwendung";
+"preferences_services_link_team_title" = "Teams-Links öffnen in";
+"preferences_services_link_zoom_title" = "Zoom-Links öffnen in";
+"preferences_services_link_meet_title" = "Konferenzlinks öffnen in";
+
+// MARK: - Preferences Services
+
+"preferences_services_link_meeting_title" = "Alle Konferenzlinks öffnen in";
+"preferences_appearance_menu_show_event_details_value" = "Details als Untermenü";
+"preferences_appearance_menu_show_event_icon_value" = "Symbol";
+"preferences_appearance_menu_show_event_end_time_value" = "Endzeit";
+"preferences_appearance_menu_show_event_title" = "Ereignis anzeigen:";
+"preferences_appearance_menu_time_format_24_hour_value" = "24 Stunden";
+"preferences_appearance_menu_time_format_12_hour_value" = "12-Stunden (AM/PM)";
+"preferences_appearance_menu_time_format_title" = "Zeitformat:";
+"preferences_appearance_menu_shorten_event_title_stepper" = "%d Zeichen";
+"preferences_appearance_menu_shorten_event_title_toggle" = "Titel des Ereignisses kürzen auf";
+"preferences_appearance_events_value_only_with_link" = "nur die mit Konferenzlinks anzeigen";
+"preferences_general_shortcut_toggle_meeting_name_visibility" = "Sichtbarkeit des Titels in der Statusleiste ein- und ausschalten:";
+"preferences_general_shortcut_join_from_clipboard" = "An Konferenz über Zwischenablage teilnehmen:";
+"preferences_general_shortcut_join_next" = "An nächster Konferenz teilnehmen:";
