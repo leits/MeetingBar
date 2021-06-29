@@ -13,7 +13,6 @@
 "general_delete" = "Удалить";
 "general_save" = "Сохранить";
 "general_meeting" = "событие";
-
 "create_meeting_error_title" = "Невозможно создать новое событие";
 "create_meeting_error_message" = "Пользовательский URL \"%@\" отсутствует или недействителен. Пожалуйста, исправьте url в настройках приложения.";
 "next_meeting_empty_title" = "Нет событий на сегодня";
@@ -54,9 +53,9 @@
 "preferences_general_external_gitHub" = "GitHub";
 "preferences_general_external_contact" = "Связь";
 "preferences_general_patron_title" = "Become a Patron";
-"preferences_general_patron_three_months" = "3 Месяца - 2.99 USD";
-"preferences_general_patron_six_months" = "6 Месяцев - 5.99 USD";
-"preferences_general_patron_twelve_months" = "12 Месяцев - 11.99 USD";
+"preferences_general_patron_three_months" = "3 Месяца - 2,99 USD";
+"preferences_general_patron_six_months" = "6 Месяцев - 5,99 USD";
+"preferences_general_patron_twelve_months" = "12 Месяцев - 11,99 USD";
 "preferences_general_patron_description" = "Эти разовые покупки не продлеваются автоматически.";
 "preferences_general_patron_thank_for_purchase" = "Спасибо! Вы помогаете MeetingBar уже %d месяц! 🎉";
 "preferences_general_patron_restore_purchases" = "Восстановить покупки";
@@ -74,7 +73,7 @@
 "preferences_appearance_events_all_day_title" = "На весь день:";
 "preferences_appearance_events_without_guest_title" = "Без гостей:";
 "preferences_appearance_events_past_title" = "Прошедшие события:";
-"preferences_appearance_events_pending_title" = "Ожидающие события:";
+"preferences_appearance_events_pending_title" = "Ожидающие события";
 "preferences_appearance_events_declined_title" = "Отклоненные события:";
 "preferences_appearance_events_non_all_day_title" = "Не весь день:";
 "preferences_appearance_events_value_inactive_without_meeting_link" = "показать неактивным без ссылки на встречу";
@@ -168,7 +167,7 @@
 
 // MARK: - Preferences Advanced
 
-"preferences_advanced_setting_warning" = "⚠️ Используйте эти настройки, только если понимаете, что они делают.";
+"preferences_advanced_setting_warning" = "⚠️ Используйте эти настройки, только если понимаете, что они делают";
 "preferences_advanced_apple_script_checkmark" = "Выполнить AppleScript при присоединении к событию";
 "preferences_advanced_apple_script_placeholder" = "# напишите здесь свой скрипт\ntell application \"Music\" to pause";
 "preferences_advanced_save_script_button" = "Сохранить скрипт";
@@ -239,7 +238,7 @@
 "welcome_screen_greeting_additional_title" = "Сделаем это на 100% вашим!";
 "welcome_screen_login_launch_toggle_title" = "Запускать MeetingBar при входе в систему";
 "welcome_screen_shortcut_next_meeting_title" = "Присоединяйтесь к следующему мероприятию:";
-"welcome_screen_ad_hoc_meeting_title" = "Создавайте специальные события в";
+"welcome_screen_ad_hoc_meeting_title" = "Создавайте специальные события в ";
 "welcome_screen_shortcut_ad_hoc_meeting_title" = "горячяя клавиша:";
 "welcome_screen_setup_calendar_title" = "Настроить календари";
 
@@ -278,7 +277,6 @@
 "constants_create_meeting_service_outlook_live" = "Outlook Live";
 "constants_create_meeting_service_outlook_office365" = "Outlook Office365";
 "constants_create_meeting_service_url" = "Пользовательский URL";
-
 "constants_meeting_service_phone" = "Телефон";
 "constants_meeting_service_meet" = "Google Meet";
 "constants_meeting_service_hangouts" = "Google Hangouts";
@@ -321,7 +319,6 @@
 "constants_meeting_service_coscreen" = "CoScreen";
 "constants_meeting_service_other" = "Другое";
 "constants_meeting_service_url" = "URL-АДРЕС";
-
 "constants_browser_brave" = "Brave";
 "constants_browser_chrome" = "Google Chrome";
 "constants_browser_chromium" = "Chromium";
