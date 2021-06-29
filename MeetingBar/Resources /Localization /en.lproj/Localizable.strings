@@ -42,6 +42,7 @@
 "preferences_general_option_preferred_language_english_value" = "English";
 "preferences_general_option_preferred_language_ukrainian_value" = "Українська";
 "preferences_general_option_preferred_language_russian_value" = "Русский";
+"preferences_general_option_preferred_language_croatian_value" = "Hrvatski";
 "preferences_general_option_shortcuts" = "Shortcuts";
 "preferences_general_all_shortcut" = "All Shortcuts";
 "preferences_general_shortcut_open_menu" = "Open menu:";

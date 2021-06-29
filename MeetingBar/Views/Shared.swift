@@ -69,6 +69,7 @@ struct LaunchAtLoginANDPreferredLanguagePicker: View {
                 Text("preferences_general_option_preferred_language_english_value".loco()).tag(AppLanguage.english)
                 Text("preferences_general_option_preferred_language_ukrainian_value".loco()).tag(AppLanguage.ukrainian)
                 Text("preferences_general_option_preferred_language_russian_value".loco()).tag(AppLanguage.russian)
+                Text("preferences_general_option_preferred_language_croatian_value".loco()).tag(AppLanguage.croatian)
             }.frame(width: 250)
         }
     }

@@ -344,6 +344,7 @@ enum AppLanguage: String, Codable {
     case english = "en"
     case ukrainian = "ua"
     case russian = "ru"
+    case croatian = "hr"
 }
 
 struct Browser: Encodable, Decodable, Hashable {
