@@ -13,7 +13,6 @@
 "general_delete" = "Izbriši";
 "general_save" = "Spremi";
 "general_meeting" = "Sastanak";
-
 "create_meeting_error_title" = "Nije moguće stvoriti sastanak";
 "create_meeting_error_message" = "Prilagođeni url \"%@\" nedostaje ili ne valja. Upiši ga u postavkama programa.";
 "next_meeting_empty_title" = "Danas više nema sastanaka";
@@ -78,7 +77,7 @@
 "preferences_appearance_events_all_day_title" = "Cjelodnevni događaji:";
 "preferences_appearance_events_without_guest_title" = "Događaji bez gostiju:";
 "preferences_appearance_events_past_title" = "Prošli događaji:";
-"preferences_appearance_events_pending_title" = "Pending events";
+"preferences_appearance_events_pending_title" = "Događaji na čekanju";
 "preferences_appearance_events_declined_title" = "Odbačeni događaji:";
 "preferences_appearance_events_value_show" = "prikaži";
 "preferences_appearance_events_value_hide" = "sakrij";
@@ -136,7 +135,7 @@
 "preferences_configure_browsers_delete_alert_title" = "Izbrisati konfiguraciju preglednika?";
 "preferences_configure_browsers_delete_alert_message" = "Želiš li izbrisati konfiguraciju preglednika %@?";
 "preferences_configure_browsers_add_button_browser_title" = "Preglednik";
-"preferences_configure_browsers_add_button_all_system_title" = "All system browsers";
+"preferences_configure_browsers_add_button_all_system_title" = "Svi preglednici sustava";
 "preferences_configure_browsers_modal_add_browser_title" = "Dodaj preglednik";
 "preferences_configure_browsers_modal_edit_browser_title" = "Uredi preglednik";
 "preferences_configure_browsers_modal_add_browser_name" = "Ime";
@@ -165,7 +164,7 @@
 "preferences_calendars_select_calendars_title" = "Odaberi kalendare za prikaz događaja na traci stanja";
 "preferences_calendars_add_account_description" = "Ne vidiš kalendar koji trebaš?";
 "preferences_calendars_add_account_button" = "Dodaj račun";
-"preferences_calendars_add_account_modal" = "Za dodavanje vanjskog kalendara, slijedi ove korake:\n1. Otvori standardni program za Kalendar\n2. Pritisni "Dodaj račun" u izborniku\n3. Odaberi i poveži tvoj račun";
+"preferences_calendars_add_account_modal" = "Za dodavanje vanjskog kalendara, slijedi ove korake:\n1. Otvori standardni program za Kalendar\n2. Pritisni \"Dodaj račun\" u izborniku\n3. Odaberi i poveži tvoj račun";
 
 // MARK: - Preferences Advanced
 
@@ -240,7 +239,7 @@
 "welcome_screen_greeting_additional_title" = "Učinimo ga 100 % svojim!";
 "welcome_screen_login_launch_toggle_title" = "Pokreni MeetingBar nakon prijave";
 "welcome_screen_shortcut_next_meeting_title" = "Pridruži se sljedećem sastanku pomoću tvojeg prečaca:";
-"welcome_screen_ad_hoc_meeting_title" = "Stvori posebne sastanke u";
+"welcome_screen_ad_hoc_meeting_title" = "Stvori posebne sastanke u ";
 "welcome_screen_shortcut_ad_hoc_meeting_title" = "s tvojim prečacem:";
 "welcome_screen_setup_calendar_title" = "Postavi kalendare";
 
@@ -279,7 +278,6 @@
 "constants_create_meeting_service_outlook_live" = "Outlook Live";
 "constants_create_meeting_service_outlook_office365" = "Outlook Office365";
 "constants_create_meeting_service_url" = "Prilagođeni url";
-
 "constants_meeting_service_phone" = "Telefon";
 "constants_meeting_service_meet" = "Google Meet";
 "constants_meeting_service_hangouts" = "Google Hangouts";
@@ -322,7 +320,6 @@
 "constants_meeting_service_coscreen" = "CoScreen";
 "constants_meeting_service_other" = "Druge";
 "constants_meeting_service_url" = "URL";
-
 "constants_browser_brave" = "Brave";
 "constants_browser_chrome" = "Google Chrome";
 "constants_browser_chromium" = "Chromium";
