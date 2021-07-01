@@ -279,9 +279,9 @@
 "constants_create_meeting_service_gcalendar" = "Google Calendar";
 "constants_create_meeting_service_outlook_live" = "Outlook Live";
 "constants_create_meeting_service_outlook_office365" = "Outlook Office 365";
-"constants_create_meeting_service_url" = "Custom url";
+"constants_create_meeting_service_url" = "Custom URL";
 
-"constants_meeting_service_phone" = "Phone";
+"constants_meeting_service_phone" = "Phone number";
 "constants_meeting_service_meet" = "Google Meet";
 "constants_meeting_service_hangouts" = "Google Hangouts";
 "constants_meeting_service_zoom" = "Zoom";
