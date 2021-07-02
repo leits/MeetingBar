@@ -14,7 +14,7 @@
 "general_save" = "Spremi";
 "general_meeting" = "Sastanak";
 "create_meeting_error_title" = "Nije moguće stvoriti sastanak";
-"create_meeting_error_message" = "Prilagođeni url \"%@\" nedostaje ili ne valja. Upiši ga u postavkama programa.";
+"create_meeting_error_message" = "Prilagođeni url „%@“ nedostaje ili ne valja. Upiši ga u postavkama programa.";
 "next_meeting_empty_title" = "Danas više nema sastanaka";
 "next_meeting_empty_message" = "Opa! Vrijeme je za cocoa";
 
@@ -61,7 +61,7 @@
 "preferences_general_patron_thank_for_purchase" = "Hvala! Podržavaš MeetingBar %d mjesec! 🎉";
 "preferences_general_patron_restore_purchases" = "Obnovi kupnje";
 "preferences_general_feedback_title" = "Ako imaš pitanja i povratne informacije,\nkontaktiraj me:";
-"preferences_general_feedback_email" = "email";
+"preferences_general_feedback_email" = "e-pošta";
 "preferences_general_feedback_twitter" = "twitter";
 "preferences_general_feedback_telegram" = "telegram";
 
@@ -122,7 +122,7 @@
 "preferences_services_link_zoom_value" = "Zoom program";
 "preferences_services_link_teams_value" = "Teams program";
 "preferences_services_supported_links_list" = "Podržane poveznice za usluge:\n%@";
-"preferences_services_supported_links_mailback" = "Ako usluga nije podržana, javi mi putem emaila";
+"preferences_services_supported_links_mailback" = "Ako usluga nije podržana, javi mi putem e-maila";
 "preferences_services_create_meeting_title" = "Stvori sastanke putem";
 "preferences_services_create_meeting_custom_url_value" = "Prilagođeni url";
 "preferences_services_create_meeting_custom_url_placeholder" = "Upiši valjani url (npr. https://)";
