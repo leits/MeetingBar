@@ -115,7 +115,7 @@
 // MARK: - Preferences tabs
 
 "preferences_tab_general" = "Allgemein";
-"windows_title_changelog" = "MeetingBar Neuigkeiten";
+"windows_title_changelog" = "MeetingBar-Neuigkeiten";
 "window_title_onboarding" = "Willkommen bei MeetingBar!";
 
 // MARK: - Window titles
@@ -307,9 +307,9 @@
 // MARK: - Shared
 
 "shared_send_notification_toggle" = "Benachrichtigung senden, um dem nächsten Ereigniss beizutreten";
-"access_screen_access_granted_click_ok_title" = "Im Popup-Fenster von MacOS auf \"OK\" drücken.";
+"access_screen_access_granted_click_ok_title" = "Im Popup-Fenster von MacOS auf „OK“ drücken.";
 "access_screen_access_granted_title" = "Benötigt Zugriffe auf Kalender.";
-"access_screen_access_denied_relaunch_title" = "Dannach müssen Sie die App manuell starten, um die Einrichtung fortzusetzen.";
+"access_screen_access_denied_relaunch_title" = "Dannach müssen Sie die Anwendung manuell starten, um die Einrichtung fortzusetzen.";
 "access_screen_access_denied_checkbox_title" = "und aktivieren Sie das Kontrollkästchen neben MeetingBar.";
 "access_screen_access_denied_system_preferences_button" = "Systemeinstellungen";
 "access_screen_access_screen_access_denied_go_to_title" = "Gehe zu";
@@ -317,7 +317,7 @@
 // MARK: - Access screen
 
 "access_screen_access_denied_title" = "Hoppla! Offenbar haben Sie den Zugriff auf Kalendere verweigert.";
-"calendars_screen_start_button" = "App starten";
+"calendars_screen_start_button" = "Anwendung starten";
 
 // MARK: - Calendars screen
 
@@ -328,13 +328,22 @@
 
 // MARK: - Welcome screen
 
-"welcome_screen_greeting_main_title" = "Hallo! MeetingBar ist eine so einfache App, dass schon fast alles bereit ist.";
-"status_bar_error_zoom_native_link_message" = "Stellen Sie sicher, dass die Zoom-App installiert ist, oder ändern Sie die App in den Einstellungen.";
-"status_bar_error_zoom_app_link_message" = "Stellen Sie sicher, dass die Zoom-App installiert ist, oder ändern Sie die App in den Einstellungen.";
-"status_bar_error_teams_link_message" = "Stellen Sie sicher, dass die Microsoft Teams-App installiert ist, oder ändern Sie die App in den Einstellungen.";
-"status_bar_error_zoom_native_link_title" = "Hoppla! Der App eigene Link kann in der Zoom-App nicht geöffnet werden";
-"status_bar_error_zoom_app_link_title" = "Hoppla! Der Link kann in der Zoom-App nicht geöffnet werden";
-"status_bar_error_teams_link_title" = "Hoppla! Der Link kann in der Microsoft Teams-App nicht geöffnet werden";
+"welcome_screen_greeting_main_title" = "Hallo! MeetingBar ist eine so einfache Anwendung, dass schon fast alles bereit ist.";
+"status_bar_error_zoom_native_link_message" = "Stellen Sie sicher, dass die Zoom-Anwendung installiert ist, oder ändern Sie die Anwendung in den Einstellungen.";
+"status_bar_error_zoom_app_link_message" = "Stellen Sie sicher, dass die Zoom-Anwendung installiert ist, oder ändern Sie die Anwendung in den Einstellungen.";
+"status_bar_error_teams_link_message" = "Stellen Sie sicher, dass die Microsoft Teams-Anwendung installiert ist, oder ändern Sie die Anwendung in den Einstellungen.";
+"status_bar_error_zoom_native_link_title" = "Hoppla! Der Anwendung eigene Link kann in der Zoom-Anwendung nicht geöffnet werden";
+"status_bar_error_zoom_app_link_title" = "Hoppla! Der Link kann in der Zoom-Anwendung nicht geöffnet werden";
+"status_bar_error_teams_link_title" = "Hoppla! Der Link kann in der Microsoft Teams-Anwendung nicht geöffnet werden";
 "status_bar_error_apple_script_title" = "AppleScript-Antwortfehler";
 "status_bar_event_status_in" = "in %@";
 "preferences_general_external_patronage" = "Schirmherrschaft";
+"store_patronage_purchase_cloud_service_revoked_message" = "Der Benutzer hat die Erlaubnis zur Nutzung dieses Cloud-Dienstes widerrufen";
+"constants_meeting_service_zoom_native" = "Zoom native";
+"shared_send_notification_disabled_tip" = "⚠️ Ihre macOS-Benachrichtigungseinstellungen für MeetingBar sind derzeit ausgeschaltet. Bitte aktivieren Sie die Benachrichtigungen in den macOS-Systemeinstellungen, um keine Konferenz zu verpassen.";
+"shared_send_notification_no_alert_style_tip" = "⚠️ Ihre macOS-Benachrichtigungseinstellungen für MeetingBar sind derzeit nicht auf Benachrichtigung eingestellt. Bitte aktivieren Sie Benachrichtigungen, wenn Sie dauerhafte Benachrichtigungen haben möchten.";
+"welcome_screen_shortcut_next_meeting_title" = "Nehmen Sie an der nächsten Ereigniskonferenz mit Ihrem Tastenkürzel teil:";
+"welcome_screen_ad_hoc_meeting_title" = "Ad-hoc-Konferenzen erstellen in ";
+"status_bar_error_link_missed_message" = "Link nicht gefunden, oder Ihr Meeting-Dienst wird noch nicht unterstützt";
+"status_bar_error_link_missed_title" = "Ach! Kann %@ nicht beitreten";
+"preferences_general_patron_title" = "Schirmherr werden";

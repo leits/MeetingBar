@@ -55,7 +55,7 @@
 "preferences_advanced_regex_new_cant_save_title" = "Impossible d'enregistrer un regex";
 "preferences_advanced_regex_new_title" = "Entrez un regex";
 "preferences_advanced_regex_add_button" = "Ajouter un regex";
-"preferences_advanced_regex_title" = "Regex personnalisés pour le lien de la réunion";
+"preferences_advanced_regex_title" = "Expressions régulières personnalisées pour le lien de réunion";
 "preferences_calendars_add_account_modal" = "Pour ajouter des calendriers externes, procédez comme suit :\n1. Ouvrez l'application Calendrier par défaut\n2. Cliquez sur « Ajouter un compte » dans le menu\n3. Choisissez et connectez votre compte";
 "preferences_services_create_meeting_custom_url_placeholder" = "Veuillez entrer une URL valide (avec le schéma de l'URL, par exemple https://)";
 
@@ -123,7 +123,7 @@
 // MARK: - Access screen
 
 "access_screen_access_denied_title" = "Oups ! Il semble que vous ayez refusé l'accès aux calendriers.";
-"calendars_screen_start_button" = "Commencer à utiliser l'appli";
+"calendars_screen_start_button" = "Démarrer l'appli";
 
 // MARK: - Calendars screen
 
@@ -329,7 +329,7 @@
 // MARK: - Preferences tabs
 
 "preferences_tab_general" = "Général";
-"windows_title_changelog" = "MeetingBar Quoi de neuf";
+"windows_title_changelog" = "Nouveautés MeetingBar";
 "window_title_onboarding" = "Bienvenue dans MeetingBar !";
 
 // MARK: - Window titles
