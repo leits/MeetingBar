@@ -172,7 +172,7 @@
 
 "preferences_advanced_setting_warning" = "⚠️ Only use these settings if you understand what they do";
 "preferences_advanced_apple_script_checkmark" = "Run AppleScript when joining a meeting";
-"preferences_advanced_apple_script_placeholder" = "# write your script here\ntell the \"Music\" app to pause";
+"preferences_advanced_apple_script_placeholder" = "# write your script here\ntell application \"Music\" to pause";
 "preferences_advanced_save_script_button" = "Save script";
 "preferences_advanced_wrong_location_title" = "Wrong location";
 "preferences_advanced_wrong_location_message" = "Please select the User → Library → Application Scripts → leits.MeetingBar folder";
