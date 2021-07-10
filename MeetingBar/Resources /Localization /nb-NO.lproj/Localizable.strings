@@ -319,10 +319,7 @@
 "preferences_general_shortcut_open_menu" = "Åpne meny:";
 "preferences_general_all_shortcut" = "Alle snarveier";
 "preferences_general_option_shortcuts" = "Snarveier";
-"preferences_general_option_preferred_language_croatian_value" = "Kroatisk";
-"preferences_general_option_preferred_language_russian_value" = "Russisk";
-"preferences_general_option_preferred_language_ukrainian_value" = "Ukrainsk";
-"preferences_general_option_preferred_language_english_value" = "Engelsk";
+
 "preferences_general_option_preferred_language_system_value" = "System";
 "preferences_general_option_preferred_language_title" = "Foretrukket språk:";
 

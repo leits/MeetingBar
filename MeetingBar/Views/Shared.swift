@@ -66,10 +66,13 @@ struct LaunchAtLoginANDPreferredLanguagePicker: View {
             Spacer()
             Picker("preferences_general_option_preferred_language_title".loco(), selection: $preferredLanguage) {
                 Text("preferences_general_option_preferred_language_system_value".loco()).tag(AppLanguage.system)
-                Text("preferences_general_option_preferred_language_english_value".loco()).tag(AppLanguage.english)
-                Text("preferences_general_option_preferred_language_ukrainian_value".loco()).tag(AppLanguage.ukrainian)
-                Text("preferences_general_option_preferred_language_russian_value".loco()).tag(AppLanguage.russian)
-                Text("preferences_general_option_preferred_language_croatian_value".loco()).tag(AppLanguage.croatian)
+                Text("English").tag(AppLanguage.english)
+                Text("Українська").tag(AppLanguage.ukrainian)
+                Text("Русский").tag(AppLanguage.russian)
+                Text("Hrvatski").tag(AppLanguage.croatian)
+                Text("Français").tag(AppLanguage.french)
+                Text("Deutsche").tag(AppLanguage.german)
+                Text("Norks").tag(AppLanguage.norwegian)
             }.frame(width: 250)
         }
     }

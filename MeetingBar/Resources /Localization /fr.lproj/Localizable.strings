@@ -312,9 +312,6 @@
 "preferences_general_shortcut_open_menu" = "Ouvrir le menu :";
 "preferences_general_all_shortcut" = "Tous les raccourcis";
 "preferences_general_option_shortcuts" = "Raccourcis";
-"preferences_general_option_preferred_language_russian_value" = "Русский";
-"preferences_general_option_preferred_language_ukrainian_value" = "Українська";
-"preferences_general_option_preferred_language_english_value" = "English";
 "preferences_general_option_preferred_language_system_value" = "Système";
 "preferences_general_option_preferred_language_title" = "Langue préférée :";
 
@@ -346,4 +343,3 @@
 "general_close" = "Fermer";
 "general_cancel" = "Annuler";
 "general_ok" = "OK";
-"preferences_general_option_preferred_language_croatian_value" = "Hrvatski";

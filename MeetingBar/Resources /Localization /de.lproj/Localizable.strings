@@ -97,9 +97,6 @@
 "preferences_general_shortcut_open_menu" = "Menü öffnen:";
 "preferences_general_all_shortcut" = "Alle Tastenkürzel";
 "preferences_general_option_shortcuts" = "Tastenkürzel";
-"preferences_general_option_preferred_language_russian_value" = "Русский";
-"preferences_general_option_preferred_language_ukrainian_value" = "Українська";
-"preferences_general_option_preferred_language_english_value" = "English";
 "preferences_general_option_preferred_language_system_value" = "System";
 "preferences_general_option_preferred_language_title" = "Bevorzugte Sprache:";
 
@@ -235,7 +232,6 @@
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "Sichtbarkeit des Titels in der Statusleiste ein- und ausschalten:";
 "preferences_general_shortcut_join_from_clipboard" = "An Konferenz über Zwischenablage teilnehmen:";
 "preferences_general_shortcut_join_next" = "An nächster Konferenz teilnehmen:";
-"preferences_general_option_preferred_language_croatian_value" = "Hrvatski";
 "welcome_screen_shortcut_ad_hoc_meeting_title" = "mit eigenem Tastenkürzel:";
 "status_bar_event_status_now" = "jetzt (%@ übrig)";
 
