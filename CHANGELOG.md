@@ -1,9 +1,18 @@
 # Changelog for Meetingbar
 
 
-## Version 3.5.0 (WIP)
+## Version 3.6.0 (WIP)
 > unreleased
 
+## Version 3.5.0
+> (released 11th Jun 2021)
+
+* Added Croatian, German, French, and Norwegian Bokmål translations
+* Improve RingCentral and Zoom links Detection
+* All program notifications are now removed after the all meetings end.
+* Open link from clipboard in configured browser
+* Fixed a bug with the inability to change shortcuts
+* Fixed disappearing app icon when no calendar selected
 * Fixed opening ZoomGov links in the native app
 
 ## Version 3.4.0
