@@ -7,9 +7,9 @@
 ## Version 3.5.0
 > (released 11th Jun 2021)
 
-* Added Croatian, German, French, and Norwegian Bokmål translations
+* Added translations into Croatian, German, French, and Norwegian Bokmål
 * Improve RingCentral and Zoom links Detection
-* All program notifications are now removed after the all meetings end.
+* All app notifications are now removed after all meetings are over
 * Open link from clipboard in configured browser
 * Fixed a bug with the inability to change shortcuts
 * Fixed disappearing app icon when no calendar selected
