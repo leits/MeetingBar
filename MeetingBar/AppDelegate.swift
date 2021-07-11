@@ -204,6 +204,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
         scheduleUpdateStatusBarTitle()
         scheduleUpdateEvents()
+        Scripts().scheduleRunScriptForMeetingStart()
 
         if Defaults[.browsers].isEmpty {
             addInstalledBrowser()
@@ -467,7 +468,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
      * implementation is necessary to show notifications even when the app has focus!
      */
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        completionHandler([.alert, .badge, .sound])     }
+        completionHandler([.alert, .badge, .sound])
+    }
+
 
     internal func userNotificationCenter(_: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         switch response.actionIdentifier {

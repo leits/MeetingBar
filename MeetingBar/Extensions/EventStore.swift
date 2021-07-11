@@ -110,7 +110,7 @@ extension EKEventStore {
         // but the next event is closer than 13 minutes later
         // then show the next event
         for event in nextEvents {
-            if event.isAllDay {
+            if event.isAllDay && Defaults[.allDayEvents] == AlldayEventsAppereance.hide {
                 continue
             } else {
                 if Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show_inactive_without_meeting_link {
