@@ -163,3 +163,8 @@ func removePendingNotificationRequests() {
     let center = UNUserNotificationCenter.current()
     center.removeAllPendingNotificationRequests()
 }
+
+func removeDeliveredNotifications() {
+    let center = UNUserNotificationCenter.current()
+    center.removeAllDeliveredNotifications()
+}

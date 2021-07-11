@@ -125,6 +125,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             case .none:
                 if Defaults[.joinEventNotification] {
                     removePendingNotificationRequests()
+                    removeDeliveredNotifications()
                 }
                 title = "🏁"
             case .nextEvent(let event):

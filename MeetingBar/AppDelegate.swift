@@ -263,7 +263,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                 self.statusBarItem.updateTitle()
 
                 // Reschedule next notification with updated event name visibility
-                UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+                removePendingNotificationRequests()
                 if let nextEvent = self.statusBarItem.eventStore.getNextEvent(calendars: self.statusBarItem.calendars) {
                     scheduleEventNotification(nextEvent)
                 }
@@ -395,7 +395,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                     scheduleEventNotification(nextEvent)
                 }
             } else {
-                UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+                removePendingNotificationRequests()
             }
         }
         showEventMaxTimeUntilEventThresholdObserver = Defaults.observe(.showEventMaxTimeUntilEventThreshold) { change in
