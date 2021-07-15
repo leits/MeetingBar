@@ -19,7 +19,7 @@
 "store_patronage_purchase_payment_not_allowed_message" = "Ze zařízení nelze provést platbu";
 "store_patronage_purchase_payment_invalid_message" = "Identifikátor nákupu je neplatný";
 "store_patronage_purchase_client_invalid_message" = "Nelze provést platbu";
-"store_patronage_purchase_unknown_message" = "Neznámá chyba. Kontaktujte prosím podporu.";
+"store_patronage_purchase_unknown_message" = "Neznámá chyba. Kontaktujte prosím podporu";
 "store_patronage_purchase_success_message" = "Úspěšně zakoupeno. Děkujeme za podporu!";
 "store_patronage_restore_nothing_message" = "Není co obnovit";
 "store_patronage_restore_success_message" = "Úspěšně obnoveno";
@@ -252,7 +252,7 @@
 "preferences_appearance_status_bar_title_title" = "Název";
 "preferences_appearance_events_value_only_with_link" = "zobrazit jen události s odkazem na schůzku";
 "preferences_appearance_events_declined_title" = "Odmítnuté události:";
-"preferences_appearance_events_pending_title" = "Nevyřízené události:";
+"preferences_appearance_events_pending_title" = "Nevyřízené události";
 "preferences_appearance_events_past_title" = "Dřívější události:";
 "preferences_appearance_events_value_inactive_without_meeting_link" = "zobrazit události bez odkazů na schůzku jako neaktivní";
 "preferences_appearance_menu_show_event_icon_value" = "ikona";
