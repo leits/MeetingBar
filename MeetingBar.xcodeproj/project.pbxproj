@@ -80,6 +80,7 @@
 		140D84402493B8030055E1CE /* KeyboardShortcutsNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardShortcutsNames.swift; sourceTree = "<group>"; };
 		14158D3A246C65AD0006436C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		1435E44B260954D00071B188 /* Changelog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Changelog.swift; sourceTree = "<group>"; };
+		143E6D6226A0C5E300B3CBEE /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/Localizable.strings; sourceTree = "<group>"; };
 		144C01792462D0C3000C9FFC /* MeetingBar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MeetingBar.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		144C017C2462D0C3000C9FFC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		144C01802462D0C5000C9FFC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -420,6 +421,7 @@
 				fr,
 				hr,
 				"nb-NO",
+				cs,
 			);
 			mainGroup = 144C01702462D0C3000C9FFC;
 			packageReferences = (
@@ -546,6 +548,7 @@
 				14C9A929269A2095005306DA /* fr */,
 				14C9A92A269A209C005306DA /* hr */,
 				14C9A92B269A20A1005306DA /* nb-NO */,
+				143E6D6226A0C5E300B3CBEE /* cs */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";

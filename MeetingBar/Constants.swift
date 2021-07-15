@@ -351,6 +351,7 @@ enum AppLanguage: String, Codable {
     case croatian = "hr"
     case german = "de"
     case french = "fr"
+    case czech = "cs"
     case norwegian = "nb-NO"
 }
 
