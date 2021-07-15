@@ -20,14 +20,14 @@ struct TitleTruncationRules {
 struct LinksRegex {
     let meet = try! NSRegularExpression(pattern: #"https?://meet.google.com/[a-z-]+"#)
     let hangouts = try! NSRegularExpression(pattern: #"https?://hangouts.google.com/[^\s]*"#)
-    let zoom = try! NSRegularExpression(pattern: #"https?:\/\/(?:[a-zA-Z0-9-.]+)?zoom.(?:us|com.cn)\/(?:j|my|w)\/[^\s]*"#)
+    let zoom = try! NSRegularExpression(pattern: #"https?:\/\/(?:[a-zA-Z0-9-.]+)?zoom.(?:us|com.cn)\/(?:j|my|w)\/[-a-zA-Z0-9()@:%_\+.~#?&=\/]*"#)
 
 
     /**
      * Examples:
      * - zoom native links: zoommtg://zoom.us/join?confno=92333341349&uname=Person&pwd=123456
      */
-    let zoom_native = try! NSRegularExpression(pattern: #"zoommtg://([a-z0-9-.]+)?zoom\.(us|com\.cn)/join[^\s]*"#)
+    let zoom_native = try! NSRegularExpression(pattern: #"zoommtg://([a-z0-9-.]+)?zoom\.(us|com\.cn)/join[-a-zA-Z0-9()@:%_\+.~#?&=\/]*"#)
     let teams = try! NSRegularExpression(pattern: #"https?://teams\.microsoft\.com/l/meetup-join/[a-zA-Z0-9_%\/=\-\+\.?]+"#)
     let webex = try! NSRegularExpression(pattern: #"https?://([a-z0-9-.]+)?webex\.com/[^\s]*"#)
     let jitsi = try! NSRegularExpression(pattern: #"https?://meet\.jit\.si/[^\s]*"#)
