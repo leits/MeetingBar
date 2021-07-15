@@ -47,6 +47,14 @@ struct ChangelogView: View {
                         Text("and small bug fixes")
                     }
                 }
+                if lastRevisedVersionInChangelog < "3.5.0" {
+                    Section(header: Text("Version 3.5.0")) {
+                        Text("🌍 Added translations into Croatian, German, French, and Norwegian Bokmål")
+                        Text("All app notifications are now removed after all meetings are over")
+                        Text("Improved RingCentral and Zoom links Detection")
+                        Text("and small bug fixes")
+                    }
+                }
             }.listStyle(SidebarListStyle())
             Button("Close", action: close)
         }.padding()

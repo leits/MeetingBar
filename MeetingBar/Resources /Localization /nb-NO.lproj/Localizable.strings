@@ -1,0 +1,347 @@
+
+
+"status_bar_submenu_attendees_status_unknown" = " [?]";
+"status_bar_submenu_status_default_extended" = " ❔ (%@)";
+"preferences_appearance_events_pending_title" = "Forestående begivenheter";
+"constants_meeting_service_facetimeaudio" = "Facetime Audio";
+"constants_meeting_service_vonageMeetings" = "Vonage-møter";
+"store_patronage_purchase_client_invalid_message" = "Tillates ikke å utføre betaling";
+"constants_meeting_service_blackboard_collab" = "Blackboard Collaborate";
+"constants_meeting_service_meetStream" = "Google Meet-strøm";
+"constants_meeting_service_skype4biz_selfhosted" = "Skype For Business (SH)";
+"constants_meeting_service_skype4biz" = "Skype For Business";
+"constants_meeting_service_facebook_workspace" = "Facebook Workspace";
+"constants_meeting_service_uberconference" = "Uber Conference";
+"constants_meeting_service_zoom_native" = "Zoom-programmet";
+"shared_send_notification_disabled_tip" = "⚠️ Merknadsinnstillingene dine i macOS for MeetingBar er avslått. Skru på merknader i macOS-systeminnstillingene for å ikke gå glipp av møter.";
+"shared_send_notification_no_alert_style_tip" = "⚠️ Merknadsinnstillingene dine i macOS for MeetingBar er ikke satt til varsling. Aktiver dette hvis du ønsker vedvarende merknader.";
+"welcome_screen_ad_hoc_meeting_title" = "Opprett ad-hoc-møter i ";
+"status_bar_submenu_attendees_no_name" = "Deltager uten navn";
+
+// MARK: - Notifications
+
+"notifications_event_start_soon_body" = "Begivenheten starter snart";
+"store_patronage_purchase_cloud_service_revoked_message" = "Bruker har nektet tilgang for bruk av denne skytjenesten";
+"store_patronage_purchase_cloud_service_network_connection_failed" = "Kunne ikke koble til nettverket";
+"store_patronage_purchase_cloud_service_permission_denied_message" = "Tilgang til skytjenesteinfo tillates ikke";
+"store_patronage_purchase_store_product_not_available_message" = "Produktet er ikke tilgjengelig i nåværende butikkvindu";
+"store_patronage_purchase_payment_not_allowed_message" = "Enheten tillates ikke å utføre betalingen";
+"store_patronage_purchase_payment_invalid_message" = "Ugyldig kjøpsidentifikator";
+"store_patronage_purchase_unknown_message" = "Ukjent feil. Kontakt brukerstøtte.";
+"store_patronage_purchase_success_message" = "Kjøp utført. Takk for din støtte!";
+
+// MARK: - Store
+
+"store_patronage_title" = "MeetingBar-kronerulling";
+"constants_meeting_service_coscreen" = "CoScreen";
+"constants_meeting_service_vowel" = "Vowel";
+"constants_meeting_service_other" = "Annet";
+"constants_meeting_service_discord" = "Discord";
+"constants_meeting_service_jam" = "Jam";
+"constants_meeting_service_around" = "Around";
+"constants_meeting_service_youtube" = "YouTube";
+"constants_meeting_service_facetime" = "Facetime";
+"constants_meeting_service_skype" = "Skype";
+"constants_meeting_service_lifesize" = "Lifesize";
+"constants_meeting_service_voov" = "Tencent VooV";
+"constants_meeting_service_duo" = "Google Duo";
+"constants_meeting_service_starleaf" = "StarLeaf";
+"constants_meeting_service_vsee" = "VSee";
+"constants_meeting_service_teamviewer_meeting" = "Teamviewer-møte";
+"constants_meeting_service_blizz" = "Blizz";
+"constants_meeting_service_whereby" = "Whereby";
+"constants_meeting_service_zoomgov" = "ZoomGov";
+"constants_meeting_service_join_me" = "Join.me";
+"constants_meeting_service_demio" = "Demio";
+"constants_meeting_service_eight_x_eight" = "8x8";
+"constants_meeting_service_bluejeans" = "BlueJeans";
+"constants_meeting_service_gotowebinar" = "GoToWebinar";
+"constants_meeting_service_gotomeeting" = "GoToMeeting";
+"constants_meeting_service_ringcentral" = "Ring Central";
+"constants_meeting_service_chime" = "Amazon Chime";
+"constants_meeting_service_webex" = "Cisco Webex";
+"constants_meeting_service_teams" = "Microsoft Teams";
+"constants_meeting_service_hangouts" = "Google Hangouts";
+"constants_meeting_service_meet" = "Google Meet";
+"constants_create_meeting_service_outlook_office365" = "Outlook Office 365";
+"constants_create_meeting_service_outlook_live" = "Outlook Live";
+"constants_create_meeting_service_gcalendar" = "Google Calendar";
+"constants_create_meeting_service_teams" = "Microsoft Teams";
+"constants_create_meeting_service_zoom" = "Zoom";
+"constants_create_meeting_service_coscreen" = "CoScreen";
+"constants_create_meeting_service_jam" = "Jam";
+
+// MARK: - Constants
+"constants_create_meeting_service_meet" = "Google Meet";
+"shared_send_notification_directly_value" = "når begivenheten starter";
+
+// MARK: - Shared
+
+"shared_send_notification_toggle" = "Send merknad om å ta del i neste begivenhetsmøte";
+"access_screen_access_granted_click_ok_title" = "Klikk «OK» i oppsprettsvinduet fra macOS.";
+"access_screen_access_granted_title" = "Forespør tilgang til kalendere.";
+"access_screen_access_denied_relaunch_title" = "Så må du kjøre programmet manuelt for å fortsette oppsettet.";
+"access_screen_access_denied_checkbox_title" = "og velg avkryssningsboksen ved siden av MeetingBar.";
+
+// MARK: - Access screen
+
+"access_screen_access_denied_title" = "Oida. Det ser ut til at du nektet tilgang til kalendere.";
+"calendars_screen_start_button" = "Begynn å bruke programmet";
+"welcome_screen_shortcut_ad_hoc_meeting_title" = "med snarveien din:";
+"welcome_screen_shortcut_next_meeting_title" = "Ta del i neste begivenhetsmøte med snarveien din:";
+"welcome_screen_login_launch_toggle_title" = "Kjør MeetingBar ved innlogging";
+
+// MARK: - Welcome screen
+
+"welcome_screen_greeting_main_title" = "Hei. MeetingBar er et så enkelt program at nesten alt er klart.";
+"welcome_screen_greeting_additional_title" = "La oss gjøre det 100% ditt.";
+"status_bar_error_zoom_native_link_message" = "Forsikre deg om at du har Zoom-programmet installert, eller endre programmet i innstillingene.";
+"status_bar_error_zoom_native_link_title" = "Oida. Kunne ikke åpne innebygd lenke i Zoom-programmet";
+"status_bar_error_zoom_app_link_message" = "Forsikre deg om at du har Zoom-programmet installert, eller endre programmet i innstillingene.";
+"status_bar_error_zoom_app_link_title" = "Oida. Kunne ikke åpne lenken i Zoom-programmet";
+"status_bar_error_teams_link_message" = "Forsikre deg om at du har Microsoft Teams-programmet installert, eller endre programmet i innstillingene.";
+"status_bar_error_teams_link_title" = "Oida. Kunne ikke åpne lenken i Microsoft Teams-programmet";
+"status_bar_error_link_missed_message" = "Fant ikke lenken, eller så støttes ikke møtetjenesten enda";
+"status_bar_error_link_missed_title" = "Oida. Kan ikke ta del i %@";
+"status_bar_error_apple_script_title" = "Feil fra AppleScript";
+"status_bar_submenu_attendees_status_tentative" = " [tentativt]";
+"status_bar_submenu_attendees_title" = "Deltagere (%d)";
+"status_bar_submenu_organizer_title" = "Organisator:";
+"status_bar_submenu_location_title" = "Sted:";
+"status_bar_submenu_status_default_simple" = " ❔ (Ukjent)";
+"status_bar_submenu_status_unknown" = " ❔ Ukjent";
+"status_bar_submenu_status_pending" = " ⏳ Forestående";
+"status_bar_submenu_status_tentative" = " ☝️ Tentativt";
+"status_bar_submenu_duration_all_day" = "%@ - %@ (%@ minutter)";
+"status_bar_section_join_from_clipboard" = "Åpne møte fra utklippstavle";
+"status_bar_section_join_next_meeting" = "Ta del i neste begivenhetsmøte";
+"preferences_advanced_regex_title" = "Egendefinerte regulære uttrykk for møtelenke";
+"preferences_advanced_wrong_location_message" = "Velg Bruker → Bibliotek → Programskript → leits.MeetingBar-mappen";
+"preferences_advanced_apple_script_placeholder" = "# skriv ditt skript her\nfortell programmet «Musikk» at det skal ta pause";
+"preferences_advanced_apple_script_checkmark" = "Kjør AppleScript når du tar del i møtet";
+
+// MARK: - Preferences Advanced
+
+"preferences_advanced_setting_warning" = "⚠️ Kun bruk disse innstillingene hvis du forstår hva de gjør";
+"preferences_calendars_add_account_modal" = "Legg til eksterne kalendere slik:\n1. Åpne forvalgt kalenderprogram\n2. Klikk på «Legg til konto» i menyen\n3. Velg og koble til kontoen din";
+"preferences_bookmarks_new_bookmark_already_exist" = "Et bokmerke med denne lenken/telefonen finnes allerede med navnet %@:\n%@";
+"preferences_configure_browsers_choose_broser_panel_message" = "Velg en nettleser fra hvilken som helst sti.";
+"preferences_configure_browsers_delete_alert_message" = "Ønsker du å slette %@-nettleseroppsettet?";
+"preferences_services_google_meet_tip" = "Tips: Meet støtter valg av konto via parameter, f.eks. https://meet.google.com/new?authuser=1";
+"preferences_appearance_status_bar_next_event" = "Vis kun neste begivenhet som starter innen %d minutter";
+"preferences_appearance_status_bar_title_dot_value" = "punkt (•)";
+"preferences_appearance_status_bar_title_event_title_value" = "begivenhetstittel";
+"preferences_appearance_status_bar_title_title" = "Tittel";
+"preferences_appearance_status_bar_icon_no_icon_value" = " Uten ikon";
+"preferences_appearance_status_bar_icon_specific_icon_value" = " Begivenhetssesifikt ikon (f.eks. MS Teams)";
+"preferences_appearance_events_value_hide_without_meeting_link" = "skjul alle uten møtelenker";
+"preferences_appearance_events_value_inactive_without_meeting_link" = "vis dem uten møtelenker som inaktive";
+"preferences_general_external_patronage" = "Kronerulling";
+"preferences_general_meeting_bar_description" = "MeetingBar er et fritt program laget av Andrii Leitsius\nProgrammet tar sikte på å gjøre din opplevelse med nettbaserte møter smidigere og enklere";
+"preferences_general_shortcut_toggle_meeting_name_visibility" = "Veksle visning av tittel i statusfelt:";
+"preferences_general_shortcut_join_from_clipboard" = "Ta del i møte fra utklippstavle:";
+"windows_title_changelog" = "MeetingBar Hva er nytt";
+
+// MARK: - Window titles
+
+"window_title_preferences" = "MeetingBar-innstillinger";
+"next_meeting_empty_message" = "Hurra. Det er på tide å lage kakao";
+"next_meeting_empty_title" = "Ingen kommende møter i dag";
+"create_meeting_error_message" = "Den egendefinerte nettadressen «%@» mangler eller er ugyldig. Skriv inn en verdi i programinnstillingene.";
+"link_url_cant_open_message" = "Forsikre deg om at du har %@ installert, eller endre nettleser i innstillingene.";
+
+// MARK: - Link open
+
+"link_url_cant_open_title" = "Oida. Kunne ikke åpne lenken i %@";
+"store_patronage_restore_nothing_message" = "Ingenting å gjenopprette";
+"store_patronage_restore_success_message" = "Gjenopprettet";
+"constants_browser_defaultBrowser" = "Forvalgt nettleser";
+"constants_browser_safari" = "Safari";
+"constants_browser_vivaldi" = "Vivaldi";
+"constants_browser_opera" = "Opera";
+"constants_browser_firefox" = "Firefox";
+"constants_browser_edge" = "Microsoft Edge";
+"constants_browser_chromium" = "Chromium";
+"constants_browser_chrome" = "Google Chrome";
+"constants_browser_brave" = "Brave";
+"constants_meeting_service_url" = "Nettadresse";
+"constants_meeting_service_jitsi" = "Jitsi";
+"constants_meeting_service_zoom" = "Zoom";
+"constants_meeting_service_phone" = "Telefon";
+"constants_create_meeting_service_url" = "Egendefinert nettadresse";
+"shared_send_notification_five_minute_value" = "fem minutter før";
+"shared_send_notification_three_minute_value" = "tre minutter før";
+"shared_send_notification_one_minute_value" = "ett minutt før";
+"access_screen_access_denied_system_preferences_button" = "Systeminnstillinger";
+"access_screen_access_screen_access_denied_go_to_title" = "Gå til";
+
+// MARK: - Calendars screen
+
+"calendars_screen_select_calendar_title" = "Velg minst én kalender";
+"welcome_screen_setup_calendar_title" = "Sett opp kalendere";
+"status_bar_event_status_in" = "i %@";
+"status_bar_event_status_now" = "nå (%@ gjenstår)";
+"status_bar_no_title" = "Uten tittel";
+"status_bar_quit" = "Avslutt MeetingBar";
+"status_bar_preferences" = "Innstillinger";
+"status_bar_whats_new" = "Hva er nytt?";
+"status_bar_hide_meeting_names" = "Skjul møtetittel";
+"status_bar_show_meeting_names" = "Vis møtetittel";
+"status_bar_quick_actions" = "Hurtighandlinger";
+"status_bar_submenu_open_in_fantastical" = "Åpne i Fantastical";
+"status_bar_submenu_open_in_calendar" = "Åpne i kalenderprogram";
+"status_bar_submenu_attendees_you" = "%@ (deg)";
+"status_bar_submenu_notes_title" = "Notater:";
+"status_bar_submenu_status_canceled" = " 👎 Kansellert";
+"status_bar_submenu_status_accepted" = " 👍 Akseptert";
+"status_bar_submenu_status_title" = "Status: %@";
+"status_bar_submenu_calendar_title" = "Kalender: %@";
+"status_bar_event_start_time_all_day" = "Hele dagen";
+"status_bar_section_date_nothing" = "Ingenting for %@";
+"status_bar_section_bookmarks_menu" = "Bokmerkemeny";
+"status_bar_section_bookmarks_title" = "Bokmerker";
+"status_bar_section_join_create_meeting" = "Opprett møte";
+"status_bar_empty_calendar_message" = "Velg kalendere i innstillingene\nfor å se møtene dine";
+"status_bar_section_tomorrow" = "I morgen";
+
+// MARK: - Status bar
+
+"status_bar_section_today" = "I dag";
+"preferences_advanced_regex_new_cant_save_title" = "Kan ikke lagre regulært uttrykk";
+"preferences_advanced_regex_new_title" = "Skriv inn regulært uttrykk";
+"preferences_advanced_regex_delete_button" = "x";
+"preferences_advanced_regex_edit_button" = "rediger";
+"preferences_advanced_regex_add_button" = "Legg til regulært uttrykk";
+"preferences_advanced_wrong_location_button" = "Skjønner.";
+"preferences_advanced_wrong_location_title" = "Feil plassering";
+"preferences_advanced_save_script_button" = "Lagre skript";
+"preferences_calendars_add_account_button" = "Legg til konto";
+"preferences_calendars_add_account_description" = "Finner du ikke kalenderen du trenger?";
+
+// MARK: - Preferences Calendars
+
+"preferences_calendars_select_calendars_title" = "Velg kalendere for visning av begivenheter i statusfelt";
+"preferences_bookmarks_new_bookmark_error_title" = "Kan ikke legge til bokmerke";
+"preferences_bookmarks_new_bookmark_service" = "Tjeneste";
+"preferences_bookmarks_new_bookmark_link_phone" = "Lenke/telefon";
+"preferences_bookmarks_new_bookmark_name" = "Navn";
+"preferences_bookmarks_new_bookmark_title" = "Nytt bokmerke";
+"preferences_bookmarks_add_bookmark_button" = "Legg til bokmerke";
+"preferences_bookmarks_delete_bookmark_message" = "Ønsker du å slette %@-bokmerket?";
+"preferences_bookmarks_delete_bookmark_title" = "Slett bokmerke?";
+
+// MARK: - Preferences Bookmarks
+
+"preferences_bookmarks_no_bookmarks_placeholder" = "Du har ingen bokmerker enda";
+"preferences_configure_browsers_choose_broser_panel_prompt" = "Velg nettleser";
+"preferences_configure_browsers_choose_broser_panel_title" = "Velg et gyldig nettleserprogram";
+"preferences_configure_browsers_modal_alert_title" = "Kan ikke legge til nettleseroppsett";
+"preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "Velg nettleser";
+"preferences_configure_browsers_modal_add_browser_path" = "Sti";
+"preferences_configure_browsers_modal_add_browser_name" = "Navn";
+"preferences_configure_browsers_modal_edit_browser_title" = "Rediger nettleser";
+"preferences_configure_browsers_modal_add_browser_title" = "Legg til nettleser";
+"preferences_configure_browsers_add_button_all_system_title" = "Alle systemnettlesere";
+"preferences_configure_browsers_add_button_browser_title" = "Nettleser";
+"preferences_configure_browsers_delete_alert_title" = "Slett nettleseroppsett?";
+
+// MARK: - Preferences Services Browsers Configuration
+
+"preferences_configure_browsers_button" = "Sett opp nettlesere";
+"preferences_services_create_meeting_browser_title" = "Bruk nettleser";
+"preferences_services_create_meeting_custom_url_placeholder" = "Skriv inn en gyldig nettadresse (med nettadressedirigering, f.eks https://)";
+"preferences_services_create_meeting_custom_url_value" = "Egendefinert nettadresse";
+"preferences_services_create_meeting_title" = "Opprett møter via";
+"preferences_services_supported_links_mailback" = "Hvis tjenesten du bruker ikke er støttet kan du sende meg en e-post";
+"preferences_services_supported_links_list" = "Støttede lenker for tjenester:\n%@";
+"preferences_services_link_teams_value" = "Teams-programmet";
+"preferences_services_link_zoom_value" = "Zoom-programmet";
+"preferences_services_link_default_browser_value" = "Forvalgt nettleser";
+"preferences_services_link_team_title" = "Åpne Teams-lenker i";
+"preferences_services_link_zoom_title" = "Åpne Zoom-lenker i";
+"preferences_services_link_meet_title" = "Åpne Google Meet-lenker i";
+
+// MARK: - Preferences Services
+
+"preferences_services_link_meeting_title" = "Åpne alle møtelenker i";
+"preferences_appearance_menu_show_event_details_value" = "detaljer som undermeny";
+"preferences_appearance_menu_show_event_icon_value" = "ikon";
+"preferences_appearance_menu_show_event_end_time_value" = "slutt-tid";
+"preferences_appearance_menu_show_event_title" = "Vis begivenhet:";
+"preferences_appearance_menu_time_format_24_hour_value" = "24-timersklokke";
+"preferences_appearance_menu_time_format_12_hour_value" = "12-timersklokke (AM/PM)";
+"preferences_appearance_menu_time_format_title" = "Tidsformat:;";
+"preferences_appearance_menu_shorten_event_title_stepper" = "%d tegn";
+"preferences_appearance_menu_shorten_event_title_toggle" = "Forkort begivenhetstittel til";
+"preferences_appearance_menu_title" = "Meny";
+"preferences_appearance_status_bar_time_hide_value" = "skjul";
+"preferences_appearance_status_bar_time_show_under_title_value" = "vis under tittel";
+"preferences_appearance_status_bar_time_show_value" = "vis";
+"preferences_appearance_status_bar_time_title" = "Tid";
+"preferences_appearance_status_bar_title_shorten_stepper" = "forkort til %d tegn";
+"preferences_appearance_status_bar_title_hide_value" = "skjul";
+"preferences_appearance_status_bar_icon_calendar_icon_value" = " Kalenderikon";
+"preferences_appearance_status_bar_icon_app_icon_value" = " Programikon";
+"preferences_appearance_status_bar_icon_title" = "Ikon";
+"preferences_appearance_status_bar_title" = "Statusfelt";
+"preferences_appearance_events_value_only_with_link" = "vis kun dem med møtelenker";
+"preferences_appearance_events_value_with_strikethrough" = "vis med gjennomstrek";
+"preferences_appearance_events_value_as_underlined" = "vis som understreket";
+"preferences_appearance_events_value_as_inactive" = "vis som inaktiv";
+"preferences_appearance_events_value_hide" = "skjul";
+"preferences_appearance_events_value_show" = "vis";
+"preferences_appearance_events_declined_title" = "Avslåtte begivenheter:";
+"preferences_appearance_events_past_title" = "Tidligere begivenheter:";
+"preferences_appearance_events_without_guest_title" = "Begivenheter uten gjester:";
+"preferences_appearance_events_all_day_title" = "Heldagsbegivenheter:";
+"preferences_appearance_events_non_all_day_title" = "Andre begivenheter:";
+"preferences_appearance_events_show_events_for_today_tomorrow_value" = "i dag og i morgen";
+"preferences_appearance_events_show_events_for_today_value" = "i dag";
+"preferences_appearance_events_show_events_for_title" = "Vise begivenheter for";
+
+// MARK: - Preferences Appearance
+
+"preferences_appearance_events_title" = "Begivenheter";
+"preferences_general_feedback_telegram" = "Telegram";
+"preferences_general_feedback_twitter" = "Twitter";
+"preferences_general_feedback_email" = "E-post";
+"preferences_general_feedback_title" = "Hvis du har spørsmål eller tilbakemeldinger,\nkan du kontakte meg:";
+"preferences_general_patron_restore_purchases" = "Gjenopprett kjøp";
+"preferences_general_patron_thank_for_purchase" = "Takk. Du støtter MeetingBar i %d måned! 🎉";
+"preferences_general_patron_description" = "Disse engangskjøpene fornyer seg ikke.";
+"preferences_general_patron_twelve_months" = "12 måneder – 11,99 USD";
+"preferences_general_patron_six_months" = "6 måneder – 5,99 USD";
+"preferences_general_patron_three_months" = "3 måneder – 3,99 USD";
+"preferences_general_patron_title" = "Bli kroneruller";
+"preferences_general_external_contact" = "Kontakt";
+"preferences_general_external_gitHub" = "GitHub";
+"preferences_general_shortcut_join_next" = "Ta del i neste møte:";
+"preferences_general_shortcut_create_meeting" = "Opprett møte:";
+"preferences_general_shortcut_open_menu" = "Åpne meny:";
+"preferences_general_all_shortcut" = "Alle snarveier";
+"preferences_general_option_shortcuts" = "Snarveier";
+
+"preferences_general_option_preferred_language_system_value" = "System";
+"preferences_general_option_preferred_language_title" = "Foretrukket språk:";
+
+// MARK: - Preferences General
+
+"preferences_general_option_login_launch" = "Start ved innlogging";
+"preferences_tab_advanced" = "Avansert";
+"preferences_tab_calendars" = "Kalendere";
+"preferences_tab_bookmarks" = "Bokmerker";
+"preferences_tab_services" = "Tjenester";
+"preferences_tab_appearance" = "Utseende";
+
+// MARK: - Preferences tabs
+
+"preferences_tab_general" = "Generelt";
+"window_title_onboarding" = "Velkommen til MeetingBar.";
+"create_meeting_error_title" = "Kan ikke opprette nytt møte";
+"general_meeting" = "Møte";
+"general_save" = "Lagre";
+"general_delete" = "Slett";
+"general_add" = "Legg til";
+"general_close" = "Lukk";
+"general_cancel" = "Avbryt";
+"general_ok" = "OK";

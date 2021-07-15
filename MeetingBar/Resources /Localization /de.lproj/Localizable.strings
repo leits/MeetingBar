@@ -95,11 +95,8 @@
 "preferences_general_external_gitHub" = "GitHub";
 "preferences_general_shortcut_create_meeting" = "Konferenz erstellen:";
 "preferences_general_shortcut_open_menu" = "Menü öffnen:";
-"preferences_general_all_shortcut" = "Alle Verknüpfungen";
-"preferences_general_option_shortcuts" = "Verknüpfungen";
-"preferences_general_option_preferred_language_russian_value" = "Русский";
-"preferences_general_option_preferred_language_ukrainian_value" = "Українська";
-"preferences_general_option_preferred_language_english_value" = "English";
+"preferences_general_all_shortcut" = "Alle Tastenkürzel";
+"preferences_general_option_shortcuts" = "Tastenkürzel";
 "preferences_general_option_preferred_language_system_value" = "System";
 "preferences_general_option_preferred_language_title" = "Bevorzugte Sprache:";
 
@@ -115,7 +112,7 @@
 // MARK: - Preferences tabs
 
 "preferences_tab_general" = "Allgemein";
-"windows_title_changelog" = "MeetingBar Was ist neu";
+"windows_title_changelog" = "MeetingBar-Neuigkeiten";
 "window_title_onboarding" = "Willkommen bei MeetingBar!";
 
 // MARK: - Window titles
@@ -165,8 +162,8 @@
 "status_bar_section_bookmarks_title" = "Lesezeichen";
 "status_bar_section_join_create_meeting" = "Konferenz erstellen";
 "status_bar_section_join_from_clipboard" = "Konferenz aus Zwischenablage öffnen";
-"status_bar_section_join_next_meeting" = "Konferenz des nächsten Ereignisses beitretten";
-"status_bar_empty_calendar_message" = "Wählen Sie Kalender in den Einstellungen,\num Ihre Besprechungen zu sehen";
+"status_bar_section_join_next_meeting" = "Der Konferenz des nächsten Ereignisses beitreten";
+"status_bar_empty_calendar_message" = "In den Einstellungen Kalender wählen,\num Ihre Konferenzen zu sehen";
 "status_bar_section_tomorrow" = "Morgen";
 
 // MARK: - Status bar
@@ -177,13 +174,13 @@
 "preferences_advanced_regex_delete_button" = "x";
 "preferences_advanced_regex_edit_button" = "bearbeiten";
 "preferences_advanced_regex_add_button" = "Regex hinzufügen";
-"preferences_advanced_regex_title" = "Benutzerdefinierte Regexe für Konferenzlink";
+"preferences_advanced_regex_title" = "Benutzerdefinierte reguläre Ausdrücke für Konferenzlink";
 "preferences_advanced_wrong_location_button" = "Verstanden!";
 "preferences_advanced_wrong_location_message" = "Bitte wählen Sie den Ordner Benutzer > Bibliothek > Anwendungsskripte > leits.MeetingBar";
 "preferences_advanced_wrong_location_title" = "Falscher Ort";
 "preferences_advanced_save_script_button" = "Skript speichern";
 "preferences_advanced_apple_script_placeholder" = "# schreiben Sie Ihr Skript hier\nAnwendung „Musik“ zum Anhalten auffordern";
-"preferences_advanced_apple_script_checkmark" = "AppleScript beim Beitritt zu einer Konferenz ausführen";
+"preferences_advanced_apple_script_checkmark" = "AppleScript bei Teilnahme an einer Konferenz ausführen";
 
 // MARK: - Preferences Advanced
 
@@ -217,7 +214,7 @@
 "preferences_services_link_zoom_value" = "Zoom-Anwendung";
 "preferences_services_link_team_title" = "Teams-Links öffnen in";
 "preferences_services_link_zoom_title" = "Zoom-Links öffnen in";
-"preferences_services_link_meet_title" = "Konferenzlinks öffnen in";
+"preferences_services_link_meet_title" = "Meet-links öffnen in";
 
 // MARK: - Preferences Services
 
@@ -235,4 +232,115 @@
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "Sichtbarkeit des Titels in der Statusleiste ein- und ausschalten:";
 "preferences_general_shortcut_join_from_clipboard" = "An Konferenz über Zwischenablage teilnehmen:";
 "preferences_general_shortcut_join_next" = "An nächster Konferenz teilnehmen:";
-"preferences_general_option_preferred_language_croatian_value" = "Hrvatski";
+"welcome_screen_shortcut_ad_hoc_meeting_title" = "mit eigenem Tastenkürzel:";
+"status_bar_event_status_now" = "jetzt (%@ übrig)";
+
+// MARK: - Store
+
+"store_patronage_title" = "MeetingBar Schirmherrschaft";
+"constants_browser_safari" = "Safari";
+"constants_browser_vivaldi" = "Vivaldi";
+"constants_browser_opera" = "Opera";
+"constants_browser_firefox" = "Firefox";
+"constants_browser_edge" = "Microsoft Edge";
+"constants_browser_chromium" = "Chromium";
+"constants_browser_chrome" = "Google Chrome";
+"constants_meeting_service_coscreen" = "CoScreen";
+"constants_meeting_service_vowel" = "Vowel";
+"constants_meeting_service_blackboard_collab" = "Blackboard Collaborate";
+"constants_meeting_service_discord" = "Discord";
+"constants_meeting_service_jam" = "Jam";
+"constants_meeting_service_around" = "Around";
+"constants_meeting_service_meetStream" = "Google Meet Stream";
+"constants_meeting_service_vonageMeetings" = "Vonage Meetings";
+"constants_meeting_service_youtube" = "YouTube";
+"constants_meeting_service_facetimeaudio" = "Facetime Audio";
+"constants_meeting_service_facetime" = "Facetime";
+"constants_meeting_service_skype4biz_selfhosted" = "Skype For Business (SH)";
+"constants_meeting_service_skype4biz" = "Skype For Business";
+"constants_meeting_service_skype" = "Skype";
+"constants_meeting_service_lifesize" = "Lifesize";
+"constants_meeting_service_facebook_workspace" = "Facebook Workspace";
+"constants_meeting_service_voov" = "Tencent VooV";
+"constants_meeting_service_duo" = "Google Duo";
+"constants_meeting_service_starleaf" = "StarLeaf";
+"constants_meeting_service_vsee" = "VSee";
+"constants_meeting_service_teamviewer_meeting" = "Teamviewer Meeting";
+"constants_meeting_service_blizz" = "Blizz";
+"constants_meeting_service_uberconference" = "Uber Conference";
+"constants_meeting_service_whereby" = "Whereby";
+"constants_meeting_service_zoomgov" = "ZoomGov";
+"constants_meeting_service_join_me" = "Join.me";
+"constants_meeting_service_demio" = "Demio";
+"constants_meeting_service_eight_x_eight" = "8x8";
+"constants_meeting_service_bluejeans" = "BlueJeans";
+"constants_meeting_service_gotowebinar" = "GoToWebinar";
+"constants_meeting_service_gotomeeting" = "GoToMeeting";
+"constants_meeting_service_ringcentral" = "Ring Central";
+"constants_meeting_service_chime" = "Amazon Chime";
+"constants_meeting_service_jitsi" = "Jitsi";
+"constants_meeting_service_webex" = "Cisco Webex";
+"constants_meeting_service_teams" = "Microsoft Teams";
+"constants_meeting_service_zoom" = "Zoom";
+"constants_meeting_service_hangouts" = "Google Hangouts";
+"constants_meeting_service_meet" = "Google Meet";
+"constants_meeting_service_phone" = "Telefon";
+"constants_create_meeting_service_url" = "Benutzerdefinierte URL";
+"constants_create_meeting_service_outlook_office365" = "Outlook Office365";
+"constants_create_meeting_service_outlook_live" = "Outlook Live";
+"constants_create_meeting_service_gcalendar" = "Google Kalender";
+"constants_create_meeting_service_teams" = "Microsoft Teams";
+"constants_create_meeting_service_zoom" = "Zoom";
+"constants_create_meeting_service_coscreen" = "CoScreen";
+"constants_create_meeting_service_jam" = "Jam";
+
+// MARK: - Constants
+"constants_create_meeting_service_meet" = "Google Meet";
+"shared_send_notification_five_minute_value" = "3 Minuten vorher";
+"shared_send_notification_three_minute_value" = "3 Minuten vorher";
+"shared_send_notification_one_minute_value" = "1 Minute vorher";
+"shared_send_notification_directly_value" = "beim Ereignissanfang";
+
+// MARK: - Shared
+
+"shared_send_notification_toggle" = "Benachrichtigung senden, um dem nächsten Ereigniss beizutreten";
+"access_screen_access_granted_click_ok_title" = "Im Popup-Fenster von MacOS auf „OK“ drücken.";
+"access_screen_access_granted_title" = "Benötigt Zugriffe auf Kalender.";
+"access_screen_access_denied_relaunch_title" = "Dannach müssen Sie die Anwendung manuell starten, um die Einrichtung fortzusetzen.";
+"access_screen_access_denied_checkbox_title" = "und aktivieren Sie das Kontrollkästchen neben MeetingBar.";
+"access_screen_access_denied_system_preferences_button" = "Systemeinstellungen";
+"access_screen_access_screen_access_denied_go_to_title" = "Gehe zu";
+
+// MARK: - Access screen
+
+"access_screen_access_denied_title" = "Hoppla! Offenbar haben Sie den Zugriff auf Kalendere verweigert.";
+"calendars_screen_start_button" = "Anwendung starten";
+
+// MARK: - Calendars screen
+
+"calendars_screen_select_calendar_title" = "Mindestens einen Kalender auswählen";
+"welcome_screen_setup_calendar_title" = "Kalender einrichten";
+"welcome_screen_login_launch_toggle_title" = "MeetingBar bei Anmeldung starten";
+"welcome_screen_greeting_additional_title" = "Machen wir es zu 100 % zu Ihrem!";
+
+// MARK: - Welcome screen
+
+"welcome_screen_greeting_main_title" = "Hallo! MeetingBar ist eine so einfache Anwendung, dass schon fast alles bereit ist.";
+"status_bar_error_zoom_native_link_message" = "Stellen Sie sicher, dass die Zoom-Anwendung installiert ist, oder ändern Sie die Anwendung in den Einstellungen.";
+"status_bar_error_zoom_app_link_message" = "Stellen Sie sicher, dass die Zoom-Anwendung installiert ist, oder ändern Sie die Anwendung in den Einstellungen.";
+"status_bar_error_teams_link_message" = "Stellen Sie sicher, dass die Microsoft Teams-Anwendung installiert ist, oder ändern Sie die Anwendung in den Einstellungen.";
+"status_bar_error_zoom_native_link_title" = "Hoppla! Der Anwendung eigene Link kann in der Zoom-Anwendung nicht geöffnet werden";
+"status_bar_error_zoom_app_link_title" = "Hoppla! Der Link kann in der Zoom-Anwendung nicht geöffnet werden";
+"status_bar_error_teams_link_title" = "Hoppla! Der Link kann in der Microsoft Teams-Anwendung nicht geöffnet werden";
+"status_bar_error_apple_script_title" = "AppleScript-Antwortfehler";
+"status_bar_event_status_in" = "in %@";
+"preferences_general_external_patronage" = "Schirmherrschaft";
+"store_patronage_purchase_cloud_service_revoked_message" = "Der Benutzer hat die Erlaubnis zur Nutzung dieses Cloud-Dienstes widerrufen";
+"constants_meeting_service_zoom_native" = "Zoom native";
+"shared_send_notification_disabled_tip" = "⚠️ Ihre macOS-Benachrichtigungseinstellungen für MeetingBar sind derzeit ausgeschaltet. Bitte aktivieren Sie die Benachrichtigungen in den macOS-Systemeinstellungen, um keine Konferenz zu verpassen.";
+"shared_send_notification_no_alert_style_tip" = "⚠️ Ihre macOS-Benachrichtigungseinstellungen für MeetingBar sind derzeit nicht auf Benachrichtigung eingestellt. Bitte aktivieren Sie Benachrichtigungen, wenn Sie dauerhafte Benachrichtigungen haben möchten.";
+"welcome_screen_shortcut_next_meeting_title" = "Nehmen Sie an der nächsten Ereigniskonferenz mit Ihrem Tastenkürzel teil:";
+"welcome_screen_ad_hoc_meeting_title" = "Ad-hoc-Konferenzen erstellen in ";
+"status_bar_error_link_missed_message" = "Link nicht gefunden, oder Ihr Meeting-Dienst wird noch nicht unterstützt";
+"status_bar_error_link_missed_title" = "Ach! Kann %@ nicht beitreten";
+"preferences_general_patron_title" = "Schirmherr werden";

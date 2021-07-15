@@ -14,7 +14,7 @@
 "general_save" = "Spremi";
 "general_meeting" = "Sastanak";
 "create_meeting_error_title" = "Nije moguće stvoriti sastanak";
-"create_meeting_error_message" = "Prilagođeni url \"%@\" nedostaje ili ne valja. Upiši ga u postavkama programa.";
+"create_meeting_error_message" = "Prilagođeni url „%@“ nedostaje ili ne valja. Upiši ga u postavkama programa.";
 "next_meeting_empty_title" = "Danas više nema sastanaka";
 "next_meeting_empty_message" = "Opa! Vrijeme je za cocoa";
 
@@ -38,10 +38,6 @@
 "preferences_general_option_login_launch" = "Pokreni nakon prijave";
 "preferences_general_option_preferred_language_title" = "Željeni jezik:";
 "preferences_general_option_preferred_language_system_value" = "Sustav";
-"preferences_general_option_preferred_language_english_value" = "English";
-"preferences_general_option_preferred_language_ukrainian_value" = "Українська";
-"preferences_general_option_preferred_language_russian_value" = "Русский";
-"preferences_general_option_preferred_language_croatian_value" = "Hrvatski";
 "preferences_general_option_shortcuts" = "Prečaci";
 "preferences_general_all_shortcut" = "Svi prečaci";
 "preferences_general_shortcut_open_menu" = "Otvori izbornik:";
@@ -58,10 +54,10 @@
 "preferences_general_patron_six_months" = "6 mjeseci – 5.99 USD";
 "preferences_general_patron_twelve_months" = "12 mjeseci – 11.99 USD";
 "preferences_general_patron_description" = "Ove jednokratne kupnje se ne obnavljaju automatski.";
-"preferences_general_patron_thank_for_purchase" = "Hvala! Podržavaš MeetingBar za %d mjesec! 🎉";
+"preferences_general_patron_thank_for_purchase" = "Hvala! Podržavaš MeetingBar %d mjesec! 🎉";
 "preferences_general_patron_restore_purchases" = "Obnovi kupnje";
 "preferences_general_feedback_title" = "Ako imaš pitanja i povratne informacije,\nkontaktiraj me:";
-"preferences_general_feedback_email" = "email";
+"preferences_general_feedback_email" = "e-pošta";
 "preferences_general_feedback_twitter" = "twitter";
 "preferences_general_feedback_telegram" = "telegram";
 
@@ -82,8 +78,8 @@
 "preferences_appearance_events_value_show" = "prikaži";
 "preferences_appearance_events_value_hide" = "sakrij";
 "preferences_appearance_events_value_as_inactive" = "prikaži kao neaktivne";
-"preferences_appearance_events_value_as_underlined" = "prikaži kao podcrtano";
-"preferences_appearance_events_value_with_strikethrough" = "prikaži kao precrtano";
+"preferences_appearance_events_value_as_underlined" = "prikaži kao podcrtane";
+"preferences_appearance_events_value_with_strikethrough" = "prikaži kao precrtane";
 "preferences_appearance_events_value_only_with_link" = "prikaži samo one s poveznicama na sastanak";
 "preferences_appearance_status_bar_title" = "Traka stanja";
 "preferences_appearance_status_bar_icon_title" = "Ikona";
@@ -122,7 +118,7 @@
 "preferences_services_link_zoom_value" = "Zoom program";
 "preferences_services_link_teams_value" = "Teams program";
 "preferences_services_supported_links_list" = "Podržane poveznice za usluge:\n%@";
-"preferences_services_supported_links_mailback" = "Ako usluga nije podržana, javi mi putem emaila";
+"preferences_services_supported_links_mailback" = "Ako usluga nije podržana, javi mi putem e-maila";
 "preferences_services_create_meeting_title" = "Stvori sastanke putem";
 "preferences_services_create_meeting_custom_url_value" = "Prilagođeni url";
 "preferences_services_create_meeting_custom_url_placeholder" = "Upiši valjani url (npr. https://)";
@@ -236,7 +232,7 @@
 // MARK: - Welcome screen
 
 "welcome_screen_greeting_main_title" = "Bok! MeetingBar je toliko jednostavan program, da je skoro sve spremno.";
-"welcome_screen_greeting_additional_title" = "Učinimo ga 100 % svojim!";
+"welcome_screen_greeting_additional_title" = "Prilagodimo ga 100 % tvojim željama!";
 "welcome_screen_login_launch_toggle_title" = "Pokreni MeetingBar nakon prijave";
 "welcome_screen_shortcut_next_meeting_title" = "Pridruži se sljedećem sastanku pomoću tvojeg prečaca:";
 "welcome_screen_ad_hoc_meeting_title" = "Stvori posebne sastanke u ";
@@ -318,6 +314,7 @@
 "constants_meeting_service_discord" = "Discord";
 "constants_meeting_service_blackboard_collab" = "Blackboard Collaborate";
 "constants_meeting_service_coscreen" = "CoScreen";
+"constants_meeting_service_vowel" = "Vowel";
 "constants_meeting_service_other" = "Druge";
 "constants_meeting_service_url" = "URL";
 "constants_browser_brave" = "Brave";

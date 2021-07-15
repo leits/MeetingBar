@@ -38,10 +38,6 @@
 "preferences_general_option_login_launch" = "Запускать при входе в систему";
 "preferences_general_option_preferred_language_title" = "Предпочтительный язык:";
 "preferences_general_option_preferred_language_system_value" = "Системный";
-"preferences_general_option_preferred_language_english_value" = "English";
-"preferences_general_option_preferred_language_ukrainian_value" = "Українська";
-"preferences_general_option_preferred_language_russian_value" = "Русский";
-"preferences_general_option_preferred_language_croatian_value" = "Hrvatski";
 "preferences_general_option_shortcuts" = "Горячие клавиши";
 "preferences_general_all_shortcut" = "Все горячие клавиши";
 "preferences_general_shortcut_open_menu" = "Открыть меню:";
@@ -318,6 +314,7 @@
 "constants_meeting_service_discord" = "Discord";
 "constants_meeting_service_blackboard_collab" = "Blackboard Collaborate";
 "constants_meeting_service_coscreen" = "CoScreen";
+"constants_meeting_service_vowel" = "Vowel";
 "constants_meeting_service_other" = "Другое";
 "constants_meeting_service_url" = "URL-АДРЕС";
 "constants_browser_brave" = "Brave";
