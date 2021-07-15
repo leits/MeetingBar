@@ -1,8 +1,14 @@
 # Changelog for Meetingbar
 
 
-## Version 3.6.0 (WIP)
+## Version 3.7.0 (WIP)
 > unreleased
+
+## Version 3.6.0
+> (released 15th Jun 2021)
+* Added translations into Czech
+* Added integration with Vowel
+* Fixed zoom link detection bug from 3.5 version
 
 ## Version 3.5.0
 > (released 11th Jun 2021)
