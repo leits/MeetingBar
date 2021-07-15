@@ -34,6 +34,7 @@
 
 "store_patronage_title" = "MeetingBar-kronerulling";
 "constants_meeting_service_coscreen" = "CoScreen";
+"constants_meeting_service_vowel" = "Vowel";
 "constants_meeting_service_other" = "Annet";
 "constants_meeting_service_discord" = "Discord";
 "constants_meeting_service_jam" = "Jam";

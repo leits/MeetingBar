@@ -527,6 +527,11 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                 image!.size = NSSize(width: 16, height: 16)
 
             // tested and verified
+            case .some(.vowel):
+                image = NSImage(named: "vowel_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
             case .none:
                 image = NSImage(named: "no_online_session")!
                 image!.size = NSSize(width: 16, height: 16)

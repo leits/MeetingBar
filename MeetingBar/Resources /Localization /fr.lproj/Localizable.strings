@@ -1,6 +1,7 @@
 
 
 "constants_meeting_service_coscreen" = "CoScreen";
+"constants_meeting_service_vowel" = "Vowel";
 "constants_meeting_service_blackboard_collab" = "Blackboard Collaborate";
 "constants_meeting_service_discord" = "Discord";
 "constants_meeting_service_jam" = "Jam";
