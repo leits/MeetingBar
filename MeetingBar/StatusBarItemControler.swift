@@ -70,13 +70,13 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
     @objc
     func statusMenuBarAction(sender: NSStatusItem) {
         if !self.menuIsOpen && self.statusItem.menu == nil {
-            let event = NSApp.currentEvent!
-            NSLog("Event occured \(event.type.rawValue)")
+            let event = NSApp.currentEvent
+            NSLog("Event occured \(String(describing: event?.type.rawValue))")
 
             // Right button click
-            if event.type == NSEvent.EventType.rightMouseUp {
+            if event?.type == NSEvent.EventType.rightMouseUp {
                 self.appdelegate.joinNextMeeting()
-            } else if event.type == NSEvent.EventType.leftMouseDown || event.type == NSEvent.EventType.leftMouseUp {
+            } else if event == nil || event?.type == NSEvent.EventType.leftMouseDown || event?.type == NSEvent.EventType.leftMouseUp {
                 // show the menu as normal
                 self.statusItem.menu = self.statusItemMenu
                 self.statusItem.button?.performClick(nil) // ...and click
