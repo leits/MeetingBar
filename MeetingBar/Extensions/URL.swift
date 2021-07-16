@@ -9,22 +9,29 @@
 import AppKit
 
 extension URL {
+    /**
+     * opens the url in the browser instance.
+     */
     func openIn(browser: Browser) {
-        guard let browserURL = browser.url else {
-            self.openInDefaultBrowser()
-            return
-        }
-        let browserName = browser.localizedValue
+        let browserPath = browser.path
+        let browserName = browser.name
 
-        let configuration = NSWorkspace.OpenConfiguration()
-        NSWorkspace.shared.open([self], withApplicationAt: browserURL, configuration: configuration) { app, error in
-            guard app != nil else {
-                NSLog("Can't open \(self) in \(browserName): \(String(describing: error?.localizedDescription))")
-                sendNotification("link_url_cant_open_title".loco(browserName), "link_url_cant_open_message".loco(browserName))
-                self.openInDefaultBrowser()
-                return
+        if browserPath.isEmpty {
+            openInDefaultBrowser()
+        } else {
+            let configuration = NSWorkspace.OpenConfiguration()
+            configuration.activates = true
+            configuration.addsToRecentItems = true
+
+            NSWorkspace.shared.open([self], withApplicationAt: URL(fileURLWithPath: browserPath), configuration: configuration) { app, error in
+                guard app != nil else {
+                    NSLog("Can't open \(self) in \(browserName): \(String(describing: error?.localizedDescription))")
+                    sendNotification("link_url_cant_open_title".loco(browserName), "link_url_cant_open_message".loco(browserName))
+                    self.openInDefaultBrowser()
+                    return
+                }
+                NSLog("Opening \(self) in \(browserName)")
             }
-            NSLog("Opening \(self) in \(browserName)")
         }
     }
 

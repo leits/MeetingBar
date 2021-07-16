@@ -125,6 +125,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             case .none:
                 if Defaults[.joinEventNotification] {
                     removePendingNotificationRequests()
+                    removeDeliveredNotifications()
                 }
                 title = "🏁"
             case .nextEvent(let event):
@@ -156,7 +157,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                 }
                 button.image?.size = NSSize(width: 16, height: 16)
             } else if title == "MeetingBar" {
-                button.image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
+                button.image = NSImage(named: "AppIcon")!
                 button.image?.size = NSSize(width: 16, height: 16)
             } else if case .afterThreshold = nextEventState {
                 switch Defaults[.eventTitleIconFormat] {
@@ -262,6 +263,12 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
         }
         self.statusItemMenu.addItem(NSMenuItem.separator())
         self.createJoinSection()
+
+        if !Defaults[.bookmarks].isEmpty {
+            self.statusItemMenu.addItem(NSMenuItem.separator())
+
+            self.createBookmarksSection()
+        }
         self.statusItemMenu.addItem(NSMenuItem.separator())
 
         self.createPreferencesSection()
@@ -280,13 +287,6 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             }
         }
 
-        let openLinkFromClipboardItem = NSMenuItem()
-        openLinkFromClipboardItem.title = "status_bar_section_join_from_clipboard".loco()
-        openLinkFromClipboardItem.action = #selector(AppDelegate.openLinkFromClipboard)
-        openLinkFromClipboardItem.keyEquivalent = ""
-        openLinkFromClipboardItem.setShortcut(for: .openClipboardShortcut)
-        self.statusItemMenu.addItem(openLinkFromClipboardItem)
-
         let createEventItem = NSMenuItem()
         createEventItem.title = "status_bar_section_join_create_meeting".loco()
         createEventItem.action = #selector(AppDelegate.createMeeting)
@@ -295,34 +295,60 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
 
         self.statusItemMenu.addItem(createEventItem)
 
-        if !Defaults[.bookmarks].isEmpty {
-            self.statusItemMenu.addItem(NSMenuItem.separator())
+        let quickActionsItem = self.statusItemMenu.addItem(
+            withTitle: "status_bar_quick_actions".loco(),
+            action: nil,
+            keyEquivalent: ""
+        )
+        quickActionsItem.isEnabled = true
 
-            let bookmarksItem = self.statusItemMenu.addItem(
-                withTitle: "status_bar_section_bookmarks_title".loco(),
-                action: nil,
-                keyEquivalent: ""
-            )
+        quickActionsItem.submenu = NSMenu(title: "status_bar_quick_actions".loco())
 
-            var bookmarksMenu: NSMenu
+        let openLinkFromClipboardItem = NSMenuItem()
+        openLinkFromClipboardItem.title = "status_bar_section_join_from_clipboard".loco()
+        openLinkFromClipboardItem.action = #selector(AppDelegate.openLinkFromClipboard)
+        openLinkFromClipboardItem.keyEquivalent = ""
+        openLinkFromClipboardItem.setShortcut(for: .openClipboardShortcut)
+        quickActionsItem.submenu!.addItem(openLinkFromClipboardItem)
 
-            if Defaults[.bookmarks].count > 3 {
-                bookmarksMenu = NSMenu(title: "status_bar_section_bookmarks_menu".loco())
-                bookmarksItem.submenu = bookmarksMenu
+        if Defaults[.eventTitleFormat] == .show {
+            let toggleMeetingTitleVisibilityItem = NSMenuItem()
+            if Defaults[.hideMeetingTitle] {
+                toggleMeetingTitleVisibilityItem.title = "status_bar_show_meeting_names".loco()
             } else {
-                bookmarksItem.attributedTitle = NSAttributedString(string: "status_bar_section_bookmarks_title".loco(), attributes: [NSAttributedString.Key.font: NSFont.boldSystemFont(ofSize: 13)])
-                bookmarksItem.isEnabled = false
-                bookmarksMenu = self.statusItemMenu
+                toggleMeetingTitleVisibilityItem.title = "status_bar_hide_meeting_names".loco()
             }
+            toggleMeetingTitleVisibilityItem.action = #selector(AppDelegate.toggleMeetingTitleVisibility)
+            toggleMeetingTitleVisibilityItem.setShortcut(for: .toggleMeetingTitleVisibilityShortcut)
+            quickActionsItem.submenu!.addItem(toggleMeetingTitleVisibilityItem)
+        }
+    }
 
-            for bookmark in Defaults[.bookmarks] {
-                let bookmarkItem = bookmarksMenu.addItem(
-                    withTitle: bookmark.name,
-                    action: #selector(AppDelegate.joinBookmark),
-                    keyEquivalent: "")
+    func createBookmarksSection() {
+        let bookmarksItem = self.statusItemMenu.addItem(
+            withTitle: "status_bar_section_bookmarks_title".loco(),
+            action: nil,
+            keyEquivalent: ""
+        )
 
-                bookmarkItem.representedObject = bookmark
-            }
+        var bookmarksMenu: NSMenu
+
+        if Defaults[.bookmarks].count > 3 {
+            bookmarksMenu = NSMenu(title: "status_bar_section_bookmarks_menu".loco())
+            bookmarksItem.submenu = bookmarksMenu
+        } else {
+            bookmarksItem.attributedTitle = NSAttributedString(string: "status_bar_section_bookmarks_title".loco(), attributes: [NSAttributedString.Key.font: NSFont.boldSystemFont(ofSize: 13)])
+            bookmarksItem.isEnabled = false
+            bookmarksMenu = self.statusItemMenu
+        }
+
+        for bookmark in Defaults[.bookmarks] {
+            let bookmarkItem = bookmarksMenu.addItem(
+                withTitle: bookmark.name,
+                action: #selector(AppDelegate.joinBookmark),
+                keyEquivalent: "")
+
+            bookmarkItem.representedObject = bookmark
         }
     }
 
@@ -501,6 +527,11 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                 image!.size = NSSize(width: 16, height: 16)
 
             // tested and verified
+            case .some(.vowel):
+                image = NSImage(named: "vowel_icon")!
+                image!.size = NSSize(width: 16, height: 16)
+
+            // tested and verified
             case .none:
                 image = NSImage(named: "no_online_session")!
                 image!.size = NSSize(width: 16, height: 16)
@@ -528,7 +559,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
      * try  to get the correct image for the specific
      */
     func getMeetingIcon(_ event: EKEvent) -> NSImage {
-        let result = getMeetingLink(event, acceptAnyLink: Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show || Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.hide_without_any_link || Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show_inactive_without_any_link)
+        let result = getMeetingLink(event)
 
         return getMeetingIconForLink(result)
     }
@@ -611,15 +642,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
         }
 
         if !event.isAllDay && Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show_inactive_without_meeting_link {
-            let meetingLink = getMeetingLink(event, acceptAnyLink: false)
-            if meetingLink == nil {
-                styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
-                shouldShowAsActive = false
-            }
-        }
-
-        if !event.isAllDay && Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show_inactive_without_any_link {
-            let meetingLink = getMeetingLink(event, acceptAnyLink: true)
+            let meetingLink = getMeetingLink(event)
             if meetingLink == nil {
                 styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
                 shouldShowAsActive = false
@@ -762,9 +785,8 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                 if !notes.isEmpty {
                     eventMenu.addItem(withTitle: "status_bar_submenu_notes_title".loco(), action: nil, keyEquivalent: "")
                     let item = eventMenu.addItem(withTitle: "", action: nil, keyEquivalent: "")
-                    let paragraphStyle = NSMutableParagraphStyle()
-                    paragraphStyle.lineBreakMode = NSLineBreakMode.byWordWrapping
-                    item.attributedTitle = notes.splitWithNewLineAttributedString(with: [NSAttributedString.Key.paragraphStyle: paragraphStyle], maxWidth: 300.0)
+                    item.view = getNotesView(notes: notes)
+
                     eventMenu.addItem(NSMenuItem.separator())
                 }
             }
@@ -829,12 +851,53 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
 
             // Open in fanctastical if fantastical is installed
             if isFantasticalInstalled() {
-                let fantasticalItem = eventMenu.addItem(withTitle: "Open in Fantastical", action: #selector(AppDelegate.openEventInFantastical), keyEquivalent: "")
+                let fantasticalItem = eventMenu.addItem(withTitle: "status_bar_submenu_open_in_fantastical".loco(), action: #selector(AppDelegate.openEventInFantastical), keyEquivalent: "")
                 fantasticalItem.representedObject = EventWithDate(event: event, dateSection: dateSection)
             }
         } else {
             eventItem.toolTip = event.title
         }
+    }
+
+    private func getNotesView(notes: String) -> NSView {
+        // Create views
+        let paddingView = NSView()
+        let textView = NSTextView()
+        paddingView.addSubview(textView)
+
+        // Text styling
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineBreakMode = NSLineBreakMode.byWordWrapping
+        textView.textStorage?.setAttributedString(
+            notes.splitWithNewLineAttributedString(
+                with: [
+                    NSAttributedString.Key.paragraphStyle: paragraphStyle,
+                    NSAttributedString.Key.font: NSFont.systemFont(ofSize: 14)
+                ],
+                maxWidth: 300.0
+            )
+            .withLinksEnabled()
+        )
+        textView.backgroundColor = .clear
+        textView.textColor = .textColor
+
+        // Adjust frame layout for padding
+        if let textContainer = textView.textContainer {
+            textView.layoutManager?.ensureLayout(for: textContainer)
+            if let frame = textView.layoutManager?.usedRect(for: textContainer) {
+                // There's 10pt of padding seemingly built into the left side,
+                // no such thing on the right so we go 20pt to match the left side
+                textView.frame = NSRect(x: 10.0, y: 0.0, width: frame.width, height: frame.height)
+                paddingView.frame = NSRect(x: 0.0, y: 0.0, width: frame.width + 20, height: frame.height)
+            } else {
+                // Backup layout if we couldn't calculate frame
+                textView.autoresizingMask = [.width, .height]
+            }
+        } else {
+            // Backup layout if we couldn't calculate frame
+            textView.autoresizingMask = [.width, .height]
+        }
+        return paddingView
     }
 
     /**
@@ -848,7 +911,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
     func createPreferencesSection() {
         if removePatchVerion(Defaults[.appVersion]) > removePatchVerion(Defaults[.lastRevisedVersionInChangelog]) {
             let changelogItem = self.statusItemMenu.addItem(
-                withTitle: "What's new?",
+                withTitle: "status_bar_whats_new".loco(),
                 action: #selector(AppDelegate.openChangelogWindow),
                 keyEquivalent: ""
             )
@@ -882,7 +945,7 @@ func shortenTitleForSystembar(title: String?) -> String {
 }
 
 func shortenTitleForMenu(title: String?) -> String {
-    var eventTitle = String(title ?? "No title").trimmingCharacters(in: TitleTruncationRules.excludeAtEnds)
+    var eventTitle = String(title ?? "status_bar_no_title".loco()).trimmingCharacters(in: TitleTruncationRules.excludeAtEnds)
     if eventTitle.count > Int(Defaults[.menuEventTitleLength]) {
         let index = eventTitle.index(eventTitle.startIndex, offsetBy: Int(Defaults[.menuEventTitleLength]) - 1)
         eventTitle = String(eventTitle[...index]).trimmingCharacters(in: TitleTruncationRules.excludeAtEnds)
@@ -899,7 +962,11 @@ func createEventStatusString(_ event: EKEvent) -> (String, String) {
     var eventTitle: String
     switch Defaults[.eventTitleFormat] {
     case .show:
-        eventTitle = shortenTitleForSystembar(title: event.title)
+        if Defaults[.hideMeetingTitle] {
+            eventTitle = "general_meeting".loco()
+        } else {
+            eventTitle = shortenTitleForSystembar(title: event.title)
+        }
     case .dot:
         eventTitle = "•"
     case .none:

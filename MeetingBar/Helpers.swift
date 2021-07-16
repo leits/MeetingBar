@@ -8,6 +8,8 @@
 import Cocoa
 import EventKit
 import Defaults
+import AppKit
+
 
 
 struct EventWithDate {
@@ -128,7 +130,7 @@ func detectLink(_ field: inout String) -> MeetingLink? {
  * this method will collect text from the location, url and notes field of an event and try to find a known meeting url link.
  * As meeting links can be part of a outlook safe url, we will extract the original link from outlook safe links.
  */
-func getMeetingLink(_ event: EKEvent, acceptAnyLink: Bool) -> MeetingLink? {
+func getMeetingLink(_ event: EKEvent) -> MeetingLink? {
     var linkFields: [String] = []
 
     if let location = event.location {
@@ -157,17 +159,6 @@ func getMeetingLink(_ event: EKEvent, acceptAnyLink: Bool) -> MeetingLink? {
         }
     }
 
-    if acceptAnyLink {
-        for field in linkFields {
-            let links = detectLinks(text: field)
-            if !links.isEmpty {
-                return MeetingLink(service: MeetingServices.url, url: links[0])
-            }
-        }
-    }
-
-
-
     return nil
 }
 
@@ -188,22 +179,22 @@ func detectLinks(text: String) -> [URL] {
 
 
 func openEvent(_ event: EKEvent) {
-    let eventTitle = event.title ?? "No title"
-    if let meeting = getMeetingLink(event, acceptAnyLink: Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show || Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.hide_without_any_link || Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show_inactive_without_any_link) {
+    let eventTitle = event.title ?? "status_bar_no_title".loco()
+    if let meeting = getMeetingLink(event) {
         if Defaults[.runJoinEventScript], Defaults[.joinEventScriptLocation] != nil {
             if let url = Defaults[.joinEventScriptLocation]?.appendingPathComponent("joinEventScript.scpt") {
                 print("URL: \(url)")
                 let task = try! NSUserAppleScriptTask(url: url)
                 task.execute { error in
                     if let error = error {
-                        sendNotification("AppleScript return error", error.localizedDescription)
+                        sendNotification("status_bar_error_apple_script_title".loco(), error.localizedDescription)
                     }
                 }
             }
         }
-        openMeetingURL(meeting.service, meeting.url)
+        openMeetingURL(meeting.service, meeting.url, nil)
     } else {
-        sendNotification("Epp! Can't join the \(eventTitle)", "Link not found, or your meeting service is not yet supported")
+        sendNotification("status_bar_error_link_missed_title".loco(eventTitle), "status_bar_error_link_missed_message".loco())
     }
 }
 
@@ -219,11 +210,10 @@ func getEventParticipantStatus(_ event: EKEvent) -> EKParticipantStatus? {
 }
 
 
-func openMeetingURL(_ service: MeetingServices?, _ url: URL) {
+func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?) {
     switch service {
     case .meet:
-        let browser = Defaults[.browserForMeetLinks]
-        url.openIn(browser: browser)
+        url.openIn(browser: browser ?? Defaults[.meetBrowser])
 
     case .teams:
         if Defaults[.useAppForTeamsLinks] {
@@ -231,29 +221,30 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL) {
             teamsAppURL.scheme = "msteams"
             let result = teamsAppURL.url!.openInDefaultBrowser()
             if !result {
-                sendNotification("Oops! Unable to open the link in Microsoft Teams app", "Make sure you have Microsoft Teams app installed, or change the app in the preferences.")
+                sendNotification("status_bar_error_teams_link_title".loco(), "status_bar_error_teams_link_message".loco())
                 url.openInDefaultBrowser()
             }
         } else {
-            url.openInDefaultBrowser()
+            url.openIn(browser: browser ?? systemDefaultBrowser)
         }
-    case .zoom:
+
+    case .zoom, .zoomgov:
         if Defaults[.useAppForZoomLinks] {
             let urlString = url.absoluteString.replacingOccurrences(of: "?", with: "&").replacingOccurrences(of: "/j/", with: "/join?confno=")
             var zoomAppUrl = URLComponents(url: URL(string: urlString)!, resolvingAgainstBaseURL: false)!
             zoomAppUrl.scheme = "zoommtg"
             let result = zoomAppUrl.url!.openInDefaultBrowser()
             if !result {
-                sendNotification("Oops! Unable to open the link in Zoom app", "Make sure you have Zoom app installed, or change the app in the preferences.")
+                sendNotification("status_bar_error_zoom_app_link_title".loco(), "status_bar_error_zoom_app_link_message".loco())
                 url.openInDefaultBrowser()
             }
         } else {
-            url.openInDefaultBrowser()
+            url.openIn(browser: browser ?? systemDefaultBrowser)
         }
     case .zoom_native:
         let result = url.openInDefaultBrowser()
         if !result {
-            sendNotification("Oops! Unable to open the native link in Zoom app", "Make sure you have Zoom app installed, or change the app in the preferences.")
+            sendNotification("status_bar_error_zoom_native_link_title".loco(), "status_bar_error_zoom_native_link_message".loco())
 
             let urlString = url.absoluteString.replacingFirstOccurrence(of: "&", with: "?").replacingOccurrences(of: "/join?confno=", with: "/j/")
             var zoomBrowserUrl = URLComponents(url: URL(string: urlString)!, resolvingAgainstBaseURL: false)!
@@ -266,8 +257,9 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL) {
         NSWorkspace.shared.open(URL(string: "facetime-audio://" + url.absoluteString)!)
     case .phone:
         NSWorkspace.shared.open(URL(string: "tel://" + url.absoluteString)!)
+
     default:
-        url.openInDefaultBrowser()
+        url.openIn(browser: browser ?? systemDefaultBrowser)
     }
 }
 
@@ -276,4 +268,34 @@ func removePatchVerion(_ version: String) -> String {
     let major = versionArray[0]
     let minor = versionArray[1]
     return "\(major).\(minor)"
+}
+
+func bundleIdentifier(forAppName appName: String) -> String? {
+    let workspace = NSWorkspace.shared
+    let appPath = workspace.fullPath(forApplication: appName)
+    if let appPath = appPath {
+        let appBundle = Bundle(path: appPath)
+        return appBundle?.bundleIdentifier
+    }
+    return nil
+}
+
+
+/**
+ * adds the default browsers for the browser dialog
+ */
+func addInstalledBrowser() {
+    let existingBrowsers = Defaults[.browsers]
+
+    var appUrls = LSCopyApplicationURLsForURL(URL(string: "https:")! as CFURL, .all)?.takeRetainedValue() as? [URL]
+
+    if !appUrls!.isEmpty {
+        appUrls = appUrls?.sorted { $0.path.fileName() < $1.path.fileName() }
+        appUrls?.forEach {
+            let browser = Browser(name: $0.path.fileName(), path: $0.path)
+            if !existingBrowsers.contains(where: { $0.name == browser.path.fileName() }) {
+                Defaults[.browsers].append(browser)
+            }
+        }
+    }
 }

@@ -45,7 +45,7 @@ extension EKEventStore {
                 if Defaults[.allDayEvents] == AlldayEventsAppereance.show {
                     addEvent = true
                 } else if Defaults[.allDayEvents] == AlldayEventsAppereance.show_with_meeting_link_only {
-                    let result = getMeetingLink(calendarEvent, acceptAnyLink: false)
+                    let result = getMeetingLink(calendarEvent)
 
                     if result?.url != nil {
                         addEvent = true
@@ -53,13 +53,7 @@ extension EKEventStore {
                 }
             } else {
                 if Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.hide_without_meeting_link {
-                    let result = getMeetingLink(calendarEvent, acceptAnyLink: false)
-
-                    if result?.url != nil {
-                        addEvent = true
-                    }
-                } else if Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.hide_without_any_link {
-                    let result = getMeetingLink(calendarEvent, acceptAnyLink: true)
+                    let result = getMeetingLink(calendarEvent)
 
                     if result?.url != nil {
                         addEvent = true
@@ -113,35 +107,19 @@ extension EKEventStore {
         }
 
         // If the current event is still going on,
-        // but the next event is closer than 10 minutes later
+        // but the next event is closer than 13 minutes later
         // then show the next event
         for event in nextEvents {
             if event.isAllDay && Defaults[.allDayEvents] == AlldayEventsAppereance.hide {
                 continue
             } else {
                 if Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show_inactive_without_meeting_link {
-                    let meetingLink = getMeetingLink(event, acceptAnyLink: false)
+                    let meetingLink = getMeetingLink(event)
                     if meetingLink == nil {
                         continue
                     }
-                }
-
-                if Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show_inactive_without_any_link {
-                    let meetingLink = getMeetingLink(event, acceptAnyLink: true)
-                    if meetingLink == nil {
-                        continue
-                    }
-                }
-                if Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.hide_without_meeting_link {
-                    let result = getMeetingLink(event, acceptAnyLink: false)
-
-                    if result?.url == nil {
-                        continue
-                    }
-                }
-
-                if Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.hide_without_any_link {
-                    let result = getMeetingLink(event, acceptAnyLink: true)
+                } else if Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.hide_without_meeting_link {
+                    let result = getMeetingLink(event)
 
                     if result?.url == nil {
                         continue
@@ -167,7 +145,7 @@ extension EKEventStore {
                     nextEvent = event
                     continue
                 } else {
-                    let soon = now.addingTimeInterval(900) // 15 min from now
+                    let soon = now.addingTimeInterval(780) // 13 min from now
                     if event.startDate < soon {
                         nextEvent = event
                     } else {

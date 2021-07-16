@@ -21,6 +21,9 @@ struct BookmarksTab: View {
     var body: some View {
         VStack(alignment: .leading) {
             List {
+                if self.bookmarks.isEmpty {
+                    Text("preferences_bookmarks_no_bookmarks_placeholder".loco()).foregroundColor(Color.gray)
+                }
                 ForEach(bookmarks, id: \.self) { bookmark in
                     HStack {
                         Image(nsImage: NSImage(named: NSImage.listViewTemplateName)!).foregroundColor(.gray)

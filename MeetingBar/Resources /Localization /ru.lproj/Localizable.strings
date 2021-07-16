@@ -12,7 +12,7 @@
 "general_add" = "Добавить";
 "general_delete" = "Удалить";
 "general_save" = "Сохранить";
-
+"general_meeting" = "событие";
 "create_meeting_error_title" = "Невозможно создать новое событие";
 "create_meeting_error_message" = "Пользовательский URL \"%@\" отсутствует или недействителен. Пожалуйста, исправьте url в настройках приложения.";
 "next_meeting_empty_title" = "Нет событий на сегодня";
@@ -38,21 +38,21 @@
 "preferences_general_option_login_launch" = "Запускать при входе в систему";
 "preferences_general_option_preferred_language_title" = "Предпочтительный язык:";
 "preferences_general_option_preferred_language_system_value" = "Системный";
-"preferences_general_option_preferred_language_english_value" = "English";
-"preferences_general_option_preferred_language_russian_value" = "Русский";
 "preferences_general_option_shortcuts" = "Горячие клавиши";
+"preferences_general_all_shortcut" = "Все горячие клавиши";
 "preferences_general_shortcut_open_menu" = "Открыть меню:";
 "preferences_general_shortcut_create_meeting" = "Создать событие:";
 "preferences_general_shortcut_join_next" = "Присоединиться к следующему событию:";
 "preferences_general_shortcut_join_from_clipboard" = "Присоединиться к событию из буфера обмена:";
+"preferences_general_shortcut_toggle_meeting_name_visibility" = "Переключить видимость названия события в статус баре:";
 "preferences_general_meeting_bar_description" = "MeetingBar - это приложение с открытым исходным кодом, созданное Andrii Leitsius.\nПриложение призвано сделать ваши онлайн-встречи более спокойными и легкими.";
 "preferences_general_external_patronage" = "Patronage";
 "preferences_general_external_gitHub" = "GitHub";
 "preferences_general_external_contact" = "Связь";
 "preferences_general_patron_title" = "Become a Patron";
-"preferences_general_patron_three_months" = "3 Месяца - 2.99 USD";
-"preferences_general_patron_six_months" = "6 Месяцев - 5.99 USD";
-"preferences_general_patron_twelve_months" = "12 Месяцев - 11.99 USD";
+"preferences_general_patron_three_months" = "3 Месяца - 2,99 USD";
+"preferences_general_patron_six_months" = "6 Месяцев - 5,99 USD";
+"preferences_general_patron_twelve_months" = "12 Месяцев - 11,99 USD";
 "preferences_general_patron_description" = "Эти разовые покупки не продлеваются автоматически.";
 "preferences_general_patron_thank_for_purchase" = "Спасибо! Вы помогаете MeetingBar уже %d месяц! 🎉";
 "preferences_general_patron_restore_purchases" = "Восстановить покупки";
@@ -72,10 +72,8 @@
 "preferences_appearance_events_past_title" = "Прошедшие события:";
 "preferences_appearance_events_pending_title" = "Ожидающие события";
 "preferences_appearance_events_declined_title" = "Отклоненные события:";
-"preferences_appearance_events_non_all_day_title" = " Не весь день";
-"preferences_appearance_events_value_inactive_without_link" = "показать неактивным без какой-либо ссылки";
+"preferences_appearance_events_non_all_day_title" = "Не весь день:";
 "preferences_appearance_events_value_inactive_without_meeting_link" = "показать неактивным без ссылки на встречу";
-"preferences_appearance_events_value_hide_without_link" = "скрыть без какой-либо ссылкиk";
 "preferences_appearance_events_value_hide_without_meeting_link" = "скрыть без ссылки на встречу";
 "preferences_appearance_events_value_show" = "показать";
 "preferences_appearance_events_value_hide" = "скрыть";
@@ -112,6 +110,7 @@
 
 // MARK: - Preferences Services
 
+"preferences_services_link_meeting_title" = "Все ссылки";
 "preferences_services_link_meet_title" = "Meet ссылки";
 "preferences_services_link_zoom_title" = "Zoom ссылки";
 "preferences_services_link_team_title" = "Teams ссылки";
@@ -123,10 +122,29 @@
 "preferences_services_create_meeting_title" = "Создавать события через";
 "preferences_services_create_meeting_custom_url_value" = "Пользовательский URL";
 "preferences_services_create_meeting_custom_url_placeholder" = "Введите действительный URL (со схемой URL, например https://)";
-"preferences_services_google_meet_tip" = "Подсказка: Google Meet поддерживает выбор учетной записи с помощью параметра, например: https://meet.google.com/new?authuser=1";
+"preferences_services_google_meet_tip" = "Подсказка: Meet поддерживает выбор учетной записи с помощью параметра, например: https://meet.google.com/new?authuser=1";
+"preferences_services_create_meeting_browser_title" = "Использовать браузер";
+
+// MARK: - Preferences Services Browsers Configuration
+
+"preferences_configure_browsers_button" = "Настроить браузеры";
+"preferences_configure_browsers_delete_alert_title" = "Удалить конфигурацию браузера?";
+"preferences_configure_browsers_delete_alert_message" = "Вы хотите удалить конфигурацию браузера% @?";
+"preferences_configure_browsers_add_button_browser_title" = "Браузер";
+"preferences_configure_browsers_add_button_all_system_title" = "Все системные браузеры";
+"preferences_configure_browsers_modal_add_browser_title" = "Добавить браузер";
+"preferences_configure_browsers_modal_edit_browser_title" = "Изменить браузер";
+"preferences_configure_browsers_modal_add_browser_name" = "Имя";
+"preferences_configure_browsers_modal_add_browser_path" = "Путь";
+"preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "Выбрать браузер";
+"preferences_configure_browsers_modal_alert_title" = "Невозможно добавить конфигурацию браузера";
+"preferences_configure_browsers_choose_broser_panel_title" = "Выберите допустимое приложение браузера";
+"preferences_configure_browsers_choose_broser_panel_prompt" = "Выбрать браузер";
+"preferences_configure_browsers_choose_broser_panel_message" = "Выберите браузер с любым расположением!";
 
 // MARK: - Preferences Bookmarks
 
+"preferences_bookmarks_no_bookmarks_placeholder" = "У вас еще нет закладок";
 "preferences_bookmarks_delete_bookmark_title" = "Удалить закладку?";
 "preferences_bookmarks_delete_bookmark_message" = "Вы хотите удалить закладку %@?";
 "preferences_bookmarks_add_bookmark_button" = "Добавить закладку";
@@ -146,7 +164,7 @@
 
 // MARK: - Preferences Advanced
 
-"preferences_advanced_setting_warning" = "⚠️ Используйте эти настройки, только если понимаете, что они делают.";
+"preferences_advanced_setting_warning" = "⚠️ Используйте эти настройки, только если понимаете, что они делают";
 "preferences_advanced_apple_script_checkmark" = "Выполнить AppleScript при присоединении к событию";
 "preferences_advanced_apple_script_placeholder" = "# напишите здесь свой скрипт\ntell application \"Music\" to pause";
 "preferences_advanced_save_script_button" = "Сохранить скрипт";
@@ -191,6 +209,11 @@
 "status_bar_submenu_attendees_status_tentative" = " [Возможно]";
 "status_bar_submenu_attendees_status_unknown" = " [?]";
 "status_bar_submenu_open_in_calendar" = "Открыть в приложении \"Календарь\"";
+"status_bar_submenu_open_in_fantastical" = "Открыть в приложении \"Fantastical\"";
+"status_bar_quick_actions" = "Быстрые Действия";
+"status_bar_show_meeting_names" = "Показать названия событий";
+"status_bar_hide_meeting_names" = "Скрыть названия событий";
+"status_bar_whats_new" = "Что нового?";
 "status_bar_preferences" = "Настройки";
 "status_bar_quit" = "Выйти из MeetingBar";
 "status_bar_no_title" = "Без названия";
@@ -199,8 +222,8 @@
 "status_bar_error_apple_script_title" = "AppleScript вернул ошибку";
 "status_bar_error_link_missed_title" = "Пффф! Не могу присоединиться к %@";
 "status_bar_error_link_missed_message" = "Ссылка не найдена, или ваша служба еще не поддерживается";
-"status_bar_error_team_link_title" = "Ой! Невозможно открыть ссылку в приложении Microsoft Teams";
-"status_bar_error_team_link_message" = "Убедитесь, что у вас установлено приложение Microsoft Teams, или измените приложение в настройках.";
+"status_bar_error_teams_link_title" = "Ой! Невозможно открыть ссылку в приложении Microsoft Teams";
+"status_bar_error_teams_link_message" = "Убедитесь, что у вас установлено приложение Microsoft Teams, или измените приложение в настройках.";
 "status_bar_error_zoom_app_link_title" = "Ой! Невозможно открыть ссылку в приложении Zoom";
 "status_bar_error_zoom_app_link_message" = "Убедитесь, что у вас установлено приложение Zoom, или измените приложение в настройках.";
 "status_bar_error_zoom_native_link_title" = "Ой! Невозможно открыть ссылку в нативном приложении Zoom";
@@ -212,7 +235,7 @@
 "welcome_screen_greeting_additional_title" = "Сделаем это на 100% вашим!";
 "welcome_screen_login_launch_toggle_title" = "Запускать MeetingBar при входе в систему";
 "welcome_screen_shortcut_next_meeting_title" = "Присоединяйтесь к следующему мероприятию:";
-"welcome_screen_ad_hoc_meeting_title" = "Создавайте специальные события в";
+"welcome_screen_ad_hoc_meeting_title" = "Создавайте специальные события в ";
 "welcome_screen_shortcut_ad_hoc_meeting_title" = "горячяя клавиша:";
 "welcome_screen_setup_calendar_title" = "Настроить календари";
 
@@ -238,7 +261,7 @@
 "shared_send_notification_one_minute_value" = "за 1 минуту до";
 "shared_send_notification_three_minute_value" = "за 3 минуты до";
 "shared_send_notification_five_minute_value" = "за 5 минут до";
-"shared__send_notification_no_alert_style_tip" = "⚠️ Системные настройки уведомлений для Meetingbar в настоящее время не настроены на \"Оповещения (Alert)\". Пожалуйста, включите \"Оповещения (Alert)\", если вы хотите получать уведомления.";
+"shared_send_notification_no_alert_style_tip" = "⚠️ Системные настройки уведомлений для Meetingbar в настоящее время не настроены на \"Оповещения (Alert)\". Пожалуйста, включите \"Оповещения (Alert)\", если вы хотите получать уведомления.";
 "shared_send_notification_disabled_tip" = "⚠️ Системные настройки уведомлений для Meetingbar в настоящее время выключены. Пожалуйста, включите уведомления в системных настройках, чтобы не пропустить события.";
 
 // MARK: - Constants
@@ -251,7 +274,6 @@
 "constants_create_meeting_service_outlook_live" = "Outlook Live";
 "constants_create_meeting_service_outlook_office365" = "Outlook Office365";
 "constants_create_meeting_service_url" = "Пользовательский URL";
-
 "constants_meeting_service_phone" = "Телефон";
 "constants_meeting_service_meet" = "Google Meet";
 "constants_meeting_service_hangouts" = "Google Hangouts";
@@ -292,9 +314,9 @@
 "constants_meeting_service_discord" = "Discord";
 "constants_meeting_service_blackboard_collab" = "Blackboard Collaborate";
 "constants_meeting_service_coscreen" = "CoScreen";
+"constants_meeting_service_vowel" = "Vowel";
 "constants_meeting_service_other" = "Другое";
 "constants_meeting_service_url" = "URL-АДРЕС";
-
 "constants_browser_brave" = "Brave";
 "constants_browser_chrome" = "Google Chrome";
 "constants_browser_chromium" = "Chromium";
@@ -304,9 +326,6 @@
 "constants_browser_vivaldi" = "Vivaldi";
 "constants_browser_safari" = "Safari";
 "constants_browser_defaultBrowser" = "Браузер по умолчанию";
-
-"constants_time_format_12_h" = "12-часовой";
-"constants_time_format_24_h" = "24-часовой";
 
 // MARK: - Store
 
@@ -322,13 +341,6 @@
 "store_patronage_purchase_cloud_service_permission_denied_message" = "Доступ к информации облачного сервиса запрещен";
 "store_patronage_purchase_cloud_service_network_connection_failed" = "Не удалось подключиться к сети";
 "store_patronage_purchase_cloud_service_revoked_message" = "Пользователь отозвал разрешение на использование этой облачной службы";
-
-// MARK: - Helpres
-
-"helper_title_sample_show_title" = "Событие с чрезмерно большим заголовком из 55-символов.";
-"helper_title_sample_show_time" = " через 1ч 25м";
-"helper_title_sample_dot_time" = "• через 1ч 25м";
-"helper_title_sample_offset_title" = "Событие с чрезмерно большим заголовком из 100 - символов, чтобы показать возможности сокращения ....";
 
 // MARK: - Notifications
 

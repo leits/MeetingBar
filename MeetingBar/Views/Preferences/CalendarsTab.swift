@@ -23,7 +23,10 @@ struct CalendarsTab: View {
                 Text("preferences_calendars_select_calendars_title".loco())
                 Spacer()
                 Button(action: self.loadCalendarList) {
-                    Image(nsImage: NSImage(named: NSImage.refreshTemplateName)!)
+                    let image = Image(nsImage: NSImage(named: NSImage.refreshTemplateName)!)
+                    if #available(OSX 11.0, *) {
+                        image.offset(x: 0.0, y: 2.0)
+                    }
                 }
             }
             VStack(alignment: .leading, spacing: 15) {

@@ -39,6 +39,8 @@ extension Defaults.Keys {
     static let titleLength = Key<Double?>("titleLength", default: nil) // Backward compatibility
     static let statusbarEventTitleLength = Key<Int>("statusbarEventTitleLength", default: statusbarEventTitleLengthLimits.max)
 
+    static let hideMeetingTitle = Key<Bool>("hideMeetingTitle", default: false)
+
     // Menu Appearance
     // if the event title in the menu should be shortened or not -> the length will be stored in field menuEventTitleLength
     static let shortenEventTitle = Key<Bool>("shortenEventTitle", default: false)
@@ -64,6 +66,11 @@ extension Defaults.Keys {
     // Bookmarks
     static let bookmarks = Key<[Bookmark]>("bookmarks", default: [])
 
+    // all browser configurations
+    static let browsers = Key<[Browser]>("browsers", default: [])
+
+    // default browser for meeting links
+    static let defaultBrowser = Key<Browser>("defaultBrowser", default: Browser(name: "Default Browser", path: "", arguments: "", deletable: false))
 
     // show all day events - by default true
     static let allDayEvents = Key<AlldayEventsAppereance>("allDayEvents", default: AlldayEventsAppereance.show)
@@ -80,8 +87,14 @@ extension Defaults.Keys {
     // custom url to create meetings
     static let createMeetingServiceUrl = Key<String>("createMeetingServiceUrl", default: "")
 
-    static let browserForMeetLinks = Key<Browser>("browserForMeetLinks", default: .defaultBrowser)
+    static let meetBrowser = Key<Browser>("meetBrowser", default: systemDefaultBrowser)
 
+    /**
+     * browser used for creating a new meeting
+     */
+    static let browserForCreateMeeting = Key<Browser>("browserForCreateMeeting", default: systemDefaultBrowser)
+
+    static let browserForMeetLinks = Key<DeprecatedBrowser?>("browserForMeetLinks", default: nil)  // Backward compatibility
     static let useChromeForMeetLinks = Key<Bool?>("useChromeForMeetLinks") // Backward compatibility
     static let useAppForZoomLinks = Key<Bool>("useAppForZoomLinks", default: false)
     static let useAppForTeamsLinks = Key<Bool>("useAppForTeamsLinks", default: false)
