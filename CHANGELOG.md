@@ -3,6 +3,7 @@
 
 ## Version 3.7.0 (WIP)
 > unreleased
+* Added translations into Japanese
 
 ## Version 3.6.0
 > (released 15th Jun 2021)
