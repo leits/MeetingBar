@@ -13,7 +13,6 @@
 "general_delete" = "削除";
 "general_save" = "保存";
 "general_meeting" = "ミーティング";
-
 "create_meeting_error_title" = "新しいミーティングが作成できませんでした";
 "create_meeting_error_message" = "カスタムURL %@ がないか、異常です。設定で正しい値を入力してください。";
 "next_meeting_empty_title" = "今日はもうミーティングがありません";
@@ -21,11 +20,13 @@
 
 // MARK: - Window titles
 
+
 "window_title_preferences" = "MeetingBar の設定";
 "window_title_onboarding" = "MeetingBar へようこそ！";
 "windows_title_changelog" = "MeetingBar の新機能";
 
 // MARK: - Preferences tabs
+
 
 "preferences_tab_general" = "一般";
 "preferences_tab_appearance" = "外観";
@@ -35,6 +36,7 @@
 "preferences_tab_advanced" = "高度な設定";
 
 // MARK: - Preferences General
+
 
 "preferences_general_option_login_launch" = "ログイン時に起動";
 "preferences_general_option_preferred_language_title" = "言語:";
@@ -46,7 +48,7 @@
 "preferences_general_shortcut_join_next" = "次のミーティングに参加:";
 "preferences_general_shortcut_join_from_clipboard" = "クリップボードからミーティングに参加:";
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "ステータスバーのタイトル表示をトグルする:";
-"preferences_general_meeting_bar_description" = "MeetingBar は Andrii Leitsius によって開発されたオープンソースアプリケーションです。オンラインミーティングをスムーズで簡単にすることを目的としています。";
+"preferences_general_meeting_bar_description" = "MeetingBar は Andrii Leitsius によって開発されたオープンソースアプリケーションです。\nオンラインミーティングをスムーズで簡単にすることを目的としています。";
 "preferences_general_external_patronage" = "パトロンになる";
 "preferences_general_external_gitHub" = "GitHub";
 "preferences_general_external_contact" = "お問い合わせ";
@@ -64,13 +66,14 @@
 
 // MARK: - Preferences Appearance
 
+
 "preferences_appearance_events_title" = "イベント";
 "preferences_appearance_events_show_events_for_title" = "表示するイベント";
 "preferences_appearance_events_show_events_for_today_value" = "今日";
 "preferences_appearance_events_show_events_for_today_tomorrow_value" = "今日と明日";
 "preferences_appearance_events_non_all_day_title" = "その他のイベント:";
-"preferences_appearance_events_value_inactive_without_meeting_link" = "ミーティングリンクのないイベントを非アクティブで表示";
-"preferences_appearance_events_value_hide_without_meeting_link" = "ミーティングリンクのないイベントを非表示";
+"preferences_appearance_events_value_inactive_without_meeting_link" = "リンクのないイベントを非アクティブで表示";
+"preferences_appearance_events_value_hide_without_meeting_link" = "リンクのないイベントを非表示";
 "preferences_appearance_events_all_day_title" = "終日のイベント:";
 "preferences_appearance_events_without_guest_title" = "ゲストのないイベント:";
 "preferences_appearance_events_past_title" = "過去のイベント:";
@@ -81,13 +84,13 @@
 "preferences_appearance_events_value_as_inactive" = "非アクティブとして表示";
 "preferences_appearance_events_value_as_underlined" = "下線を表示";
 "preferences_appearance_events_value_with_strikethrough" = "取り消し線で表示";
-"preferences_appearance_events_value_only_with_link" = "ミーティングリンクのあるイベントのみ表示";
+"preferences_appearance_events_value_only_with_link" = "リンクのあるイベントのみ表示";
 "preferences_appearance_status_bar_title" = "ステータスバー";
 "preferences_appearance_status_bar_icon_title" = "アイコン";
-"preferences_appearance_status_bar_icon_app_icon_value" = "\U00A0アプリアイコン";
-"preferences_appearance_status_bar_icon_calendar_icon_value" = "\U00A0カレンダーアイコン";
-"preferences_appearance_status_bar_icon_specific_icon_value" = "\U00A0ミーティング固有のアイコン (MS Teamsなど)";
-"preferences_appearance_status_bar_icon_no_icon_value" = "\U00A0アイコンなし";
+"preferences_appearance_status_bar_icon_app_icon_value" = " アプリアイコン";
+"preferences_appearance_status_bar_icon_calendar_icon_value" = " カレンダーアイコン";
+"preferences_appearance_status_bar_icon_specific_icon_value" = " ミーティング固有のアイコン (MS Teamsなど)";
+"preferences_appearance_status_bar_icon_no_icon_value" = " アイコンなし";
 "preferences_appearance_status_bar_title_title" = "タイトル";
 "preferences_appearance_status_bar_title_event_title_value" = "イベント名";
 "preferences_appearance_status_bar_title_dot_value" = "ドット (•)";
@@ -97,10 +100,10 @@
 "preferences_appearance_status_bar_time_show_value" = "表示";
 "preferences_appearance_status_bar_time_show_under_title_value" = "タイトルの下に表示";
 "preferences_appearance_status_bar_time_hide_value" = "非表示";
-"preferences_appearance_status_bar_next_event" = "%d 分以内に開始されるミーティングのみ表示";
+"preferences_appearance_status_bar_next_event" = "%d分以内に開始されるミーティングのみ表示";
 "preferences_appearance_menu_title" = "メニュー";
 "preferences_appearance_menu_shorten_event_title_toggle" = "ミーティング名を短縮する";
-"preferences_appearance_menu_shorten_event_title_stepper" = "%d 文字";
+"preferences_appearance_menu_shorten_event_title_stepper" = "%d文字";
 "preferences_appearance_menu_time_format_title" = "時刻形式:";
 "preferences_appearance_menu_time_format_12_hour_value" = "12時間 (AM/PM)";
 "preferences_appearance_menu_time_format_24_hour_value" = "24時間";
@@ -110,6 +113,7 @@
 "preferences_appearance_menu_show_event_details_value" = "サブメニューに詳細表示";
 
 // MARK: - Preferences Services
+
 
 "preferences_services_link_meeting_title" = "すべてのミーティングリンクを開くアプリ";
 "preferences_services_link_meet_title" = "Meet を開くアプリ";
@@ -128,6 +132,7 @@
 
 // MARK: - Preferences Services Browsers Configuration
 
+
 "preferences_configure_browsers_button" = "ブラウザー設定";
 "preferences_configure_browsers_delete_alert_title" = "ブラウザー設定を削除しますか？";
 "preferences_configure_browsers_delete_alert_message" = "%@ のブラウザー設定を削除してもよろしいですか？";
@@ -141,9 +146,10 @@
 "preferences_configure_browsers_modal_alert_title" = "ブラウザー設定を追加できませんでした";
 "preferences_configure_browsers_choose_broser_panel_title" = "正しいブラウザーアプリを指定してください";
 "preferences_configure_browsers_choose_broser_panel_prompt" = "ブラウザーの選択";
-"preferences_configure_browsers_choose_broser_panel_message" = "任意のパスからブラウザを選択してください！";
+"preferences_configure_browsers_choose_broser_panel_message" = "任意のパスからブラウザーを選択してください！";
 
 // MARK: - Preferences Bookmarks
+
 
 "preferences_bookmarks_no_bookmarks_placeholder" = "ブックマークはまだありません";
 "preferences_bookmarks_delete_bookmark_title" = "ブックマークの削除";
@@ -158,16 +164,18 @@
 
 // MARK: - Preferences Calendars
 
+
 "preferences_calendars_select_calendars_title" = "表示するカレンダーの選択";
 "preferences_calendars_add_account_description" = "必要なカレンダーが見当たりませんか？";
 "preferences_calendars_add_account_button" = "アカウントを追加";
-"preferences_calendars_add_account_modal" = "外部カレンダーを追加するには、次の手順を実行してください。\n1. デフォルトのカレンダーアプリを開きます。\n2. メニューの「アカウントを追加」をクリックします。\n3. アカウントを選択して接続します。";
+"preferences_calendars_add_account_modal" = "外部カレンダーを追加するには、次の手順を実行してください:\n1. デフォルトのカレンダーアプリを開きます。\n2. メニューの「アカウントを追加」をクリックします。\n3. アカウントを選択して接続します。";
 
 // MARK: - Preferences Advanced
 
-"preferences_advanced_setting_warning" = "⚠️ これらの設定は、その内容を理解した上で使用してください。";
+
+"preferences_advanced_setting_warning" = "⚠️ これらの設定は、その内容を理解した上で使用してください";
 "preferences_advanced_apple_script_checkmark" = "ミーティング参加時に AppleScript を実行する";
-"preferences_advanced_apple_script_placeholder" = "# ここにスクリプトを書いてください\ntell application \"Music\" to pause";
+"preferences_advanced_apple_script_placeholder" = "# ここにスクリプトを書いてください\ntell application \\"Music\\" to pause";
 "preferences_advanced_save_script_button" = "保存";
 "preferences_advanced_wrong_location_title" = "場所が誤っています";
 "preferences_advanced_wrong_location_message" = "User > Library > Application Scripts > leits.MeetingBar フォルダを選択してください";
@@ -181,9 +189,10 @@
 
 // MARK: - Status bar
 
+
 "status_bar_section_today" = "今日";
 "status_bar_section_tomorrow" = "明日";
-"status_bar_empty_calendar_message" = "環境設定でカレンダーを選択すると、\nミーティングが表示されます。";
+"status_bar_empty_calendar_message" = "環境設定でカレンダーを選択すると、\nミーティングが表示されます";
 "status_bar_section_join_next_meeting" = "次のミーティングに参加";
 "status_bar_section_join_from_clipboard" = "クリップボードからミーティングを開く";
 "status_bar_section_join_create_meeting" = "ミーティングを作成";
@@ -225,12 +234,13 @@
 "status_bar_error_link_missed_message" = "ミーティングリンクが登録されていないか、サポートされていないサービスです";
 "status_bar_error_teams_link_title" = "おっと！Microsoft Team アプリでリンクを開けませんでした";
 "status_bar_error_teams_link_message" = "Microsoft Team アプリをインストールするか、設定でアプリを変更してください。";
-"status_bar_error_zoom_app_link_title" = "おーっと！ Zoom アプリでリンクを開けません。";
+"status_bar_error_zoom_app_link_title" = "おーっと！ Zoom アプリでリンクを開けません";
 "status_bar_error_zoom_app_link_message" = "Zoom アプリをインストールするか、設定でアプリを変更してください。";
 "status_bar_error_zoom_native_link_title" = "ぎゃー！ Zoom アプリでネイティブリンクを開けません";
 "status_bar_error_zoom_native_link_message" = "Zoom アプリをインストールするか、設定でアプリを変更してください。";
 
 // MARK: - Welcome screen
+
 
 "welcome_screen_greeting_main_title" = "こんにちは！ MeetingBar は必要な機能が揃ったシンプルなアプリです。";
 "welcome_screen_greeting_additional_title" = "100% 使いこなしましょう！";
@@ -242,10 +252,12 @@
 
 // MARK: - Calendars screen
 
+
 "calendars_screen_select_calendar_title" = "カレンダーが選択されていません";
 "calendars_screen_start_button" = "アプリを開始する";
 
 // MARK: - Access screen
+
 
 "access_screen_access_denied_title" = "おっと！カレンダーへのアクセスが拒否されているようです。";
 "access_screen_access_screen_access_denied_go_to_title" = "Go to";
@@ -257,6 +269,7 @@
 
 // MARK: - Shared
 
+
 "shared_send_notification_toggle" = "イベント開始前に通知する";
 "shared_send_notification_directly_value" = "イベントが始まったとき";
 "shared_send_notification_one_minute_value" = "1分前";
@@ -266,6 +279,7 @@
 "shared_send_notification_disabled_tip" = "⚠️ MeetingBar の macOS の通知設定が現在オフになっています。ミーティングを見逃さないために、 macOS のシステム設定で通知を有効にしてください。";
 
 // MARK: - Constants
+
 "constants_create_meeting_service_meet" = "Google Meet";
 "constants_create_meeting_service_jam" = "Jam";
 "constants_create_meeting_service_coscreen" = "CoScreen";
@@ -275,12 +289,11 @@
 "constants_create_meeting_service_outlook_live" = "Outlook Live";
 "constants_create_meeting_service_outlook_office365" = "Outlook Office365";
 "constants_create_meeting_service_url" = "カスタムURL";
-
 "constants_meeting_service_phone" = "電話";
 "constants_meeting_service_meet" = "Google Meet";
 "constants_meeting_service_hangouts" = "Google Hangouts";
 "constants_meeting_service_zoom" = "Zoom";
-"constants_meeting_service_zoom_native" = "Zoom ネイティブ";
+"constants_meeting_service_zoom_native" = "Zoomネイティブ";
 "constants_meeting_service_teams" = "Microsoft Teams";
 "constants_meeting_service_webex" = "Cisco Webex";
 "constants_meeting_service_jitsi" = "Jitsi";
@@ -319,7 +332,6 @@
 "constants_meeting_service_vowel" = "Vowel";
 "constants_meeting_service_other" = "その他";
 "constants_meeting_service_url" = "URL";
-
 "constants_browser_brave" = "Brave";
 "constants_browser_chrome" = "Google Chrome";
 "constants_browser_chromium" = "Chromium";
@@ -331,6 +343,7 @@
 "constants_browser_defaultBrowser" = "標準のブラウザー";
 
 // MARK: - Store
+
 
 "store_patronage_title" = "MeetingBar のパトロンになる";
 "store_patronage_restore_success_message" = "復元に成功しました";
@@ -347,9 +360,11 @@
 
 // MARK: - Notifications
 
+
 "notifications_event_start_soon_body" = "もうすぐイベントが開始されます";
 
 // MARK: - Link open
 
-"link_url_cant_open_title" = "ひえー！ %@ リンクを開くことが出来ませんでした";
+
+"link_url_cant_open_title" = "ひえー！ %@ のリンクを開くことが出来ませんでした";
 "link_url_cant_open_message" = "%@ をインストールするか、設定でブラウザーを変更してください。";
