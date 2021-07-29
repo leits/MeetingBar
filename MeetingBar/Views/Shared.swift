@@ -74,6 +74,7 @@ struct LaunchAtLoginANDPreferredLanguagePicker: View {
                 Text("Deutsche").tag(AppLanguage.german)
                 Text("Norks").tag(AppLanguage.norwegian)
                 Text("Čeština").tag(AppLanguage.czech)
+                Text("Japanese").tag(AppLanguage.japanese)
             }.frame(width: 250)
         }
     }
