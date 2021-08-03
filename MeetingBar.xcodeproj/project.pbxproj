@@ -127,6 +127,7 @@
 		E4DD0F0A2529D0D20029E395 /* Project-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Project-Release.xcconfig"; sourceTree = "<group>"; };
 		E4DD0F0B2529D0D20029E395 /* Project.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Project.xcconfig; sourceTree = "<group>"; };
 		E4DD0F0C2529D0D20029E395 /* Project-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Project-Debug.xcconfig"; sourceTree = "<group>"; };
+		EA04E13F26B2664F00D183B8 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -422,6 +423,7 @@
 				hr,
 				"nb-NO",
 				cs,
+				ja,
 			);
 			mainGroup = 144C01702462D0C3000C9FFC;
 			packageReferences = (
@@ -549,6 +551,7 @@
 				14C9A92A269A209C005306DA /* hr */,
 				14C9A92B269A20A1005306DA /* nb-NO */,
 				143E6D6226A0C5E300B3CBEE /* cs */,
+				EA04E13F26B2664F00D183B8 /* ja */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";

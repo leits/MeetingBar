@@ -62,6 +62,11 @@ struct ChangelogView: View {
                         Text("Fixed zoom link detection")
                     }
                 }
+                if lastRevisedVersionInChangelog < "3.7.0" {
+                    Section(header: Text("Version 3.7.0")) {
+                        Text("🌍 Added translations into Japanese")
+                    }
+                }
             }.listStyle(SidebarListStyle())
             Button("Close", action: close)
         }.padding()

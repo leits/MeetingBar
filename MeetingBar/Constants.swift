@@ -353,6 +353,7 @@ enum AppLanguage: String, Codable {
     case french = "fr"
     case czech = "cs"
     case norwegian = "nb-NO"
+    case japanese = "ja"
 }
 
 struct Browser: Encodable, Decodable, Hashable {
