@@ -204,7 +204,6 @@
 "status_bar_submenu_duration_all_day" = "%@ - %@ (%@分)";
 "status_bar_submenu_status_title" = "状態: %@";
 "status_bar_submenu_status_accepted" = " 👍 参加";
-"status_bar_submenu_status_canceled" = " 👎 不参加";
 "status_bar_submenu_status_tentative" = " ☝️ 仮";
 "status_bar_submenu_status_pending" = " ⏳ 保留";
 "status_bar_submenu_status_unknown" = " ❔ 不明";
