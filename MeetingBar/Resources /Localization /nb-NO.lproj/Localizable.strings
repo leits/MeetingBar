@@ -192,7 +192,7 @@
 "status_bar_submenu_open_in_calendar" = "Åpne i kalenderprogram";
 "status_bar_submenu_attendees_you" = "%@ (deg)";
 "status_bar_submenu_notes_title" = "Notater:";
-"status_bar_submenu_status_canceled" = " 👎 Kansellert";
+"status_bar_submenu_status_declined" = " 👎 Kansellert";
 "status_bar_submenu_status_accepted" = " 👍 Akseptert";
 "status_bar_submenu_status_title" = "Status: %@";
 "status_bar_submenu_calendar_title" = "Kalender: %@";

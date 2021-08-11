@@ -162,7 +162,7 @@
 "status_bar_submenu_status_unknown" = " ❔ Inconnu";
 "status_bar_submenu_status_pending" = " ⏳ En attente";
 "status_bar_submenu_status_tentative" = " ☝️ Tentative";
-"status_bar_submenu_status_canceled" = " 👎 Annulé";
+"status_bar_submenu_status_declined" = " 👎 Annulé";
 "status_bar_submenu_status_accepted" = " 👍 Accepté";
 "status_bar_submenu_status_title" = "État : %@";
 "status_bar_submenu_duration_all_day" = "%@ - %@ (%@ minutes)";

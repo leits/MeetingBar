@@ -726,7 +726,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                 case .accepted:
                     status = "status_bar_submenu_status_accepted".loco()
                 case .declined:
-                    status = "status_bar_submenu_status_canceled".loco()
+                    status = "status_bar_submenu_status_declined".loco()
                 case .tentative:
                     status = "status_bar_submenu_status_tentative".loco()
                 case .pending:

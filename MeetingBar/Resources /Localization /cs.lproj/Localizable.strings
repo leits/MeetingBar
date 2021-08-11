@@ -157,7 +157,7 @@
 "status_bar_submenu_status_unknown" = " ❔ Neznámý";
 "status_bar_submenu_status_pending" = " ⏳ Čeká na vyřízení";
 "status_bar_submenu_status_tentative" = " ☝️ Nezávazně";
-"status_bar_submenu_status_canceled" = " 👎 Zrušeno";
+"status_bar_submenu_status_declined" = " 👎 Zrušeno";
 "status_bar_submenu_status_accepted" = " 👍 Přijato";
 "status_bar_submenu_status_title" = "Stav: %@";
 "status_bar_submenu_duration_all_day" = "%@–%@ (%@ minut)";

@@ -194,7 +194,7 @@
 "status_bar_submenu_duration_all_day" = "%@ – %@ (%@ min)";
 "status_bar_submenu_status_title" = "Stanje: %@";
 "status_bar_submenu_status_accepted" = " 👍 Prihvaćeno";
-"status_bar_submenu_status_canceled" = " 👎 Otkazano";
+"status_bar_submenu_status_declined" = " 👎 Otkazano";
 "status_bar_submenu_status_tentative" = " ☝️ Provizorno";
 "status_bar_submenu_status_pending" = " ⏳ U tijeku";
 "status_bar_submenu_status_unknown" = " ❔ Nepoznato";

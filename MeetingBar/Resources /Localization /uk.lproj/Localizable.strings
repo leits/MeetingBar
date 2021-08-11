@@ -194,7 +194,7 @@
 "status_bar_submenu_duration_all_day" = "%@ - %@ (%@ хвилин)";
 "status_bar_submenu_status_title" = "Сатус: %@";
 "status_bar_submenu_status_accepted" = " 👍 Прийнято";
-"status_bar_submenu_status_canceled" = " 👎 Відхилено";
+"status_bar_submenu_status_declined" = " 👎 Відхилено";
 "status_bar_submenu_status_tentative" = " ☝️ Мабуть";
 "status_bar_submenu_status_pending" = " ⏳ Очікується";
 "status_bar_submenu_status_unknown" = " ❔ Невідомо";

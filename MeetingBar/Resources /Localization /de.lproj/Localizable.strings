@@ -151,7 +151,7 @@
 "status_bar_submenu_status_unknown" = " ❔ Unbekannt";
 "status_bar_submenu_status_pending" = " ⏳ Ausstehend";
 "status_bar_submenu_status_tentative" = " ☝️ Versuch";
-"status_bar_submenu_status_canceled" = " 👎 Abgebrochen";
+"status_bar_submenu_status_declined" = " 👎 Abgebrochen";
 "status_bar_submenu_status_accepted" = " 👍 Akzeptiert";
 "status_bar_submenu_status_title" = "Status: %@";
 "status_bar_submenu_duration_all_day" = "%@ - %@ (%@ Minuten)";

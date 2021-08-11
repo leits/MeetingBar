@@ -195,7 +195,7 @@
 "status_bar_submenu_duration_all_day" = "%@ - %@ (%@ minutes)";
 "status_bar_submenu_status_title" = "Status: %@";
 "status_bar_submenu_status_accepted" = " 👍 Accepted";
-"status_bar_submenu_status_canceled" = " 👎 Canceled";
+"status_bar_submenu_status_declined" = " 👎 Declined";
 "status_bar_submenu_status_tentative" = " ☝️ Tentative";
 "status_bar_submenu_status_pending" = " ⏳ Pending";
 "status_bar_submenu_status_unknown" = " ❔ Unknown";
