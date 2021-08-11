@@ -10,7 +10,6 @@ import SwiftUI
 
 import Defaults
 
-
 struct ChangelogView: View {
     @Default(.lastRevisedVersionInChangelog) var lastRevisedVersionInChangelog
 

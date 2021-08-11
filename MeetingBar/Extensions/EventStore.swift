@@ -37,7 +37,6 @@ extension EKEventStore {
 
         var filteredCalendarEvents = [EKEvent]()
 
-
         for calendarEvent in calendarEvents {
             var addEvent = false
 
@@ -64,7 +63,7 @@ extension EKEventStore {
             }
 
             let status = getEventParticipantStatus(calendarEvent)
-            if status == .pending && Defaults[.showPendingEvents] == .hide {
+            if status == .pending, Defaults[.showPendingEvents] == .hide {
                 addEvent = false
             }
 
@@ -127,13 +126,12 @@ extension EKEventStore {
                 }
             }
 
-
             if let status = getEventParticipantStatus(event) {
                 if status == .declined { // Skip event if declined
                     continue
                 }
 
-                if status == .pending && (Defaults[.showPendingEvents] == PendingEventsAppereance.hide || Defaults[.showPendingEvents] == PendingEventsAppereance.show_inactive) {
+                if status == .pending, Defaults[.showPendingEvents] == PendingEventsAppereance.hide || Defaults[.showPendingEvents] == PendingEventsAppereance.show_inactive {
                     continue
                 }
             }

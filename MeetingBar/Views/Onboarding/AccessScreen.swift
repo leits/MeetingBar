@@ -6,8 +6,8 @@
 //  Copyright © 2021 Andrii Leitsius. All rights reserved.
 //
 
-import SwiftUI
 import EventKit
+import SwiftUI
 
 import Defaults
 

@@ -114,7 +114,7 @@ struct ServicesTab: View {
     }
 
     func clickConfigureBrowser() {
-        self.showBrowserConfiguration.toggle()
+        showBrowserConfiguration.toggle()
     }
 }
 

@@ -5,10 +5,10 @@
 //  Created by Andrii Leitsius on 14.08.2020.
 //  Copyright © 2020 Andrii Leitsius. All rights reserved.
 //
-import EventKit
-import UserNotifications
 import AppKit
 import Defaults
+import EventKit
+import UserNotifications
 
 func requestNotificationAuthorization() {
     let center = UNUserNotificationCenter.current()

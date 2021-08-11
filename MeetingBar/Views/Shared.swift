@@ -6,8 +6,8 @@
 //  Copyright © 2021 Andrii Leitsius. All rights reserved.
 //
 
-import SwiftUI
 import Defaults
+import SwiftUI
 import UserNotifications
 
 struct JoinEventNotificationPicker: View {
@@ -32,7 +32,6 @@ struct JoinEventNotificationPicker: View {
         return (noAlertStyle, notificationsDisabled)
     }
 
-
     var body: some View {
         HStack {
             Toggle("shared_send_notification_toggle".loco(), isOn: $joinEventNotification)
@@ -54,7 +53,6 @@ struct JoinEventNotificationPicker: View {
         }
     }
 }
-
 
 struct LaunchAtLoginANDPreferredLanguagePicker: View {
     @Default(.launchAtLogin) var launchAtLogin
