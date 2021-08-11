@@ -201,7 +201,7 @@
 "status_bar_submenu_status_default_extended" = " ❔ (%@)";
 "status_bar_submenu_status_default_simple" = " ❔ (nepoznato)";
 "status_bar_submenu_location_title" = "Lokacija:";
-"status_bar_submenu_organizer_title" = "Organizator:";
+"status_bar_submenu_organizer_title" = "Organizator: %@";
 "status_bar_submenu_notes_title" = "Napomene:";
 "status_bar_submenu_attendees_title" = "Sudionici (%d)";
 "status_bar_submenu_attendees_no_name" = "Bezimeni sudionik";

@@ -106,7 +106,7 @@
 "status_bar_error_apple_script_title" = "Feil fra AppleScript";
 "status_bar_submenu_attendees_status_tentative" = " [tentativt]";
 "status_bar_submenu_attendees_title" = "Deltagere (%d)";
-"status_bar_submenu_organizer_title" = "Organisator:";
+"status_bar_submenu_organizer_title" = "Organisator: %@";
 "status_bar_submenu_location_title" = "Sted:";
 "status_bar_submenu_status_default_simple" = " ❔ (Ukjent)";
 "status_bar_submenu_status_unknown" = " ❔ Ukjent";

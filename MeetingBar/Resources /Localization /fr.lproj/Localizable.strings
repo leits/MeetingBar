@@ -155,7 +155,7 @@
 "status_bar_submenu_attendees_no_name" = "Participant·e sans nom";
 "status_bar_submenu_attendees_title" = "Participant·e·s (%d)";
 "status_bar_submenu_notes_title" = "Notes :";
-"status_bar_submenu_organizer_title" = "Organisateur·ice :";
+"status_bar_submenu_organizer_title" = "Organisateur·ice : %@";
 "status_bar_submenu_location_title" = "Emplacement :";
 "status_bar_submenu_status_default_simple" = " ❔ (Inconnu)";
 "status_bar_submenu_status_default_extended" = " ❔ (%@)";

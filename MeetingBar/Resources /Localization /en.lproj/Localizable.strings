@@ -202,7 +202,7 @@
 "status_bar_submenu_status_default_extended" = " ❔ (%@)";
 "status_bar_submenu_status_default_simple" = " ❔ (Unknown)";
 "status_bar_submenu_location_title" = "Location:";
-"status_bar_submenu_organizer_title" = "Organizer:";
+"status_bar_submenu_organizer_title" = "Organizer: %@";
 "status_bar_submenu_notes_title" = "Notes:";
 "status_bar_submenu_attendees_title" = "Attendees (%d)";
 "status_bar_submenu_attendees_no_name" = "No name attendee";

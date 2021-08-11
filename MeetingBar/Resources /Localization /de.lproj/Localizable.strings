@@ -143,7 +143,7 @@
 "status_bar_submenu_attendees_you" = "%@ (Sie)";
 "status_bar_submenu_attendees_no_name" = "Teilnehmer/in ohne Namen";
 "status_bar_submenu_attendees_title" = "Teilnehmer/innen (%d)";
-"status_bar_submenu_organizer_title" = "Veranstalter/in:";
+"status_bar_submenu_organizer_title" = "Veranstalter/in: %@";
 "status_bar_submenu_notes_title" = "Notizen:";
 "status_bar_submenu_location_title" = "Ort:";
 "status_bar_submenu_status_default_simple" = " ❔ (Unbekannt)";

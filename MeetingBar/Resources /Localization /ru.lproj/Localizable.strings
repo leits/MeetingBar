@@ -201,7 +201,7 @@
 "status_bar_submenu_status_default_extended" = " ❔ (%@)";
 "status_bar_submenu_status_default_simple" = " ❔ (Неизвестно)";
 "status_bar_submenu_location_title" = "Местоположение:";
-"status_bar_submenu_organizer_title" = "Организатор:";
+"status_bar_submenu_organizer_title" = "Организатор: %@";
 "status_bar_submenu_notes_title" = "Примечания:";
 "status_bar_submenu_attendees_title" = "Участники (%d)";
 "status_bar_submenu_attendees_no_name" = "Участник без имени";

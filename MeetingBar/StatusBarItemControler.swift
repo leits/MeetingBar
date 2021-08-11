@@ -724,21 +724,6 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             titleItem.attributedTitle = NSAttributedString(string: eventTitle, attributes: [NSAttributedString.Key.font: NSFont.boldSystemFont(ofSize: 15)])
             eventMenu.addItem(NSMenuItem.separator())
 
-            // Calendar
-            if Defaults[.selectedCalendarIDs].count > 1 {
-                eventMenu.addItem(withTitle: "status_bar_submenu_calendar_title".loco(event.calendar.title), action: nil, keyEquivalent: "")
-                eventMenu.addItem(NSMenuItem.separator())
-            }
-
-            // Duration
-            if !event.isAllDay {
-                let eventEndTime = eventTimeFormatter.string(from: event.endDate)
-                let eventDurationMinutes = String(Int(event.endDate.timeIntervalSince(event.startDate) / 60))
-                let durationTitle = "status_bar_submenu_duration_all_day".loco(eventStartTime, eventEndTime, eventDurationMinutes)
-                eventMenu.addItem(withTitle: durationTitle, action: nil, keyEquivalent: "")
-                eventMenu.addItem(NSMenuItem.separator())
-            }
-
             // Status
             if eventParticipantStatus != nil {
                 var status: String
@@ -764,6 +749,21 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                 eventMenu.addItem(NSMenuItem.separator())
             }
 
+            // Duration
+            if !event.isAllDay {
+                let eventEndTime = eventTimeFormatter.string(from: event.endDate)
+                let eventDurationMinutes = String(Int(event.endDate.timeIntervalSince(event.startDate) / 60))
+                let durationTitle = "status_bar_submenu_duration_all_day".loco(eventStartTime, eventEndTime, eventDurationMinutes)
+                eventMenu.addItem(withTitle: durationTitle, action: nil, keyEquivalent: "")
+                eventMenu.addItem(NSMenuItem.separator())
+            }
+
+            // Calendar
+            if Defaults[.selectedCalendarIDs].count > 1 {
+                eventMenu.addItem(withTitle: "status_bar_submenu_calendar_title".loco(event.calendar.title), action: nil, keyEquivalent: "")
+                eventMenu.addItem(NSMenuItem.separator())
+            }
+
             // Location
             if let location = event.location {
                 eventMenu.addItem(withTitle: "status_bar_submenu_location_title".loco(), action: nil, keyEquivalent: "")
@@ -773,9 +773,8 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
 
             // Organizer
             if let eventOrganizer = event.organizer {
-                eventMenu.addItem(withTitle: "status_bar_submenu_organizer_title".loco(), action: nil, keyEquivalent: "")
                 let organizerName = eventOrganizer.name ?? ""
-                eventMenu.addItem(withTitle: "\(organizerName)", action: nil, keyEquivalent: "")
+                eventMenu.addItem(withTitle: "status_bar_submenu_organizer_title".loco(organizerName), action: nil, keyEquivalent: "")
                 eventMenu.addItem(NSMenuItem.separator())
             }
 

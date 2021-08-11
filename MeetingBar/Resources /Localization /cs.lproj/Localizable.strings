@@ -150,7 +150,7 @@
 "status_bar_submenu_attendees_no_name" = "Účastník beze jména";
 "status_bar_submenu_attendees_title" = "Účastníci (%d)";
 "status_bar_submenu_notes_title" = "Poznámky:";
-"status_bar_submenu_organizer_title" = "Organizátor:";
+"status_bar_submenu_organizer_title" = "Organizátor: %@";
 "status_bar_submenu_location_title" = "Místnost:";
 "status_bar_submenu_status_default_simple" = " ❔ (Neznámý)";
 "status_bar_submenu_status_default_extended" = " ❔ (%@)";
