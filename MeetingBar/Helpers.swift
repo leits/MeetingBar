@@ -293,3 +293,18 @@ func addInstalledBrowser() {
         }
     }
 }
+
+func emailEventAttendees(_ event: EKEvent) {
+    let service = NSSharingService(named: NSSharingService.Name.composeEmail)!
+    var recipients: [String] = []
+    event.attendees?.forEach {
+        if let email = ($0.url as NSURL).resourceSpecifier {
+            recipients.append(email)
+        }
+    }
+    service.recipients = recipients
+    if let title = event.title {
+        service.subject = title
+    }
+    service.perform(withItems: [])
+}

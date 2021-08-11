@@ -839,6 +839,14 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                 eventMenu.addItem(NSMenuItem.separator())
             }
 
+            // Copy meeting link
+            let copyLinkItem = eventMenu.addItem(withTitle: "Copy meeting link", action: #selector(AppDelegate.copyEventMeetingLink), keyEquivalent: "")
+            copyLinkItem.representedObject = event
+
+            // Send email
+            let emailItem = eventMenu.addItem(withTitle: "Email attendees", action: #selector(AppDelegate.emailAttendees), keyEquivalent: "")
+            emailItem.representedObject = event
+
             // Open in App
             let openItem = eventMenu.addItem(withTitle: "status_bar_submenu_open_in_calendar".loco(), action: #selector(AppDelegate.openEventInCalendar), keyEquivalent: "")
             openItem.representedObject = event.eventIdentifier

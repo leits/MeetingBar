@@ -564,6 +564,26 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
     }
 
+    @objc
+    func copyEventMeetingLink(sender: NSMenuItem) {
+        if let event: EKEvent = sender.representedObject as? EKEvent {
+            let eventTitle = event.title ?? "status_bar_no_title".loco()
+            if let meeting = getMeetingLink(event) {
+                NSPasteboard.general.clearContents()
+                NSPasteboard.general.setString(meeting.url.absoluteString, forType: .string)
+            } else {
+                sendNotification("status_bar_error_link_missed_title".loco(eventTitle), "status_bar_error_link_missed_message".loco())
+            }
+        }
+    }
+
+    @objc
+    func emailAttendees(sender: NSMenuItem) {
+        if let event: EKEvent = sender.representedObject as? EKEvent {
+            emailEventAttendees(event)
+        }
+    }
+
     /**
      * opens an event in the fantastical app. It uses the x-fantastical url handler which is not fully described on the fantastical website,
      * but was confirmed in the github ticket.
