@@ -21,6 +21,10 @@
 // MARK: - Notifications
 
 "notifications_event_start_soon_body" = "Begivenheten starter snart";
+"notifications_event_start_one_minute_body" = "The event starts in one minute";
+"notifications_event_start_three_minutes_body" = "The event starts in three minutes";
+"notifications_event_start_five_minutes_body" = "The event starts in five minutes";
+
 "store_patronage_purchase_cloud_service_revoked_message" = "Bruker har nektet tilgang for bruk av denne skytjenesten";
 "store_patronage_purchase_cloud_service_network_connection_failed" = "Kunne ikke koble til nettverket";
 "store_patronage_purchase_cloud_service_permission_denied_message" = "Tilgang til skytjenesteinfo tillates ikke";
