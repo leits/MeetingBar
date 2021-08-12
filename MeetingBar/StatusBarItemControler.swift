@@ -983,16 +983,16 @@ func createEventStatusString(_ event: EKEvent) -> (String, String) {
     formatter.calendar = calendar
 
     var eventDate: Date
+    let prevMinute = Date().addingTimeInterval(-60)
     let now = Date()
-    let nextMinute = Date().addingTimeInterval(60)
-    if (event.startDate)! < nextMinute, (event.endDate)! > nextMinute {
+    if (event.startDate)! < now, (event.endDate)! > prevMinute {
         isActiveEvent = true
         eventDate = event.endDate
     } else {
         isActiveEvent = false
         eventDate = event.startDate
     }
-    let formattedTimeLeft = formatter.string(from: now, to: eventDate)!
+    let formattedTimeLeft = formatter.string(from: prevMinute, to: eventDate)!
 
     if isActiveEvent {
         eventTime = "status_bar_event_status_now".loco(formattedTimeLeft)
