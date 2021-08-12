@@ -5,6 +5,7 @@ import XCTest
 
 class StringExtensionsTests: XCTestCase {
     // MARK: withLinksEnabled
+
     func testLinkDetectionPicksUpHttpDotComLinks() throws {
         let urlString = "http://example.com"
         let testString = NSAttributedString(string: "\(urlString)")

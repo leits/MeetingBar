@@ -14,7 +14,7 @@ on:
       - '**/*.swift'
 
 jobs:
-  SwiftLint:
+  Lint:
     runs-on: macOS-latest
     steps:
       - uses: actions/checkout@v1
