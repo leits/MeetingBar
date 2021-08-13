@@ -6,10 +6,9 @@
 // MARK: - Notifications
 
 "notifications_event_start_soon_body" = "Die Veranstaltung beginnt bald";
-"notifications_event_start_one_minute_body" = "The event starts in one minute";
-"notifications_event_start_three_minutes_body" = "The event starts in three minutes";
-"notifications_event_start_five_minutes_body" = "The event starts in five minutes";
-
+"notifications_event_start_one_minute_body" = "Das Ereignis beginnt in einer Minute";
+"notifications_event_start_three_minutes_body" = "Das Ereignis beginnt in drei Minuten";
+"notifications_event_start_five_minutes_body" = "Das Ereignis beginnt in fünf Minuten";
 "store_patronage_purchase_cloud_service_network_connection_failed" = "Es konnte keine Verbindung zum Netzwerk hergestellt werden";
 "store_patronage_purchase_cloud_service_permission_denied_message" = "Der Zugriff auf Cloud-Service-Informationen ist nicht erlaubt";
 "store_patronage_purchase_store_product_not_available_message" = "Das Produkt ist im aktuellen Schaufenster nicht verfügbar";
@@ -155,7 +154,7 @@
 "status_bar_submenu_status_unknown" = " ❔ Unbekannt";
 "status_bar_submenu_status_pending" = " ⏳ Ausstehend";
 "status_bar_submenu_status_tentative" = " ☝️ Versuch";
-"status_bar_submenu_status_declined" = " 👎 Abgebrochen";
+"status_bar_submenu_status_declined" = " 👎 Abgelehnt";
 "status_bar_submenu_status_accepted" = " 👍 Akzeptiert";
 "status_bar_submenu_status_title" = "Status: %@";
 "status_bar_submenu_duration_all_day" = "%@ - %@ (%@ Minuten)";

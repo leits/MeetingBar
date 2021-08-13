@@ -67,10 +67,9 @@
 // MARK: - Notifications
 
 "notifications_event_start_soon_body" = "L'évènement commence bientôt";
-"notifications_event_start_one_minute_body" = "The event starts in one minute";
-"notifications_event_start_three_minutes_body" = "The event starts in three minutes";
-"notifications_event_start_five_minutes_body" = "The event starts in five minutes";
-
+"notifications_event_start_one_minute_body" = "L'évènement commence dans une minute";
+"notifications_event_start_three_minutes_body" = "L'évènement commence dans trois minutes";
+"notifications_event_start_five_minutes_body" = "L'évènement commence dans cinq minutes";
 "store_patronage_purchase_cloud_service_revoked_message" = "L'utilisateur a révoqué l'autorisation d'utiliser ce service dans le nuage";
 "store_patronage_purchase_cloud_service_network_connection_failed" = "Impossible de se connecter au réseau";
 "store_patronage_purchase_cloud_service_permission_denied_message" = "L'accès aux informations sur les services en nuage n'est pas autorisé";
@@ -166,7 +165,7 @@
 "status_bar_submenu_status_unknown" = " ❔ Inconnu";
 "status_bar_submenu_status_pending" = " ⏳ En attente";
 "status_bar_submenu_status_tentative" = " ☝️ Tentative";
-"status_bar_submenu_status_declined" = " 👎 Annulé";
+"status_bar_submenu_status_declined" = " 👎 Refusé";
 "status_bar_submenu_status_accepted" = " 👍 Accepté";
 "status_bar_submenu_status_title" = "État : %@";
 "status_bar_submenu_duration_all_day" = "%@ - %@ (%@ minutes)";
