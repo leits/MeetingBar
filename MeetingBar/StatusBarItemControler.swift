@@ -273,10 +273,17 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
 
     func createJoinSection() {
         if !calendars.isEmpty {
-            let nextEvent = eventStore.getNextEvent(calendars: calendars)
-            if nextEvent != nil {
+            if let nextEvent = eventStore.getNextEvent(calendars: calendars) {
+                let now = Date()
+                var itemTitle: String
+                if nextEvent.startDate < now {
+                    itemTitle = "status_bar_section_join_current_meeting".loco()
+                } else {
+                    itemTitle = "status_bar_section_join_next_meeting".loco()
+                }
+
                 let joinItem = statusItemMenu.addItem(
-                    withTitle: "status_bar_section_join_next_meeting".loco(),
+                    withTitle: itemTitle,
                     action: #selector(AppDelegate.joinNextMeeting),
                     keyEquivalent: ""
                 )

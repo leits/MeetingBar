@@ -194,6 +194,7 @@
 "status_bar_section_tomorrow" = "明日";
 "status_bar_empty_calendar_message" = "環境設定でカレンダーを選択すると、\nミーティングが表示されます";
 "status_bar_section_join_next_meeting" = "次のミーティングに参加";
+"status_bar_section_join_current_meeting" = "Join current event meeting";
 "status_bar_section_join_from_clipboard" = "クリップボードからミーティングを開く";
 "status_bar_section_join_create_meeting" = "ミーティングを作成";
 "status_bar_section_bookmarks_title" = "ブックマーク";

@@ -183,7 +183,8 @@
 "status_bar_section_today" = "Сьогодні";
 "status_bar_section_tomorrow" = "Завтра";
 "status_bar_empty_calendar_message" = "Виберіть календарі у Налаштуваннях\nщоб побачити Ваші зустрічі";
-"status_bar_section_join_next_meeting" = "Долучитись до зустрічі з наступної події";
+"status_bar_section_join_next_meeting" = "Долучитись до наступної зустрічі";
+"status_bar_section_join_current_meeting" = "Долучитись до поточної зустрічі";
 "status_bar_section_join_from_clipboard" = "Відкрити зустріч із буфера обміну";
 "status_bar_section_join_create_meeting" = "Створити зустріч";
 "status_bar_section_bookmarks_title" = "Закладки";

@@ -184,6 +184,7 @@
 "status_bar_section_tomorrow" = "Sutra";
 "status_bar_empty_calendar_message" = "Odaberi kalendare u postavkama\nza prikaz tvojih sastanaka";
 "status_bar_section_join_next_meeting" = "Pridruži se sljedećem sastanku";
+"status_bar_section_join_current_meeting" = "Join current event meeting";
 "status_bar_section_join_from_clipboard" = "Otvori sastanak iz međuspremnika";
 "status_bar_section_join_create_meeting" = "Stvori sastanak";
 "status_bar_section_bookmarks_title" = "Zabilješke";

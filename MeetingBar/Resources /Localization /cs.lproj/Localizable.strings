@@ -171,6 +171,7 @@
 "status_bar_section_join_create_meeting" = "Vytvořit schůzku";
 "status_bar_section_join_from_clipboard" = "Otevřít schůzku ze schránky";
 "status_bar_section_join_next_meeting" = "Připojit se k nadcházející schůzce";
+"status_bar_section_join_current_meeting" = "Join current event meeting";
 "status_bar_empty_calendar_message" = "Pro zobrazení vašich schůzek\nvyberte kalendáře v předvolbách";
 "status_bar_section_tomorrow" = "Zítra";
 

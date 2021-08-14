@@ -184,6 +184,7 @@
 "status_bar_section_tomorrow" = "Завтра";
 "status_bar_empty_calendar_message" = "Выберите календари в настройках,\nчтобы увидеть свои события";
 "status_bar_section_join_next_meeting" = "Присоединяйтесь к следующему событию";
+"status_bar_section_join_current_meeting" = "Присоединяйтесь к текущему событию";
 "status_bar_section_join_from_clipboard" = "Присоединиться к событию из буфера обмена";
 "status_bar_section_join_create_meeting" = "Создать событие";
 "status_bar_section_bookmarks_title" = "Закладки";

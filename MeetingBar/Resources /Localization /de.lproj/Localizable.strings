@@ -166,6 +166,7 @@
 "status_bar_section_join_create_meeting" = "Konferenz erstellen";
 "status_bar_section_join_from_clipboard" = "Konferenz aus Zwischenablage öffnen";
 "status_bar_section_join_next_meeting" = "Der Konferenz des nächsten Ereignisses beitreten";
+"status_bar_section_join_current_meeting" = "Join current event meeting";
 "status_bar_empty_calendar_message" = "In den Einstellungen Kalender wählen,\num Ihre Konferenzen zu sehen";
 "status_bar_section_tomorrow" = "Morgen";
 

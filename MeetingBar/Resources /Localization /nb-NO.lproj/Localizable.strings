@@ -119,6 +119,7 @@
 "status_bar_submenu_duration_all_day" = "%@ - %@ (%@ minutter)";
 "status_bar_section_join_from_clipboard" = "Åpne møte fra utklippstavle";
 "status_bar_section_join_next_meeting" = "Ta del i neste begivenhetsmøte";
+"status_bar_section_join_current_meeting" = "Join current event meeting";
 "preferences_advanced_regex_title" = "Egendefinerte regulære uttrykk for møtelenke";
 "preferences_advanced_wrong_location_message" = "Velg Bruker → Bibliotek → Programskript → leits.MeetingBar-mappen";
 "preferences_advanced_apple_script_placeholder" = "# skriv ditt skript her\nfortell programmet «Musikk» at det skal ta pause";
