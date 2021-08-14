@@ -219,6 +219,8 @@
 "status_bar_submenu_attendees_you" = "%@ (あなた)";
 "status_bar_submenu_attendees_status_tentative" = " [名無しさん]";
 "status_bar_submenu_attendees_status_unknown" = " [?]";
+"status_bar_submenu_copy_meeting_link" = "Copy meeting link";
+"status_bar_submenu_email_attendees" = "Email attendees";
 "status_bar_submenu_open_in_calendar" = "カレンダーアプリで開く";
 "status_bar_submenu_open_in_fantastical" = "Fantastical で開く";
 "status_bar_quick_actions" = "クイックアクション";

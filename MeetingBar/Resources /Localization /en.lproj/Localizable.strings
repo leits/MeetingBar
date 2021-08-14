@@ -210,6 +210,8 @@
 "status_bar_submenu_attendees_you" = "%@ (you)";
 "status_bar_submenu_attendees_status_tentative" = " [tentative]";
 "status_bar_submenu_attendees_status_unknown" = " [?]";
+"status_bar_submenu_copy_meeting_link" = "Copy meeting link";
+"status_bar_submenu_email_attendees" = "Email attendees";
 "status_bar_submenu_open_in_calendar" = "Open in Calendar App";
 "status_bar_submenu_open_in_fantastical" = "Open in Fantastical";
 "status_bar_quick_actions" = "Quick Actions";

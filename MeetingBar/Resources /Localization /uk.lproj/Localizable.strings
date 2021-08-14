@@ -209,6 +209,8 @@
 "status_bar_submenu_attendees_you" = "%@ (Ви)";
 "status_bar_submenu_attendees_status_tentative" = " [мабуть]";
 "status_bar_submenu_attendees_status_unknown" = " [?]";
+"status_bar_submenu_copy_meeting_link" = "Скопіювати посилання на зустріч";
+"status_bar_submenu_email_attendees" = "Надіслати учасникам емейл";
 "status_bar_submenu_open_in_calendar" = "Відкрити у додатку \"Календар\"";
 "status_bar_submenu_open_in_fantastical" = "Відкрити у додатку \"Fantastical\"";
 "status_bar_quick_actions" = "Швидкі Дії";

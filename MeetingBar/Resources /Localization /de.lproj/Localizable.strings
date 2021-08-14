@@ -139,6 +139,8 @@
 "status_bar_hide_meeting_names" = "Konferenztitel ausblenden";
 "status_bar_show_meeting_names" = "Konferenztitel anzeigen";
 "status_bar_quick_actions" = "Schnellaktionen";
+"status_bar_submenu_copy_meeting_link" = "Copy meeting link";
+"status_bar_submenu_email_attendees" = "Email attendees";
 "status_bar_submenu_open_in_fantastical" = "Fantastical öffnen";
 "status_bar_submenu_open_in_calendar" = "In Kalender-Anwendung öffnen";
 "status_bar_submenu_attendees_status_unknown" = " [?]";

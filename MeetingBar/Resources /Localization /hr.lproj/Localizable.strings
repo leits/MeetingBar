@@ -209,6 +209,8 @@
 "status_bar_submenu_attendees_you" = "%@ (ti)";
 "status_bar_submenu_attendees_status_tentative" = " [provizorno]";
 "status_bar_submenu_attendees_status_unknown" = " [?]";
+"status_bar_submenu_copy_meeting_link" = "Copy meeting link";
+"status_bar_submenu_email_attendees" = "Email attendees";
 "status_bar_submenu_open_in_calendar" = "Otvori u programu Kalendar";
 "status_bar_submenu_open_in_fantastical" = "Otvori u Fantastical";
 "status_bar_quick_actions" = "Brze radnje";

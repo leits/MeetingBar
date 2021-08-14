@@ -209,6 +209,8 @@
 "status_bar_submenu_attendees_you" = "%@ (вы)";
 "status_bar_submenu_attendees_status_tentative" = " [Возможно]";
 "status_bar_submenu_attendees_status_unknown" = " [?]";
+"status_bar_submenu_copy_meeting_link" = "Скопировать ссылку на встречу";
+"status_bar_submenu_email_attendees" = "Отправить участникам емейл";
 "status_bar_submenu_open_in_calendar" = "Открыть в приложении \"Календарь\"";
 "status_bar_submenu_open_in_fantastical" = "Открыть в приложении \"Fantastical\"";
 "status_bar_quick_actions" = "Быстрые Действия";
