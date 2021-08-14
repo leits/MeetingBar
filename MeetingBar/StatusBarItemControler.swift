@@ -55,13 +55,11 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
 
     @objc
     func menuWillOpen(_ menu: NSMenu) {
-        NSLog("menu has been opened \(menuIsOpen) for menu \(menu)")
         menuIsOpen = true
     }
 
     @objc
     func menuDidClose(_ menu: NSMenu) {
-        NSLog("menu will close - \(menuIsOpen) for menu \(menu)")
         // remove menu when closed so we can override left click behavior
         statusItem.menu = nil
         menuIsOpen = false
