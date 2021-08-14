@@ -54,12 +54,12 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
     }
 
     @objc
-    func menuWillOpen(_ menu: NSMenu) {
+    func menuWillOpen(_: NSMenu) {
         menuIsOpen = true
     }
 
     @objc
-    func menuDidClose(_ menu: NSMenu) {
+    func menuDidClose(_: NSMenu) {
         // remove menu when closed so we can override left click behavior
         statusItem.menu = nil
         menuIsOpen = false
@@ -849,7 +849,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             copyLinkItem.representedObject = event
 
             // Send email
-            let emailItem = eventMenu.addItem(withTitle:  "status_bar_submenu_email_attendees".loco(), action: #selector(AppDelegate.emailAttendees), keyEquivalent: "")
+            let emailItem = eventMenu.addItem(withTitle: "status_bar_submenu_email_attendees".loco(), action: #selector(AppDelegate.emailAttendees), keyEquivalent: "")
             emailItem.representedObject = event
 
             // Open in App
