@@ -21,6 +21,10 @@
 // MARK: - Notifications
 
 "notifications_event_start_soon_body" = "Begivenheten starter snart";
+"notifications_event_start_one_minute_body" = "The event starts in one minute";
+"notifications_event_start_three_minutes_body" = "The event starts in three minutes";
+"notifications_event_start_five_minutes_body" = "The event starts in five minutes";
+
 "store_patronage_purchase_cloud_service_revoked_message" = "Bruker har nektet tilgang for bruk av denne skytjenesten";
 "store_patronage_purchase_cloud_service_network_connection_failed" = "Kunne ikke koble til nettverket";
 "store_patronage_purchase_cloud_service_permission_denied_message" = "Tilgang til skytjenesteinfo tillates ikke";
@@ -106,7 +110,7 @@
 "status_bar_error_apple_script_title" = "Feil fra AppleScript";
 "status_bar_submenu_attendees_status_tentative" = " [tentativt]";
 "status_bar_submenu_attendees_title" = "Deltagere (%d)";
-"status_bar_submenu_organizer_title" = "Organisator:";
+"status_bar_submenu_organizer_title" = "Organisator: %@";
 "status_bar_submenu_location_title" = "Sted:";
 "status_bar_submenu_status_default_simple" = " ❔ (Ukjent)";
 "status_bar_submenu_status_unknown" = " ❔ Ukjent";
@@ -115,6 +119,7 @@
 "status_bar_submenu_duration_all_day" = "%@ - %@ (%@ minutter)";
 "status_bar_section_join_from_clipboard" = "Åpne møte fra utklippstavle";
 "status_bar_section_join_next_meeting" = "Ta del i neste begivenhetsmøte";
+"status_bar_section_join_current_meeting" = "Join current event meeting";
 "preferences_advanced_regex_title" = "Egendefinerte regulære uttrykk for møtelenke";
 "preferences_advanced_wrong_location_message" = "Velg Bruker → Bibliotek → Programskript → leits.MeetingBar-mappen";
 "preferences_advanced_apple_script_placeholder" = "# skriv ditt skript her\nfortell programmet «Musikk» at det skal ta pause";
@@ -188,11 +193,13 @@
 "status_bar_hide_meeting_names" = "Skjul møtetittel";
 "status_bar_show_meeting_names" = "Vis møtetittel";
 "status_bar_quick_actions" = "Hurtighandlinger";
+"status_bar_submenu_copy_meeting_link" = "Copy meeting link";
+"status_bar_submenu_email_attendees" = "Email attendees";
 "status_bar_submenu_open_in_fantastical" = "Åpne i Fantastical";
 "status_bar_submenu_open_in_calendar" = "Åpne i kalenderprogram";
 "status_bar_submenu_attendees_you" = "%@ (deg)";
 "status_bar_submenu_notes_title" = "Notater:";
-"status_bar_submenu_status_canceled" = " 👎 Kansellert";
+"status_bar_submenu_status_declined" = " 👎 Kansellert";
 "status_bar_submenu_status_accepted" = " 👍 Akseptert";
 "status_bar_submenu_status_title" = "Status: %@";
 "status_bar_submenu_calendar_title" = "Kalender: %@";

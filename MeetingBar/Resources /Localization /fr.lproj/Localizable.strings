@@ -67,6 +67,9 @@
 // MARK: - Notifications
 
 "notifications_event_start_soon_body" = "L'évènement commence bientôt";
+"notifications_event_start_one_minute_body" = "L'évènement commence dans une minute";
+"notifications_event_start_three_minutes_body" = "L'évènement commence dans trois minutes";
+"notifications_event_start_five_minutes_body" = "L'évènement commence dans cinq minutes";
 "store_patronage_purchase_cloud_service_revoked_message" = "L'utilisateur a révoqué l'autorisation d'utiliser ce service dans le nuage";
 "store_patronage_purchase_cloud_service_network_connection_failed" = "Impossible de se connecter au réseau";
 "store_patronage_purchase_cloud_service_permission_denied_message" = "L'accès aux informations sur les services en nuage n'est pas autorisé";
@@ -147,6 +150,8 @@
 "status_bar_hide_meeting_names" = "Masquer le titre de la réunion";
 "status_bar_show_meeting_names" = "Afficher le titre de la réunion";
 "status_bar_quick_actions" = "Actions rapides";
+"status_bar_submenu_copy_meeting_link" = "Copy meeting link";
+"status_bar_submenu_email_attendees" = "Email attendees";
 "status_bar_submenu_open_in_fantastical" = "Ouvrir dans Fantastical";
 "status_bar_submenu_open_in_calendar" = "Ouvrir dans l'application Calendrier";
 "status_bar_submenu_attendees_status_unknown" = " [?]";
@@ -155,14 +160,14 @@
 "status_bar_submenu_attendees_no_name" = "Participant·e sans nom";
 "status_bar_submenu_attendees_title" = "Participant·e·s (%d)";
 "status_bar_submenu_notes_title" = "Notes :";
-"status_bar_submenu_organizer_title" = "Organisateur·ice :";
+"status_bar_submenu_organizer_title" = "Organisateur·ice : %@";
 "status_bar_submenu_location_title" = "Emplacement :";
 "status_bar_submenu_status_default_simple" = " ❔ (Inconnu)";
 "status_bar_submenu_status_default_extended" = " ❔ (%@)";
 "status_bar_submenu_status_unknown" = " ❔ Inconnu";
 "status_bar_submenu_status_pending" = " ⏳ En attente";
 "status_bar_submenu_status_tentative" = " ☝️ Tentative";
-"status_bar_submenu_status_canceled" = " 👎 Annulé";
+"status_bar_submenu_status_declined" = " 👎 Refusé";
 "status_bar_submenu_status_accepted" = " 👍 Accepté";
 "status_bar_submenu_status_title" = "État : %@";
 "status_bar_submenu_duration_all_day" = "%@ - %@ (%@ minutes)";
@@ -173,6 +178,7 @@
 "status_bar_section_bookmarks_title" = "Marque-pages";
 "status_bar_section_join_create_meeting" = "Créer une réunion";
 "status_bar_section_join_next_meeting" = "Rejoindre la réunion du prochain évènement";
+"status_bar_section_join_current_meeting" = "Join current event meeting";
 "status_bar_empty_calendar_message" = "Sélectionnez les calendriers dans les préférences\npour voir vos réunions";
 "status_bar_section_tomorrow" = "Demain";
 

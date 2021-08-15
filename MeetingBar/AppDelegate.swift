@@ -26,7 +26,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     var allDayEventsObserver: DefaultsObservation?
     var nonAllDayEventsObserver: DefaultsObservation?
 
-
     var statusbarEventTitleLengthObserver: DefaultsObservation?
     var timeFormatObserver: DefaultsObservation?
     var bookmarksObserver: DefaultsObservation?
@@ -209,7 +208,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             addInstalledBrowser()
         }
 
-
         KeyboardShortcuts.onKeyUp(for: .createMeetingShortcut) {
             self.createMeeting()
         }
@@ -240,7 +238,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                 self.statusBarItem.updateMenu()
             }
         }
-
 
         shortenEventTitleObserver = Defaults.observe(.shortenEventTitle) { change in
             NSLog("Change shortenEventTitle from \(change.oldValue) to \(change.newValue)")
@@ -337,14 +334,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             }
         }
 
-
         timeFormatObserver = Defaults.observe(.timeFormat) { change in
             NSLog("Change timeFormat from \(change.oldValue) to \(change.newValue)")
             self.statusBarItem.updateMenu()
         }
 
         bookmarksObserver = Defaults.observe(keys: .bookmarks) {
-                self.statusBarItem.updateMenu()
+            self.statusBarItem.updateMenu()
         }
 
         eventTitleFormatObserver = Defaults.observe(.eventTitleFormat) { change in
@@ -357,7 +353,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             NSLog("Changed eventTitleFormat from \(String(describing: change.oldValue)) to \(String(describing: change.newValue))")
             self.statusBarItem.updateTitle()
         }
-
 
         pastEventsAppereanceObserver = Defaults.observe(.pastEventsAppereance) { change in
             NSLog("Changed pastEventsAppereance from \(change.oldValue) to \(change.newValue)")
@@ -420,18 +415,18 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                 NSApplication.shared.terminate(self)
             } else if windowTitle == WindowTitles.changelog {
                 Defaults[.lastRevisedVersionInChangelog] = Defaults[.appVersion]
-                self.statusBarItem.updateMenu()
+                statusBarItem.updateMenu()
             }
         }
     }
 
     func getClipboardContent() -> String {
-       let pasteboard = NSPasteboard.general
+        let pasteboard = NSPasteboard.general
         return pasteboard.string(forType: .string) ?? ""
     }
 
     @objc
-    func eventStoreChanged(_ notification: NSNotification) {
+    func eventStoreChanged(_: NSNotification) {
         NSLog("Store changed. Update status bar menu.")
         statusBarItem.updateTitle()
         statusBarItem.updateMenu()
@@ -466,8 +461,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     /**
      * implementation is necessary to show notifications even when the app has focus!
      */
-    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        completionHandler([.alert, .badge, .sound])     }
+    func userNotificationCenter(_: UNUserNotificationCenter, willPresent _: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        completionHandler([.alert, .badge, .sound])
+    }
 
     internal func userNotificationCenter(_: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         switch response.actionIdentifier {
@@ -517,7 +513,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             var url: String = Defaults[.createMeetingServiceUrl]
             let checkedUrl = NSURL(string: url)
 
-            if !url.isEmpty && checkedUrl != nil {
+            if !url.isEmpty, checkedUrl != nil {
                 openMeetingURL(nil, URL(string: url)!, browser)
             } else {
                 if !url.isEmpty {
@@ -568,9 +564,29 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
     }
 
+    @objc
+    func copyEventMeetingLink(sender: NSMenuItem) {
+        if let event: EKEvent = sender.representedObject as? EKEvent {
+            let eventTitle = event.title ?? "status_bar_no_title".loco()
+            if let meeting = getMeetingLink(event) {
+                NSPasteboard.general.clearContents()
+                NSPasteboard.general.setString(meeting.url.absoluteString, forType: .string)
+            } else {
+                sendNotification("status_bar_error_link_missed_title".loco(eventTitle), "status_bar_error_link_missed_message".loco())
+            }
+        }
+    }
+
+    @objc
+    func emailAttendees(sender: NSMenuItem) {
+        if let event: EKEvent = sender.representedObject as? EKEvent {
+            emailEventAttendees(event)
+        }
+    }
+
     /**
      * opens an event in the fantastical app. It uses the x-fantastical url handler which is not fully described on the fantastical website,
-     * but was confirmed in the github ticket. 
+     * but was confirmed in the github ticket.
      */
     @objc
     func openEventInFantastical(sender: NSMenuItem) {

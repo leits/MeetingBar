@@ -183,7 +183,8 @@
 "status_bar_section_today" = "Сьогодні";
 "status_bar_section_tomorrow" = "Завтра";
 "status_bar_empty_calendar_message" = "Виберіть календарі у Налаштуваннях\nщоб побачити Ваші зустрічі";
-"status_bar_section_join_next_meeting" = "Долучитись до зустрічі з наступної події";
+"status_bar_section_join_next_meeting" = "Долучитись до наступної зустрічі";
+"status_bar_section_join_current_meeting" = "Долучитись до поточної зустрічі";
 "status_bar_section_join_from_clipboard" = "Відкрити зустріч із буфера обміну";
 "status_bar_section_join_create_meeting" = "Створити зустріч";
 "status_bar_section_bookmarks_title" = "Закладки";
@@ -194,20 +195,22 @@
 "status_bar_submenu_duration_all_day" = "%@ - %@ (%@ хвилин)";
 "status_bar_submenu_status_title" = "Сатус: %@";
 "status_bar_submenu_status_accepted" = " 👍 Прийнято";
-"status_bar_submenu_status_canceled" = " 👎 Відхилено";
+"status_bar_submenu_status_declined" = " 👎 Відхилено";
 "status_bar_submenu_status_tentative" = " ☝️ Мабуть";
 "status_bar_submenu_status_pending" = " ⏳ Очікується";
 "status_bar_submenu_status_unknown" = " ❔ Невідомо";
 "status_bar_submenu_status_default_extended" = " ❔ (%@)";
 "status_bar_submenu_status_default_simple" = " ❔ (Невідомо)";
 "status_bar_submenu_location_title" = "Розташування:";
-"status_bar_submenu_organizer_title" = "Організатор:";
+"status_bar_submenu_organizer_title" = "Організатор: %@";
 "status_bar_submenu_notes_title" = "Нотатки:";
 "status_bar_submenu_attendees_title" = "Учасники (%d)";
 "status_bar_submenu_attendees_no_name" = "Учасник без імені";
 "status_bar_submenu_attendees_you" = "%@ (Ви)";
 "status_bar_submenu_attendees_status_tentative" = " [мабуть]";
 "status_bar_submenu_attendees_status_unknown" = " [?]";
+"status_bar_submenu_copy_meeting_link" = "Скопіювати посилання на зустріч";
+"status_bar_submenu_email_attendees" = "Надіслати учасникам емейл";
 "status_bar_submenu_open_in_calendar" = "Відкрити у додатку \"Календар\"";
 "status_bar_submenu_open_in_fantastical" = "Відкрити у додатку \"Fantastical\"";
 "status_bar_quick_actions" = "Швидкі Дії";
@@ -345,6 +348,9 @@
 // MARK: - Notifications
 
 "notifications_event_start_soon_body" = "Подія невдовзі розпочнеться";
+"notifications_event_start_one_minute_body" = "Подія ропочинається за одну хвилину";
+"notifications_event_start_three_minutes_body" = "Подія ропочинається за три хвилини";
+"notifications_event_start_five_minutes_body" = "Подія ропочинається за п'ять хвилин";
 
 // MARK: - Link open
 

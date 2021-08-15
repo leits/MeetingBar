@@ -9,13 +9,13 @@
 import Cocoa
 
 class AutoLauncherAppDelegate: NSObject, NSApplicationDelegate {
-    struct Constants {
+    enum Constants {
         static let mainAppBundleID = "leits.MeetingBar"
         static let mainAppName = "MeetingBar"
         static let appTargetPlatform = "MacOS"
     }
 
-    func applicationDidFinishLaunching(_ aNotification: Notification) {
+    func applicationDidFinishLaunching(_: Notification) {
         launchOrTerminateMainApp()
     }
 
@@ -28,7 +28,7 @@ class AutoLauncherAppDelegate: NSObject, NSApplicationDelegate {
         if !isRunning {
             let killAutoLauncherNotificationName = Notification.Name(rawValue: "killAutoLauncher")
             DistributedNotificationCenter.default().addObserver(self,
-                                                                selector: #selector(self.terminateApp),
+                                                                selector: #selector(terminateApp),
                                                                 name: killAutoLauncherNotificationName,
                                                                 object: Constants.mainAppBundleID)
             let path = Bundle.main.bundlePath as NSString
@@ -36,7 +36,7 @@ class AutoLauncherAppDelegate: NSObject, NSApplicationDelegate {
             // This Auto Launcher app is actually embedded inside the main app bundle
             // under the subdirectory Contents/Library/LoginItems.
             // So there will be a total of 3 path components to be deleted.
-            for _ in 1...3 {
+            for _ in 1 ... 3 {
                 components.removeLast()
             }
             components.append(Constants.appTargetPlatform)
@@ -45,7 +45,7 @@ class AutoLauncherAppDelegate: NSObject, NSApplicationDelegate {
             let actualAppPath = NSString.path(withComponents: components)
             NSWorkspace.shared.launchApplication(actualAppPath)
         } else {
-            self.terminateApp()
+            terminateApp()
         }
     }
 

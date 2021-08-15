@@ -92,7 +92,7 @@ extension Defaults.Keys {
      */
     static let browserForCreateMeeting = Key<Browser>("browserForCreateMeeting", default: systemDefaultBrowser)
 
-    static let browserForMeetLinks = Key<DeprecatedBrowser?>("browserForMeetLinks", default: nil)  // Backward compatibility
+    static let browserForMeetLinks = Key<DeprecatedBrowser?>("browserForMeetLinks", default: nil) // Backward compatibility
     static let useChromeForMeetLinks = Key<Bool?>("useChromeForMeetLinks") // Backward compatibility
     static let useAppForZoomLinks = Key<Bool>("useAppForZoomLinks", default: false)
     static let useAppForTeamsLinks = Key<Bool>("useAppForTeamsLinks", default: false)

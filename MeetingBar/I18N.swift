@@ -21,20 +21,20 @@ final class I18N {
     @discardableResult
     func changeLanguage(to appLanguage: AppLanguage) -> Bool {
         if appLanguage == .system {
-            self.resetToDefault()
+            resetToDefault()
             return true
-        } else if let newBunlde = self.checkLanguageAvailability(appLanguage.rawValue) {
-            self.bundle = newBunlde
-            self.locale = Locale(identifier: appLanguage.rawValue)
+        } else if let newBunlde = checkLanguageAvailability(appLanguage.rawValue) {
+            bundle = newBunlde
+            locale = Locale(identifier: appLanguage.rawValue)
             return true
         }
-        self.resetToDefault()
+        resetToDefault()
         return false
     }
 
     private func resetToDefault() {
-        self.bundle = Bundle.main
-        self.locale = Locale.current
+        bundle = Bundle.main
+        locale = Locale.current
     }
 
     private func checkLanguageAvailability(_ language: String) -> Bundle? {
@@ -47,21 +47,21 @@ final class I18N {
     // MARK: - Loco
 
     func localizedString(for key: String) -> String {
-        self.bundle.localizedString(forKey: key, value: "$\(key)$", table: nil)
+        bundle.localizedString(forKey: key, value: "$\(key)$", table: nil)
     }
 
     func localizedString(for key: String, _ arg: CVarArg) -> String {
-        let format = self.localizedString(for: key)
+        let format = localizedString(for: key)
         return String.localizedStringWithFormat(format, arg)
     }
 
     func localizedString(for key: String, _ firstArg: CVarArg, _ secondArg: CVarArg) -> String {
-        let format = self.localizedString(for: key)
+        let format = localizedString(for: key)
         return String.localizedStringWithFormat(format, firstArg, secondArg)
     }
 
     func localizedString(for key: String, _ firstArg: CVarArg, _ secondArg: CVarArg, _ thirdArg: CVarArg) -> String {
-        let format = self.localizedString(for: key)
+        let format = localizedString(for: key)
         return String.localizedStringWithFormat(format, firstArg, secondArg, thirdArg)
     }
 }

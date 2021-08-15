@@ -5,10 +5,10 @@
 //  Created by Andrii Leitsius on 14.08.2020.
 //  Copyright © 2020 Andrii Leitsius. All rights reserved.
 //
-import EventKit
-import UserNotifications
 import AppKit
 import Defaults
+import EventKit
+import UserNotifications
 
 func requestNotificationAuthorization() {
     let center = UNUserNotificationCenter.current()
@@ -142,7 +142,17 @@ func scheduleEventNotification(_ event: EKEvent) {
     } else {
         content.title = event.title
     }
-    content.body = "notifications_event_start_soon_body".loco()
+
+    switch Defaults[.joinEventNotificationTime] {
+    case .atStart:
+        content.body = "notifications_event_start_soon_body".loco()
+    case .minuteBefore:
+        content.body = "notifications_event_start_one_minute_body".loco()
+    case .threeMinuteBefore:
+        content.body = "notifications_event_start_three_minutes_body".loco()
+    case .fiveMinuteBefore:
+        content.body = "notifications_event_start_five_minutes_body".loco()
+    }
     content.categoryIdentifier = "EVENT"
     content.sound = UNNotificationSound.default
     content.userInfo = ["eventID": event.eventIdentifier!]

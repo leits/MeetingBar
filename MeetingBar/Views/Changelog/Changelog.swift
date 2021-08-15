@@ -10,7 +10,6 @@ import SwiftUI
 
 import Defaults
 
-
 struct ChangelogView: View {
     @Default(.lastRevisedVersionInChangelog) var lastRevisedVersionInChangelog
 
@@ -51,8 +50,20 @@ struct ChangelogView: View {
                     Section(header: Text("Version 3.5.0")) {
                         Text("🌍 Added translations into Croatian, German, French, and Norwegian Bokmål")
                         Text("All app notifications are now removed after all meetings are over")
-                        Text("Improved RingCentral and Zoom links Detection")
+                        Text("Improved RingCentral and Zoom links detection")
                         Text("and small bug fixes")
+                    }
+                }
+                if lastRevisedVersionInChangelog < "3.6.0" {
+                    Section(header: Text("Version 3.6.0")) {
+                        Text("🌍 Added translations into Czech")
+                        Text("Added integration with Vowel")
+                        Text("Fixed zoom link detection")
+                    }
+                }
+                if lastRevisedVersionInChangelog < "3.7.0" {
+                    Section(header: Text("Version 3.7.0")) {
+                        Text("🌍 Added translations into Japanese")
                     }
                 }
             }.listStyle(SidebarListStyle())

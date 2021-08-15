@@ -147,7 +147,7 @@ struct PatronageAppSection: View {
 
     func clickPatronage() {
         if isInstalledFromAppStore {
-            self.showingPatronageModal.toggle()
+            showingPatronageModal.toggle()
         } else {
             Links.patreon.openInDefaultBrowser()
         }

@@ -5,11 +5,10 @@
 //  Created by Andrii Leitsius on 12.06.2020.
 //  Copyright © 2020 Andrii Leitsius. All rights reserved.
 //
-import Cocoa
-import EventKit
-import Defaults
 import AppKit
-
+import Cocoa
+import Defaults
+import EventKit
 
 struct EventWithDate {
     let event: EKEvent
@@ -38,11 +37,11 @@ struct Bookmark: Encodable, Decodable, Hashable {
  * If no m365 links are found, the original text is returned.
  *
  */
-fileprivate func cleanupOutlookSafeLinks( text: inout String) -> String {
+private func cleanupOutlookSafeLinks(text: inout String) -> String {
     var links = UtilsRegex.outlookSafeLinkRegex.matches(in: text, range: NSRange(text.startIndex..., in: text))
     if !links.isEmpty {
         repeat {
-            let urlRange = links[0].range( at: 1)
+            let urlRange = links[0].range(at: 1)
             let safeLinks = links.map { String(text[Range($0.range, in: text)!]) }
             if !safeLinks.isEmpty {
                 let serviceUrl = (text as NSString).substring(with: urlRange)
@@ -64,7 +63,6 @@ func getMatch(text: String, regex: NSRegularExpression) -> String? {
     }
     return nil
 }
-
 
 func cleanUpNotes(_ notes: String) -> String {
     let zoomSeparator = "\n──────────"
@@ -144,15 +142,15 @@ func getMeetingLink(_ event: EKEvent) -> MeetingLink? {
         linkFields.append(notes)
     }
 
-
     for var field in linkFields {
         var meetingLink = detectLink(&field)
         if meetingLink != nil {
             if meetingLink?.service == .meet,
                let account = getGmailAccount(event),
-               let urlEncodedAccount = account.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
+               let urlEncodedAccount = account.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+            {
                 let url = URL(string: (meetingLink?.url.absoluteString)! + "?authuser=\(urlEncodedAccount)")!
-                    meetingLink?.url = url
+                meetingLink?.url = url
             }
             return meetingLink
         }
@@ -175,7 +173,6 @@ func detectLinks(text: String) -> [URL] {
 
     return []
 }
-
 
 func openEvent(_ event: EKEvent) {
     let eventTitle = event.title ?? "status_bar_no_title".loco()
@@ -208,7 +205,6 @@ func getEventParticipantStatus(_ event: EKEvent) -> EKParticipantStatus? {
     return EKParticipantStatus.unknown
 }
 
-
 func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?) {
     switch service {
     case .meet:
@@ -229,6 +225,9 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?
 
     case .zoom, .zoomgov:
         if Defaults[.useAppForZoomLinks] {
+            if url.absoluteString.contains("/my/") {
+                url.openIn(browser: browser ?? systemDefaultBrowser)
+            }
             let urlString = url.absoluteString.replacingOccurrences(of: "?", with: "&").replacingOccurrences(of: "/j/", with: "/join?confno=")
             var zoomAppUrl = URLComponents(url: URL(string: urlString)!, resolvingAgainstBaseURL: false)!
             zoomAppUrl.scheme = "zoommtg"
@@ -279,7 +278,6 @@ func bundleIdentifier(forAppName appName: String) -> String? {
     return nil
 }
 
-
 /**
  * adds the default browsers for the browser dialog
  */
@@ -297,4 +295,19 @@ func addInstalledBrowser() {
             }
         }
     }
+}
+
+func emailEventAttendees(_ event: EKEvent) {
+    let service = NSSharingService(named: NSSharingService.Name.composeEmail)!
+    var recipients: [String] = []
+    event.attendees?.forEach {
+        if let email = ($0.url as NSURL).resourceSpecifier {
+            recipients.append(email)
+        }
+    }
+    service.recipients = recipients
+    if let title = event.title {
+        service.subject = title
+    }
+    service.perform(withItems: [])
 }

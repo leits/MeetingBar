@@ -120,7 +120,7 @@
 "preferences_services_link_meet_title" = "Open Google Meet links in";
 "preferences_services_link_zoom_title" = "Open Zoom links in";
 "preferences_services_link_team_title" = "Open Teams links in";
-"preferences_services_link_default_browser_value" = "Default web-browser";
+"preferences_services_link_default_browser_value" = "Default web browser";
 "preferences_services_link_zoom_value" = "Zoom app";
 "preferences_services_link_teams_value" = "Teams app";
 "preferences_services_supported_links_list" = "Supported links for services:\n%@";
@@ -129,24 +129,24 @@
 "preferences_services_create_meeting_custom_url_value" = "Custom URL";
 "preferences_services_create_meeting_custom_url_placeholder" = "Please enter a valid URL (with http:// or https://)";
 "preferences_services_google_meet_tip" = "Tip: Google Meet supports choosing account in the URL, e.g. https://meet.google.com/new?authuser=1";
-"preferences_services_create_meeting_browser_title" = "Use web-browser";
+"preferences_services_create_meeting_browser_title" = "Use web browser";
 
 // MARK: - Preferences Services Browsers Configuration
 
-"preferences_configure_browsers_button" = "Configure web-browsers";
-"preferences_configure_browsers_delete_alert_title" = "Delete web-browser configuration?";
+"preferences_configure_browsers_button" = "Configure web browsers";
+"preferences_configure_browsers_delete_alert_title" = "Delete web browser configuration?";
 "preferences_configure_browsers_delete_alert_message" = "Delete the %@ browser configuration?";
-"preferences_configure_browsers_add_button_browser_title" = "Web-browser";
-"preferences_configure_browsers_add_button_all_system_title" = "All system web-browsers";
-"preferences_configure_browsers_modal_add_browser_title" = "Add web-browser";
-"preferences_configure_browsers_modal_edit_browser_title" = "Edit web-browser";
+"preferences_configure_browsers_add_button_browser_title" = "Web browser";
+"preferences_configure_browsers_add_button_all_system_title" = "All system web browsers";
+"preferences_configure_browsers_modal_add_browser_title" = "Add web browser";
+"preferences_configure_browsers_modal_edit_browser_title" = "Edit web browser";
 "preferences_configure_browsers_modal_add_browser_name" = "Name";
 "preferences_configure_browsers_modal_add_browser_path" = "Path";
-"preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "Choose web-browser";
+"preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "Choose web browser";
 "preferences_configure_browsers_modal_alert_title" = "Can't add browser config";
-"preferences_configure_browsers_choose_broser_panel_title" = "Select a web-browser app";
-"preferences_configure_browsers_choose_broser_panel_prompt" = "Choose web-browser";
-"preferences_configure_browsers_choose_broser_panel_message" = "Select where to run the web-browser from.";
+"preferences_configure_browsers_choose_broser_panel_title" = "Select a web browser app";
+"preferences_configure_browsers_choose_broser_panel_prompt" = "Choose web browser";
+"preferences_configure_browsers_choose_broser_panel_message" = "Select where to run the web browser from.";
 
 // MARK: - Preferences Bookmarks
 
@@ -190,6 +190,7 @@
 "status_bar_section_tomorrow" = "Tomorrow";
 "status_bar_empty_calendar_message" = "Select your calendars in the preferences\nto see your meetings";
 "status_bar_section_join_next_meeting" = "Join next event meeting";
+"status_bar_section_join_current_meeting" = "Join current event meeting";
 "status_bar_section_join_from_clipboard" = "Open meeting from clipboard";
 "status_bar_section_join_create_meeting" = "Create meeting";
 "status_bar_section_bookmarks_title" = "Bookmarks";
@@ -200,20 +201,22 @@
 "status_bar_submenu_duration_all_day" = "%@ - %@ (%@ minutes)";
 "status_bar_submenu_status_title" = "Status: %@";
 "status_bar_submenu_status_accepted" = " 👍 Accepted";
-"status_bar_submenu_status_canceled" = " 👎 Cancelled";
+"status_bar_submenu_status_declined" = " 👎 Declined";
 "status_bar_submenu_status_tentative" = " ☝️ Tentative";
 "status_bar_submenu_status_pending" = " ⏳ Pending";
 "status_bar_submenu_status_unknown" = " ❔ Unknown";
 "status_bar_submenu_status_default_extended" = " ❔ (%@)";
 "status_bar_submenu_status_default_simple" = " ❔ (Unknown)";
 "status_bar_submenu_location_title" = "Location:";
-"status_bar_submenu_organizer_title" = "Organizer:";
+"status_bar_submenu_organizer_title" = "Organizer: %@";
 "status_bar_submenu_notes_title" = "Notes:";
 "status_bar_submenu_attendees_title" = "Attendees (%d)";
 "status_bar_submenu_attendees_no_name" = "Anonymous attendee";
 "status_bar_submenu_attendees_you" = "%@ (you)";
 "status_bar_submenu_attendees_status_tentative" = " [tentative]";
 "status_bar_submenu_attendees_status_unknown" = " [?]";
+"status_bar_submenu_copy_meeting_link" = "Copy meeting link";
+"status_bar_submenu_email_attendees" = "Email attendees";
 "status_bar_submenu_open_in_calendar" = "Open in Calendar App";
 "status_bar_submenu_open_in_fantastical" = "Open in Fantastical";
 "status_bar_quick_actions" = "Quick Actions";
@@ -229,11 +232,11 @@
 "status_bar_error_link_missed_title" = "Ouch! Can't join the %@";
 "status_bar_error_link_missed_message" = "Link not found, or your meeting service is not yet supported";
 "status_bar_error_teams_link_title" = "Oops! Unable to open the link in the Microsoft Teams app";
-"status_bar_error_teams_link_message" = "Ensure you have the Microsoft Teams app installed, or open such links in a web-browser from the preferences instead.";
+"status_bar_error_teams_link_message" = "Ensure you have the Microsoft Teams app installed, or open such links in a web browser from the preferences instead.";
 "status_bar_error_zoom_app_link_title" = "Oops! Unable to open the link in Zoom app";
-"status_bar_error_zoom_app_link_message" = "Ensure you have the Zoom app installed, or open such links in a web-browser from the preferences instead.";
+"status_bar_error_zoom_app_link_message" = "Ensure you have the Zoom app installed, or open such links in a web browser from the preferences instead.";
 "status_bar_error_zoom_native_link_title" = "Oops! Unable to open this link in the Zoom app";
-"status_bar_error_zoom_native_link_message" = "Ensure you have the Zoom app installed, or open such links in a web-browser from the preferences instead.";
+"status_bar_error_zoom_native_link_message" = "Ensure you have the Zoom app installed, or open such links in a web browser from the preferences instead.";
 
 // MARK: - Welcome screen
 
@@ -333,7 +336,7 @@
 "constants_browser_opera" = "Opera";
 "constants_browser_vivaldi" = "Vivaldi";
 "constants_browser_safari" = "Safari";
-"constants_browser_defaultBrowser" = "Default web-browser";
+"constants_browser_defaultBrowser" = "Default web browser";
 
 // MARK: - Store
 
@@ -353,8 +356,11 @@
 // MARK: - Notifications
 
 "notifications_event_start_soon_body" = "The event starts soon";
+"notifications_event_start_one_minute_body" = "The event starts in one minute";
+"notifications_event_start_three_minutes_body" = "The event starts in three minutes";
+"notifications_event_start_five_minutes_body" = "The event starts in five minutes";
 
 // MARK: - Link open
 
 "link_url_cant_open_title" = "Oops! Unable to open the link in %@";
-"link_url_cant_open_message" = "Ensure you have %@ installed, or open such links in a web-browser from the preferences instead.";
+"link_url_cant_open_message" = "Ensure you have %@ installed, or open such links in a web browser from the preferences instead.";

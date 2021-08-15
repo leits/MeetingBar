@@ -207,11 +207,11 @@ struct EditRegexModal: View {
                 }.disabled(new_regex.isEmpty)
             }
         }.padding()
-        .frame(width: 500, height: 150)
-        .onAppear { self.new_regex = self.regex }
-        .alert(isPresented: $showingAlert) {
-            Alert(title: Text("preferences_advanced_regex_new_cant_save_title".loco()), message: Text(error_msg), dismissButton: .default(Text("general_ok".loco())))
-        }
+            .frame(width: 500, height: 150)
+            .onAppear { self.new_regex = self.regex }
+            .alert(isPresented: $showingAlert) {
+                Alert(title: Text("preferences_advanced_regex_new_cant_save_title".loco()), message: Text(error_msg), dismissButton: .default(Text("general_ok".loco())))
+            }
     }
 
     func cancel() {

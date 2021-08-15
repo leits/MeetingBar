@@ -6,6 +6,9 @@
 // MARK: - Notifications
 
 "notifications_event_start_soon_body" = "Die Veranstaltung beginnt bald";
+"notifications_event_start_one_minute_body" = "Das Ereignis beginnt in einer Minute";
+"notifications_event_start_three_minutes_body" = "Das Ereignis beginnt in drei Minuten";
+"notifications_event_start_five_minutes_body" = "Das Ereignis beginnt in fünf Minuten";
 "store_patronage_purchase_cloud_service_network_connection_failed" = "Es konnte keine Verbindung zum Netzwerk hergestellt werden";
 "store_patronage_purchase_cloud_service_permission_denied_message" = "Der Zugriff auf Cloud-Service-Informationen ist nicht erlaubt";
 "store_patronage_purchase_store_product_not_available_message" = "Das Produkt ist im aktuellen Schaufenster nicht verfügbar";
@@ -136,6 +139,8 @@
 "status_bar_hide_meeting_names" = "Konferenztitel ausblenden";
 "status_bar_show_meeting_names" = "Konferenztitel anzeigen";
 "status_bar_quick_actions" = "Schnellaktionen";
+"status_bar_submenu_copy_meeting_link" = "Copy meeting link";
+"status_bar_submenu_email_attendees" = "Email attendees";
 "status_bar_submenu_open_in_fantastical" = "Fantastical öffnen";
 "status_bar_submenu_open_in_calendar" = "In Kalender-Anwendung öffnen";
 "status_bar_submenu_attendees_status_unknown" = " [?]";
@@ -143,7 +148,7 @@
 "status_bar_submenu_attendees_you" = "%@ (Sie)";
 "status_bar_submenu_attendees_no_name" = "Teilnehmer/in ohne Namen";
 "status_bar_submenu_attendees_title" = "Teilnehmer/innen (%d)";
-"status_bar_submenu_organizer_title" = "Veranstalter/in:";
+"status_bar_submenu_organizer_title" = "Veranstalter/in: %@";
 "status_bar_submenu_notes_title" = "Notizen:";
 "status_bar_submenu_location_title" = "Ort:";
 "status_bar_submenu_status_default_simple" = " ❔ (Unbekannt)";
@@ -151,7 +156,7 @@
 "status_bar_submenu_status_unknown" = " ❔ Unbekannt";
 "status_bar_submenu_status_pending" = " ⏳ Ausstehend";
 "status_bar_submenu_status_tentative" = " ☝️ Versuch";
-"status_bar_submenu_status_canceled" = " 👎 Abgebrochen";
+"status_bar_submenu_status_declined" = " 👎 Abgelehnt";
 "status_bar_submenu_status_accepted" = " 👍 Akzeptiert";
 "status_bar_submenu_status_title" = "Status: %@";
 "status_bar_submenu_duration_all_day" = "%@ - %@ (%@ Minuten)";
@@ -163,6 +168,7 @@
 "status_bar_section_join_create_meeting" = "Konferenz erstellen";
 "status_bar_section_join_from_clipboard" = "Konferenz aus Zwischenablage öffnen";
 "status_bar_section_join_next_meeting" = "Der Konferenz des nächsten Ereignisses beitreten";
+"status_bar_section_join_current_meeting" = "Join current event meeting";
 "status_bar_empty_calendar_message" = "In den Einstellungen Kalender wählen,\num Ihre Konferenzen zu sehen";
 "status_bar_section_tomorrow" = "Morgen";
 

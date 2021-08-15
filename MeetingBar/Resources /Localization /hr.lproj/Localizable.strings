@@ -184,6 +184,7 @@
 "status_bar_section_tomorrow" = "Sutra";
 "status_bar_empty_calendar_message" = "Odaberi kalendare u postavkama\nza prikaz tvojih sastanaka";
 "status_bar_section_join_next_meeting" = "Pridruži se sljedećem sastanku";
+"status_bar_section_join_current_meeting" = "Join current event meeting";
 "status_bar_section_join_from_clipboard" = "Otvori sastanak iz međuspremnika";
 "status_bar_section_join_create_meeting" = "Stvori sastanak";
 "status_bar_section_bookmarks_title" = "Zabilješke";
@@ -194,20 +195,22 @@
 "status_bar_submenu_duration_all_day" = "%@ – %@ (%@ min)";
 "status_bar_submenu_status_title" = "Stanje: %@";
 "status_bar_submenu_status_accepted" = " 👍 Prihvaćeno";
-"status_bar_submenu_status_canceled" = " 👎 Otkazano";
+"status_bar_submenu_status_declined" = " 👎 Otkazano";
 "status_bar_submenu_status_tentative" = " ☝️ Provizorno";
 "status_bar_submenu_status_pending" = " ⏳ U tijeku";
 "status_bar_submenu_status_unknown" = " ❔ Nepoznato";
 "status_bar_submenu_status_default_extended" = " ❔ (%@)";
 "status_bar_submenu_status_default_simple" = " ❔ (nepoznato)";
 "status_bar_submenu_location_title" = "Lokacija:";
-"status_bar_submenu_organizer_title" = "Organizator:";
+"status_bar_submenu_organizer_title" = "Organizator: %@";
 "status_bar_submenu_notes_title" = "Napomene:";
 "status_bar_submenu_attendees_title" = "Sudionici (%d)";
 "status_bar_submenu_attendees_no_name" = "Bezimeni sudionik";
 "status_bar_submenu_attendees_you" = "%@ (ti)";
 "status_bar_submenu_attendees_status_tentative" = " [provizorno]";
 "status_bar_submenu_attendees_status_unknown" = " [?]";
+"status_bar_submenu_copy_meeting_link" = "Copy meeting link";
+"status_bar_submenu_email_attendees" = "Email attendees";
 "status_bar_submenu_open_in_calendar" = "Otvori u programu Kalendar";
 "status_bar_submenu_open_in_fantastical" = "Otvori u Fantastical";
 "status_bar_quick_actions" = "Brze radnje";
@@ -345,6 +348,9 @@
 // MARK: - Notifications
 
 "notifications_event_start_soon_body" = "Događaj uskoro počinje";
+"notifications_event_start_one_minute_body" = "The event starts in one minute";
+"notifications_event_start_three_minutes_body" = "The event starts in three minutes";
+"notifications_event_start_five_minutes_body" = "The event starts in five minutes";
 
 // MARK: - Link open
 

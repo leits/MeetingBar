@@ -76,7 +76,7 @@ func purchasePatronage(_ productID: String) {
             let purchasePatronageDuration = getPatronageDurationFromProductID(productID)
             Defaults[.patronageDuration] += purchasePatronageDuration
             sendNotification("store_patronage_title".loco(), "store_patronage_purchase_success_message".loco())
-        case .error(let error):
+        case let .error(error):
             switch error.code {
             case .unknown:
                 sendNotification("store_patronage_title".loco(), "store_patronage_purchase_unknown_message".loco())
