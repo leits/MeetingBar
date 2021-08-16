@@ -990,7 +990,7 @@ func createEventStatusString(_ event: EKEvent) -> (String, String) {
     var eventDate: Date
     let prevMinute = Date().addingTimeInterval(-60)
     let now = Date()
-    if (event.startDate)! < now, (event.endDate)! > prevMinute {
+    if (event.startDate)! <= now, (event.endDate)! > now {
         isActiveEvent = true
         eventDate = event.endDate
     } else {
