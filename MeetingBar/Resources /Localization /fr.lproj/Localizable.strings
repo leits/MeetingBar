@@ -150,8 +150,8 @@
 "status_bar_hide_meeting_names" = "Masquer le titre de la réunion";
 "status_bar_show_meeting_names" = "Afficher le titre de la réunion";
 "status_bar_quick_actions" = "Actions rapides";
-"status_bar_submenu_copy_meeting_link" = "Copy meeting link";
-"status_bar_submenu_email_attendees" = "Email attendees";
+"status_bar_submenu_copy_meeting_link" = "Copier le lien de la réunion";
+"status_bar_submenu_email_attendees" = "Envoyer un courriel aux participants";
 "status_bar_submenu_open_in_fantastical" = "Ouvrir dans Fantastical";
 "status_bar_submenu_open_in_calendar" = "Ouvrir dans l'application Calendrier";
 "status_bar_submenu_attendees_status_unknown" = " [?]";
@@ -178,7 +178,7 @@
 "status_bar_section_bookmarks_title" = "Marque-pages";
 "status_bar_section_join_create_meeting" = "Créer une réunion";
 "status_bar_section_join_next_meeting" = "Rejoindre la réunion du prochain évènement";
-"status_bar_section_join_current_meeting" = "Join current event meeting";
+"status_bar_section_join_current_meeting" = "Rejoindre la réunion de l’évènement en cours";
 "status_bar_empty_calendar_message" = "Sélectionnez les calendriers dans les préférences\npour voir vos réunions";
 "status_bar_section_tomorrow" = "Demain";
 
