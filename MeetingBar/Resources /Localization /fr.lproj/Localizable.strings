@@ -243,7 +243,6 @@
 "preferences_services_link_teams_value" = "Appli Teams";
 "preferences_services_link_zoom_value" = "Appli Zoom";
 "preferences_services_link_jitsi_value" = "Appli Jitsi";
-
 "preferences_services_link_default_browser_value" = "Navigateur par défaut";
 "preferences_services_link_team_title" = "Ouvrir les liens Team dans";
 "preferences_services_link_jitsi_title" = "Ouvrir les liens Jitsi dans";
