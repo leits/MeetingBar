@@ -51,7 +51,7 @@
 "preferences_general_shortcut_join_next" = "Join next meeting:";
 "preferences_general_shortcut_join_from_clipboard" = "Join meeting from clipboard:";
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "Toggle title visibility in status bar:";
-"preferences_general_meeting_bar_description" = "MeetingBar is a libre app created by Andrii Leitsius\nFor smoother and easier online meetings";
+"preferences_general_meeting_bar_description" = "MeetingBar is an open-source app created by Andrii Leitsius\nFor smoother and easier online meetings";
 "preferences_general_external_patronage" = "Patronage";
 "preferences_general_external_gitHub" = "GitHub";
 "preferences_general_external_contact" = "Contact";
