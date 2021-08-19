@@ -64,6 +64,8 @@ struct ChangelogView: View {
                 if lastRevisedVersionInChangelog < "3.7.0" {
                     Section(header: Text("Version 3.7.0")) {
                         Text("🌍 Added translations into Japanese")
+                        Text("Copy meeting link & email attendees actions in event submenu")
+                        Text("Round the timer up, not down")
                     }
                 }
             }.listStyle(SidebarListStyle())
