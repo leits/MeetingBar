@@ -3,7 +3,7 @@
 > unreleased
 *
 
-## Version 3.7.0 (WIP)
+## Version 3.7.0
 > (released 19th Aug 2021)
 * Add copy meeting link & email attendees from event submenu 
 * Round the timer up, not down
