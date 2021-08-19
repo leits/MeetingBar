@@ -13,7 +13,7 @@ struct statusbarEventTitleLengthLimits {
     static let max = 55
 }
 
-struct TitleTruncationRules {
+enum TitleTruncationRules {
     static let excludeAtEnds = CharacterSet.whitespacesAndNewlines
 }
 
@@ -21,7 +21,6 @@ struct LinksRegex {
     let meet = try! NSRegularExpression(pattern: #"https?://meet.google.com/[a-z-]+"#)
     let hangouts = try! NSRegularExpression(pattern: #"https?://hangouts.google.com/[^\s]*"#)
     let zoom = try! NSRegularExpression(pattern: #"https?:\/\/(?:[a-zA-Z0-9-.]+)?zoom.(?:us|com.cn)\/(?:j|my|w)\/[-a-zA-Z0-9()@:%_\+.~#?&=\/]*"#)
-
 
     /**
      * Examples:
@@ -362,6 +361,7 @@ enum AppLanguage: String, Codable {
     case french = "fr"
     case czech = "cs"
     case norwegian = "nb-NO"
+    case japanese = "ja"
 }
 
 struct Browser: Encodable, Decodable, Hashable {
@@ -383,7 +383,7 @@ enum DeprecatedBrowser: String, Codable, CaseIterable {
     case defaultBrowser = "Default Browser"
 }
 
- struct WindowTitles {
+enum WindowTitles {
     static let onboarding = "window_title_onboarding".loco()
     static let preferences = "window_title_preferences".loco()
     static let changelog = "windows_title_changelog".loco()

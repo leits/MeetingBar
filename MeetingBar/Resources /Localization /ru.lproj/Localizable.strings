@@ -46,10 +46,10 @@
 "preferences_general_shortcut_join_from_clipboard" = "Присоединиться к событию из буфера обмена:";
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "Переключить видимость названия события в статус баре:";
 "preferences_general_meeting_bar_description" = "MeetingBar - это приложение с открытым исходным кодом, созданное Andrii Leitsius.\nПриложение призвано сделать ваши онлайн-встречи более спокойными и легкими.";
-"preferences_general_external_patronage" = "Patronage";
+"preferences_general_external_patronage" = "Спонсоры";
 "preferences_general_external_gitHub" = "GitHub";
 "preferences_general_external_contact" = "Связь";
-"preferences_general_patron_title" = "Become a Patron";
+"preferences_general_patron_title" = "Стать спонсором";
 "preferences_general_patron_three_months" = "3 Месяца - 2,99 USD";
 "preferences_general_patron_six_months" = "6 Месяцев - 5,99 USD";
 "preferences_general_patron_twelve_months" = "12 Месяцев - 11,99 USD";
@@ -184,6 +184,7 @@
 "status_bar_section_tomorrow" = "Завтра";
 "status_bar_empty_calendar_message" = "Выберите календари в настройках,\nчтобы увидеть свои события";
 "status_bar_section_join_next_meeting" = "Присоединяйтесь к следующему событию";
+"status_bar_section_join_current_meeting" = "Присоединяйтесь к текущему событию";
 "status_bar_section_join_from_clipboard" = "Присоединиться к событию из буфера обмена";
 "status_bar_section_join_create_meeting" = "Создать событие";
 "status_bar_section_bookmarks_title" = "Закладки";
@@ -194,20 +195,22 @@
 "status_bar_submenu_duration_all_day" = "%@ - %@ (%@ минут(а/ы))";
 "status_bar_submenu_status_title" = "Статус: %@";
 "status_bar_submenu_status_accepted" = " 👍 Принято";
-"status_bar_submenu_status_canceled" = " 👎 Отклонено";
+"status_bar_submenu_status_declined" = " 👎 Отклонено";
 "status_bar_submenu_status_tentative" = " ☝️ Возможно";
 "status_bar_submenu_status_pending" = " ⏳ В ожидании";
 "status_bar_submenu_status_unknown" = " ❔ Неизвестно";
 "status_bar_submenu_status_default_extended" = " ❔ (%@)";
 "status_bar_submenu_status_default_simple" = " ❔ (Неизвестно)";
 "status_bar_submenu_location_title" = "Местоположение:";
-"status_bar_submenu_organizer_title" = "Организатор:";
+"status_bar_submenu_organizer_title" = "Организатор: %@";
 "status_bar_submenu_notes_title" = "Примечания:";
 "status_bar_submenu_attendees_title" = "Участники (%d)";
 "status_bar_submenu_attendees_no_name" = "Участник без имени";
 "status_bar_submenu_attendees_you" = "%@ (вы)";
 "status_bar_submenu_attendees_status_tentative" = " [Возможно]";
 "status_bar_submenu_attendees_status_unknown" = " [?]";
+"status_bar_submenu_copy_meeting_link" = "Скопировать ссылку на встречу";
+"status_bar_submenu_email_attendees" = "Отправить участникам емейл";
 "status_bar_submenu_open_in_calendar" = "Открыть в приложении \"Календарь\"";
 "status_bar_submenu_open_in_fantastical" = "Открыть в приложении \"Fantastical\"";
 "status_bar_quick_actions" = "Быстрые Действия";
@@ -345,6 +348,9 @@
 // MARK: - Notifications
 
 "notifications_event_start_soon_body" = "Событие скоро начнется";
+"notifications_event_start_one_minute_body" = "Событие начнется через одну минуту";
+"notifications_event_start_three_minutes_body" = "Событие начнется через три минуты";
+"notifications_event_start_five_minutes_body" = "Событие начнется через пять минут";
 
 // MARK: - Link open
 

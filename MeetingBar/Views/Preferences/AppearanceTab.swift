@@ -71,7 +71,7 @@ struct StatusBarSection: View {
                 if eventTitleFormat == EventTitleFormat.show {
                     Stepper("preferences_appearance_status_bar_title_shorten_stepper".loco(statusbarEventTitleLength),
                             value: $statusbarEventTitleLength,
-                            in: statusbarEventTitleLengthLimits.min...statusbarEventTitleLengthLimits.max,
+                            in: statusbarEventTitleLengthLimits.min ... statusbarEventTitleLengthLimits.max,
                             step: 5)
                 }
             }
@@ -87,7 +87,7 @@ struct StatusBarSection: View {
 
             HStack {
                 Toggle("", isOn: $showEventMaxTimeUntilEventEnabled).labelsHidden()
-                Stepper("preferences_appearance_status_bar_next_event".loco(showEventMaxTimeUntilEventThreshold), value: $showEventMaxTimeUntilEventThreshold, in: 5...720, step: 5)
+                Stepper("preferences_appearance_status_bar_next_event".loco(showEventMaxTimeUntilEventThreshold), value: $showEventMaxTimeUntilEventThreshold, in: 5 ... 720, step: 5)
                     .disabled(!showEventMaxTimeUntilEventEnabled)
             }
         }.padding(.horizontal, 10)
@@ -113,7 +113,7 @@ struct MenuSection: View {
         Section {
             HStack {
                 Toggle("preferences_appearance_menu_shorten_event_title_toggle".loco(), isOn: $shortenEventTitle)
-                Stepper("preferences_appearance_menu_shorten_event_title_stepper".loco(menuEventTitleLength), value: $menuEventTitleLength, in: 20...100, step: 5).disabled(!shortenEventTitle)
+                Stepper("preferences_appearance_menu_shorten_event_title_stepper".loco(menuEventTitleLength), value: $menuEventTitleLength, in: 20 ... 100, step: 5).disabled(!shortenEventTitle)
             }
             Group {
                 HStack {

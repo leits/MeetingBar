@@ -1,8 +1,14 @@
 # Changelog for Meetingbar
-
-
-## Version 3.7.0 (WIP)
+## Version 3.8.0 (WIP)
 > unreleased
+*
+
+## Version 3.7.0
+> (released 19th Aug 2021)
+* Add copy meeting link & email attendees from event submenu 
+* Round the timer up, not down
+* Make event start soon notification more specified 
+* Added translations into Japanese
 
 ## Version 3.6.0
 > (released 15th Jun 2021)

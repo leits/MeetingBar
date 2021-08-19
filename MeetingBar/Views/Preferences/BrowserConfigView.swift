@@ -85,12 +85,12 @@ struct BrowserConfigView: View {
                 }.frame(width: 20, height: 20, alignment: .trailing)
             }
         }.padding()
-        .frame(width: 500,
-               height: 500,
-               alignment: .center)
+            .frame(width: 500,
+                   height: 500,
+                   alignment: .center)
     }
 
-    private func generatePath (browser: Browser) -> String {
+    private func generatePath(browser: Browser) -> String {
         var path: String = ""
 
         if !browser.path.isEmpty {
@@ -121,7 +121,6 @@ struct BrowserConfigView: View {
     func removeBrowser(_ browser: Browser) {
         browserConfigs.removeAll { $0.name == browser.name }
     }
-
 
     struct EditBrowserModal: View {
         @Environment(\.presentationMode) var presentationMode
@@ -179,24 +178,24 @@ struct BrowserConfigView: View {
                     }.disabled(self.browser.name.isEmpty || self.browser.name.isEmpty)
                 }
             }.frame(width: 500, height: 200)
-            .padding()
-            .alert(isPresented: $showingAlert) {
-                Alert(title: Text("preferences_configure_browsers_modal_alert_title".loco()), message: Text(error_msg), dismissButton: .default(Text("general_ok".loco())))
-            }
+                .padding()
+                .alert(isPresented: $showingAlert) {
+                    Alert(title: Text("preferences_configure_browsers_modal_alert_title".loco()), message: Text(error_msg), dismissButton: .default(Text("general_ok".loco())))
+                }
         }
 
         /**
          * saves the browser to the browsers configuration.
          */
         func saveBrowser() {
-            self.presentationMode.wrappedValue.dismiss()
+            presentationMode.wrappedValue.dismiss()
 
             let browserConfig = Browser(name: browser.name, path: browser.path, arguments: browser.arguments)
             browserConfigs.removeAll { $0.name == browser.name }
             browserConfigs.append(browserConfig)
 
             browserConfigs = browserConfigs.sorted { $0.path.fileName() < $1.path.fileName() }
-            self.browser = Browser(name: "", path: "", arguments: "", deletable: true)
+            browser = Browser(name: "", path: "", arguments: "", deletable: true)
         }
 
         /**

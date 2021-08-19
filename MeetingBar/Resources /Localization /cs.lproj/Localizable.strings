@@ -12,6 +12,10 @@
 // MARK: - Notifications
 
 "notifications_event_start_soon_body" = "Událost za chvilku začne";
+"notifications_event_start_one_minute_body" = "The event starts in one minute";
+"notifications_event_start_three_minutes_body" = "The event starts in three minutes";
+"notifications_event_start_five_minutes_body" = "The event starts in five minutes";
+
 "store_patronage_purchase_cloud_service_revoked_message" = "Uživatel zrušil oprávnění k používání této cloudové služby";
 "store_patronage_purchase_cloud_service_network_connection_failed" = "Nepodařilo se připojit k síti";
 "store_patronage_purchase_cloud_service_permission_denied_message" = "Přístup k informacím o cloudových službách není povolen";
@@ -144,20 +148,22 @@
 "status_bar_quick_actions" = "Rychlé akce";
 "status_bar_submenu_open_in_fantastical" = "Otevřít v aplikaci Fantastical";
 "status_bar_submenu_open_in_calendar" = "Otevřít v aplikaci Kalendář";
+"status_bar_submenu_copy_meeting_link" = "Copy meeting link";
+"status_bar_submenu_email_attendees" = "Email attendees";
 "status_bar_submenu_attendees_status_unknown" = " [?]";
 "status_bar_submenu_attendees_status_tentative" = " [nezávazně]";
 "status_bar_submenu_attendees_you" = "%@ (já)";
 "status_bar_submenu_attendees_no_name" = "Účastník beze jména";
 "status_bar_submenu_attendees_title" = "Účastníci (%d)";
 "status_bar_submenu_notes_title" = "Poznámky:";
-"status_bar_submenu_organizer_title" = "Organizátor:";
+"status_bar_submenu_organizer_title" = "Organizátor: %@";
 "status_bar_submenu_location_title" = "Místnost:";
 "status_bar_submenu_status_default_simple" = " ❔ (Neznámý)";
 "status_bar_submenu_status_default_extended" = " ❔ (%@)";
 "status_bar_submenu_status_unknown" = " ❔ Neznámý";
 "status_bar_submenu_status_pending" = " ⏳ Čeká na vyřízení";
 "status_bar_submenu_status_tentative" = " ☝️ Nezávazně";
-"status_bar_submenu_status_canceled" = " 👎 Zrušeno";
+"status_bar_submenu_status_declined" = " 👎 Zrušeno";
 "status_bar_submenu_status_accepted" = " 👍 Přijato";
 "status_bar_submenu_status_title" = "Stav: %@";
 "status_bar_submenu_duration_all_day" = "%@–%@ (%@ minut)";
@@ -167,6 +173,7 @@
 "status_bar_section_join_create_meeting" = "Vytvořit schůzku";
 "status_bar_section_join_from_clipboard" = "Otevřít schůzku ze schránky";
 "status_bar_section_join_next_meeting" = "Připojit se k nadcházející schůzce";
+"status_bar_section_join_current_meeting" = "Join current event meeting";
 "status_bar_empty_calendar_message" = "Pro zobrazení vašich schůzek\nvyberte kalendáře v předvolbách";
 "status_bar_section_tomorrow" = "Zítra";
 
