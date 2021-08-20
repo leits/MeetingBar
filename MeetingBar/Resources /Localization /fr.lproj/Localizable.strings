@@ -293,6 +293,8 @@
 "preferences_appearance_events_show_events_for_today_tomorrow_value" = "aujourd'hui et demain";
 "preferences_appearance_events_show_events_for_today_value" = "aujourd'hui";
 "preferences_appearance_events_show_events_for_title" = "Afficher les évènements pour";
+"preferences_appearance_no_event_title" = "No more meetings";
+"preferences_appearance_no_event_title_tooltip" = "customisable label";
 
 // MARK: - Preferences Appearance
 

@@ -48,6 +48,8 @@
 "link_url_cant_open_title" = "Hoppla! Kann den Link in %@ nicht öffnen";
 "preferences_appearance_status_bar_title_event_title_value" = "Ereignistitel";
 "preferences_appearance_menu_title" = "Menü";
+"preferences_appearance_no_event_title" = "No more meetings";
+"preferences_appearance_no_event_title_tooltip" = "customisable label";
 "preferences_appearance_status_bar_next_event" = "Nur nächstes Ereignis anzeigen, das innerhalb von %d Minuten beginnt";
 "preferences_appearance_status_bar_time_hide_value" = "ausblenden";
 "preferences_appearance_status_bar_time_show_under_title_value" = "unter Titel anzeigen";

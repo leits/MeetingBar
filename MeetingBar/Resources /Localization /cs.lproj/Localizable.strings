@@ -292,6 +292,8 @@
 "preferences_appearance_events_show_events_for_today_tomorrow_value" = "dnešek a zítřek";
 "preferences_appearance_events_show_events_for_today_value" = "dnešek";
 "preferences_appearance_events_show_events_for_title" = "Zobrazit události na:";
+"preferences_appearance_no_event_title" = "No more meetings";
+"preferences_appearance_no_event_title_tooltip" = "customisable label";
 
 // MARK: - Preferences Appearance
 

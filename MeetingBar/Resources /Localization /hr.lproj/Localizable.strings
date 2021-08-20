@@ -65,6 +65,8 @@
 
 "preferences_appearance_events_title" = "Događaji";
 "preferences_appearance_events_show_events_for_title" = "Prikaži događaje za";
+"preferences_appearance_no_event_title" = "No more meetings";
+"preferences_appearance_no_event_title_tooltip" = "customisable label";
 "preferences_appearance_events_show_events_for_today_value" = "danas";
 "preferences_appearance_events_show_events_for_today_tomorrow_value" = "danas ili sutra";
 "preferences_appearance_events_non_all_day_title" = "Ostali događaji:";

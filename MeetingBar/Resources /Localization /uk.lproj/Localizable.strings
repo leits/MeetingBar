@@ -65,6 +65,8 @@
 
 "preferences_appearance_events_title" = "Події";
 "preferences_appearance_events_show_events_for_title" = "Показати події зі";
+"preferences_appearance_no_event_title" = "No more meetings";
+"preferences_appearance_no_event_title_tooltip" = "customisable label";
 "preferences_appearance_events_show_events_for_today_value" = "сьогодні";
 "preferences_appearance_events_show_events_for_today_tomorrow_value" = "сьогодні та завтра";
 "preferences_appearance_events_non_all_day_title" = "Події не на весь день:";

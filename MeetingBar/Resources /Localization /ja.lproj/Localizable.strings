@@ -111,6 +111,8 @@
 "preferences_appearance_menu_show_event_end_time_value" = "終了時刻";
 "preferences_appearance_menu_show_event_icon_value" = "アイコン";
 "preferences_appearance_menu_show_event_details_value" = "サブメニューに詳細表示";
+"preferences_appearance_no_event_title" = "No more meetings";
+"preferences_appearance_no_event_title_tooltip" = "customisable label";
 
 // MARK: - Preferences Services
 
