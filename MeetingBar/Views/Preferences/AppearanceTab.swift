@@ -77,7 +77,7 @@ struct StatusBarSection: View {
                 if eventTitleFormat == EventTitleFormat.show {
                     Stepper("preferences_appearance_status_bar_title_shorten_stepper".loco(statusbarEventTitleLength),
                             value: $statusbarEventTitleLength,
-                            in: statusbarEventTitleLengthLimits.min...statusbarEventTitleLengthLimits.max,
+                            in: statusbarEventTitleLengthLimits.min ... statusbarEventTitleLengthLimits.max,
                             step: 5)
                 }
             }
@@ -93,7 +93,7 @@ struct StatusBarSection: View {
 
             HStack {
                 Toggle("", isOn: $showEventMaxTimeUntilEventEnabled).labelsHidden()
-                Stepper("preferences_appearance_status_bar_next_event".loco(showEventMaxTimeUntilEventThreshold), value: $showEventMaxTimeUntilEventThreshold, in: 5...720, step: 5)
+                Stepper("preferences_appearance_status_bar_next_event".loco(showEventMaxTimeUntilEventThreshold), value: $showEventMaxTimeUntilEventThreshold, in: 5 ... 720, step: 5)
                     .disabled(!showEventMaxTimeUntilEventEnabled)
             }
         }.padding(.horizontal, 10)
@@ -119,7 +119,7 @@ struct MenuSection: View {
         Section {
             HStack {
                 Toggle("preferences_appearance_menu_shorten_event_title_toggle".loco(), isOn: $shortenEventTitle)
-                Stepper("preferences_appearance_menu_shorten_event_title_stepper".loco(menuEventTitleLength), value: $menuEventTitleLength, in: 20...100, step: 5).disabled(!shortenEventTitle)
+                Stepper("preferences_appearance_menu_shorten_event_title_stepper".loco(menuEventTitleLength), value: $menuEventTitleLength, in: 20 ... 100, step: 5).disabled(!shortenEventTitle)
             }
             Group {
                 HStack {
@@ -159,18 +159,16 @@ struct EventsSection: View {
             }
 
             HStack {
-                Picker("Non all day events:", selection: $nonAllDayEvents) {
-                    Text("preferences_appearance_events_value_show".loco()).tag(NonAlldayEventsAppereance.show)
-                    Text("preferences_appearance_events_value_inactive_without_link".loco()).tag(NonAlldayEventsAppereance.show_inactive_without_any_link)
-                    Text("preferences_appearance_events_value_inactive_without_meeting_link".loco()).tag(NonAlldayEventsAppereance.show_inactive_without_meeting_link)
-                    Text("preferences_appearance_events_value_hide_without_link".loco()).tag(NonAlldayEventsAppereance.hide_without_any_link)
-                    Text("preferences_appearance_events_value_hide_without_meeting_link".loco()).tag(NonAlldayEventsAppereance.hide_without_meeting_link)
-                }
-
                 Picker("preferences_appearance_events_all_day_title".loco(), selection: $allDayEvents) {
                     Text("preferences_appearance_events_value_show".loco()).tag(AlldayEventsAppereance.show)
                     Text("preferences_appearance_events_value_only_with_link".loco()).tag(AlldayEventsAppereance.show_with_meeting_link_only)
                     Text("preferences_appearance_events_value_hide".loco()).tag(AlldayEventsAppereance.hide)
+                }
+
+                Picker("preferences_appearance_events_non_all_day_title".loco(), selection: $nonAllDayEvents) {
+                    Text("preferences_appearance_events_value_show".loco()).tag(NonAlldayEventsAppereance.show)
+                    Text("preferences_appearance_events_value_inactive_without_meeting_link".loco()).tag(NonAlldayEventsAppereance.show_inactive_without_meeting_link)
+                    Text("preferences_appearance_events_value_hide_without_meeting_link".loco()).tag(NonAlldayEventsAppereance.hide_without_meeting_link)
                 }
             }
 

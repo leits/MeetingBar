@@ -38,6 +38,8 @@ extension Defaults.Keys {
     static let statusbarEventTitleLength = Key<Int>("statusbarEventTitleLength", default: statusbarEventTitleLengthLimits.max)
     static let noEventTitle = Key<String>("noEventTitle", default: "")
 
+    static let hideMeetingTitle = Key<Bool>("hideMeetingTitle", default: false)
+
     // Menu Appearance
     // if the event title in the menu should be shortened or not -> the length will be stored in field menuEventTitleLength
     static let shortenEventTitle = Key<Bool>("shortenEventTitle", default: false)
@@ -84,13 +86,14 @@ extension Defaults.Keys {
     // custom url to create meetings
     static let createMeetingServiceUrl = Key<String>("createMeetingServiceUrl", default: "")
 
-    static let browserForMeetLinks = Key<Browser>("browserForMeetLinks", default: systemDefaultBrowser)
+    static let meetBrowser = Key<Browser>("meetBrowser", default: systemDefaultBrowser)
 
     /**
      * browser used for creating a new meeting
      */
     static let browserForCreateMeeting = Key<Browser>("browserForCreateMeeting", default: systemDefaultBrowser)
 
+    static let browserForMeetLinks = Key<DeprecatedBrowser?>("browserForMeetLinks", default: nil) // Backward compatibility
     static let useChromeForMeetLinks = Key<Bool?>("useChromeForMeetLinks") // Backward compatibility
     static let useAppForZoomLinks = Key<Bool>("useAppForZoomLinks", default: false)
     static let useAppForTeamsLinks = Key<Bool>("useAppForTeamsLinks", default: false)

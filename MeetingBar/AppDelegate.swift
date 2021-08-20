@@ -26,7 +26,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     var allDayEventsObserver: DefaultsObservation?
     var nonAllDayEventsObserver: DefaultsObservation?
 
-
     var statusbarEventTitleLengthObserver: DefaultsObservation?
     var statusbarNoEventTitleObserver: DefaultsObservation?
     var timeFormatObserver: DefaultsObservation?
@@ -39,6 +38,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
     var shortenEventTitleObserver: DefaultsObservation?
     var menuEventTitleLengthObserver: DefaultsObservation?
+    var meetingTitleVisibilityObserver: DefaultsObservation?
     var showEventEndTimeObserver: DefaultsObservation?
     var pastEventsAppereanceObserver: DefaultsObservation?
     var disablePastEventObserver: DefaultsObservation?
@@ -89,14 +89,34 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
         if let useChromeForMeetLinks = Defaults[.useChromeForMeetLinks] {
             if useChromeForMeetLinks {
-                let chromeBrowser = Defaults[.browsers].first { $0.name == "Google Chrome" }
-                Defaults[.browserForMeetLinks] = chromeBrowser!
+                Defaults[.meetBrowser] = Browser(name: "Google Chrome", path: "/Applications/Google Chrome.app", arguments: "", deletable: true)
             } else {
-                Defaults[.browserForMeetLinks] = Browser(name: "Default Browser", path: "", arguments: "", deletable: false)
+                Defaults[.meetBrowser] = Browser(name: "Default Browser", path: "", arguments: "", deletable: false)
             }
-
-
             Defaults[.useChromeForMeetLinks] = nil
+        }
+        if let browserForMeetLinks = Defaults[.browserForMeetLinks] {
+            switch browserForMeetLinks {
+            case .chrome:
+                Defaults[.meetBrowser] = Browser(name: "Google Chrome", path: "/Applications/Google Chrome.app", arguments: "", deletable: true)
+            case .firefox:
+                Defaults[.meetBrowser] = Browser(name: "Firefox", path: "/Applications/Firefox.app", arguments: "", deletable: true)
+            case .safari:
+                Defaults[.meetBrowser] = Browser(name: "Safari", path: "/Applications/Safari.app", arguments: "", deletable: true)
+            case .chromium:
+                Defaults[.meetBrowser] = Browser(name: "Chromium", path: "/Applications/Chromium.app", arguments: "", deletable: true)
+            case .brave:
+                Defaults[.meetBrowser] = Browser(name: "Brave", path: "/Applications/Brave Browser.app", arguments: "", deletable: true)
+            case .edge:
+                Defaults[.meetBrowser] = Browser(name: "Microsoft Edge", path: "/Applications/Microsoft Edge.app", arguments: "", deletable: true)
+            case .opera:
+                Defaults[.meetBrowser] = Browser(name: "Opera", path: "/Applications/Opera.app", arguments: "", deletable: true)
+            case .vivaldi:
+                Defaults[.meetBrowser] = Browser(name: "Vivaldi", path: "/Applications/Vivaldi.app", arguments: "", deletable: true)
+            default:
+                Defaults[.meetBrowser] = Browser(name: "Default Browser", path: "", arguments: "", deletable: false)
+            }
+            Defaults[.browserForMeetLinks] = nil
         }
 
         // AppStore sync
@@ -109,9 +129,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         //
 
         if let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
-            if Defaults[.appVersion] == UserDefaults.standard.string(forKey: Defaults.Keys.appVersion.name) {
-                Defaults[.lastRevisedVersionInChangelog] = appVersion
-            }
             Defaults[.appVersion] = appVersion
         }
 
@@ -152,7 +169,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             let meetingLink = detectLink(&clipboardContent)
 
             if let meetingLink = meetingLink {
-                openMeetingURL(meetingLink.service, meetingLink.url, systemDefaultBrowser)
+                openMeetingURL(meetingLink.service, meetingLink.url, nil)
             } else {
                 let validUrl = NSURL(string: clipboardContent)
                 if validUrl != nil {
@@ -166,6 +183,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             sendNotification("Clipboard is empty",
                              "Clipboard has no content, so the meeting cannot be started...")
         }
+    }
+
+    @objc
+    func toggleMeetingTitleVisibility() {
+        Defaults[.hideMeetingTitle].toggle()
     }
 
     func setup() {
@@ -183,7 +205,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         if Defaults[.browsers].isEmpty {
             addInstalledBrowser()
         }
-
 
         KeyboardShortcuts.onKeyUp(for: .createMeetingShortcut) {
             self.createMeeting()
@@ -203,6 +224,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             self.openLinkFromClipboard()
         }
 
+        KeyboardShortcuts.onKeyUp(for: .toggleMeetingTitleVisibilityShortcut) {
+            Defaults[.hideMeetingTitle].toggle()
+        }
+
         NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.eventStoreChanged), name: .EKEventStoreChanged, object: statusBarItem.eventStore)
 
         showEventDetailsObserver = Defaults.observe(.showEventDetails) { change in
@@ -211,7 +236,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                 self.statusBarItem.updateMenu()
             }
         }
-
 
         shortenEventTitleObserver = Defaults.observe(.shortenEventTitle) { change in
             NSLog("Change shortenEventTitle from \(change.oldValue) to \(change.newValue)")
@@ -224,6 +248,20 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             NSLog("Change menuEventTitleLengthObserver from \(change.oldValue) to \(change.newValue)")
             if change.oldValue != change.newValue {
                 self.statusBarItem.updateMenu()
+            }
+        }
+
+        meetingTitleVisibilityObserver = Defaults.observe(.hideMeetingTitle) { change in
+            NSLog("Change hideMeetingTitle from \(change.oldValue) to \(change.newValue)")
+            if change.oldValue != change.newValue {
+                self.statusBarItem.updateMenu()
+                self.statusBarItem.updateTitle()
+
+                // Reschedule next notification with updated event name visibility
+                removePendingNotificationRequests()
+                if let nextEvent = self.statusBarItem.eventStore.getNextEvent(calendars: self.statusBarItem.calendars) {
+                    scheduleEventNotification(nextEvent)
+                }
             }
         }
 
@@ -301,26 +339,25 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             }
         }
 
-
         timeFormatObserver = Defaults.observe(.timeFormat) { change in
             NSLog("Change timeFormat from \(change.oldValue) to \(change.newValue)")
             self.statusBarItem.updateMenu()
         }
 
         bookmarksObserver = Defaults.observe(keys: .bookmarks) {
-                self.statusBarItem.updateMenu()
+            self.statusBarItem.updateMenu()
         }
 
         eventTitleFormatObserver = Defaults.observe(.eventTitleFormat) { change in
             NSLog("Changed eventTitleFormat from \(String(describing: change.oldValue)) to \(String(describing: change.newValue))")
             self.statusBarItem.updateTitle()
+            self.statusBarItem.updateMenu()
         }
 
         eventTitleIconFormatObserver = Defaults.observe(.eventTitleIconFormat) { change in
             NSLog("Changed eventTitleFormat from \(String(describing: change.oldValue)) to \(String(describing: change.newValue))")
             self.statusBarItem.updateTitle()
         }
-
 
         pastEventsAppereanceObserver = Defaults.observe(.pastEventsAppereance) { change in
             NSLog("Changed pastEventsAppereance from \(change.oldValue) to \(change.newValue)")
@@ -358,7 +395,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                     scheduleEventNotification(nextEvent)
                 }
             } else {
-                UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+                removePendingNotificationRequests()
             }
         }
         showEventMaxTimeUntilEventThresholdObserver = Defaults.observe(.showEventMaxTimeUntilEventThreshold) { change in
@@ -383,25 +420,25 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                 NSApplication.shared.terminate(self)
             } else if windowTitle == WindowTitles.changelog {
                 Defaults[.lastRevisedVersionInChangelog] = Defaults[.appVersion]
-                self.statusBarItem.updateMenu()
+                statusBarItem.updateMenu()
             }
         }
     }
 
     func getClipboardContent() -> String {
-       let pasteboard = NSPasteboard.general
+        let pasteboard = NSPasteboard.general
         return pasteboard.string(forType: .string) ?? ""
     }
 
     @objc
-    func eventStoreChanged(_ notification: NSNotification) {
+    func eventStoreChanged(_: NSNotification) {
         NSLog("Store changed. Update status bar menu.")
         statusBarItem.updateTitle()
         statusBarItem.updateMenu()
     }
 
     private func scheduleUpdateStatusBarTitle() {
-        let timer = Timer.scheduledTimer(timeInterval: 15, target: self, selector: #selector(updateStatusbar), userInfo: nil, repeats: true)
+        let timer = Timer(timeInterval: 10, target: self, selector: #selector(updateStatusbar), userInfo: nil, repeats: true)
         RunLoop.current.add(timer, forMode: .common)
     }
 
@@ -422,15 +459,16 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     }
 
     private func scheduleUpdateEvents() {
-        let timer = Timer.scheduledTimer(timeInterval: 60 * 5, target: self, selector: #selector(updateMenuBar), userInfo: nil, repeats: true)
+        let timer = Timer(timeInterval: 60 * 5, target: self, selector: #selector(updateMenuBar), userInfo: nil, repeats: true)
         RunLoop.current.add(timer, forMode: .common)
     }
 
     /**
      * implementation is necessary to show notifications even when the app has focus!
      */
-    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        completionHandler([.alert, .badge, .sound])     }
+    func userNotificationCenter(_: UNUserNotificationCenter, willPresent _: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        completionHandler([.alert, .badge, .sound])
+    }
 
     internal func userNotificationCenter(_: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         switch response.actionIdentifier {
@@ -480,7 +518,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             var url: String = Defaults[.createMeetingServiceUrl]
             let checkedUrl = NSURL(string: url)
 
-            if !url.isEmpty && checkedUrl != nil {
+            if !url.isEmpty, checkedUrl != nil {
                 openMeetingURL(nil, URL(string: url)!, browser)
             } else {
                 if !url.isEmpty {
@@ -531,9 +569,29 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
     }
 
+    @objc
+    func copyEventMeetingLink(sender: NSMenuItem) {
+        if let event: EKEvent = sender.representedObject as? EKEvent {
+            let eventTitle = event.title ?? "status_bar_no_title".loco()
+            if let meeting = getMeetingLink(event) {
+                NSPasteboard.general.clearContents()
+                NSPasteboard.general.setString(meeting.url.absoluteString, forType: .string)
+            } else {
+                sendNotification("status_bar_error_link_missed_title".loco(eventTitle), "status_bar_error_link_missed_message".loco())
+            }
+        }
+    }
+
+    @objc
+    func emailAttendees(sender: NSMenuItem) {
+        if let event: EKEvent = sender.representedObject as? EKEvent {
+            emailEventAttendees(event)
+        }
+    }
+
     /**
      * opens an event in the fantastical app. It uses the x-fantastical url handler which is not fully described on the fantastical website,
-     * but was confirmed in the github ticket. 
+     * but was confirmed in the github ticket.
      */
     @objc
     func openEventInFantastical(sender: NSMenuItem) {
@@ -613,7 +671,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             onboardingWindow.close()
         }
         onboardingWindow = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 520, height: 400),
+            contentRect: NSRect(x: 0, y: 0, width: 660, height: 450),
             styleMask: [.closable, .titled],
             backing: .buffered,
             defer: false

@@ -19,7 +19,6 @@ struct BrowserConfigView: View {
     @State var showingAddBrowserModal = false
     @State var showingEditBrowserModal = false
     @State private var showingAlert = false
-    @State private var showingDeleteAllAlert = false
     @State private var browser = Browser(name: "", path: "", arguments: "", deletable: true)
 
     var body: some View {
@@ -29,7 +28,7 @@ struct BrowserConfigView: View {
                     HStack {
                         VStack(alignment: .leading) {
                             Text("\(browser.name)")
-                            Text(generatePath(browser: browser)).font(.system(size:11)).foregroundColor(Color.gray)
+                            Text(generatePath(browser: browser)).font(.system(size: 11)).foregroundColor(Color.gray)
                         }
 
                         Spacer()
@@ -55,9 +54,9 @@ struct BrowserConfigView: View {
             }
             .alert(isPresented: $showingAlert) {
                 Alert(
-                    title: Text("Delete browser configuration?"),
-                    message: Text("Do you want to delete the browser configuration \(self.browser.name)?"),
-                    primaryButton: .default(Text("Delete")) {
+                    title: Text("preferences_configure_browsers_delete_alert_title".loco()),
+                    message: Text("preferences_configure_browsers_delete_alert_message".loco(self.browser.name)),
+                    primaryButton: .default(Text("general_delete".loco())) {
                         self.removeBrowser(self.browser)
                     },
                     secondaryButton: .cancel()
@@ -66,49 +65,32 @@ struct BrowserConfigView: View {
 
             HStack(alignment: .center, spacing: 20) {
                 Spacer()
-                MenuButton(label: Image(nsImage: NSImage(named: NSImage.addTemplateName)!)) {
-                    Button("Custom browser") {
+                MenuButton(label: Text("general_add".loco())) {
+                    Button("preferences_configure_browsers_add_button_browser_title".loco()) {
                         self.showingAddBrowserModal.toggle()
                     }
-                    Button("All system browser") {
+                    Button("preferences_configure_browsers_add_button_all_system_title".loco()) {
                         self.addSystemBrowser()
                     }
                 }
-                .frame(width: 20, height: 20, alignment: .center)
-                .menuButtonStyle(BorderlessPullDownMenuButtonStyle())
+                .frame(width: 100, height: 20, alignment: .center)
                 .sheet(isPresented: $showingAddBrowserModal) {
                     EditBrowserModal(browser: $browser)
                 }
 
-                Button(action: {
-                    self.showingDeleteAllAlert = true
-                }) {
-                    Image(nsImage: NSImage(named: NSImage.touchBarDeleteTemplateName)!)
-                }.buttonStyle(BorderlessButtonStyle())
-
                 Spacer()
 
-                Button("OK") {
+                Button("general_ok".loco()) {
                     presentationMode.wrappedValue.dismiss()
                 }.frame(width: 20, height: 20, alignment: .trailing)
             }
-            .alert(isPresented: $showingDeleteAllAlert) {
-                Alert(
-                    title: Text("Delete all browser configs?"),
-                    message: Text("Do you want to delete all browser configs?"),
-                    primaryButton: .default(Text("Delete all")) {
-                        self.removeAllBrowser()
-                    },
-                    secondaryButton: .cancel()
-                )
-            }
         }.padding()
-        .frame(width: 500,
-               height: 500,
-               alignment: .center)
+            .frame(width: 500,
+                   height: 500,
+                   alignment: .center)
     }
 
-    private func generatePath (browser: Browser) -> String {
+    private func generatePath(browser: Browser) -> String {
         var path: String = ""
 
         if !browser.path.isEmpty {
@@ -133,18 +115,12 @@ struct BrowserConfigView: View {
         addInstalledBrowser()
     }
 
-    // allow to change the order of bookmarks
-    private func removeAllBrowser() {
-        Defaults[.browsers] = []
-    }
-
     /**
      * allows to remove the bookmark
      */
     func removeBrowser(_ browser: Browser) {
         browserConfigs.removeAll { $0.name == browser.name }
     }
-
 
     struct EditBrowserModal: View {
         @Environment(\.presentationMode) var presentationMode
@@ -159,9 +135,9 @@ struct BrowserConfigView: View {
             VStack {
                 HStack {
                     if browser.name.isEmpty {
-                        Text("Add browser").font(.headline)
+                        Text("preferences_configure_browsers_modal_add_browser_title".loco()).font(.headline)
                     } else {
-                        Text("Edit browser").font(.headline)
+                        Text("preferences_configure_browsers_modal_edit_browser_title".loco()).font(.headline)
                     }
                 }
                 Spacer()
@@ -170,8 +146,8 @@ struct BrowserConfigView: View {
                         alignment: .leading,
                         spacing: 15
                     ) {
-                        Text("Name")
-                        Text("Path")
+                        Text("preferences_configure_browsers_modal_add_browser_name".loco())
+                        Text("preferences_configure_browsers_modal_add_browser_path".loco())
                     }
                     VStack(
                         alignment: .leading,
@@ -184,7 +160,7 @@ struct BrowserConfigView: View {
                         alignment: .leading
                     ) {
                         Button(action: chooseBrowser) {
-                            Text("Choose browser")
+                            Text("preferences_configure_browsers_modal_add_browser_choose_browser_button_title".loco())
                         }
                     }
                 }
@@ -194,32 +170,32 @@ struct BrowserConfigView: View {
                         self.presentationMode.wrappedValue.dismiss()
                         self.browser = Browser(name: "", path: "", arguments: "", deletable: true)
                     }) {
-                        Text("Cancel")
+                        Text("general_cancel".loco())
                     }
 
                     Button(action: saveBrowser) {
-                        Text("Save")
+                        Text("general_save".loco())
                     }.disabled(self.browser.name.isEmpty || self.browser.name.isEmpty)
                 }
             }.frame(width: 500, height: 200)
-            .padding()
-            .alert(isPresented: $showingAlert) {
-                Alert(title: Text("Can't add browser config"), message: Text(error_msg), dismissButton: .default(Text("OK")))
-            }
+                .padding()
+                .alert(isPresented: $showingAlert) {
+                    Alert(title: Text("preferences_configure_browsers_modal_alert_title".loco()), message: Text(error_msg), dismissButton: .default(Text("general_ok".loco())))
+                }
         }
 
         /**
          * saves the browser to the browsers configuration.
          */
         func saveBrowser() {
-            self.presentationMode.wrappedValue.dismiss()
+            presentationMode.wrappedValue.dismiss()
 
             let browserConfig = Browser(name: browser.name, path: browser.path, arguments: browser.arguments)
             browserConfigs.removeAll { $0.name == browser.name }
             browserConfigs.append(browserConfig)
 
             browserConfigs = browserConfigs.sorted { $0.path.fileName() < $1.path.fileName() }
-            self.browser = Browser(name: "", path: "", arguments: "", deletable: true)
+            browser = Browser(name: "", path: "", arguments: "", deletable: true)
         }
 
         /**
@@ -230,9 +206,9 @@ struct BrowserConfigView: View {
             openPanel.canChooseFiles = true
             openPanel.canChooseDirectories = false
             openPanel.allowsMultipleSelection = false
-            openPanel.title = "Select a valid browser app"
-            openPanel.prompt = "Choose browser"
-            openPanel.message = "Please select a browser from any path!"
+            openPanel.title = "preferences_configure_browsers_choose_broser_panel_title".loco()
+            openPanel.prompt = "preferences_configure_browsers_choose_broser_panel_prompt".loco()
+            openPanel.message = "preferences_configure_browsers_choose_broser_panel_message".loco()
 
             let appPath = try! FileManager.default.url(for: .allApplicationsDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
 

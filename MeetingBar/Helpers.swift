@@ -5,11 +5,10 @@
 //  Created by Andrii Leitsius on 12.06.2020.
 //  Copyright © 2020 Andrii Leitsius. All rights reserved.
 //
-import Cocoa
-import EventKit
-import Defaults
 import AppKit
-
+import Cocoa
+import Defaults
+import EventKit
 
 struct EventWithDate {
     let event: EKEvent
@@ -38,11 +37,11 @@ struct Bookmark: Encodable, Decodable, Hashable {
  * If no m365 links are found, the original text is returned.
  *
  */
-fileprivate func cleanupOutlookSafeLinks( text: inout String) -> String {
+private func cleanupOutlookSafeLinks(text: inout String) -> String {
     var links = UtilsRegex.outlookSafeLinkRegex.matches(in: text, range: NSRange(text.startIndex..., in: text))
     if !links.isEmpty {
         repeat {
-            let urlRange = links[0].range( at: 1)
+            let urlRange = links[0].range(at: 1)
             let safeLinks = links.map { String(text[Range($0.range, in: text)!]) }
             if !safeLinks.isEmpty {
                 let serviceUrl = (text as NSString).substring(with: urlRange)
@@ -64,7 +63,6 @@ func getMatch(text: String, regex: NSRegularExpression) -> String? {
     }
     return nil
 }
-
 
 func cleanUpNotes(_ notes: String) -> String {
     let zoomSeparator = "\n──────────"
@@ -129,7 +127,7 @@ func detectLink(_ field: inout String) -> MeetingLink? {
  * this method will collect text from the location, url and notes field of an event and try to find a known meeting url link.
  * As meeting links can be part of a outlook safe url, we will extract the original link from outlook safe links.
  */
-func getMeetingLink(_ event: EKEvent, acceptAnyLink: Bool) -> MeetingLink? {
+func getMeetingLink(_ event: EKEvent) -> MeetingLink? {
     var linkFields: [String] = []
 
     if let location = event.location {
@@ -144,30 +142,19 @@ func getMeetingLink(_ event: EKEvent, acceptAnyLink: Bool) -> MeetingLink? {
         linkFields.append(notes)
     }
 
-
     for var field in linkFields {
         var meetingLink = detectLink(&field)
         if meetingLink != nil {
             if meetingLink?.service == .meet,
                let account = getGmailAccount(event),
-               let urlEncodedAccount = account.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
+               let urlEncodedAccount = account.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+            {
                 let url = URL(string: (meetingLink?.url.absoluteString)! + "?authuser=\(urlEncodedAccount)")!
-                    meetingLink?.url = url
+                meetingLink?.url = url
             }
             return meetingLink
         }
     }
-
-    if acceptAnyLink {
-        for field in linkFields {
-            let links = detectLinks(text: field)
-            if !links.isEmpty {
-                return MeetingLink(service: MeetingServices.url, url: links[0])
-            }
-        }
-    }
-
-
 
     return nil
 }
@@ -187,24 +174,23 @@ func detectLinks(text: String) -> [URL] {
     return []
 }
 
-
 func openEvent(_ event: EKEvent) {
-    let eventTitle = event.title ?? "No title"
-    if let meeting = getMeetingLink(event, acceptAnyLink: Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show || Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.hide_without_any_link || Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show_inactive_without_any_link) {
+    let eventTitle = event.title ?? "status_bar_no_title".loco()
+    if let meeting = getMeetingLink(event) {
         if Defaults[.runJoinEventScript], Defaults[.joinEventScriptLocation] != nil {
             if let url = Defaults[.joinEventScriptLocation]?.appendingPathComponent("joinEventScript.scpt") {
                 print("URL: \(url)")
                 let task = try! NSUserAppleScriptTask(url: url)
                 task.execute { error in
                     if let error = error {
-                        sendNotification("AppleScript return error", error.localizedDescription)
+                        sendNotification("status_bar_error_apple_script_title".loco(), error.localizedDescription)
                     }
                 }
             }
         }
         openMeetingURL(meeting.service, meeting.url, nil)
     } else {
-        sendNotification("Epp! Can't join the \(eventTitle)", "Link not found, or your meeting service is not yet supported")
+        sendNotification("status_bar_error_link_missed_title".loco(eventTitle), "status_bar_error_link_missed_message".loco())
     }
 }
 
@@ -219,11 +205,10 @@ func getEventParticipantStatus(_ event: EKEvent) -> EKParticipantStatus? {
     return EKParticipantStatus.unknown
 }
 
-
 func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?) {
     switch service {
     case .meet:
-        url.openIn(browser: browser ?? Defaults[.browserForMeetLinks])
+        url.openIn(browser: browser ?? Defaults[.meetBrowser])
 
     case .teams:
         if Defaults[.useAppForTeamsLinks] {
@@ -231,21 +216,24 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?
             teamsAppURL.scheme = "msteams"
             let result = teamsAppURL.url!.openInDefaultBrowser()
             if !result {
-                sendNotification("Oops! Unable to open the link in Microsoft Teams app", "Make sure you have Microsoft Teams app installed, or change the app in the preferences.")
+                sendNotification("status_bar_error_teams_link_title".loco(), "status_bar_error_teams_link_message".loco())
                 url.openInDefaultBrowser()
             }
         } else {
             url.openIn(browser: browser ?? systemDefaultBrowser)
         }
 
-    case .zoom:
+    case .zoom, .zoomgov:
         if Defaults[.useAppForZoomLinks] {
+            if url.absoluteString.contains("/my/") {
+                url.openIn(browser: browser ?? systemDefaultBrowser)
+            }
             let urlString = url.absoluteString.replacingOccurrences(of: "?", with: "&").replacingOccurrences(of: "/j/", with: "/join?confno=")
             var zoomAppUrl = URLComponents(url: URL(string: urlString)!, resolvingAgainstBaseURL: false)!
             zoomAppUrl.scheme = "zoommtg"
             let result = zoomAppUrl.url!.openInDefaultBrowser()
             if !result {
-                sendNotification("Oops! Unable to open the link in Zoom app", "Make sure you have Zoom app installed, or change the app in the preferences.")
+                sendNotification("status_bar_error_zoom_app_link_title".loco(), "status_bar_error_zoom_app_link_message".loco())
                 url.openInDefaultBrowser()
             }
         } else {
@@ -254,7 +242,7 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?
     case .zoom_native:
         let result = url.openInDefaultBrowser()
         if !result {
-            sendNotification("Oops! Unable to open the native link in Zoom app", "Make sure you have Zoom app installed, or change the app in the preferences.")
+            sendNotification("status_bar_error_zoom_native_link_title".loco(), "status_bar_error_zoom_native_link_message".loco())
 
             let urlString = url.absoluteString.replacingFirstOccurrence(of: "&", with: "?").replacingOccurrences(of: "/join?confno=", with: "/j/")
             var zoomBrowserUrl = URLComponents(url: URL(string: urlString)!, resolvingAgainstBaseURL: false)!
@@ -290,7 +278,6 @@ func bundleIdentifier(forAppName appName: String) -> String? {
     return nil
 }
 
-
 /**
  * adds the default browsers for the browser dialog
  */
@@ -308,4 +295,19 @@ func addInstalledBrowser() {
             }
         }
     }
+}
+
+func emailEventAttendees(_ event: EKEvent) {
+    let service = NSSharingService(named: NSSharingService.Name.composeEmail)!
+    var recipients: [String] = []
+    event.attendees?.forEach {
+        if let email = ($0.url as NSURL).resourceSpecifier {
+            recipients.append(email)
+        }
+    }
+    service.recipients = recipients
+    if let title = event.title {
+        service.subject = title
+    }
+    service.perform(withItems: [])
 }

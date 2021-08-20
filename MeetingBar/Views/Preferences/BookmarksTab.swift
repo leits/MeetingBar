@@ -21,6 +21,9 @@ struct BookmarksTab: View {
     var body: some View {
         VStack(alignment: .leading) {
             List {
+                if self.bookmarks.isEmpty {
+                    Text("preferences_bookmarks_no_bookmarks_placeholder".loco()).foregroundColor(Color.gray)
+                }
                 ForEach(bookmarks, id: \.self) { bookmark in
                     HStack {
                         Image(nsImage: NSImage(named: NSImage.listViewTemplateName)!).foregroundColor(.gray)
@@ -137,9 +140,9 @@ struct AddBookmarkModal: View {
                 }.disabled(url.isEmpty || name.isEmpty)
             }
         }.frame(width: 500, height: 200)
-        .padding()
-        .alert(isPresented: $showingAlert) {
-            Alert(title: Text("preferences_bookmarks_new_bookmark_error_title".loco()), message: Text(error_msg), dismissButton: .default(Text("general_ok".loco())))
-        }
+            .padding()
+            .alert(isPresented: $showingAlert) {
+                Alert(title: Text("preferences_bookmarks_new_bookmark_error_title".loco()), message: Text(error_msg), dismissButton: .default(Text("general_ok".loco())))
+            }
     }
 }

@@ -1,7 +1,52 @@
 # Changelog for Meetingbar
+## Version 3.8.0 (WIP)
+> unreleased
+*
 
-## Next version (WIP)
-* browser management 
+## Version 3.7.0
+> (released 19th Aug 2021)
+* Add copy meeting link & email attendees from event submenu 
+* Round the timer up, not down
+* Make event start soon notification more specified 
+* Added translations into Japanese
+
+## Version 3.6.0
+> (released 15th Jun 2021)
+* Added translations into Czech
+* Added integration with Vowel
+* Fixed zoom link detection bug from 3.5 version
+
+## Version 3.5.0
+> (released 11th Jun 2021)
+
+* Added translations into Croatian, German, French, and Norwegian Bokmål
+* Improve RingCentral and Zoom links Detection
+* All app notifications are now removed after all meetings are over
+* Open link from clipboard in configured browser
+* Fixed a bug with the inability to change shortcuts
+* Fixed disappearing app icon when no calendar selected
+* Fixed opening ZoomGov links in the native app
+
+## Version 3.4.0
+> (released 12th May 2021)
+* 📋 New view of notes in the event submenu with selectable text and clickable links
+* 🧭 Fixed a bug with opening meetings in a new browser instance
+
+and small bug fixes
+
+## Version 3.3.0
+> (released 1st May 2021)
+
+* Fixed bug with timer freeze ⏱️
+* Browser management 🧰
+* Quick Actions ⚡
+  * Show/hide meeting title in status bar
+  * Open meeting from clipboard
+* Customizable appereance for events without meeting links
+* Localization (Ukrainian and Russian)
+* Create meetings in Jam
+* Open event in Fantastical from event submenu
+* Integration with subscribed calendars
 
 ## Version 3.2.1
 > (released 30th Mar 2021)

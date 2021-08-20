@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -34,7 +34,7 @@
 		14879B2B24E6889C00DB0A7E /* Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14879B2A24E6889C00DB0A7E /* Notifications.swift */; };
 		148E47E824F400C400399929 /* Onboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 148E47E724F400C400399929 /* Onboarding.swift */; };
 		148E47EB24F546E700399929 /* Defaults in Frameworks */ = {isa = PBXBuildFile; productRef = 148E47EA24F546E700399929 /* Defaults */; };
-        14BAC84225C4AF1100C8A852 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 14BAC84125C4AF1000C8A852 /* StoreKit.framework */; };
+		14BAC84225C4AF1100C8A852 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 14BAC84125C4AF1000C8A852 /* StoreKit.framework */; };
 		14C59B8525CF45340019C9E4 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14C59B8425CF45340019C9E4 /* Store.swift */; };
 		14E4110E246F2F9200F73ACF /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14E4110D246F2F9200F73ACF /* Preferences.swift */; };
 		1BF37A9A2604C8960053D53C /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1BF37A9C2604C8960053D53C /* Localizable.strings */; };
@@ -80,6 +80,7 @@
 		140D84402493B8030055E1CE /* KeyboardShortcutsNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardShortcutsNames.swift; sourceTree = "<group>"; };
 		14158D3A246C65AD0006436C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		1435E44B260954D00071B188 /* Changelog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Changelog.swift; sourceTree = "<group>"; };
+		143E6D6226A0C5E300B3CBEE /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/Localizable.strings; sourceTree = "<group>"; };
 		144C01792462D0C3000C9FFC /* MeetingBar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MeetingBar.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		144C017C2462D0C3000C9FFC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		144C01802462D0C5000C9FFC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -102,9 +103,14 @@
 		14619A1F25EC26DF00F3098F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		14879B2A24E6889C00DB0A7E /* Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = "<group>"; };
 		148E47E724F400C400399929 /* Onboarding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Onboarding.swift; sourceTree = "<group>"; };
-        14BAC84125C4AF1000C8A852 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		14BAC84125C4AF1000C8A852 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		14C59B8425CF45340019C9E4 /* Store.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
+		14C9A928269A2083005306DA /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
+		14C9A929269A2095005306DA /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
+		14C9A92A269A209C005306DA /* hr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hr; path = hr.lproj/Localizable.strings; sourceTree = "<group>"; };
+		14C9A92B269A20A1005306DA /* nb-NO */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "nb-NO"; path = "nb-NO.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		14E4110D246F2F9200F73ACF /* Preferences.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
+		14E8DD85262A476600952FC2 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/Localizable.strings; sourceTree = "<group>"; };
 		1BF37A9B2604C8960053D53C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		1BF37AA02604C8A50053D53C /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 		1BF37AA42604F7E00053D53C /* I18N.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = I18N.swift; sourceTree = "<group>"; };
@@ -121,6 +127,7 @@
 		E4DD0F0A2529D0D20029E395 /* Project-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Project-Release.xcconfig"; sourceTree = "<group>"; };
 		E4DD0F0B2529D0D20029E395 /* Project.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Project.xcconfig; sourceTree = "<group>"; };
 		E4DD0F0C2529D0D20029E395 /* Project-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Project-Debug.xcconfig"; sourceTree = "<group>"; };
+		EA04E13F26B2664F00D183B8 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -132,7 +139,7 @@
 				148E47EB24F546E700399929 /* Defaults in Frameworks */,
 				140D842E248AB2960055E1CE /* KeyboardShortcuts in Frameworks */,
 				1432D98C25C4B94900FD121D /* SwiftyStoreKit in Frameworks */,
-                14BAC84225C4AF1100C8A852 /* StoreKit.framework in Frameworks */,
+				14BAC84225C4AF1100C8A852 /* StoreKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -302,7 +309,7 @@
 		40DC7052250E5E1000217DD9 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-                14BAC84125C4AF1000C8A852 /* StoreKit.framework */,         
+				14BAC84125C4AF1000C8A852 /* StoreKit.framework */,
 				40DC7053250E5E1000217DD9 /* ServiceManagement.framework */,
 			);
 			name = Frameworks;
@@ -410,6 +417,13 @@
 				en,
 				Base,
 				ru,
+				uk,
+				de,
+				fr,
+				hr,
+				"nb-NO",
+				cs,
+				ja,
 			);
 			mainGroup = 144C01702462D0C3000C9FFC;
 			packageReferences = (
@@ -531,6 +545,13 @@
 			children = (
 				1BF37A9B2604C8960053D53C /* en */,
 				1BF37AA02604C8A50053D53C /* ru */,
+				14E8DD85262A476600952FC2 /* uk */,
+				14C9A928269A2083005306DA /* de */,
+				14C9A929269A2095005306DA /* fr */,
+				14C9A92A269A209C005306DA /* hr */,
+				14C9A92B269A20A1005306DA /* nb-NO */,
+				143E6D6226A0C5E300B3CBEE /* cs */,
+				EA04E13F26B2664F00D183B8 /* ja */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -670,7 +691,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 117;
+				CURRENT_PROJECT_VERSION = 123;
 				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -680,7 +701,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
-				MARKETING_VERSION = 3.2.2;
+				MARKETING_VERSION = 3.7.0;
 				PRODUCT_BUNDLE_IDENTIFIER = leits.MeetingBar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -696,7 +717,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 117;
+				CURRENT_PROJECT_VERSION = 123;
 				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -706,7 +727,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
-				MARKETING_VERSION = 3.2.2;
+				MARKETING_VERSION = 3.7.0;
 				PRODUCT_BUNDLE_IDENTIFIER = leits.MeetingBar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
