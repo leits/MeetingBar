@@ -179,12 +179,9 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                     button.image?.size = NSSize(width: 16, height: 16)
                     button.imagePosition = .imageLeft
                 }
-
-
             } else if title == "MeetingBar" {
                 button.image = NSImage(named: "AppIcon")!
                 button.image?.size = NSSize(width: 16, height: 16)
-
             } else if case .afterThreshold = nextEventState {
                 switch Defaults[.eventTitleIconFormat] {
                 case .appicon:
@@ -194,7 +191,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                 }
             }
 
-            if button.image == nil  {
+            if button.image == nil {
                 if Defaults[.eventTitleIconFormat] != EventTitleIconFormat.none {
                     let image: NSImage
                     if Defaults[.eventTitleIconFormat] == EventTitleIconFormat.eventtype {
@@ -908,7 +905,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             notes.splitWithNewLineAttributedString(
                 with: [
                     NSAttributedString.Key.paragraphStyle: paragraphStyle,
-                    NSAttributedString.Key.font: NSFont.systemFont(ofSize: 14),
+                    NSAttributedString.Key.font: NSFont.systemFont(ofSize: 14)
                 ],
                 maxWidth: 300.0
             )
