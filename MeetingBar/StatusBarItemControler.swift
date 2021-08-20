@@ -159,10 +159,11 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
 
                 switch Defaults[.eventTitleIconFormat] {
                 case .none:
+                    button.image = NSImage(named: "iconCalendarCheckmark")!
+
                     if noEventTitle {
                         button.imagePosition = .noImage
                     } else {
-                        button.image = NSImage(named: "iconCalendarCheckmark")!
                         button.imagePosition = .imageLeft
                     }
                 case .calendar:
