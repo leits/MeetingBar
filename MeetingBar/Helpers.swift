@@ -147,7 +147,8 @@ func getMeetingLink(_ event: EKEvent) -> MeetingLink? {
         if meetingLink != nil {
             if meetingLink?.service == .meet,
                let account = getGmailAccount(event),
-               let urlEncodedAccount = account.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
+               let urlEncodedAccount = account.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+            {
                 let url = URL(string: (meetingLink?.url.absoluteString)! + "?authuser=\(urlEncodedAccount)")!
                 meetingLink?.url = url
             }

@@ -145,8 +145,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             nextEventState = .none
         }
 
-
-        if let button = self.statusItem.button {
+        if let button = statusItem.button {
             button.image = nil
             button.title = ""
             button.toolTip = nil
@@ -905,7 +904,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             notes.splitWithNewLineAttributedString(
                 with: [
                     NSAttributedString.Key.paragraphStyle: paragraphStyle,
-                    NSAttributedString.Key.font: NSFont.systemFont(ofSize: 14)
+                    NSAttributedString.Key.font: NSFont.systemFont(ofSize: 14),
                 ],
                 maxWidth: 300.0
             )
