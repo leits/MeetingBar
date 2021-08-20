@@ -30,6 +30,7 @@ struct StatusBarSection: View {
     @Default(.statusbarEventTitleLength) var statusbarEventTitleLength
     @Default(.showEventMaxTimeUntilEventThreshold) var showEventMaxTimeUntilEventThreshold
     @Default(.showEventMaxTimeUntilEventEnabled) var showEventMaxTimeUntilEventEnabled
+    @Default(.noEventTitle) var noEventTitle
 
     var body: some View {
         Text("preferences_appearance_status_bar_title".loco()).font(.headline).bold()
@@ -59,8 +60,13 @@ struct StatusBarSection: View {
                             .frame(width: 16.0, height: 16.0)
                         Text("preferences_appearance_status_bar_icon_no_icon_value".loco())
                     }.tag(EventTitleIconFormat.none)
+                }.frame(width: 300)
+
+                HStack {
+                    Text("preferences_appearance_no_event_title".loco()).frame(alignment: .leading)
+                    TextField("preferences_appearance_no_event_title_tooltip".loco(), text: $noEventTitle)
                 }
-            }.frame(width: 300)
+            }
 
             HStack {
                 Picker("preferences_appearance_status_bar_title_title".loco(), selection: $eventTitleFormat) {

@@ -106,8 +106,10 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
         var time = ""
         var nextEvent: EKEvent!
         let nextEventState: NextEventState
+
         if !calendars.isEmpty {
             nextEvent = eventStore.getNextEvent(calendars: calendars)
+
             nextEventState = {
                 guard let nextEvent = nextEvent else {
                     return .none
@@ -121,6 +123,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                 let thresholdInSeconds = TimeInterval(Defaults[.showEventMaxTimeUntilEventThreshold] * 60)
                 return timeUntilStart < thresholdInSeconds ? .nextEvent(nextEvent) : .afterThreshold(nextEvent)
             }()
+
             switch nextEventState {
             case .none:
                 if Defaults[.joinEventNotification] {
@@ -143,21 +146,47 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             NSLog("No loaded calendars")
             nextEventState = .none
         }
+
+
         if let button = self.statusItem.button {
             button.image = nil
             button.title = ""
             button.toolTip = nil
+
             if title == "🏁" {
+                let noEventTitle = Defaults[.noEventTitle] != ""
+                if noEventTitle {
+                    button.title = Defaults[.noEventTitle]
+                }
+
                 switch Defaults[.eventTitleIconFormat] {
+                case .none:
+                    if noEventTitle {
+                        button.imagePosition = .noImage
+                    } else {
+                        button.image = NSImage(named: "iconCalendarCheckmark")!
+                        button.imagePosition = .imageLeft
+                    }
+                case .calendar:
+                    button.image = NSImage(named: "iconCalendar")!
+                    button.image?.size = NSSize(width: 16, height: 16)
+                    button.imagePosition = .imageLeft
                 case .appicon:
                     button.image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
+                    button.image?.size = NSSize(width: 16, height: 16)
+                    button.imagePosition = .imageLeft
                 default:
                     button.image = NSImage(named: "iconCalendarCheckmark")
+                    button.image?.size = NSSize(width: 16, height: 16)
+                    button.imagePosition = .imageLeft
                 }
-                button.image?.size = NSSize(width: 16, height: 16)
+
+
             } else if title == "MeetingBar" {
+
                 button.image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
                 button.image?.size = NSSize(width: 16, height: 16)
+
             } else if case .afterThreshold = nextEventState {
                 switch Defaults[.eventTitleIconFormat] {
                 case .appicon:
@@ -167,7 +196,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                 }
             }
 
-            if button.image == nil {
+            if button.image == nil  {
                 if Defaults[.eventTitleIconFormat] != EventTitleIconFormat.none {
                     let image: NSImage
                     if Defaults[.eventTitleIconFormat] == EventTitleIconFormat.eventtype {

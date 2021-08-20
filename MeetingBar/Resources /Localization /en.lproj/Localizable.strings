@@ -64,6 +64,8 @@
 // MARK: - Preferences Appearance
 
 "preferences_appearance_events_title" = "Events";
+"preferences_appearance_no_event_title" = "No more meetings";
+"preferences_appearance_no_event_title_tooltip" = "customisable label";
 "preferences_appearance_events_show_events_for_title" = "Show events for";
 "preferences_appearance_events_show_events_for_today_value" = "today";
 "preferences_appearance_events_show_events_for_today_tomorrow_value" = "today and tomorrow";

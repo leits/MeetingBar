@@ -28,6 +28,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
 
     var statusbarEventTitleLengthObserver: DefaultsObservation?
+    var statusbarNoEventTitleObserver: DefaultsObservation?
     var timeFormatObserver: DefaultsObservation?
     var bookmarksObserver: DefaultsObservation?
 
@@ -242,6 +243,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
         statusbarEventTitleLengthObserver = Defaults.observe(.statusbarEventTitleLength) { change in
             NSLog("Changed statusbarEventTitleLengthLimits from \(change.oldValue) to \(change.newValue)")
+            if change.oldValue != change.newValue {
+                self.statusBarItem.updateTitle()
+            }
+        }
+
+        statusbarNoEventTitleObserver = Defaults.observe(.noEventTitle) { change in
+            NSLog("Changed statusbarNoEventTitleObserver from \(change.oldValue) to \(change.newValue)")
             if change.oldValue != change.newValue {
                 self.statusBarItem.updateTitle()
             }

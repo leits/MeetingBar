@@ -64,6 +64,8 @@
 // MARK: - Preferences Appearance
 
 "preferences_appearance_events_title" = "События";
+"preferences_appearance_no_event_title" = "No more meetings";
+"preferences_appearance_no_event_title_tooltip" = "customisable label";
 "preferences_appearance_events_show_events_for_title" = "Показывать события за";
 "preferences_appearance_events_show_events_for_today_value" = "сегодня";
 "preferences_appearance_events_show_events_for_today_tomorrow_value" = "сегодня и завтра";
