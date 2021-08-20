@@ -39,7 +39,7 @@
 "constants_meeting_service_zoom" = "Zoom";
 "constants_meeting_service_hangouts" = "Google Hangouts";
 "constants_meeting_service_meet" = "Google Meet";
-"access_screen_access_granted_title" = "Demande d'accès aux calendriers.";
+"access_screen_access_granted_title" = "Demande d'accès aux calendriers…";
 "access_screen_access_denied_relaunch_title" = "Vous devez ensuite lancer l'application manuellement pour poursuivre la configuration.";
 "welcome_screen_setup_calendar_title" = "Configurer les calendriers";
 "welcome_screen_shortcut_ad_hoc_meeting_title" = "avec votre raccourci :";
@@ -77,7 +77,7 @@
 "store_patronage_purchase_payment_not_allowed_message" = "L'appareil n'est pas autorisé à effectuer le paiement";
 "store_patronage_purchase_payment_invalid_message" = "L'identifiant de l'achat était invalide";
 "store_patronage_purchase_client_invalid_message" = "Non autorisé à effectuer le paiement";
-"store_patronage_purchase_unknown_message" = "Erreur inconnue. Veuillez contacter l'assistance technique";
+"store_patronage_purchase_unknown_message" = "Erreur inconnue. Veuillez contacter l'assistance technique.";
 "store_patronage_purchase_success_message" = "Acheté avec succès. Merci pour votre soutien !";
 "store_patronage_restore_nothing_message" = "Rien à restaurer";
 "store_patronage_restore_success_message" = "Restauré avec succès";
@@ -217,7 +217,7 @@
 
 "preferences_bookmarks_no_bookmarks_placeholder" = "Vous n'avez pas encore de marque-pages";
 "preferences_tab_bookmarks" = "Marque-pages";
-"preferences_configure_browsers_choose_broser_panel_message" = "Sélectionnez un navigateur à partir de n'importe quel chemin !";
+"preferences_configure_browsers_choose_broser_panel_message" = "Sélectionnez l'endroit duquel exécuter le navigateur web.";
 "preferences_configure_browsers_choose_broser_panel_prompt" = "Choisir le navigateur";
 "preferences_configure_browsers_choose_broser_panel_title" = "Sélectionnez une application de navigation valide";
 "preferences_configure_browsers_modal_alert_title" = "Impossible d'ajouter la configuration du navigateur";
@@ -235,10 +235,10 @@
 
 "preferences_configure_browsers_button" = "Configurer les navigateurs";
 "preferences_services_create_meeting_browser_title" = "Utiliser le navigateur";
-"preferences_services_google_meet_tip" = "Conseil : Meet prend en charge le choix du compte via un paramètre, par exemple https://meet.google.com/new?authuser=1";
+"preferences_services_google_meet_tip" = "Conseil : Google Meet prend en charge le choix du compte dans l'URL, par exemple https://meet.google.com/new?authuser=1";
 "preferences_services_create_meeting_custom_url_value" = "URL personnalisée";
 "preferences_services_create_meeting_title" = "Créer des réunions via";
-"preferences_services_supported_links_mailback" = "Si le service que vous utilisez n'est pas pris en charge, envoyez-moi un courriel";
+"preferences_services_supported_links_mailback" = "Si le service que vous utilisez n'est pas pris en charge, vous pouvez envoyer un courriel aux développeurs";
 "preferences_services_supported_links_list" = "Liens pris en charge pour les services :\n%@";
 "preferences_services_link_teams_value" = "Appli Teams";
 "preferences_services_link_zoom_value" = "Appli Zoom";
@@ -299,7 +299,7 @@
 "preferences_appearance_events_title" = "Évènements";
 "preferences_general_feedback_telegram" = "Telegram";
 "preferences_general_feedback_twitter" = "Twitter";
-"preferences_general_feedback_email" = "courriel";
+"preferences_general_feedback_email" = "Courriel";
 "preferences_general_feedback_title" = "Si vous avez des questions ou des remarques,\nn'hésitez pas à me contacter :";
 "preferences_general_patron_restore_purchases" = "Restaurer les achats";
 "preferences_general_patron_thank_for_purchase" = "Merci ! Vous soutenez MeetingBar depuis %d mois ! 🎉";
@@ -320,11 +320,11 @@
 "preferences_general_all_shortcut" = "Tous les raccourcis";
 "preferences_general_option_shortcuts" = "Raccourcis";
 "preferences_general_option_preferred_language_system_value" = "Système";
-"preferences_general_option_preferred_language_title" = "Langue préférée :";
+"preferences_general_option_preferred_language_title" = "Langue :";
 
 // MARK: - Preferences General
 
-"preferences_general_option_login_launch" = "Lancer à la connexion";
+"preferences_general_option_login_launch" = "Lancer après connexion";
 "preferences_tab_advanced" = "Avancé";
 "preferences_tab_calendars" = "Calendriers";
 "preferences_tab_services" = "Services";
@@ -333,15 +333,15 @@
 // MARK: - Preferences tabs
 
 "preferences_tab_general" = "Général";
-"windows_title_changelog" = "Nouveautés MeetingBar";
-"window_title_onboarding" = "Bienvenue dans MeetingBar !";
+"windows_title_changelog" = "Nouveautés – MeetingBar";
+"window_title_onboarding" = "Bienvenue dans MeetingBar";
 
 // MARK: - Window titles
 
 "window_title_preferences" = "Préférences MeetingBar";
 "next_meeting_empty_message" = "Youhou ! C'est le moment de faire du cacao";
-"next_meeting_empty_title" = "Il n'y a pas de prochaines réunions aujourd'hui";
-"create_meeting_error_message" = "L'URL personnalisée « %@ » est manquante ou invalide. Veuillez entrer une valeur dans les préférences de l'application.";
+"next_meeting_empty_title" = "Il n'y a pas de réunions aujourd'hui";
+"create_meeting_error_message" = "L'URL personnalisée « %@ » est manquante ou invalide. Ajoutez-en une dans les préférences de l'application.";
 "create_meeting_error_title" = "Impossible de créer une nouvelle réunion";
 "general_meeting" = "Réunion";
 "general_save" = "Enregistrer";
@@ -350,3 +350,8 @@
 "general_close" = "Fermer";
 "general_cancel" = "Annuler";
 "general_ok" = "OK";
+"preferences_general_option_preferred_language_norwegianbokmal_value" = "Norsk bokmål";
+"preferences_general_option_preferred_language_croatian_value" = "Hrvatski";
+"preferences_general_option_preferred_language_russian_value" = "Русский";
+"preferences_general_option_preferred_language_ukrainian_value" = "Українська";
+"preferences_general_option_preferred_language_english_value" = "English";
