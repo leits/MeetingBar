@@ -1,7 +1,7 @@
 # Changelog for Meetingbar
 ## Version 3.8.0 (WIP)
 > unreleased
-*
+* Allow to customise the "no meetings" label (#317)
 
 ## Version 3.7.0
 > (released 19th Aug 2021)

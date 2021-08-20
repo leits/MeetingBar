@@ -70,6 +70,12 @@ struct ChangelogView: View {
                         Text("  - Copy meeting link")
                     }
                 }
+                if lastRevisedVersionInChangelog < "3.8.0" {
+                    Section(header: Text("Version 3.8.0")) {
+                        Text("Allow to customise the 'no meetings' label (#317)")
+
+                    }
+                }
             }.listStyle(SidebarListStyle())
             Button("Close", action: close)
         }.padding()
