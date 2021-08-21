@@ -119,9 +119,11 @@
 "preferences_services_link_meet_title" = "Meet を開くアプリ";
 "preferences_services_link_zoom_title" = "Zoom を開くアプリ";
 "preferences_services_link_team_title" = "Teams を開くアプリ";
+"preferences_services_link_jitsi_title" = "Jitsi を開くアプリ";
 "preferences_services_link_default_browser_value" = "標準のブラウザー";
 "preferences_services_link_zoom_value" = "Zoom アプリ";
 "preferences_services_link_teams_value" = "Teams アプリ";
+"preferences_services_link_jitsi_value" = "Jitsi Meet アプリ";
 "preferences_services_supported_links_list" = "サポートしているサービス一覧:\n%@";
 "preferences_services_supported_links_mailback" = "もしあなたが使っているサービスが無ければご連絡ください";
 "preferences_services_create_meeting_title" = "ミーティングを作成するサービス";

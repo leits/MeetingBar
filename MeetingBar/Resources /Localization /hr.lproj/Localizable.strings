@@ -114,9 +114,11 @@
 "preferences_services_link_meet_title" = "Otvori Meet poveznice u";
 "preferences_services_link_zoom_title" = "Otvori Zoom poveznice u";
 "preferences_services_link_team_title" = "Otvori Teams poveznice u";
+"preferences_services_link_jitsi_title" = "Open Jitsi links in";
 "preferences_services_link_default_browser_value" = "Standardni preglednik";
 "preferences_services_link_zoom_value" = "Zoom program";
 "preferences_services_link_teams_value" = "Teams program";
+"preferences_services_link_jitsi_value" = "Jitsi Meet program";
 "preferences_services_supported_links_list" = "Podržane poveznice za usluge:\n%@";
 "preferences_services_supported_links_mailback" = "Ako usluga nije podržana, javi mi putem e-maila";
 "preferences_services_create_meeting_title" = "Stvori sastanke putem";

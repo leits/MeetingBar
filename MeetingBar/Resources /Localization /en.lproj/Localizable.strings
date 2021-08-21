@@ -120,9 +120,11 @@
 "preferences_services_link_meet_title" = "Open Google Meet links in";
 "preferences_services_link_zoom_title" = "Open Zoom links in";
 "preferences_services_link_team_title" = "Open Teams links in";
+"preferences_services_link_jitsi_title" = "Open Jitsi links in";
 "preferences_services_link_default_browser_value" = "Default web browser";
 "preferences_services_link_zoom_value" = "Zoom app";
 "preferences_services_link_teams_value" = "Teams app";
+"preferences_services_link_jitsi_value" = "Jitsi Meet app";
 "preferences_services_supported_links_list" = "Supported links for services:\n%@";
 "preferences_services_supported_links_mailback" = "If the service you use isn't supported, you can send an e-mail to the developers";
 "preferences_services_create_meeting_title" = "Create meetings via";

@@ -114,9 +114,11 @@
 "preferences_services_link_meet_title" = "Meet ссылки";
 "preferences_services_link_zoom_title" = "Zoom ссылки";
 "preferences_services_link_team_title" = "Teams ссылки";
+"preferences_services_link_jitsi_title" = "Open Jitsi links in";
 "preferences_services_link_default_browser_value" = "Браузер по умолчанию";
 "preferences_services_link_zoom_value" = "Приложении Zoom";
 "preferences_services_link_teams_value" = "Приложении Teams";
+"preferences_services_link_jitsi_value" = "Приложении Jitsi";
 "preferences_services_supported_links_list" = "Поддерживаются ссылки для сервисов:\n%@";
 "preferences_services_supported_links_mailback" = "Если приложения, которым вы пользуете, нет в списке, напишите мне";
 "preferences_services_create_meeting_title" = "Создавать события через";

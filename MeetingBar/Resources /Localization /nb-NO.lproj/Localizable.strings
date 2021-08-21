@@ -263,8 +263,10 @@
 "preferences_services_supported_links_list" = "Støttede lenker for tjenester:\n%@";
 "preferences_services_link_teams_value" = "Teams-programmet";
 "preferences_services_link_zoom_value" = "Zoom-programmet";
+"preferences_services_link_jitsi_value" = "Jitsi Meet-programmet";
 "preferences_services_link_default_browser_value" = "Forvalgt nettleser";
 "preferences_services_link_team_title" = "Åpne Teams-lenker i";
+"preferences_services_link_jitsi_title" = "Åpne Jitsi-lenker i";
 "preferences_services_link_zoom_title" = "Åpne Zoom-lenker i";
 "preferences_services_link_meet_title" = "Åpne Google Meet-lenker i";
 
