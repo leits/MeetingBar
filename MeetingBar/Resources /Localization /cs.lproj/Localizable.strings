@@ -15,7 +15,6 @@
 "notifications_event_start_one_minute_body" = "The event starts in one minute";
 "notifications_event_start_three_minutes_body" = "The event starts in three minutes";
 "notifications_event_start_five_minutes_body" = "The event starts in five minutes";
-
 "store_patronage_purchase_cloud_service_revoked_message" = "Uživatel zrušil oprávnění k používání této cloudové služby";
 "store_patronage_purchase_cloud_service_network_connection_failed" = "Nepodařilo se připojit k síti";
 "store_patronage_purchase_cloud_service_permission_denied_message" = "Přístup k informacím o cloudových službách není povolen";
@@ -310,7 +309,7 @@
 "preferences_general_external_contact" = "Kontakt";
 "preferences_general_external_gitHub" = "GitHub";
 "preferences_general_external_patronage" = "Členství";
-"preferences_general_meeting_bar_description" = "MeetingBar je open-source aplikace, kterou vytvořil Andrii Leitsius.\nCílem aplikace je usnadnit a zjednodušit práci s online schůzkami.";
+"preferences_general_meeting_bar_description" = "MeetingBar je open-source aplikace, kterou vytvořil Andrii Leitsius. Cílem aplikace je usnadnit a zjednodušit práci s online schůzkami.";
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "Přepnout viditelnost nadpisu v řádku nabídek:";
 "preferences_general_shortcut_join_from_clipboard" = "Připojit se ke schůzce ze schránky:";
 "preferences_general_shortcut_join_next" = "Připojit se k nadcházející schůzce:";
@@ -351,3 +350,8 @@
 "general_cancel" = "Zrušit";
 "general_ok" = "OK";
 "constants_meeting_service_vowel" = "Vowel";
+"preferences_general_option_preferred_language_norwegianbokmal_value" = "Norsk bokmål";
+"preferences_general_option_preferred_language_croatian_value" = "Hrvatski";
+"preferences_general_option_preferred_language_russian_value" = "Русский";
+"preferences_general_option_preferred_language_ukrainian_value" = "Українська";
+"preferences_general_option_preferred_language_english_value" = "English";
