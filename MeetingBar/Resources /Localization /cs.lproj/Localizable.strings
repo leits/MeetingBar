@@ -2,8 +2,8 @@
 
 "status_bar_section_date_nothing" = "Žádné schůzky pro %@";
 "status_bar_event_start_time_all_day" = "Celodenní";
-"preferences_services_create_meeting_custom_url_placeholder" = "Zadejte prosím platnou adresu url (včetně tvaru url, např. https://)";
-"link_url_cant_open_message" = "Ujistěte se, že máte prohlížeč %@ nainstalovaný, nebo jej nastavte v předvolbách.";
+"preferences_services_create_meeting_custom_url_placeholder" = "Zadejte prosím platnou adresu URL (včetně http:// nebo https://)";
+"link_url_cant_open_message" = "Ujistěte se, že máte %@ nainstalovaný, nebo v předvolbách nastavte, aby se tyto odkazy otevíraly ve webovém prohlížeči.";
 
 // MARK: - Link open
 
@@ -12,26 +12,25 @@
 // MARK: - Notifications
 
 "notifications_event_start_soon_body" = "Událost za chvilku začne";
-"notifications_event_start_one_minute_body" = "The event starts in one minute";
-"notifications_event_start_three_minutes_body" = "The event starts in three minutes";
-"notifications_event_start_five_minutes_body" = "The event starts in five minutes";
-
+"notifications_event_start_one_minute_body" = "Událost začíná za minutu";
+"notifications_event_start_three_minutes_body" = "Událost začíná za tři minuty";
+"notifications_event_start_five_minutes_body" = "Událost začíná za pět minut";
 "store_patronage_purchase_cloud_service_revoked_message" = "Uživatel zrušil oprávnění k používání této cloudové služby";
 "store_patronage_purchase_cloud_service_network_connection_failed" = "Nepodařilo se připojit k síti";
-"store_patronage_purchase_cloud_service_permission_denied_message" = "Přístup k informacím o cloudových službách není povolen";
+"store_patronage_purchase_cloud_service_permission_denied_message" = "Přístup k informacím o cloudové službě není povolen";
 "store_patronage_purchase_store_product_not_available_message" = "Produkt není v aktuálním obchodě k dispozici";
 "store_patronage_purchase_payment_not_allowed_message" = "Ze zařízení nelze provést platbu";
-"store_patronage_purchase_payment_invalid_message" = "Identifikátor nákupu je neplatný";
+"store_patronage_purchase_payment_invalid_message" = "Neplatný identifikátor nákupu";
 "store_patronage_purchase_client_invalid_message" = "Nelze provést platbu";
-"store_patronage_purchase_unknown_message" = "Neznámá chyba. Kontaktujte prosím podporu";
-"store_patronage_purchase_success_message" = "Úspěšně zakoupeno. Děkujeme za podporu!";
+"store_patronage_purchase_unknown_message" = "Neznámá chyba. Kontaktujte prosím podporu.";
+"store_patronage_purchase_success_message" = "Zakoupeno. Děkujeme za podporu!";
 "store_patronage_restore_nothing_message" = "Není co obnovovat";
-"store_patronage_restore_success_message" = "Úspěšně obnoveno";
+"store_patronage_restore_success_message" = "Obnoveno";
 
 // MARK: - Store
 
 "store_patronage_title" = "Členství MeetingBaru";
-"constants_browser_defaultBrowser" = "Výchozí prohlížeč";
+"constants_browser_defaultBrowser" = "Výchozí webový prohlížeč";
 "constants_browser_safari" = "Safari";
 "constants_browser_vivaldi" = "Vivaldi";
 "constants_browser_opera" = "Opera";
@@ -81,9 +80,9 @@
 "constants_meeting_service_zoom" = "Zoom";
 "constants_meeting_service_hangouts" = "Google Hangouts";
 "constants_meeting_service_meet" = "Google Meet";
-"constants_meeting_service_phone" = "Telefon";
-"constants_create_meeting_service_url" = "Vlastní adresa url";
-"constants_create_meeting_service_outlook_office365" = "Outlook Office365";
+"constants_meeting_service_phone" = "Telefonní číslo";
+"constants_create_meeting_service_url" = "Vlastní adresa URL";
+"constants_create_meeting_service_outlook_office365" = "Outlook Office 365";
 "constants_create_meeting_service_outlook_live" = "Outlook Live";
 "constants_create_meeting_service_gcalendar" = "Kalendář Google";
 "constants_create_meeting_service_teams" = "Microsoft Teams";
@@ -93,8 +92,8 @@
 
 // MARK: - Constants
 "constants_create_meeting_service_meet" = "Google Meet";
-"shared_send_notification_disabled_tip" = "⚠️ Oznámení pro MeetingBar v macOS jsou aktuálně vypnuta. Abyste nezmeškali žádnou schůzku, povolte oznámení v předvolbách macOS.";
-"shared_send_notification_no_alert_style_tip" = "⚠️ Styl oznámení pro MeetingBar v macOS není aktuálně nastaven na Upozornění. Pokud chcete dostávat trvalá oznámení, vyberte styl Upozornění.";
+"shared_send_notification_disabled_tip" = "⚠️ Oznámení pro MeetingBar v macOS jsou vypnuta. Abyste měli přehled o schůzkách, povolte oznámení v předvolbách macOS.";
+"shared_send_notification_no_alert_style_tip" = "⚠️ Styl oznámení pro MeetingBar v macOS není nastaven na Upozornění. Pokud chcete dostávat trvalá oznámení, vyberte styl Upozornění.";
 "shared_send_notification_five_minute_value" = "5 minut předem";
 "shared_send_notification_three_minute_value" = "3 minuty předem";
 "shared_send_notification_one_minute_value" = "1 minutu předem";
@@ -103,9 +102,9 @@
 // MARK: - Shared
 
 "shared_send_notification_toggle" = "Odeslat oznámení pro připojení k nadcházející schůzce:";
-"access_screen_access_granted_click_ok_title" = "Klikněte na tlačítko \"OK\" ve vyskakovacím okně systému macOS.";
-"access_screen_access_granted_title" = "Žádost o přístup ke kalendářům.";
-"access_screen_access_denied_relaunch_title" = "Pak musíte aplikaci spustit ručně a pokračovat dál v nastavení.";
+"access_screen_access_granted_click_ok_title" = "Ve vyskakovacím okně systému macOS klikněte na tlačítko \"OK\".";
+"access_screen_access_granted_title" = "Žádost o přístup ke kalendářům…";
+"access_screen_access_denied_relaunch_title" = "Pak spusťte aplikaci ručně a pokračujte v nastavení.";
 "access_screen_access_denied_checkbox_title" = "a zaškrtněte políčko u položky MeetingBar.";
 "access_screen_access_screen_access_denied_go_to_title" = "Přejděte na";
 "access_screen_access_denied_system_preferences_button" = "Předvolby systému";
@@ -128,15 +127,15 @@
 "welcome_screen_shortcut_ad_hoc_meeting_title" = "pomocí zkratky:";
 "welcome_screen_ad_hoc_meeting_title" = "Vytvářet ad hoc schůzky v ";
 "welcome_screen_login_launch_toggle_title" = "Spouštět aplikaci MeetingBar po přihlášení";
-"status_bar_error_zoom_native_link_message" = "Ujistěte se, že máte nainstalovanou aplikaci Zoom, nebo ji změňte v předvolbách.";
-"status_bar_error_zoom_native_link_title" = "Nelze otevřít nativní odkaz v aplikaci Zoom";
-"status_bar_error_zoom_app_link_message" = "Ujistěte se, že máte nainstalovanou aplikaci Zoom, nebo ji nastavte v předvolbách.";
+"status_bar_error_zoom_native_link_message" = "Ujistěte se, že máte nainstalovanou aplikaci Zoom, nebo v předvolbách nastavte, aby se její odkazy otevíraly ve webovém prohlížeči.";
+"status_bar_error_zoom_native_link_title" = "Odkaz nelze otevřít v aplikaci Zoom";
+"status_bar_error_zoom_app_link_message" = "Ujistěte se, že máte nainstalovanou aplikaci Zoom, nebo v předvolbách nastavte, aby se její odkazy otevíraly ve webovém prohlížeči.";
 "status_bar_error_zoom_app_link_title" = "Nelze otevřít odkaz v aplikaci Zoom";
-"status_bar_error_teams_link_message" = "Ujistěte se, že máte nainstalovanou aplikaci Microsoft Teams, nebo ji nastavte v předvolbách.";
+"status_bar_error_teams_link_message" = "Ujistěte se, že máte nainstalovanou aplikaci Microsoft Teams, nebo v předvolbách nastavte, aby se její odkazy otevíraly ve webovém prohlížeči.";
 "status_bar_error_teams_link_title" = "Nelze otevřít odkaz v aplikaci Microsoft Teams";
 "status_bar_error_link_missed_message" = "Odkaz nebyl nalezen, nebo služba schůzky zatím není podporována";
 "status_bar_error_link_missed_title" = "Nelze se připojit k %@";
-"status_bar_error_apple_script_title" = "Chybové hlášení AppleScriptu";
+"status_bar_error_apple_script_title" = "Chyba AppleScriptu";
 "status_bar_event_status_in" = "za %@";
 "status_bar_event_status_now" = "– nyní probíhá (zbývá %@)";
 "status_bar_no_title" = "Bez názvu";
@@ -148,12 +147,12 @@
 "status_bar_quick_actions" = "Rychlé akce";
 "status_bar_submenu_open_in_fantastical" = "Otevřít v aplikaci Fantastical";
 "status_bar_submenu_open_in_calendar" = "Otevřít v aplikaci Kalendář";
-"status_bar_submenu_copy_meeting_link" = "Copy meeting link";
-"status_bar_submenu_email_attendees" = "Email attendees";
+"status_bar_submenu_copy_meeting_link" = "Zkopírovat odkaz na schůzku";
+"status_bar_submenu_email_attendees" = "Poslat e-mail účastníkům";
 "status_bar_submenu_attendees_status_unknown" = " [?]";
 "status_bar_submenu_attendees_status_tentative" = " [nezávazně]";
 "status_bar_submenu_attendees_you" = "%@ (já)";
-"status_bar_submenu_attendees_no_name" = "Účastník beze jména";
+"status_bar_submenu_attendees_no_name" = "Anonymní účastník";
 "status_bar_submenu_attendees_title" = "Účastníci (%d)";
 "status_bar_submenu_notes_title" = "Poznámky:";
 "status_bar_submenu_organizer_title" = "Organizátor: %@";
@@ -173,7 +172,7 @@
 "status_bar_section_join_create_meeting" = "Vytvořit schůzku";
 "status_bar_section_join_from_clipboard" = "Otevřít schůzku ze schránky";
 "status_bar_section_join_next_meeting" = "Připojit se k nadcházející schůzce";
-"status_bar_section_join_current_meeting" = "Join current event meeting";
+"status_bar_section_join_current_meeting" = "Připojit se k aktuální schůzce";
 "status_bar_empty_calendar_message" = "Pro zobrazení vašich schůzek\nvyberte kalendáře v předvolbách";
 "status_bar_section_tomorrow" = "Zítra";
 
@@ -187,7 +186,7 @@
 "preferences_advanced_regex_add_button" = "Přidat regex";
 "preferences_advanced_regex_title" = "Vlastní regexy pro odkaz na schůzku";
 "preferences_advanced_wrong_location_button" = "Mám to!";
-"preferences_advanced_wrong_location_message" = "Vyberte složku Uživatel > Knihovna > Application Scripts > leits.MeetingBar";
+"preferences_advanced_wrong_location_message" = "Vyberte složku Uživatel → Knihovna → Application Scripts → leits.MeetingBar";
 "preferences_advanced_wrong_location_title" = "Špatné umístění";
 "preferences_advanced_save_script_button" = "Uložit skript";
 "preferences_advanced_apple_script_placeholder" = "# sem napište svůj skript\ntell application \"Music\" to pause";
@@ -195,53 +194,53 @@
 
 // MARK: - Preferences Advanced
 
-"preferences_advanced_setting_warning" = "⚠️ Toto nastavení používejte jen v případě, že rozumíte, k čemu je";
-"preferences_calendars_add_account_modal" = "Chcete-li přidat externí kalendáře, postupujte podle následujících kroků:\n1. Otevřete výchozí aplikaci Kalendář\n2. V nabídce klikněte na položku \"Přidat účet\".\n3. Vyberte a připojte svůj účet";
+"preferences_advanced_setting_warning" = "⚠️ Tato nastavení použijte jen v případě, že rozumíte, k čemu je";
+"preferences_calendars_add_account_modal" = "Pro přidání externích kalendářů:\n1. Otevřete výchozí aplikaci Kalendář\n2. V nabídce klikněte na položku \"Přidat účet\"\n3. Vyberte a připojte svůj účet";
 "preferences_calendars_add_account_button" = "Přidat účet";
-"preferences_calendars_add_account_description" = "Nevidíte požadovaný kalendář?";
+"preferences_calendars_add_account_description" = "Nemůžete najít požadovaný kalendář?";
 
 // MARK: - Preferences Calendars
 
 "preferences_calendars_select_calendars_title" = "Vyberte kalendáře pro zobrazení událostí v řádku nabídek";
 "preferences_bookmarks_new_bookmark_error_title" = "Nelze přidat záložku";
-"preferences_bookmarks_new_bookmark_already_exist" = "Záložka s tímto odkazem/telefonem již existuje pod názvem %@:\n%@";
+"preferences_bookmarks_new_bookmark_already_exist" = "%@ už má tento odkaz/telefonní číslo:\n%@";
 "preferences_bookmarks_new_bookmark_service" = "Služba:";
-"preferences_bookmarks_new_bookmark_link_phone" = "Odkaz/telefon:";
+"preferences_bookmarks_new_bookmark_link_phone" = "Odkaz/telefonní číslo:";
 "preferences_bookmarks_new_bookmark_name" = "Název:";
 "preferences_bookmarks_new_bookmark_title" = "Nová záložka";
 "preferences_bookmarks_add_bookmark_button" = "Přidat záložku";
-"preferences_bookmarks_delete_bookmark_message" = "Chcete odstranit záložku %@?";
+"preferences_bookmarks_delete_bookmark_message" = "Odstranit záložku %@?";
 "preferences_bookmarks_delete_bookmark_title" = "Odstranit záložku?";
 
 // MARK: - Preferences Bookmarks
 
 "preferences_bookmarks_no_bookmarks_placeholder" = "Zatím nemáte žádné záložky";
-"preferences_configure_browsers_choose_broser_panel_message" = "Vyberte prohlížeč z libovolné cesty!";
-"preferences_configure_browsers_choose_broser_panel_prompt" = "Vybrat prohlížeč";
-"preferences_configure_browsers_choose_broser_panel_title" = "Vyberte platnou aplikaci prohlížeče";
+"preferences_configure_browsers_choose_broser_panel_message" = "Vyberte, odkud se má webový prohlížeč spustit.";
+"preferences_configure_browsers_choose_broser_panel_prompt" = "Vybrat webový prohlížeč";
+"preferences_configure_browsers_choose_broser_panel_title" = "Vyberte aplikaci webového prohlížeče";
 "preferences_configure_browsers_modal_alert_title" = "Nelze přidat konfiguraci prohlížeče";
-"preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "Vybrat prohlížeč";
+"preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "Vybrat webový prohlížeč";
 "preferences_configure_browsers_modal_add_browser_path" = "Cesta:";
 "preferences_configure_browsers_modal_add_browser_name" = "Název:";
-"preferences_configure_browsers_modal_edit_browser_title" = "Upravit prohlížeč";
-"preferences_configure_browsers_modal_add_browser_title" = "Přidat prohlížeč";
-"preferences_configure_browsers_add_button_all_system_title" = "Všechny systémové prohlížeče";
-"preferences_configure_browsers_add_button_browser_title" = "Prohlížeč";
-"preferences_configure_browsers_delete_alert_message" = "Chcete odstranit konfiguraci prohlížeče %@?";
-"preferences_configure_browsers_delete_alert_title" = "Smazat konfiguraci prohlížeče?";
+"preferences_configure_browsers_modal_edit_browser_title" = "Upravit webový prohlížeč";
+"preferences_configure_browsers_modal_add_browser_title" = "Přidat webový prohlížeč";
+"preferences_configure_browsers_add_button_all_system_title" = "Všechny systémové webové prohlížeče";
+"preferences_configure_browsers_add_button_browser_title" = "Webový prohlížeč";
+"preferences_configure_browsers_delete_alert_message" = "Odstranit konfiguraci prohlížeče %@?";
+"preferences_configure_browsers_delete_alert_title" = "Smazat konfiguraci webového prohlížeče?";
 
 // MARK: - Preferences Services Browsers Configuration
 
-"preferences_configure_browsers_button" = "Konfigurovat prohlížeče";
-"preferences_services_create_meeting_browser_title" = "Použít prohlížeč:";
-"preferences_services_google_meet_tip" = "Tip: Google Meet podporuje výběr účtu pomocí parametru, např. https://meet.google.com/new?authuser=1";
-"preferences_services_create_meeting_custom_url_value" = "Vlastní adresa url";
+"preferences_configure_browsers_button" = "Konfigurovat webové prohlížeče";
+"preferences_services_create_meeting_browser_title" = "Použít webový prohlížeč:";
+"preferences_services_google_meet_tip" = "Tip: Služba Google Meet podporuje výběr účtu v adrese URL, např. https://meet.google.com/new?authuser=1";
+"preferences_services_create_meeting_custom_url_value" = "Vlastní adresa URL";
 "preferences_services_create_meeting_title" = "Vytvářet schůzky přes:";
-"preferences_services_supported_links_mailback" = "Pokud služba, kterou používáte, není podporována, napište mi";
+"preferences_services_supported_links_mailback" = "Pokud služba, kterou používáte, není podporována, napište e-mail vývojářům";
 "preferences_services_supported_links_list" = "Podporované odkazy na služby:\n%@";
 "preferences_services_link_teams_value" = "Aplikace Teams";
 "preferences_services_link_zoom_value" = "Aplikace Zoom";
-"preferences_services_link_default_browser_value" = "Výchozí prohlížeč";
+"preferences_services_link_default_browser_value" = "Výchozí webový prohlížeč";
 "preferences_services_link_team_title" = "Otvírat odkazy služby Teams v:";
 "preferences_services_link_zoom_title" = "Otvírat odkazy služby Zoom v:";
 "preferences_services_link_meet_title" = "Otvírat odkazy služby Google Meet v:";
@@ -296,9 +295,9 @@
 // MARK: - Preferences Appearance
 
 "preferences_appearance_events_title" = "Události";
-"preferences_general_feedback_telegram" = "telegram";
-"preferences_general_feedback_twitter" = "twitter";
-"preferences_general_feedback_email" = "e-mail";
+"preferences_general_feedback_telegram" = "Telegram";
+"preferences_general_feedback_twitter" = "Twitter";
+"preferences_general_feedback_email" = "E-mail";
 "preferences_general_feedback_title" = "Pokud máte jakékoli dotazy nebo připomínky,\nkontaktujte mě:";
 "preferences_general_patron_restore_purchases" = "Obnovit nákupy";
 "preferences_general_patron_thank_for_purchase" = "Díky! Podpořili jste MeetingBar na %d měsíců! 🎉";
@@ -310,7 +309,7 @@
 "preferences_general_external_contact" = "Kontakt";
 "preferences_general_external_gitHub" = "GitHub";
 "preferences_general_external_patronage" = "Členství";
-"preferences_general_meeting_bar_description" = "MeetingBar je open-source aplikace, kterou vytvořil Andrii Leitsius.\nCílem aplikace je usnadnit a zjednodušit práci s online schůzkami.";
+"preferences_general_meeting_bar_description" = "MeetingBar je open-source aplikace, kterou vytvořil Andrii Leitsius. Cílem aplikace je usnadnit a zjednodušit práci s online schůzkami.";
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "Přepnout viditelnost nadpisu v řádku nabídek:";
 "preferences_general_shortcut_join_from_clipboard" = "Připojit se ke schůzce ze schránky:";
 "preferences_general_shortcut_join_next" = "Připojit se k nadcházející schůzce:";
@@ -351,3 +350,8 @@
 "general_cancel" = "Zrušit";
 "general_ok" = "OK";
 "constants_meeting_service_vowel" = "Vowel";
+"preferences_general_option_preferred_language_norwegianbokmal_value" = "Norsk bokmål";
+"preferences_general_option_preferred_language_croatian_value" = "Hrvatski";
+"preferences_general_option_preferred_language_russian_value" = "Русский";
+"preferences_general_option_preferred_language_ukrainian_value" = "Українська";
+"preferences_general_option_preferred_language_english_value" = "English";
