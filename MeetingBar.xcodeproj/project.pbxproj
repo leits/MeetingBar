@@ -88,6 +88,7 @@
 		144C01862462D0C5000C9FFC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		144C01882462D0C5000C9FFC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		144C01892462D0C5000C9FFC /* MeetingBar.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MeetingBar.entitlements; sourceTree = "<group>"; };
+		14513C7726D697FB0026B40A /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		1452C9B425AF5CE700C46CDF /* GeneralTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralTab.swift; sourceTree = "<group>"; };
 		1452C9BB25AF5D8700C46CDF /* Shared.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shared.swift; sourceTree = "<group>"; };
 		1452C9C125AF854000C46CDF /* AppearanceTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceTab.swift; sourceTree = "<group>"; };
@@ -424,6 +425,7 @@
 				"nb-NO",
 				cs,
 				ja,
+				pl,
 			);
 			mainGroup = 144C01702462D0C3000C9FFC;
 			packageReferences = (
@@ -552,6 +554,7 @@
 				14C9A92B269A20A1005306DA /* nb-NO */,
 				143E6D6226A0C5E300B3CBEE /* cs */,
 				EA04E13F26B2664F00D183B8 /* ja */,
+				14513C7726D697FB0026B40A /* pl */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
