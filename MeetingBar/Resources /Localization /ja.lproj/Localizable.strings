@@ -375,3 +375,8 @@
 
 "link_url_cant_open_title" = "ひえー！ %@ のリンクを開くことが出来ませんでした";
 "link_url_cant_open_message" = "%@ をインストールするか、設定でブラウザーを変更してください。";
+"preferences_general_option_preferred_language_ukrainian_value" = "Українська";
+"preferences_general_option_preferred_language_croatian_value" = "Hrvatski";
+"preferences_general_option_preferred_language_russian_value" = "Русский";
+"preferences_general_option_preferred_language_norwegianbokmal_value" = "Norsk bokmål";
+"preferences_general_option_preferred_language_english_value" = "English";
