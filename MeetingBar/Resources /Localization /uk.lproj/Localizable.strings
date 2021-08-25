@@ -21,7 +21,7 @@
 // MARK: - Window titles
 
 "window_title_preferences" = "Налаштування MeetingBar";
-"window_title_onboarding" = "Ласкаво просимо у MeetingBar!";
+"window_title_onboarding" = "Ласкаво просимо у MeetingBar";
 "windows_title_changelog" = "Що нового у MeetingBar?";
 
 // MARK: - Preferences tabs
@@ -119,7 +119,6 @@
 "preferences_services_link_zoom_value" = "додатку Zoom";
 "preferences_services_link_teams_value" = "додатку Teams";
 "preferences_services_link_jitsi_value" = "додатку Jitsi";
-
 "preferences_services_supported_links_list" = "Розпізнаються посилання для сервісів:\n%@";
 "preferences_services_supported_links_mailback" = "Якщо сервіс, який Ви використовуєте для зустрічей, не підтримується, напишіть мені";
 "preferences_services_create_meeting_title" = "Створювати зустрічі в";
