@@ -240,8 +240,10 @@
 "preferences_services_supported_links_list" = "Podporované odkazy na služby:\n%@";
 "preferences_services_link_teams_value" = "Aplikace Teams";
 "preferences_services_link_zoom_value" = "Aplikace Zoom";
+"preferences_services_link_jitsi_value" = "Aplikace Jitsi Meet";
 "preferences_services_link_default_browser_value" = "Výchozí webový prohlížeč";
 "preferences_services_link_team_title" = "Otvírat odkazy služby Teams v:";
+"preferences_services_link_jitsi_title" = "Otvírat odkazy služby Jitsi v:";
 "preferences_services_link_zoom_title" = "Otvírat odkazy služby Zoom v:";
 "preferences_services_link_meet_title" = "Otvírat odkazy služby Google Meet v:";
 

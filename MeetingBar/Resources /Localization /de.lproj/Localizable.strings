@@ -216,9 +216,11 @@
 "preferences_services_create_meeting_custom_url_value" = "Benutzerdefinierte URL";
 "preferences_services_create_meeting_title" = "Konferenzen erstellen über";
 "preferences_services_supported_links_list" = "Unterstützte Links für Dienste:\n%@";
-"preferences_services_link_teams_value" = "Teams-Anwendung";
-"preferences_services_link_zoom_value" = "Zoom-Anwendung";
+"preferences_services_link_teams_value" = "Teams Anwendung";
+"preferences_services_link_zoom_value" = "Zoom Anwendung";
+"preferences_services_link_jitsi_value" = "Jitsi-Meet Anwendung";
 "preferences_services_link_team_title" = "Teams-Links öffnen in";
+"preferences_services_link_jitsi_title" = "Jitsi-Links öffnen in";
 "preferences_services_link_zoom_title" = "Zoom-Links öffnen in";
 "preferences_services_link_meet_title" = "Meet-links öffnen in";
 

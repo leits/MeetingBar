@@ -114,9 +114,12 @@
 "preferences_services_link_meet_title" = "Відкривати Meet посилання в";
 "preferences_services_link_zoom_title" = "Відкривати Zoom посилання в";
 "preferences_services_link_team_title" = "Відкривати Teams посилання в";
+"preferences_services_link_jitsi_title" = "Open Jitsi links in";
 "preferences_services_link_default_browser_value" = "основному браузері";
 "preferences_services_link_zoom_value" = "додатку Zoom";
 "preferences_services_link_teams_value" = "додатку Teams";
+"preferences_services_link_jitsi_value" = "додатку Jitsi";
+
 "preferences_services_supported_links_list" = "Розпізнаються посилання для сервісів:\n%@";
 "preferences_services_supported_links_mailback" = "Якщо сервіс, який Ви використовуєте для зустрічей, не підтримується, напишіть мені";
 "preferences_services_create_meeting_title" = "Створювати зустрічі в";
