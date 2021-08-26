@@ -114,7 +114,7 @@
 "preferences_services_link_meet_title" = "Відкривати Meet посилання в";
 "preferences_services_link_zoom_title" = "Відкривати Zoom посилання в";
 "preferences_services_link_team_title" = "Відкривати Teams посилання в";
-"preferences_services_link_jitsi_title" = "Open Jitsi links in";
+"preferences_services_link_jitsi_title" = "Відкривати Jitsi посилання в";
 "preferences_services_link_default_browser_value" = "основному браузері";
 "preferences_services_link_zoom_value" = "додатку Zoom";
 "preferences_services_link_teams_value" = "додатку Teams";
@@ -142,7 +142,7 @@
 "preferences_configure_browsers_modal_alert_title" = "Ой леле! Не вдалось додати браузер";
 "preferences_configure_browsers_choose_broser_panel_title" = "Виберіть коректний браузер";
 "preferences_configure_browsers_choose_broser_panel_prompt" = "Виберіть браузер";
-"preferences_configure_browsers_choose_broser_panel_message" = "Виберіть браузер із будь-яким розташуванням!";
+"preferences_configure_browsers_choose_broser_panel_message" = "Виберіть браузер із будь-яким розташуванням.";
 
 // MARK: - Preferences Bookmarks
 
@@ -338,7 +338,7 @@
 "store_patronage_restore_success_message" = "Успішно відновлено";
 "store_patronage_restore_nothing_message" = "Нічого відновлювати";
 "store_patronage_purchase_success_message" = "Успішно оплачено. Дякую за підтримку!";
-"store_patronage_purchase_unknown_message" = "Невідома помилка. Будь ласка, зв'яжіться з підтримкою";
+"store_patronage_purchase_unknown_message" = "Невідома помилка. Будь ласка, зв'яжіться з підтримкою.";
 "store_patronage_purchase_client_invalid_message" = "Платіж недозволений";
 "store_patronage_purchase_payment_invalid_message" = "Ідентифікатор покупки хибний";
 "store_patronage_purchase_payment_not_allowed_message" = "Цьому пристрою не дозволено здійснювати платежі";
