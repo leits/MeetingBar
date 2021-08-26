@@ -24,7 +24,6 @@
 "notifications_event_start_one_minute_body" = "The event starts in one minute";
 "notifications_event_start_three_minutes_body" = "The event starts in three minutes";
 "notifications_event_start_five_minutes_body" = "The event starts in five minutes";
-
 "store_patronage_purchase_cloud_service_revoked_message" = "Bruker har nektet tilgang for bruk av denne skytjenesten";
 "store_patronage_purchase_cloud_service_network_connection_failed" = "Kunne ikke koble til nettverket";
 "store_patronage_purchase_cloud_service_permission_denied_message" = "Tilgang til skytjenesteinfo tillates ikke";
@@ -329,7 +328,6 @@
 "preferences_general_shortcut_open_menu" = "Åpne meny:";
 "preferences_general_all_shortcut" = "Alle snarveier";
 "preferences_general_option_shortcuts" = "Snarveier";
-
 "preferences_general_option_preferred_language_system_value" = "System";
 "preferences_general_option_preferred_language_title" = "Foretrukket språk:";
 
@@ -354,3 +352,8 @@
 "general_close" = "Lukk";
 "general_cancel" = "Avbryt";
 "general_ok" = "OK";
+"preferences_general_option_preferred_language_norwegianbokmal_value" = "Norsk bokmål";
+"preferences_general_option_preferred_language_croatian_value" = "Hrvatski";
+"preferences_general_option_preferred_language_russian_value" = "Русский";
+"preferences_general_option_preferred_language_ukrainian_value" = "Українська";
+"preferences_general_option_preferred_language_english_value" = "English";
