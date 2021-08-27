@@ -1,7 +1,7 @@
 
 
 "link_url_cant_open_message" = "Stellen Sie sicher, dass Sie %@ installiert haben, oder ändern Sie den Browser in den Voreinstellungen.";
-"preferences_general_meeting_bar_description" = "MeetingBar ist eine quelloffene Anwendung, die von Andrii Leitsius entwickelt wurde.\nDie Anwendung zielt darauf ab, Ihre Erfahrung mit Online-Konferenzen reibungsloser und einfacher zu machen";
+"preferences_general_meeting_bar_description" = "MeetingBar ist eine quelloffene Anwendung, die von Andrii Leitsius entwickelt wurde.\nFür reibungslosere und einfachere Online-Meetings";
 
 // MARK: - Notifications
 
@@ -103,11 +103,11 @@
 "preferences_general_all_shortcut" = "Alle Tastenkürzel";
 "preferences_general_option_shortcuts" = "Tastenkürzel";
 "preferences_general_option_preferred_language_system_value" = "System";
-"preferences_general_option_preferred_language_title" = "Bevorzugte Sprache:";
+"preferences_general_option_preferred_language_title" = "Sprache:";
 
 // MARK: - Preferences General
 
-"preferences_general_option_login_launch" = "Bei Anmeldung starten";
+"preferences_general_option_login_launch" = "Nach der Anmeldung starten";
 "preferences_tab_advanced" = "Erweitert";
 "preferences_tab_calendars" = "Kalender";
 "preferences_tab_bookmarks" = "Lesezeichen";
@@ -118,14 +118,14 @@
 
 "preferences_tab_general" = "Allgemein";
 "windows_title_changelog" = "MeetingBar-Neuigkeiten";
-"window_title_onboarding" = "Willkommen bei MeetingBar!";
+"window_title_onboarding" = "Willkommen bei MeetingBar";
 
 // MARK: - Window titles
 
 "window_title_preferences" = "MeetingBar-Einstellungen";
 "next_meeting_empty_message" = "Juhu! Es ist Zeit, Kakao zu machen";
 "next_meeting_empty_title" = "Heute finden keine weiteren Sitzungen statt";
-"create_meeting_error_message" = "Benutzerdefinierte URL „%@“ fehlt oder ist ungültig. Bitte geben Sie einen Wert in den Anwendungseinstellungen ein.";
+"create_meeting_error_message" = "Benutzerdefinierte URL „%@“ fehlt oder ist ungültig. Fügen Sie eine in den Anwendungseinstellungen hinzu.";
 "create_meeting_error_title" = "Kann keine neue Konferenz erstellen";
 "general_meeting" = "Konferenz";
 "general_save" = "Speichern";
@@ -218,9 +218,11 @@
 "preferences_services_create_meeting_custom_url_value" = "Benutzerdefinierte URL";
 "preferences_services_create_meeting_title" = "Konferenzen erstellen über";
 "preferences_services_supported_links_list" = "Unterstützte Links für Dienste:\n%@";
-"preferences_services_link_teams_value" = "Teams-Anwendung";
-"preferences_services_link_zoom_value" = "Zoom-Anwendung";
+"preferences_services_link_teams_value" = "Teams Anwendung";
+"preferences_services_link_zoom_value" = "Zoom Anwendung";
+"preferences_services_link_jitsi_value" = "Jitsi-Meet Anwendung";
 "preferences_services_link_team_title" = "Teams-Links öffnen in";
+"preferences_services_link_jitsi_title" = "Jitsi-Links öffnen in";
 "preferences_services_link_zoom_title" = "Zoom-Links öffnen in";
 "preferences_services_link_meet_title" = "Meet-links öffnen in";
 
@@ -352,3 +354,8 @@
 "status_bar_error_link_missed_message" = "Link nicht gefunden, oder Ihr Meeting-Dienst wird noch nicht unterstützt";
 "status_bar_error_link_missed_title" = "Ach! Kann %@ nicht beitreten";
 "preferences_general_patron_title" = "Schirmherr werden";
+"preferences_general_option_preferred_language_norwegianbokmal_value" = "Norsk bokmål";
+"preferences_general_option_preferred_language_russian_value" = "Русский";
+"preferences_general_option_preferred_language_ukrainian_value" = "Українська";
+"preferences_general_option_preferred_language_english_value" = "English";
+"preferences_general_option_preferred_language_croatian_value" = "Hrvatski";

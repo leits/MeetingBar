@@ -18,6 +18,7 @@ struct ServicesTab: View {
     @Default(.defaultBrowser) var defaultBrowser
     @Default(.useAppForZoomLinks) var useAppForZoomLinks
     @Default(.useAppForTeamsLinks) var useAppForTeamsLinks
+    @Default(.useAppForJitsiLinks) var useAppForJitsiLinks
     @Default(.createMeetingServiceUrl) var createMeetingServiceUrl
     @Default(.createMeetingService) var createMeetingService
     @Default(.browsers) var allBrowser
@@ -48,6 +49,10 @@ struct ServicesTab: View {
                 Picker(selection: $useAppForTeamsLinks, label: Text("preferences_services_link_team_title".loco()).frame(width: 200, alignment: .leading)) {
                     Text("preferences_services_link_default_browser_value".loco()).tag(false)
                     Text("preferences_services_link_teams_value".loco()).tag(true)
+                }
+                Picker(selection: $useAppForJitsiLinks, label: Text("preferences_services_link_jitsi_title".loco()).frame(width: 200, alignment: .leading)) {
+                    Text("preferences_services_link_default_browser_value".loco()).tag(false)
+                    Text("preferences_services_link_jitsi_value".loco()).tag(true)
                 }
             }.padding(.horizontal, 10)
 

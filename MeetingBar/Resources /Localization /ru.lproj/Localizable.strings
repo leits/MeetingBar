@@ -21,7 +21,7 @@
 // MARK: - Window titles
 
 "window_title_preferences" = "MeetingBar Настройки";
-"window_title_onboarding" = "Добро пожаловать в MeetingBar!";
+"window_title_onboarding" = "Добро пожаловать в MeetingBar";
 "windows_title_changelog" = "Список изменений";
 
 // MARK: - Preferences tabs
@@ -36,7 +36,7 @@
 // MARK: - Preferences General
 
 "preferences_general_option_login_launch" = "Запускать при входе в систему";
-"preferences_general_option_preferred_language_title" = "Предпочтительный язык:";
+"preferences_general_option_preferred_language_title" = "Язык:";
 "preferences_general_option_preferred_language_system_value" = "Системный";
 "preferences_general_option_shortcuts" = "Горячие клавиши";
 "preferences_general_all_shortcut" = "Все горячие клавиши";
@@ -85,10 +85,10 @@
 "preferences_appearance_events_value_only_with_link" = "показать только со ссылкой на событие";
 "preferences_appearance_status_bar_title" = "Статус бар";
 "preferences_appearance_status_bar_icon_title" = "Иконка";
-"preferences_appearance_status_bar_icon_app_icon_value" = "\U00A0Иконка приложения";
-"preferences_appearance_status_bar_icon_calendar_icon_value" = "\U00A0Иконка календаря";
-"preferences_appearance_status_bar_icon_specific_icon_value" = "\U00A0Иконка события (например MS Teams)";
-"preferences_appearance_status_bar_icon_no_icon_value" = "\U00A0Без иконки";
+"preferences_appearance_status_bar_icon_app_icon_value" = " Иконка приложения";
+"preferences_appearance_status_bar_icon_calendar_icon_value" = " Иконка календаря";
+"preferences_appearance_status_bar_icon_specific_icon_value" = " Иконка события (например MS Teams)";
+"preferences_appearance_status_bar_icon_no_icon_value" = " Без иконки";
 "preferences_appearance_status_bar_title_title" = "Заголовок";
 "preferences_appearance_status_bar_title_event_title_value" = "название события";
 "preferences_appearance_status_bar_title_dot_value" = "точка (•)";
@@ -113,18 +113,20 @@
 // MARK: - Preferences Services
 
 "preferences_services_link_meeting_title" = "Все ссылки";
-"preferences_services_link_meet_title" = "Meet ссылки";
+"preferences_services_link_meet_title" = "Google Meet ссылки";
 "preferences_services_link_zoom_title" = "Zoom ссылки";
 "preferences_services_link_team_title" = "Teams ссылки";
+"preferences_services_link_jitsi_title" = "Jitsi ссылки";
 "preferences_services_link_default_browser_value" = "Браузер по умолчанию";
 "preferences_services_link_zoom_value" = "Приложении Zoom";
 "preferences_services_link_teams_value" = "Приложении Teams";
+"preferences_services_link_jitsi_value" = "Приложении Jitsi";
 "preferences_services_supported_links_list" = "Поддерживаются ссылки для сервисов:\n%@";
 "preferences_services_supported_links_mailback" = "Если приложения, которым вы пользуете, нет в списке, напишите мне";
 "preferences_services_create_meeting_title" = "Создавать события через";
 "preferences_services_create_meeting_custom_url_value" = "Пользовательский URL";
 "preferences_services_create_meeting_custom_url_placeholder" = "Введите действительный URL (со схемой URL, например https://)";
-"preferences_services_google_meet_tip" = "Подсказка: Meet поддерживает выбор учетной записи с помощью параметра, например: https://meet.google.com/new?authuser=1";
+"preferences_services_google_meet_tip" = "Подсказка: Google Meet поддерживает выбор учетной записи с помощью параметра, например: https://meet.google.com/new?authuser=1";
 "preferences_services_create_meeting_browser_title" = "Использовать браузер";
 
 // MARK: - Preferences Services Browsers Configuration
@@ -162,7 +164,7 @@
 "preferences_calendars_select_calendars_title" = "Выберите календари для отображения событий в строке состояния";
 "preferences_calendars_add_account_description" = "Не видите нужный календарь?";
 "preferences_calendars_add_account_button" = "Добавить аккаунт";
-"preferences_calendars_add_account_modal" = "Чтобы добавить внешние календари, выполните следующие действия:\n1. Откройте стандартное приложение Календарь\n2. Нажмите 'Добавить аккаунт' в меню\n3. Выберите и подключите свой аккаунт";
+"preferences_calendars_add_account_modal" = "Чтобы добавить внешние календари:\n1. Откройте стандартное приложение Календарь\n2. Нажмите 'Добавить аккаунт' в меню\n3. Выберите и подключите свой аккаунт";
 
 // MARK: - Preferences Advanced
 
@@ -171,7 +173,7 @@
 "preferences_advanced_apple_script_placeholder" = "# напишите здесь свой скрипт\ntell application \"Music\" to pause";
 "preferences_advanced_save_script_button" = "Сохранить скрипт";
 "preferences_advanced_wrong_location_title" = "Неправильное местоположение";
-"preferences_advanced_wrong_location_message" = "Пожалуйста, выберите User > Library > Application Scripts > leits.MeetingBar folder";
+"preferences_advanced_wrong_location_message" = "Пожалуйста, выберите User → Library → Application Scripts → leits.MeetingBar folder";
 "preferences_advanced_wrong_location_button" = "Понятно!";
 "preferences_advanced_regex_title" = "Пользовательские regex для ссылок на события";
 "preferences_advanced_regex_add_button" = "Добавить regex";
@@ -358,3 +360,8 @@
 
 "link_url_cant_open_title" = "Ой! Невозможно открыть ссылку в %@";
 "link_url_cant_open_message" = "Убедитесь, что у вас установлен %@, или измените браузер в настройках.";
+"preferences_general_option_preferred_language_russian_value" = "Русский";
+"preferences_general_option_preferred_language_english_value" = "English";
+"preferences_general_option_preferred_language_ukrainian_value" = "Українська";
+"preferences_general_option_preferred_language_croatian_value" = "Hrvatski";
+"preferences_general_option_preferred_language_norwegianbokmal_value" = "Norsk bokmål";

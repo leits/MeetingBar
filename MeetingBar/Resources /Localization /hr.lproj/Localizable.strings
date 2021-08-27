@@ -85,10 +85,10 @@
 "preferences_appearance_events_value_only_with_link" = "prikaži samo one s poveznicama na sastanak";
 "preferences_appearance_status_bar_title" = "Traka stanja";
 "preferences_appearance_status_bar_icon_title" = "Ikona";
-"preferences_appearance_status_bar_icon_app_icon_value" = "\U00A0Ikona programa";
-"preferences_appearance_status_bar_icon_calendar_icon_value" = "\U00A0Ikona Kalendara";
-"preferences_appearance_status_bar_icon_specific_icon_value" = "\U00A0Ikona određenog događaja (npr. MS Teams)";
-"preferences_appearance_status_bar_icon_no_icon_value" = "\U00A0Bez ikone";
+"preferences_appearance_status_bar_icon_app_icon_value" = " Ikona programa";
+"preferences_appearance_status_bar_icon_calendar_icon_value" = " Ikona Kalendara";
+"preferences_appearance_status_bar_icon_specific_icon_value" = " Ikona određenog događaja (npr. MS Teams)";
+"preferences_appearance_status_bar_icon_no_icon_value" = " Bez ikone";
 "preferences_appearance_status_bar_title_title" = "Naslov";
 "preferences_appearance_status_bar_title_event_title_value" = "naslov događaja";
 "preferences_appearance_status_bar_title_dot_value" = "predznak (•)";
@@ -116,9 +116,11 @@
 "preferences_services_link_meet_title" = "Otvori Meet poveznice u";
 "preferences_services_link_zoom_title" = "Otvori Zoom poveznice u";
 "preferences_services_link_team_title" = "Otvori Teams poveznice u";
+"preferences_services_link_jitsi_title" = "Open Jitsi links in";
 "preferences_services_link_default_browser_value" = "Standardni preglednik";
 "preferences_services_link_zoom_value" = "Zoom program";
 "preferences_services_link_teams_value" = "Teams program";
+"preferences_services_link_jitsi_value" = "Jitsi Meet program";
 "preferences_services_supported_links_list" = "Podržane poveznice za usluge:\n%@";
 "preferences_services_supported_links_mailback" = "Ako usluga nije podržana, javi mi putem e-maila";
 "preferences_services_create_meeting_title" = "Stvori sastanke putem";
@@ -358,3 +360,8 @@
 
 "link_url_cant_open_title" = "Ups! Nije moguće otvoriti poveznicu u %@";
 "link_url_cant_open_message" = "%@ mora biti instaliran ili promijeni preglednik u postavkama.";
+"preferences_general_option_preferred_language_russian_value" = "Русский";
+"preferences_general_option_preferred_language_english_value" = "English";
+"preferences_general_option_preferred_language_norwegianbokmal_value" = "Norsk bokmål";
+"preferences_general_option_preferred_language_croatian_value" = "Hrvatski";
+"preferences_general_option_preferred_language_ukrainian_value" = "Українська";

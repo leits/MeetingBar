@@ -19,7 +19,7 @@
 "constants_meeting_service_duo" = "Google Duo";
 "constants_meeting_service_starleaf" = "StarLeaf";
 "constants_meeting_service_vsee" = "VSee";
-"constants_meeting_service_teamviewer_meeting" = "Teamviewer Meeting";
+"constants_meeting_service_teamviewer_meeting" = "TeamViewer Meeting";
 "constants_meeting_service_blizz" = "Blizz";
 "constants_meeting_service_uberconference" = "Uber Conference";
 "constants_meeting_service_whereby" = "Whereby";
@@ -40,25 +40,25 @@
 "constants_meeting_service_hangouts" = "Google Hangouts";
 "constants_meeting_service_meet" = "Google Meet";
 "access_screen_access_granted_title" = "Demande d'accès aux calendriers…";
-"access_screen_access_denied_relaunch_title" = "Vous devez ensuite lancer l'application manuellement pour poursuivre la configuration.";
+"access_screen_access_denied_relaunch_title" = "Lancez ensuite l'application manuellement pour poursuivre l'installation.";
 "welcome_screen_setup_calendar_title" = "Configurer les calendriers";
 "welcome_screen_shortcut_ad_hoc_meeting_title" = "avec votre raccourci :";
 "welcome_screen_ad_hoc_meeting_title" = "Créer des réunions ad hoc dans ";
 "welcome_screen_shortcut_next_meeting_title" = "Rejoignez la prochaine réunion d'évènement avec votre raccourci :";
-"status_bar_error_zoom_native_link_message" = "Assurez-vous que l'application Zoom est installée, ou changez l'application dans les préférences.";
-"status_bar_error_zoom_native_link_title" = "Oups ! Impossible d'ouvrir le lien natif dans l'application Zoom";
-"link_url_cant_open_message" = "Assurez-vous que %@ est installé, ou changez le navigateur dans les préférences.";
-"status_bar_error_zoom_app_link_message" = "Assurez-vous que l'application Zoom est installée, ou changez l'application dans les préférences.";
+"status_bar_error_zoom_native_link_message" = "Assurez-vous d'avoir installé l'application Zoom, ou ouvrez plutôt ces liens dans un navigateur web à partir des préférences.";
+"status_bar_error_zoom_native_link_title" = "Oups ! Impossible d'ouvrir ce lien dans l'application Zoom";
+"link_url_cant_open_message" = "Assurez-vous que %@ est installé, ou ouvrez plutôt ces liens dans un navigateur web à partir des préférences.";
+"status_bar_error_zoom_app_link_message" = "Assurez-vous d'avoir installé l'application Zoom, ou ouvrez plutôt ces liens dans un navigateur web à partir des préférences.";
 "status_bar_error_zoom_app_link_title" = "Oups ! Impossible d'ouvrir le lien dans l'application Zoom";
-"status_bar_error_teams_link_message" = "Assurez-vous que l'application Microsoft Teams est installée, ou modifiez l'application dans les préférences.";
-"status_bar_error_apple_script_title" = "Erreur de retour AppleScript";
+"status_bar_error_teams_link_message" = "Assurez-vous que l'application Microsoft Teams est installée, ou ouvrez plutôt ces liens dans un navigateur web à partir des préférences.";
+"status_bar_error_apple_script_title" = "Erreur AppleScript";
 "status_bar_section_join_from_clipboard" = "Ouvrir la réunion à partir du presse-papier";
 "preferences_advanced_regex_new_cant_save_title" = "Impossible d'enregistrer un regex";
 "preferences_advanced_regex_new_title" = "Entrez un regex";
 "preferences_advanced_regex_add_button" = "Ajouter un regex";
 "preferences_advanced_regex_title" = "Expressions régulières personnalisées pour le lien de réunion";
-"preferences_calendars_add_account_modal" = "Pour ajouter des calendriers externes, procédez comme suit :\n1. Ouvrez l'application Calendrier par défaut\n2. Cliquez sur « Ajouter un compte » dans le menu\n3. Choisissez et connectez votre compte";
-"preferences_services_create_meeting_custom_url_placeholder" = "Veuillez entrer une URL valide (avec le schéma de l'URL, par exemple https://)";
+"preferences_calendars_add_account_modal" = "Pour ajouter des calendriers externes :\n1. Ouvrez l'application calendrier par défaut\n2. Cliquez sur « Ajouter un compte » dans le menu\n3. Choisissez et connectez votre compte";
+"preferences_services_create_meeting_custom_url_placeholder" = "Veuillez entrer une URL valide (avec http:// ou https://)";
 
 // MARK: - Link open
 
@@ -75,12 +75,12 @@
 "store_patronage_purchase_cloud_service_permission_denied_message" = "L'accès aux informations sur les services en nuage n'est pas autorisé";
 "store_patronage_purchase_store_product_not_available_message" = "Le produit n'est pas disponible dans la vitrine actuelle";
 "store_patronage_purchase_payment_not_allowed_message" = "L'appareil n'est pas autorisé à effectuer le paiement";
-"store_patronage_purchase_payment_invalid_message" = "L'identifiant de l'achat était invalide";
+"store_patronage_purchase_payment_invalid_message" = "Identifiant d'achat invalide";
 "store_patronage_purchase_client_invalid_message" = "Non autorisé à effectuer le paiement";
 "store_patronage_purchase_unknown_message" = "Erreur inconnue. Veuillez contacter l'assistance technique.";
-"store_patronage_purchase_success_message" = "Acheté avec succès. Merci pour votre soutien !";
+"store_patronage_purchase_success_message" = "Achat effectué. Merci de votre soutien !";
 "store_patronage_restore_nothing_message" = "Rien à restaurer";
-"store_patronage_restore_success_message" = "Restauré avec succès";
+"store_patronage_restore_success_message" = "Restauré";
 
 // MARK: - Store
 
@@ -97,9 +97,9 @@
 "constants_meeting_service_ringcentral" = "Ring Central";
 "constants_meeting_service_chime" = "Amazon Chime";
 "constants_meeting_service_jitsi" = "Jitsi";
-"constants_meeting_service_phone" = "Téléphone";
+"constants_meeting_service_phone" = "Numéro de téléphone";
 "constants_create_meeting_service_url" = "URL personnalisée";
-"constants_create_meeting_service_outlook_office365" = "Outlook Office365";
+"constants_create_meeting_service_outlook_office365" = "Outlook Office 365";
 "constants_create_meeting_service_outlook_live" = "Outlook Live";
 "constants_create_meeting_service_gcalendar" = "Google Calendar";
 "constants_create_meeting_service_teams" = "Microsoft Teams";
@@ -109,8 +109,8 @@
 
 // MARK: - Constants
 "constants_create_meeting_service_meet" = "Google Meet";
-"shared_send_notification_disabled_tip" = "⚠️ Vos paramètres de notification macOS pour MeetingBar sont actuellement désactivés. Veuillez activer les notifications dans les paramètres système de macOS pour ne pas manquer une réunion.";
-"shared_send_notification_no_alert_style_tip" = "⚠️ Vos paramètres de notification macOS pour MeetingBar ne sont actuellement pas définis sur les alertes. Veuillez activer les alertes si vous souhaitez avoir des notifications permanentes.";
+"shared_send_notification_disabled_tip" = "⚠️ Vos paramètres de notification macOS pour MeetingBar sont désactivés. Activez les notifications dans les paramètres système de macOS pour garder une trace des réunions.";
+"shared_send_notification_no_alert_style_tip" = "⚠️ Vos paramètres de notification macOS pour MeetingBar ne sont pas réglés sur alerte. Faites-le si vous voulez des notifications persistantes.";
 "shared_send_notification_five_minute_value" = "5 minutes avant";
 "shared_send_notification_three_minute_value" = "3 minutes avant";
 "shared_send_notification_one_minute_value" = "1 minute avant";
@@ -119,7 +119,7 @@
 // MARK: - Shared
 
 "shared_send_notification_toggle" = "Envoyer une notification pour rejoindre la prochaine réunion de l'évènement";
-"access_screen_access_granted_click_ok_title" = "Cliquez sur « OK » dans la fenêtre pop-up de MacOS.";
+"access_screen_access_granted_click_ok_title" = "Cliquez sur « OK » dans la fenêtre popup de macOS.";
 "access_screen_access_screen_access_denied_go_to_title" = "Allez dans les";
 "access_screen_access_denied_checkbox_title" = "et sélectionnez une case à cocher près de MeetingBar.";
 "access_screen_access_denied_system_preferences_button" = "Préférences du système";
@@ -157,7 +157,7 @@
 "status_bar_submenu_attendees_status_unknown" = " [?]";
 "status_bar_submenu_attendees_status_tentative" = " [tentative]";
 "status_bar_submenu_attendees_you" = "%@ (vous)";
-"status_bar_submenu_attendees_no_name" = "Participant·e sans nom";
+"status_bar_submenu_attendees_no_name" = "Participant·e anonyme";
 "status_bar_submenu_attendees_title" = "Participant·e·s (%d)";
 "status_bar_submenu_notes_title" = "Notes :";
 "status_bar_submenu_organizer_title" = "Organisateur·ice : %@";
@@ -179,7 +179,7 @@
 "status_bar_section_join_create_meeting" = "Créer une réunion";
 "status_bar_section_join_next_meeting" = "Rejoindre la réunion du prochain évènement";
 "status_bar_section_join_current_meeting" = "Rejoindre la réunion de l’évènement en cours";
-"status_bar_empty_calendar_message" = "Sélectionnez les calendriers dans les préférences\npour voir vos réunions";
+"status_bar_empty_calendar_message" = "Sélectionnez vos calendriers dans les préférences\npour voir vos réunions";
 "status_bar_section_tomorrow" = "Demain";
 
 // MARK: - Status bar
@@ -188,7 +188,7 @@
 "preferences_advanced_regex_delete_button" = "x";
 "preferences_advanced_regex_edit_button" = "modifier";
 "preferences_advanced_wrong_location_button" = "Compris !";
-"preferences_advanced_wrong_location_message" = "Veuillez sélectionner le dossier Utilisateur > Bibliothèque > Scripts d'application > leits.MeetingBar";
+"preferences_advanced_wrong_location_message" = "Veuillez sélectionner le dossier Utilisateur → Bibliothèque → Scripts d'application → leits.MeetingBar";
 "preferences_advanced_wrong_location_title" = "Mauvais emplacement";
 "preferences_advanced_save_script_button" = "Enregistrer le script";
 "preferences_advanced_apple_script_placeholder" = "# écrire votre script ici\ndites à l'application « Musique » de se mettre en pause";
@@ -198,18 +198,18 @@
 
 "preferences_advanced_setting_warning" = "⚠️ Utilisez ces paramètres uniquement si vous comprenez ce qu'ils font";
 "preferences_calendars_add_account_button" = "Ajouter un compte";
-"preferences_calendars_add_account_description" = "Vous ne voyez pas le calendrier dont vous avez besoin ?";
+"preferences_calendars_add_account_description" = "Vous ne trouvez pas le calendrier dont vous avez besoin ?";
 
 // MARK: - Preferences Calendars
 
 "preferences_calendars_select_calendars_title" = "Sélectionnez les calendriers pour afficher les évènements dans la barre d'état";
 "preferences_bookmarks_new_bookmark_error_title" = "Impossible d'ajouter un marque-page";
-"preferences_bookmarks_new_bookmark_already_exist" = "Un marque-page avec ce lien/téléphone existe déjà avec le nom %@ :\n%@";
+"preferences_bookmarks_new_bookmark_already_exist" = "%@ a déjà ce lien/numéro de téléphone :\n%@";
 "preferences_bookmarks_new_bookmark_service" = "Service";
-"preferences_bookmarks_new_bookmark_link_phone" = "Lien/Téléphone";
+"preferences_bookmarks_new_bookmark_link_phone" = "Lien/nunéro de téléphone";
 "preferences_bookmarks_new_bookmark_name" = "Nom";
 "preferences_bookmarks_add_bookmark_button" = "Ajouter un marque-page";
-"preferences_bookmarks_delete_bookmark_message" = "Voulez-vous supprimer le marque-page %@ ?";
+"preferences_bookmarks_delete_bookmark_message" = "Supprimer le marque-page %@ ?";
 "preferences_bookmarks_delete_bookmark_title" = "Supprimer le marque-page ?";
 "preferences_bookmarks_new_bookmark_title" = "Nouveau marque-page";
 
@@ -218,17 +218,17 @@
 "preferences_bookmarks_no_bookmarks_placeholder" = "Vous n'avez pas encore de marque-pages";
 "preferences_tab_bookmarks" = "Marque-pages";
 "preferences_configure_browsers_choose_broser_panel_message" = "Sélectionnez l'endroit duquel exécuter le navigateur web.";
-"preferences_configure_browsers_choose_broser_panel_prompt" = "Choisir le navigateur";
-"preferences_configure_browsers_choose_broser_panel_title" = "Sélectionnez une application de navigation valide";
+"preferences_configure_browsers_choose_broser_panel_prompt" = "Choisir le navigateur web";
+"preferences_configure_browsers_choose_broser_panel_title" = "Sélectionnez une appli de navigation web";
 "preferences_configure_browsers_modal_alert_title" = "Impossible d'ajouter la configuration du navigateur";
-"preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "Choisir le navigateur";
+"preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "Choisir le navigateur web";
 "preferences_configure_browsers_modal_add_browser_path" = "Chemin";
 "preferences_configure_browsers_modal_add_browser_name" = "Nom";
-"preferences_configure_browsers_modal_edit_browser_title" = "Modifier le navigateur";
-"preferences_configure_browsers_modal_add_browser_title" = "Ajouter un navigateur";
+"preferences_configure_browsers_modal_edit_browser_title" = "Modifier le navigateur web";
+"preferences_configure_browsers_modal_add_browser_title" = "Ajouter un navigateur web";
 "preferences_configure_browsers_add_button_all_system_title" = "Tous les navigateurs du système";
-"preferences_configure_browsers_add_button_browser_title" = "Navigateur";
-"preferences_configure_browsers_delete_alert_message" = "Voulez-vous supprimer la configuration du navigateur %@ ?";
+"preferences_configure_browsers_add_button_browser_title" = "Navigateur web";
+"preferences_configure_browsers_delete_alert_message" = "Supprimer la configuration du navigateur %@ ?";
 "preferences_configure_browsers_delete_alert_title" = "Supprimer la configuration du navigateur ?";
 
 // MARK: - Preferences Services Browsers Configuration
@@ -242,8 +242,10 @@
 "preferences_services_supported_links_list" = "Liens pris en charge pour les services :\n%@";
 "preferences_services_link_teams_value" = "Appli Teams";
 "preferences_services_link_zoom_value" = "Appli Zoom";
+"preferences_services_link_jitsi_value" = "Appli Jitsi Meet";
 "preferences_services_link_default_browser_value" = "Navigateur par défaut";
 "preferences_services_link_team_title" = "Ouvrir les liens Team dans";
+"preferences_services_link_jitsi_title" = "Ouvrir les liens Jitsi dans";
 "preferences_services_link_zoom_title" = "Ouvrir les liens Zoom dans";
 "preferences_services_link_meet_title" = "Ouvrir les liens Meet dans";
 
@@ -302,7 +304,7 @@
 "preferences_general_feedback_telegram" = "Telegram";
 "preferences_general_feedback_twitter" = "Twitter";
 "preferences_general_feedback_email" = "Courriel";
-"preferences_general_feedback_title" = "Si vous avez des questions ou des remarques,\nn'hésitez pas à me contacter :";
+"preferences_general_feedback_title" = "Si vous avez des questions ou des remarques,\nn'hésitez pas à nous contacter :";
 "preferences_general_patron_restore_purchases" = "Restaurer les achats";
 "preferences_general_patron_thank_for_purchase" = "Merci ! Vous soutenez MeetingBar depuis %d mois ! 🎉";
 "preferences_general_patron_description" = "Ces achats ponctuels ne sont pas renouvelables automatiquement.";
@@ -313,7 +315,7 @@
 "preferences_general_external_contact" = "Contact";
 "preferences_general_external_gitHub" = "GitHub";
 "preferences_general_external_patronage" = "Mécénat";
-"preferences_general_meeting_bar_description" = "MeetingBar est une application à code source ouvert créée par Andrii Leitsius.\nL'application vise à rendre votre expérience des réunions en ligne plus fluide et plus facile";
+"preferences_general_meeting_bar_description" = "MeetingBar est une application à code source ouvert créée par Andrii Leitsius.\nPour des réunions en ligne plus faciles et plus fluides";
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "Basculer la visibilité du titre dans la barre d'état :";
 "preferences_general_shortcut_join_from_clipboard" = "Rejoindre la réunion à partir du presse-papier :";
 "preferences_general_shortcut_join_next" = "Rejoindre la prochaine réunion :";
