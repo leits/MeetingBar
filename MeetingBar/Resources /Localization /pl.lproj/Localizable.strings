@@ -14,7 +14,7 @@
 "general_save" = "Zapisz";
 "general_meeting" = "Spotkanie";
 "create_meeting_error_title" = "Nie można utworzyć nowego spotkania";
-"create_meeting_error_message" = "Brak niestandardowego adresu URL lub jest on nieprawidłowy. Dodaj go w preferencjach aplikacji.";
+"create_meeting_error_message" = "Brak niestandardowego adresu URL \"%@\" lub jest on nieprawidłowy. Dodaj go w preferencjach aplikacji.";
 "next_meeting_empty_title" = "Nie ma żadnych nadchodzących spotkań w dniu dzisiejszym";
 "next_meeting_empty_message" = "Woohoo! Nadszedł czas, aby zrobić kakao";
 
