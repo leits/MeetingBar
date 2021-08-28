@@ -14,14 +14,14 @@
 "general_save" = "Spremi";
 "general_meeting" = "Sastanak";
 "create_meeting_error_title" = "Nije moguće stvoriti sastanak";
-"create_meeting_error_message" = "Prilagođeni url „%@“ nedostaje ili ne valja. Upiši ga u postavkama programa.";
+"create_meeting_error_message" = "Prilagođeni URL „%@“ nedostaje ili ne valja. Dodaj ga u postavkama programa.";
 "next_meeting_empty_title" = "Danas više nema sastanaka";
 "next_meeting_empty_message" = "Opa! Vrijeme je za cocoa";
 
 // MARK: - Window titles
 
 "window_title_preferences" = "MeetingBar postavke";
-"window_title_onboarding" = "MeetingBar dobrodošlica!";
+"window_title_onboarding" = "MeetingBar dobrodošlica";
 "windows_title_changelog" = "MeetingBar novosti";
 
 // MARK: - Preferences tabs
@@ -114,7 +114,7 @@
 "preferences_services_link_meet_title" = "Otvori Meet poveznice u";
 "preferences_services_link_zoom_title" = "Otvori Zoom poveznice u";
 "preferences_services_link_team_title" = "Otvori Teams poveznice u";
-"preferences_services_link_jitsi_title" = "Open Jitsi links in";
+"preferences_services_link_jitsi_title" = "Otvori Jitsi poveznice u";
 "preferences_services_link_default_browser_value" = "Standardni preglednik";
 "preferences_services_link_zoom_value" = "Zoom program";
 "preferences_services_link_teams_value" = "Teams program";
@@ -142,7 +142,7 @@
 "preferences_configure_browsers_modal_alert_title" = "Nije moguće dodati konfiguraciju preglednika";
 "preferences_configure_browsers_choose_broser_panel_title" = "Odaberi valjanji program za preglavanje";
 "preferences_configure_browsers_choose_broser_panel_prompt" = "Odaberi preglednik";
-"preferences_configure_browsers_choose_broser_panel_message" = "Odaberi preglednik iz bilo koje staze!";
+"preferences_configure_browsers_choose_broser_panel_message" = "Odaberi otkuda pokrenuti web-preglednik.";
 
 // MARK: - Preferences Bookmarks
 
@@ -256,7 +256,7 @@
 "access_screen_access_denied_system_preferences_button" = "Postavke sustava";
 "access_screen_access_denied_checkbox_title" = "i odaberi polje pored MeetingBar.";
 "access_screen_access_denied_relaunch_title" = "Zatim moraš pokrenuti program za nastavljanje postavljanja programa.";
-"access_screen_access_granted_title" = "Zahtijeva tvoj pristup kalendarima.";
+"access_screen_access_granted_title" = "Zahtijevamje pristupa kalendarima …";
 "access_screen_access_granted_click_ok_title" = "Pritisni \"U redu\" u skočnom prozoru MacOS-a.";
 
 // MARK: - Shared
@@ -338,7 +338,7 @@
 "store_patronage_restore_success_message" = "Uspješno obnovljeno";
 "store_patronage_restore_nothing_message" = "Nema se što obnoviti";
 "store_patronage_purchase_success_message" = "Uspješno kupljeno. Hvala na podršci!";
-"store_patronage_purchase_unknown_message" = "Nepoznata greška. Kontaktiraj podršku";
+"store_patronage_purchase_unknown_message" = "Nepoznata greška. Kontaktiraj podršku.";
 "store_patronage_purchase_client_invalid_message" = "Plaćanje nije dozvoljeno";
 "store_patronage_purchase_payment_invalid_message" = "Identifikator za plaćanje ne valja";
 "store_patronage_purchase_payment_not_allowed_message" = "Uređaj ne smije izvršiti plaćanje";
