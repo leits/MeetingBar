@@ -189,6 +189,9 @@ func openEvent(_ event: EKEvent) {
             }
         }
         openMeetingURL(meeting.service, meeting.url, nil)
+    } else if event.url != nil {
+        NSLog("opening \(String(describing: event.url?.absoluteString)) in default browser")
+        event.url?.openInDefaultBrowser()
     } else {
         sendNotification("status_bar_error_link_missed_title".loco(eventTitle), "status_bar_error_link_missed_message".loco())
     }
