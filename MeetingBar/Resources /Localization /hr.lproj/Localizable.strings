@@ -73,7 +73,7 @@
 "preferences_appearance_events_all_day_title" = "Cjelodnevni događaji:";
 "preferences_appearance_events_without_guest_title" = "Događaji bez gostiju:";
 "preferences_appearance_events_past_title" = "Prošli događaji:";
-"preferences_appearance_events_pending_title" = "Događaji na čekanju";
+"preferences_appearance_events_pending_title" = "Nezavršeni događaji";
 "preferences_appearance_events_declined_title" = "Odbačeni događaji:";
 "preferences_appearance_events_value_show" = "prikaži";
 "preferences_appearance_events_value_hide" = "sakrij";
@@ -96,7 +96,7 @@
 "preferences_appearance_status_bar_time_show_value" = "prikaži";
 "preferences_appearance_status_bar_time_show_under_title_value" = "prikaži ispod naslova";
 "preferences_appearance_status_bar_time_hide_value" = "sakrij";
-"preferences_appearance_status_bar_next_event" = "Prikaži samo sljedeći događaj koji počinje u sljedećih %d min";
+"preferences_appearance_status_bar_next_event" = "Prikaži samo sljedeći događaj koji počinje za %d min";
 "preferences_appearance_menu_title" = "Izbornik";
 "preferences_appearance_menu_shorten_event_title_toggle" = "Skrati naslov događaja na";
 "preferences_appearance_menu_shorten_event_title_stepper" = "%d znaka/znakova";
@@ -116,9 +116,9 @@
 "preferences_services_link_team_title" = "Otvori Teams poveznice u";
 "preferences_services_link_jitsi_title" = "Otvori Jitsi poveznice u";
 "preferences_services_link_default_browser_value" = "Standardni web-preglednik";
-"preferences_services_link_zoom_value" = "Zoom program";
-"preferences_services_link_teams_value" = "Teams program";
-"preferences_services_link_jitsi_value" = "Jitsi Meet program";
+"preferences_services_link_zoom_value" = "Program Zoom";
+"preferences_services_link_teams_value" = "Program Teams";
+"preferences_services_link_jitsi_value" = "Program Jitsi Meet";
 "preferences_services_supported_links_list" = "Podržane poveznice za usluge:\n%@";
 "preferences_services_supported_links_mailback" = "Ako usluga koju koristiš nije podržana, javi programerima putem e-maila";
 "preferences_services_create_meeting_title" = "Stvori sastanke putem";
@@ -140,7 +140,7 @@
 "preferences_configure_browsers_modal_add_browser_path" = "Staza";
 "preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "Odaberi web-preglednik";
 "preferences_configure_browsers_modal_alert_title" = "Nije moguće dodati konfiguraciju preglednika";
-"preferences_configure_browsers_choose_broser_panel_title" = "Odaberi jedan web-preglednik";
+"preferences_configure_browsers_choose_broser_panel_title" = "Odaberi web-preglednik";
 "preferences_configure_browsers_choose_broser_panel_prompt" = "Odaberi web-preglednik";
 "preferences_configure_browsers_choose_broser_panel_message" = "Odaberi otkuda pokrenuti web-preglednik.";
 
@@ -173,7 +173,7 @@
 "preferences_advanced_wrong_location_title" = "Krivo mjesto";
 "preferences_advanced_wrong_location_message" = "Odaberi Korisnici → Medijateka → Application Scripts → leits.MeetingBar mapa";
 "preferences_advanced_wrong_location_button" = "Razumijem!";
-"preferences_advanced_regex_title" = "Prilagođeni regularni izrazi za poveznicu sastanka";
+"preferences_advanced_regex_title" = "Prilagođen regularni izrazi za poveznicu sastanka";
 "preferences_advanced_regex_add_button" = "Dodaj regularni izraz";
 "preferences_advanced_regex_edit_button" = "uredi";
 "preferences_advanced_regex_delete_button" = "x";
@@ -184,7 +184,7 @@
 
 "status_bar_section_today" = "Danas";
 "status_bar_section_tomorrow" = "Sutra";
-"status_bar_empty_calendar_message" = "Odaberi tvoje kalendare u postavkama\nza prikaz tvojih sastanaka";
+"status_bar_empty_calendar_message" = "Za prikaz tvojih sastanaka odaberi\nsvoje kalendare u postavkama";
 "status_bar_section_join_next_meeting" = "Pridruži se sljedećem sastanku";
 "status_bar_section_join_current_meeting" = "Pridruži se trenutačnom sastanku";
 "status_bar_section_join_from_clipboard" = "Otvori sastanak iz međuspremnika";
@@ -203,7 +203,7 @@
 "status_bar_submenu_status_unknown" = " ❔ Nepoznato";
 "status_bar_submenu_status_default_extended" = " ❔ (%@)";
 "status_bar_submenu_status_default_simple" = " ❔ (nepoznato)";
-"status_bar_submenu_location_title" = "Lokacija:";
+"status_bar_submenu_location_title" = "Mjesto:";
 "status_bar_submenu_organizer_title" = "Organizator: %@";
 "status_bar_submenu_notes_title" = "Napomene:";
 "status_bar_submenu_attendees_title" = "Sudionici (%d)";
