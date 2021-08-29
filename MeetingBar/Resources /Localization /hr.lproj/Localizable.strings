@@ -68,7 +68,7 @@
 "preferences_appearance_events_show_events_for_today_value" = "danas";
 "preferences_appearance_events_show_events_for_today_tomorrow_value" = "danas ili sutra";
 "preferences_appearance_events_non_all_day_title" = "Ostali događaji:";
-"preferences_appearance_events_value_inactive_without_meeting_link" = "prikaži ih bez poveznica na sastanke kao neaktivne";
+"preferences_appearance_events_value_inactive_without_meeting_link" = "prikaži događaje bez poveznica kao neaktivne";
 "preferences_appearance_events_value_hide_without_meeting_link" = "sakrij sve bez poveznica na sastanke";
 "preferences_appearance_events_all_day_title" = "Cjelodnevni događaji:";
 "preferences_appearance_events_without_guest_title" = "Događaji bez gostiju:";
