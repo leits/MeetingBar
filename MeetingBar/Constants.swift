@@ -8,6 +8,10 @@
 
 import Cocoa
 
+var systemDefaultBrowser = Browser(name: "Default Browser", path: "")
+var MeetInOneBrowser = Browser(name: "MeetInOne", path: "")
+
+
 struct statusbarEventTitleLengthLimits {
     static let min = 5
     static let max = 55
