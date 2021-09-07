@@ -39,8 +39,8 @@
 "preferences_general_option_preferred_language_title" = "Język:";
 "preferences_general_option_preferred_language_system_value" = "System\"; \"preferences_general_option_preferred_language_system_value\" = \"System";
 "preferences_general_option_preferred_language_english_value" = "English";
-"preferences_general_option_preferred_language_ukrainian_value" = "Українська";
-"preferences_general_option_preferred_language_russian_value" = "Русский";
+"preferences_general_option_preferred_language_ukrainian_value" = "Ukraiński";
+"preferences_general_option_preferred_language_russian_value" = "Rosyjski";
 "preferences_general_option_preferred_language_croatian_value" = "Hrvatski";
 "preferences_general_option_preferred_language_norwegianbokmal_value" = "Norsk bokmål";
 "preferences_general_option_shortcuts" = "Skróty";
@@ -70,7 +70,7 @@
 
 "preferences_appearance_events_title" = "Wydarzenia";
 "preferences_appearance_events_show_events_for_title" = "Pokaż wydarzenia dla";
-"preferences_appearance_events_show_events_for_today_value" = "today";
+"preferences_appearance_events_show_events_for_today_value" = "dzisiaj";
 "preferences_appearance_events_show_events_for_today_tomorrow_value" = "dziś i jutro";
 "preferences_appearance_events_non_all_day_title" = "Inne wydarzenia:";
 "preferences_appearance_events_value_inactive_without_meeting_link" = "pokaż te bez linków do spotkań jako nieaktywne";
@@ -97,15 +97,15 @@
 "preferences_appearance_status_bar_title_dot_value" = "kropka (-)";
 "preferences_appearance_status_bar_title_hide_value" = "ukryj\"; \"preferences_appearance_status_bar_title_hide_value\" = \"ukryj";
 "preferences_appearance_status_bar_title_shorten_stepper" = "skróć do %d znaków\"; \"preferences_appearance_status_bar_title_shorten_stepper\" = \"shorten to %d characters";
-"preferences_appearance_status_bar_time_title" = "Time";
-"preferences_appearance_status_bar_time_show_value" = "show";
+"preferences_appearance_status_bar_time_title" = "Czas";
+"preferences_appearance_status_bar_time_show_value" = "pokaż";
 "preferences_appearance_status_bar_time_show_under_title_value" = "pokaż pod tytułem";
-"preferences_appearance_status_bar_time_hide_value" = "hide";
+"preferences_appearance_status_bar_time_hide_value" = "ukryj";
 "preferences_appearance_status_bar_next_event_toggle" = "Pokaż tylko następne wydarzenie rozpoczynające się w ciągu";
 "preferences_appearance_status_bar_next_event_stepper" = "%d minut";
 "preferences_appearance_menu_title" = "Menu";
 "preferences_appearance_menu_shorten_event_title_toggle" = "Skróć tytuł wydarzenia do";
-"preferences_appearance_menu_shorten_event_title_stepper" = "%d characters";
+"preferences_appearance_menu_shorten_event_title_stepper" = "%d znaków";
 "preferences_appearance_menu_time_format_title" = "Format czasu:";
 "preferences_appearance_menu_time_format_12_hour_value" = "12-godzinny (AM/PM)\"; \"preferences_appearance_menu_time_format_12_hour_value\" = \"12-godzinny (AM/PM)";
 "preferences_appearance_menu_time_format_24_hour_value" = "24-godzinny";
@@ -117,7 +117,7 @@
 // MARK: - Preferences Services
 
 "preferences_services_link_meeting_title" = "Otwórz wszystkie linki spotkań w";
-"preferences_services_link_meet_title" = "Open Google Meet links in";
+"preferences_services_link_meet_title" = "Otwórz linki Google Meet w";
 "preferences_services_link_zoom_title" = "Otwórz linki Zoom w";
 "preferences_services_link_team_title" = "Open Teams links in";
 "preferences_services_link_default_browser_value" = "Domyślna przeglądarka internetowa";
@@ -127,7 +127,7 @@
 "preferences_services_supported_links_mailback" = "Jeśli usługa, z której korzystasz, nie jest obsługiwana, możesz wysłać wiadomość e-mail do jej twórców";
 "preferences_services_create_meeting_title" = "Utwórz spotkania za pomocą";
 "preferences_services_create_meeting_custom_url_value" = "Niestandardowy adres URL";
-"preferences_services_create_meeting_custom_url_placeholder" = "Please enter a valid URL (with http:// or https://)";
+"preferences_services_create_meeting_custom_url_placeholder" = "Proszę wpisać prawidłowy adres URL (z http:// lub https://)";
 "preferences_services_google_meet_tip" = "Wskazówka: Google Meet obsługuje wybieranie konta w adresie URL, np. https://meet.google.com/new?authuser=1";
 "preferences_services_create_meeting_browser_title" = "Użyj przeglądarki internetowej";
 
@@ -171,7 +171,7 @@
 // MARK: - Preferences Advanced
 
 "preferences_advanced_setting_warning" = "⚠️ Używaj tych ustawień tylko wtedy, gdy rozumiesz, co one robią";
-"preferences_advanced_apple_script_checkmark" = "Run AppleScript when joining a meeting";
+"preferences_advanced_apple_script_checkmark" = "Uruchamiaj AppleScript podczas dołączania do spotkania";
 "preferences_advanced_apple_script_placeholder" = "# wpisz tutaj swój skrypt \nPowiedz aplikacji \"Music\", aby wstrzymać";
 "preferences_advanced_save_script_button" = "Zapisz skrypt";
 "preferences_advanced_wrong_location_title" = "Nieprawidłowa lokalizacja";
@@ -202,19 +202,19 @@
 "status_bar_submenu_status_title" = "Status: %@";
 "status_bar_submenu_status_accepted" = " 👍 Zaakceptowano";
 "status_bar_submenu_status_declined" = " 👎 Odrzucony";
-"status_bar_submenu_status_pending" = " ⏳ Pending";
-"status_bar_submenu_status_unknown" = " ❔ Unknown";
+"status_bar_submenu_status_pending" = " ⏳ Oczekujący";
+"status_bar_submenu_status_unknown" = " ❔ Nieznany";
 "status_bar_submenu_status_default_extended" = " ❔ (%@)";
-"status_bar_submenu_status_default_simple" = " ❔ (Unknown)";
+"status_bar_submenu_status_default_simple" = " ❔ (Nieznany)";
 "status_bar_submenu_location_title" = "Lokalizacja:";
 "status_bar_submenu_organizer_title" = "Organizator: %@\"; \"status_bar_submenu_organizer_title\" = \"Organizator: %@";
 "status_bar_submenu_notes_title" = "Notes:";
 "status_bar_submenu_attendees_title" = "Uczestnicy (%d)\"; \"status_bar_submenu_attendees_title\" = \"Uczestnicy (%d)";
 "status_bar_submenu_attendees_no_name" = "Anonimowy uczestnik";
 "status_bar_submenu_attendees_you" = "%@ (ty)";
-"status_bar_submenu_attendees_status_tentative" = " [tentative]";
-"status_bar_submenu_copy_meeting_link" = "Copy meeting link";
-"status_bar_submenu_email_attendees" = "Email attendees";
+"status_bar_submenu_attendees_status_tentative" = " [oczekujący]";
+"status_bar_submenu_copy_meeting_link" = "Kopuj link do spotkania";
+"status_bar_submenu_email_attendees" = "Adresy email uczestników";
 "status_bar_submenu_open_in_calendar" = "Otwórz w aplikacji Kalendarz";
 "status_bar_submenu_open_in_fantastical" = "Otwórz w Fantastical";
 "status_bar_quick_actions" = "Szybkie działania";
@@ -239,7 +239,7 @@
 
 "welcome_screen_greeting_main_title" = "Cześć! MeetingBar jest tak prostą aplikacją, że wszystko jest już prawie gotowe.";
 "welcome_screen_greeting_additional_title" = "Sprawmy, aby był w 100% Twój!";
-"welcome_screen_login_launch_toggle_title" = "Launch MeetingBar at Login";
+"welcome_screen_login_launch_toggle_title" = "Uruchom MeetingBar przy logowaniu";
 "welcome_screen_shortcut_next_meeting_title" = "Dołącz do następnego spotkania wydarzenia za pomocą swojego skrótu:";
 "welcome_screen_ad_hoc_meeting_title" = "Twórz spotkania ad hoc w ";
 "welcome_screen_shortcut_ad_hoc_meeting_title" = "z Twoim skrótem:";
@@ -256,7 +256,7 @@
 "access_screen_access_denied_system_preferences_button" = "Preferencje systemowe";
 "access_screen_access_denied_checkbox_title" = "i wybierz pole wyboru w pobliżu MeetingBar.";
 "access_screen_access_denied_relaunch_title" = "Następnie uruchom aplikację ręcznie, aby kontynuować konfigurację.";
-"access_screen_access_granted_title" = "Requesting access to calendars...";
+"access_screen_access_granted_title" = "Żądanie dostępu do kalendarzy…";
 "access_screen_access_granted_click_ok_title" = "Kliknij \"OK\" w popupie macOS.";
 
 // MARK: - Shared
@@ -360,7 +360,7 @@
 "link_url_cant_open_message" = "Upewnij się, że masz zainstalowany %@, lub zamiast tego otwieraj takie linki w przeglądarce internetowej z poziomu preferencji.";
 "status_bar_submenu_attendees_status_unknown" = " [?]";
 "access_screen_access_screen_access_denied_go_to_title" = "Go to";
-"preferences_services_link_jitsi_title" = "Open Jitsi links in";
-"status_bar_preferences" = "Preferences";
+"preferences_services_link_jitsi_title" = "Otwórz linki Jitsi w";
+"status_bar_preferences" = "Preferencje";
 "preferences_services_link_jitsi_value" = "Jitsi Meet app";
-"status_bar_submenu_status_tentative" = " ☝️ Tentative";
+"status_bar_submenu_status_tentative" = " ☝️ Wstępnia akceptacja";
