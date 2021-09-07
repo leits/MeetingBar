@@ -24,7 +24,6 @@
 "notifications_event_start_one_minute_body" = "The event starts in one minute";
 "notifications_event_start_three_minutes_body" = "The event starts in three minutes";
 "notifications_event_start_five_minutes_body" = "The event starts in five minutes";
-
 "store_patronage_purchase_cloud_service_revoked_message" = "Bruker har nektet tilgang for bruk av denne skytjenesten";
 "store_patronage_purchase_cloud_service_network_connection_failed" = "Kunne ikke koble til nettverket";
 "store_patronage_purchase_cloud_service_permission_denied_message" = "Tilgang til skytjenesteinfo tillates ikke";
@@ -133,7 +132,8 @@
 "preferences_configure_browsers_choose_broser_panel_message" = "Velg en nettleser fra hvilken som helst sti.";
 "preferences_configure_browsers_delete_alert_message" = "Ønsker du å slette %@-nettleseroppsettet?";
 "preferences_services_google_meet_tip" = "Tips: Meet støtter valg av konto via parameter, f.eks. https://meet.google.com/new?authuser=1";
-"preferences_appearance_status_bar_next_event" = "Vis kun neste begivenhet som starter innen %d minutter";
+"preferences_appearance_status_bar_next_event_toggle" = "Vis kun neste begivenhet som starter innen";
+"preferences_appearance_status_bar_next_event_stepper" = "%d minutter";
 "preferences_appearance_status_bar_title_dot_value" = "punkt (•)";
 "preferences_appearance_status_bar_title_event_title_value" = "begivenhetstittel";
 "preferences_appearance_status_bar_title_title" = "Tittel";
@@ -263,8 +263,10 @@
 "preferences_services_supported_links_list" = "Støttede lenker for tjenester:\n%@";
 "preferences_services_link_teams_value" = "Teams-programmet";
 "preferences_services_link_zoom_value" = "Zoom-programmet";
+"preferences_services_link_jitsi_value" = "Jitsi Meet-programmet";
 "preferences_services_link_default_browser_value" = "Forvalgt nettleser";
 "preferences_services_link_team_title" = "Åpne Teams-lenker i";
+"preferences_services_link_jitsi_title" = "Åpne Jitsi-lenker i";
 "preferences_services_link_zoom_title" = "Åpne Zoom-lenker i";
 "preferences_services_link_meet_title" = "Åpne Google Meet-lenker i";
 
@@ -327,7 +329,6 @@
 "preferences_general_shortcut_open_menu" = "Åpne meny:";
 "preferences_general_all_shortcut" = "Alle snarveier";
 "preferences_general_option_shortcuts" = "Snarveier";
-
 "preferences_general_option_preferred_language_system_value" = "System";
 "preferences_general_option_preferred_language_title" = "Foretrukket språk:";
 
@@ -352,3 +353,8 @@
 "general_close" = "Lukk";
 "general_cancel" = "Avbryt";
 "general_ok" = "OK";
+"preferences_general_option_preferred_language_norwegianbokmal_value" = "Norsk bokmål";
+"preferences_general_option_preferred_language_croatian_value" = "Hrvatski";
+"preferences_general_option_preferred_language_russian_value" = "Русский";
+"preferences_general_option_preferred_language_ukrainian_value" = "Українська";
+"preferences_general_option_preferred_language_english_value" = "English";

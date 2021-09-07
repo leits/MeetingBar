@@ -14,7 +14,7 @@
 "general_save" = "保存";
 "general_meeting" = "ミーティング";
 "create_meeting_error_title" = "新しいミーティングが作成できませんでした";
-"create_meeting_error_message" = "カスタムURL %@ がないか、異常です。設定で正しい値を入力してください。";
+"create_meeting_error_message" = "カスタムURL \"%@\" が存在しないか異常です。設定で正しい値を入力してください。";
 "next_meeting_empty_title" = "今日はもうミーティングがありません";
 "next_meeting_empty_message" = "ウオー！ココアを作る時間です";
 
@@ -22,8 +22,8 @@
 
 
 "window_title_preferences" = "MeetingBar の設定";
-"window_title_onboarding" = "MeetingBar へようこそ！";
-"windows_title_changelog" = "MeetingBar の新機能";
+"window_title_onboarding" = "MeetingBar へようこそ";
+"windows_title_changelog" = "MeetingBar - 新機能";
 
 // MARK: - Preferences tabs
 
@@ -48,7 +48,7 @@
 "preferences_general_shortcut_join_next" = "次のミーティングに参加:";
 "preferences_general_shortcut_join_from_clipboard" = "クリップボードからミーティングに参加:";
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "ステータスバーのタイトル表示をトグルする:";
-"preferences_general_meeting_bar_description" = "MeetingBar は Andrii Leitsius によって開発されたオープンソースアプリケーションです。\nオンラインミーティングをスムーズで簡単にすることを目的としています。";
+"preferences_general_meeting_bar_description" = "MeetingBar は Andrii Leitsius によって開発されたオープンソースアプリケーションです。\nオンラインミーティングをスムーズで簡単にします。";
 "preferences_general_external_patronage" = "パトロンになる";
 "preferences_general_external_gitHub" = "GitHub";
 "preferences_general_external_contact" = "お問い合わせ";
@@ -61,8 +61,8 @@
 "preferences_general_patron_restore_purchases" = "購入の復元";
 "preferences_general_feedback_title" = "質問やフィードバックがあれば、\nお気軽にお問い合わせください:";
 "preferences_general_feedback_email" = "メール";
-"preferences_general_feedback_twitter" = "twitter";
-"preferences_general_feedback_telegram" = "telegram";
+"preferences_general_feedback_twitter" = "Twitter";
+"preferences_general_feedback_telegram" = "Telegram";
 
 // MARK: - Preferences Appearance
 
@@ -87,10 +87,10 @@
 "preferences_appearance_events_value_only_with_link" = "リンクのあるイベントのみ表示";
 "preferences_appearance_status_bar_title" = "ステータスバー";
 "preferences_appearance_status_bar_icon_title" = "アイコン";
-"preferences_appearance_status_bar_icon_app_icon_value" = "\U00A0アプリアイコン";
-"preferences_appearance_status_bar_icon_calendar_icon_value" = "\U00A0カレンダーアイコン";
-"preferences_appearance_status_bar_icon_specific_icon_value" = "\U00A0ミーティング固有のアイコン (MS Teamsなど)";
-"preferences_appearance_status_bar_icon_no_icon_value" = "\U00A0アイコンなし";
+"preferences_appearance_status_bar_icon_app_icon_value" = " アプリアイコン";
+"preferences_appearance_status_bar_icon_calendar_icon_value" = " カレンダーアイコン";
+"preferences_appearance_status_bar_icon_specific_icon_value" = " ミーティング固有のアイコン (MS Teamsなど)";
+"preferences_appearance_status_bar_icon_no_icon_value" = " アイコンなし";
 "preferences_appearance_status_bar_title_title" = "タイトル";
 "preferences_appearance_status_bar_title_event_title_value" = "イベント名";
 "preferences_appearance_status_bar_title_dot_value" = "ドット (•)";
@@ -100,7 +100,8 @@
 "preferences_appearance_status_bar_time_show_value" = "表示";
 "preferences_appearance_status_bar_time_show_under_title_value" = "タイトルの下に表示";
 "preferences_appearance_status_bar_time_hide_value" = "非表示";
-"preferences_appearance_status_bar_next_event" = "%d分以内に開始されるミーティングのみ表示";
+"preferences_appearance_status_bar_next_event_toggle" = "";
+"preferences_appearance_status_bar_next_event_stepper" = "%d分以内に開始されるミーティングのみ表示";
 "preferences_appearance_menu_title" = "メニュー";
 "preferences_appearance_menu_shorten_event_title_toggle" = "ミーティング名を短縮する";
 "preferences_appearance_menu_shorten_event_title_stepper" = "%d文字";
@@ -116,44 +117,46 @@
 
 
 "preferences_services_link_meeting_title" = "すべてのミーティングリンクを開くアプリ";
-"preferences_services_link_meet_title" = "Meet を開くアプリ";
+"preferences_services_link_meet_title" = "Goole Meet を開くアプリ";
 "preferences_services_link_zoom_title" = "Zoom を開くアプリ";
 "preferences_services_link_team_title" = "Teams を開くアプリ";
-"preferences_services_link_default_browser_value" = "標準のブラウザー";
+"preferences_services_link_jitsi_title" = "Jitsi リンクを開くアプリ";
+"preferences_services_link_default_browser_value" = "標準のウェブブラウザー";
 "preferences_services_link_zoom_value" = "Zoom アプリ";
 "preferences_services_link_teams_value" = "Teams アプリ";
+"preferences_services_link_jitsi_value" = "Jitsi Meet アプリ";
 "preferences_services_supported_links_list" = "サポートしているサービス一覧:\n%@";
-"preferences_services_supported_links_mailback" = "もしあなたが使っているサービスが無ければご連絡ください";
+"preferences_services_supported_links_mailback" = "もしあなたが使っているサービスが無ければ開発チームにご連絡ください";
 "preferences_services_create_meeting_title" = "ミーティングを作成するサービス";
 "preferences_services_create_meeting_custom_url_value" = "カスタム URL";
-"preferences_services_create_meeting_custom_url_placeholder" = "正しい URL を入力してください (https:// などのスキーマも必要です)";
-"preferences_services_google_meet_tip" = "Tip: Meet はパラメタを利用してアカウントを選択できます。例: https://meet.google.com/new?authuser=1";
-"preferences_services_create_meeting_browser_title" = "使用するブラウザ";
+"preferences_services_create_meeting_custom_url_placeholder" = "正しい URL を入力してください (http:// や https:// などのスキーマも必要です)";
+"preferences_services_google_meet_tip" = "Tip: Google Meet はURLでアカウントを選択することが出来ます。例: https://meet.google.com/new?authuser=1";
+"preferences_services_create_meeting_browser_title" = "使用するウェブブラウザ";
 
 // MARK: - Preferences Services Browsers Configuration
 
 
-"preferences_configure_browsers_button" = "ブラウザー設定";
-"preferences_configure_browsers_delete_alert_title" = "ブラウザー設定を削除しますか？";
-"preferences_configure_browsers_delete_alert_message" = "%@ のブラウザー設定を削除してもよろしいですか？";
-"preferences_configure_browsers_add_button_browser_title" = "ブラウザー";
-"preferences_configure_browsers_add_button_all_system_title" = "すべてのシステムブラウザー";
-"preferences_configure_browsers_modal_add_browser_title" = "ブラウザーを追加する";
-"preferences_configure_browsers_modal_edit_browser_title" = "ブラウザーの編集";
+"preferences_configure_browsers_button" = "ウェブブラウザー設定";
+"preferences_configure_browsers_delete_alert_title" = "ウェブブラウザー設定を削除しますか？";
+"preferences_configure_browsers_delete_alert_message" = "%@ のウェブブラウザー設定を削除しますか？";
+"preferences_configure_browsers_add_button_browser_title" = "ウェブブラウザー";
+"preferences_configure_browsers_add_button_all_system_title" = "すべてのシステムウェブブラウザー";
+"preferences_configure_browsers_modal_add_browser_title" = "ウェブブラウザーを追加する";
+"preferences_configure_browsers_modal_edit_browser_title" = "ウェブブラウザーの編集";
 "preferences_configure_browsers_modal_add_browser_name" = "名前";
 "preferences_configure_browsers_modal_add_browser_path" = "パス";
-"preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "ブラウザーの選択";
+"preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "ウェブブラウザーの選択";
 "preferences_configure_browsers_modal_alert_title" = "ブラウザー設定を追加できませんでした";
-"preferences_configure_browsers_choose_broser_panel_title" = "正しいブラウザーアプリを指定してください";
-"preferences_configure_browsers_choose_broser_panel_prompt" = "ブラウザーの選択";
-"preferences_configure_browsers_choose_broser_panel_message" = "任意のパスからブラウザーを選択してください！";
+"preferences_configure_browsers_choose_broser_panel_title" = "ウェブブラウザーアプリを選択してください";
+"preferences_configure_browsers_choose_broser_panel_prompt" = "ウェブブラウザーの選択";
+"preferences_configure_browsers_choose_broser_panel_message" = "ウェブブラウザーをどこから起動するか選択します。";
 
 // MARK: - Preferences Bookmarks
 
 
 "preferences_bookmarks_no_bookmarks_placeholder" = "ブックマークはまだありません";
-"preferences_bookmarks_delete_bookmark_title" = "ブックマークの削除";
-"preferences_bookmarks_delete_bookmark_message" = "%@を削除してもよろしいですか？";
+"preferences_bookmarks_delete_bookmark_title" = "ブックマークを削除しますか？";
+"preferences_bookmarks_delete_bookmark_message" = "ブックマーク%@を削除しますか？";
 "preferences_bookmarks_add_bookmark_button" = "ブックマークを追加する";
 "preferences_bookmarks_new_bookmark_title" = "新しいブックマーク";
 "preferences_bookmarks_new_bookmark_name" = "名前";
@@ -166,19 +169,19 @@
 
 
 "preferences_calendars_select_calendars_title" = "表示するカレンダーの選択";
-"preferences_calendars_add_account_description" = "必要なカレンダーが見当たりませんか？";
+"preferences_calendars_add_account_description" = "ご希望のカレンダーが見つかりませんか？";
 "preferences_calendars_add_account_button" = "アカウントを追加";
-"preferences_calendars_add_account_modal" = "外部カレンダーを追加するには、次の手順を実行してください:\n1. デフォルトのカレンダーアプリを開きます。\n2. メニューの「アカウントを追加」をクリックします。\n3. アカウントを選択して接続します。";
+"preferences_calendars_add_account_modal" = "外部カレンダーの追加手順:\n1. デフォルトのカレンダーアプリを開きます\n2. メニューの「アカウントを追加」をクリックします\n3. アカウントを選択して接続します";
 
 // MARK: - Preferences Advanced
 
 
-"preferences_advanced_setting_warning" = "⚠️ これらの設定は、その内容を理解した上で使用してください";
+"preferences_advanced_setting_warning" = "⚠️ これらの設定は、内容をご理解の上でご利用ください";
 "preferences_advanced_apple_script_checkmark" = "ミーティング参加時に AppleScript を実行する";
 "preferences_advanced_apple_script_placeholder" = "# ここにスクリプトを書いてください\ntell application \"Music\" to pause";
 "preferences_advanced_save_script_button" = "保存";
 "preferences_advanced_wrong_location_title" = "場所が誤っています";
-"preferences_advanced_wrong_location_message" = "User > Library > Application Scripts > leits.MeetingBar フォルダを選択してください";
+"preferences_advanced_wrong_location_message" = "User > Library → Application Scripts → leits.MeetingBar フォルダを選択してください";
 "preferences_advanced_wrong_location_button" = "了解！";
 "preferences_advanced_regex_title" = "ミーティングリンク用のカスタム正規表現";
 "preferences_advanced_regex_add_button" = "正規表現を追加";
@@ -194,7 +197,7 @@
 "status_bar_section_tomorrow" = "明日";
 "status_bar_empty_calendar_message" = "環境設定でカレンダーを選択すると、\nミーティングが表示されます";
 "status_bar_section_join_next_meeting" = "次のミーティングに参加";
-"status_bar_section_join_current_meeting" = "Join current event meeting";
+"status_bar_section_join_current_meeting" = "開催中のミーティングに参加する";
 "status_bar_section_join_from_clipboard" = "クリップボードからミーティングを開く";
 "status_bar_section_join_create_meeting" = "ミーティングを作成";
 "status_bar_section_bookmarks_title" = "ブックマーク";
@@ -212,15 +215,15 @@
 "status_bar_submenu_status_default_extended" = " ❔ (%@)";
 "status_bar_submenu_status_default_simple" = " ❔ (不明)";
 "status_bar_submenu_location_title" = "場所:";
-"status_bar_submenu_organizer_title" = "主催者:";
+"status_bar_submenu_organizer_title" = "主催者: %@";
 "status_bar_submenu_notes_title" = "ノート:";
 "status_bar_submenu_attendees_title" = "参加者 (%d)";
 "status_bar_submenu_attendees_no_name" = "名無しさん";
 "status_bar_submenu_attendees_you" = "%@ (あなた)";
 "status_bar_submenu_attendees_status_tentative" = " [名無しさん]";
 "status_bar_submenu_attendees_status_unknown" = " [?]";
-"status_bar_submenu_copy_meeting_link" = "Copy meeting link";
-"status_bar_submenu_email_attendees" = "Email attendees";
+"status_bar_submenu_copy_meeting_link" = "ミーティングリンクをコピー";
+"status_bar_submenu_email_attendees" = "参加者のメール";
 "status_bar_submenu_open_in_calendar" = "カレンダーアプリで開く";
 "status_bar_submenu_open_in_fantastical" = "Fantastical で開く";
 "status_bar_quick_actions" = "クイックアクション";
@@ -232,15 +235,15 @@
 "status_bar_no_title" = "タイトルなし";
 "status_bar_event_status_now" = "現在 (残り %@)";
 "status_bar_event_status_in" = "あと%@";
-"status_bar_error_apple_script_title" = "AppleScript return error";
-"status_bar_error_link_missed_title" = "えー！%@ に参加できませんでした";
+"status_bar_error_apple_script_title" = "AppleScriptエラー";
+"status_bar_error_link_missed_title" = "ギャー！%@ に参加できませんでした";
 "status_bar_error_link_missed_message" = "ミーティングリンクが登録されていないか、サポートされていないサービスです";
 "status_bar_error_teams_link_title" = "おっと！Microsoft Team アプリでリンクを開けませんでした";
-"status_bar_error_teams_link_message" = "Microsoft Team アプリをインストールするか、設定でアプリを変更してください。";
+"status_bar_error_teams_link_message" = "Microsoft Team アプリがインストールされていることを確認するか、代わりにウェブブラウザーでリンクを開いてください。";
 "status_bar_error_zoom_app_link_title" = "おーっと！ Zoom アプリでリンクを開けません";
-"status_bar_error_zoom_app_link_message" = "Zoom アプリをインストールするか、設定でアプリを変更してください。";
-"status_bar_error_zoom_native_link_title" = "ぎゃー！ Zoom アプリでネイティブリンクを開けません";
-"status_bar_error_zoom_native_link_message" = "Zoom アプリをインストールするか、設定でアプリを変更してください。";
+"status_bar_error_zoom_app_link_message" = "Zoom アプリがインストールされていることを確認するか、代わりにウェブブラウザーでリンクを開いてください。";
+"status_bar_error_zoom_native_link_title" = "グオー！ Zoom アプリでリンクを開けません";
+"status_bar_error_zoom_native_link_message" = "Zoom アプリがインストールされていることを確認するか、代わりにウェブブラウザーでリンクを開いてください。";
 
 // MARK: - Welcome screen
 
@@ -266,7 +269,7 @@
 "access_screen_access_screen_access_denied_go_to_title" = "Go to";
 "access_screen_access_denied_system_preferences_button" = "システム設定";
 "access_screen_access_denied_checkbox_title" = "MeetingBarの近くにあるチェックボックスを選択します。";
-"access_screen_access_denied_relaunch_title" = "その後、手動でアプリを起動して設定を続ける必要があります。";
+"access_screen_access_denied_relaunch_title" = "手動でアプリを起動して設定を続ける必要があります。";
 "access_screen_access_granted_title" = "カレンダーへのアクセス許可を求めています。";
 "access_screen_access_granted_click_ok_title" = "macOS のポップアップウィンドウで \"OK\" をクリックしてください。";
 
@@ -278,7 +281,7 @@
 "shared_send_notification_one_minute_value" = "1分前";
 "shared_send_notification_three_minute_value" = "3分前";
 "shared_send_notification_five_minute_value" = "5分前";
-"shared_send_notification_no_alert_style_tip" = "⚠️ MeetingBar の macOS の通知設定は、現在アラートに設定されていません。持続的な通知をご希望の場合は、アラートを有効にしてください。";
+"shared_send_notification_no_alert_style_tip" = "⚠️ MeetingBar の macOS の通知設定は、アラートに設定されていません。持続的な通知を利用する場合は、アラートを有効にしてください。";
 "shared_send_notification_disabled_tip" = "⚠️ MeetingBar の macOS の通知設定が現在オフになっています。ミーティングを見逃さないために、 macOS のシステム設定で通知を有効にしてください。";
 
 // MARK: - Constants
@@ -290,9 +293,9 @@
 "constants_create_meeting_service_teams" = "Microsoft Teams";
 "constants_create_meeting_service_gcalendar" = "Google Calendar";
 "constants_create_meeting_service_outlook_live" = "Outlook Live";
-"constants_create_meeting_service_outlook_office365" = "Outlook Office365";
-"constants_create_meeting_service_url" = "カスタムURL";
-"constants_meeting_service_phone" = "電話";
+"constants_create_meeting_service_outlook_office365" = "Outlook Office 365";
+"constants_create_meeting_service_url" = "カスタム URL";
+"constants_meeting_service_phone" = "電話番号";
 "constants_meeting_service_meet" = "Google Meet";
 "constants_meeting_service_hangouts" = "Google Hangouts";
 "constants_meeting_service_zoom" = "Zoom";
@@ -312,7 +315,7 @@
 "constants_meeting_service_whereby" = "Whereby";
 "constants_meeting_service_uberconference" = "Uber Conference";
 "constants_meeting_service_blizz" = "Blizz";
-"constants_meeting_service_teamviewer_meeting" = "Teamviewer Meeting";
+"constants_meeting_service_teamviewer_meeting" = "TeamViewer Meeting";
 "constants_meeting_service_vsee" = "VSee";
 "constants_meeting_service_starleaf" = "StarLeaf";
 "constants_meeting_service_duo" = "Google Duo";
@@ -343,19 +346,19 @@
 "constants_browser_opera" = "Opera";
 "constants_browser_vivaldi" = "Vivaldi";
 "constants_browser_safari" = "Safari";
-"constants_browser_defaultBrowser" = "標準のブラウザー";
+"constants_browser_defaultBrowser" = "標準のウェブブラウザー";
 
 // MARK: - Store
 
 
 "store_patronage_title" = "MeetingBar のパトロンになる";
-"store_patronage_restore_success_message" = "復元に成功しました";
+"store_patronage_restore_success_message" = "復元しました";
 "store_patronage_restore_nothing_message" = "復元する内容がありません";
-"store_patronage_purchase_success_message" = "購入に成功しました。サポートありがとうございます！";
-"store_patronage_purchase_unknown_message" = "不明なエラーが発生しました。サポートにお問い合わせください";
+"store_patronage_purchase_success_message" = "購入しました。あなたのサポートに感謝します！";
+"store_patronage_purchase_unknown_message" = "不明なエラーが発生しました。サポートにお問い合わせください。";
 "store_patronage_purchase_client_invalid_message" = "決済ができません";
-"store_patronage_purchase_payment_invalid_message" = "購入者の識別子が無効です";
-"store_patronage_purchase_payment_not_allowed_message" = "このデバイスでは支払いを行うことが出来ません";
+"store_patronage_purchase_payment_invalid_message" = "購入識別子が無効です";
+"store_patronage_purchase_payment_not_allowed_message" = "このデバイスでは支払いが許可されていません";
 "store_patronage_purchase_store_product_not_available_message" = "製品は現在ストアフロントでご利用できません";
 "store_patronage_purchase_cloud_service_permission_denied_message" = "クラウドサービスの情報へのアクセスが拒否されました";
 "store_patronage_purchase_cloud_service_network_connection_failed" = "ネットワークに接続できません";
@@ -364,12 +367,17 @@
 // MARK: - Notifications
 
 "notifications_event_start_soon_body" = "もうすぐイベントが開始されます";
-"notifications_event_start_one_minute_body" = "The event starts in one minute";
-"notifications_event_start_three_minutes_body" = "The event starts in three minutes";
-"notifications_event_start_five_minutes_body" = "The event starts in five minutes";
+"notifications_event_start_one_minute_body" = "イベント開始1分前";
+"notifications_event_start_three_minutes_body" = "イベント開始3分前";
+"notifications_event_start_five_minutes_body" = "イベント開始5分前";
 
 // MARK: - Link open
 
 
 "link_url_cant_open_title" = "ひえー！ %@ のリンクを開くことが出来ませんでした";
-"link_url_cant_open_message" = "%@ をインストールするか、設定でブラウザーを変更してください。";
+"link_url_cant_open_message" = "%@ がインストールされていることを確認するか、代わりにウェブブラウザーでリンクを開いてください。";
+"preferences_general_option_preferred_language_ukrainian_value" = "Українська";
+"preferences_general_option_preferred_language_croatian_value" = "Hrvatski";
+"preferences_general_option_preferred_language_russian_value" = "Русский";
+"preferences_general_option_preferred_language_norwegianbokmal_value" = "Norsk bokmål";
+"preferences_general_option_preferred_language_english_value" = "English";

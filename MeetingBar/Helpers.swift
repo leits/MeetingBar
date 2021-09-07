@@ -208,8 +208,26 @@ func getEventParticipantStatus(_ event: EKEvent) -> EKParticipantStatus? {
 
 func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?) {
     switch service {
+    case .jitsi:
+        if Defaults[.useAppForJitsiLinks] {
+            var jitsiAppUrl = URLComponents(url: url, resolvingAgainstBaseURL: false)!
+            jitsiAppUrl.scheme = "jitsi-meet"
+            let result = jitsiAppUrl.url!.openInDefaultBrowser()
+            if !result {
+                sendNotification("status_bar_error_jitsi_link_title".loco(), "status_bar_error_jitsi_link_message".loco())
+                url.openInDefaultBrowser()
+            }
+        } else {
+            url.openIn(browser: browser ?? systemDefaultBrowser)
+        }
     case .meet:
-        url.openIn(browser: browser ?? Defaults[.meetBrowser])
+        let browser = browser ?? Defaults[.meetBrowser]
+        if browser == MeetInOneBrowser {
+            let meetInOneUrl = URL(string: "meetinone://url=" + url.absoluteString)!
+            meetInOneUrl.openInDefaultBrowser()
+        } else {
+            url.openIn(browser: browser)
+        }
 
     case .teams:
         if Defaults[.useAppForTeamsLinks] {

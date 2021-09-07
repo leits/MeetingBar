@@ -8,7 +8,10 @@
 
 import Cocoa
 
-struct statusbarEventTitleLengthLimits {
+var systemDefaultBrowser = Browser(name: "Default Browser", path: "")
+var MeetInOneBrowser = Browser(name: "MeetInOne", path: "")
+
+enum statusbarEventTitleLengthLimits {
     static let min = 5
     static let max = 55
 }
@@ -362,6 +365,7 @@ enum AppLanguage: String, Codable {
     case czech = "cs"
     case norwegian = "nb-NO"
     case japanese = "ja"
+    case polish = "pl"
 }
 
 struct Browser: Encodable, Decodable, Hashable {

@@ -98,6 +98,7 @@ extension Defaults.Keys {
     static let useChromeForMeetLinks = Key<Bool?>("useChromeForMeetLinks") // Backward compatibility
     static let useAppForZoomLinks = Key<Bool>("useAppForZoomLinks", default: false)
     static let useAppForTeamsLinks = Key<Bool>("useAppForTeamsLinks", default: false)
+    static let useAppForJitsiLinks = Key<Bool>("useAppForJitsiLinks", default: false)
 
     // Advanced
     static let joinEventScriptLocation = Key<URL?>("joinEventScriptLocation", default: nil)

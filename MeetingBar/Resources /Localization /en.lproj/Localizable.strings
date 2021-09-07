@@ -102,7 +102,8 @@
 "preferences_appearance_status_bar_time_show_value" = "show";
 "preferences_appearance_status_bar_time_show_under_title_value" = "show under title";
 "preferences_appearance_status_bar_time_hide_value" = "hide";
-"preferences_appearance_status_bar_next_event" = "Show only next event starting within %d minutes";
+"preferences_appearance_status_bar_next_event_toggle" = "Show only next event starting within";
+"preferences_appearance_status_bar_next_event_stepper" = "%d minutes";
 "preferences_appearance_menu_title" = "Menu";
 "preferences_appearance_menu_shorten_event_title_toggle" = "Shorten event title to";
 "preferences_appearance_menu_shorten_event_title_stepper" = "%d characters";
@@ -120,9 +121,11 @@
 "preferences_services_link_meet_title" = "Open Google Meet links in";
 "preferences_services_link_zoom_title" = "Open Zoom links in";
 "preferences_services_link_team_title" = "Open Teams links in";
+"preferences_services_link_jitsi_title" = "Open Jitsi links in";
 "preferences_services_link_default_browser_value" = "Default web browser";
 "preferences_services_link_zoom_value" = "Zoom app";
 "preferences_services_link_teams_value" = "Teams app";
+"preferences_services_link_jitsi_value" = "Jitsi Meet app";
 "preferences_services_supported_links_list" = "Supported links for services:\n%@";
 "preferences_services_supported_links_mailback" = "If the service you use isn't supported, you can send an e-mail to the developers";
 "preferences_services_create_meeting_title" = "Create meetings via";
