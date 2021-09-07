@@ -50,7 +50,7 @@
 "preferences_general_shortcut_join_next" = "Dołącz do następnego spotkania:";
 "preferences_general_shortcut_join_from_clipboard" = "Dołącz do spotkania ze schowka:";
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "Przełącz widoczność tytułu na pasku stanu:";
-"preferences_general_meeting_bar_description" = "MeetingBar to aplikacja open-source stworzona przez Andrii Leitsiusa dla płynniejszych i łatwiejszych spotkań online";
+"preferences_general_meeting_bar_description" = "MeetingBar to aplikacja open-source stworzona przez Andrii Leitsius\n dla płynniejszych i łatwiejszych spotkań online";
 "preferences_general_external_patronage" = "Patronage";
 "preferences_general_external_gitHub" = "GitHub\"; \"preferences_general_external_gitHub\" = \"GitHub";
 "preferences_general_external_contact" = "Kontakt\"; \"preferences_general_external_contact\" = \"Kontakt";
@@ -61,7 +61,7 @@
 "preferences_general_patron_description" = "Te jednorazowe zakupy nie ulegają automatycznemu odnowieniu.";
 "preferences_general_patron_thank_for_purchase" = "Dzięki! Wspierasz MeetingBar przez %d miesięcy. 🎉";
 "preferences_general_patron_restore_purchases" = "Przywróć zakupy";
-"preferences_general_feedback_title" = "Jeśli masz jakieś pytania lub opinie, zapraszamy do kontaktu:";
+"preferences_general_feedback_title" = "Jeśli masz jakieś pytania lub opinie,\n zapraszamy do kontaktu:";
 "preferences_general_feedback_email" = "E-mail";
 "preferences_general_feedback_twitter" = "Twitter";
 "preferences_general_feedback_telegram" = "Telegram";
@@ -188,7 +188,7 @@
 
 "status_bar_section_today" = "Dzisiaj";
 "status_bar_section_tomorrow" = "Jutro";
-"status_bar_empty_calendar_message" = "Wybierz swoje kalendarze w preferencjach, aby zobaczyć swoje spotkania";
+"status_bar_empty_calendar_message" = "Wybierz swoje kalendarze w preferencjach,\n aby zobaczyć swoje spotkania";
 "status_bar_section_join_next_meeting" = "Dołącz do następnego spotkania w ramach wydarzenia";
 "status_bar_section_join_current_meeting" = "Dołącz do bieżącego spotkania";
 "status_bar_section_join_from_clipboard" = "Otwórz spotkanie ze schowka";
