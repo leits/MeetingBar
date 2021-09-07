@@ -353,8 +353,3 @@
 "status_bar_error_link_missed_message" = "Link nicht gefunden, oder Ihr Meeting-Dienst wird noch nicht unterstützt";
 "status_bar_error_link_missed_title" = "Ach! Kann %@ nicht beitreten";
 "preferences_general_patron_title" = "Schirmherr werden";
-"preferences_general_option_preferred_language_norwegianbokmal_value" = "Norsk bokmål";
-"preferences_general_option_preferred_language_russian_value" = "Русский";
-"preferences_general_option_preferred_language_ukrainian_value" = "Українська";
-"preferences_general_option_preferred_language_english_value" = "English";
-"preferences_general_option_preferred_language_croatian_value" = "Hrvatski";
