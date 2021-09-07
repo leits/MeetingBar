@@ -22,8 +22,8 @@
 
 "notifications_event_start_soon_body" = "Begivenheten starter snart";
 "notifications_event_start_one_minute_body" = "The event starts in one minute";
-"notifications_event_start_three_minutes_body" = "The event starts in three minutes";
-"notifications_event_start_five_minutes_body" = "The event starts in five minutes";
+"notifications_event_start_three_minutes_body" = "Begivenheten starter om tre minutter";
+"notifications_event_start_five_minutes_body" = "Begivenheten starter om fem minutter";
 "store_patronage_purchase_cloud_service_revoked_message" = "Bruker har nektet tilgang for bruk av denne skytjenesten";
 "store_patronage_purchase_cloud_service_network_connection_failed" = "Kunne ikke koble til nettverket";
 "store_patronage_purchase_cloud_service_permission_denied_message" = "Tilgang til skytjenesteinfo tillates ikke";
@@ -153,7 +153,7 @@
 "next_meeting_empty_message" = "Hurra. Det er på tide å lage kakao";
 "next_meeting_empty_title" = "Ingen kommende møter i dag";
 "create_meeting_error_message" = "Den egendefinerte nettadressen «%@» mangler eller er ugyldig. Skriv inn en verdi i programinnstillingene.";
-"link_url_cant_open_message" = "Forsikre deg om at du har %@ installert, eller endre nettleser i innstillingene.";
+"link_url_cant_open_message" = "Forsikre deg om at du har %@ installert, eller åpne slike lenker i en nettleser fra innstillingene istedenfor.";
 
 // MARK: - Link open
 
@@ -316,11 +316,11 @@
 "preferences_general_feedback_email" = "E-post";
 "preferences_general_feedback_title" = "Hvis du har spørsmål eller tilbakemeldinger,\nkan du kontakte meg:";
 "preferences_general_patron_restore_purchases" = "Gjenopprett kjøp";
-"preferences_general_patron_thank_for_purchase" = "Takk. Du støtter MeetingBar i %d måned! 🎉";
+"preferences_general_patron_thank_for_purchase" = "Takk. Du støtter MeetingBar i %d måneder! 🎉";
 "preferences_general_patron_description" = "Disse engangskjøpene fornyer seg ikke.";
 "preferences_general_patron_twelve_months" = "12 måneder – 11,99 USD";
 "preferences_general_patron_six_months" = "6 måneder – 5,99 USD";
-"preferences_general_patron_three_months" = "3 måneder – 3,99 USD";
+"preferences_general_patron_three_months" = "3 måneder – 2,99 USD";
 "preferences_general_patron_title" = "Bli kroneruller";
 "preferences_general_external_contact" = "Kontakt";
 "preferences_general_external_gitHub" = "GitHub";
@@ -330,7 +330,7 @@
 "preferences_general_all_shortcut" = "Alle snarveier";
 "preferences_general_option_shortcuts" = "Snarveier";
 "preferences_general_option_preferred_language_system_value" = "System";
-"preferences_general_option_preferred_language_title" = "Foretrukket språk:";
+"preferences_general_option_preferred_language_title" = "Språk:";
 
 // MARK: - Preferences General
 
