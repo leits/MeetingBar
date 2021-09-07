@@ -344,7 +344,7 @@
 // MARK: - Preferences tabs
 
 "preferences_tab_general" = "Generelt";
-"window_title_onboarding" = "Velkommen til MeetingBar.";
+"window_title_onboarding" = "Velkommen til MeetingBar";
 "create_meeting_error_title" = "Kan ikke opprette nytt møte";
 "general_meeting" = "Møte";
 "general_save" = "Lagre";

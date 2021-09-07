@@ -257,7 +257,7 @@
 "access_screen_access_denied_system_preferences_button" = "Системні параметри";
 "access_screen_access_denied_checkbox_title" = "і поставте прапорець біля MeetingBar.";
 "access_screen_access_denied_relaunch_title" = "Після цього вам потрібно перезапустити додаток, щоб продовжити налаштування.";
-"access_screen_access_granted_title" = "Запит на доступ до календарів.";
+"access_screen_access_granted_title" = "Запит на доступ до календарів…";
 "access_screen_access_granted_click_ok_title" = "Натисніть \"OK\" у вікні від MacOS.";
 
 // MARK: - Shared
