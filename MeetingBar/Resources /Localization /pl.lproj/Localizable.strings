@@ -101,7 +101,8 @@
 "preferences_appearance_status_bar_time_show_value" = "show";
 "preferences_appearance_status_bar_time_show_under_title_value" = "pokaż pod tytułem";
 "preferences_appearance_status_bar_time_hide_value" = "hide";
-"preferences_appearance_status_bar_next_event" = "Pokaż tylko następne wydarzenie rozpoczynające się w ciągu %d minut";
+"preferences_appearance_status_bar_next_event_toggle" = "Pokaż tylko następne wydarzenie rozpoczynające się w ciągu";
+"preferences_appearance_status_bar_next_event_stepper" = "%d minut";
 "preferences_appearance_menu_title" = "Menu";
 "preferences_appearance_menu_shorten_event_title_toggle" = "Skróć tytuł wydarzenia do";
 "preferences_appearance_menu_shorten_event_title_stepper" = "%d characters";

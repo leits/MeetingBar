@@ -96,7 +96,8 @@
 "preferences_appearance_status_bar_time_show_value" = "показати";
 "preferences_appearance_status_bar_time_show_under_title_value" = "показати під заголовком";
 "preferences_appearance_status_bar_time_hide_value" = "приховати";
-"preferences_appearance_status_bar_next_event" = "Показувати лише наступну подію, яка починається через %d хвилин";
+"preferences_appearance_status_bar_next_event_toggle" = "Показувати лише наступну подію, яка починається через";
+"preferences_appearance_status_bar_next_event_stepper" = "%d хвилин";
 "preferences_appearance_menu_title" = "Меню";
 "preferences_appearance_menu_shorten_event_title_toggle" = "Скоротити заголовок події до";
 "preferences_appearance_menu_shorten_event_title_stepper" = "%d символів";

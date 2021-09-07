@@ -255,7 +255,8 @@
 "preferences_appearance_menu_time_format_24_hour_value" = "24hodinový";
 "preferences_appearance_menu_time_format_12_hour_value" = "12hodinový (AM/PM)";
 "preferences_appearance_menu_time_format_title" = "Formát času:";
-"preferences_appearance_status_bar_next_event" = "Zobrazit pouze nadcházející události, které začínají nejpozději během %d minut";
+"preferences_appearance_status_bar_next_event_toggle" = "Zobrazit pouze nadcházející události, které začínají nejpozději během";
+"preferences_appearance_status_bar_next_event_stepper" = "%d minut";
 "preferences_appearance_status_bar_title_event_title_value" = "název události";
 "preferences_appearance_status_bar_title_title" = "Název:";
 "preferences_appearance_events_value_only_with_link" = "zobrazit jen ty s odkazy na schůzku";

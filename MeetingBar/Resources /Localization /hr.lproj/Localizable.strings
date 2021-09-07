@@ -96,7 +96,8 @@
 "preferences_appearance_status_bar_time_show_value" = "prikaži";
 "preferences_appearance_status_bar_time_show_under_title_value" = "prikaži ispod naslova";
 "preferences_appearance_status_bar_time_hide_value" = "sakrij";
-"preferences_appearance_status_bar_next_event" = "Prikaži samo sljedeći događaj koji počinje za %d min";
+"preferences_appearance_status_bar_next_event_toggle" = "Prikaži samo sljedeći događaj koji počinje za";
+"preferences_appearance_status_bar_next_event_stepper" = "%d min";
 "preferences_appearance_menu_title" = "Izbornik";
 "preferences_appearance_menu_shorten_event_title_toggle" = "Skrati naslov događaja na";
 "preferences_appearance_menu_shorten_event_title_stepper" = "%d znaka/znakova";

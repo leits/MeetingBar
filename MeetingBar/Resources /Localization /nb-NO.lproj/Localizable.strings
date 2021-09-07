@@ -132,7 +132,8 @@
 "preferences_configure_browsers_choose_broser_panel_message" = "Velg en nettleser fra hvilken som helst sti.";
 "preferences_configure_browsers_delete_alert_message" = "Ønsker du å slette %@-nettleseroppsettet?";
 "preferences_services_google_meet_tip" = "Tips: Meet støtter valg av konto via parameter, f.eks. https://meet.google.com/new?authuser=1";
-"preferences_appearance_status_bar_next_event" = "Vis kun neste begivenhet som starter innen %d minutter";
+"preferences_appearance_status_bar_next_event_toggle" = "Vis kun neste begivenhet som starter innen";
+"preferences_appearance_status_bar_next_event_stepper" = "%d minutter";
 "preferences_appearance_status_bar_title_dot_value" = "punkt (•)";
 "preferences_appearance_status_bar_title_event_title_value" = "begivenhetstittel";
 "preferences_appearance_status_bar_title_title" = "Tittel";
