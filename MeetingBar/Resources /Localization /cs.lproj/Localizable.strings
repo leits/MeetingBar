@@ -353,8 +353,3 @@
 "general_cancel" = "Zrušit";
 "general_ok" = "OK";
 "constants_meeting_service_vowel" = "Vowel";
-"preferences_general_option_preferred_language_norwegianbokmal_value" = "Norsk bokmål";
-"preferences_general_option_preferred_language_croatian_value" = "Hrvatski";
-"preferences_general_option_preferred_language_russian_value" = "Русский";
-"preferences_general_option_preferred_language_ukrainian_value" = "Українська";
-"preferences_general_option_preferred_language_english_value" = "English";

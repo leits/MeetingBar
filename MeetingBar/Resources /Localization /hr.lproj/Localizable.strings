@@ -359,8 +359,3 @@
 
 "link_url_cant_open_title" = "Ups! Nije moguće otvoriti poveznicu u %@";
 "link_url_cant_open_message" = "%@ mora biti instaliran ili otvori takve poveznice u jednom od web-preglednika koji su određeni u postavkama.";
-"preferences_general_option_preferred_language_russian_value" = "Русский";
-"preferences_general_option_preferred_language_english_value" = "English";
-"preferences_general_option_preferred_language_norwegianbokmal_value" = "Norsk bokmål";
-"preferences_general_option_preferred_language_croatian_value" = "Hrvatski";
-"preferences_general_option_preferred_language_ukrainian_value" = "Українська";

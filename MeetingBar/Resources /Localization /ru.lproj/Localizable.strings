@@ -359,8 +359,3 @@
 
 "link_url_cant_open_title" = "Ой! Невозможно открыть ссылку в %@";
 "link_url_cant_open_message" = "Убедитесь, что у вас установлен %@, или измените браузер в настройках.";
-"preferences_general_option_preferred_language_russian_value" = "Русский";
-"preferences_general_option_preferred_language_english_value" = "English";
-"preferences_general_option_preferred_language_ukrainian_value" = "Українська";
-"preferences_general_option_preferred_language_croatian_value" = "Hrvatski";
-"preferences_general_option_preferred_language_norwegianbokmal_value" = "Norsk bokmål";

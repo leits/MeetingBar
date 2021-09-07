@@ -359,8 +359,3 @@
 
 "link_url_cant_open_title" = "Ой леле! Не вдалось відкрити посилання в %@";
 "link_url_cant_open_message" = "Перевірте, чи %@ встановлено, або змініть браузер у налаштуваннях.";
-"preferences_general_option_preferred_language_ukrainian_value" = "Українська";
-"preferences_general_option_preferred_language_norwegianbokmal_value" = "Norsk bokmål";
-"preferences_general_option_preferred_language_russian_value" = "Русский";
-"preferences_general_option_preferred_language_croatian_value" = "Hrvatski";
-"preferences_general_option_preferred_language_english_value" = "English";
