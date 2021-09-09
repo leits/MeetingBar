@@ -189,6 +189,8 @@ func openEvent(_ event: EKEvent) {
             }
         }
         openMeetingURL(meeting.service, meeting.url, nil)
+    } else if let eventUrl = event.url {
+        eventUrl.openInDefaultBrowser()
     } else {
         sendNotification("status_bar_error_link_missed_title".loco(eventTitle), "status_bar_error_link_missed_message".loco())
     }
