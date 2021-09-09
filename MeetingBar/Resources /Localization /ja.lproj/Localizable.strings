@@ -100,7 +100,7 @@
 "preferences_appearance_status_bar_time_show_value" = "表示";
 "preferences_appearance_status_bar_time_show_under_title_value" = "タイトルの下に表示";
 "preferences_appearance_status_bar_time_hide_value" = "非表示";
-"preferences_appearance_status_bar_next_event_toggle" = "";
+"preferences_appearance_status_bar_next_event_toggle" = "開始中の次のイベントのみ表示";
 "preferences_appearance_status_bar_next_event_stepper" = "%d分以内に開始されるミーティングのみ表示";
 "preferences_appearance_menu_title" = "メニュー";
 "preferences_appearance_menu_shorten_event_title_toggle" = "ミーティング名を短縮する";
@@ -223,7 +223,7 @@
 "status_bar_submenu_attendees_status_tentative" = " [名無しさん]";
 "status_bar_submenu_attendees_status_unknown" = " [?]";
 "status_bar_submenu_copy_meeting_link" = "ミーティングリンクをコピー";
-"status_bar_submenu_email_attendees" = "参加者のメール";
+"status_bar_submenu_email_attendees" = "参加者にメールを送信";
 "status_bar_submenu_open_in_calendar" = "カレンダーアプリで開く";
 "status_bar_submenu_open_in_fantastical" = "Fantastical で開く";
 "status_bar_quick_actions" = "クイックアクション";
