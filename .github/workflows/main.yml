@@ -3,10 +3,6 @@ name: Lint&Test
 
 on:
   push:
-    paths:
-      - '.github/workflows/main.yml'
-      - '.swiftlint.yml'
-      - '**/*.swift'
   pull_request:
     paths:
       - '.github/workflows/main.yml'
