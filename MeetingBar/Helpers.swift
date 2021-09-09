@@ -176,7 +176,6 @@ func detectLinks(text: String) -> [URL] {
 
 func openEvent(_ event: EKEvent) {
     let eventTitle = event.title ?? "status_bar_no_title".loco()
-    let eventUrl = event.url?.absoluteString ?? ""
     if let meeting = getMeetingLink(event) {
         if Defaults[.runJoinEventScript], Defaults[.joinEventScriptLocation] != nil {
             if let url = Defaults[.joinEventScriptLocation]?.appendingPathComponent("joinEventScript.scpt") {
@@ -190,9 +189,8 @@ func openEvent(_ event: EKEvent) {
             }
         }
         openMeetingURL(meeting.service, meeting.url, nil)
-    } else if eventUrl != "" {
-        // NSLog("opening \(eventUrl) in default browser")
-        event.url?.openInDefaultBrowser()
+    } else if let eventUrl = event.url {
+        eventUrl.openInDefaultBrowser()
     } else {
         sendNotification("status_bar_error_link_missed_title".loco(eventTitle), "status_bar_error_link_missed_message".loco())
     }
