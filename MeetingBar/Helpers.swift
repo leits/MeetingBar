@@ -222,7 +222,13 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?
             url.openIn(browser: browser ?? systemDefaultBrowser)
         }
     case .meet:
-        url.openIn(browser: browser ?? Defaults[.meetBrowser])
+        let browser = browser ?? Defaults[.meetBrowser]
+        if browser == MeetInOneBrowser {
+            let meetInOneUrl = URL(string: "meetinone://url=" + url.absoluteString)!
+            meetInOneUrl.openInDefaultBrowser()
+        } else {
+            url.openIn(browser: browser)
+        }
 
     case .teams:
         if Defaults[.useAppForTeamsLinks] {

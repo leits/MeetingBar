@@ -10,8 +10,6 @@ import SwiftUI
 
 import Defaults
 
-var systemDefaultBrowser = Browser(name: "Default Browser", path: "")
-
 struct ServicesTab: View {
     @Default(.meetBrowser) var meetBrowser
     @Default(.browserForCreateMeeting) var browserForCreateMeeting
@@ -37,6 +35,7 @@ struct ServicesTab: View {
 
                 Picker(selection: $meetBrowser, label: Text("preferences_services_link_meet_title".loco()).frame(width: 200, alignment: .leading)) {
                     Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
+                    Text(MeetInOneBrowser.name).tag(MeetInOneBrowser)
                     ForEach(allBrowser, id: \.self) { (browser: Browser) in
                         Text(browser.name).tag(browser)
                     }

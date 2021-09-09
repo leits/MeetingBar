@@ -101,7 +101,7 @@
 
 // MARK: - Shared
 
-"shared_send_notification_toggle" = "Odeslat oznámení pro připojení k nadcházející schůzce:";
+"shared_send_notification_toggle" = "Odeslat oznámení pro připojení k nadcházející schůzce";
 "access_screen_access_granted_click_ok_title" = "Ve vyskakovacím okně systému macOS klikněte na tlačítko \"OK\".";
 "access_screen_access_granted_title" = "Žádost o přístup ke kalendářům…";
 "access_screen_access_denied_relaunch_title" = "Pak spusťte aplikaci ručně a pokračujte v nastavení.";
@@ -204,9 +204,9 @@
 "preferences_calendars_select_calendars_title" = "Vyberte kalendáře pro zobrazení událostí v řádku nabídek";
 "preferences_bookmarks_new_bookmark_error_title" = "Nelze přidat záložku";
 "preferences_bookmarks_new_bookmark_already_exist" = "%@ už má tento odkaz/telefonní číslo:\n%@";
-"preferences_bookmarks_new_bookmark_service" = "Služba:";
-"preferences_bookmarks_new_bookmark_link_phone" = "Odkaz/telefonní číslo:";
-"preferences_bookmarks_new_bookmark_name" = "Název:";
+"preferences_bookmarks_new_bookmark_service" = "Služba";
+"preferences_bookmarks_new_bookmark_link_phone" = "Odkaz/telefonní číslo";
+"preferences_bookmarks_new_bookmark_name" = "Název";
 "preferences_bookmarks_new_bookmark_title" = "Nová záložka";
 "preferences_bookmarks_add_bookmark_button" = "Přidat záložku";
 "preferences_bookmarks_delete_bookmark_message" = "Odstranit záložku %@?";
@@ -220,8 +220,8 @@
 "preferences_configure_browsers_choose_broser_panel_title" = "Vyberte aplikaci webového prohlížeče";
 "preferences_configure_browsers_modal_alert_title" = "Nelze přidat konfiguraci prohlížeče";
 "preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "Vybrat webový prohlížeč";
-"preferences_configure_browsers_modal_add_browser_path" = "Cesta:";
-"preferences_configure_browsers_modal_add_browser_name" = "Název:";
+"preferences_configure_browsers_modal_add_browser_path" = "Cesta";
+"preferences_configure_browsers_modal_add_browser_name" = "Název";
 "preferences_configure_browsers_modal_edit_browser_title" = "Upravit webový prohlížeč";
 "preferences_configure_browsers_modal_add_browser_title" = "Přidat webový prohlížeč";
 "preferences_configure_browsers_add_button_all_system_title" = "Všechny systémové webové prohlížeče";
@@ -232,35 +232,36 @@
 // MARK: - Preferences Services Browsers Configuration
 
 "preferences_configure_browsers_button" = "Konfigurovat webové prohlížeče";
-"preferences_services_create_meeting_browser_title" = "Použít webový prohlížeč:";
+"preferences_services_create_meeting_browser_title" = "Použít webový prohlížeč";
 "preferences_services_google_meet_tip" = "Tip: Služba Google Meet podporuje výběr účtu v adrese URL, např. https://meet.google.com/new?authuser=1";
 "preferences_services_create_meeting_custom_url_value" = "Vlastní adresa URL";
-"preferences_services_create_meeting_title" = "Vytvářet schůzky přes:";
+"preferences_services_create_meeting_title" = "Vytvářet schůzky přes";
 "preferences_services_supported_links_mailback" = "Pokud služba, kterou používáte, není podporována, napište e-mail vývojářům";
 "preferences_services_supported_links_list" = "Podporované odkazy na služby:\n%@";
 "preferences_services_link_teams_value" = "Aplikace Teams";
 "preferences_services_link_zoom_value" = "Aplikace Zoom";
 "preferences_services_link_jitsi_value" = "Aplikace Jitsi Meet";
 "preferences_services_link_default_browser_value" = "Výchozí webový prohlížeč";
-"preferences_services_link_team_title" = "Otvírat odkazy služby Teams v:";
+"preferences_services_link_team_title" = "Otvírat odkazy služby Teams v";
 "preferences_services_link_jitsi_title" = "Otvírat odkazy služby Jitsi v";
-"preferences_services_link_zoom_title" = "Otvírat odkazy služby Zoom v:";
-"preferences_services_link_meet_title" = "Otvírat odkazy služby Google Meet v:";
+"preferences_services_link_zoom_title" = "Otvírat odkazy služby Zoom v";
+"preferences_services_link_meet_title" = "Otvírat odkazy služby Google Meet v";
 
 // MARK: - Preferences Services
 
-"preferences_services_link_meeting_title" = "Otvírat všechny odkazy na schůzku v:";
+"preferences_services_link_meeting_title" = "Otvírat všechny odkazy na schůzku v";
 "preferences_appearance_menu_show_event_details_value" = "podrobnosti jako podnabídku";
 "preferences_appearance_menu_show_event_title" = "U události zobrazit:";
 "preferences_appearance_menu_time_format_24_hour_value" = "24hodinový";
 "preferences_appearance_menu_time_format_12_hour_value" = "12hodinový (AM/PM)";
 "preferences_appearance_menu_time_format_title" = "Formát času:";
-"preferences_appearance_status_bar_next_event" = "Zobrazit pouze nadcházející události, které začínají nejpozději během %d minut";
+"preferences_appearance_status_bar_next_event_toggle" = "Zobrazit pouze nadcházející události, které začínají nejpozději během";
+"preferences_appearance_status_bar_next_event_stepper" = "%d minut";
 "preferences_appearance_status_bar_title_event_title_value" = "název události";
-"preferences_appearance_status_bar_title_title" = "Název:";
+"preferences_appearance_status_bar_title_title" = "Název";
 "preferences_appearance_events_value_only_with_link" = "zobrazit jen ty s odkazy na schůzku";
 "preferences_appearance_events_declined_title" = "Odmítnuté události:";
-"preferences_appearance_events_pending_title" = "Nevyřízené události:";
+"preferences_appearance_events_pending_title" = "Nevyřízené události";
 "preferences_appearance_events_past_title" = "Dřívější události:";
 "preferences_appearance_events_value_inactive_without_meeting_link" = "zobrazit všechny bez odkazů na schůzku jako neaktivní";
 "preferences_appearance_menu_show_event_icon_value" = "ikonu";
@@ -271,7 +272,7 @@
 "preferences_appearance_status_bar_time_hide_value" = "skrýt";
 "preferences_appearance_status_bar_time_show_under_title_value" = "zobrazit pod názvem";
 "preferences_appearance_status_bar_time_show_value" = "zobrazit";
-"preferences_appearance_status_bar_time_title" = "Čas:";
+"preferences_appearance_status_bar_time_title" = "Čas";
 "preferences_appearance_status_bar_title_shorten_stepper" = "zkrátit na %d znaků";
 "preferences_appearance_status_bar_title_hide_value" = "skrýt";
 "preferences_appearance_status_bar_title_dot_value" = "tečka (•)";
@@ -279,7 +280,7 @@
 "preferences_appearance_status_bar_icon_specific_icon_value" = " Ikona dané události (např. MS Teams)";
 "preferences_appearance_status_bar_icon_calendar_icon_value" = " Ikona kalendáře";
 "preferences_appearance_status_bar_icon_app_icon_value" = " Ikona aplikace";
-"preferences_appearance_status_bar_icon_title" = "Ikona:";
+"preferences_appearance_status_bar_icon_title" = "Ikona";
 "preferences_appearance_status_bar_title" = "Řádek nabídek";
 "preferences_appearance_events_value_with_strikethrough" = "zobrazit jako přeškrtnuté";
 "preferences_appearance_events_value_as_underlined" = "zobrazit jako podtržené";
@@ -292,7 +293,7 @@
 "preferences_appearance_events_non_all_day_title" = "Ostatní události:";
 "preferences_appearance_events_show_events_for_today_tomorrow_value" = "dnešek a zítřek";
 "preferences_appearance_events_show_events_for_today_value" = "dnešek";
-"preferences_appearance_events_show_events_for_title" = "Zobrazit události na:";
+"preferences_appearance_events_show_events_for_title" = "Zobrazit události na";
 
 // MARK: - Preferences Appearance
 
@@ -311,7 +312,7 @@
 "preferences_general_external_contact" = "Kontakt";
 "preferences_general_external_gitHub" = "GitHub";
 "preferences_general_external_patronage" = "Členství";
-"preferences_general_meeting_bar_description" = "MeetingBar je open-source aplikace, kterou vytvořil Andrii Leitsius. Cílem aplikace je usnadnit a zjednodušit práci s online schůzkami.";
+"preferences_general_meeting_bar_description" = "MeetingBar je open-source aplikace, kterou vytvořil Andrii Leitsius\nCílem aplikace je usnadnit a zjednodušit práci s online schůzkami";
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "Přepnout viditelnost nadpisu v řádku nabídek:";
 "preferences_general_shortcut_join_from_clipboard" = "Připojit se ke schůzce ze schránky:";
 "preferences_general_shortcut_join_next" = "Připojit se k nadcházející schůzce:";
@@ -339,7 +340,7 @@
 // MARK: - Window titles
 
 "window_title_preferences" = "Předvolby MeetingBaru";
-"window_title_onboarding" = "Vítejte v MeetingBaru!";
+"window_title_onboarding" = "Vítejte v MeetingBaru";
 "next_meeting_empty_message" = "Super! Je čas na kafe";
 "next_meeting_empty_title" = "Dnes se nekonají žádné další schůzky";
 "create_meeting_error_message" = "Vlastní url \"%@\" chybí nebo je neplatná. Zadejte prosím hodnotu v předvolbách aplikace.";
@@ -352,8 +353,3 @@
 "general_cancel" = "Zrušit";
 "general_ok" = "OK";
 "constants_meeting_service_vowel" = "Vowel";
-"preferences_general_option_preferred_language_norwegianbokmal_value" = "Norsk bokmål";
-"preferences_general_option_preferred_language_croatian_value" = "Hrvatski";
-"preferences_general_option_preferred_language_russian_value" = "Русский";
-"preferences_general_option_preferred_language_ukrainian_value" = "Українська";
-"preferences_general_option_preferred_language_english_value" = "English";

@@ -15,7 +15,7 @@
 "store_patronage_purchase_payment_not_allowed_message" = "Das Gerät darf die Zahlung nicht durchführen";
 "store_patronage_purchase_payment_invalid_message" = "Der Kaufbezeichner war ungültig";
 "store_patronage_purchase_client_invalid_message" = "Nicht erlaubt, die Zahlung vorzunehmen";
-"store_patronage_purchase_unknown_message" = "Unbekannter Fehler. Bitte kontaktieren Sie den Support";
+"store_patronage_purchase_unknown_message" = "Unbekannter Fehler. Bitte kontaktieren Sie den Support.";
 "store_patronage_purchase_success_message" = "Erfolgreich gekauft. Danke für die Unterstützung!";
 "store_patronage_restore_nothing_message" = "Nichts zum Wiederherstellen";
 "store_patronage_restore_success_message" = "Erfolgreich wiederhergestellt";
@@ -48,7 +48,8 @@
 "link_url_cant_open_title" = "Hoppla! Kann den Link in %@ nicht öffnen";
 "preferences_appearance_status_bar_title_event_title_value" = "Ereignistitel";
 "preferences_appearance_menu_title" = "Menü";
-"preferences_appearance_status_bar_next_event" = "Nur nächstes Ereignis anzeigen, das innerhalb von %d Minuten beginnt";
+"preferences_appearance_status_bar_next_event_toggle" = "Nur nächstes Ereignis anzeigen, das innerhalb von";
+"preferences_appearance_status_bar_next_event_stepper" = "%d Minuten beginnt";
 "preferences_appearance_status_bar_time_hide_value" = "ausblenden";
 "preferences_appearance_status_bar_time_show_under_title_value" = "unter Titel anzeigen";
 "preferences_appearance_status_bar_time_show_value" = "anzeigen";
@@ -182,7 +183,7 @@
 "preferences_advanced_regex_add_button" = "Regex hinzufügen";
 "preferences_advanced_regex_title" = "Benutzerdefinierte reguläre Ausdrücke für Konferenzlink";
 "preferences_advanced_wrong_location_button" = "Verstanden!";
-"preferences_advanced_wrong_location_message" = "Bitte wählen Sie den Ordner Benutzer > Bibliothek > Anwendungsskripte > leits.MeetingBar";
+"preferences_advanced_wrong_location_message" = "Bitte wählen Sie den Ordner Benutzer → Bibliothek → Anwendungsskripte → leits.MeetingBar";
 "preferences_advanced_wrong_location_title" = "Falscher Ort";
 "preferences_advanced_save_script_button" = "Skript speichern";
 "preferences_advanced_apple_script_placeholder" = "# schreiben Sie Ihr Skript hier\nAnwendung „Musik“ zum Anhalten auffordern";
@@ -222,7 +223,7 @@
 "preferences_services_link_team_title" = "Teams-Links öffnen in";
 "preferences_services_link_jitsi_title" = "Jitsi-Links öffnen in";
 "preferences_services_link_zoom_title" = "Zoom-Links öffnen in";
-"preferences_services_link_meet_title" = "Meet-links öffnen in";
+"preferences_services_link_meet_title" = "Google Meet-links öffnen in";
 
 // MARK: - Preferences Services
 
@@ -273,7 +274,7 @@
 "constants_meeting_service_duo" = "Google Duo";
 "constants_meeting_service_starleaf" = "StarLeaf";
 "constants_meeting_service_vsee" = "VSee";
-"constants_meeting_service_teamviewer_meeting" = "Teamviewer Meeting";
+"constants_meeting_service_teamviewer_meeting" = "Team Viewer Meeting";
 "constants_meeting_service_blizz" = "Blizz";
 "constants_meeting_service_uberconference" = "Uber Conference";
 "constants_meeting_service_whereby" = "Whereby";
@@ -294,7 +295,7 @@
 "constants_meeting_service_meet" = "Google Meet";
 "constants_meeting_service_phone" = "Telefon";
 "constants_create_meeting_service_url" = "Benutzerdefinierte URL";
-"constants_create_meeting_service_outlook_office365" = "Outlook Office365";
+"constants_create_meeting_service_outlook_office365" = "Outlook Office 365";
 "constants_create_meeting_service_outlook_live" = "Outlook Live";
 "constants_create_meeting_service_gcalendar" = "Google Kalender";
 "constants_create_meeting_service_teams" = "Microsoft Teams";
@@ -352,8 +353,3 @@
 "status_bar_error_link_missed_message" = "Link nicht gefunden, oder Ihr Meeting-Dienst wird noch nicht unterstützt";
 "status_bar_error_link_missed_title" = "Ach! Kann %@ nicht beitreten";
 "preferences_general_patron_title" = "Schirmherr werden";
-"preferences_general_option_preferred_language_norwegianbokmal_value" = "Norsk bokmål";
-"preferences_general_option_preferred_language_russian_value" = "Русский";
-"preferences_general_option_preferred_language_ukrainian_value" = "Українська";
-"preferences_general_option_preferred_language_english_value" = "English";
-"preferences_general_option_preferred_language_croatian_value" = "Hrvatski";

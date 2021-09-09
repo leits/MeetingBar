@@ -39,11 +39,6 @@
 "preferences_general_option_login_launch" = "Launch after login";
 "preferences_general_option_preferred_language_title" = "Language:";
 "preferences_general_option_preferred_language_system_value" = "System";
-"preferences_general_option_preferred_language_english_value" = "English";
-"preferences_general_option_preferred_language_ukrainian_value" = "Українська";
-"preferences_general_option_preferred_language_russian_value" = "Русский";
-"preferences_general_option_preferred_language_croatian_value" = "Hrvatski";
-"preferences_general_option_preferred_language_norwegianbokmal_value" = "Norsk bokmål";
 "preferences_general_option_shortcuts" = "Shortcuts";
 "preferences_general_all_shortcut" = "All Shortcuts";
 "preferences_general_shortcut_open_menu" = "Open menu:";
@@ -102,7 +97,8 @@
 "preferences_appearance_status_bar_time_show_value" = "show";
 "preferences_appearance_status_bar_time_show_under_title_value" = "show under title";
 "preferences_appearance_status_bar_time_hide_value" = "hide";
-"preferences_appearance_status_bar_next_event" = "Show only next event starting within %d minutes";
+"preferences_appearance_status_bar_next_event_toggle" = "Show only next event starting within";
+"preferences_appearance_status_bar_next_event_stepper" = "%d minutes";
 "preferences_appearance_menu_title" = "Menu";
 "preferences_appearance_menu_shorten_event_title_toggle" = "Shorten event title to";
 "preferences_appearance_menu_shorten_event_title_stepper" = "%d characters";
