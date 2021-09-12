@@ -66,7 +66,7 @@
 "preferences_appearance_status_bar_title" = "Menüleiste";
 "preferences_appearance_events_value_with_strikethrough" = "durchgestrichen anzeigen";
 "preferences_appearance_events_value_as_underlined" = "unterstrichen anzeigen";
-"preferences_appearance_events_value_as_inactive" = "als inaktiv anzeigen";
+"preferences_appearance_events_value_as_inactive" = "abdunkeln";
 "preferences_appearance_events_value_hide" = "ausblenden";
 "preferences_appearance_events_value_show" = "anzeigen";
 "preferences_appearance_events_declined_title" = "Abgelehnte Ereignisse:";
