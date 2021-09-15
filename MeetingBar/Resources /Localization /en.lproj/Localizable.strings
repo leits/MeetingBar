@@ -54,8 +54,8 @@
 "preferences_general_patron_three_months" = "3 months – 2.99 USD";
 "preferences_general_patron_six_months" = "6 months – 5.99 USD";
 "preferences_general_patron_twelve_months" = "12 months – 11.99 USD";
-"preferences_general_patron_description" = "These one-time purchases do not auto-renew.";
-"preferences_general_patron_thank_for_purchase" = "Thanks! You are supporting MeetingBar for %d months. 🎉";
+"preferences_general_patron_description" = "These are one-off purchases, and will not auto-renew.";
+"preferences_general_patron_thank_for_purchase" = "Thanks! You have paid to support MeetingBar for %d months. 🎉";
 "preferences_general_patron_restore_purchases" = "Restore Purchases";
 "preferences_general_feedback_title" = "If you have any questions or feedback,\nfeel free to get in contact:";
 "preferences_general_feedback_email" = "E-mail";
@@ -84,9 +84,9 @@
 "preferences_appearance_events_value_only_with_link" = "show only those with meeting links";
 "preferences_appearance_status_bar_title" = "Status bar";
 "preferences_appearance_status_bar_icon_title" = "Icon";
-"preferences_appearance_status_bar_icon_app_icon_value" = "\U00A0App icon";
-"preferences_appearance_status_bar_icon_calendar_icon_value" = "\U00A0Calendar icon";
-"preferences_appearance_status_bar_icon_specific_icon_value" = "\U00A0Event specific icon (e.g. MS Teams)";
+"preferences_appearance_status_bar_icon_app_icon_value" = "\U00A0MeetingBar";
+"preferences_appearance_status_bar_icon_calendar_icon_value" = "\U00A0Calendar";
+"preferences_appearance_status_bar_icon_specific_icon_value" = "\U00A0Event-specific icon (e.g. MS Teams)";
 "preferences_appearance_status_bar_icon_no_icon_value" = "\U00A0No icon";
 "preferences_appearance_status_bar_title_title" = "Title";
 "preferences_appearance_status_bar_title_event_title_value" = "event title";
@@ -97,7 +97,7 @@
 "preferences_appearance_status_bar_time_show_value" = "show";
 "preferences_appearance_status_bar_time_show_under_title_value" = "show under title";
 "preferences_appearance_status_bar_time_hide_value" = "hide";
-"preferences_appearance_status_bar_next_event_toggle" = "Show only next event starting within";
+"preferences_appearance_status_bar_next_event_toggle" = "Show only events starting within";
 "preferences_appearance_status_bar_next_event_stepper" = "%d minutes";
 "preferences_appearance_menu_title" = "Menu";
 "preferences_appearance_menu_shorten_event_title_toggle" = "Shorten event title to";
