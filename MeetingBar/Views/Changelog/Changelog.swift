@@ -70,6 +70,14 @@ struct ChangelogView: View {
                         Text("  - Copy meeting link")
                     }
                 }
+                if lastRevisedVersionInChangelog < "3.8.0" {
+                    Section(header: Text("Version 3.8.0")) {
+                        Text("🇵🇱 Added translations into Polish")
+                        Text("• Support MeetInOne for Google Meet links")
+                        Text("• Support Jitsi native app for Jitsi links")
+                        Text("• Open the link from the event link field if the meeting service is not recognized")
+                    }
+                }
             }.listStyle(SidebarListStyle())
             Button("Close", action: close)
         }.padding()
