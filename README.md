@@ -90,6 +90,9 @@ v StarLeaf
 
 If the service you use isn't supported, add a comment [here](https://github.com/leits/MeetingBar/discussions/108).
 
+## Third-Party Integrations
+* [Raycast commands](https://github.com/raycast/script-commands/tree/master/commands#meetingbar)
+
 
 ## Other similar apps
 

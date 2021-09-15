@@ -189,6 +189,8 @@ func openEvent(_ event: EKEvent) {
             }
         }
         openMeetingURL(meeting.service, meeting.url, nil)
+    } else if let eventUrl = event.url {
+        eventUrl.openInDefaultBrowser()
     } else {
         sendNotification("status_bar_error_link_missed_title".loco(eventTitle), "status_bar_error_link_missed_message".loco())
     }
@@ -220,7 +222,13 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?
             url.openIn(browser: browser ?? systemDefaultBrowser)
         }
     case .meet:
-        url.openIn(browser: browser ?? Defaults[.meetBrowser])
+        let browser = browser ?? Defaults[.meetBrowser]
+        if browser == MeetInOneBrowser {
+            let meetInOneUrl = URL(string: "meetinone://url=" + url.absoluteString)!
+            meetInOneUrl.openInDefaultBrowser()
+        } else {
+            url.openIn(browser: browser)
+        }
 
     case .teams:
         if Defaults[.useAppForTeamsLinks] {

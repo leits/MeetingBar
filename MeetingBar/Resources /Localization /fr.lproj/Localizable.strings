@@ -262,7 +262,8 @@
 "preferences_appearance_menu_shorten_event_title_toggle" = "Raccourcir le titre de l'évènement à";
 "preferences_appearance_menu_shorten_event_title_stepper" = "%d caractères";
 "preferences_appearance_menu_title" = "Menu";
-"preferences_appearance_status_bar_next_event" = "Afficher seulement le prochain évènement qui commence dans les %d minutes";
+"preferences_appearance_status_bar_next_event_toggle" = "Afficher seulement le prochain évènement qui commence dans les";
+"preferences_appearance_status_bar_next_event_stepper" = "%d minutes";
 "preferences_appearance_status_bar_time_hide_value" = "masquer";
 "preferences_appearance_status_bar_time_show_under_title_value" = "afficher sous le titre";
 "preferences_appearance_status_bar_time_show_value" = "afficher";
@@ -352,8 +353,3 @@
 "general_close" = "Fermer";
 "general_cancel" = "Annuler";
 "general_ok" = "OK";
-"preferences_general_option_preferred_language_norwegianbokmal_value" = "Norsk bokmål";
-"preferences_general_option_preferred_language_croatian_value" = "Hrvatski";
-"preferences_general_option_preferred_language_russian_value" = "Русский";
-"preferences_general_option_preferred_language_ukrainian_value" = "Українська";
-"preferences_general_option_preferred_language_english_value" = "English";
