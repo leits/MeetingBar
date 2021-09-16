@@ -262,7 +262,7 @@
 "preferences_appearance_menu_shorten_event_title_toggle" = "Raccourcir le titre de l'évènement à";
 "preferences_appearance_menu_shorten_event_title_stepper" = "%d caractères";
 "preferences_appearance_menu_title" = "Menu";
-"preferences_appearance_status_bar_next_event_toggle" = "Afficher seulement le prochain évènement qui commence dans les";
+"preferences_appearance_status_bar_next_event_toggle" = "Afficher uniquement les évènements commençant dans";
 "preferences_appearance_status_bar_next_event_stepper" = "%d minutes";
 "preferences_appearance_status_bar_time_hide_value" = "masquer";
 "preferences_appearance_status_bar_time_show_under_title_value" = "afficher sous le titre";
@@ -275,8 +275,8 @@
 "preferences_appearance_status_bar_title_title" = "Titre";
 "preferences_appearance_status_bar_icon_no_icon_value" = " Aucune icône";
 "preferences_appearance_status_bar_icon_specific_icon_value" = " Icône spécifique à l'évènement (par exemple : MS Teams)";
-"preferences_appearance_status_bar_icon_calendar_icon_value" = " Icône du calendrier";
-"preferences_appearance_status_bar_icon_app_icon_value" = " Icône de l'appli";
+"preferences_appearance_status_bar_icon_calendar_icon_value" = " Agenda";
+"preferences_appearance_status_bar_icon_app_icon_value" = " MeetingBar";
 "preferences_appearance_status_bar_icon_title" = "Icône";
 "preferences_appearance_status_bar_title" = "Barre d'état";
 "preferences_appearance_events_value_only_with_link" = "afficher seulement ceux qui ont des liens de réunion";
@@ -305,8 +305,8 @@
 "preferences_general_feedback_email" = "Courriel";
 "preferences_general_feedback_title" = "Si vous avez des questions ou des remarques,\nn'hésitez pas à nous contacter :";
 "preferences_general_patron_restore_purchases" = "Restaurer les achats";
-"preferences_general_patron_thank_for_purchase" = "Merci ! Vous soutenez MeetingBar depuis %d mois ! 🎉";
-"preferences_general_patron_description" = "Ces achats ponctuels ne sont pas renouvelables automatiquement.";
+"preferences_general_patron_thank_for_purchase" = "Merci ! Vous avez payé pour soutenir MeetingBar pendant %d mois. 🎉";
+"preferences_general_patron_description" = "Il s'agit d'achats uniques, qui ne seront pas renouvelés automatiquement.";
 "preferences_general_patron_twelve_months" = "12 mois – 11,99 USD";
 "preferences_general_patron_six_months" = "6 mois – 5,99 USD";
 "preferences_general_patron_three_months" = "3 mois – 2,99 USD";
