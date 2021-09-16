@@ -48,7 +48,7 @@
 "link_url_cant_open_title" = "Hoppla! Kann den Link in %@ nicht öffnen";
 "preferences_appearance_status_bar_title_event_title_value" = "Ereignistitel";
 "preferences_appearance_menu_title" = "Menü";
-"preferences_appearance_status_bar_next_event_toggle" = "Nur nächstes Ereignis anzeigen, das innerhalb von";
+"preferences_appearance_status_bar_next_event_toggle" = "Nur Ereignisse anzeigen, die innerhalb von";
 "preferences_appearance_status_bar_next_event_stepper" = "%d Minuten beginnt";
 "preferences_appearance_status_bar_time_hide_value" = "ausblenden";
 "preferences_appearance_status_bar_time_show_under_title_value" = "unter Titel anzeigen";
@@ -60,8 +60,8 @@
 "preferences_appearance_status_bar_title_title" = "Titel";
 "preferences_appearance_status_bar_icon_no_icon_value" = " Kein Symbol";
 "preferences_appearance_status_bar_icon_specific_icon_value" = " Meeting-Symbol (z.B. MS Teams)";
-"preferences_appearance_status_bar_icon_calendar_icon_value" = " Kalendersymbol";
-"preferences_appearance_status_bar_icon_app_icon_value" = " App Icon";
+"preferences_appearance_status_bar_icon_calendar_icon_value" = " Kalender";
+"preferences_appearance_status_bar_icon_app_icon_value" = " MeetingBar";
 "preferences_appearance_status_bar_icon_title" = "Symbol";
 "preferences_appearance_status_bar_title" = "Menüleiste";
 "preferences_appearance_events_value_with_strikethrough" = "durchgestrichen anzeigen";
@@ -88,8 +88,8 @@
 "preferences_general_feedback_twitter" = "Twitter";
 "preferences_general_feedback_title" = "Wenn Sie Fragen oder Kommentare haben,\nkönnen Sie mich gerne kontaktieren:";
 "preferences_general_patron_restore_purchases" = "Käufe wiederherstellen";
-"preferences_general_patron_thank_for_purchase" = "Danke! Sie unterstützen MeetingBar für %d Monat(e)! 🎉";
-"preferences_general_patron_description" = "Diese einmaligen Käufe verlängern sich nicht automatisch.";
+"preferences_general_patron_thank_for_purchase" = "Danke! Sie haben für die Unterstützung von MeetingBar für %d Monate bezahlt. 🎉";
+"preferences_general_patron_description" = "Es handelt sich um einmalige Käufe, die sich nicht automatisch verlängern.";
 "preferences_services_supported_links_mailback" = "Falls der benötigte Service fehlt, bitte eine E-Mail an die Entwickler senden";
 "preferences_general_feedback_email" = "E-Mail";
 "preferences_general_patron_twelve_months" = "12 Monate – 11,99 USD";
