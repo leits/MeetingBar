@@ -1,11 +1,11 @@
 
 
 "link_url_cant_open_message" = "Sicherstellen, dass %@ installiert ist oder in den Einstellungen festlegen, dass diese Links im Webbrowser geöffnet werden.";
-"preferences_general_meeting_bar_description" = "MeetingBar ist eine quelloffene Anwendung, die von Andrii Leitsius entwickelt wurde.\nFür reibungslosere und einfachere Online-Meetings";
+"preferences_general_meeting_bar_description" = "MeetingBar ist eine quelloffene App, die von Andrii Leitsius entwickelt wurde.\nFür reibungslosere und einfachere Online-Meetings";
 
 // MARK: - Notifications
 
-"notifications_event_start_soon_body" = "Die Veranstaltung beginnt bald";
+"notifications_event_start_soon_body" = "Das Ereignis beginnt gleich";
 "notifications_event_start_one_minute_body" = "Das Ereignis beginnt in einer Minute";
 "notifications_event_start_three_minutes_body" = "Das Ereignis beginnt in drei Minuten";
 "notifications_event_start_five_minutes_body" = "Das Ereignis beginnt in fünf Minuten";
@@ -15,9 +15,9 @@
 "store_patronage_purchase_payment_not_allowed_message" = "Das Gerät darf die Zahlung nicht durchführen";
 "store_patronage_purchase_payment_invalid_message" = "Ungültige Kaufkennung";
 "store_patronage_purchase_client_invalid_message" = "Nicht erlaubt, die Zahlung vorzunehmen";
-"store_patronage_purchase_unknown_message" = "Unbekannter Fehler. Bitte kontaktieren Sie den Support.";
+"store_patronage_purchase_unknown_message" = "Unbekannter Fehler. Bitte kontaktiere den Support.";
 "store_patronage_purchase_success_message" = "Erfolgreich gekauft. Danke für die Unterstützung!";
-"store_patronage_restore_nothing_message" = "Nichts zum Wiederherstellen";
+"store_patronage_restore_nothing_message" = "Nichts wiederherzustellen";
 "store_patronage_restore_success_message" = "Wiederhergestellt";
 "constants_meeting_service_url" = "URL";
 "constants_meeting_service_other" = "Andere";
@@ -70,7 +70,7 @@
 "preferences_appearance_events_value_hide" = "ausblenden";
 "preferences_appearance_events_value_show" = "anzeigen";
 "preferences_appearance_events_declined_title" = "Abgelehnte Ereignisse:";
-"preferences_appearance_events_pending_title" = "Anstehende Ereignisse";
+"preferences_appearance_events_pending_title" = "Anstehende Ereignisse:";
 "preferences_appearance_events_past_title" = "Vergangene Ereignisse:";
 "preferences_appearance_events_without_guest_title" = "Ereignisse ohne Gäste:";
 "preferences_appearance_events_all_day_title" = "Ganztägige Ereignisse:";
@@ -86,9 +86,9 @@
 "preferences_appearance_events_title" = "Ereignisse";
 "preferences_general_feedback_telegram" = "Telegram";
 "preferences_general_feedback_twitter" = "Twitter";
-"preferences_general_feedback_title" = "Wenn Sie Fragen oder Kommentare haben,\nkönnen Sie mich gerne kontaktieren:";
+"preferences_general_feedback_title" = "Bei Fragen oder Feedback\nkannst Du mich gerne kontaktieren:";
 "preferences_general_patron_restore_purchases" = "Käufe wiederherstellen";
-"preferences_general_patron_thank_for_purchase" = "Danke! Sie haben für die Unterstützung von MeetingBar für %d Monate bezahlt. 🎉";
+"preferences_general_patron_thank_for_purchase" = "Danke! Du hast eine Unterstützung von MeetingBar für %d Monate bezahlt. 🎉";
 "preferences_general_patron_description" = "Es handelt sich um einmalige Käufe, die sich nicht automatisch verlängern.";
 "preferences_services_supported_links_mailback" = "Falls der benötigte Service fehlt, bitte eine E-Mail an die Entwickler senden";
 "preferences_general_feedback_email" = "E-Mail";
@@ -143,20 +143,20 @@
 "status_bar_submenu_copy_meeting_link" = "Meeting-Link kopieren";
 "status_bar_submenu_email_attendees" = "E-Mail an Teilnehmer";
 "status_bar_submenu_open_in_fantastical" = "Fantastical öffnen";
-"status_bar_submenu_open_in_calendar" = "In Kalender-Anwendung öffnen";
+"status_bar_submenu_open_in_calendar" = "In Kalender-App öffnen";
 "status_bar_submenu_attendees_status_unknown" = " [?]";
 "status_bar_submenu_attendees_status_tentative" = " [Versuch]";
-"status_bar_submenu_attendees_you" = "%@ (Sie)";
+"status_bar_submenu_attendees_you" = "%@ (Du)";
 "status_bar_submenu_attendees_no_name" = "Anonymer Teilnehmer";
 "status_bar_submenu_attendees_title" = "Teilnehmer/innen (%d)";
-"status_bar_submenu_organizer_title" = "Veranstalter/in: %@";
+"status_bar_submenu_organizer_title" = "Organisator/in: %@";
 "status_bar_submenu_notes_title" = "Notizen:";
 "status_bar_submenu_location_title" = "Ort:";
 "status_bar_submenu_status_default_simple" = " ❔ (Unbekannt)";
 "status_bar_submenu_status_default_extended" = " ❔ (%@)";
 "status_bar_submenu_status_unknown" = " ❔ Unbekannt";
 "status_bar_submenu_status_pending" = " ⏳ Ausstehend";
-"status_bar_submenu_status_tentative" = " ☝️ Versuch";
+"status_bar_submenu_status_tentative" = " ☝️ Vorläufig";
 "status_bar_submenu_status_declined" = " 👎 Abgelehnt";
 "status_bar_submenu_status_accepted" = " 👍 Akzeptiert";
 "status_bar_submenu_status_title" = "Status: %@";
@@ -167,7 +167,7 @@
 "status_bar_section_bookmarks_menu" = "Lesezeichenmenü";
 "status_bar_section_bookmarks_title" = "Lesezeichen";
 "status_bar_section_join_create_meeting" = "Meeting erstellen";
-"status_bar_section_join_from_clipboard" = "Meeting aus Zwischenablage öffnen";
+"status_bar_section_join_from_clipboard" = "Meeting in der Zwischenablage öffnen";
 "status_bar_section_join_next_meeting" = "An nächstem Meeting teilnehmen";
 "status_bar_section_join_current_meeting" = "Am aktuellen Meeting teilnehmen";
 "status_bar_empty_calendar_message" = "Wähle Deine Kalender in den Einstellungen aus,\num Deine Meetings zu sehen";
@@ -176,30 +176,30 @@
 // MARK: - Status bar
 
 "status_bar_section_today" = "Heute";
-"preferences_advanced_regex_new_cant_save_title" = "Regex kann nicht gespeichert werden";
+"preferences_advanced_regex_new_cant_save_title" = "Kann Regex nicht speichern";
 "preferences_advanced_regex_new_title" = "Regex eingeben";
 "preferences_advanced_regex_delete_button" = "x";
 "preferences_advanced_regex_edit_button" = "bearbeiten";
 "preferences_advanced_regex_add_button" = "Regex hinzufügen";
-"preferences_advanced_regex_title" = "Benutzerdefinierte reguläre Ausdrücke für Meeting-Link";
+"preferences_advanced_regex_title" = "Benutzerdefinierte reguläre Ausdrücke für Meeting-Links";
 "preferences_advanced_wrong_location_button" = "Verstanden!";
 "preferences_advanced_wrong_location_message" = "Bitte wählen Sie den Ordner Benutzer → Bibliothek → Anwendungsskripte → leits.MeetingBar";
 "preferences_advanced_wrong_location_title" = "Falscher Ort";
 "preferences_advanced_save_script_button" = "Skript speichern";
-"preferences_advanced_apple_script_placeholder" = "# schreiben Sie Ihr Skript hier\nAnwendung „Musik“ zum Anhalten auffordern";
+"preferences_advanced_apple_script_placeholder" = "# Schreibe Dein Skript hier\nAnwendung „Musik“ zum Anhalten auffordern";
 "preferences_advanced_apple_script_checkmark" = "AppleScript beim Betreten eines Meetings ausführen";
 
 // MARK: - Preferences Advanced
 
 "preferences_advanced_setting_warning" = "⚠️ Verwende diese Einstellungen nur, wenn Du verstehst was sie bewirken";
 "preferences_calendars_add_account_modal" = "Externe Kalender hinzuzufügen:\n1. Standard-Kalender-App öffnen\n2. Im Menü „Account hinzufügen“ auswählen\n3. Account auswählen und verbinden";
-"preferences_calendars_add_account_button" = "Konto hinzufügen";
+"preferences_calendars_add_account_button" = "Account hinzufügen";
 "preferences_calendars_add_account_description" = "Benötigten Kalender nicht gefunden?";
 
 // MARK: - Preferences Calendars
 
-"preferences_calendars_select_calendars_title" = "Kalender auswählen, um Ereignisse in der Statusleiste anzuzeigen";
-"preferences_bookmarks_new_bookmark_error_title" = "Lesezeichen kann nicht hinzugefügt werden";
+"preferences_calendars_select_calendars_title" = "Kalender auswählen, um Ereignisse in der Menüleiste anzuzeigen";
+"preferences_bookmarks_new_bookmark_error_title" = "Kann Lesezeichen nicht hinzufügen";
 "preferences_bookmarks_new_bookmark_already_exist" = "%@ hat bereits diesen Link/Telefonnummer:\n%@";
 "preferences_bookmarks_new_bookmark_service" = "Service";
 "preferences_bookmarks_new_bookmark_link_phone" = "Link/Telefonnummer";
@@ -308,7 +308,7 @@
 "shared_send_notification_five_minute_value" = "3 Minuten vorher";
 "shared_send_notification_three_minute_value" = "3 Minuten vorher";
 "shared_send_notification_one_minute_value" = "1 Minute vorher";
-"shared_send_notification_directly_value" = "beim Ereignissanfang";
+"shared_send_notification_directly_value" = "zum Ereignisstart";
 
 // MARK: - Shared
 
@@ -316,25 +316,25 @@
 "access_screen_access_granted_click_ok_title" = "Im macOS-Popup auf „OK“ klicken.";
 "access_screen_access_granted_title" = "Zugriff auf Kalender anfordern…";
 "access_screen_access_denied_relaunch_title" = "Anschließend die App manuell starten, um die Einrichtung fortzusetzen.";
-"access_screen_access_denied_checkbox_title" = "und aktivieren Sie das Kontrollkästchen neben MeetingBar.";
+"access_screen_access_denied_checkbox_title" = "und aktiviere ein Kontrollkästchen bei MeetingBar.";
 "access_screen_access_denied_system_preferences_button" = "Systemeinstellungen";
 "access_screen_access_screen_access_denied_go_to_title" = "Gehe zu";
 
 // MARK: - Access screen
 
-"access_screen_access_denied_title" = "Hoppla! Offenbar haben Sie den Zugriff auf Kalendere verweigert.";
-"calendars_screen_start_button" = "Anwendung starten";
+"access_screen_access_denied_title" = "Hoppla! Offenbar hast Du den Zugriff auf Kalender verweigert.";
+"calendars_screen_start_button" = "Mit App starten";
 
 // MARK: - Calendars screen
 
 "calendars_screen_select_calendar_title" = "Mindestens einen Kalender auswählen";
 "welcome_screen_setup_calendar_title" = "Kalender einrichten";
-"welcome_screen_login_launch_toggle_title" = "MeetingBar bei Anmeldung starten";
-"welcome_screen_greeting_additional_title" = "Machen wir es zu 100 % zu Ihrem!";
+"welcome_screen_login_launch_toggle_title" = "MeetingBar bei der Anmeldung starten";
+"welcome_screen_greeting_additional_title" = "Lass es uns komplett zu Deinem machen!";
 
 // MARK: - Welcome screen
 
-"welcome_screen_greeting_main_title" = "Hallo! MeetingBar ist eine so einfache Anwendung, dass schon fast alles bereit ist.";
+"welcome_screen_greeting_main_title" = "Hi! MeetingBar ist so eine simple App, dass schon fast alles vorbereitet ist.";
 "status_bar_error_zoom_native_link_message" = "Sicherstellen, dass die Zoom-App installiert ist oder in den Einstellungen festlegen, dass diese Links im Webbrowser geöffnet werden.";
 "status_bar_error_zoom_app_link_message" = "Sicherstellen, dass die Zoom-App installiert ist oder in den Einstellungen festlegen, dass diese Links im Webbrowser geöffnet werden.";
 "status_bar_error_teams_link_message" = "Sicherstellen, dass die Microsoft Teams-Anwendung installiert ist oder in den Einstellungen festlegen, dass diese Links im Webbrowser geöffnet werden.";
@@ -346,10 +346,10 @@
 "preferences_general_external_patronage" = "Schirmherrschaft";
 "store_patronage_purchase_cloud_service_revoked_message" = "Der Benutzer hat die Erlaubnis zur Nutzung dieses Cloud-Services widerrufen";
 "constants_meeting_service_zoom_native" = "Zoom native";
-"shared_send_notification_disabled_tip" = "⚠️Benachrichtigungen für MeetingBar sind derzeit in den Systemeinstellungen von macOS deaktiviert. Bitte die Benachrichtigungen im Bereich \"Mitteilungen\" für MeetingBar erlauben um kein Meeting zu verpassen.";
-"shared_send_notification_no_alert_style_tip" = "⚠️ Benachrichtigungen für MeetingBar sind derzeit in den Systemeinstellungen von macOS deaktiviert. Bitte die Benachrichtigungen im Bereich \"Mitteilungen\" für MeetingBar erlauben.";
+"shared_send_notification_disabled_tip" = "⚠️Benachrichtigungen für MeetingBar sind derzeit in den Systemeinstellungen von macOS deaktiviert. Bitte die Benachrichtigungen im Bereich \"Mitteilungen\" für MeetingBar aktivieren um kein Meeting zu verpassen.";
+"shared_send_notification_no_alert_style_tip" = "⚠️ Benachrichtigungen für MeetingBar sind derzeit in den Systemeinstellungen von macOS deaktiviert. Bitte die Benachrichtigungen im Bereich \"Mitteilungen\" für MeetingBar aktivieren.";
 "welcome_screen_shortcut_next_meeting_title" = "Am nächsten Meeting mit Tastaturkürzel teilnehmen:";
 "welcome_screen_ad_hoc_meeting_title" = "Ad-hoc-Meetings erstellen mit ";
-"status_bar_error_link_missed_message" = "Link nicht gefunden, oder Ihr Meeting-Service wird noch nicht unterstützt";
+"status_bar_error_link_missed_message" = "Meeting-Link nicht gefunden, oder Ihr Service wird noch nicht unterstützt";
 "status_bar_error_link_missed_title" = "Ach! Kann %@ nicht beitreten";
 "preferences_general_patron_title" = "Schirmherr werden";
