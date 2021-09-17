@@ -323,7 +323,7 @@
 // MARK: - Access screen
 
 "access_screen_access_denied_title" = "Hoppla! Offenbar hast Du den Zugriff auf Kalender verweigert.";
-"calendars_screen_start_button" = "Mit App starten";
+"calendars_screen_start_button" = "MeetingBar starten";
 
 // MARK: - Calendars screen
 
