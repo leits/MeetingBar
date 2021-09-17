@@ -87,8 +87,8 @@
 "preferences_appearance_events_value_only_with_link" = "リンクのあるイベントのみ表示";
 "preferences_appearance_status_bar_title" = "ステータスバー";
 "preferences_appearance_status_bar_icon_title" = "アイコン";
-"preferences_appearance_status_bar_icon_app_icon_value" = " アプリアイコン";
-"preferences_appearance_status_bar_icon_calendar_icon_value" = " カレンダーアイコン";
+"preferences_appearance_status_bar_icon_app_icon_value" = " MeetingBar";
+"preferences_appearance_status_bar_icon_calendar_icon_value" = " カレンダー";
 "preferences_appearance_status_bar_icon_specific_icon_value" = " ミーティング固有のアイコン (MS Teamsなど)";
 "preferences_appearance_status_bar_icon_no_icon_value" = " アイコンなし";
 "preferences_appearance_status_bar_title_title" = "タイトル";
@@ -100,7 +100,7 @@
 "preferences_appearance_status_bar_time_show_value" = "表示";
 "preferences_appearance_status_bar_time_show_under_title_value" = "タイトルの下に表示";
 "preferences_appearance_status_bar_time_hide_value" = "非表示";
-"preferences_appearance_status_bar_next_event_toggle" = "開始中の次のイベントのみ表示";
+"preferences_appearance_status_bar_next_event_toggle" = "開始中のイベントのみ表示";
 "preferences_appearance_status_bar_next_event_stepper" = "%d分";
 "preferences_appearance_menu_title" = "メニュー";
 "preferences_appearance_menu_shorten_event_title_toggle" = "ミーティング名を短縮する";
