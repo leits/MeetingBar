@@ -35,7 +35,7 @@
 
 // MARK: - Preferences General
 
-"preferences_general_option_login_launch" = "Launch after login";
+"preferences_general_option_login_launch" = "Uruchom po zalogowaniu";
 "preferences_general_option_preferred_language_title" = "Język:";
 "preferences_general_option_preferred_language_system_value" = "System";
 "preferences_general_option_shortcuts" = "Skróty";
@@ -46,15 +46,15 @@
 "preferences_general_shortcut_join_from_clipboard" = "Dołącz do spotkania ze schowka:";
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "Przełącz widoczność tytułu na pasku stanu:";
 "preferences_general_meeting_bar_description" = "MeetingBar to aplikacja open-source stworzona przez Andrii Leitsius\n dla płynniejszych i łatwiejszych spotkań online";
-"preferences_general_external_patronage" = "Patronage";
+"preferences_general_external_patronage" = "Patronat";
 "preferences_general_external_gitHub" = "GitHub\"; \"preferences_general_external_gitHub\" = \"GitHub";
 "preferences_general_external_contact" = "Kontakt\"; \"preferences_general_external_contact\" = \"Kontakt";
 "preferences_general_patron_title" = "Zostań patronem";
 "preferences_general_patron_three_months" = "3 miesiące - 2,99 USD";
 "preferences_general_patron_six_months" = "6 miesięcy - 5,99 USD";
 "preferences_general_patron_twelve_months" = "12 miesięcy - 11,99 USD";
-"preferences_general_patron_description" = "Te jednorazowe zakupy nie ulegają automatycznemu odnowieniu.";
-"preferences_general_patron_thank_for_purchase" = "Dzięki! Wspierasz MeetingBar przez %d miesięcy. 🎉";
+"preferences_general_patron_description" = "To są jednorazowe zakupy i nie podlegają odnowieniu.";
+"preferences_general_patron_thank_for_purchase" = "Dziękuje! Zapłaciłeś żeby wesprzeć MeetingBar przez %d miesięcy. 🎉";
 "preferences_general_patron_restore_purchases" = "Przywróć zakupy";
 "preferences_general_feedback_title" = "Jeśli masz jakieś pytania lub opinie,\n zapraszamy do kontaktu:";
 "preferences_general_feedback_email" = "E-mail";
@@ -83,8 +83,8 @@
 "preferences_appearance_events_value_only_with_link" = "pokaż tylko te z linkami do spotkań";
 "preferences_appearance_status_bar_title" = "Pasek stanu";
 "preferences_appearance_status_bar_icon_title" = "Ikona";
-"preferences_appearance_status_bar_icon_app_icon_value" = " App icon";
-"preferences_appearance_status_bar_icon_calendar_icon_value" = " CIkona kalendarz";
+"preferences_appearance_status_bar_icon_app_icon_value" = " MeetingBar";
+"preferences_appearance_status_bar_icon_calendar_icon_value" = " Kalendarz";
 "preferences_appearance_status_bar_icon_specific_icon_value" = " Ikona zdarzenia (e.g. MS Teams)";
 "preferences_appearance_status_bar_icon_no_icon_value" = " Brak ikony";
 "preferences_appearance_status_bar_title_title" = "Tytuł";
@@ -96,7 +96,7 @@
 "preferences_appearance_status_bar_time_show_value" = "pokaż";
 "preferences_appearance_status_bar_time_show_under_title_value" = "pokaż pod tytułem";
 "preferences_appearance_status_bar_time_hide_value" = "ukryj";
-"preferences_appearance_status_bar_next_event_toggle" = "Pokaż tylko następne wydarzenie rozpoczynające się w ciągu";
+"preferences_appearance_status_bar_next_event_toggle" = "Pokaż tylko wydarzenie rozpoczynające się w ciągu";
 "preferences_appearance_status_bar_next_event_stepper" = "%d minut";
 "preferences_appearance_menu_title" = "Menu";
 "preferences_appearance_menu_shorten_event_title_toggle" = "Skróć tytuł wydarzenia do";
