@@ -53,8 +53,8 @@
 "preferences_general_patron_three_months" = "3 mjeseca – 2,99 USD";
 "preferences_general_patron_six_months" = "6 mjeseci – 5,99 USD";
 "preferences_general_patron_twelve_months" = "12 mjeseci – 11,99 USD";
-"preferences_general_patron_description" = "Ove jednokratne kupnje se ne obnavljaju automatski.";
-"preferences_general_patron_thank_for_purchase" = "Hvala! Podržavaš MeetingBar %d mjeseci. 🎉";
+"preferences_general_patron_description" = "Ovo su jednokratne kupnje i neće se automatski obnavljati.";
+"preferences_general_patron_thank_for_purchase" = "Hvala! S tvojim plaćanjem podržavaš MeetingBar %d mjeseci. 🎉";
 "preferences_general_patron_restore_purchases" = "Obnovi kupnje";
 "preferences_general_feedback_title" = "Kanali za slanje pitanja i\npovratnih informacija:";
 "preferences_general_feedback_email" = "E-pošta";
@@ -83,8 +83,8 @@
 "preferences_appearance_events_value_only_with_link" = "prikaži samo one s poveznicama na sastanak";
 "preferences_appearance_status_bar_title" = "Traka stanja";
 "preferences_appearance_status_bar_icon_title" = "Ikona";
-"preferences_appearance_status_bar_icon_app_icon_value" = " Ikona programa";
-"preferences_appearance_status_bar_icon_calendar_icon_value" = " Ikona Kalendara";
+"preferences_appearance_status_bar_icon_app_icon_value" = " MeetingBar";
+"preferences_appearance_status_bar_icon_calendar_icon_value" = " Kalendar";
 "preferences_appearance_status_bar_icon_specific_icon_value" = " Ikona određenog događaja (npr. MS Teams)";
 "preferences_appearance_status_bar_icon_no_icon_value" = " Bez ikone";
 "preferences_appearance_status_bar_title_title" = "Naslov";
@@ -96,7 +96,7 @@
 "preferences_appearance_status_bar_time_show_value" = "prikaži";
 "preferences_appearance_status_bar_time_show_under_title_value" = "prikaži ispod naslova";
 "preferences_appearance_status_bar_time_hide_value" = "sakrij";
-"preferences_appearance_status_bar_next_event_toggle" = "Prikaži samo sljedeći događaj koji počinje za";
+"preferences_appearance_status_bar_next_event_toggle" = "Prikaži samo događaje koji počinju u idućih";
 "preferences_appearance_status_bar_next_event_stepper" = "%d min";
 "preferences_appearance_menu_title" = "Izbornik";
 "preferences_appearance_menu_shorten_event_title_toggle" = "Skrati naslov događaja na";
