@@ -86,6 +86,8 @@ v StarLeaf
 * Discord
 * Jam
 * Blackboard Collaborate
+* CoScreen
+* Vowel
 
 
 If the service you use isn't supported, add a comment [here](https://github.com/leits/MeetingBar/discussions/108).
