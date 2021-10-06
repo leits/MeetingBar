@@ -1,0 +1,355 @@
+
+
+"general_close" = "סגירה";
+"general_add" = "הוספה";
+"general_delete" = "מחיקה";
+"general_save" = "שמירה";
+"create_meeting_error_title" = "לא ניתן ליצור פגישה חדשה";
+"next_meeting_empty_title" = "אין פגישות שתתרחשנה היום";
+"next_meeting_empty_message" = "נפלא! זה בדיוק הזמן להכין שוקו";
+"window_title_onboarding" = "ברוך בואך ל־MeetingBar";
+
+// MARK: - Preferences General
+
+"preferences_general_option_login_launch" = "הפעלה לאחר הכניסה";
+"preferences_general_option_preferred_language_title" = "שפה:";
+"preferences_general_option_preferred_language_system_value" = "מערכת";
+"preferences_general_option_shortcuts" = "קיצורים";
+"preferences_general_all_shortcut" = "כל הקיצורים";
+"preferences_general_shortcut_open_menu" = "פתיחת התפריט:";
+"preferences_general_shortcut_create_meeting" = "יצירת פגישה:";
+"preferences_general_shortcut_join_next" = "הצטרפות לפגישה הבאה:";
+"preferences_general_shortcut_join_from_clipboard" = "הצטרפות לפגישה שבלוח הגזירים:";
+"preferences_general_shortcut_toggle_meeting_name_visibility" = "החלפת מצב הצגת הכותרת בשורת המצב:";
+"preferences_general_meeting_bar_description" = "MeetingBar הוא יישום בקוד פתוח שנוצר על ידי Andrii Leitsius\nלפגישות מקוונות פשוטות וחלקות יותר";
+"preferences_general_external_patronage" = "Patronage";
+"preferences_general_external_gitHub" = "GitHub";
+"preferences_general_external_contact" = "יצירת קשר";
+"preferences_general_patron_title" = "להפוך ל־Patron (מימון חודשי)";
+"preferences_general_patron_three_months" = "3 חודשים – 2.99 דולר";
+"preferences_general_patron_six_months" = "חצי שנה – 5.99 דולר";
+"preferences_general_patron_twelve_months" = "שנה - 11.99 דולר";
+"preferences_general_patron_description" = "אלו רכישות חד־פעמיות והן לא תתחדשנה.";
+"general_ok" = "אישור";
+"preferences_tab_services" = "שירותים";
+"preferences_tab_appearance" = "מראה";
+"preferences_general_patron_thank_for_purchase" = "תודה רבה! שילמת כדי לתמוך ב־MeetingBar למשך %d חודשים. 🎉";
+"status_bar_submenu_attendees_status_unknown" = " [?]";
+"status_bar_error_apple_script_title" = "שגיאת AppleScript";
+"preferences_general_patron_restore_purchases" = "שחזור רכישות";
+"preferences_general_feedback_title" = "אם יש לך שאלות או משוב,\nניתן ליצור קשר מפה:";
+"preferences_general_feedback_email" = "דוא״ל";
+"preferences_general_feedback_twitter" = "טוויטר";
+"preferences_general_feedback_telegram" = "טלגרם";
+"preferences_appearance_events_show_events_for_today_value" = "היום";
+"preferences_appearance_events_show_events_for_title" = "הצגת אירועים על פני";
+"preferences_appearance_events_show_events_for_today_tomorrow_value" = "היום ומחר";
+"preferences_appearance_events_non_all_day_title" = "אירועים אחרים:";
+"preferences_appearance_events_value_hide_without_meeting_link" = "להסתיר את אלו ללא קישורי פגישות";
+"preferences_appearance_events_all_day_title" = "אירועי כל היום:";
+"preferences_appearance_events_without_guest_title" = "אירועים ללא אורחים:";
+"preferences_appearance_events_past_title" = "אירועי עבר:";
+"preferences_appearance_events_pending_title" = "אירועים ממתינים";
+"preferences_appearance_events_declined_title" = "אירועים שנדחו:";
+"preferences_appearance_events_value_show" = "הצגה";
+"preferences_appearance_events_value_hide" = "הסתרה";
+"preferences_appearance_events_value_as_inactive" = "הצגה כבלתי פעיל";
+"preferences_appearance_events_value_with_strikethrough" = "הצגה כמסומן בקו חוצה";
+"preferences_appearance_events_value_only_with_link" = "הצגת אלו עם קישורים פגישות בלבד";
+"preferences_appearance_status_bar_title" = "שורת מצב";
+"preferences_appearance_status_bar_icon_title" = "סמל";
+"preferences_appearance_status_bar_icon_app_icon_value" = " MeetingBar";
+"preferences_appearance_status_bar_icon_calendar_icon_value" = " לוח שנה";
+"preferences_appearance_status_bar_icon_no_icon_value" = " ללא סמל";
+"preferences_appearance_status_bar_title_title" = "כותרת";
+"preferences_appearance_status_bar_title_event_title_value" = "כותרת אירוע";
+"preferences_appearance_status_bar_time_title" = "שעה";
+"preferences_appearance_status_bar_time_hide_value" = "הסתרה";
+"preferences_appearance_menu_title" = "תפריט";
+"preferences_appearance_menu_shorten_event_title_toggle" = "קיצור כותרות אירועים לכדי";
+"preferences_appearance_menu_shorten_event_title_stepper" = "%d תווים";
+"preferences_appearance_menu_time_format_title" = "תבנית השעה:";
+"preferences_appearance_menu_show_event_title" = "הצגת אירוע:";
+"preferences_appearance_menu_show_event_end_time_value" = "זמן הסיום";
+"preferences_appearance_menu_show_event_icon_value" = "סמל";
+"preferences_appearance_menu_show_event_details_value" = "פרטים כתת־תפריט";
+"preferences_services_link_meet_title" = "לפתוח קישורי Google Meet עם";
+"preferences_services_link_zoom_title" = "לפתוח קישורי Zoom עם";
+"preferences_services_link_team_title" = "לפתוח קישורי Teams עם";
+"preferences_services_link_jitsi_title" = "לפתוח קישורי Jitsi עם";
+"preferences_services_link_default_browser_value" = "דפדפן בררת המחדל";
+"preferences_services_link_zoom_value" = "היישום Zoom";
+"preferences_services_link_teams_value" = "היישום Teams";
+"preferences_services_link_jitsi_value" = "היישום Jitsi Meet";
+"preferences_services_supported_links_mailback" = "אם השירות שמשמש אותך עדיין אינו נתמך, אפשר לשלוח הודעת דוא״ל למתכנתים";
+"preferences_services_create_meeting_title" = "יצירת פגישות דרך";
+"preferences_services_create_meeting_custom_url_value" = "כתובת משלך";
+"preferences_services_google_meet_tip" = "עצה: Google Meet תומך בבחירת חשבון בכתובת, למשל: https://meet.google.com/new?authuser=1";
+"preferences_services_create_meeting_browser_title" = "להשתמש בדפדפן";
+
+// MARK: - Preferences Services Browsers Configuration
+
+"preferences_configure_browsers_button" = "הגדרת דפדפנים";
+"preferences_configure_browsers_delete_alert_title" = "למחוק הגדרות דפדפן?";
+"preferences_configure_browsers_add_button_browser_title" = "דפדפן";
+"preferences_configure_browsers_add_button_all_system_title" = "כל דפדפני המערכת";
+"preferences_configure_browsers_modal_edit_browser_title" = "עריכת דפדפן";
+"preferences_configure_browsers_modal_add_browser_name" = "שם";
+"preferences_configure_browsers_modal_add_browser_path" = "נתיב";
+"preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "בחירת דפדפן";
+"preferences_configure_browsers_modal_alert_title" = "לא ניתן להוסיף הגדרות דפדפן";
+"preferences_configure_browsers_choose_broser_panel_title" = "נא לבחור יישום דפדפן";
+"preferences_configure_browsers_choose_broser_panel_prompt" = "בחירת דפדפן";
+"preferences_configure_browsers_choose_broser_panel_message" = "נא לבחור מאיפה להריץ את הדפדפן.";
+
+// MARK: - Preferences Bookmarks
+
+"preferences_bookmarks_no_bookmarks_placeholder" = "אין לך סימניות עדיין";
+"preferences_bookmarks_delete_bookmark_title" = "למחוק סימניה?";
+"preferences_bookmarks_delete_bookmark_message" = "למחוק את הסימניה %@?";
+"preferences_bookmarks_new_bookmark_title" = "סימניה חדשה";
+"preferences_bookmarks_new_bookmark_link_phone" = "קישור/מספר טלפון";
+"preferences_bookmarks_new_bookmark_service" = "שירות";
+"preferences_bookmarks_new_bookmark_error_title" = "אי אפשר להוסיף סימניה";
+"preferences_calendars_add_account_description" = "לוחות השנה שדרושים לך לא נמצאים?";
+"preferences_calendars_add_account_button" = "הוספת חשבון";
+"preferences_advanced_apple_script_checkmark" = "להפעיל AppleScript בעת הצטרפות לפגישה";
+"preferences_advanced_apple_script_placeholder" = "# כאן ניתן לכתוב את הסקריפט שלך\ntell application \"Music\" to pause";
+"preferences_advanced_save_script_button" = "שמירת הסקריפט";
+"preferences_advanced_wrong_location_title" = "מיקום שגוי";
+
+// MARK: - Preferences Advanced
+
+"preferences_advanced_setting_warning" = "⚠️ נא להשתמש בהגדרות אלו אם ברור לך מה תפקידן";
+"preferences_advanced_wrong_location_button" = "הבנתי!";
+"preferences_advanced_regex_title" = "ביטויים רגולריים מותאמים לקישור פגישה";
+"preferences_advanced_regex_add_button" = "הוספת ביטוי רגולרי";
+"preferences_advanced_regex_edit_button" = "עריכה";
+"preferences_advanced_regex_new_title" = "נא לכתוב ביטוי רגולרי";
+"preferences_advanced_regex_new_cant_save_title" = "לא ניתן לשמור ביטוי רגולרי";
+
+// MARK: - Status bar
+
+"status_bar_section_today" = "היום";
+"status_bar_section_tomorrow" = "מחר";
+"status_bar_empty_calendar_message" = "נא לבחור את לוחות השנה שלך בהעדפות\nכדי לראות את הפגישות שלך";
+"status_bar_section_join_next_meeting" = "הצטרפות לפגישת האירוע הבאה";
+"status_bar_section_join_from_clipboard" = "פתיחת פגישה מלוח הגזירים";
+"status_bar_section_join_create_meeting" = "יצירת פגישה";
+"status_bar_section_bookmarks_title" = "סימניות";
+"status_bar_submenu_calendar_title" = "לוח שנה: %@";
+"status_bar_submenu_duration_all_day" = "%@ - %@ (%@ דקות)";
+"status_bar_submenu_status_title" = "מצב: %@";
+"status_bar_submenu_status_accepted" = " 👍 התקבל";
+"status_bar_submenu_status_declined" = " 👎 נדחה";
+"status_bar_submenu_status_tentative" = " ☝️ טנטטיבי";
+"status_bar_submenu_status_pending" = " ⏳ בהמתנה";
+"status_bar_submenu_status_unknown" = " ❔ לא ידוע";
+"status_bar_submenu_status_default_extended" = " ❔ (%@)";
+"status_bar_submenu_status_default_simple" = " ❔ (לא ידוע)";
+"status_bar_submenu_location_title" = "מיקום:";
+"status_bar_submenu_organizer_title" = "ארגון: %@";
+"status_bar_submenu_notes_title" = "הערות:";
+"status_bar_submenu_attendees_title" = "משתתפים (%d)";
+"status_bar_submenu_attendees_no_name" = "משתתף אלמוני";
+"status_bar_submenu_attendees_you" = "%@ (אני)";
+"status_bar_submenu_email_attendees" = "שליחת דוא״ל למשתתפים";
+"status_bar_quick_actions" = "פעולות זריזות";
+"status_bar_error_link_missed_title" = "אוף! אי אפשר להצטרף אל %@";
+"status_bar_error_link_missed_message" = "הקישור לא נמצא או ששירות הפגישות שלך לא נתמך עדיין";
+"status_bar_error_teams_link_title" = "אופס! לא ניתן לפתוח את הקישור ביישום Microsoft Teams";
+"status_bar_error_teams_link_message" = "נא לוודא שהיישום Microsoft Teams מותקן אצלך או שאפשר לפתוח קישורים כאלו בדפדפן שלך דרך ההעדפות במקום.";
+"status_bar_error_zoom_app_link_title" = "אופס! לא ניתן לפתוח את הקישור ביישום Zoom";
+"status_bar_error_zoom_app_link_message" = "נא לוודא שהיישום Zoom מותקן אצלך או שאפשר לפתוח קישורים כאלו בדפדפן שלך דרך ההעדפות במקום.";
+"status_bar_error_zoom_native_link_title" = "אופס! לא ניתן לפתוח את הקישור הזה ביישום Zoom";
+"status_bar_error_zoom_native_link_message" = "נא לוודא שהיישום Zoom מותקן אצלך או שאפשר לפתוח קישורים כאלו בדפדפן שלך דרך ההעדפות במקום.";
+
+// MARK: - Welcome screen
+
+"welcome_screen_greeting_main_title" = "היי! MeetingBar הוא יישום כל כך פשוט שהכול כמעט מוכן.";
+"welcome_screen_greeting_additional_title" = "הבה נתאים אותו 100% אליך!";
+"welcome_screen_login_launch_toggle_title" = "הפעלת MeetingBar בכניסה למערכת";
+"welcome_screen_shortcut_next_meeting_title" = "ניתן להצטרף לפגישת האירוע הבאה עם הקיצור שלך:";
+"welcome_screen_ad_hoc_meeting_title" = "יצירת ישיבות נקודתיות תחת ";
+"welcome_screen_shortcut_ad_hoc_meeting_title" = "עם הקיצור שלך:";
+"welcome_screen_setup_calendar_title" = "הקמת לוחות שנה";
+
+// MARK: - Calendars screen
+
+"calendars_screen_select_calendar_title" = "נא לבחור לפחות לוח שנה אחד";
+"calendars_screen_start_button" = "התחלה באמצעות יישום";
+"access_screen_access_screen_access_denied_go_to_title" = "מעבר אל";
+"access_screen_access_denied_relaunch_title" = "ואז להפעיל את היישום ידנית כדי להמשיך את ההגדרות.";
+"access_screen_access_granted_title" = "מוגשת בקשה לגשת ללוחות השנה שלך…";
+"access_screen_access_granted_click_ok_title" = "יש ללחוץ על „אישור” בחלונית הקופצת ב־macOS שלך.";
+
+// MARK: - Shared
+
+"shared_send_notification_toggle" = "לשלוח התראה להצטרף לפגישת האירוע הבאה שלך";
+"shared_send_notification_directly_value" = "כאשר אירוע מתחיל";
+"shared_send_notification_one_minute_value" = "דקה לפני";
+"shared_send_notification_three_minute_value" = "3 דקות לפני";
+"constants_create_meeting_service_jam" = "Jam";
+"constants_create_meeting_service_coscreen" = "CoScreen";
+"constants_create_meeting_service_zoom" = "Zoom";
+"constants_create_meeting_service_teams" = "Microsoft Teams";
+"constants_create_meeting_service_gcalendar" = "יומן Google";
+"constants_create_meeting_service_outlook_live" = "Outlook Live";
+"constants_create_meeting_service_outlook_office365" = "Outlook Office 365";
+"constants_create_meeting_service_url" = "כתובת משלך";
+"constants_meeting_service_meet" = "Google Meet";
+"constants_meeting_service_hangouts" = "Google Hangouts";
+"constants_meeting_service_zoom" = "Zoom";
+"constants_meeting_service_teams" = "Microsoft Teams";
+"constants_meeting_service_webex" = "Cisco Webex";
+"constants_meeting_service_jitsi" = "Jitsi";
+"constants_meeting_service_ringcentral" = "Ring Central";
+"constants_meeting_service_gotomeeting" = "GoToMeeting";
+"constants_meeting_service_gotowebinar" = "GoToWebinar";
+"constants_meeting_service_bluejeans" = "BlueJeans";
+"constants_meeting_service_eight_x_eight" = "8x8";
+"constants_meeting_service_demio" = "Demio";
+"constants_meeting_service_join_me" = "Join.me";
+"constants_meeting_service_zoomgov" = "ZoomGov";
+"constants_meeting_service_whereby" = "Whereby";
+"constants_meeting_service_uberconference" = "Uber Conference";
+"constants_meeting_service_blizz" = "Blizz";
+"constants_meeting_service_vsee" = "VSee";
+"constants_meeting_service_starleaf" = "StarLeaf";
+"constants_meeting_service_duo" = "Google Duo";
+"constants_meeting_service_voov" = "Tencent VooV";
+"constants_meeting_service_skype4biz_selfhosted" = "Skype לעסקים (אירוח עצמי)";
+"constants_meeting_service_facetime" = "Facetime";
+"constants_meeting_service_facetimeaudio" = "Facetime Audio";
+"constants_meeting_service_youtube" = "YouTube";
+"constants_meeting_service_vonageMeetings" = "Vonage Meetings";
+"constants_meeting_service_meetStream" = "Google Meet Stream";
+"constants_meeting_service_around" = "Around";
+"constants_meeting_service_jam" = "Jam";
+"constants_meeting_service_zoom_native" = "Zoom טבעי";
+"shared_send_notification_no_alert_style_tip" = "⚠️ הגדרות ההתראות ב־macOS שלך עבור MeetingBar לא מוגדרות להוציא התראות. יש לעשות זאת אם מעניין אותך להשתמש בהתראות דביקות.";
+"shared_send_notification_disabled_tip" = "⚠️ הגדרות ההתראות ב־macOS שלך עבור MeetingBar כבויות. יש להפעיל את ההתראות בהגדרות המערכת של macOS כדי לעקוב אחר פגישות.";
+"general_cancel" = "ביטול";
+"general_meeting" = "פגישה";
+
+// MARK: - Window titles
+
+"window_title_preferences" = "העדפות MeetingBar";
+"windows_title_changelog" = "MeetingBar – מה חדש";
+"preferences_tab_bookmarks" = "סימניות";
+"preferences_tab_calendars" = "לוחות שנה";
+"preferences_appearance_status_bar_title_dot_value" = "נקודה (•)";
+"create_meeting_error_message" = "הכתובת שבחרת „%@” חסרה או שגויה. נא להוסיף אחת בהעדפות היישום.";
+"preferences_bookmarks_add_bookmark_button" = "הוספת סימניה";
+
+// MARK: - Link open
+
+"link_url_cant_open_title" = "אופס! לא ניתן לפתוח את הקישור עם %@";
+"notifications_event_start_three_minutes_body" = "האירוע מתחיל בעוד שלוש דקות";
+"notifications_event_start_five_minutes_body" = "האירוע מתחיל בעוד חמש דקות";
+"constants_meeting_service_blackboard_collab" = "Blackboard Collaborate";
+"constants_meeting_service_coscreen" = "CoScreen";
+"constants_meeting_service_vowel" = "Vowel";
+"constants_meeting_service_other" = "אחר";
+"constants_meeting_service_url" = "כתובת";
+"constants_browser_brave" = "Brave";
+"constants_browser_chrome" = "Google Chrome";
+"constants_browser_chromium" = "Chromium";
+"constants_browser_edge" = "Microsoft Edge";
+"constants_browser_firefox" = "Firefox";
+"constants_browser_opera" = "Opera";
+
+// MARK: - Store
+
+"store_patronage_title" = "ה־Patronage של MeetingBar";
+"store_patronage_restore_success_message" = "שוחזר";
+"store_patronage_restore_nothing_message" = "אין מה לשחזר";
+"store_patronage_purchase_success_message" = "הרכישה בוצעה. תודה רבה על התמיכה!";
+"store_patronage_purchase_unknown_message" = "שגיאה לא ידועה. נא ליצור קשר עם התמיכה.";
+"store_patronage_purchase_client_invalid_message" = "אין הרשה לשלם";
+"store_patronage_purchase_payment_invalid_message" = "מזהה הרכישה שגוי";
+"store_patronage_purchase_payment_not_allowed_message" = "למכשיר אסור לבצע את התשלום";
+"store_patronage_purchase_store_product_not_available_message" = "המוצר אינו זמין בחזית החנות הנוכחית";
+"store_patronage_purchase_cloud_service_network_connection_failed" = "לא ניתן להתחבר לרשת";
+"notifications_event_start_one_minute_body" = "האירוע מתחיל בעוד דקה";
+"link_url_cant_open_message" = "נא לוודא שמותקן אצלך %@ או להגדיר לפתוח קישורים כאלה בדפדפן דרך ההעדפות במקום.";
+"preferences_tab_advanced" = "מתקדם";
+
+// MARK: - Preferences tabs
+
+"preferences_tab_general" = "כללי";
+
+// MARK: - Preferences Appearance
+
+"preferences_appearance_events_title" = "אירועים";
+"preferences_appearance_events_value_inactive_without_meeting_link" = "הצגת אלו ללא קישורי פגישות כבלתי פעילים";
+"preferences_appearance_events_value_as_underlined" = "הצגה כמסומן בקו תחתון";
+"preferences_appearance_status_bar_icon_specific_icon_value" = " סמל מוכוון אירוע (למשל MS Teams)";
+"preferences_appearance_status_bar_title_shorten_stepper" = "קיצור ל־%d תווים";
+"preferences_appearance_status_bar_time_show_value" = "הצגה";
+"preferences_appearance_status_bar_time_show_under_title_value" = "הצגה תחת הכותרת";
+"preferences_appearance_status_bar_next_event_stepper" = "%d דקות";
+"preferences_appearance_menu_time_format_12_hour_value" = "12 שעות (AM/PM)";
+"preferences_appearance_menu_time_format_24_hour_value" = "24 שעות";
+
+// MARK: - Preferences Services
+
+"preferences_services_link_meeting_title" = "לפתוח את כל קישורי הפגישות עם";
+"preferences_services_supported_links_list" = "קישורים נתמכים לשירותים:\n%@";
+"preferences_appearance_status_bar_title_hide_value" = "הסתרה";
+"preferences_appearance_status_bar_next_event_toggle" = "להציג רק אירועים שמתחילים בעוד";
+"preferences_services_create_meeting_custom_url_placeholder" = "לא למלא כתובת תקפה (http://‎ או https://‎)";
+"preferences_configure_browsers_delete_alert_message" = "למחוק את הגדרות הדפדפן %@?";
+"preferences_configure_browsers_modal_add_browser_title" = "הוספת דפדפן";
+"preferences_bookmarks_new_bookmark_name" = "שם";
+"preferences_bookmarks_new_bookmark_already_exist" = "ל־%@ כבר יש את הקישור/מספר הטלפון הזה:\n%@";
+
+// MARK: - Preferences Calendars
+
+"preferences_calendars_select_calendars_title" = "נא לבחור לוחות שנה כדי לצפות באירועים בסרגל המצב";
+"preferences_calendars_add_account_modal" = "כדי להוסיף לוחות שנה חיצוניים:\n1. יש לפתוח את יישום לוח השנה כבררת המחדל\n2. ללחוץ על ‚הוספת חשבון’ בתפריט\n3. לבחור ולחבר את החשבון שלך";
+"preferences_advanced_wrong_location_message" = "נא לבחור את תיקיית משתמש ← ספרייה ← סקריפטים של יישומים ← leits.MeetingBar";
+"preferences_advanced_regex_delete_button" = "x";
+"status_bar_section_bookmarks_menu" = "תפריט סימניות";
+"status_bar_section_date_nothing" = "שום דבר עבור %@";
+"status_bar_event_start_time_all_day" = "כל היום";
+"status_bar_submenu_open_in_calendar" = "פתיחה ביישום לוח שנה";
+
+// MARK: - Access screen
+
+"access_screen_access_denied_title" = "אופס! נראה שדחית את הגישה ללוחות השנה שלך.";
+"constants_meeting_service_teamviewer_meeting" = "TeamViewer Meeting";
+"constants_browser_defaultBrowser" = "דפדפן בררת המחדל";
+"status_bar_section_join_current_meeting" = "הצטרפות לפגישת האירוע הנוכחית";
+"status_bar_submenu_attendees_status_tentative" = " [טנטטיבי]";
+"status_bar_submenu_copy_meeting_link" = "העתקת קישור פגישה";
+"status_bar_submenu_open_in_fantastical" = "פתיחה ב־Fantastical";
+"status_bar_show_meeting_names" = "הצגת כותרת הפגישה";
+"status_bar_hide_meeting_names" = "הסתרת כותרת הפגישה";
+"status_bar_whats_new" = "מה חדש?";
+"status_bar_preferences" = "העדפות";
+"status_bar_quit" = "יציאה מ־MeetingBar";
+"status_bar_no_title" = "אין כותרת";
+"status_bar_event_status_now" = "עכשיו (%@ נותרו)";
+"status_bar_event_status_in" = "בעוד %@";
+"access_screen_access_denied_system_preferences_button" = "העדפות המערכת";
+"access_screen_access_denied_checkbox_title" = "ולבחור את תיבת הסימון שליד MeetingBar.";
+"shared_send_notification_five_minute_value" = "5 דקות לפני";
+
+// MARK: - Constants
+"constants_create_meeting_service_meet" = "Google Meet";
+"constants_meeting_service_phone" = "מספר טלפון";
+"constants_meeting_service_chime" = "Amazon Chime";
+"constants_meeting_service_facebook_workspace" = "Facebook Workspace";
+"constants_meeting_service_lifesize" = "Lifesize";
+"constants_meeting_service_skype" = "Skype";
+"constants_meeting_service_skype4biz" = "Skype לעסקים";
+"constants_meeting_service_discord" = "Discord";
+"constants_browser_vivaldi" = "Vivaldi";
+"constants_browser_safari" = "Safari";
+"store_patronage_purchase_cloud_service_permission_denied_message" = "הגישה לפרטי שירות הענן אסורה";
+"store_patronage_purchase_cloud_service_revoked_message" = "המשתמש דחה את ההרשאה להשתמש בשירות הענן הזה";
+
+// MARK: - Notifications
+
+"notifications_event_start_soon_body" = "האירוע מתחיל בקרוב";
