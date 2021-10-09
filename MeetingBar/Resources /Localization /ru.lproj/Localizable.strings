@@ -83,8 +83,8 @@
 "preferences_appearance_events_value_only_with_link" = "показать только со ссылкой на событие";
 "preferences_appearance_status_bar_title" = "Статус бар";
 "preferences_appearance_status_bar_icon_title" = "Иконка";
-"preferences_appearance_status_bar_icon_app_icon_value" = " Иконка приложения";
-"preferences_appearance_status_bar_icon_calendar_icon_value" = " Иконка календаря";
+"preferences_appearance_status_bar_icon_app_icon_value" = " MeetingBar";
+"preferences_appearance_status_bar_icon_calendar_icon_value" = " Календарь";
 "preferences_appearance_status_bar_icon_specific_icon_value" = " Иконка события (например MS Teams)";
 "preferences_appearance_status_bar_icon_no_icon_value" = " Без иконки";
 "preferences_appearance_status_bar_title_title" = "Заголовок";
