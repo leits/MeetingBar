@@ -305,7 +305,7 @@
 
 // MARK: - Constants
 "constants_create_meeting_service_meet" = "Google Meet";
-"shared_send_notification_five_minute_value" = "3 Minuten vorher";
+"shared_send_notification_five_minute_value" = "5 Minuten vorher";
 "shared_send_notification_three_minute_value" = "3 Minuten vorher";
 "shared_send_notification_one_minute_value" = "1 Minute vorher";
 "shared_send_notification_directly_value" = "zum Ereignisstart";
