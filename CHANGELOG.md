@@ -1,6 +1,7 @@
 # Changelog for Meetingbar
 ## Version 3.9.0 (WIP)
 > unreleased
+* Added support to filter out events by regex
 
 ## Version 3.8.0 (WIP)
 > (released 15th Sep 2021)
