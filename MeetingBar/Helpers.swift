@@ -64,6 +64,10 @@ func getMatch(text: String, regex: NSRegularExpression) -> String? {
     return nil
 }
 
+func hasMatch(text: String, regex: NSRegularExpression) -> Bool {
+    return regex.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)) != nil
+}
+
 func cleanUpNotes(_ notes: String) -> String {
     let zoomSeparator = "\n──────────"
     let meetSeparator = "-::~:~::~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~::~:~::-"
@@ -121,6 +125,17 @@ func detectLink(_ field: inout String) -> MeetingLink? {
         }
     }
     return nil
+}
+
+func shouldIncludeMeeting(_ event: EKEvent) -> Bool {
+    for pattern in Defaults[.customEventRegexes] {
+        if let regex = try? NSRegularExpression(pattern: pattern) {
+            if hasMatch(text: event.title, regex: regex) {
+                return false
+            }
+        }
+    }
+    return true
 }
 
 /**

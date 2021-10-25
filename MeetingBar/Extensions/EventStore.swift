@@ -38,8 +38,11 @@ extension EKEventStore {
         var filteredCalendarEvents = [EKEvent]()
 
         for calendarEvent in calendarEvents {
+            if !shouldIncludeMeeting(calendarEvent) {
+                continue
+            }
+            
             var addEvent = false
-
             if calendarEvent.isAllDay {
                 if Defaults[.allDayEvents] == AlldayEventsAppereance.show {
                     addEvent = true
@@ -109,7 +112,7 @@ extension EKEventStore {
         // but the next event is closer than 13 minutes later
         // then show the next event
         for event in nextEvents {
-            if event.isAllDay {
+            if event.isAllDay || !shouldIncludeMeeting(event) {
                 continue
             } else {
                 if Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show_inactive_without_meeting_link {

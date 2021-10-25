@@ -170,7 +170,7 @@ struct EventRegexesSection: View {
     func openEditRegexModal(_ regex: String) {
         selectedRegex = regex
         removeRegex(regex)
-//        showingEditRegexModal.toggle()
+        showingEditRegexModal.toggle()
     }
 
     func addRegex(_ regex: String) {
