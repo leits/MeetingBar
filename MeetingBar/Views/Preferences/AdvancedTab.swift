@@ -137,13 +137,12 @@ struct NSScrollableTextViewWrapper: NSViewRepresentable {
     }
 }
 
-
 struct EventRegexesSection: View {
     @Default(.customEventRegexes) var customEventRegexes
-    
+
     @State private var showingEditRegexModal = false
     @State private var selectedRegex = ""
-    
+
     var body: some View {
         Section {
             HStack {
@@ -166,7 +165,7 @@ struct EventRegexesSection: View {
             }
         }.padding(.leading, 19)
     }
-    
+
     func openEditRegexModal(_ regex: String) {
         selectedRegex = regex
         removeRegex(regex)

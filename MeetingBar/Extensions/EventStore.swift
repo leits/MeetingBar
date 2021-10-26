@@ -41,7 +41,7 @@ extension EKEventStore {
             if !shouldIncludeMeeting(calendarEvent) {
                 continue
             }
-            
+
             var addEvent = false
             if calendarEvent.isAllDay {
                 if Defaults[.allDayEvents] == AlldayEventsAppereance.show {
