@@ -103,5 +103,5 @@ extension Defaults.Keys {
     static let runJoinEventScript = Key<Bool>("runAppleScriptWhenJoiningEvent", default: false)
     static let joinEventScript = Key<String>("joinEventScript", default: "preferences_advanced_apple_script_placeholder".loco())
     static let customRegexes = Key<[String]>("customRegexes", default: [])
-    static let customEventRegexes = Key<[String]>("customEventRegexes", default: [])
+    static let filterEventRegexes = Key<[String]>("filterEventRegexes", default: [])
 }

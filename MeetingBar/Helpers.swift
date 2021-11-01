@@ -128,7 +128,7 @@ func detectLink(_ field: inout String) -> MeetingLink? {
 }
 
 func shouldIncludeMeeting(_ event: EKEvent) -> Bool {
-    for pattern in Defaults[.customEventRegexes] {
+    for pattern in Defaults[.filterEventRegexes] {
         if let regex = try? NSRegularExpression(pattern: pattern) {
             if hasMatch(text: event.title, regex: regex) {
                 return false

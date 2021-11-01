@@ -15,7 +15,7 @@ struct AdvancedTab: View {
         VStack(alignment: .leading) {
             ScriptSection()
             Divider()
-            EventRegexesSection()
+            FilterEventRegexesSection()
             Divider()
             MeetingRegexesSection()
             Divider()
@@ -137,8 +137,8 @@ struct NSScrollableTextViewWrapper: NSViewRepresentable {
     }
 }
 
-struct EventRegexesSection: View {
-    @Default(.customEventRegexes) var customEventRegexes
+struct FilterEventRegexesSection: View {
+    @Default(.filterEventRegexes) var filterEventRegexes
 
     @State private var showingEditRegexModal = false
     @State private var selectedRegex = ""
@@ -151,7 +151,7 @@ struct EventRegexesSection: View {
                 Button("preferences_advanced_regex_add_button".loco()) { openEditRegexModal("") }
             }
             List {
-                ForEach(customEventRegexes, id: \.self) { regex in
+                ForEach(filterEventRegexes, id: \.self) { regex in
                     HStack {
                         Text(regex)
                         Spacer()
@@ -173,14 +173,14 @@ struct EventRegexesSection: View {
     }
 
     func addRegex(_ regex: String) {
-        if !customEventRegexes.contains(regex) {
-            customEventRegexes.append(regex)
+        if !filterEventRegexes.contains(regex) {
+            filterEventRegexes.append(regex)
         }
     }
 
     func removeRegex(_ regex: String) {
-        if let index = customEventRegexes.firstIndex(of: regex) {
-            customEventRegexes.remove(at: index)
+        if let index = filterEventRegexes.firstIndex(of: regex) {
+            filterEventRegexes.remove(at: index)
         }
     }
 }
