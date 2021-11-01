@@ -167,7 +167,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
             }
 
             if currentStatusBarEvent?.eventIdentifier != nextEvent?.eventIdentifier {
-                if nextEvent == nil || (nextEvent!).startDate   .timeIntervalSinceNow <= 0 {
+                if nextEvent == nil || (nextEvent!).startDate.timeIntervalSinceNow <= 0 {
                     currentStatusBarEvent = nextEvent
                     updateMenu()
                 }
