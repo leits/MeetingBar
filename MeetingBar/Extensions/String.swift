@@ -47,7 +47,7 @@ extension String {
     ///   - replacement: The replacement string.
     /// - Returns: The string with the replacement, if any.
     func replacingFirstOccurrence(of target: String, with replacement: String) -> String {
-        if let range = self.range(of: target) {
+        if let range = range(of: target) {
             return replacingCharacters(in: range, with: replacement)
         }
         return self
@@ -63,7 +63,7 @@ extension String {
     /// - Returns: The string without HTML tags.
     func htmlTagsStripped() -> String {
         if containsHTML,
-           let data = self.data(using: .utf16),
+           let data = data(using: .utf16),
            let attributedSelf = NSAttributedString(
                html: data,
                options: [.documentType: NSAttributedString.DocumentType.html],

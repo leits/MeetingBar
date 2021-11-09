@@ -175,6 +175,7 @@
 "preferences_advanced_wrong_location_title" = "Wrong location";
 "preferences_advanced_wrong_location_message" = "Please select the User → Library → Application Scripts → leits.MeetingBar folder";
 "preferences_advanced_wrong_location_button" = "Got it!";
+"preferences_advanced_event_regex_title" = "Custom regexes to filter out meetings";
 "preferences_advanced_regex_title" = "Custom regexes for meeting link";
 "preferences_advanced_regex_add_button" = "Add regex";
 "preferences_advanced_regex_edit_button" = "edit";
