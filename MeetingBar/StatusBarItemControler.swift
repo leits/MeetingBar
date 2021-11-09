@@ -19,6 +19,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
     var statusItem: NSStatusItem!
     var statusItemMenu: NSMenu!
     var menuIsOpen = false
+    var currentStatusBarEvent: EKEvent?
 
     var eventStore: EKEventStore!
     var calendars: [EKCalendar] = []
@@ -162,6 +163,13 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
                     button.image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
                 default:
                     button.image = NSImage(named: "iconCalendar")
+                }
+            }
+
+            if currentStatusBarEvent?.eventIdentifier != nextEvent?.eventIdentifier {
+                if nextEvent == nil || (nextEvent!).startDate.timeIntervalSinceNow <= 0 {
+                    currentStatusBarEvent = nextEvent
+                    updateMenu()
                 }
             }
 
