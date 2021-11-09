@@ -19,7 +19,7 @@ class StatusBarItemControler: NSObject, NSMenuDelegate {
     var statusItem: NSStatusItem!
     var statusItemMenu: NSMenu!
     var menuIsOpen = false
-    var currentStatusBarEvent: EKEvent? = nil
+    var currentStatusBarEvent: EKEvent?
 
     var eventStore: EKEventStore!
     var calendars: [EKCalendar] = []
