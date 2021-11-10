@@ -359,3 +359,4 @@
 
 "link_url_cant_open_title" = "Ups! Nije moguće otvoriti poveznicu u %@";
 "link_url_cant_open_message" = "%@ mora biti instaliran ili otvori takve poveznice u jednom od web-preglednika koji su određeni u postavkama.";
+"preferences_advanced_event_regex_title" = "Prilagođeni regularni izrazi za filtriranje sastanaka";
