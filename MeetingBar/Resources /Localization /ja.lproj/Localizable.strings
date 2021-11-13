@@ -376,3 +376,4 @@
 
 "link_url_cant_open_title" = "ひえー！ %@ のリンクを開くことが出来ませんでした";
 "link_url_cant_open_message" = "%@ がインストールされていることを確認するか、代わりにウェブブラウザーでリンクを開いてください。";
+"preferences_advanced_event_regex_title" = "ミーティングをフィルターするための正規表現";
