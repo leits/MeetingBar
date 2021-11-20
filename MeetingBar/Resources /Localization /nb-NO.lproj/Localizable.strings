@@ -3,15 +3,9 @@
 "status_bar_submenu_attendees_status_unknown" = " [?]";
 "status_bar_submenu_status_default_extended" = " ❔ (%@)";
 "preferences_appearance_events_pending_title" = "Forestående begivenheter";
-"constants_meeting_service_facetimeaudio" = "Facetime Audio";
-"constants_meeting_service_vonageMeetings" = "Vonage-møter";
 "store_patronage_purchase_client_invalid_message" = "Tillates ikke å utføre betaling";
-"constants_meeting_service_blackboard_collab" = "Blackboard Collaborate";
-"constants_meeting_service_meetStream" = "Google Meet-strøm";
 "constants_meeting_service_skype4biz_selfhosted" = "Skype For Business (SH)";
 "constants_meeting_service_skype4biz" = "Skype For Business";
-"constants_meeting_service_facebook_workspace" = "Facebook Workspace";
-"constants_meeting_service_uberconference" = "Uber Conference";
 "constants_meeting_service_zoom_native" = "Zoom-programmet";
 "shared_send_notification_disabled_tip" = "⚠️ Merknadsinnstillingene dine i macOS for MeetingBar er avslått. Skru på merknader i macOS-systeminnstillingene for å ikke gå glipp av møter.";
 "shared_send_notification_no_alert_style_tip" = "⚠️ Merknadsinnstillingene dine i macOS for MeetingBar er ikke satt til varsling. Aktiver dette hvis du ønsker vedvarende merknader.";
@@ -36,46 +30,9 @@
 // MARK: - Store
 
 "store_patronage_title" = "MeetingBar-kronerulling";
-"constants_meeting_service_coscreen" = "CoScreen";
-"constants_meeting_service_vowel" = "Vowel";
 "constants_meeting_service_other" = "Annet";
-"constants_meeting_service_discord" = "Discord";
-"constants_meeting_service_jam" = "Jam";
-"constants_meeting_service_around" = "Around";
-"constants_meeting_service_youtube" = "YouTube";
-"constants_meeting_service_facetime" = "Facetime";
-"constants_meeting_service_skype" = "Skype";
-"constants_meeting_service_lifesize" = "Lifesize";
-"constants_meeting_service_voov" = "Tencent VooV";
-"constants_meeting_service_duo" = "Google Duo";
-"constants_meeting_service_starleaf" = "StarLeaf";
-"constants_meeting_service_vsee" = "VSee";
-"constants_meeting_service_teamviewer_meeting" = "Teamviewer-møte";
-"constants_meeting_service_blizz" = "Blizz";
-"constants_meeting_service_whereby" = "Whereby";
-"constants_meeting_service_zoomgov" = "ZoomGov";
-"constants_meeting_service_join_me" = "Join.me";
-"constants_meeting_service_demio" = "Demio";
-"constants_meeting_service_eight_x_eight" = "8x8";
-"constants_meeting_service_bluejeans" = "BlueJeans";
-"constants_meeting_service_gotowebinar" = "GoToWebinar";
-"constants_meeting_service_gotomeeting" = "GoToMeeting";
-"constants_meeting_service_ringcentral" = "Ring Central";
-"constants_meeting_service_chime" = "Amazon Chime";
-"constants_meeting_service_webex" = "Cisco Webex";
-"constants_meeting_service_teams" = "Microsoft Teams";
-"constants_meeting_service_hangouts" = "Google Hangouts";
-"constants_meeting_service_meet" = "Google Meet";
-"constants_create_meeting_service_outlook_office365" = "Outlook Office 365";
-"constants_create_meeting_service_outlook_live" = "Outlook Live";
-"constants_create_meeting_service_gcalendar" = "Google Calendar";
-"constants_create_meeting_service_teams" = "Microsoft Teams";
-"constants_create_meeting_service_zoom" = "Zoom";
-"constants_create_meeting_service_coscreen" = "CoScreen";
-"constants_create_meeting_service_jam" = "Jam";
 
 // MARK: - Constants
-"constants_create_meeting_service_meet" = "Google Meet";
 "shared_send_notification_directly_value" = "når begivenheten starter";
 
 // MARK: - Shared
@@ -123,6 +80,8 @@
 "preferences_advanced_wrong_location_message" = "Velg Bruker → Bibliotek → Programskript → leits.MeetingBar-mappen";
 "preferences_advanced_apple_script_placeholder" = "# skriv ditt skript her\nfortell programmet «Musikk» at det skal ta pause";
 "preferences_advanced_apple_script_checkmark" = "Kjør AppleScript når du tar del i møtet";
+"preferences_advanced_event_regex_title" = "Custom regexes to filter out meetings";
+
 
 // MARK: - Preferences Advanced
 
@@ -147,6 +106,7 @@
 "preferences_general_shortcut_join_from_clipboard" = "Ta del i møte fra utklippstavle:";
 "windows_title_changelog" = "MeetingBar Hva er nytt";
 
+
 // MARK: - Window titles
 
 "window_title_preferences" = "MeetingBar-innstillinger";
@@ -170,8 +130,6 @@
 "constants_browser_chrome" = "Google Chrome";
 "constants_browser_brave" = "Brave";
 "constants_meeting_service_url" = "Nettadresse";
-"constants_meeting_service_jitsi" = "Jitsi";
-"constants_meeting_service_zoom" = "Zoom";
 "constants_meeting_service_phone" = "Telefon";
 "constants_create_meeting_service_url" = "Egendefinert nettadresse";
 "shared_send_notification_five_minute_value" = "fem minutter før";
