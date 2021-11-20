@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		140D84322493A3FE0055E1CE /* StatusBarItemControler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 140D84312493A3FE0055E1CE /* StatusBarItemControler.swift */; };
+		140D84322493A3FE0055E1CE /* StatusBarItemController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 140D84312493A3FE0055E1CE /* StatusBarItemController.swift */; };
 		140D84342493A4180055E1CE /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 140D84332493A4180055E1CE /* Constants.swift */; };
 		140D843A2493A6240055E1CE /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 140D84392493A6240055E1CE /* Helpers.swift */; };
 		140D843D2493B7BF0055E1CE /* EventStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 140D843C2493B7BF0055E1CE /* EventStore.swift */; };
@@ -71,7 +71,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		140D84312493A3FE0055E1CE /* StatusBarItemControler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBarItemControler.swift; sourceTree = "<group>"; };
+		140D84312493A3FE0055E1CE /* StatusBarItemController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBarItemController.swift; sourceTree = "<group>"; };
 		140D84332493A4180055E1CE /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		140D84392493A6240055E1CE /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		140D843C2493B7BF0055E1CE /* EventStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventStore.swift; sourceTree = "<group>"; };
@@ -195,7 +195,7 @@
 				1BF37A902604C8050053D53C /* Resources  */,
 				144C017C2462D0C3000C9FFC /* AppDelegate.swift */,
 				1452C9AD25AF5B1000C46CDF /* Views */,
-				140D84312493A3FE0055E1CE /* StatusBarItemControler.swift */,
+				140D84312493A3FE0055E1CE /* StatusBarItemController.swift */,
 				140D84332493A4180055E1CE /* Constants.swift */,
 				14C59B8425CF45340019C9E4 /* Store.swift */,
 				140D84392493A6240055E1CE /* Helpers.swift */,
@@ -497,7 +497,7 @@
 				1452C9CE25AF868E00C46CDF /* CalendarsTab.swift in Sources */,
 				14E4110E246F2F9200F73ACF /* Preferences.swift in Sources */,
 				1452C9CA25AF861300C46CDF /* BookmarksTab.swift in Sources */,
-				140D84322493A3FE0055E1CE /* StatusBarItemControler.swift in Sources */,
+				140D84322493A3FE0055E1CE /* StatusBarItemController.swift in Sources */,
 				140D84342493A4180055E1CE /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

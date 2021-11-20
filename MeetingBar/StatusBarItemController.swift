@@ -1,5 +1,5 @@
 //
-//  StatusBarItemControler.swift
+//  StatusBarItemController.swift
 //  MeetingBar
 //
 //  Created by Andrii Leitsius on 12.06.2020.
@@ -15,7 +15,7 @@ import KeyboardShortcuts
 /**
  * creates the menu in the system status bar, creates the menu items and controls the whole lifecycle.
  */
-class StatusBarItemControler: NSObject, NSMenuDelegate {
+class StatusBarItemController: NSObject, NSMenuDelegate {
     var statusItem: NSStatusItem!
     var statusItemMenu: NSMenu!
     var menuIsOpen = false
