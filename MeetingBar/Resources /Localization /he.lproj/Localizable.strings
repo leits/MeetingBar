@@ -190,7 +190,6 @@
 "shared_send_notification_one_minute_value" = "דקה לפני";
 "shared_send_notification_three_minute_value" = "3 דקות לפני";
 "constants_create_meeting_service_url" = "כתובת משלך";
-"constants_meeting_service_uberconference" = "Uber Conference";
 "constants_meeting_service_skype4biz_selfhosted" = "Skype לעסקים (אירוח עצמי)";
 "constants_meeting_service_zoom_native" = "Zoom טבעי";
 "shared_send_notification_no_alert_style_tip" = "⚠️ הגדרות ההתראות ב־macOS שלך עבור MeetingBar לא מוגדרות להוציא התראות. יש לעשות זאת אם מעניין אותך להשתמש בהתראות דביקות.";
