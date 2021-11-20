@@ -80,7 +80,10 @@ struct ChangelogView: View {
                 }
                 if lastRevisedVersionInChangelog < "3.9.0" {
                     Section(header: Text("Version 3.9.0")) {
-                        Text("• Support to filter out events by regex")
+                        Text("🌍 Added translations into Hebrew")
+                        Text("• Advanced feature to filter out events by regex")
+                        Text("• Added integration with Zhumu/WeMeeting, Lark, and Feishu")
+                        Text("and small bug fixes")
                     }
                 }
             }.listStyle(SidebarListStyle())
