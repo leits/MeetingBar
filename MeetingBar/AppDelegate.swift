@@ -530,7 +530,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                 return
             }
             NSLog("Bookmark url: \(bookmark.url)")
-            openMeetingURL(bookmark.service, url, systemDefaultBrowser)
+            openMeetingURL(bookmark.service, url, nil)
         }
     }
 
