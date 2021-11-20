@@ -64,6 +64,7 @@ struct LinksRegex {
     let blackboard_collab = try! NSRegularExpression(pattern: #"https?://us\.bbcollab\.com/[^\s]*"#)
     let coscreen = try! NSRegularExpression(pattern: #"https?://join\.coscreen\.co/[^\s]*"#)
     let vowel = try! NSRegularExpression(pattern: #"https?://([a-z0-9.]+)?vowel\.com/#/g/[^\s]*"#)
+    let zhumu = try! NSRegularExpression(pattern: #"https://welink.zhumu.com/j/[0-9]+?pwd=[a-zA-Z0-9]+"#)
 }
 
 enum CreateMeetingLinks {
@@ -164,6 +165,7 @@ enum MeetingServices: String, Codable, CaseIterable {
     case url = "Any Link"
     case coscreen = "CoScreen"
     case vowel = "Vowel"
+    case zhumu = "Zhumu"
     case other = "Other"
 
     var localizedValue: String {
@@ -250,6 +252,8 @@ enum MeetingServices: String, Codable, CaseIterable {
             return "constants_meeting_service_coscreen".loco()
         case .vowel:
             return "constants_meeting_service_vowel".loco()
+        case .zhumu:
+            return "Zhumu"
         case .other:
             return "constants_meeting_service_other".loco()
         case .url:
