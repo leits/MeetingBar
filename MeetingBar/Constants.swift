@@ -96,7 +96,7 @@ enum CreateMeetingServices: String, Codable, CaseIterable {
         case .url:
             return "constants_create_meeting_service_url".loco()
         default:
-            return self.rawValue
+            return rawValue
         }
     }
 }
@@ -173,7 +173,7 @@ enum MeetingServices: String, Codable, CaseIterable {
         case .url:
             return "constants_meeting_service_url".loco()
         default:
-            return self.rawValue
+            return rawValue
         }
     }
 }
