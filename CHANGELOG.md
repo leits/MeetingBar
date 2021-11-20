@@ -1,9 +1,16 @@
 # Changelog for Meetingbar
-## Version 3.9.0 (WIP)
+## Version 3.10.0 (WIP)
 > unreleased
-* Added support to filter out events by regex
+*
 
-## Version 3.8.0 (WIP)
+## Version 3.9.0
+> (released 20th Nov 2021)
+* Added translations into Hebrew
+* Advanced feature to filter out events by regex
+* Added integration with Zhumu/WeMeeting, Lark, and Feishu
+and small bug fixes
+
+## Version 3.8.0
 > (released 15th Sep 2021)
 * Added translations into Polish
 * Support MeetInOne for Google Meet links
