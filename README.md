@@ -51,46 +51,7 @@ If you have some installation problems or some other questions please check the 
 
 ## Supported meeting services
 
-* Google Meet
-* Zoom
-* Google Hangouts
-* Microsoft Teams
-* Amazon Chime
-* Cisco Webex
-* Jitsi
-* Ring Central
-* GoToMeeting
-* GoToWebinar
-* BlueJeans
-* 8x8
-* Demio
-* Join.me
-* ZoomGov
-* Whereby
-* Uber Conference
-* Blizz
-* VSee
-v StarLeaf
-* Google Duo
-* Tencent VooV
-* Skype
-* Skype For Bussines
-* Lifesize
-* Facebook Workspace
-* Facetime scheme
-* Telephone scheme
-* Youtube
-* TeamViewer Meeting
-* Google Meet Stream
-* Vonage Meetings
-* Discord
-* Jam
-* Blackboard Collaborate
-* CoScreen
-* Vowel
-
-
-If the service you use isn't supported, add a comment [here](https://github.com/leits/MeetingBar/discussions/108).
+Check full list [here](https://github.com/leits/MeetingBar/discussions/108).
 
 ## Third-Party Integrations
 * [Raycast commands](https://github.com/raycast/script-commands/tree/master/commands#meetingbar)
