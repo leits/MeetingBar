@@ -189,15 +189,10 @@
 "shared_send_notification_directly_value" = "כאשר אירוע מתחיל";
 "shared_send_notification_one_minute_value" = "דקה לפני";
 "shared_send_notification_three_minute_value" = "3 דקות לפני";
-"constants_create_meeting_service_teams" = "Microsoft Teams";
 "constants_create_meeting_service_url" = "כתובת משלך";
-"constants_meeting_service_teams" = "Microsoft Teams";
 "constants_meeting_service_gotomeeting" = "GoToMeeting";
-"constants_meeting_service_demio" = "Demio";
 "constants_meeting_service_uberconference" = "Uber Conference";
-"constants_meeting_service_duo" = "Google Duo";
 "constants_meeting_service_skype4biz_selfhosted" = "Skype לעסקים (אירוח עצמי)";
-"constants_meeting_service_vonageMeetings" = "Vonage Meetings";
 "constants_meeting_service_zoom_native" = "Zoom טבעי";
 "shared_send_notification_no_alert_style_tip" = "⚠️ הגדרות ההתראות ב־macOS שלך עבור MeetingBar לא מוגדרות להוציא התראות. יש לעשות זאת אם מעניין אותך להשתמש בהתראות דביקות.";
 "shared_send_notification_disabled_tip" = "⚠️ הגדרות ההתראות ב־macOS שלך עבור MeetingBar כבויות. יש להפעיל את ההתראות בהגדרות המערכת של macOS כדי לעקוב אחר פגישות.";
@@ -304,7 +299,6 @@
 "access_screen_access_denied_checkbox_title" = "ולבחור את תיבת הסימון שליד MeetingBar.";
 "shared_send_notification_five_minute_value" = "5 דקות לפני";
 "constants_meeting_service_phone" = "מספר טלפון";
-"constants_meeting_service_skype" = "Skype";
 "constants_meeting_service_skype4biz" = "Skype לעסקים";
 "constants_browser_vivaldi" = "Vivaldi";
 "constants_browser_safari" = "Safari";
