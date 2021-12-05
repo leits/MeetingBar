@@ -1,6 +1,6 @@
 # Changelog for Meetingbar
 ## Version 3.10.0 (WIP)
-> unreleased
+* 😴 Added feature to snooze the notification
 *
 
 ## Version 3.9.0

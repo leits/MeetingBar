@@ -256,6 +256,13 @@ enum JoinEventNotificationTime: Int, Codable {
     case fiveMinuteBefore = 300
 }
 
+enum SnoozeEventNotificationTime: Int, Codable {
+    case untilStart = 0
+    case fiveMinuteLater = 300
+    case fifteenMinuteLater = 900
+    case thirtyMinuteLater = 3600
+}
+
 enum UtilsRegex {
     static let emailAddress = try! NSRegularExpression(pattern: #""mailto:(.+@.+)""#)
     static let outlookSafeLinkRegex = try! NSRegularExpression(pattern: #"https://[\S]+\.safelinks\.protection\.outlook\.com/[\S]+url=([\S]*)"#)

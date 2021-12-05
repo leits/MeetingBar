@@ -86,6 +86,11 @@ struct ChangelogView: View {
                         Text("and small bug fixes")
                     }
                 }
+                if lastRevisedVersionInChangelog < "3.10.0" {
+                    Section(header: Text("Version 3.10.0")) {
+                        Text("😴 Added feature to snooze the notification")
+                    }
+                }
             }.listStyle(SidebarListStyle())
             Button("Close", action: close)
         }.padding()
