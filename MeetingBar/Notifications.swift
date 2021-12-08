@@ -30,34 +30,34 @@ func registerNotificationCategories() {
     let acceptAction = UNNotificationAction(identifier: "JOIN_ACTION",
                                             title: "Join",
                                             options: .foreground)
-    
+
     let snoozeUntilStartTime = UNNotificationAction(identifier: "SNOOZE_UNTIL_START_TIME",
                                                     title: "Snooze until start time",
                                                     options: .foreground)
-    
+
     let snooze5Min = UNNotificationAction(identifier: "SNOOZE_5_MIN",
                                           title: "Snooze for 5 min",
                                           options: .foreground)
-    
+
     let snooze15Min = UNNotificationAction(identifier: "SNOOZE_15_MIN",
                                            title: "Snooze for 15 min",
                                            options: .foreground)
-    
+
     let snooze30Min = UNNotificationAction(identifier: "SNOOZE_30_MIN",
                                            title: "Snooze for 30 min",
                                            options: .foreground)
-    
+
     let eventCategory = UNNotificationCategory(identifier: "EVENT",
                                                actions: [acceptAction, snooze5Min, snooze15Min, snooze30Min, snoozeUntilStartTime],
                                                intentIdentifiers: [],
                                                hiddenPreviewsBodyPlaceholder: "",
                                                options: [.customDismissAction, .hiddenPreviewsShowTitle])
-    
+
     let snoozeEventCategory = UNNotificationCategory(identifier: "SNOOZE_EVENT",
-                                               actions: [acceptAction, snooze5Min, snooze15Min, snooze30Min],
-                                               intentIdentifiers: [],
-                                               hiddenPreviewsBodyPlaceholder: "",
-                                               options: [.customDismissAction, .hiddenPreviewsShowTitle])
+                                                     actions: [acceptAction, snooze5Min, snooze15Min, snooze30Min],
+                                                     intentIdentifiers: [],
+                                                     hiddenPreviewsBodyPlaceholder: "",
+                                                     options: [.customDismissAction, .hiddenPreviewsShowTitle])
 
     let notificationCenter = UNUserNotificationCenter.current()
 
@@ -193,7 +193,7 @@ func scheduleEventNotification(_ event: EKEvent) {
 func snoozeEventNotification(_ event: EKEvent, _ interval: SnoozeEventNotificationTime) {
     requestNotificationAuthorization() // By the apple best practices
     removePendingNotificationRequests()
-    
+
     let now = Date()
     let center = UNUserNotificationCenter.current()
     var timeInterval = Double(interval.rawValue)
@@ -204,17 +204,17 @@ func snoozeEventNotification(_ event: EKEvent, _ interval: SnoozeEventNotificati
     } else {
         content.title = event.title
     }
-    
+
     if interval == .untilStart {
         timeInterval = event.startDate.timeIntervalSince(now)
     }
-    
+
     content.categoryIdentifier = "SNOOZE_EVENT"
     content.sound = UNNotificationSound.default
     content.userInfo = ["eventID": event.eventIdentifier!]
     content.threadIdentifier = "meetingbar"
     content.body = "notifications_event_started_body".loco()
-    
+
     let trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeInterval, repeats: false)
     let request = UNNotificationRequest(identifier: "NEXT_EVENT", content: content, trigger: trigger)
     center.add(request) { error in
