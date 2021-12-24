@@ -184,7 +184,7 @@ class GCEventStore: NSObject, OIDExternalUserAgent {
 
     func getAllCalendars() -> Promise<[MBCalendar]> {
         return Promise { seal in
-            
+
             loadState()
 
             guard let auth = self.auth else {
@@ -193,12 +193,11 @@ class GCEventStore: NSObject, OIDExternalUserAgent {
             }
 
             if let url = URL(string: "https://www.googleapis.com/calendar/v3/users/me/calendarList") {
-
                 let service = GTMSessionFetcherService()
 
                 service.authorizer = auth
                 service.fetcher(with: url).beginFetch { data, error in
-                    if (error != nil) {
+                    if error != nil {
                         if (error as NSError?)?.domain == OIDOAuthTokenErrorDomain {
                             self.setAuthorization(auth: nil)
                         }
@@ -241,7 +240,7 @@ class GCEventStore: NSObject, OIDExternalUserAgent {
                 service.authorizer = auth
                 NSLog("Request GoogleAPI")
                 service.fetcher(with: url).beginFetch { data, error in
-                    if (error != nil) {
+                    if error != nil {
                         if (error as NSError?)?.domain == OIDOAuthTokenErrorDomain {
                             self.setAuthorization(auth: nil)
                         }

@@ -78,7 +78,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         } else {
             Defaults[.selectedCalendarIDs] = []
             setup()
-            _ = GCEventStore.shared.signIn().done{
+            _ = GCEventStore.shared.signIn().done {
                 self.statusBarItem.loadCalendars()
             }
         }
