@@ -15,6 +15,8 @@ import Defaults
 import KeyboardShortcuts
 import ServiceManagement
 
+import PromiseKit
+
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDelegate {
     var statusBarItem: StatusBarItemController!
@@ -57,66 +59,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     var changelogWindow: NSWindow!
 
     func applicationDidFinishLaunching(_: Notification) {
-        // Backward compatibility
-        if let oldEventTitleOption = Defaults[.showEventTitleInStatusBar] {
-            Defaults[.eventTitleFormat] = oldEventTitleOption ? EventTitleFormat.show : EventTitleFormat.dot
-            Defaults[.showEventTitleInStatusBar] = nil
-        }
-        var calendarTitles: [String] = []
-        if Defaults[.calendarTitle] != "" {
-            calendarTitles.append(Defaults[.calendarTitle])
-            Defaults[.calendarTitle] = ""
-        }
-        if !Defaults[.selectedCalendars].isEmpty {
-            calendarTitles.append(contentsOf: Defaults[.selectedCalendars])
-            Defaults[.selectedCalendars] = []
-        }
-        if !calendarTitles.isEmpty {
-            let matchCalendars = statusBarItem.eventStore.getMatchedCalendars(titles: calendarTitles)
-            for calendar in matchCalendars {
-                Defaults[.selectedCalendarIDs].append(calendar.calendarIdentifier)
-            }
-        }
-        if let disablePastEvents = Defaults[.disablePastEvents] {
-            Defaults[.pastEventsAppereance] = disablePastEvents ? .show_inactive : .show_active
-            Defaults[.disablePastEvents] = nil
-        }
-
-        if let titleLength = Defaults[.titleLength] {
-            Defaults[.statusbarEventTitleLength] = Int(titleLength)
-            Defaults[.titleLength] = nil
-        }
-        if let useChromeForMeetLinks = Defaults[.useChromeForMeetLinks] {
-            if useChromeForMeetLinks {
-                Defaults[.meetBrowser] = Browser(name: "Google Chrome", path: "/Applications/Google Chrome.app", arguments: "", deletable: true)
-            } else {
-                Defaults[.meetBrowser] = Browser(name: "Default Browser", path: "", arguments: "", deletable: false)
-            }
-            Defaults[.useChromeForMeetLinks] = nil
-        }
-        if let browserForMeetLinks = Defaults[.browserForMeetLinks] {
-            switch browserForMeetLinks {
-            case .chrome:
-                Defaults[.meetBrowser] = Browser(name: "Google Chrome", path: "/Applications/Google Chrome.app", arguments: "", deletable: true)
-            case .firefox:
-                Defaults[.meetBrowser] = Browser(name: "Firefox", path: "/Applications/Firefox.app", arguments: "", deletable: true)
-            case .safari:
-                Defaults[.meetBrowser] = Browser(name: "Safari", path: "/Applications/Safari.app", arguments: "", deletable: true)
-            case .chromium:
-                Defaults[.meetBrowser] = Browser(name: "Chromium", path: "/Applications/Chromium.app", arguments: "", deletable: true)
-            case .brave:
-                Defaults[.meetBrowser] = Browser(name: "Brave", path: "/Applications/Brave Browser.app", arguments: "", deletable: true)
-            case .edge:
-                Defaults[.meetBrowser] = Browser(name: "Microsoft Edge", path: "/Applications/Microsoft Edge.app", arguments: "", deletable: true)
-            case .opera:
-                Defaults[.meetBrowser] = Browser(name: "Opera", path: "/Applications/Opera.app", arguments: "", deletable: true)
-            case .vivaldi:
-                Defaults[.meetBrowser] = Browser(name: "Vivaldi", path: "/Applications/Vivaldi.app", arguments: "", deletable: true)
-            default:
-                Defaults[.meetBrowser] = Browser(name: "Default Browser", path: "", arguments: "", deletable: false)
-            }
-            Defaults[.browserForMeetLinks] = nil
-        }
+        NSAppleEventManager.shared().setEventHandler(self, andSelector: #selector(handle(getURLEvent:replyEvent:)), forEventClass: AEEventClass(kInternetEventClass), andEventID: AEEventID(kAEGetURL))
 
         // AppStore sync
         completeStoreTransactions()
@@ -124,23 +67,41 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
         // Handle windows closing closing
         NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.windowClosed), name: NSWindow.willCloseNotification, object: nil)
-
         //
 
         if let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
             Defaults[.appVersion] = appVersion
         }
 
-        let eventStoreAuthorized = (EKEventStore.authorizationStatus(for: .event) == .authorized)
-        if Defaults[.onboardingCompleted], eventStoreAuthorized {
+        if GCEventStore.shared.isAuthed {
             setup()
         } else {
-            openOnboardingWindow()
+            Defaults[.selectedCalendarIDs] = []
+            setup()
+            _ = GCEventStore.shared.signIn().done{
+                self.statusBarItem.loadCalendars()
+            }
         }
+
+//        if Defaults[.onboardingCompleted], GCEventStore.shared.isAuthed {
+//            setup()
+//        } else {
+//            openOnboardingWindow()
+//        }
 
         // When our main application starts, we have to kill
         // the auto launcher application if it's still running.
         postNotificationForAutoLauncher()
+    }
+
+    @objc
+    func handle(getURLEvent event: NSAppleEventDescriptor, replyEvent _: NSAppleEventDescriptor) {
+        if let string = event.paramDescriptor(forKeyword: keyDirectObject)?.stringValue,
+           let url = URL(string: string)
+        {
+            GCEventStore.shared
+                .currentAuthorizationFlow?.resumeExternalUserAgentFlow(with: url)
+        }
     }
 
     /// Sending a notification to AutoLauncher app
@@ -198,8 +159,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
         statusBarItem.loadCalendars()
 
-        scheduleUpdateStatusBarTitle()
-        scheduleUpdateEvents()
+        scheduleUpdateStatusBarItem()
+        scheduleFetchEvents()
 
         if Defaults[.browsers].isEmpty {
             addInstalledBrowser()
@@ -227,74 +188,64 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             Defaults[.hideMeetingTitle].toggle()
         }
 
-        NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.eventStoreChanged), name: .EKEventStoreChanged, object: statusBarItem.eventStore)
+//        NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.eventStoreChanged), name: .EKEventStoreChanged, object: statusBarItem.eventStore)
 
         showEventDetailsObserver = Defaults.observe(.showEventDetails) { change in
-            NSLog("Change showEventDetails from \(change.oldValue) to \(change.newValue)")
             if change.oldValue != change.newValue {
                 self.statusBarItem.updateMenu()
             }
         }
 
         shortenEventTitleObserver = Defaults.observe(.shortenEventTitle) { change in
-            NSLog("Change shortenEventTitle from \(change.oldValue) to \(change.newValue)")
             if change.oldValue != change.newValue {
                 self.statusBarItem.updateMenu()
             }
         }
 
         menuEventTitleLengthObserver = Defaults.observe(.menuEventTitleLength) { change in
-            NSLog("Change menuEventTitleLengthObserver from \(change.oldValue) to \(change.newValue)")
             if change.oldValue != change.newValue {
                 self.statusBarItem.updateMenu()
             }
         }
 
         meetingTitleVisibilityObserver = Defaults.observe(.hideMeetingTitle) { change in
-            NSLog("Change hideMeetingTitle from \(change.oldValue) to \(change.newValue)")
             if change.oldValue != change.newValue {
                 self.statusBarItem.updateMenu()
                 self.statusBarItem.updateTitle()
 
                 // Reschedule next notification with updated event name visibility
                 removePendingNotificationRequests()
-                if let nextEvent = self.statusBarItem.eventStore.getNextEvent(calendars: self.statusBarItem.calendars) {
+                if let nextEvent = getNextEvent(events: self.statusBarItem.events) {
                     scheduleEventNotification(nextEvent)
                 }
             }
         }
 
         showEventEndTimeObserver = Defaults.observe(.showEventEndTime) { change in
-            NSLog("Change showEventEndTime from \(change.oldValue) to \(change.newValue)")
             if change.oldValue != change.newValue {
                 self.statusBarItem.updateMenu()
             }
         }
 
         eventTimeFormatObserver = Defaults.observe(.eventTimeFormat) { change in
-            NSLog("Changed eventTimeFormat from \(String(describing: change.oldValue)) to \(String(describing: change.newValue))")
             if change.oldValue != change.newValue {
                 self.statusBarItem.updateTitle()
             }
         }
 
         statusbarEventTitleLengthObserver = Defaults.observe(.statusbarEventTitleLength) { change in
-            NSLog("Changed statusbarEventTitleLengthLimits from \(change.oldValue) to \(change.newValue)")
             if change.oldValue != change.newValue {
                 self.statusBarItem.updateTitle()
             }
         }
 
         disablePastEventObserver = Defaults.observe(.disablePastEvents) { change in
-            NSLog("Changed disablePastEvents from \(String(describing: change.oldValue)) to \(String(describing: change.newValue))")
             if change.oldValue != change.newValue {
                 self.statusBarItem.updateMenu()
             }
         }
 
         showPendingEventObserver = Defaults.observe(.showPendingEvents) { change in
-            NSLog("Changed showPendingEvents from \(String(describing: change.oldValue)) to \(String(describing: change.newValue))")
-
             if change.oldValue != change.newValue {
                 self.statusBarItem.updateTitle()
                 self.statusBarItem.updateMenu()
@@ -302,21 +253,18 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
 
         selectedCalendarIDsObserver = Defaults.observe(.selectedCalendarIDs) { change in
-            NSLog("Changed selectedCalendarIDs from \(change.oldValue) to \(change.newValue)")
             if change.oldValue != change.newValue {
                 self.statusBarItem.loadCalendars()
             }
         }
 
         showMeetingServiceIconObserver = Defaults.observe(.showMeetingServiceIcon) { change in
-            NSLog("Change showMeetingServiceIcon from \(change.oldValue) to \(change.newValue)")
             if change.oldValue != change.newValue {
                 self.statusBarItem.updateMenu()
             }
         }
 
         allDayEventsObserver = Defaults.observe(.allDayEvents) { change in
-            NSLog("Change allDayEvents from \(change.oldValue) to \(change.newValue)")
             if change.oldValue != change.newValue {
                 self.statusBarItem.updateTitle()
                 self.statusBarItem.updateMenu()
@@ -324,15 +272,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
 
         nonAllDayEventsObserver = Defaults.observe(.nonAllDayEvents) { change in
-            NSLog("Change nonAllDayEvents from \(change.oldValue) to \(change.newValue)")
             if change.oldValue != change.newValue {
                 self.statusBarItem.updateTitle()
                 self.statusBarItem.updateMenu()
             }
         }
 
-        timeFormatObserver = Defaults.observe(.timeFormat) { change in
-            NSLog("Change timeFormat from \(change.oldValue) to \(change.newValue)")
+        timeFormatObserver = Defaults.observe(.timeFormat) { _ in
             self.statusBarItem.updateMenu()
         }
 
@@ -340,50 +286,41 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             self.statusBarItem.updateMenu()
         }
 
-        eventTitleFormatObserver = Defaults.observe(.eventTitleFormat) { change in
-            NSLog("Changed eventTitleFormat from \(String(describing: change.oldValue)) to \(String(describing: change.newValue))")
+        eventTitleFormatObserver = Defaults.observe(.eventTitleFormat) { _ in
             self.statusBarItem.updateTitle()
             self.statusBarItem.updateMenu()
         }
 
-        eventTitleIconFormatObserver = Defaults.observe(.eventTitleIconFormat) { change in
-            NSLog("Changed eventTitleFormat from \(String(describing: change.oldValue)) to \(String(describing: change.newValue))")
+        eventTitleIconFormatObserver = Defaults.observe(.eventTitleIconFormat) { _ in
             self.statusBarItem.updateTitle()
         }
 
-        pastEventsAppereanceObserver = Defaults.observe(.pastEventsAppereance) { change in
-            NSLog("Changed pastEventsAppereance from \(change.oldValue) to \(change.newValue)")
+        pastEventsAppereanceObserver = Defaults.observe(.pastEventsAppereance) { _ in
             self.statusBarItem.updateMenu()
         }
-        declinedEventsAppereanceObserver = Defaults.observe(.declinedEventsAppereance) { change in
-            NSLog("Changed declinedEventsAppereance from \(change.oldValue) to \(change.newValue)")
+        declinedEventsAppereanceObserver = Defaults.observe(.declinedEventsAppereance) { _ in
             self.statusBarItem.updateMenu()
         }
-        personalEventsAppereanceObserver = Defaults.observe(.personalEventsAppereance) { change in
-            NSLog("Changed personalEventsAppereance from \(change.oldValue) to \(change.newValue)")
+        personalEventsAppereanceObserver = Defaults.observe(.personalEventsAppereance) { _ in
             self.statusBarItem.updateTitle()
             self.statusBarItem.updateMenu()
         }
-        showEventsForPeriodObserver = Defaults.observe(.showEventsForPeriod) { change in
-            NSLog("Changed showEventsForPeriod from \(change.oldValue) to \(change.newValue)")
+        showEventsForPeriodObserver = Defaults.observe(.showEventsForPeriod) { _ in
             self.statusBarItem.updateTitle()
             self.statusBarItem.updateMenu()
         }
         launchAtLoginObserver = Defaults.observe(.launchAtLogin) { change in
-            NSLog("Changed launchAtLogin from \(change.oldValue) to \(change.newValue)")
             SMLoginItemSetEnabled(AutoLauncher.bundleIdentifier as CFString, change.newValue)
         }
         preferredLanguageObserver = Defaults.observe(.preferredLanguage) { change in
-            NSLog("Changed preferredLanguage from \(change.oldValue) to \(change.newValue)")
             if I18N.instance.changeLanguage(to: change.newValue) {
                 self.statusBarItem.updateTitle()
                 self.statusBarItem.updateMenu()
             }
         }
         joinEventNotificationObserver = Defaults.observe(.joinEventNotification) { change in
-            NSLog("Changed joinEventNotification from \(change.oldValue) to \(change.newValue)")
             if change.newValue == true {
-                if let nextEvent = self.statusBarItem.eventStore.getNextEvent(calendars: self.statusBarItem.calendars) {
+                if let nextEvent = getNextEvent(events: self.statusBarItem.events) {
                     scheduleEventNotification(nextEvent)
                 }
             } else {
@@ -391,13 +328,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             }
         }
         showEventMaxTimeUntilEventThresholdObserver = Defaults.observe(.showEventMaxTimeUntilEventThreshold) { change in
-            NSLog("Changed showEventMaxTimeUntilEventThreshold from \(change.oldValue) to \(change.newValue)")
             if change.oldValue != change.newValue {
                 self.statusBarItem.updateTitle()
             }
         }
         showEventMaxTimeUntilEventEnabledObserver = Defaults.observe(.showEventMaxTimeUntilEventEnabled) { change in
-            NSLog("Change showEventMaxTimeUntilEventEnabled from \(change.oldValue) to \(change.newValue)")
             if change.oldValue != change.newValue {
                 self.statusBarItem.updateTitle()
             }
@@ -422,37 +357,39 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         return pasteboard.string(forType: .string) ?? ""
     }
 
-    @objc
-    func eventStoreChanged(_: NSNotification) {
-        NSLog("Store changed. Update status bar menu.")
-        statusBarItem.updateTitle()
-        statusBarItem.updateMenu()
+//    @objc
+//    func eventStoreChanged(_: NSNotification) {
+//        NSLog("Store changed. Update status bar menu.")
+//        statusBarItem.updateTitle()
+//        statusBarItem.updateMenu()
+//    }
+
+    private func scheduleFetchEvents() {
+        let timer = Timer(timeInterval: 60, target: self, selector: #selector(fetchEvents), userInfo: nil, repeats: true)
+        RunLoop.current.add(timer, forMode: .common)
     }
 
-    private func scheduleUpdateStatusBarTitle() {
-        let timer = Timer(timeInterval: 10, target: self, selector: #selector(updateStatusbar), userInfo: nil, repeats: true)
+    private func scheduleUpdateStatusBarItem() {
+        let timer = Timer(timeInterval: 5, target: self, selector: #selector(updateStatusBarItem), userInfo: nil, repeats: true)
         RunLoop.current.add(timer, forMode: .common)
     }
 
     @objc
-    private func updateStatusbar() {
-        NSLog("Firing reccuring updateStatusBarTitle")
+    private func fetchEvents() {
+        NSLog("Firing reccuring fetchEvents")
+        DispatchQueue.main.async {
+            self.statusBarItem.loadCalendars()
+            self.statusBarItem.loadEvents()
+        }
+    }
+
+    @objc
+    private func updateStatusBarItem() {
+//        NSLog("Firing reccuring updateStatusBarItem")
         DispatchQueue.main.async {
             self.statusBarItem.updateTitle()
-        }
-    }
-
-    @objc
-    private func updateMenuBar() {
-        NSLog("Firing reccuring updateStatusBarMenu")
-        DispatchQueue.main.async {
             self.statusBarItem.updateMenu()
         }
-    }
-
-    private func scheduleUpdateEvents() {
-        let timer = Timer(timeInterval: 60 * 5, target: self, selector: #selector(updateMenuBar), userInfo: nil, repeats: true)
-        RunLoop.current.add(timer, forMode: .common)
     }
 
     /**
@@ -467,11 +404,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         case "JOIN_ACTION", UNNotificationDefaultActionIdentifier:
             if response.notification.request.content.categoryIdentifier == "EVENT" {
                 if let eventID = response.notification.request.content.userInfo["eventID"] {
+                    // TODO: Allow to open event from any notification
                     // built-in method EKEventStore.event(withIdentifier:) is broken
                     // temporary allow to open only the last event
-                    if let nextEvent = statusBarItem.eventStore.getNextEvent(calendars: statusBarItem.calendars) {
+                    if let nextEvent = getNextEvent(events: statusBarItem.events) {
                         if nextEvent.eventIdentifier == (eventID as! String) {
-                            NSLog("Join \(nextEvent.title ?? "No title") event from notication")
+                            NSLog("Join \(nextEvent.title) event from notication")
                             openEvent(nextEvent)
                         }
                     }
@@ -536,7 +474,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
     @objc
     func joinNextMeeting(_: NSStatusBarButton? = nil) {
-        if let nextEvent = statusBarItem.eventStore.getNextEvent(calendars: statusBarItem.calendars) {
+        if let nextEvent = getNextEvent(events: statusBarItem.events) {
             NSLog("Join next event")
             openEvent(nextEvent)
         } else {
@@ -549,7 +487,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     @objc
     func clickOnEvent(sender: NSMenuItem) {
         NSLog("Click on event (\(sender.title))!")
-        let event: EKEvent = sender.representedObject as! EKEvent
+        let event: MBEvent = sender.representedObject as! MBEvent
         openEvent(event)
     }
 
@@ -563,8 +501,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
     @objc
     func copyEventMeetingLink(sender: NSMenuItem) {
-        if let event: EKEvent = sender.representedObject as? EKEvent {
-            let eventTitle = event.title ?? "status_bar_no_title".loco()
+        if let event: MBEvent = sender.representedObject as? MBEvent {
+            let eventTitle = event.title
             if let meeting = getMeetingLink(event) {
                 NSPasteboard.general.clearContents()
                 NSPasteboard.general.setString(meeting.url.absoluteString, forType: .string)
@@ -576,7 +514,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
     @objc
     func emailAttendees(sender: NSMenuItem) {
-        if let event: EKEvent = sender.representedObject as? EKEvent {
+        if let event: MBEvent = sender.representedObject as? MBEvent {
             emailEventAttendees(event)
         }
     }

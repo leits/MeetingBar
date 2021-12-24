@@ -11,6 +11,7 @@ import EventKit
 
 import Defaults
 import KeyboardShortcuts
+import PromiseKit
 
 /**
  * creates the menu in the system status bar, creates the menu items and controls the whole lifecycle.
@@ -19,10 +20,10 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
     var statusItem: NSStatusItem!
     var statusItemMenu: NSMenu!
     var menuIsOpen = false
-    var currentStatusBarEvent: EKEvent?
+    var currentStatusBarEvent: MBEvent?
 
-    var eventStore: EKEventStore!
-    var calendars: [EKCalendar] = []
+    var calendars: [MBCalendar] = []
+    var events: [MBEvent] = []
 
     weak var appdelegate: AppDelegate!
 
@@ -46,12 +47,6 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
         statusItemMenu.delegate = self
 
         enableButtonAction()
-        eventStore = EKEventStore()
-
-        var sources = eventStore.sources
-        sources.append(contentsOf: eventStore!.delegateSources)
-
-        eventStore = EKEventStore(sources: sources)
     }
 
     @objc
@@ -70,7 +65,6 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
     func statusMenuBarAction(sender _: NSStatusItem) {
         if !menuIsOpen, statusItem.menu == nil {
             let event = NSApp.currentEvent
-            NSLog("Event occured \(String(describing: event?.type.rawValue))")
 
             // Right button click
             if event?.type == NSEvent.EventType.rightMouseUp {
@@ -88,24 +82,38 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
     }
 
     func loadCalendars() {
-        calendars = eventStore.getMatchedCalendars(ids: Defaults[.selectedCalendarIDs])
-        updateTitle()
-        updateMenu()
+        _ = GCEventStore.shared.getAllCalendars().done { calendars in
+            for calendar in calendars {
+                calendar.selected = Defaults[.selectedCalendarIDs].contains(calendar.calendarIdentifier)
+            }
+            self.calendars = calendars
+            self.loadEvents()
+        }
+    }
+
+    func loadEvents() {
+        let dateFrom = Calendar.current.startOfDay(for: Date())
+        let dateTo = Calendar.current.date(byAdding: .day, value: 1, to: dateFrom)!
+        _ = GCEventStore.shared.loadEventsForDate(calendars: calendars.filter { $0.selected }, dateFrom: dateFrom, dateTo: dateTo).done { events in
+            self.events = filterEvents(events)
+            self.updateTitle()
+            self.updateMenu()
+        }
     }
 
     func updateTitle() {
         enum NextEventState {
             case none
-            case afterThreshold(EKEvent)
-            case nextEvent(EKEvent)
+            case afterThreshold(MBEvent)
+            case nextEvent(MBEvent)
         }
 
         var title = "MeetingBar"
         var time = ""
-        var nextEvent: EKEvent!
+        var nextEvent: MBEvent!
         let nextEventState: NextEventState
-        if !calendars.isEmpty {
-            nextEvent = eventStore.getNextEvent(calendars: calendars)
+        if !calendars.filter({ $0.selected }).isEmpty {
+            nextEvent = getNextEvent(events: events)
             nextEventState = {
                 guard let nextEvent = nextEvent else {
                     return .none
@@ -139,7 +147,6 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
                 }
             }
         } else {
-            NSLog("No loaded calendars")
             nextEventState = .none
         }
         if let button = statusItem.button {
@@ -245,17 +252,18 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
         statusItemMenu.autoenablesItems = false
         statusItemMenu.removeAllItems()
 
-        if !calendars.isEmpty {
+        if !calendars.filter({ $0.selected }).isEmpty {
             let today = Date()
-            switch Defaults[.showEventsForPeriod] {
-            case .today:
-                createDateSection(date: today, title: "status_bar_section_today".loco())
-            case .today_n_tomorrow:
-                let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today)!
-                createDateSection(date: today, title: "status_bar_section_today".loco())
-                statusItemMenu.addItem(NSMenuItem.separator())
-                createDateSection(date: tomorrow, title: "status_bar_section_tomorrow".loco())
-            }
+            createDateSection(date: today, title: "status_bar_section_today".loco(), events: events)
+//            switch Defaults[.showEventsForPeriod] {
+//            case .today:
+//                createDateSection(date: today, title: "status_bar_section_today".loco())
+//            case .today_n_tomorrow:
+//                let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today)!
+//                createDateSection(date: today, title: "status_bar_section_today".loco())
+//                statusItemMenu.addItem(NSMenuItem.separator())
+//                createDateSection(date: tomorrow, title: "status_bar_section_tomorrow".loco())
+//            }
         } else {
             let text = "status_bar_empty_calendar_message".loco()
             let item = statusItemMenu.addItem(withTitle: "", action: nil, keyEquivalent: "")
@@ -278,8 +286,8 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
     }
 
     func createJoinSection() {
-        if !calendars.isEmpty {
-            if let nextEvent = eventStore.getNextEvent(calendars: calendars) {
+        if !calendars.filter({ $0.selected }).isEmpty {
+            if let nextEvent = getNextEvent(events: self.events) {
                 let now = Date()
                 var itemTitle: String
                 if nextEvent.startDate < now {
@@ -363,9 +371,7 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
         }
     }
 
-    func createDateSection(date: Date, title: String) {
-        let events: [EKEvent] = eventStore.loadEventsForDate(calendars: calendars, date: date)
-
+    func createDateSection(date: Date, title: String, events: [MBEvent]) {
         // Header
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "E, d MMM"
@@ -583,13 +589,13 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
     /**
      * try  to get the correct image for the specific
      */
-    func getMeetingIcon(_ event: EKEvent) -> NSImage {
+    func getMeetingIcon(_ event: MBEvent) -> NSImage {
         let result = getMeetingLink(event)
 
         return getMeetingIconForLink(result)
     }
 
-    func createEventItem(event: EKEvent, dateSection: Date) {
+    func createEventItem(event: MBEvent, dateSection: Date) {
         let eventParticipantStatus = getEventParticipantStatus(event)
         let eventStatus = event.status
 
@@ -603,7 +609,7 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
             return
         }
 
-        if !event.hasAttendees, Defaults[.personalEventsAppereance] == .hide {
+        if event.attendees.count == 0, Defaults[.personalEventsAppereance] == .hide {
             return
         }
 
@@ -681,7 +687,7 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
             }
         }
 
-        if !event.hasAttendees, Defaults[.personalEventsAppereance] == .show_inactive {
+        if event.attendees.count == 0, Defaults[.personalEventsAppereance] == .show_inactive {
             styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
             shouldShowAsActive = false
         }
@@ -796,7 +802,7 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
 
             // Organizer
             if let eventOrganizer = event.organizer {
-                let organizerName = eventOrganizer.name ?? ""
+                let organizerName = eventOrganizer.name
                 eventMenu.addItem(withTitle: "status_bar_submenu_organizer_title".loco(organizerName), action: nil, keyEquivalent: "")
                 eventMenu.addItem(NSMenuItem.separator())
             }
@@ -814,41 +820,22 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
             }
 
             // Attendees
-            if event.hasAttendees {
-                let attendees: [EKParticipant] = event.attendees ?? []
-                let count = attendees.filter {
-                    $0.participantType == .person
-                }.count
-                let sortedAttendees = attendees.sorted {
-                    if $0.participantRole.rawValue != $1.participantRole.rawValue {
-                        return $0.participantRole.rawValue < $1.participantRole.rawValue
-                    } else {
-                        return $0.participantStatus.rawValue < $1.participantStatus.rawValue
-                    }
-                }
-                eventMenu.addItem(withTitle: "status_bar_submenu_attendees_title".loco(count), action: nil, keyEquivalent: "")
+            if event.attendees.count != 0 {
+                let sortedAttendees = event.attendees.sorted { $0.status.rawValue < $1.status.rawValue }
+                eventMenu.addItem(withTitle: "status_bar_submenu_attendees_title".loco(sortedAttendees.count), action: nil, keyEquivalent: "")
                 for attendee in sortedAttendees {
-                    if attendee.participantType != .person {
-                        continue
-                    }
                     var attributes: [NSAttributedString.Key: Any] = [:]
 
-                    var name = attendee.name ?? "status_bar_submenu_attendees_no_name".loco()
+                    var name = attendee.name
 
                     if attendee.isCurrentUser {
                         name = "status_bar_submenu_attendees_you".loco(name)
                     }
 
-                    var roleMark: String
-                    switch attendee.participantRole {
-                    case .optional:
-                        roleMark = "*"
-                    default:
-                        roleMark = ""
-                    }
+                    let roleMark = attendee.optional ? "*" : ""
 
                     var status: String
-                    switch attendee.participantStatus {
+                    switch attendee.status {
                     case .declined:
                         status = ""
                         attributes[NSAttributedString.Key.strikethroughStyle] = NSUnderlineStyle.thick.rawValue
@@ -983,7 +970,7 @@ func shortenTitleForMenu(title: String?) -> String {
     return eventTitle
 }
 
-func createEventStatusString(_ event: EKEvent) -> (String, String) {
+func createEventStatusString(_ event: MBEvent) -> (String, String) {
     var eventTime: String
 
     var eventTitle: String
@@ -1013,7 +1000,7 @@ func createEventStatusString(_ event: EKEvent) -> (String, String) {
     var eventDate: Date
     let prevMinute = Date().addingTimeInterval(-60)
     let now = Date()
-    if (event.startDate)! <= now, (event.endDate)! > now {
+    if event.startDate <= now, event.endDate > now {
         isActiveEvent = true
         eventDate = event.endDate
     } else {

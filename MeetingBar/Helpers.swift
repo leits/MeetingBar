@@ -11,7 +11,7 @@ import Defaults
 import EventKit
 
 struct EventWithDate {
-    let event: EKEvent
+    let event: MBEvent
     let dateSection: Date
 }
 
@@ -90,14 +90,15 @@ func getRegexForService(_ service: MeetingServices) -> NSRegularExpression? {
     return nil
 }
 
-func getGmailAccount(_ event: EKEvent) -> String? {
+func getGmailAccount(_ event: MBEvent) -> String? {
     // Hacky and likely to break, but should work until Apple changes something
     let regex = UtilsRegex.emailAddress
-    let text = event.calendar.source.description
-    let resultsIterator = regex.matches(in: text, range: NSRange(text.startIndex..., in: text))
-    let resultsMap = resultsIterator.map { String(text[Range($0.range(at: 1), in: text)!]) }
-    if !resultsMap.isEmpty {
-        return resultsMap.first
+    if let text = event.calendar.source {
+        let resultsIterator = regex.matches(in: text, range: NSRange(text.startIndex..., in: text))
+        let resultsMap = resultsIterator.map { String(text[Range($0.range(at: 1), in: text)!]) }
+        if !resultsMap.isEmpty {
+            return resultsMap.first
+        }
     }
     return nil
 }
@@ -127,22 +128,11 @@ func detectLink(_ field: inout String) -> MeetingLink? {
     return nil
 }
 
-func shouldIncludeMeeting(_ event: EKEvent) -> Bool {
-    for pattern in Defaults[.filterEventRegexes] {
-        if let regex = try? NSRegularExpression(pattern: pattern) {
-            if hasMatch(text: event.title, regex: regex) {
-                return false
-            }
-        }
-    }
-    return true
-}
-
 /**
  * this method will collect text from the location, url and notes field of an event and try to find a known meeting url link.
  * As meeting links can be part of a outlook safe url, we will extract the original link from outlook safe links.
  */
-func getMeetingLink(_ event: EKEvent) -> MeetingLink? {
+func getMeetingLink(_ event: MBEvent) -> MeetingLink? {
     var linkFields: [String] = []
 
     if let location = event.location {
@@ -189,12 +179,11 @@ func detectLinks(text: String) -> [URL] {
     return []
 }
 
-func openEvent(_ event: EKEvent) {
-    let eventTitle = event.title ?? "status_bar_no_title".loco()
+func openEvent(_ event: MBEvent) {
+    let eventTitle = event.title
     if let meeting = getMeetingLink(event) {
         if Defaults[.runJoinEventScript], Defaults[.joinEventScriptLocation] != nil {
             if let url = Defaults[.joinEventScriptLocation]?.appendingPathComponent("joinEventScript.scpt") {
-                print("URL: \(url)")
                 let task = try! NSUserAppleScriptTask(url: url)
                 task.execute { error in
                     if let error = error {
@@ -211,15 +200,11 @@ func openEvent(_ event: EKEvent) {
     }
 }
 
-func getEventParticipantStatus(_ event: EKEvent) -> EKParticipantStatus? {
-    if event.hasAttendees {
-        if let attendees = event.attendees {
-            if let currentUser = attendees.first(where: { $0.isCurrentUser }) {
-                return currentUser.participantStatus
-            }
-        }
+func getEventParticipantStatus(_ event: MBEvent) -> MBEventAttendeeStatus? {
+    if let currentUser = event.attendees.first(where: { $0.isCurrentUser }) {
+        return currentUser.status
     }
-    return EKParticipantStatus.unknown
+    return MBEventAttendeeStatus.unknown
 }
 
 func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?) {
@@ -332,17 +317,109 @@ func addInstalledBrowser() {
     }
 }
 
-func emailEventAttendees(_ event: EKEvent) {
+func emailEventAttendees(_ event: MBEvent) {
     let service = NSSharingService(named: NSSharingService.Name.composeEmail)!
     var recipients: [String] = []
-    event.attendees?.forEach {
-        if let email = ($0.url as NSURL).resourceSpecifier {
+    for attendee in event.attendees {
+        if let email = attendee.email {
             recipients.append(email)
         }
     }
     service.recipients = recipients
-    if let title = event.title {
-        service.subject = title
-    }
+    service.subject = event.title
     service.perform(withItems: [])
+}
+
+func hexStringToUIColor(hex: String) -> NSColor {
+    var cString: String = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+
+    if cString.hasPrefix("#") {
+        cString.remove(at: cString.startIndex)
+    }
+
+    if (cString.count) != 6 {
+        return NSColor.gray
+    }
+
+    var rgbValue: UInt64 = 0
+    Scanner(string: cString).scanHexInt64(&rgbValue)
+
+    return NSColor(
+        red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0,
+        green: CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0,
+        blue: CGFloat(rgbValue & 0x0000FF) / 255.0,
+        alpha: CGFloat(1.0)
+    )
+}
+
+func getNextEvent(events: [MBEvent]) -> MBEvent? {
+    var nextEvent: MBEvent?
+
+    let now = Date()
+    let startPeriod = Calendar.current.date(byAdding: .minute, value: 1, to: now)!
+    var endPeriod: Date
+
+    let todayMidnight = Calendar.current.startOfDay(for: now)
+    switch Defaults[.showEventsForPeriod] {
+    case .today:
+        endPeriod = Calendar.current.date(byAdding: .day, value: 1, to: todayMidnight)!
+    case .today_n_tomorrow:
+        endPeriod = Calendar.current.date(byAdding: .day, value: 2, to: todayMidnight)!
+    }
+
+    var nextEvents = events.filter { $0.endDate > startPeriod && $0.startDate < endPeriod }
+
+    // Filter out personal events, if not marked as 'active'
+    if Defaults[.personalEventsAppereance] != .show_active {
+        nextEvents = nextEvents.filter { $0.attendees.count > 0 }
+    }
+
+    // If the current event is still going on,
+    // but the next event is closer than 13 minutes later
+    // then show the next event
+    for event in nextEvents {
+        if event.isAllDay {
+            continue
+        } else {
+            if Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show_inactive_without_meeting_link {
+                let meetingLink = getMeetingLink(event)
+                if meetingLink == nil {
+                    continue
+                }
+            } else if Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.hide_without_meeting_link {
+                let result = getMeetingLink(event)
+
+                if result?.url == nil {
+                    continue
+                }
+            }
+        }
+
+        if let status = getEventParticipantStatus(event) {
+            if status == .declined { // Skip event if declined
+                continue
+            }
+
+            if status == .pending, Defaults[.showPendingEvents] == PendingEventsAppereance.hide || Defaults[.showPendingEvents] == PendingEventsAppereance.show_inactive {
+                continue
+            }
+        }
+
+        if event.status == .canceled {
+            continue
+        } else {
+            if nextEvent == nil {
+                nextEvent = event
+                continue
+            } else {
+                let soon = now.addingTimeInterval(780) // 13 min from now
+                if event.startDate < soon {
+                    nextEvent = event
+                } else {
+                    break
+                }
+            }
+        }
+    }
+    return nextEvent
 }

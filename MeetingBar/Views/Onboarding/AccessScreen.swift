@@ -13,22 +13,18 @@ import Defaults
 
 struct AccessScreen: View {
     @ObservedObject var viewRouter: ViewRouter
-    @State var accessDenied = false
-    @State var accessToEvents = false
-
-    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     var body: some View {
         VStack(alignment: .center) {
             Spacer()
-            if accessDenied {
-                Text("access_screen_access_denied_title".loco())
-                Spacer()
-                Text("access_screen_access_screen_access_denied_go_to_title".loco())
-                Button("access_screen_access_denied_system_preferences_button".loco(), action: self.openSystemCalendarPreferences)
-                Text("access_screen_access_denied_checkbox_title".loco())
-                Spacer()
-                Text("access_screen_access_denied_relaunch_title".loco())
+            if !GCEventStore.shared.isAuthed {
+                Text("Google Sign In")
+//                Spacer()
+//                Text("access_screen_access_screen_access_denied_go_to_title".loco())
+//                Button("access_screen_access_denied_system_preferences_button".loco(), action: self.openSystemCalendarPreferences)
+//                Text("access_screen_access_denied_checkbox_title".loco())
+//                Spacer()
+//                Text("access_screen_access_denied_relaunch_title".loco())
             } else {
                 Text("access_screen_access_granted_title".loco())
                 Text("")
@@ -39,34 +35,28 @@ struct AccessScreen: View {
             .onAppear {
                 self.requestAccess()
             }
-            .onReceive(timer) { _ in
-                if self.accessDenied {
-                    self.checkAccess()
-                }
-            }
     }
 
     func requestAccess() {
         EKEventStore().requestAccess(to: .event) { access, _ in
             NSLog("EventStore access: \(access)")
-            self.checkAccess()
-            self.accessDenied = !access
-        }
-    }
-
-    func checkAccess() {
-        if EKEventStore.authorizationStatus(for: .event) == .authorized {
-            DispatchQueue.main.async {
-                Defaults[.onboardingCompleted] = true
-                if let app = NSApplication.shared.delegate as! AppDelegate? {
-                    app.setup()
+            _ = GCEventStore.shared.signIn().done {
+                if GCEventStore.shared.isAuthed {
+                    DispatchQueue.main.async {
+                        Defaults[.onboardingCompleted] = true
+                        if let app = NSApplication.shared.delegate as! AppDelegate? {
+                            app.setup()
+                        }
+                        self.viewRouter.currentScreen = .calendars
+                    }
+                } else {
+                    self.requestAccess()
                 }
-                self.viewRouter.currentScreen = .calendars
             }
         }
     }
 
-    func openSystemCalendarPreferences() {
-        NSWorkspace.shared.open(Links.calendarPreferences)
-    }
+//    func openSystemCalendarPreferences() {
+//        NSWorkspace.shared.open(Links.calendarPreferences)
+//    }
 }

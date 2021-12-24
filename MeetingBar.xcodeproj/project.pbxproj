@@ -34,6 +34,10 @@
 		14619A1E25EC26DF00F3098F /* HelpersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14619A1D25EC26DF00F3098F /* HelpersTests.swift */; };
 		14879B2B24E6889C00DB0A7E /* Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14879B2A24E6889C00DB0A7E /* Notifications.swift */; };
 		148E47E824F400C400399929 /* Onboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 148E47E724F400C400399929 /* Onboarding.swift */; };
+		14B08ACE2749A57B002E3892 /* GTMAppAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 14B08ACD2749A57B002E3892 /* GTMAppAuth */; };
+		14B08AD02749AB96002E3892 /* GCEventStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14B08ACF2749AB96002E3892 /* GCEventStore.swift */; };
+		14B08AD42749AEF3002E3892 /* PromiseKit in Frameworks */ = {isa = PBXBuildFile; productRef = 14B08AD32749AEF3002E3892 /* PromiseKit */; };
+		14B08AD72749AFEE002E3892 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = 14B08AD62749AFEE002E3892 /* SwiftyJSON */; };
 		14C59B8525CF45340019C9E4 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14C59B8425CF45340019C9E4 /* Store.swift */; };
 		14E4110E246F2F9200F73ACF /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14E4110D246F2F9200F73ACF /* Preferences.swift */; };
 		1BF37A9A2604C8960053D53C /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1BF37A9C2604C8960053D53C /* Localizable.strings */; };
@@ -104,6 +108,7 @@
 		14879B2A24E6889C00DB0A7E /* Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = "<group>"; };
 		148E47E724F400C400399929 /* Onboarding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Onboarding.swift; sourceTree = "<group>"; };
 		14B08ACB27498308002E3892 /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = he.lproj/Localizable.strings; sourceTree = "<group>"; };
+		14B08ACF2749AB96002E3892 /* GCEventStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GCEventStore.swift; sourceTree = "<group>"; };
 		14C59B8425CF45340019C9E4 /* Store.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
 		14C9A928269A2083005306DA /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
 		14C9A929269A2095005306DA /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -136,6 +141,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				40DC7054250E5E1000217DD9 /* ServiceManagement.framework in Frameworks */,
+				14B08AD72749AFEE002E3892 /* SwiftyJSON in Frameworks */,
+				14B08AD42749AEF3002E3892 /* PromiseKit in Frameworks */,
+				14B08ACE2749A57B002E3892 /* GTMAppAuth in Frameworks */,
 				1418907C26F23CCD00DCD9B1 /* KeyboardShortcuts in Frameworks */,
 				1432D98C25C4B94900FD121D /* SwiftyStoreKit in Frameworks */,
 				1418907F26F23CF600DCD9B1 /* Defaults in Frameworks */,
@@ -198,6 +206,7 @@
 				1452C9AD25AF5B1000C46CDF /* Views */,
 				140D84312493A3FE0055E1CE /* StatusBarItemController.swift */,
 				140D84332493A4180055E1CE /* Constants.swift */,
+				14B08ACF2749AB96002E3892 /* GCEventStore.swift */,
 				14C59B8425CF45340019C9E4 /* Store.swift */,
 				140D84392493A6240055E1CE /* Helpers.swift */,
 				14879B2A24E6889C00DB0A7E /* Notifications.swift */,
@@ -345,6 +354,9 @@
 				1432D98B25C4B94900FD121D /* SwiftyStoreKit */,
 				1418907B26F23CCD00DCD9B1 /* KeyboardShortcuts */,
 				1418907E26F23CF600DCD9B1 /* Defaults */,
+				14B08ACD2749A57B002E3892 /* GTMAppAuth */,
+				14B08AD32749AEF3002E3892 /* PromiseKit */,
+				14B08AD62749AFEE002E3892 /* SwiftyJSON */,
 			);
 			productName = MeetingBar;
 			productReference = 144C01792462D0C3000C9FFC /* MeetingBar.app */;
@@ -430,6 +442,9 @@
 				1432D98A25C4B94900FD121D /* XCRemoteSwiftPackageReference "SwiftyStoreKit" */,
 				1418907A26F23CCD00DCD9B1 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */,
 				1418907D26F23CF600DCD9B1 /* XCRemoteSwiftPackageReference "Defaults" */,
+				14B08ACC2749A57B002E3892 /* XCRemoteSwiftPackageReference "GTMAppAuth" */,
+				14B08AD22749AEF3002E3892 /* XCRemoteSwiftPackageReference "PromiseKit" */,
+				14B08AD52749AFEE002E3892 /* XCRemoteSwiftPackageReference "SwiftyJSON" */,
 			);
 			productRefGroup = 144C017A2462D0C3000C9FFC /* Products */;
 			projectDirPath = "";
@@ -500,6 +515,7 @@
 				14E4110E246F2F9200F73ACF /* Preferences.swift in Sources */,
 				1452C9CA25AF861300C46CDF /* BookmarksTab.swift in Sources */,
 				140D84322493A3FE0055E1CE /* StatusBarItemController.swift in Sources */,
+				14B08AD02749AB96002E3892 /* GCEventStore.swift in Sources */,
 				140D84342493A4180055E1CE /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -693,7 +709,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 126;
+				CURRENT_PROJECT_VERSION = 128;
 				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -703,7 +719,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
-				MARKETING_VERSION = 3.9.0;
+				MARKETING_VERSION = 4.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = leits.MeetingBar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -719,7 +735,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 126;
+				CURRENT_PROJECT_VERSION = 128;
 				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -729,7 +745,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
-				MARKETING_VERSION = 3.9.0;
+				MARKETING_VERSION = 4.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = leits.MeetingBar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -889,6 +905,30 @@
 				minimumVersion = 0.16.3;
 			};
 		};
+		14B08ACC2749A57B002E3892 /* XCRemoteSwiftPackageReference "GTMAppAuth" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GTMAppAuth";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.2;
+			};
+		};
+		14B08AD22749AEF3002E3892 /* XCRemoteSwiftPackageReference "PromiseKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/mxcl/PromiseKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.16.2;
+			};
+		};
+		14B08AD52749AFEE002E3892 /* XCRemoteSwiftPackageReference "SwiftyJSON" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SwiftyJSON/SwiftyJSON";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.2.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -906,6 +946,21 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 1432D98A25C4B94900FD121D /* XCRemoteSwiftPackageReference "SwiftyStoreKit" */;
 			productName = SwiftyStoreKit;
+		};
+		14B08ACD2749A57B002E3892 /* GTMAppAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 14B08ACC2749A57B002E3892 /* XCRemoteSwiftPackageReference "GTMAppAuth" */;
+			productName = GTMAppAuth;
+		};
+		14B08AD32749AEF3002E3892 /* PromiseKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 14B08AD22749AEF3002E3892 /* XCRemoteSwiftPackageReference "PromiseKit" */;
+			productName = PromiseKit;
+		};
+		14B08AD62749AFEE002E3892 /* SwiftyJSON */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 14B08AD52749AFEE002E3892 /* XCRemoteSwiftPackageReference "SwiftyJSON" */;
+			productName = SwiftyJSON;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

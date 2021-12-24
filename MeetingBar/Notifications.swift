@@ -121,7 +121,7 @@ func displayAlert(title: String, text: String) {
     userAlert.runModal()
 }
 
-func scheduleEventNotification(_ event: EKEvent) {
+func scheduleEventNotification(_ event: MBEvent) {
     requestNotificationAuthorization() // By the apple best practices
 
     let now = Date()
@@ -155,7 +155,7 @@ func scheduleEventNotification(_ event: EKEvent) {
     }
     content.categoryIdentifier = "EVENT"
     content.sound = UNNotificationSound.default
-    content.userInfo = ["eventID": event.eventIdentifier!]
+    content.userInfo = ["eventID": event.eventIdentifier]
     content.threadIdentifier = "meetingbar"
 
     let trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeInterval, repeats: false)

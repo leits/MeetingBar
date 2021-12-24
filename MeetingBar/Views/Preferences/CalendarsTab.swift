@@ -12,7 +12,7 @@ import SwiftUI
 import Defaults
 
 struct CalendarsTab: View {
-    @State var calendarsBySource: [String: [EKCalendar]] = [:]
+    @State var calendars: [MBCalendar] = []
     @State var showingAddAcountModal = false
 
     @Default(.selectedCalendarIDs) var selectedCalendarIDs
@@ -33,15 +33,13 @@ struct CalendarsTab: View {
                 Form {
                     Section {
                         List {
-                            ForEach(Array(calendarsBySource.keys), id: \.self) { source in
-                                Section(header: Text(source)) {
-                                    ForEach(self.calendarsBySource[source]!, id: \.self) { calendar in
-                                        CalendarRow(title: calendar.title, isSelected: self.selectedCalendarIDs.contains(calendar.calendarIdentifier), color: Color(calendar.color)) {
-                                            if self.selectedCalendarIDs.contains(calendar.calendarIdentifier) {
-                                                self.selectedCalendarIDs.removeAll { $0 == calendar.calendarIdentifier }
-                                            } else {
-                                                self.selectedCalendarIDs.append(calendar.calendarIdentifier)
-                                            }
+                            Section(header: Text("Google Calendar API")) {
+                                ForEach(self.calendars, id: \.calendarIdentifier) { calendar in
+                                    CalendarRow(title: calendar.title, isSelected: self.selectedCalendarIDs.contains(calendar.calendarIdentifier), color: Color(calendar.color)) {
+                                        if self.selectedCalendarIDs.contains(calendar.calendarIdentifier) {
+                                            self.selectedCalendarIDs.removeAll { $0 == calendar.calendarIdentifier }
+                                        } else {
+                                            self.selectedCalendarIDs.append(calendar.calendarIdentifier)
                                         }
                                     }
                                 }
@@ -63,7 +61,7 @@ struct CalendarsTab: View {
 
     func loadCalendarList() {
         if let app = NSApplication.shared.delegate as! AppDelegate? {
-            calendarsBySource = app.statusBarItem.eventStore.getAllCalendars()
+            calendars = app.statusBarItem.calendars
         }
     }
 }
