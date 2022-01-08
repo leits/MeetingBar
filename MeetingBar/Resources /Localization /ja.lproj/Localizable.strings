@@ -281,7 +281,7 @@
 "shared_send_notification_one_minute_value" = "1分前";
 "shared_send_notification_three_minute_value" = "3分前";
 "shared_send_notification_five_minute_value" = "5分前";
-"shared_send_notification_no_alert_style_tip" = "⚠️ MeetingBar の macOS の通知設定は、通知パネルに設定されていません。通知を表示したままにするには、通知パネルに設定してください。";
+"shared_send_notification_no_alert_style_tip" = "⚠️ MeetingBar の macOS の通知設定は、通知パネルに設定されていません。持続的な通知を利用する場合は、通知パネルに設定してください。";
 "shared_send_notification_disabled_tip" = "⚠️ MeetingBar の macOS の通知設定が現在オフになっています。ミーティングを見逃さないために、 macOS のシステム設定で通知を有効にしてください。";
 
 // MARK: - Constants
