@@ -1,0 +1,317 @@
+/*
+  Localizable.strings
+  MeetingBar
+
+  Created by Varol Aksoy on 19.03.2021.
+  Copyright © 2021 Andrii Leitsius. All rights reserved.
+*/
+
+"status_bar_section_tomorrow" = "Yarın";
+"preferences_advanced_wrong_location_title" = "Hatalı konum";
+"status_bar_submenu_status_title" = "Durum: %@";
+"status_bar_submenu_status_accepted" = " 👍 Kabul edildi";
+"status_bar_submenu_notes_title" = "Notlar:";
+"status_bar_error_zoom_native_link_message" = "Zoom uygulamasının yüklü olduğundan emin olun veya bu bağlantıyı bir tarayıcıda açın.";
+"constants_browser_chrome" = "Google Chrome";
+"status_bar_error_zoom_app_link_message" = "Zoom uygulamasının yüklü olduğundan emin olun veya bu bağlantıyı bir tarayıcıda açın.";
+
+// MARK: - Access screen
+
+"access_screen_access_denied_title" = "Amanın! Takvimlere erişimin reddedilmiş görünüyor.";
+"preferences_configure_browsers_delete_alert_title" = "Tarayıcı konfigurasyonunu sil?";
+"preferences_bookmarks_new_bookmark_name" = "Adı";
+"general_ok" = "Tamam";
+"general_cancel" = "Vazgeç";
+"general_close" = "Kapat";
+"general_delete" = "Sil";
+"general_save" = "Kaydet";
+"create_meeting_error_title" = "Yeni toplantı oluşturulamıyor";
+"create_meeting_error_message" = "Özel bağlantı \\%@\\ eksik veya geçersiz. Uygulama tercihlerinden yeni bir tane ekleyin.";
+"next_meeting_empty_title" = "Bugün yaklaşmakta olan toplantı yok";
+"next_meeting_empty_message" = "Yaşasın! Kakao içme zamanı";
+"windows_title_changelog" = "MeetingBar – Neler Yeni";
+
+// MARK: - Preferences tabs
+
+"preferences_tab_general" = "Genel";
+"preferences_tab_appearance" = "Görünüm";
+"preferences_tab_services" = "Servisler";
+"preferences_tab_bookmarks" = "Yer İmleri";
+"preferences_tab_calendars" = "Takvimler";
+"preferences_tab_advanced" = "Gelişmiş";
+
+// MARK: - Preferences General
+
+"preferences_general_option_login_launch" = "Oturum açtıktan sonra başlat";
+"preferences_general_option_preferred_language_title" = "Dil:";
+"preferences_general_option_preferred_language_system_value" = "Sistem";
+"preferences_general_option_shortcuts" = "Kısayollar";
+"preferences_general_all_shortcut" = "Tüm Kısayollar";
+"preferences_general_shortcut_open_menu" = "Menüyü aç:";
+"preferences_general_shortcut_create_meeting" = "Yeni toplantı:";
+"preferences_general_shortcut_join_from_clipboard" = "Kopyalanmış toplantı bağlantısına katıl:";
+"preferences_general_shortcut_toggle_meeting_name_visibility" = "Durum çubuğunda başlık görünürlüğünü aç/kapat:";
+"preferences_general_external_patronage" = "Destek";
+"preferences_general_external_gitHub" = "GitHub";
+"preferences_general_external_contact" = "İletişim";
+"preferences_general_patron_description" = "Bunlar tek seferlik satın almalardır ve otomatik olarak yenilenmez.";
+"preferences_general_patron_thank_for_purchase" = "Teşekkürler! Bizi %d ay desteklemek için ödeme yaptınız. 🎉";
+"preferences_general_patron_restore_purchases" = "Satın alımları geri yükle";
+"preferences_general_feedback_email" = "E-posta";
+"preferences_general_feedback_twitter" = "Twitter";
+"preferences_general_feedback_telegram" = "Telegram";
+"preferences_appearance_events_show_events_for_today_value" = "bugün";
+"preferences_appearance_events_show_events_for_today_tomorrow_value" = "bugün ve yarın";
+"preferences_appearance_events_non_all_day_title" = "Diğer etkinlikler:";
+"preferences_appearance_events_value_inactive_without_meeting_link" = "toplantı bağlantıları olmayanları etkin değil olarak göster";
+"preferences_appearance_events_value_hide_without_meeting_link" = "tümünü toplantı linki olmadan gizle";
+"preferences_appearance_events_all_day_title" = "Gün boyu etkinlikleri:";
+"preferences_appearance_events_past_title" = "Önceki etkinlikler:";
+"preferences_appearance_events_pending_title" = "Bekleyen etkinlikler";
+"preferences_appearance_events_declined_title" = "Reddedilen etkinlikler:";
+"preferences_appearance_events_value_show" = "göster";
+"preferences_appearance_events_value_hide" = "gizle";
+"preferences_appearance_events_value_as_underlined" = "altı çizgili göster";
+"preferences_appearance_events_value_with_strikethrough" = "üstü çizgili göster";
+"preferences_appearance_status_bar_title" = "Durum çubuğu";
+"preferences_appearance_status_bar_icon_app_icon_value" = " MeetingBar";
+"preferences_appearance_status_bar_icon_calendar_icon_value" = " Takvim";
+"preferences_appearance_status_bar_icon_specific_icon_value" = " Etkinliğe özel simge (MS Teams vs. gibi)";
+"preferences_appearance_status_bar_icon_no_icon_value" = " Simge yok";
+"preferences_appearance_status_bar_title_title" = "Başlık";
+"preferences_appearance_status_bar_title_dot_value" = "nokta (•)";
+"preferences_appearance_status_bar_title_hide_value" = "gizle";
+"preferences_appearance_status_bar_title_shorten_stepper" = "%d karakterle kısıtla";
+"preferences_appearance_status_bar_time_title" = "Zaman";
+"preferences_appearance_status_bar_time_show_value" = "göster";
+"preferences_appearance_status_bar_next_event_stepper" = "%d dakika";
+"preferences_appearance_menu_title" = "Menü";
+"preferences_appearance_menu_shorten_event_title_toggle" = "Etkinlik başlığını kısalt";
+"preferences_appearance_menu_shorten_event_title_stepper" = "%d karakter";
+"preferences_appearance_menu_time_format_title" = "Zaman formatı:";
+"preferences_appearance_menu_time_format_12_hour_value" = "12-saat";
+"preferences_appearance_menu_time_format_24_hour_value" = "24-saat";
+"preferences_appearance_menu_show_event_title" = "Etkinliği göster:";
+"preferences_appearance_menu_show_event_icon_value" = "simge";
+"preferences_appearance_menu_show_event_details_value" = "detaylar alt menüde";
+
+// MARK: - Preferences Services
+
+"preferences_services_link_meeting_title" = "Tüm toplantıları şununla aç";
+"preferences_services_link_meet_title" = "Google Meet'i şununla aç";
+"preferences_services_link_zoom_title" = "Zoom'u şununla aç";
+"preferences_services_link_team_title" = "Teams'i şununla aç";
+"preferences_services_link_zoom_value" = "Zoom uygulaması";
+"preferences_services_link_teams_value" = "Teams uygulaması";
+"preferences_services_supported_links_list" = "Servisler için desteklenen bağlantı:\n%@";
+"preferences_services_supported_links_mailback" = "Kullandığınız hizmet desteklenmiyorsa, geliştiricilere bir e-posta gönderebilirsiniz";
+"preferences_services_create_meeting_title" = "Toplantıları şununla oluştur";
+"preferences_services_create_meeting_custom_url_value" = "Özel bağlantı";
+"preferences_services_create_meeting_custom_url_placeholder" = "Lütfen geçerli bir bağlantı girin (http:// veya https://)";
+"preferences_services_create_meeting_browser_title" = "Web tarayıcı kullan";
+"preferences_configure_browsers_delete_alert_message" = "%@ tarayıcı konfigurasyonunu sil?";
+"preferences_configure_browsers_modal_edit_browser_title" = "Tarayıcı düzenle";
+"preferences_configure_browsers_choose_broser_panel_title" = "Bir tarayıcı uygulaması seç";
+"preferences_configure_browsers_choose_broser_panel_prompt" = "Tarayıcı seç";
+"preferences_configure_browsers_choose_broser_panel_message" = "Web tarayıcısının nereden çalıştırılacağını seçin.";
+
+// MARK: - Preferences Bookmarks
+
+"preferences_bookmarks_no_bookmarks_placeholder" = "Henüz yer iminiz yok";
+"preferences_bookmarks_delete_bookmark_title" = "Yer imini sil?";
+"preferences_bookmarks_delete_bookmark_message" = "%@ yer imini sil?";
+"preferences_bookmarks_add_bookmark_button" = "Yer imi ekle";
+"preferences_bookmarks_new_bookmark_link_phone" = "Link/telefon numarası";
+"preferences_bookmarks_new_bookmark_service" = "Servis";
+"preferences_bookmarks_new_bookmark_already_exist" = "%@ zaten bu linkte/telefon numarası:\n%@";
+"preferences_bookmarks_new_bookmark_error_title" = "Yer imi eklenemedi";
+"preferences_calendars_add_account_modal" = "Harici takvim eklemek için:\n1. Varsayılan takvim uygulamanızı açın\n2. Açılan menüde 'Hesap Ekle' butonuna tıklayın\n3. Hesabınızı seçin ve bağlanın";
+"preferences_advanced_apple_script_checkmark" = "Toplantıya katıldığında AppleScript çalıştır";
+"preferences_advanced_save_script_button" = "Scripti kaydet";
+"preferences_advanced_wrong_location_message" = "Lütfen User → Library → Application Scripts → leits.MeetingBar klasörünü seçin";
+"preferences_advanced_wrong_location_button" = "Anladım!";
+"preferences_advanced_event_regex_title" = "Toplantıları filtrelemek için özel regex betikleri";
+"preferences_advanced_regex_add_button" = "Regex ekle";
+"preferences_advanced_regex_edit_button" = "düzenle";
+"preferences_advanced_regex_delete_button" = "x";
+"preferences_advanced_regex_new_title" = "Regex gir";
+"preferences_advanced_regex_new_cant_save_title" = "Regex kaydedilemedi";
+"status_bar_empty_calendar_message" = "Toplantılarınızı görebilmek için tercihlerden\ntakvim seçin";
+"status_bar_section_join_next_meeting" = "Sonraki toplantıya katıl";
+"status_bar_section_join_from_clipboard" = "Kopyalanan toplantıyı aç";
+"status_bar_section_join_create_meeting" = "Toplantı oluştur";
+"status_bar_section_bookmarks_title" = "Yer imleri";
+"status_bar_section_bookmarks_menu" = "Yer imleri menüsü";
+"status_bar_section_date_nothing" = "%@ için hiçbir şey yok";
+"status_bar_event_start_time_all_day" = "Tüm gün";
+"status_bar_submenu_calendar_title" = "Takvim: %@";
+"status_bar_submenu_duration_all_day" = "%@ - %@ (%@ dakika)";
+"status_bar_submenu_status_declined" = " 👎 Reddedildi";
+"status_bar_submenu_status_tentative" = " ☝️ Belirsiz";
+"status_bar_submenu_status_pending" = " ⏳ Bekliyor";
+"status_bar_submenu_status_unknown" = " ❔ Bilinmeyen";
+"status_bar_submenu_status_default_simple" = " ❔ (Bilinmeyen)";
+"status_bar_submenu_organizer_title" = "Organizasyon sahibi: %@";
+"status_bar_submenu_attendees_title" = "Katılımcılar (%d)";
+"status_bar_submenu_attendees_no_name" = "Anonim katılımcı";
+"status_bar_submenu_attendees_you" = "%@ (sen)";
+"status_bar_submenu_attendees_status_tentative" = " [belirsiz]";
+"status_bar_submenu_attendees_status_unknown" = " [?]";
+"status_bar_submenu_email_attendees" = "Katılımcılara e-posta gönder";
+"status_bar_quick_actions" = "Hızlı İşlemler";
+"status_bar_hide_meeting_names" = "Toplantı başlığını gizle";
+"status_bar_whats_new" = "Neler yeni?";
+"status_bar_preferences" = "Tercihler";
+"status_bar_quit" = "MeetingBar'dan çıkış";
+"status_bar_no_title" = "Başlık yok";
+"status_bar_error_link_missed_title" = "Amanın! %@ 'e katılınamadı";
+"status_bar_error_link_missed_message" = "Link bulunamadı ya da toplantı servisiniz henüz desteklenmiyor";
+"status_bar_error_teams_link_title" = "Amanın! Microsoft Teams uygulamasındaki bağlantı açılamıyor";
+"status_bar_error_zoom_native_link_title" = "Amanın! Zoom bağlantısı açılamıyor";
+
+// MARK: - Welcome screen
+
+"welcome_screen_greeting_main_title" = "Selam! MeetingBar neredeyse her şeyin hazır olduğu basit bir uygulamadır.";
+"welcome_screen_greeting_additional_title" = "Hadi 100% sana uyarlayalım!";
+"welcome_screen_login_launch_toggle_title" = "MeetingBar'ı başlangıçta aç";
+"welcome_screen_shortcut_next_meeting_title" = "Sonraki etkinliğe kısayol ile katıl:";
+"welcome_screen_shortcut_ad_hoc_meeting_title" = "kısayolun:";
+"welcome_screen_setup_calendar_title" = "Takvimini ayarla";
+
+// MARK: - Calendars screen
+
+"calendars_screen_select_calendar_title" = "En az bir takvim seçin";
+"access_screen_access_denied_checkbox_title" = "MeetingBar'ın yanındaki kutuyu işaretleyin.";
+"access_screen_access_denied_relaunch_title" = "Sonra uygulamayı manuel olarak açın ve kuruluma devam edin.";
+"access_screen_access_granted_title" = "Takvimlere erişim isteği…";
+"access_screen_access_granted_click_ok_title" = "Karşınıza çıkan macOS ekranında \\OK\\ butonuna tıklayın.";
+"shared_send_notification_no_alert_style_tip" = "⚠️ macOS bildirim ayarlarınız MeetingBar için yapılandırılmamış. Bildirim istiyorsanız bunu açmanız gerekir.";
+
+// MARK: - Constants
+"constants_create_meeting_service_url" = "Özel bağlantı";
+"constants_meeting_service_zoom_native" = "Zoom";
+"constants_meeting_service_skype4biz" = "Skype For Business";
+"constants_meeting_service_other" = "Diğer";
+"constants_meeting_service_url" = "URL";
+"constants_browser_chromium" = "Chromium";
+"constants_browser_edge" = "Microsoft Edge";
+"constants_browser_firefox" = "Firefox";
+"constants_browser_opera" = "Opera";
+"constants_browser_vivaldi" = "Vivaldi";
+"constants_browser_safari" = "Safari";
+"constants_browser_defaultBrowser" = "Varsayılan tarayıcı";
+
+// MARK: - Store
+
+"store_patronage_title" = "MeetingBar'ı Destekle";
+"store_patronage_purchase_success_message" = "Satın alma gerçekleşti. Desteğin için teşekkürler!";
+"store_patronage_purchase_payment_invalid_message" = "Geçersiz satın alma kimliği";
+"store_patronage_purchase_payment_not_allowed_message" = "Cihazın ödeme yapmasına izin verilmiyor";
+"store_patronage_purchase_cloud_service_network_connection_failed" = "Ağa bağlanılamadı";
+
+// MARK: - Notifications
+
+"notifications_event_start_soon_body" = "Toplantı yakında başlıyor";
+"window_title_onboarding" = "MeetingBar'a Hoşgeldiniz";
+"preferences_general_patron_title" = "Destekçi ol";
+"preferences_general_patron_twelve_months" = "12 aylık – 11.99 USD";
+"general_add" = "Ekle";
+"general_meeting" = "Toplantı";
+
+// MARK: - Window titles
+
+"window_title_preferences" = "MeetingBar Tercihler";
+"preferences_general_shortcut_join_next" = "Sonraki toplantıya katıl:";
+"preferences_general_meeting_bar_description" = "MeetingBar, sorunsuz ve kolay çevrimiçi toplantılar için,\nAndrii Leitsius tarafından geliştirilmiş bir açık kaynak projesidir.";
+"preferences_general_patron_three_months" = "3 aylık – 2.99 USD";
+"preferences_general_patron_six_months" = "6 aylık – 5.99 USD";
+"preferences_appearance_events_without_guest_title" = "Misafirsiz etkinlikler:";
+"preferences_services_link_jitsi_value" = "Jitsi Meet uygulaması";
+"preferences_appearance_status_bar_icon_title" = "Simge";
+
+// MARK: - Preferences Appearance
+
+"preferences_appearance_events_title" = "Etkinlikler";
+"preferences_appearance_events_value_as_inactive" = "inaktif göster";
+"preferences_appearance_events_show_events_for_title" = "Etkinlikleri göster";
+"preferences_appearance_events_value_only_with_link" = "yalnızca toplantı bağlantılarına sahip olanları göster";
+"preferences_appearance_status_bar_title_event_title_value" = "Etkinlik başlığı";
+"preferences_appearance_status_bar_time_show_under_title_value" = "başlığın altında göster";
+"preferences_services_link_jitsi_title" = "Jitsi'yi şununla aç";
+"preferences_appearance_status_bar_time_hide_value" = "gizle";
+"preferences_appearance_status_bar_next_event_toggle" = "Sadece şu kadar zaman içinde başlayacak etkinlikleri göster";
+"preferences_appearance_menu_show_event_end_time_value" = "bitiş zamanı";
+"notifications_event_start_five_minutes_body" = "Toplantı beş dakika içinde başlıyor";
+
+// MARK: - Preferences Services Browsers Configuration
+
+"preferences_configure_browsers_button" = "Tarayıcı konfigurasyonu";
+"preferences_services_link_default_browser_value" = "Varsayılan tarayıcı";
+"preferences_configure_browsers_add_button_all_system_title" = "Tüm sistem tarayıcıları";
+"preferences_configure_browsers_modal_add_browser_name" = "Adı";
+"preferences_configure_browsers_modal_alert_title" = "Tarayıcı konfigurasyonu eklenemez";
+"preferences_services_google_meet_tip" = "İpucu: Google Meet bağlantıdan hesap seçmeyi destekler, örnek: https://meet.google.com/new?authuser=1";
+"preferences_configure_browsers_add_button_browser_title" = "Tarayıcı";
+"preferences_configure_browsers_modal_add_browser_title" = "Tarayıcı ekle";
+"preferences_configure_browsers_modal_add_browser_path" = "Dosya yolu";
+"preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "Tarayıcı seç";
+"preferences_bookmarks_new_bookmark_title" = "Yeni yer imi";
+"preferences_calendars_add_account_button" = "Hesap ekle";
+
+// MARK: - Preferences Advanced
+
+"preferences_advanced_setting_warning" = "⚠️ Sadece ne yaptğınızı biliyorsanız, bu ayarları kullanın";
+"preferences_advanced_apple_script_placeholder" = "# scriptinizi buraya yazın\ntell application \"Music\" to pause";
+"preferences_advanced_regex_title" = "Toplantı bağlantıları için özel regex betikleri";
+
+// MARK: - Status bar
+
+"status_bar_section_today" = "Bugün";
+"status_bar_submenu_status_default_extended" = " ❔ (%@)";
+
+// MARK: - Preferences Calendars
+
+"preferences_calendars_select_calendars_title" = "Etkinlikleri durum çubuğunda göstermek için takvim seçin";
+"preferences_calendars_add_account_description" = "İhtiyacınız olan takvimi bulamıyor musunuz?";
+"status_bar_section_join_current_meeting" = "Mevcut toplantıya katıl";
+"store_patronage_restore_success_message" = "Geri yüklendi";
+"store_patronage_purchase_store_product_not_available_message" = "Ürün mevcut mağazada bulunmamaktadır";
+"status_bar_submenu_location_title" = "Konum:";
+"status_bar_submenu_copy_meeting_link" = "Bağlantı linkini kopyala";
+"status_bar_submenu_open_in_fantastical" = "Fantastical'da aç";
+"status_bar_show_meeting_names" = "Toplantı başlığını göster";
+"status_bar_event_status_in" = "%@";
+"status_bar_submenu_open_in_calendar" = "Takvim uygulamasında aç";
+"status_bar_error_zoom_app_link_title" = "Amanın! Zoom bağlantısı açılamıyor";
+"welcome_screen_ad_hoc_meeting_title" = "Şurada geçici toplantılar oluşturun ";
+"access_screen_access_screen_access_denied_go_to_title" = "Git";
+"status_bar_event_status_now" = "şu an (%@ kaldı)";
+"status_bar_error_apple_script_title" = "AppleScript hatası";
+"status_bar_error_teams_link_message" = "Microsoft Teams uygulamasının yüklü olduğundan emin olun veya bu bağlantıyı bir tarayıcıda açın.";
+
+// MARK: - Shared
+
+"shared_send_notification_toggle" = "Sonraki toplantıya katılmak için bildirim gönder";
+"shared_send_notification_directly_value" = "toplantı başladığında";
+"calendars_screen_start_button" = "Uygulamayı kullanmaya başla";
+"access_screen_access_denied_system_preferences_button" = "Sistem Tercihleri";
+"shared_send_notification_one_minute_value" = "1 dakika önce";
+"shared_send_notification_three_minute_value" = "3 dakika önce";
+"shared_send_notification_five_minute_value" = "5 dakika önce";
+"shared_send_notification_disabled_tip" = "⚠️ macOS bildirim ayarlarınız MeetingBar için kapalı durumda. Toplantıları takip etmek için macOS sistem tercihlerinden bildirimleri açın.";
+"constants_meeting_service_phone" = "Telefon numarası";
+"constants_browser_brave" = "Brave";
+"store_patronage_purchase_unknown_message" = "Bilinmeyen hata. Lütfen desteğe başvurun.";
+"store_patronage_purchase_cloud_service_revoked_message" = "Kullanıcı bu bulut hizmetini kullanma iznini iptal etti";
+"constants_meeting_service_skype4biz_selfhosted" = "Skype For Business (SH)";
+"store_patronage_purchase_cloud_service_permission_denied_message" = "Bulut servis bilgilerine erişim izni verilmedi";
+"notifications_event_start_three_minutes_body" = "Toplantı üç dakika içinde başlıyor";
+
+// MARK: - Link open
+
+"link_url_cant_open_title" = "Amanın! %@ ile bağlantı açılamıyor";
+"store_patronage_restore_nothing_message" = "Geri yüklenecek bir şey yok";
+"store_patronage_purchase_client_invalid_message" = "Ödemeye izin verilmedi";
+"notifications_event_start_one_minute_body" = "Toplantı bir dakika içinde başlıyor";
+"link_url_cant_open_message" = "%@ yüklü olduğundan emin olun veya bu bağlantıyı bir tarayıcıda açın.";
+"preferences_general_feedback_title" = "Eğer soru veya geribildiriminiz varsa,\nlütfen iletişim kurmaktan çekinmeyin:";
