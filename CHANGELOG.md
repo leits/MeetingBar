@@ -1,7 +1,7 @@
 # Changelog for Meetingbar
 ## Version 3.10.0 (WIP)
 > unreleased
-*
+* Added translations into Turkish
 
 ## Version 3.9.0
 > (released 20th Nov 2021)
