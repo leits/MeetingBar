@@ -438,8 +438,9 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
             image = NSImage(named: "amazon_chime_icon")!
             image!.size = NSSize(width: 16, height: 16)
 
+        // tested and verified
         case .some(.ringcentral):
-            image = NSImage(named: "online_meeting_icon")!
+            image = NSImage(named: "ringcentral_icon")!
             image!.size = NSSize(width: 16, height: 16)
 
         // tested and verified
