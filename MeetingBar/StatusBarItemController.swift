@@ -452,8 +452,9 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
             image = NSImage(named: "gotowebinar_icon")!
             image!.size = NSSize(width: 16, height: 16)
 
+        // tested and verified
         case .some(.bluejeans):
-            image = NSImage(named: "online_meeting_icon")!
+            image = NSImage(named: "bluejeans_icon")!
             image!.size = NSSize(width: 16, height: 16)
 
         // tested and verified
