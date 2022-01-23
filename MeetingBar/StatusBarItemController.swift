@@ -409,7 +409,7 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
             image!.size = NSSize(width: 16, height: 16)
 
         // tested and verified
-        case .some(.meet):
+        case .some(.meet), .some(.meetStream):
             image = NSImage(named: "google_meet_icon")!
             image!.size = NSSize(width: 16, height: 13.2)
 
@@ -577,12 +577,9 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
             image = NSImage(named: "no_online_session")!
             image!.size = NSSize(width: 16, height: 16)
 
+        // tested and verified
         case .some(.vonageMeetings):
             image = NSImage(named: "vonage_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        case .some(.meetStream):
-            image = NSImage(named: "online_meeting_icon")!
             image!.size = NSSize(width: 16, height: 16)
 
         case .some(.url):
