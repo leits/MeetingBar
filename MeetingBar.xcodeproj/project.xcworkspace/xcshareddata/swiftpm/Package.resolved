@@ -15,8 +15,8 @@
         "repositoryURL": "https://github.com/sindresorhus/KeyboardShortcuts",
         "state": {
           "branch": null,
-          "revision": "7030a2e3d46100585f9c5c6a2fe3bae9f6e78fa8",
-          "version": "1.2.1"
+          "revision": "9bc72c441c713362a137ecbb4104920655a9aa5e",
+          "version": "1.4.0"
         }
       },
       {
@@ -24,8 +24,8 @@
         "repositoryURL": "https://github.com/bizz84/SwiftyStoreKit.git",
         "state": {
           "branch": null,
-          "revision": "3b54c8eac2840b0cdd576634e83d9ebeb70f847c",
-          "version": "0.16.3"
+          "revision": "9ce911639680113dac9b554d6243e406a9758ebe",
+          "version": "0.16.4"
         }
       }
     ]
