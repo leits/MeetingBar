@@ -89,8 +89,10 @@ struct ChangelogView: View {
                 if lastRevisedVersionInChangelog < "3.10.0" {
                     Section(header: Text("Version 3.10.0")) {
                         Text("😴 Added feature to snooze the notification")
+                        Text("🌍 Added translations into Turkish")
                     }
                 }
+
             }.listStyle(SidebarListStyle())
             Button("Close", action: close)
         }.padding()

@@ -124,6 +124,7 @@
 		E23954672628BF89003ECCB3 /* BrowserConfigView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrowserConfigView.swift; sourceTree = "<group>"; };
 		E249D533259BBC3800429BF1 /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		E2AE715525AA54A600D3C7CF /* DevTeamOverride.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = DevTeamOverride.xcconfig; sourceTree = "<group>"; };
+		E48FB770279B3A820071CC5A /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		E4DD0F0A2529D0D20029E395 /* Project-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Project-Release.xcconfig"; sourceTree = "<group>"; };
 		E4DD0F0B2529D0D20029E395 /* Project.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Project.xcconfig; sourceTree = "<group>"; };
 		E4DD0F0C2529D0D20029E395 /* Project-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Project-Debug.xcconfig"; sourceTree = "<group>"; };
@@ -424,6 +425,7 @@
 				ja,
 				pl,
 				he,
+				tr,
 			);
 			mainGroup = 144C01702462D0C3000C9FFC;
 			packageReferences = (
@@ -554,6 +556,7 @@
 				EA04E13F26B2664F00D183B8 /* ja */,
 				14513C7726D697FB0026B40A /* pl */,
 				14B08ACB27498308002E3892 /* he */,
+				E48FB770279B3A820071CC5A /* tr */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
