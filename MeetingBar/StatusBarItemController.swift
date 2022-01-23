@@ -566,6 +566,10 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
             image = NSImage(named: "ovice_icon")!
             image!.size = NSSize(width: 16, height: 16)
 
+        case .some(.facetime):
+            image = NSImage(named: "facetime_icon")!
+            image!.size = NSSize(width: 16, height: 16)
+
         // tested and verified
         case .none:
             image = NSImage(named: "no_online_session")!
