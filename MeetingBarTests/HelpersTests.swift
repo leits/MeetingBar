@@ -18,6 +18,7 @@ let meetings = [
     MeetingLink(service: .blackboard_collab, url: URL(string: "https://us.bbcollab.com/guest/C2419D0F68382D351B97376D6B47ABA2")!),
     MeetingLink(service: .blackboard_collab, url: URL(string: "https://us.bbcollab.com/invite/EFC53F2790E6E50FFCC2AFBC16CC69EE")!),
     MeetingLink(service: .coscreen, url: URL(string: "https://join.coscreen.co/Eng-Leads/95RyHqtzn7EoQjQ19ju3")!),
+    MeetingLink(service: .ovice, url: URL(string: "https://universeph-armynight.ovice.in/lobby/enter")!),
 ]
 
 class HelpersTests: XCTestCase {
