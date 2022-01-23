@@ -578,7 +578,7 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
             image!.size = NSSize(width: 16, height: 16)
 
         case .some(.vonageMeetings):
-            image = NSImage(named: "online_meeting_icon")!
+            image = NSImage(named: "vonage_icon")!
             image!.size = NSSize(width: 16, height: 16)
 
         case .some(.meetStream):
