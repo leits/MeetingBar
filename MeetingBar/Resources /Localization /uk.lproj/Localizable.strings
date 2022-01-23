@@ -84,8 +84,8 @@
 "preferences_appearance_status_bar_title" = "Смуга меню";
 "preferences_appearance_status_bar_icon_title" = "Значок";
 "preferences_appearance_status_bar_icon_app_icon_value" = " Значок додатка";
-"preferences_appearance_status_bar_icon_calendar_icon_value" = " Календаря";
-"preferences_appearance_status_bar_icon_specific_icon_value" = " Сервіс зустріч (напр. MS Teams)";
+"preferences_appearance_status_bar_icon_calendar_icon_value" = " Значок календаря";
+"preferences_appearance_status_bar_icon_specific_icon_value" = " Значок сервісу зустрічі (напр. MS Teams)";
 "preferences_appearance_status_bar_icon_no_icon_value" = " Без значка";
 "preferences_appearance_status_bar_title_title" = "Заголовок";
 "preferences_appearance_status_bar_title_event_title_value" = "заголовок події";
@@ -96,7 +96,7 @@
 "preferences_appearance_status_bar_time_show_value" = "показати";
 "preferences_appearance_status_bar_time_show_under_title_value" = "показати під заголовком";
 "preferences_appearance_status_bar_time_hide_value" = "приховати";
-"preferences_appearance_status_bar_next_event_toggle" = "Показувати лише подію, яка починається через";
+"preferences_appearance_status_bar_next_event_toggle" = "Показувати лише наступну подію, яка починається через";
 "preferences_appearance_status_bar_next_event_stepper" = "%d хвилин";
 "preferences_appearance_menu_title" = "Меню";
 "preferences_appearance_menu_shorten_event_title_toggle" = "Скоротити заголовок події до";
