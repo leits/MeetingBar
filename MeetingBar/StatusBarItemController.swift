@@ -633,7 +633,7 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
 
         switch Defaults[.timeFormat] {
         case .am_pm:
-            eventTimeFormatter.dateFormat = "h:mm a"
+            eventTimeFormatter.dateFormat = "h:mm a  "
         case .military:
             eventTimeFormatter.dateFormat = "HH:mm"
         }
