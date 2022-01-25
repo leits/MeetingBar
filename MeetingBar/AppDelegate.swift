@@ -189,6 +189,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         Defaults[.hideMeetingTitle].toggle()
     }
 
+    @objc
+    func refreshSources() {
+        statusBarItem.eventStore.refreshSourcesIfNecessary()
+        statusBarItem.updateTitle()
+        statusBarItem.updateMenu()
+    }
+
     func setup() {
         statusBarItem = StatusBarItemController()
         statusBarItem.setAppDelegate(appdelegate: self)

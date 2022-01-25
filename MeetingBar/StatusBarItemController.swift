@@ -332,6 +332,12 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
             toggleMeetingTitleVisibilityItem.setShortcut(for: .toggleMeetingTitleVisibilityShortcut)
             quickActionsItem.submenu!.addItem(toggleMeetingTitleVisibilityItem)
         }
+
+        let refreshSourcesItem = NSMenuItem()
+        refreshSourcesItem.title = "status_bar_section_refresh_sources".loco()
+        refreshSourcesItem.action = #selector(AppDelegate.refreshSources)
+        refreshSourcesItem.keyEquivalent = ""
+        quickActionsItem.submenu!.addItem(refreshSourcesItem)
     }
 
     func createBookmarksSection() {
