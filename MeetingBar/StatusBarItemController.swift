@@ -70,7 +70,6 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
     func statusMenuBarAction(sender _: NSStatusItem) {
         if !menuIsOpen, statusItem.menu == nil {
             let event = NSApp.currentEvent
-            NSLog("Event occured \(String(describing: event?.type.rawValue))")
 
             // Right button click
             if event?.type == NSEvent.EventType.rightMouseUp {

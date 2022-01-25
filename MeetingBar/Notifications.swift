@@ -13,7 +13,7 @@ import UserNotifications
 func requestNotificationAuthorization() {
     let center = UNUserNotificationCenter.current()
 
-    center.requestAuthorization(options: [.alert, .badge, .sound]) {_,_ in }
+    center.requestAuthorization(options: [.alert, .badge, .sound]) { _, _ in }
 }
 
 func registerNotificationCategories() {
