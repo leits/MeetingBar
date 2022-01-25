@@ -296,11 +296,8 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?
     }
 }
 
-func removePatchVerion(_ version: String) -> String {
-    let versionArray = version.split(separator: ".")
-    let major = versionArray[0]
-    let minor = versionArray[1]
-    return "\(major).\(minor)"
+func compareVersions(_ version_x: String, _ version_y: String) -> Bool {
+    return version_x.compare(version_y, options: .numeric) == .orderedDescending
 }
 
 func bundleIdentifier(forAppName appName: String) -> String? {

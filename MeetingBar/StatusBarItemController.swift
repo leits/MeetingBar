@@ -956,7 +956,9 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
     }
 
     func createPreferencesSection() {
-        if removePatchVerion(Defaults[.appVersion]) > removePatchVerion(Defaults[.lastRevisedVersionInChangelog]) {
+        let showChangelogItem = compareVersions(Defaults[.appVersion], Defaults[.lastRevisedVersionInChangelog])
+
+        if showChangelogItem {
             let changelogItem = statusItemMenu.addItem(
                 withTitle: "status_bar_whats_new".loco(),
                 action: #selector(AppDelegate.openChangelogWindow),
