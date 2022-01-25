@@ -1,4 +1,3 @@
-
 "constants_meeting_service_skype4biz_selfhosted" = "Skype For Business (SH)";
 "constants_meeting_service_skype4biz" = "Skype For Business";
 "constants_browser_edge" = "Microsoft Edge";
@@ -308,3 +307,4 @@
 "general_cancel" = "Annuler";
 "general_ok" = "OK";
 "preferences_advanced_event_regex_title" = "Des expressions régulières personnalisées pour filtrer les réunions";
+"status_bar_section_refresh_sources" = "Actualiser les sources";

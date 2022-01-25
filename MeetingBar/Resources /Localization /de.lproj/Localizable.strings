@@ -309,3 +309,4 @@
 "status_bar_error_link_missed_title" = "Ach! Kann %@ nicht beitreten";
 "preferences_general_patron_title" = "Schirmherr werden";
 "preferences_advanced_event_regex_title" = "Benutzerdefinierte reguläre Ausdrücke zum Herausfiltern von Besprechungen";
+"status_bar_section_refresh_sources" = "Quellen aktualisieren";
