@@ -58,7 +58,7 @@ struct LinksRegex {
     let youtube = try! NSRegularExpression(pattern: #"https?://((www|m)\.)?(youtube\.com|youtu\.be)/[^\s]*"#)
     let vonageMeetings = try! NSRegularExpression(pattern: #"https?://meetings\.vonage\.com/[0-9]{9}"#)
     let meetStream = try! NSRegularExpression(pattern: #"https?://stream\.meet\.google\.com/stream/[a-z0-9-]+"#)
-    let around = try! NSRegularExpression(pattern: #"https?://meet\.around\.co/[^\s]*"#)
+    let around = try! NSRegularExpression(pattern: #"https?://(meet.)?around\.co/[^\s]*"#)
     let jam = try! NSRegularExpression(pattern: #"https?://jam\.systems/[^\s]*"#)
     let discord = try! NSRegularExpression(pattern: #"(http|https|discord)://(www\.)?(canary\.)?discord(app)?\.([a-zA-Z]{2,})(.+)?"#)
     let blackboard_collab = try! NSRegularExpression(pattern: #"https?://us\.bbcollab\.com/[^\s]*"#)
