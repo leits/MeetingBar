@@ -2,6 +2,8 @@
 ## Version 3.10.0 (WIP)
 * 😴 Added feature to snooze the notification
 * Added translations into Turkish
+* Integrations with Facetime, Vimeo Showcases, and oVice
+* New "Refresh source" Quick Action
 
 ## Version 3.9.0
 > (released 20th Nov 2021)

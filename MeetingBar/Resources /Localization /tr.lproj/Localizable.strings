@@ -315,3 +315,4 @@
 "notifications_event_start_one_minute_body" = "Toplantı bir dakika içinde başlıyor";
 "link_url_cant_open_message" = "%@ yüklü olduğundan emin olun veya bu bağlantıyı bir tarayıcıda açın.";
 "preferences_general_feedback_title" = "Eğer soru veya geribildiriminiz varsa,\nlütfen iletişim kurmaktan çekinmeyin:";
+"status_bar_section_refresh_sources" = "Kaynakları yenile";
