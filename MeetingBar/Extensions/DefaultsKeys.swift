@@ -43,7 +43,7 @@ extension Defaults.Keys {
 
     // Menu Appearance
     // if the event title in the menu should be shortened or not -> the length will be stored in field menuEventTitleLength
-    static let shortenEventTitle = Key<Bool>("shortenEventTitle", default: false)
+    static let shortenEventTitle = Key<Bool>("shortenEventTitle", default: true)
     static let menuEventTitleLength = Key<Int>("menuEventTitleLength", default: 50)
 
     static let showEventDetails = Key<Bool>("showEventDetails", default: false)
@@ -108,4 +108,5 @@ extension Defaults.Keys {
     static let automaticEventScriptTime = Key<EventScriptExecutionTime>("automaticEventScriptTime", default: .atStart)
 
     static let customRegexes = Key<[String]>("customRegexes", default: [])
+    static let filterEventRegexes = Key<[String]>("filterEventRegexes", default: [])
 }

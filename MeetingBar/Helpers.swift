@@ -65,6 +65,10 @@ func getMatch(text: String, regex: NSRegularExpression) -> String? {
     return nil
 }
 
+func hasMatch(text: String, regex: NSRegularExpression) -> Bool {
+    return regex.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)) != nil
+}
+
 func cleanUpNotes(_ notes: String) -> String {
     let zoomSeparator = "\n──────────"
     let meetSeparator = "-::~:~::~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~::~:~::-"
@@ -122,6 +126,17 @@ func detectLink(_ field: inout String) -> MeetingLink? {
         }
     }
     return nil
+}
+
+func shouldIncludeMeeting(_ event: EKEvent) -> Bool {
+    for pattern in Defaults[.filterEventRegexes] {
+        if let regex = try? NSRegularExpression(pattern: pattern) {
+            if hasMatch(text: event.title, regex: regex) {
+                return false
+            }
+        }
+    }
+    return true
 }
 
 /**
@@ -190,6 +205,8 @@ func openEvent(_ event: EKEvent) {
             }
         }
         openMeetingURL(meeting.service, meeting.url, nil)
+    } else if let eventUrl = event.url {
+        eventUrl.openInDefaultBrowser()
     } else {
         sendNotification("status_bar_error_link_missed_title".loco(eventTitle), "status_bar_error_link_missed_message".loco())
     }
@@ -280,11 +297,8 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?
     }
 }
 
-func removePatchVerion(_ version: String) -> String {
-    let versionArray = version.split(separator: ".")
-    let major = versionArray[0]
-    let minor = versionArray[1]
-    return "\(major).\(minor)"
+func compareVersions(_ version_x: String, _ version_y: String) -> Bool {
+    return version_x.compare(version_y, options: .numeric) == .orderedDescending
 }
 
 func bundleIdentifier(forAppName appName: String) -> String? {

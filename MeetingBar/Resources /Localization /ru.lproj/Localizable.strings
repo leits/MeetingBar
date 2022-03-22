@@ -53,7 +53,7 @@
 "preferences_general_patron_three_months" = "3 Месяца - 2,99 USD";
 "preferences_general_patron_six_months" = "6 Месяцев - 5,99 USD";
 "preferences_general_patron_twelve_months" = "12 Месяцев - 11,99 USD";
-"preferences_general_patron_description" = "Эти разовые покупки не продлеваются автоматически.";
+"preferences_general_patron_description" = "Это разовые покупки, они не продлеваются автоматически.";
 "preferences_general_patron_thank_for_purchase" = "Спасибо! Вы помогаете MeetingBar уже %d месяц! 🎉";
 "preferences_general_patron_restore_purchases" = "Восстановить покупки";
 "preferences_general_feedback_title" = "Если у вас есть какие-либо вопросы или отзывы,\nсвяжитесь со мной:";
@@ -83,8 +83,8 @@
 "preferences_appearance_events_value_only_with_link" = "показать только со ссылкой на событие";
 "preferences_appearance_status_bar_title" = "Статус бар";
 "preferences_appearance_status_bar_icon_title" = "Иконка";
-"preferences_appearance_status_bar_icon_app_icon_value" = " Иконка приложения";
-"preferences_appearance_status_bar_icon_calendar_icon_value" = " Иконка календаря";
+"preferences_appearance_status_bar_icon_app_icon_value" = " MeetingBar";
+"preferences_appearance_status_bar_icon_calendar_icon_value" = " Календарь";
 "preferences_appearance_status_bar_icon_specific_icon_value" = " Иконка события (например MS Teams)";
 "preferences_appearance_status_bar_icon_no_icon_value" = " Без иконки";
 "preferences_appearance_status_bar_title_title" = "Заголовок";
@@ -96,7 +96,7 @@
 "preferences_appearance_status_bar_time_show_value" = "показать";
 "preferences_appearance_status_bar_time_show_under_title_value" = "показать под заголовком";
 "preferences_appearance_status_bar_time_hide_value" = "скрыть";
-"preferences_appearance_status_bar_next_event_toggle" = "Показывать только следующее событие, начинающееся за";
+"preferences_appearance_status_bar_next_event_toggle" = "Показывать только события, начинающееся за";
 "preferences_appearance_status_bar_next_event_stepper" = "%d минут";
 "preferences_appearance_menu_title" = "Меню";
 "preferences_appearance_menu_shorten_event_title_toggle" = "Сократить название мероприятия до";
@@ -143,7 +143,7 @@
 "preferences_configure_browsers_modal_alert_title" = "Невозможно добавить конфигурацию браузера";
 "preferences_configure_browsers_choose_broser_panel_title" = "Выберите допустимое приложение браузера";
 "preferences_configure_browsers_choose_broser_panel_prompt" = "Выбрать браузер";
-"preferences_configure_browsers_choose_broser_panel_message" = "Выберите браузер с любым расположением!";
+"preferences_configure_browsers_choose_broser_panel_message" = "Выберите, откуда запускать веб-браузер.";
 
 // MARK: - Preferences Bookmarks
 
@@ -180,6 +180,7 @@
 "preferences_advanced_regex_delete_button" = "x";
 "preferences_advanced_regex_new_title" = "Введите regex";
 "preferences_advanced_regex_new_cant_save_title" = "Не удается сохранить regex";
+"preferences_advanced_event_regex_title" = "Custom regexes to filter out meetings";
 
 // MARK: - Status bar
 
@@ -208,7 +209,7 @@
 "status_bar_submenu_organizer_title" = "Организатор: %@";
 "status_bar_submenu_notes_title" = "Примечания:";
 "status_bar_submenu_attendees_title" = "Участники (%d)";
-"status_bar_submenu_attendees_no_name" = "Участник без имени";
+"status_bar_submenu_attendees_no_name" = "Анонимный участник";
 "status_bar_submenu_attendees_you" = "%@ (вы)";
 "status_bar_submenu_attendees_status_tentative" = " [Возможно]";
 "status_bar_submenu_attendees_status_unknown" = " [?]";
@@ -225,7 +226,7 @@
 "status_bar_no_title" = "Без названия";
 "status_bar_event_status_now" = "сейчас (%@ осталось)";
 "status_bar_event_status_in" = "через %@";
-"status_bar_error_apple_script_title" = "AppleScript вернул ошибку";
+"status_bar_error_apple_script_title" = "Ошибка AppleScript";
 "status_bar_error_link_missed_title" = "Пффф! Не могу присоединиться к %@";
 "status_bar_error_link_missed_message" = "Ссылка не найдена, или ваша служба еще не поддерживается";
 "status_bar_error_teams_link_title" = "Ой! Невозможно открыть ссылку в приложении Microsoft Teams";
@@ -257,7 +258,7 @@
 "access_screen_access_denied_system_preferences_button" = "Системные настройки (System Preferences)";
 "access_screen_access_denied_checkbox_title" = "и установите флажок напротив MeetingBar.";
 "access_screen_access_denied_relaunch_title" = "Затем вам нужно запустить приложение вручную, чтобы продолжить настройку.";
-"access_screen_access_granted_title" = "Запрос доступа к календарям.";
+"access_screen_access_granted_title" = "Запрос доступа к календарям…";
 "access_screen_access_granted_click_ok_title" = "Нажмите \"ОК\" в появившемся системном диалоге.";
 
 // MARK: - Shared
@@ -267,60 +268,15 @@
 "shared_send_notification_one_minute_value" = "за 1 минуту до";
 "shared_send_notification_three_minute_value" = "за 3 минуты до";
 "shared_send_notification_five_minute_value" = "за 5 минут до";
-"shared_send_notification_no_alert_style_tip" = "⚠️ Системные настройки уведомлений для Meetingbar в настоящее время не настроены на \"Оповещения (Alert)\". Пожалуйста, включите \"Оповещения (Alert)\", если вы хотите получать уведомления.";
-"shared_send_notification_disabled_tip" = "⚠️ Системные настройки уведомлений для Meetingbar в настоящее время выключены. Пожалуйста, включите уведомления в системных настройках, чтобы не пропустить события.";
+"shared_send_notification_no_alert_style_tip" = "⚠️ Системные настройки уведомлений для Meetingbar в не настроены на \"Оповещения (Alert)\". Включите \"Оповещения (Alert)\", если вы хотите получать уведомления.";
+"shared_send_notification_disabled_tip" = "⚠️ Системные настройки уведомлений для Meetingbar выключены. Включите уведомления в системных настройках, чтобы не пропустить события.";
 
 // MARK: - Constants
-"constants_create_meeting_service_meet" = "Google Meet";
-"constants_create_meeting_service_jam" = "Jam";
-"constants_create_meeting_service_coscreen" = "CoScreen";
-"constants_create_meeting_service_zoom" = "Zoom";
-"constants_create_meeting_service_teams" = "Microsoft Teams";
-"constants_create_meeting_service_gcalendar" = "Google Calendar";
-"constants_create_meeting_service_outlook_live" = "Outlook Live";
-"constants_create_meeting_service_outlook_office365" = "Outlook Office365";
 "constants_create_meeting_service_url" = "Пользовательский URL";
 "constants_meeting_service_phone" = "Телефон";
-"constants_meeting_service_meet" = "Google Meet";
-"constants_meeting_service_hangouts" = "Google Hangouts";
-"constants_meeting_service_zoom" = "Zoom";
 "constants_meeting_service_zoom_native" = "Zoom native";
-"constants_meeting_service_teams" = "Microsoft Teams";
-"constants_meeting_service_webex" = "Cisco Webex";
-"constants_meeting_service_jitsi" = "Jitsi";
-"constants_meeting_service_chime" = "Amazon Chime";
-"constants_meeting_service_ringcentral" = "Ring Central";
-"constants_meeting_service_gotomeeting" = "GoToMeeting";
-"constants_meeting_service_gotowebinar" = "GoToWebinar";
-"constants_meeting_service_bluejeans" = "BlueJeans";
-"constants_meeting_service_eight_x_eight" = "8x8";
-"constants_meeting_service_demio" = "Demio";
-"constants_meeting_service_join_me" = "Join.me";
-"constants_meeting_service_zoomgov" = "ZoomGov";
-"constants_meeting_service_whereby" = "Whereby";
-"constants_meeting_service_uberconference" = "Uber Conference";
-"constants_meeting_service_blizz" = "Blizz";
-"constants_meeting_service_teamviewer_meeting" = "Teamviewer Meeting";
-"constants_meeting_service_vsee" = "VSee";
-"constants_meeting_service_starleaf" = "StarLeaf";
-"constants_meeting_service_duo" = "Google Duo";
-"constants_meeting_service_voov" = "Tencent VooV";
-"constants_meeting_service_facebook_workspace" = "Facebook Workspace";
-"constants_meeting_service_lifesize" = "Lifesize";
-"constants_meeting_service_skype" = "Skype";
 "constants_meeting_service_skype4biz" = "Skype для бизнеса";
 "constants_meeting_service_skype4biz_selfhosted" = "Skype для бизнеса (SH)";
-"constants_meeting_service_facetime" = "Facetime";
-"constants_meeting_service_facetimeaudio" = "Facetime Audio";
-"constants_meeting_service_youtube" = "YouTube";
-"constants_meeting_service_vonageMeetings" = "Vonage Meetings";
-"constants_meeting_service_meetStream" = "Google Meet Stream";
-"constants_meeting_service_around" = "Around";
-"constants_meeting_service_jam" = "Jam";
-"constants_meeting_service_discord" = "Discord";
-"constants_meeting_service_blackboard_collab" = "Blackboard Collaborate";
-"constants_meeting_service_coscreen" = "CoScreen";
-"constants_meeting_service_vowel" = "Vowel";
 "constants_meeting_service_other" = "Другое";
 "constants_meeting_service_url" = "URL-АДРЕС";
 "constants_browser_brave" = "Brave";
@@ -336,12 +292,12 @@
 // MARK: - Store
 
 "store_patronage_title" = "MeetingBar Patronage";
-"store_patronage_restore_success_message" = "Успешно";
+"store_patronage_restore_success_message" = "Восстановлено";
 "store_patronage_restore_nothing_message" = "Нечего восстанавливать";
-"store_patronage_purchase_success_message" = "Успешно приобретено. Спасибо за помощь!";
-"store_patronage_purchase_unknown_message" = "Неизвестная ошибка. Обратитесь в службу поддержки";
+"store_patronage_purchase_success_message" = "Приобретено. Спасибо за помощь!";
+"store_patronage_purchase_unknown_message" = "Неизвестная ошибка. Обратитесь в службу поддержки.";
 "store_patronage_purchase_client_invalid_message" = "Не разрешено производить оплату";
-"store_patronage_purchase_payment_invalid_message" = "Идентификатор покупки недействителен";
+"store_patronage_purchase_payment_invalid_message" = "Недействителен идентификатор покупки";
 "store_patronage_purchase_payment_not_allowed_message" = "Устройство не позволяет производить оплату";
 "store_patronage_purchase_store_product_not_available_message" = "Товар недоступен";
 "store_patronage_purchase_cloud_service_permission_denied_message" = "Доступ к информации облачного сервиса запрещен";
@@ -359,8 +315,3 @@
 
 "link_url_cant_open_title" = "Ой! Невозможно открыть ссылку в %@";
 "link_url_cant_open_message" = "Убедитесь, что у вас установлен %@, или измените браузер в настройках.";
-"preferences_general_option_preferred_language_russian_value" = "Русский";
-"preferences_general_option_preferred_language_english_value" = "English";
-"preferences_general_option_preferred_language_ukrainian_value" = "Українська";
-"preferences_general_option_preferred_language_croatian_value" = "Hrvatski";
-"preferences_general_option_preferred_language_norwegianbokmal_value" = "Norsk bokmål";

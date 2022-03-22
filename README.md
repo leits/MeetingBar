@@ -1,3 +1,30 @@
+> # 🇺🇦 UKRAINE NEEDS YOUR HELP NOW!
+>
+> I'm the creator of this project and I'm Ukrainian.
+>
+> **My country, Ukraine, [is being invaded by the Russian Federation, right now](https://www.bbc.com/news/world-europe-60504334)**. Right now I'm safe with my family in the western part of Ukraine. At least for now.
+> Russia is hitting target all over my country by ballistic missiles.
+>
+> **Please, save me and help to save my country!**
+>
+> Ukrainian National Bank opened [an account to Raise Funds for Ukraine’s Armed Forces](https://bank.gov.ua/en/news/all/natsionalniy-bank-vidkriv-spetsrahunok-dlya-zboru-koshtiv-na-potrebi-armiyi):
+>
+> ```
+> SWIFT Code NBU: NBUA UA UX
+> JP MORGAN CHASE BANK, New York
+> SWIFT Code: CHASUS33
+> Account: 400807238
+> 383 Madison Avenue, New York, NY 10179, USA
+> IBAN: UA843000010000000047330992708
+> ```
+>
+> You can also donate to [charity supporting Ukrainian army](https://savelife.in.ua/en/donate/).
+>
+> Don't be silent!
+> Call on your politicians to support Ukraine.
+>
+> **THANK YOU!**
+
 [![GitHub license](https://img.shields.io/github/license/leits/MeetingBar.svg)](https://github.com/leits/MeetingBar/blob/master/LICENSE)
 [![Translation state](https://hosted.weblate.org/widgets/meetingbar/-/app/svg-badge.svg)](https://hosted.weblate.org/engage/meetingbar/)
 [![Github all releases](https://img.shields.io/github/downloads/leits/MeetingBar/total.svg)](https://GitHub.com/leits/MeetingBar/releases/)
@@ -41,7 +68,7 @@ Integrated with 20+ meeting services so you can quickly join meetings from event
 
 1. Install:
   * From the [App Store](https://apps.apple.com/us/app/id1532419400)
-  * From homebrew `brew install --cask meetingbar`
+  * From homebrew `brew install meetingbar`
   * Manual download the [latest version](https://github.com/leits/MeetingBar/releases/latest/download/MeetingBar.dmg)
 2. Make sure your calendar synchronized to macOS calendar or [add a calendar account](https://support.apple.com/guide/calendar/add-or-delete-calendar-accounts-icl4308d6701/mac).
 3. Open the app and go through the onboarding.
@@ -51,44 +78,7 @@ If you have some installation problems or some other questions please check the 
 
 ## Supported meeting services
 
-* Google Meet
-* Zoom
-* Google Hangouts
-* Microsoft Teams
-* Amazon Chime
-* Cisco Webex
-* Jitsi
-* Ring Central
-* GoToMeeting
-* GoToWebinar
-* BlueJeans
-* 8x8
-* Demio
-* Join.me
-* ZoomGov
-* Whereby
-* Uber Conference
-* Blizz
-* VSee
-v StarLeaf
-* Google Duo
-* Tencent VooV
-* Skype
-* Skype For Bussines
-* Lifesize
-* Facebook Workspace
-* Facetime scheme
-* Telephone scheme
-* Youtube
-* TeamViewer Meeting
-* Google Meet Stream
-* Vonage Meetings
-* Discord
-* Jam
-* Blackboard Collaborate
-
-
-If the service you use isn't supported, add a comment [here](https://github.com/leits/MeetingBar/discussions/108).
+Check full list [here](https://github.com/leits/MeetingBar/discussions/108).
 
 ## Third-Party Integrations
 * [Raycast commands](https://github.com/raycast/script-commands/tree/master/commands#meetingbar)

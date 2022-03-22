@@ -1,13 +1,29 @@
 # Changelog for Meetingbar
-## Version 3.8.0 (WIP)
+## Version 3.10.0 (WIP)
 > unreleased
-*
+* Added translations into Turkish
+* Integrations with Facetime, Vimeo Showcases, and oVice
+* New "Refresh source" Quick Action
+
+## Version 3.9.0
+> (released 20th Nov 2021)
+* Added translations into Hebrew
+* Advanced feature to filter out events by regex
+* Added integration with Zhumu/WeMeeting, Lark, and Feishu
+and small bug fixes
+
+## Version 3.8.0
+> (released 15th Sep 2021)
+* Added translations into Polish
+* Support MeetInOne for Google Meet links
+* Support Jitsi native app for Jitsi links
+* Open the link from the event link field if the meeting service is not recognized
 
 ## Version 3.7.0
 > (released 19th Aug 2021)
-* Add copy meeting link & email attendees from event submenu 
+* Added copy meeting link & email attendees from event submenu 
 * Round the timer up, not down
-* Make event start soon notification more specified 
+* Made event start soon notification more specified 
 * Added translations into Japanese
 
 ## Version 3.6.0

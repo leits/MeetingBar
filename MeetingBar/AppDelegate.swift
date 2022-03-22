@@ -17,7 +17,7 @@ import ServiceManagement
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDelegate {
-    var statusBarItem: StatusBarItemControler!
+    var statusBarItem: StatusBarItemController!
 
     var selectedCalendarIDsObserver: DefaultsObservation?
     var showEventDetailsObserver: DefaultsObservation?
@@ -189,8 +189,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         Defaults[.hideMeetingTitle].toggle()
     }
 
+    @objc
+    func refreshSources() {
+        statusBarItem.eventStore.refreshSourcesIfNecessary()
+        statusBarItem.updateTitle()
+        statusBarItem.updateMenu()
+    }
+
     func setup() {
-        statusBarItem = StatusBarItemControler()
+        statusBarItem = StatusBarItemController()
         statusBarItem.setAppDelegate(appdelegate: self)
 
         registerNotificationCategories()
@@ -231,29 +238,29 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.eventStoreChanged), name: .EKEventStoreChanged, object: statusBarItem.eventStore)
 
         showEventDetailsObserver = Defaults.observe(.showEventDetails) { change in
-            NSLog("Change showEventDetails from \(change.oldValue) to \(change.newValue)")
             if change.oldValue != change.newValue {
+                NSLog("Change showEventDetails from \(change.oldValue) to \(change.newValue)")
                 self.statusBarItem.updateMenu()
             }
         }
 
         shortenEventTitleObserver = Defaults.observe(.shortenEventTitle) { change in
-            NSLog("Change shortenEventTitle from \(change.oldValue) to \(change.newValue)")
             if change.oldValue != change.newValue {
+                NSLog("Change shortenEventTitle from \(change.oldValue) to \(change.newValue)")
                 self.statusBarItem.updateMenu()
             }
         }
 
         menuEventTitleLengthObserver = Defaults.observe(.menuEventTitleLength) { change in
-            NSLog("Change menuEventTitleLengthObserver from \(change.oldValue) to \(change.newValue)")
             if change.oldValue != change.newValue {
+                NSLog("Change menuEventTitleLengthObserver from \(change.oldValue) to \(change.newValue)")
                 self.statusBarItem.updateMenu()
             }
         }
 
         meetingTitleVisibilityObserver = Defaults.observe(.hideMeetingTitle) { change in
-            NSLog("Change hideMeetingTitle from \(change.oldValue) to \(change.newValue)")
             if change.oldValue != change.newValue {
+                NSLog("Change hideMeetingTitle from \(change.oldValue) to \(change.newValue)")
                 self.statusBarItem.updateMenu()
                 self.statusBarItem.updateTitle()
 
@@ -266,75 +273,76 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
 
         showEventEndTimeObserver = Defaults.observe(.showEventEndTime) { change in
-            NSLog("Change showEventEndTime from \(change.oldValue) to \(change.newValue)")
             if change.oldValue != change.newValue {
+                NSLog("Change showEventEndTime from \(change.oldValue) to \(change.newValue)")
                 self.statusBarItem.updateMenu()
             }
         }
 
         eventTimeFormatObserver = Defaults.observe(.eventTimeFormat) { change in
-            NSLog("Changed eventTimeFormat from \(String(describing: change.oldValue)) to \(String(describing: change.newValue))")
             if change.oldValue != change.newValue {
+                NSLog("Changed eventTimeFormat from \(String(describing: change.oldValue)) to \(String(describing: change.newValue))")
                 self.statusBarItem.updateTitle()
             }
         }
 
         statusbarEventTitleLengthObserver = Defaults.observe(.statusbarEventTitleLength) { change in
-            NSLog("Changed statusbarEventTitleLengthLimits from \(change.oldValue) to \(change.newValue)")
             if change.oldValue != change.newValue {
+                NSLog("Changed statusbarEventTitleLengthLimits from \(change.oldValue) to \(change.newValue)")
                 self.statusBarItem.updateTitle()
             }
         }
 
         disablePastEventObserver = Defaults.observe(.disablePastEvents) { change in
-            NSLog("Changed disablePastEvents from \(String(describing: change.oldValue)) to \(String(describing: change.newValue))")
             if change.oldValue != change.newValue {
+                NSLog("Changed disablePastEvents from \(String(describing: change.oldValue)) to \(String(describing: change.newValue))")
                 self.statusBarItem.updateMenu()
             }
         }
 
         showPendingEventObserver = Defaults.observe(.showPendingEvents) { change in
-            NSLog("Changed showPendingEvents from \(String(describing: change.oldValue)) to \(String(describing: change.newValue))")
-
             if change.oldValue != change.newValue {
+                NSLog("Changed showPendingEvents from \(String(describing: change.oldValue)) to \(String(describing: change.newValue))")
                 self.statusBarItem.updateTitle()
                 self.statusBarItem.updateMenu()
             }
         }
 
         selectedCalendarIDsObserver = Defaults.observe(.selectedCalendarIDs) { change in
-            NSLog("Changed selectedCalendarIDs from \(change.oldValue) to \(change.newValue)")
             if change.oldValue != change.newValue {
+                NSLog("Changed selectedCalendarIDs from \(change.oldValue) to \(change.newValue)")
                 self.statusBarItem.loadCalendars()
             }
         }
 
         showMeetingServiceIconObserver = Defaults.observe(.showMeetingServiceIcon) { change in
-            NSLog("Change showMeetingServiceIcon from \(change.oldValue) to \(change.newValue)")
             if change.oldValue != change.newValue {
+                NSLog("Change showMeetingServiceIcon from \(change.oldValue) to \(change.newValue)")
                 self.statusBarItem.updateMenu()
             }
         }
 
         allDayEventsObserver = Defaults.observe(.allDayEvents) { change in
-            NSLog("Change allDayEvents from \(change.oldValue) to \(change.newValue)")
             if change.oldValue != change.newValue {
+                NSLog("Change allDayEvents from \(change.oldValue) to \(change.newValue)")
                 self.statusBarItem.updateTitle()
                 self.statusBarItem.updateMenu()
             }
         }
 
         nonAllDayEventsObserver = Defaults.observe(.nonAllDayEvents) { change in
-            NSLog("Change nonAllDayEvents from \(change.oldValue) to \(change.newValue)")
             if change.oldValue != change.newValue {
+                NSLog("Change nonAllDayEvents from \(change.oldValue) to \(change.newValue)")
                 self.statusBarItem.updateTitle()
                 self.statusBarItem.updateMenu()
             }
         }
 
         timeFormatObserver = Defaults.observe(.timeFormat) { change in
-            NSLog("Change timeFormat from \(change.oldValue) to \(change.newValue)")
-            self.statusBarItem.updateMenu()
+            if change.oldValue != change.newValue {
+                NSLog("Change timeFormat from \(change.oldValue) to \(change.newValue)")
+                self.statusBarItem.updateMenu()
+            }
         }
 
         bookmarksObserver = Defaults.observe(keys: .bookmarks) {
@@ -342,37 +350,51 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
 
         eventTitleFormatObserver = Defaults.observe(.eventTitleFormat) { change in
-            NSLog("Changed eventTitleFormat from \(String(describing: change.oldValue)) to \(String(describing: change.newValue))")
-            self.statusBarItem.updateTitle()
-            self.statusBarItem.updateMenu()
+            if change.oldValue != change.newValue {
+                NSLog("Changed eventTitleFormat from \(String(describing: change.oldValue)) to \(String(describing: change.newValue))")
+                self.statusBarItem.updateTitle()
+                self.statusBarItem.updateMenu()
+            }
         }
 
         eventTitleIconFormatObserver = Defaults.observe(.eventTitleIconFormat) { change in
-            NSLog("Changed eventTitleFormat from \(String(describing: change.oldValue)) to \(String(describing: change.newValue))")
-            self.statusBarItem.updateTitle()
+            if change.oldValue != change.newValue {
+                NSLog("Changed eventTitleFormat from \(String(describing: change.oldValue)) to \(String(describing: change.newValue))")
+                self.statusBarItem.updateTitle()
+            }
         }
 
         pastEventsAppereanceObserver = Defaults.observe(.pastEventsAppereance) { change in
-            NSLog("Changed pastEventsAppereance from \(change.oldValue) to \(change.newValue)")
-            self.statusBarItem.updateMenu()
+            if change.oldValue != change.newValue {
+                NSLog("Changed pastEventsAppereance from \(change.oldValue) to \(change.newValue)")
+                self.statusBarItem.updateMenu()
+            }
         }
         declinedEventsAppereanceObserver = Defaults.observe(.declinedEventsAppereance) { change in
-            NSLog("Changed declinedEventsAppereance from \(change.oldValue) to \(change.newValue)")
-            self.statusBarItem.updateMenu()
+            if change.oldValue != change.newValue {
+                NSLog("Changed declinedEventsAppereance from \(change.oldValue) to \(change.newValue)")
+                self.statusBarItem.updateMenu()
+            }
         }
         personalEventsAppereanceObserver = Defaults.observe(.personalEventsAppereance) { change in
-            NSLog("Changed personalEventsAppereance from \(change.oldValue) to \(change.newValue)")
-            self.statusBarItem.updateTitle()
-            self.statusBarItem.updateMenu()
+            if change.oldValue != change.newValue {
+                NSLog("Changed personalEventsAppereance from \(change.oldValue) to \(change.newValue)")
+                self.statusBarItem.updateTitle()
+                self.statusBarItem.updateMenu()
+            }
         }
         showEventsForPeriodObserver = Defaults.observe(.showEventsForPeriod) { change in
-            NSLog("Changed showEventsForPeriod from \(change.oldValue) to \(change.newValue)")
-            self.statusBarItem.updateTitle()
-            self.statusBarItem.updateMenu()
+            if change.oldValue != change.newValue {
+                NSLog("Changed showEventsForPeriod from \(change.oldValue) to \(change.newValue)")
+                self.statusBarItem.updateTitle()
+                self.statusBarItem.updateMenu()
+            }
         }
         launchAtLoginObserver = Defaults.observe(.launchAtLogin) { change in
-            NSLog("Changed launchAtLogin from \(change.oldValue) to \(change.newValue)")
-            SMLoginItemSetEnabled(AutoLauncher.bundleIdentifier as CFString, change.newValue)
+            if change.oldValue != change.newValue {
+                NSLog("Changed launchAtLogin from \(change.oldValue) to \(change.newValue)")
+                SMLoginItemSetEnabled(AutoLauncher.bundleIdentifier as CFString, change.newValue)
+            }
         }
         preferredLanguageObserver = Defaults.observe(.preferredLanguage) { change in
             NSLog("Changed preferredLanguage from \(change.oldValue) to \(change.newValue)")
@@ -382,24 +404,26 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             }
         }
         joinEventNotificationObserver = Defaults.observe(.joinEventNotification) { change in
-            NSLog("Changed joinEventNotification from \(change.oldValue) to \(change.newValue)")
-            if change.newValue == true {
-                if let nextEvent = self.statusBarItem.eventStore.getNextEvent(calendars: self.statusBarItem.calendars) {
-                    scheduleEventNotification(nextEvent)
+            if change.oldValue != change.newValue {
+                NSLog("Changed joinEventNotification from \(change.oldValue) to \(change.newValue)")
+                if change.newValue == true {
+                    if let nextEvent = self.statusBarItem.eventStore.getNextEvent(calendars: self.statusBarItem.calendars) {
+                        scheduleEventNotification(nextEvent)
+                    }
+                } else {
+                    removePendingNotificationRequests()
                 }
-            } else {
-                removePendingNotificationRequests()
             }
         }
         showEventMaxTimeUntilEventThresholdObserver = Defaults.observe(.showEventMaxTimeUntilEventThreshold) { change in
-            NSLog("Changed showEventMaxTimeUntilEventThreshold from \(change.oldValue) to \(change.newValue)")
             if change.oldValue != change.newValue {
+                NSLog("Changed showEventMaxTimeUntilEventThreshold from \(change.oldValue) to \(change.newValue)")
                 self.statusBarItem.updateTitle()
             }
         }
         showEventMaxTimeUntilEventEnabledObserver = Defaults.observe(.showEventMaxTimeUntilEventEnabled) { change in
-            NSLog("Change showEventMaxTimeUntilEventEnabled from \(change.oldValue) to \(change.newValue)")
             if change.oldValue != change.newValue {
+                NSLog("Change showEventMaxTimeUntilEventEnabled from \(change.oldValue) to \(change.newValue)")
                 self.statusBarItem.updateTitle()
             }
         }
@@ -531,7 +555,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                 return
             }
             NSLog("Bookmark url: \(bookmark.url)")
-            openMeetingURL(bookmark.service, url, systemDefaultBrowser)
+            openMeetingURL(bookmark.service, url, nil)
         }
     }
 

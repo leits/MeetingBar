@@ -13,17 +13,7 @@ import UserNotifications
 func requestNotificationAuthorization() {
     let center = UNUserNotificationCenter.current()
 
-    center.requestAuthorization(options: [.alert, .badge, .sound]) { granted, _ in
-        if granted {
-            NSLog("Access to notications granted")
-            center.getNotificationSettings { notificationSettings in
-                NSLog("Authorisation status \(notificationSettings.authorizationStatus.rawValue)")
-                NSLog("Alert Style settings \(notificationSettings.alertStyle.rawValue)")
-            }
-        } else {
-            NSLog("Access to notications denied")
-        }
-    }
+    center.requestAuthorization(options: [.alert, .badge, .sound]) { _, _ in }
 }
 
 func registerNotificationCategories() {
@@ -63,9 +53,7 @@ func sendUserNotification(_ title: String, _ text: String) {
 
     center.add(request) { error in
         if let error = error {
-            NSLog("%@", "request \(request) could not be added because of error \(error)")
-        } else {
-            NSLog("%@", "request \(request) was added")
+            NSLog("%@", "request \(request.identifier) could not be added because of error \(error)")
         }
     }
 }
@@ -162,9 +150,7 @@ func scheduleEventNotification(_ event: EKEvent) {
     let request = UNNotificationRequest(identifier: "NEXT_EVENT", content: content, trigger: trigger)
     center.add(request) { error in
         if let error = error {
-            NSLog("%@", "request \(request) could not be added because of error \(error)")
-        } else {
-            NSLog("%@", "request \(request) was added")
+            NSLog("%@", "request \(request.identifier) could not be added because of error \(error)")
         }
     }
 }

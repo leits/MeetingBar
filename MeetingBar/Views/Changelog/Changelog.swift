@@ -16,7 +16,7 @@ struct ChangelogView: View {
     var body: some View {
         VStack(alignment: .center, spacing: 15) {
             List {
-                if lastRevisedVersionInChangelog < "3.2.0" {
+                if compareVersions("3.2.0", lastRevisedVersionInChangelog) {
                     Section(header: Text("Version 3.2.0")) {
                         Text("• Added setting to only show events starting in x minutes")
                         Text("• Added Safari as a browser option")
@@ -25,7 +25,7 @@ struct ChangelogView: View {
                         Text("and small bug fixes")
                     }
                 }
-                if lastRevisedVersionInChangelog < "3.3.0" {
+                if compareVersions("3.3.0", lastRevisedVersionInChangelog) {
                     Section(header: Text("Version 3.3.0")) {
                         Text("⏱️ Fixed bug with timer freeze")
                         Text("🧰 Browser management")
@@ -39,14 +39,14 @@ struct ChangelogView: View {
                         Text("• Integration with subscribed calendars")
                     }
                 }
-                if lastRevisedVersionInChangelog < "3.4.0" {
+                if compareVersions("3.4.0", lastRevisedVersionInChangelog) {
                     Section(header: Text("Version 3.4.0")) {
                         Text("📋 New view of notes in the event submenu with selectable text and clickable links.")
                         Text("🧭 Fixed a bug with opening meetings in a new browser instance")
                         Text("and small bug fixes")
                     }
                 }
-                if lastRevisedVersionInChangelog < "3.5.0" {
+                if compareVersions("3.5.0", lastRevisedVersionInChangelog) {
                     Section(header: Text("Version 3.5.0")) {
                         Text("🌍 Added translations into Croatian, German, French, and Norwegian Bokmål")
                         Text("All app notifications are now removed after all meetings are over")
@@ -54,14 +54,14 @@ struct ChangelogView: View {
                         Text("and small bug fixes")
                     }
                 }
-                if lastRevisedVersionInChangelog < "3.6.0" {
+                if compareVersions("3.6.0", lastRevisedVersionInChangelog) {
                     Section(header: Text("Version 3.6.0")) {
                         Text("🌍 Added translations into Czech")
                         Text("Added integration with Vowel")
                         Text("Fixed zoom link detection")
                     }
                 }
-                if lastRevisedVersionInChangelog < "3.7.0" {
+                if compareVersions("3.7.0", lastRevisedVersionInChangelog) {
                     Section(header: Text("Version 3.7.0")) {
                         Text("🌍 Added translations into Japanese")
                         Text("🕑 Round the timer up, not down")
@@ -70,6 +70,30 @@ struct ChangelogView: View {
                         Text("  - Copy meeting link")
                     }
                 }
+                if compareVersions("3.8.0", lastRevisedVersionInChangelog) {
+                    Section(header: Text("Version 3.8.0")) {
+                        Text("🇵🇱 Added translations into Polish")
+                        Text("• Support MeetInOne for Google Meet links")
+                        Text("• Support Jitsi native app for Jitsi links")
+                        Text("• Open the link from the event link field if the meeting service is not recognized")
+                    }
+                }
+                if compareVersions("3.9.0", lastRevisedVersionInChangelog) {
+                    Section(header: Text("Version 3.9.0")) {
+                        Text("🌍 Added translations into Hebrew")
+                        Text("• Advanced feature to filter out events by regex")
+                        Text("• Added integration with Zhumu/WeMeeting, Lark, and Feishu")
+                        Text("and small bug fixes")
+                    }
+                }
+                if compareVersions("3.10.0", lastRevisedVersionInChangelog) {
+                    Section(header: Text("Version 3.10.0")) {
+                        Text("⚡ New \"Refresh source\" Quick Action")
+                        Text("🌍 Translation into Turkish")
+                        Text("• Integrations with Facetime, Vimeo Showcases, and oVice")
+                    }
+                }
+
             }.listStyle(SidebarListStyle())
             Button("Close", action: close)
         }.padding()

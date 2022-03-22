@@ -15,7 +15,9 @@ struct AdvancedTab: View {
         VStack(alignment: .leading) {
             ScriptSection()
             Divider()
-            RegexesSection()
+            FilterEventRegexesSection()
+            Divider()
+            MeetingRegexesSection()
             Divider()
             HStack {
                 Spacer()
@@ -162,7 +164,55 @@ struct NSScrollableTextViewWrapper: NSViewRepresentable {
     }
 }
 
-struct RegexesSection: View {
+struct FilterEventRegexesSection: View {
+    @Default(.filterEventRegexes) var filterEventRegexes
+
+    @State private var showingEditRegexModal = false
+    @State private var selectedRegex = ""
+
+    var body: some View {
+        Section {
+            HStack {
+                Text("preferences_advanced_event_regex_title".loco())
+                Spacer()
+                Button("preferences_advanced_regex_add_button".loco()) { openEditRegexModal("") }
+            }
+            List {
+                ForEach(filterEventRegexes, id: \.self) { regex in
+                    HStack {
+                        Text(regex)
+                        Spacer()
+                        Button("preferences_advanced_regex_edit_button".loco()) { openEditRegexModal(regex) }
+                        Button("preferences_advanced_regex_delete_button".loco()) { removeRegex(regex) }
+                    }
+                }
+            }
+            .sheet(isPresented: $showingEditRegexModal) {
+                EditRegexModal(regex: selectedRegex, function: addRegex)
+            }
+        }.padding(.leading, 19)
+    }
+
+    func openEditRegexModal(_ regex: String) {
+        selectedRegex = regex
+        removeRegex(regex)
+        showingEditRegexModal.toggle()
+    }
+
+    func addRegex(_ regex: String) {
+        if !filterEventRegexes.contains(regex) {
+            filterEventRegexes.append(regex)
+        }
+    }
+
+    func removeRegex(_ regex: String) {
+        if let index = filterEventRegexes.firstIndex(of: regex) {
+            filterEventRegexes.remove(at: index)
+        }
+    }
+}
+
+struct MeetingRegexesSection: View {
     @Default(.customRegexes) var customRegexes
 
     @State private var showingEditRegexModal = false

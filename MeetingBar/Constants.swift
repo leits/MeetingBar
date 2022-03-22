@@ -58,12 +58,18 @@ struct LinksRegex {
     let youtube = try! NSRegularExpression(pattern: #"https?://((www|m)\.)?(youtube\.com|youtu\.be)/[^\s]*"#)
     let vonageMeetings = try! NSRegularExpression(pattern: #"https?://meetings\.vonage\.com/[0-9]{9}"#)
     let meetStream = try! NSRegularExpression(pattern: #"https?://stream\.meet\.google\.com/stream/[a-z0-9-]+"#)
-    let around = try! NSRegularExpression(pattern: #"https?://meet\.around\.co/[^\s]*"#)
+    let around = try! NSRegularExpression(pattern: #"https?://(meet.)?around\.co/[^\s]*"#)
     let jam = try! NSRegularExpression(pattern: #"https?://jam\.systems/[^\s]*"#)
     let discord = try! NSRegularExpression(pattern: #"(http|https|discord)://(www\.)?(canary\.)?discord(app)?\.([a-zA-Z]{2,})(.+)?"#)
     let blackboard_collab = try! NSRegularExpression(pattern: #"https?://us\.bbcollab\.com/[^\s]*"#)
     let coscreen = try! NSRegularExpression(pattern: #"https?://join\.coscreen\.co/[^\s]*"#)
     let vowel = try! NSRegularExpression(pattern: #"https?://([a-z0-9.]+)?vowel\.com/#/g/[^\s]*"#)
+    let zhumu = try! NSRegularExpression(pattern: #"https://welink\.zhumu\.com/j/[0-9]+?pwd=[a-zA-Z0-9]+"#)
+    let lark = try! NSRegularExpression(pattern: #" https://vc\.larksuite\.com/j/[0-9]+"#)
+    let feishu = try! NSRegularExpression(pattern: #"https://vc\.feishu\.cn/j/[0-9]+"#)
+    let vimeo_showcases = try! NSRegularExpression(pattern: #"https://vimeo\.com/showcase/[0-9]+"#)
+    let ovice = try! NSRegularExpression(pattern: #"https://([a-z0-9-.]+)?ovice\.in/[^\s]*"#)
+    let facetime = try! NSRegularExpression(pattern: #"https://facetime\.apple\.com/join[^\s]*"#)
 }
 
 enum CreateMeetingLinks {
@@ -90,24 +96,10 @@ enum CreateMeetingServices: String, Codable, CaseIterable {
 
     var localizedValue: String {
         switch self {
-        case .meet:
-            return "constants_create_meeting_service_meet".loco()
-        case .zoom:
-            return "constants_create_meeting_service_zoom".loco()
-        case .teams:
-            return "constants_create_meeting_service_teams".loco()
-        case .jam:
-            return "constants_create_meeting_service_jam".loco()
-        case .coscreen:
-            return "constants_create_meeting_service_coscreen".loco()
-        case .gcalendar:
-            return "constants_create_meeting_service_gcalendar".loco()
-        case .outlook_live:
-            return "constants_create_meeting_service_outlook_live".loco()
-        case .outlook_office365:
-            return "constants_create_meeting_service_outlook_office365".loco()
         case .url:
             return "constants_create_meeting_service_url".loco()
+        default:
+            return rawValue
         }
     }
 }
@@ -164,96 +156,29 @@ enum MeetingServices: String, Codable, CaseIterable {
     case url = "Any Link"
     case coscreen = "CoScreen"
     case vowel = "Vowel"
+    case zhumu = "Zhumu"
+    case lark = "Lark"
+    case feishu = "Feishu"
+    case vimeo_showcases = "Vimeo Showcases"
+    case ovice = "oVice"
     case other = "Other"
 
     var localizedValue: String {
         switch self {
         case .phone:
             return "constants_meeting_service_phone".loco()
-        case .meet:
-            return "constants_meeting_service_meet".loco()
-        case .hangouts:
-            return "constants_meeting_service_hangouts".loco()
-        case .zoom:
-            return "constants_meeting_service_zoom".loco()
         case .zoom_native:
             return "constants_meeting_service_zoom_native".loco()
-        case .teams:
-            return "constants_meeting_service_teams".loco()
-        case .webex:
-            return "constants_meeting_service_webex".loco()
-        case .jitsi:
-            return "constants_meeting_service_jitsi".loco()
-        case .chime:
-            return "constants_meeting_service_chime".loco()
-        case .ringcentral:
-            return "constants_meeting_service_ringcentral".loco()
-        case .gotomeeting:
-            return "constants_meeting_service_gotomeeting".loco()
-        case .gotowebinar:
-            return "constants_meeting_service_gotowebinar".loco()
-        case .bluejeans:
-            return "constants_meeting_service_bluejeans".loco()
-        case .eight_x_eight:
-            return "constants_meeting_service_eight_x_eight".loco()
-        case .demio:
-            return "constants_meeting_service_demio".loco()
-        case .join_me:
-            return "constants_meeting_service_join_me".loco()
-        case .zoomgov:
-            return "constants_meeting_service_zoomgov".loco()
-        case .whereby:
-            return "constants_meeting_service_whereby".loco()
-        case .uberconference:
-            return "constants_meeting_service_uberconference".loco()
-        case .blizz:
-            return "constants_meeting_service_blizz".loco()
-        case .teamviewer_meeting:
-            return "constants_meeting_service_teamviewer_meeting".loco()
-        case .vsee:
-            return "constants_meeting_service_vsee".loco()
-        case .starleaf:
-            return "constants_meeting_service_starleaf".loco()
-        case .duo:
-            return "constants_meeting_service_duo".loco()
-        case .voov:
-            return "constants_meeting_service_voov".loco()
-        case .facebook_workspace:
-            return "constants_meeting_service_facebook_workspace".loco()
-        case .lifesize:
-            return "constants_meeting_service_lifesize".loco()
-        case .skype:
-            return "constants_meeting_service_skype".loco()
         case .skype4biz:
             return "constants_meeting_service_skype4biz".loco()
         case .skype4biz_selfhosted:
             return "constants_meeting_service_skype4biz_selfhosted".loco()
-        case .facetime:
-            return "constants_meeting_service_facetime".loco()
-        case .facetimeaudio:
-            return "constants_meeting_service_facetimeaudio".loco()
-        case .youtube:
-            return "constants_meeting_service_youtube".loco()
-        case .vonageMeetings:
-            return "constants_meeting_service_vonageMeetings".loco()
-        case .meetStream:
-            return "constants_meeting_service_meetStream".loco()
-        case .around:
-            return "constants_meeting_service_around".loco()
-        case .jam:
-            return "constants_meeting_service_jam".loco()
-        case .discord:
-            return "constants_meeting_service_discord".loco()
-        case .blackboard_collab:
-            return "constants_meeting_service_blackboard_collab".loco()
-        case .coscreen:
-            return "constants_meeting_service_coscreen".loco()
-        case .vowel:
-            return "constants_meeting_service_vowel".loco()
         case .other:
             return "constants_meeting_service_other".loco()
         case .url:
             return "constants_meeting_service_url".loco()
+        default:
+            return rawValue
         }
     }
 }
@@ -366,6 +291,8 @@ enum AppLanguage: String, Codable {
     case norwegian = "nb-NO"
     case japanese = "ja"
     case polish = "pl"
+    case hebrew = "he"
+    case turkish = "tr"
 }
 
 struct Browser: Encodable, Decodable, Hashable {
