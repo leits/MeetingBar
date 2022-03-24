@@ -11,22 +11,12 @@ import Carbon
 import Defaults
 import EventKit
 
-struct Event: Encodable, Decodable, Hashable {
-    var id: String
-    var lastModifiedDate: Date
-}
-
 class Scripts: NSObject {
     var eventStore: EKEventStore
 
     override
     init() {
-        eventStore = EKEventStore()
-
-        var sources = eventStore.sources
-        sources.append(contentsOf: eventStore.delegateSources)
-
-        eventStore = EKEventStore(sources: sources)
+        eventStore = initEventStore()
     }
 
     /**
@@ -48,7 +38,7 @@ class Scripts: NSObject {
     * - All day events will be reported the first time when the current time is within the timeframe of the allday event (which can be several days).
     */
     func scheduleRunScriptForMeetingStart() {
-        let timer = Timer(timeInterval: 60 * 5, target: self, selector: #selector(runScriptsForMeetingStart), userInfo: nil, repeats: true)
+        let timer = Timer(timeInterval: 60 * 1, target: self, selector: #selector(runScriptsForMeetingStart), userInfo: nil, repeats: true)
         RunLoop.current.add(timer, forMode: .common)
     }
 
@@ -66,7 +56,7 @@ class Scripts: NSObject {
 
         NSLog("Firing reccuring runscriptfornextmeeting")
 
-        if let nextEvent = nextEvent() {
+        if let nextEvent = nextEvent(eventStore:eventStore) {
             let now = Date()
             let notificationTime = Double(Defaults[.joinEventNotificationTime].rawValue)
             let timeInterval = nextEvent.startDate.timeIntervalSince(now)
@@ -129,7 +119,7 @@ class Scripts: NSObject {
         parameters.insert(NSAppleEventDescriptor(boolean: event.hasRecurrenceRules), at: 0)
         parameters.insert(NSAppleEventDescriptor(int32: Int32(event.attendees?.count ?? 0)), at: 0)
 
-        if let meetingLink = getMeetingLink(event, acceptAnyLink: false) {
+        if let meetingLink = getMeetingLink(event) {
             parameters.insert(NSAppleEventDescriptor(string: meetingLink.url.absoluteString), at: 0)
             parameters.insert(NSAppleEventDescriptor(string: meetingLink.service!.rawValue), at: 0)
         } else {
@@ -219,15 +209,5 @@ class Scripts: NSObject {
     }
 
 
-    func nextEvent() -> EKEvent? {
-        var nextEvent: EKEvent?
-        let calendarIds = Defaults[.selectedCalendarIDs]
-
-        if !calendarIds.isEmpty {
-            let calendars = eventStore.getMatchedCalendars(ids: calendarIds)
-            nextEvent = eventStore.getNextEvent(calendars: calendars)
-        }
-
-        return nextEvent
-    }
+    
 }

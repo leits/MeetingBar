@@ -50,8 +50,9 @@ struct ScriptSection: View {
                     Text("3 minutes before").tag(EventScriptExecutionTime.threeMinuteBefore)
                     Text("5 minutes before").tag(EventScriptExecutionTime.fiveMinuteBefore)
                 }.frame(width: 150, alignment: .leading).labelsHidden().disabled(!runAutomaticEventScript)
+                Spacer()
                 Button(action: runSampleScript) {
-                    Text("Test")
+                    Text("Test script")
                 }
             }
             HStack {

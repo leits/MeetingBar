@@ -27,6 +27,12 @@ struct Bookmark: Encodable, Decodable, Hashable {
     var url: String
 }
 
+
+struct Event: Encodable, Decodable, Hashable {
+    var id: String
+    var lastModifiedDate: Date
+}
+
 /**
  * this method will extract m365 safe links if any of these links are found in the given text..
  * The method will extract the real url from safe links and decode it, so that the following regex logic can detect the meeting service.
@@ -343,4 +349,26 @@ func emailEventAttendees(_ event: EKEvent) {
         service.subject = title
     }
     service.perform(withItems: [])
+}
+
+func initEventStore() -> EKEventStore {
+    var eventStore = EKEventStore()
+
+    var sources = eventStore.sources
+    sources.append(contentsOf: eventStore.delegateSources)
+
+    eventStore = EKEventStore(sources: sources)
+    return eventStore
+}
+
+func nextEvent(eventStore: EKEventStore) -> EKEvent? {
+    var nextEvent: EKEvent?
+    let calendarIds = Defaults[.selectedCalendarIDs]
+
+    if !calendarIds.isEmpty {
+        let calendars = eventStore.getMatchedCalendars(ids: calendarIds)
+        nextEvent = eventStore.getNextEvent(calendars: calendars)
+    }
+
+    return nextEvent
 }

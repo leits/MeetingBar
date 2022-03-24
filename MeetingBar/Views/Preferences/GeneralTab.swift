@@ -21,6 +21,8 @@ struct GeneralTab: View {
             Divider()
             JoinEventNotificationPicker()
             Divider()
+            AutomaticEventJoinPicker()
+            Divider()
             ShortcutsSection()
             Divider()
             PatronageAppSection()

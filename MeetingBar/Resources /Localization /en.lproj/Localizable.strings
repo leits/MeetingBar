@@ -272,6 +272,15 @@
 "shared_send_notification_five_minute_value" = "5 minutes before";
 "shared_send_notification_no_alert_style_tip" = "⚠️ Your macOS notification settings for MeetingBar are not set to alert. Do so if you want persistent notifications.";
 "shared_send_notification_disabled_tip" = "⚠️ Your macOS notification settings for MeetingBar are off. Turn on notifications in the macOS system settings to keep track of meetings.";
+"shared_automatic_event_join_toggle" = "Automatic join next event meeting";
+"shared_automatic_event_join_directly_value" = "when event starts";
+"shared_automatic_event_join_one_minute_value" = "1 minute before";
+"shared_automatic_event_join_two_minutes_value" = "2 minutes before";
+"shared_automatic_event_join_three_minutes_value" = "3 minutes before";
+"shared_automatic_event_join_four_minutes_value" = "4 minutes before";
+"shared_automatic_event_join_five_minutes_value" = "5 minutes before";
+"shared_automatic_event_join_ten_minutes_value" = "10 minutes before";
+"shared_automatic_event_join_tip" = "This setting will automatically open your next meeting in your configured app or browser. Please keep that in mind!";
 
 // MARK: - Constants
 "constants_create_meeting_service_url" = "Custom URL";

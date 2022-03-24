@@ -208,6 +208,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         scheduleUpdateStatusBarTitle()
         scheduleUpdateEvents()
         Scripts().scheduleRunScriptForMeetingStart()
+        AutomaticJoinEvent().scheduleRunScriptForAutomaticMeetingJoin()
 
         if Defaults[.browsers].isEmpty {
             addInstalledBrowser()
