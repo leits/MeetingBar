@@ -13,12 +13,12 @@ jobs:
       - name: Install SwiftFormat
         run: brew install swiftformat
       - name: Run SwiftFormat
-        run: swiftformat --lint .
+        run: swiftformat --lint --disable redundantClosure,trailingClosures,indent --verbose .
   Tests:
     runs-on: macOS-latest
     steps:
-    - uses: actions/checkout@v1
-    - name: Install xcbeautify
-      run: brew install xcbeautify
-    - name: Run unit tests
-      run: xcodebuild -scheme MeetingBar test CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO | xcbeautify
+      - uses: actions/checkout@v1
+      - name: Install xcbeautify
+        run: brew install xcbeautify
+      - name: Run unit tests
+        run: xcodebuild -scheme MeetingBar test CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO | xcbeautify

@@ -21,6 +21,7 @@ let meetings = [
     MeetingLink(service: .coscreen, url: URL(string: "https://join.coscreen.co/Eng-Leads/95RyHqtzn7EoQjQ19ju3")!),
     MeetingLink(service: .ovice, url: URL(string: "https://universeph-armynight.ovice.in/lobby/enter")!),
     MeetingLink(service: .facetime, url: URL(string: "https://facetime.apple.com/join#v=1&p=AeVKu1rGEeyppwJC8kftBg&k=FrCNneouFgL26VdnDit78WHNoGjzZyteymBi1U5I23E")!),
+    MeetingLink(service: .pop, url: URL(string: "https://pop.com/j/810-218-630")!),
 ]
 
 class HelpersTests: XCTestCase {
