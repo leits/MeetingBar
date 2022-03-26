@@ -162,6 +162,7 @@ enum MeetingServices: String, Codable, CaseIterable {
     case feishu = "Feishu"
     case vimeo_showcases = "Vimeo Showcases"
     case ovice = "oVice"
+    case pop = "Pop"
     case other = "Other"
 
     var localizedValue: String {
