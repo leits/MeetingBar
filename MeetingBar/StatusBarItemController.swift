@@ -580,11 +580,11 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
         case .some(.pop):
             image = NSImage(named: "pop_icon")!
             image!.size = NSSize(width: 16, height: 16)
-            
+
         case .some(.chorus):
             image = NSImage(named: "chorus_icon")!
             image!.size = NSSize(width: 16, height: 16)
-            
+
         case .some(.gong):
             image = NSImage(named: "gong_icon")!
             image!.size = NSSize(width: 16, height: 16)
