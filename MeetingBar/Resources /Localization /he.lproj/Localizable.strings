@@ -307,3 +307,4 @@
 
 "notifications_event_start_soon_body" = "האירוע מתחיל בקרוב";
 "preferences_advanced_event_regex_title" = "ביטויים רגולריים משלך לסינון הודעות";
+"status_bar_section_refresh_sources" = "רענון המקורות";

@@ -58,15 +58,19 @@ struct LinksRegex {
     let youtube = try! NSRegularExpression(pattern: #"https?://((www|m)\.)?(youtube\.com|youtu\.be)/[^\s]*"#)
     let vonageMeetings = try! NSRegularExpression(pattern: #"https?://meetings\.vonage\.com/[0-9]{9}"#)
     let meetStream = try! NSRegularExpression(pattern: #"https?://stream\.meet\.google\.com/stream/[a-z0-9-]+"#)
-    let around = try! NSRegularExpression(pattern: #"https?://meet\.around\.co/[^\s]*"#)
+    let around = try! NSRegularExpression(pattern: #"https?://(meet.)?around\.co/[^\s]*"#)
     let jam = try! NSRegularExpression(pattern: #"https?://jam\.systems/[^\s]*"#)
     let discord = try! NSRegularExpression(pattern: #"(http|https|discord)://(www\.)?(canary\.)?discord(app)?\.([a-zA-Z]{2,})(.+)?"#)
     let blackboard_collab = try! NSRegularExpression(pattern: #"https?://us\.bbcollab\.com/[^\s]*"#)
     let coscreen = try! NSRegularExpression(pattern: #"https?://join\.coscreen\.co/[^\s]*"#)
     let vowel = try! NSRegularExpression(pattern: #"https?://([a-z0-9.]+)?vowel\.com/#/g/[^\s]*"#)
-    let zhumu = try! NSRegularExpression(pattern: #"https://welink.zhumu.com/j/[0-9]+?pwd=[a-zA-Z0-9]+"#)
-    let lark = try! NSRegularExpression(pattern: #" https://vc.larksuite.com/j/[0-9]+"#)
-    let feishu = try! NSRegularExpression(pattern: #"https://vc.feishu.cn/j/[0-9]+"#)
+    let zhumu = try! NSRegularExpression(pattern: #"https://welink\.zhumu\.com/j/[0-9]+?pwd=[a-zA-Z0-9]+"#)
+    let lark = try! NSRegularExpression(pattern: #" https://vc\.larksuite\.com/j/[0-9]+"#)
+    let feishu = try! NSRegularExpression(pattern: #"https://vc\.feishu\.cn/j/[0-9]+"#)
+    let vimeo_showcases = try! NSRegularExpression(pattern: #"https://vimeo\.com/showcase/[0-9]+"#)
+    let ovice = try! NSRegularExpression(pattern: #"https://([a-z0-9-.]+)?ovice\.in/[^\s]*"#)
+    let facetime = try! NSRegularExpression(pattern: #"https://facetime\.apple\.com/join[^\s]*"#)
+    let pop = try! NSRegularExpression(pattern: #"https?://pop.com/j/[0-9-]+"#)
 }
 
 enum CreateMeetingLinks {
@@ -156,6 +160,8 @@ enum MeetingServices: String, Codable, CaseIterable {
     case zhumu = "Zhumu"
     case lark = "Lark"
     case feishu = "Feishu"
+    case vimeo_showcases = "Vimeo Showcases"
+    case ovice = "oVice"
     case other = "Other"
 
     var localizedValue: String {
@@ -278,6 +284,7 @@ enum AppLanguage: String, Codable {
     case japanese = "ja"
     case polish = "pl"
     case hebrew = "he"
+    case turkish = "tr"
 }
 
 struct Browser: Encodable, Decodable, Hashable {

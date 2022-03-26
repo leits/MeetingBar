@@ -191,6 +191,7 @@
 "status_bar_section_join_next_meeting" = "Join next event meeting";
 "status_bar_section_join_current_meeting" = "Join current event meeting";
 "status_bar_section_join_from_clipboard" = "Open meeting from clipboard";
+"status_bar_section_refresh_sources" = "Refresh sources";
 "status_bar_section_join_create_meeting" = "Create meeting";
 "status_bar_section_bookmarks_title" = "Bookmarks";
 "status_bar_section_bookmarks_menu" = "Bookmarks menu";

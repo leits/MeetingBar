@@ -340,6 +340,12 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
             toggleMeetingTitleVisibilityItem.setShortcut(for: .toggleMeetingTitleVisibilityShortcut)
             quickActionsItem.submenu!.addItem(toggleMeetingTitleVisibilityItem)
         }
+
+        let refreshSourcesItem = NSMenuItem()
+        refreshSourcesItem.title = "status_bar_section_refresh_sources".loco()
+        refreshSourcesItem.action = #selector(AppDelegate.refreshSources)
+        refreshSourcesItem.keyEquivalent = ""
+        quickActionsItem.submenu!.addItem(refreshSourcesItem)
     }
 
     func createBookmarksSection() {
@@ -415,7 +421,7 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
             image!.size = NSSize(width: 16, height: 16)
 
         // tested and verified
-        case .some(.meet):
+        case .some(.meet), .some(.meetStream):
             image = NSImage(named: "google_meet_icon")!
             image!.size = NSSize(width: 16, height: 13.2)
 
@@ -444,8 +450,9 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
             image = NSImage(named: "amazon_chime_icon")!
             image!.size = NSSize(width: 16, height: 16)
 
+        // tested and verified
         case .some(.ringcentral):
-            image = NSImage(named: "online_meeting_icon")!
+            image = NSImage(named: "ringcentral_icon")!
             image!.size = NSSize(width: 16, height: 16)
 
         // tested and verified
@@ -458,8 +465,9 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
             image = NSImage(named: "gotowebinar_icon")!
             image!.size = NSSize(width: 16, height: 16)
 
+        // tested and verified
         case .some(.bluejeans):
-            image = NSImage(named: "online_meeting_icon")!
+            image = NSImage(named: "bluejeans_icon")!
             image!.size = NSSize(width: 16, height: 16)
 
         // tested and verified
@@ -563,16 +571,31 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
             image!.size = NSSize(width: 16, height: 16)
 
         // tested and verified
+        case .some(.vimeo_showcases):
+            image = NSImage(named: "vimeo_icon")!
+            image!.size = NSSize(width: 16, height: 16)
+
+        // tested and verified
+        case .some(.ovice):
+            image = NSImage(named: "ovice_icon")!
+            image!.size = NSSize(width: 16, height: 16)
+
+        case .some(.facetime):
+            image = NSImage(named: "facetime_icon")!
+            image!.size = NSSize(width: 16, height: 16)
+
+        case .some(.pop):
+            image = NSImage(named: "pop_icon")!
+            image!.size = NSSize(width: 16, height: 16)
+
+        // tested and verified
         case .none:
             image = NSImage(named: "no_online_session")!
             image!.size = NSSize(width: 16, height: 16)
 
+        // tested and verified
         case .some(.vonageMeetings):
-            image = NSImage(named: "online_meeting_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        case .some(.meetStream):
-            image = NSImage(named: "online_meeting_icon")!
+            image = NSImage(named: "vonage_icon")!
             image!.size = NSSize(width: 16, height: 16)
 
         case .some(.url):
@@ -626,9 +649,9 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
 
         switch Defaults[.timeFormat] {
         case .am_pm:
-            eventTimeFormatter.dateFormat = "h:mm a"
+            eventTimeFormatter.dateFormat = "h:mm a  "
         case .military:
-            eventTimeFormatter.dateFormat = "H:mm"
+            eventTimeFormatter.dateFormat = "HH:mm"
         }
 
         var eventStartTime = ""
@@ -925,7 +948,9 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
     }
 
     func createPreferencesSection() {
-        if removePatchVerion(Defaults[.appVersion]) > removePatchVerion(Defaults[.lastRevisedVersionInChangelog]) {
+        let showChangelogItem = compareVersions(Defaults[.appVersion], Defaults[.lastRevisedVersionInChangelog])
+
+        if showChangelogItem {
             let changelogItem = statusItemMenu.addItem(
                 withTitle: "status_bar_whats_new".loco(),
                 action: #selector(AppDelegate.openChangelogWindow),

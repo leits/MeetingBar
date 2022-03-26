@@ -91,7 +91,7 @@ struct BrowserConfigView: View {
     }
 
     private func generatePath(browser: Browser) -> String {
-        var path: String = ""
+        var path = ""
 
         if !browser.path.isEmpty {
             path += " \(browser.path) "

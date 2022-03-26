@@ -1,7 +1,13 @@
 # Changelog for Meetingbar
-## Version 3.10.0 (WIP)
+## Version 3.11.0
 > unreleased
-*
+* Added integration with Pop
+
+## Version 3.10.0
+> (released 25 Jan 2022)
+* Added translations into Turkish
+* Integrations with Facetime, Vimeo Showcases, and oVice
+* New "Refresh source" Quick Action
 
 ## Version 3.9.0
 > (released 20th Nov 2021)

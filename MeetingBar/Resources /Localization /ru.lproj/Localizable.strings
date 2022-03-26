@@ -53,7 +53,7 @@
 "preferences_general_patron_three_months" = "3 Месяца - 2,99 USD";
 "preferences_general_patron_six_months" = "6 Месяцев - 5,99 USD";
 "preferences_general_patron_twelve_months" = "12 Месяцев - 11,99 USD";
-"preferences_general_patron_description" = "Эти разовые покупки не продлеваются автоматически.";
+"preferences_general_patron_description" = "Это разовые покупки, они не продлеваются автоматически.";
 "preferences_general_patron_thank_for_purchase" = "Спасибо! Вы помогаете MeetingBar уже %d месяц! 🎉";
 "preferences_general_patron_restore_purchases" = "Восстановить покупки";
 "preferences_general_feedback_title" = "Если у вас есть какие-либо вопросы или отзывы,\nсвяжитесь со мной:";
@@ -96,7 +96,7 @@
 "preferences_appearance_status_bar_time_show_value" = "показать";
 "preferences_appearance_status_bar_time_show_under_title_value" = "показать под заголовком";
 "preferences_appearance_status_bar_time_hide_value" = "скрыть";
-"preferences_appearance_status_bar_next_event_toggle" = "Показывать только следующее событие, начинающееся за";
+"preferences_appearance_status_bar_next_event_toggle" = "Показывать только события, начинающееся за";
 "preferences_appearance_status_bar_next_event_stepper" = "%d минут";
 "preferences_appearance_menu_title" = "Меню";
 "preferences_appearance_menu_shorten_event_title_toggle" = "Сократить название мероприятия до";
