@@ -287,7 +287,7 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
 
     func createJoinSection() {
         if !calendars.filter({ $0.selected }).isEmpty {
-            if let nextEvent = getNextEvent(events: self.events) {
+            if let nextEvent = getNextEvent(events: events) {
                 let now = Date()
                 var itemTitle: String
                 if nextEvent.startDate < now {
