@@ -23,7 +23,7 @@ let meetings = [
     MeetingLink(service: .facetime, url: URL(string: "https://facetime.apple.com/join#v=1&p=AeVKu1rGEeyppwJC8kftBg&k=FrCNneouFgL26VdnDit78WHNoGjzZyteymBi1U5I23E")!),
     MeetingLink(service: .pop, url: URL(string: "https://pop.com/j/810-218-630")!),
     MeetingLink(service: .gong, url: URL(string: "https://join.gong.io/mycompany/ryker.morgan")!),
-    MeetingLink(service: .chorus, url: URL(string: "https://go.chorus.ai/1234567890")!)
+    MeetingLink(service: .chorus, url: URL(string: "https://go.chorus.ai/1234567890")!),
 ]
 
 class HelpersTests: XCTestCase {
