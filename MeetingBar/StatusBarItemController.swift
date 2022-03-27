@@ -24,7 +24,7 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
 
     var calendars: [MBCalendar] = []
     var events: [MBEvent] = []
-    
+
     let isFantasticalInstalled = checkIsFantasticalInstalled()
 
     weak var appdelegate: AppDelegate!
@@ -434,7 +434,7 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
         let eventTitle: String
 
         if Defaults[.shortenEventTitle] {
-            eventTitle = shortenEventTitle(title: event.title, offset:Defaults[.menuEventTitleLength])
+            eventTitle = shortenEventTitle(title: event.title, offset: Defaults[.menuEventTitleLength])
 
         } else {
             eventTitle = String(event.title)
@@ -687,7 +687,7 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
             openItem.representedObject = event.eventIdentifier
 
             // Open in fanctastical if fantastical is installed
-            if self.isFantasticalInstalled {
+            if isFantasticalInstalled {
                 let fantasticalItem = eventMenu.addItem(withTitle: "status_bar_submenu_open_in_fantastical".loco(), action: #selector(AppDelegate.openEventInFantastical), keyEquivalent: "")
                 fantasticalItem.representedObject = EventWithDate(event: event, dateSection: dateSection)
             }
@@ -742,7 +742,7 @@ func createEventStatusString(_ event: MBEvent) -> (String, String) {
         if Defaults[.hideMeetingTitle] {
             eventTitle = "general_meeting".loco()
         } else {
-            eventTitle =  shortenEventTitle(title: event.title, offset: Defaults[.statusbarEventTitleLength])
+            eventTitle = shortenEventTitle(title: event.title, offset: Defaults[.statusbarEventTitleLength])
         }
     case .dot:
         eventTitle = "•"

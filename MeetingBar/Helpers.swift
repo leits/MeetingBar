@@ -425,7 +425,7 @@ func checkIsFantasticalInstalled() -> Bool {
     NSWorkspace.shared.urlForApplication(withBundleIdentifier: "com.flexibits.fantastical2.mac") != nil
 }
 
-func getIconForMeetingService(_ meetingService: MeetingServices? ) -> NSImage {
+func getIconForMeetingService(_ meetingService: MeetingServices?) -> NSImage {
     var image: NSImage? = NSImage(named: "no_online_session")
     image!.size = NSSize(width: 16, height: 16)
 
