@@ -24,6 +24,8 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
 
     var calendars: [MBCalendar] = []
     var events: [MBEvent] = []
+    
+    let isFantasticalInstalled = checkIsFantasticalInstalled()
 
     weak var appdelegate: AppDelegate!
 
@@ -184,7 +186,8 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
                 if Defaults[.eventTitleIconFormat] != EventTitleIconFormat.none {
                     let image: NSImage
                     if Defaults[.eventTitleIconFormat] == EventTitleIconFormat.eventtype {
-                        image = getMeetingIcon(nextEvent)
+                        let meetingLink = getMeetingLink(nextEvent)
+                        image = getIconForMeetingService(meetingLink?.service)
                     } else {
                         image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
                     }
@@ -410,214 +413,6 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
         }
     }
 
-    func getMeetingIconForLink(_ result: MeetingLink?) -> NSImage {
-        var image: NSImage? = NSImage(named: "no_online_session")
-        image!.size = NSSize(width: 16, height: 16)
-
-        switch result?.service {
-        // tested and verified
-        case .some(.teams):
-            image = NSImage(named: "ms_teams_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.meet), .some(.meetStream):
-            image = NSImage(named: "google_meet_icon")!
-            image!.size = NSSize(width: 16, height: 13.2)
-
-        // tested and verified -> deprecated, can be removed because hangouts was replaced by google meet
-        case .some(.hangouts):
-            image = NSImage(named: "google_hangouts_icon")!
-            image!.size = NSSize(width: 16, height: 17.8)
-
-        // tested and verified
-        case .some(.zoom), .some(.zoomgov), .some(.zoom_native):
-            image = NSImage(named: "zoom_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.webex):
-            image = NSImage(named: "webex_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.jitsi):
-            image = NSImage(named: "jitsi_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.chime):
-            image = NSImage(named: "amazon_chime_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.ringcentral):
-            image = NSImage(named: "ringcentral_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.gotomeeting):
-            image = NSImage(named: "gotomeeting_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.gotowebinar):
-            image = NSImage(named: "gotowebinar_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.bluejeans):
-            image = NSImage(named: "bluejeans_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.eight_x_eight):
-            image = NSImage(named: "8x8_icon")!
-            image!.size = NSSize(width: 16, height: 8)
-
-        // tested and verified
-        case .some(.demio):
-            image = NSImage(named: "demio_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.join_me):
-            image = NSImage(named: "joinme_icon")!
-            image!.size = NSSize(width: 16, height: 10)
-
-        // tested and verified
-        case .some(.whereby):
-            image = NSImage(named: "whereby_icon")!
-            image!.size = NSSize(width: 16, height: 18)
-
-        // tested and verified
-        case .some(.uberconference):
-            image = NSImage(named: "uberconference_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.blizz), .some(.teamviewer_meeting):
-            image = NSImage(named: "teamviewer_meeting_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.vsee):
-            image = NSImage(named: "vsee_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.starleaf):
-            image = NSImage(named: "starleaf_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.duo):
-            image = NSImage(named: "google_duo_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.voov):
-            image = NSImage(named: "voov_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.skype):
-            image = NSImage(named: "skype_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.skype4biz), .some(.skype4biz_selfhosted):
-            image = NSImage(named: "skype_business_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.lifesize):
-            image = NSImage(named: "lifesize_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.facebook_workspace):
-            image = NSImage(named: "facebook_workplace_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.youtube):
-            image = NSImage(named: "youtube_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.coscreen):
-            image = NSImage(named: "coscreen_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.vowel):
-            image = NSImage(named: "vowel_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.zhumu):
-            image = NSImage(named: "zhumu_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.lark):
-            image = NSImage(named: "lark_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.feishu):
-            image = NSImage(named: "feishu_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.vimeo_showcases):
-            image = NSImage(named: "vimeo_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.ovice):
-            image = NSImage(named: "ovice_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        case .some(.facetime):
-            image = NSImage(named: "facetime_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        case .some(.pop):
-            image = NSImage(named: "pop_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .none:
-            image = NSImage(named: "no_online_session")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        // tested and verified
-        case .some(.vonageMeetings):
-            image = NSImage(named: "vonage_icon")!
-            image!.size = NSSize(width: 16, height: 16)
-
-        case .some(.url):
-            image = NSImage(named: NSImage.touchBarOpenInBrowserTemplateName)!
-            image!.size = NSSize(width: 16, height: 16)
-
-        default:
-            break
-        }
-
-        return image!
-    }
-
-    /**
-     * try  to get the correct image for the specific
-     */
-    func getMeetingIcon(_ event: MBEvent) -> NSImage {
-        let result = getMeetingLink(event)
-
-        return getMeetingIconForLink(result)
-    }
-
     func createEventItem(event: MBEvent, dateSection: Date) {
         let eventParticipantStatus = getEventParticipantStatus(event)
         let eventStatus = event.status
@@ -639,7 +434,8 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
         let eventTitle: String
 
         if Defaults[.shortenEventTitle] {
-            eventTitle = shortenTitleForMenu(title: event.title)
+            eventTitle = shortenEventTitle(title: event.title, offset:Defaults[.menuEventTitleLength])
+
         } else {
             eventTitle = String(event.title)
         }
@@ -679,7 +475,8 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
         eventItem.keyEquivalent = ""
 
         if Defaults[.showMeetingServiceIcon] {
-            eventItem.image = getMeetingIcon(event)
+            let meetingLink = getMeetingLink(event)
+            eventItem.image = getIconForMeetingService(meetingLink?.service)
         }
 
         var shouldShowAsActive = true
@@ -836,7 +633,7 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
                 if !notes.isEmpty {
                     eventMenu.addItem(withTitle: "status_bar_submenu_notes_title".loco(), action: nil, keyEquivalent: "")
                     let item = eventMenu.addItem(withTitle: "", action: nil, keyEquivalent: "")
-                    item.view = getNotesView(notes: notes)
+                    item.view = createNSViewFromNotes(notes: notes)
 
                     eventMenu.addItem(NSMenuItem.separator())
                 }
@@ -890,61 +687,13 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
             openItem.representedObject = event.eventIdentifier
 
             // Open in fanctastical if fantastical is installed
-            if isFantasticalInstalled() {
+            if self.isFantasticalInstalled {
                 let fantasticalItem = eventMenu.addItem(withTitle: "status_bar_submenu_open_in_fantastical".loco(), action: #selector(AppDelegate.openEventInFantastical), keyEquivalent: "")
                 fantasticalItem.representedObject = EventWithDate(event: event, dateSection: dateSection)
             }
         } else {
             eventItem.toolTip = event.title
         }
-    }
-
-    private func getNotesView(notes: String) -> NSView {
-        // Create views
-        let paddingView = NSView()
-        let textView = NSTextView()
-        paddingView.addSubview(textView)
-
-        // Text styling
-        let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineBreakMode = NSLineBreakMode.byWordWrapping
-        textView.textStorage?.setAttributedString(
-            notes.splitWithNewLineAttributedString(
-                with: [
-                    NSAttributedString.Key.paragraphStyle: paragraphStyle,
-                    NSAttributedString.Key.font: NSFont.systemFont(ofSize: 14),
-                ],
-                maxWidth: 300.0
-            )
-            .withLinksEnabled()
-        )
-        textView.backgroundColor = .clear
-        textView.textColor = .textColor
-
-        // Adjust frame layout for padding
-        if let textContainer = textView.textContainer {
-            textView.layoutManager?.ensureLayout(for: textContainer)
-            if let frame = textView.layoutManager?.usedRect(for: textContainer) {
-                // There's 10pt of padding seemingly built into the left side,
-                // no such thing on the right so we go 20pt to match the left side
-                textView.frame = NSRect(x: 10.0, y: 0.0, width: frame.width, height: frame.height)
-                paddingView.frame = NSRect(x: 0.0, y: 0.0, width: frame.width + 20, height: frame.height)
-            } else {
-                // Backup layout if we couldn't calculate frame
-                textView.autoresizingMask = [.width, .height]
-            }
-        } else {
-            // Backup layout if we couldn't calculate frame
-            textView.autoresizingMask = [.width, .height]
-        }
-        return paddingView
-    }
-
-    /**
-     * checks if fantastical is installed
-     */
-    func isFantasticalInstalled() -> Bool {
-        NSWorkspace.shared.urlForApplication(withBundleIdentifier: "com.flexibits.fantastical2.mac") != nil
     }
 
     func createPreferencesSection() {
@@ -973,21 +722,10 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
     }
 }
 
-func shortenTitleForSystembar(title: String?) -> String {
+func shortenEventTitle(title: String?, offset: Int) -> String {
     var eventTitle = String(title ?? "status_bar_no_title".loco()).trimmingCharacters(in: TitleTruncationRules.excludeAtEnds)
-    if eventTitle.count > Defaults[.statusbarEventTitleLength] {
-        let index = eventTitle.index(eventTitle.startIndex, offsetBy: Defaults[.statusbarEventTitleLength] - 1)
-        eventTitle = String(eventTitle[...index]).trimmingCharacters(in: TitleTruncationRules.excludeAtEnds)
-        eventTitle += "..."
-    }
-
-    return eventTitle
-}
-
-func shortenTitleForMenu(title: String?) -> String {
-    var eventTitle = String(title ?? "status_bar_no_title".loco()).trimmingCharacters(in: TitleTruncationRules.excludeAtEnds)
-    if eventTitle.count > Int(Defaults[.menuEventTitleLength]) {
-        let index = eventTitle.index(eventTitle.startIndex, offsetBy: Int(Defaults[.menuEventTitleLength]) - 1)
+    if eventTitle.count > offset {
+        let index = eventTitle.index(eventTitle.startIndex, offsetBy: offset - 1)
         eventTitle = String(eventTitle[...index]).trimmingCharacters(in: TitleTruncationRules.excludeAtEnds)
         eventTitle += "..."
     }
@@ -1004,7 +742,7 @@ func createEventStatusString(_ event: MBEvent) -> (String, String) {
         if Defaults[.hideMeetingTitle] {
             eventTitle = "general_meeting".loco()
         } else {
-            eventTitle = shortenTitleForSystembar(title: event.title)
+            eventTitle =  shortenEventTitle(title: event.title, offset: Defaults[.statusbarEventTitleLength])
         }
     case .dot:
         eventTitle = "•"
@@ -1040,4 +778,45 @@ func createEventStatusString(_ event: MBEvent) -> (String, String) {
         eventTime = "status_bar_event_status_in".loco(formattedTimeLeft)
     }
     return (eventTitle, eventTime)
+}
+
+func createNSViewFromNotes(notes: String) -> NSView {
+    // Create views
+    let paddingView = NSView()
+    let textView = NSTextView()
+    paddingView.addSubview(textView)
+
+    // Text styling
+    let paragraphStyle = NSMutableParagraphStyle()
+    paragraphStyle.lineBreakMode = NSLineBreakMode.byWordWrapping
+    textView.textStorage?.setAttributedString(
+        notes.splitWithNewLineAttributedString(
+            with: [
+                NSAttributedString.Key.paragraphStyle: paragraphStyle,
+                NSAttributedString.Key.font: NSFont.systemFont(ofSize: 14),
+            ],
+            maxWidth: 300.0
+        )
+        .withLinksEnabled()
+    )
+    textView.backgroundColor = .clear
+    textView.textColor = .textColor
+
+    // Adjust frame layout for padding
+    if let textContainer = textView.textContainer {
+        textView.layoutManager?.ensureLayout(for: textContainer)
+        if let frame = textView.layoutManager?.usedRect(for: textContainer) {
+            // There's 10pt of padding seemingly built into the left side,
+            // no such thing on the right so we go 20pt to match the left side
+            textView.frame = NSRect(x: 10.0, y: 0.0, width: frame.width, height: frame.height)
+            paddingView.frame = NSRect(x: 0.0, y: 0.0, width: frame.width + 20, height: frame.height)
+        } else {
+            // Backup layout if we couldn't calculate frame
+            textView.autoresizingMask = [.width, .height]
+        }
+    } else {
+        // Backup layout if we couldn't calculate frame
+        textView.autoresizingMask = [.width, .height]
+    }
+    return paddingView
 }
