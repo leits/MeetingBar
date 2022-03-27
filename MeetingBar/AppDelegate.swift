@@ -59,7 +59,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     var changelogWindow: NSWindow!
 
     func applicationDidFinishLaunching(_: Notification) {
-        NSAppleEventManager.shared().setEventHandler(self, andSelector: #selector(handle(getURLEvent:replyEvent:)), forEventClass: AEEventClass(kInternetEventClass), andEventID: AEEventID(kAEGetURL))
+        NSAppleEventManager.shared().setEventHandler(self, andSelector: #selector(handleURLEvent(getURLEvent:replyEvent:)), forEventClass: AEEventClass(kInternetEventClass), andEventID: AEEventID(kAEGetURL))
 
         // AppStore sync
         completeStoreTransactions()
@@ -94,16 +94,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         postNotificationForAutoLauncher()
     }
 
-    @objc
-    func handle(getURLEvent event: NSAppleEventDescriptor, replyEvent _: NSAppleEventDescriptor) {
-        if let string = event.paramDescriptor(forKeyword: keyDirectObject)?.stringValue,
-           let url = URL(string: string)
-        {
-            GCEventStore.shared
-                .currentAuthorizationFlow?.resumeExternalUserAgentFlow(with: url)
-        }
-    }
-
     /// Sending a notification to AutoLauncher app
     /// about main application running status
     private func postNotificationForAutoLauncher() {
@@ -114,48 +104,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             DistributedNotificationCenter.default().post(name: killAutoLauncherNotificationName,
                                                          object: Bundle.main.bundleIdentifier)
         }
-    }
-
-    /**
-     * tries to open the link from the macos system clipboard.
-     */
-    @objc
-    func openLinkFromClipboard() {
-        NSLog("Check macos clipboard for link")
-        var clipboardContent = getClipboardContent()
-        NSLog("Found \(clipboardContent) in clipboard")
-
-        if !clipboardContent.isEmpty {
-            let meetingLink = detectLink(&clipboardContent)
-
-            if let meetingLink = meetingLink {
-                openMeetingURL(meetingLink.service, meetingLink.url, nil)
-            } else {
-                let validUrl = NSURL(string: clipboardContent)
-                if validUrl != nil {
-                    URL(string: clipboardContent)?.openInDefaultBrowser()
-                } else {
-                    sendNotification("No valid url",
-                                     "Clipboard has no meeting link, so the meeting cannot be started")
-                }
-            }
-        } else {
-            sendNotification("Clipboard is empty",
-                             "Clipboard has no content, so the meeting cannot be started...")
-        }
-    }
-
-    @objc
-    func toggleMeetingTitleVisibility() {
-        Defaults[.hideMeetingTitle].toggle()
-    }
-
-    @objc
-    func refreshSources() {
-//        TODO: fix refresh sources
-//        statusBarItem.eventStore.refreshSourcesIfNecessary()
-        statusBarItem.updateTitle()
-        statusBarItem.updateMenu()
     }
 
     func setup() {
@@ -389,30 +337,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
     }
 
-    @objc
-    func windowClosed(notification: NSNotification) {
-        let window = notification.object as? NSWindow
-        if let windowTitle = window?.title {
-            if windowTitle == WindowTitles.onboarding, !Defaults[.onboardingCompleted] {
-                NSApplication.shared.terminate(self)
-            } else if windowTitle == WindowTitles.changelog {
-                Defaults[.lastRevisedVersionInChangelog] = Defaults[.appVersion]
-                statusBarItem.updateMenu()
-            }
-        }
-    }
-
     func getClipboardContent() -> String {
         let pasteboard = NSPasteboard.general
         return pasteboard.string(forType: .string) ?? ""
     }
-
-//    @objc
-//    func eventStoreChanged(_: NSNotification) {
-//        NSLog("Store changed. Update status bar menu.")
-//        statusBarItem.updateTitle()
-//        statusBarItem.updateMenu()
-//    }
 
     private func scheduleFetchEvents() {
         let timer = Timer(timeInterval: 60, target: self, selector: #selector(fetchEvents), userInfo: nil, repeats: true)
@@ -422,24 +350,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     private func scheduleUpdateStatusBarItem() {
         let timer = Timer(timeInterval: 5, target: self, selector: #selector(updateStatusBarItem), userInfo: nil, repeats: true)
         RunLoop.current.add(timer, forMode: .common)
-    }
-
-    @objc
-    private func fetchEvents() {
-        NSLog("Firing reccuring fetchEvents")
-        DispatchQueue.main.async {
-            self.statusBarItem.loadCalendars()
-            self.statusBarItem.loadEvents()
-        }
-    }
-
-    @objc
-    private func updateStatusBarItem() {
-//        NSLog("Firing reccuring updateStatusBarItem")
-        DispatchQueue.main.async {
-            self.statusBarItem.updateTitle()
-            self.statusBarItem.updateMenu()
-        }
     }
 
     /**
@@ -470,6 +380,127 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
 
         completionHandler()
+    }
+
+    func openOnboardingWindow() {
+        NSLog("Open onboarding window")
+
+        let contentView = OnboardingView()
+        if onboardingWindow != nil {
+            onboardingWindow.close()
+        }
+        onboardingWindow = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 660, height: 450),
+            styleMask: [.closable, .titled],
+            backing: .buffered,
+            defer: false
+        )
+
+        onboardingWindow.title = WindowTitles.onboarding
+        onboardingWindow.contentView = NSHostingView(rootView: contentView)
+        let controller = NSWindowController(window: onboardingWindow)
+        controller.showWindow(self)
+
+        onboardingWindow.level = NSWindow.Level.floating
+        onboardingWindow.center()
+        onboardingWindow.orderFrontRegardless()
+    }
+}
+
+/*
+ * -----------------------
+ * MARK: - Actions
+ * ------------------------
+ */
+extension AppDelegate {
+    @objc
+    func handleURLEvent(getURLEvent event: NSAppleEventDescriptor, replyEvent _: NSAppleEventDescriptor) {
+        if let string = event.paramDescriptor(forKeyword: keyDirectObject)?.stringValue,
+           let url = URL(string: string)
+        {
+            GCEventStore.shared
+                .currentAuthorizationFlow?.resumeExternalUserAgentFlow(with: url)
+        }
+    }
+
+    @objc
+    func windowClosed(notification: NSNotification) {
+        let window = notification.object as? NSWindow
+        if let windowTitle = window?.title {
+            if windowTitle == WindowTitles.onboarding, !Defaults[.onboardingCompleted] {
+                NSApplication.shared.terminate(self)
+            } else if windowTitle == WindowTitles.changelog {
+                Defaults[.lastRevisedVersionInChangelog] = Defaults[.appVersion]
+                statusBarItem.updateMenu()
+            }
+        }
+    }
+
+    /**
+     * tries to open the link from the macos system clipboard.
+     */
+    @objc
+    func openLinkFromClipboard() {
+        NSLog("Check macos clipboard for link")
+        var clipboardContent = getClipboardContent()
+        NSLog("Found \(clipboardContent) in clipboard")
+
+        if !clipboardContent.isEmpty {
+            let meetingLink = detectLink(&clipboardContent)
+
+            if let meetingLink = meetingLink {
+                openMeetingURL(meetingLink.service, meetingLink.url, nil)
+            } else {
+                let validUrl = NSURL(string: clipboardContent)
+                if validUrl != nil {
+                    URL(string: clipboardContent)?.openInDefaultBrowser()
+                } else {
+                    sendNotification("No valid url",
+                                     "Clipboard has no meeting link, so the meeting cannot be started")
+                }
+            }
+        } else {
+            sendNotification("Clipboard is empty",
+                             "Clipboard has no content, so the meeting cannot be started...")
+        }
+    }
+
+    @objc
+    func toggleMeetingTitleVisibility() {
+        Defaults[.hideMeetingTitle].toggle()
+    }
+
+    @objc
+    func refreshSources() {
+//        TODO: fix refresh sources
+//        statusBarItem.eventStore.refreshSourcesIfNecessary()
+        statusBarItem.updateTitle()
+        statusBarItem.updateMenu()
+    }
+
+//    @objc
+//    func eventStoreChanged(_: NSNotification) {
+//        NSLog("Store changed. Update status bar menu.")
+//        statusBarItem.updateTitle()
+//        statusBarItem.updateMenu()
+//    }
+
+    @objc
+    private func fetchEvents() {
+        NSLog("Firing reccuring fetchEvents")
+        DispatchQueue.main.async {
+            self.statusBarItem.loadCalendars()
+            self.statusBarItem.loadEvents()
+        }
+    }
+
+    @objc
+    private func updateStatusBarItem() {
+//        NSLog("Firing reccuring updateStatusBarItem")
+        DispatchQueue.main.async {
+            self.statusBarItem.updateTitle()
+            self.statusBarItem.updateMenu()
+        }
     }
 
     @objc
@@ -641,30 +672,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
         preferencesWindow.center()
         preferencesWindow.orderFrontRegardless()
-    }
-
-    func openOnboardingWindow() {
-        NSLog("Open onboarding window")
-
-        let contentView = OnboardingView()
-        if onboardingWindow != nil {
-            onboardingWindow.close()
-        }
-        onboardingWindow = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 660, height: 450),
-            styleMask: [.closable, .titled],
-            backing: .buffered,
-            defer: false
-        )
-
-        onboardingWindow.title = WindowTitles.onboarding
-        onboardingWindow.contentView = NSHostingView(rootView: contentView)
-        let controller = NSWindowController(window: onboardingWindow)
-        controller.showWindow(self)
-
-        onboardingWindow.level = NSWindow.Level.floating
-        onboardingWindow.center()
-        onboardingWindow.orderFrontRegardless()
     }
 
     @objc
