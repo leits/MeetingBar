@@ -145,7 +145,7 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
                 }
                 title = "🏁"
             case let .nextEvent(event):
-                (title, time) = createEventStatusString(event)
+                (title, time) = createEventStatusString(title: event.title, startDate: event.startDate, endDate: event.endDate)
                 if Defaults[.joinEventNotification] {
                     scheduleEventNotification(event)
                 }
@@ -194,8 +194,7 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
                 if Defaults[.eventTitleIconFormat] != EventTitleIconFormat.none {
                     let image: NSImage
                     if Defaults[.eventTitleIconFormat] == EventTitleIconFormat.eventtype {
-                        let meetingLink = getMeetingLink(nextEvent)
-                        image = getIconForMeetingService(meetingLink?.service)
+                        image = getIconForMeetingService(nextEvent.meetingLink?.service)
                     } else {
                         image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
                     }
@@ -423,7 +422,7 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
         }
     }
 
-    func createEventItem(event: MBEvent, dateSection: Date) {
+    func createEventItem(event: MBEvent, dateSection _: Date) {
         let eventStatus = event.status
 
         let now = Date()
@@ -484,8 +483,7 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
         eventItem.keyEquivalent = ""
 
         if Defaults[.showMeetingServiceIcon] {
-            let meetingLink = getMeetingLink(event)
-            eventItem.image = getIconForMeetingService(meetingLink?.service)
+            eventItem.image = getIconForMeetingService(event.meetingLink?.service)
         }
 
         var shouldShowAsActive = true
@@ -501,8 +499,7 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
         }
 
         if !event.isAllDay, Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show_inactive_without_meeting_link {
-            let meetingLink = getMeetingLink(event)
-            if meetingLink == nil {
+            if event.meetingLink == nil {
                 styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
                 shouldShowAsActive = false
             }
@@ -692,7 +689,7 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
             // Open in fanctastical if fantastical is installed
             if isFantasticalInstalled {
                 let fantasticalItem = eventMenu.addItem(withTitle: "status_bar_submenu_open_in_fantastical".loco(), action: #selector(AppDelegate.openEventInFantastical), keyEquivalent: "")
-                fantasticalItem.representedObject = EventWithDate(event: event, dateSection: dateSection)
+                fantasticalItem.representedObject = event
             }
         } else {
             eventItem.toolTip = event.title
@@ -736,7 +733,7 @@ func shortenEventTitle(title: String?, offset: Int) -> String {
     return eventTitle
 }
 
-func createEventStatusString(_ event: MBEvent) -> (String, String) {
+func createEventStatusString(title: String, startDate: Date, endDate: Date) -> (String, String) {
     var eventTime: String
 
     var eventTitle: String
@@ -745,7 +742,7 @@ func createEventStatusString(_ event: MBEvent) -> (String, String) {
         if Defaults[.hideMeetingTitle] {
             eventTitle = "general_meeting".loco()
         } else {
-            eventTitle = shortenEventTitle(title: event.title, offset: Defaults[.statusbarEventTitleLength])
+            eventTitle = shortenEventTitle(title: title, offset: Defaults[.statusbarEventTitleLength])
         }
     case .dot:
         eventTitle = "•"
@@ -766,12 +763,12 @@ func createEventStatusString(_ event: MBEvent) -> (String, String) {
     var eventDate: Date
     let prevMinute = Date().addingTimeInterval(-60)
     let now = Date()
-    if event.startDate <= now, event.endDate > now {
+    if startDate <= now, endDate > now {
         isActiveEvent = true
-        eventDate = event.endDate
+        eventDate = endDate
     } else {
         isActiveEvent = false
-        eventDate = event.startDate
+        eventDate = startDate
     }
     let formattedTimeLeft = formatter.string(from: prevMinute, to: eventDate)!
 

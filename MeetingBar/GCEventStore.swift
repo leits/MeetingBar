@@ -106,6 +106,7 @@ class MBEvent {
     let title: String
     var status: MBEventStatus = .none
     var participationStatus: MBEventAttendeeStatus = .unknown
+    var meetingLink: MeetingLink?
     var organizer: MBEventOrganizer?
     let url: URL?
     let notes: String?
@@ -160,6 +161,25 @@ class MBEvent {
             startDate = formatter.date(from: json["start"]["date"].stringValue)!
             endDate = formatter.date(from: json["end"]["date"].stringValue)!
             isAllDay = true
+        }
+
+        let linkFields = [
+            location,
+            url?.absoluteString,
+            notes,
+        ].compactMap { $0 }
+
+        for linkField in linkFields {
+            if var detectedLink = detectLink(linkField) {
+                if detectedLink.service == .meet,
+                   let account = getEmailAccount(calendar.source),
+                   let urlEncodedAccount = account.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+                {
+                    detectedLink.url = URL(string: (detectedLink.url.absoluteString) + "?authuser=\(urlEncodedAccount)")!
+                }
+                meetingLink = detectedLink
+                break
+            }
         }
     }
 }
@@ -385,7 +405,8 @@ class GCEventStore: NSObject, OIDExternalUserAgent {
 func filterEvents(_ events: [MBEvent]) -> [MBEvent] {
     let showAlldayEvents: Bool = Defaults[.allDayEvents] == AlldayEventsAppereance.show
 
-    let calendarEvents = events.filter { ($0.isAllDay && showAlldayEvents) || Calendar.current.isDate($0.startDate, inSameDayAs: Date()) }
+    // TODO: Шось треба зробити з тим блятьським isSameDayAs
+    let calendarEvents = events.filter { ($0.isAllDay && showAlldayEvents) || true } // || Calendar.current.isDate($0.startDate, inSameDayAs: Date())  }
 
     var filteredCalendarEvents: [MBEvent] = []
 
@@ -403,17 +424,13 @@ func filterEvents(_ events: [MBEvent]) -> [MBEvent] {
             if Defaults[.allDayEvents] == AlldayEventsAppereance.show {
                 addEvent = true
             } else if Defaults[.allDayEvents] == AlldayEventsAppereance.show_with_meeting_link_only {
-                let result = getMeetingLink(calendarEvent)
-
-                if result?.url != nil {
+                if calendarEvent.meetingLink?.url != nil {
                     addEvent = true
                 }
             }
         } else {
             if Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.hide_without_meeting_link {
-                let result = getMeetingLink(calendarEvent)
-
-                if result?.url != nil {
+                if calendarEvent.meetingLink?.url != nil {
                     addEvent = true
                 }
             } else {

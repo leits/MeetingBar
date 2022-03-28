@@ -153,13 +153,8 @@ extension String {
 
 extension NSAttributedString {
     func withLinksEnabled() -> NSAttributedString {
-        let linkDetectionRegexPattern = #"(http|ftp|https)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?"#
-        guard let regex = try? NSRegularExpression(pattern: linkDetectionRegexPattern, options: .caseInsensitive) else {
-            return self
-        }
-
         let newAttributedString = NSMutableAttributedString(attributedString: self)
-        for match in regex.matches(in: string, range: NSRange(location: 0, length: string.utf16.count)) {
+        for match in UtilsRegex.linkDetection.matches(in: string, range: NSRange(location: 0, length: string.utf16.count)) {
             guard let range = Range(match.range, in: string) else {
                 continue
             }

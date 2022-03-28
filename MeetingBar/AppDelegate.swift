@@ -337,11 +337,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
     }
 
-    func getClipboardContent() -> String {
-        let pasteboard = NSPasteboard.general
-        return pasteboard.string(forType: .string) ?? ""
-    }
-
     private func scheduleFetchEvents() {
         let timer = Timer(timeInterval: 60, target: self, selector: #selector(fetchEvents), userInfo: nil, repeats: true)
         RunLoop.current.add(timer, forMode: .common)
@@ -442,11 +437,11 @@ extension AppDelegate {
     @objc
     func openLinkFromClipboard() {
         NSLog("Check macos clipboard for link")
-        var clipboardContent = getClipboardContent()
+        let clipboardContent = getClipboardContent()
         NSLog("Found \(clipboardContent) in clipboard")
 
         if !clipboardContent.isEmpty {
-            let meetingLink = detectLink(&clipboardContent)
+            let meetingLink = detectLink(clipboardContent)
 
             if let meetingLink = meetingLink {
                 openMeetingURL(meetingLink.service, meetingLink.url, nil)
@@ -584,9 +579,9 @@ extension AppDelegate {
     func copyEventMeetingLink(sender: NSMenuItem) {
         if let event: MBEvent = sender.representedObject as? MBEvent {
             let eventTitle = event.title
-            if let meeting = getMeetingLink(event) {
+            if let meetingLink = event.meetingLink {
                 NSPasteboard.general.clearContents()
-                NSPasteboard.general.setString(meeting.url.absoluteString, forType: .string)
+                NSPasteboard.general.setString(meetingLink.url.absoluteString, forType: .string)
             } else {
                 sendNotification("status_bar_error_link_missed_title".loco(eventTitle), "status_bar_error_link_missed_message".loco())
             }
@@ -606,11 +601,11 @@ extension AppDelegate {
      */
     @objc
     func openEventInFantastical(sender: NSMenuItem) {
-        if let eventWithDate: EventWithDate = sender.representedObject as? EventWithDate {
+        if let event: MBEvent = sender.representedObject as? MBEvent {
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "yyyy-MM-dd"
 
-            let queryItems = [URLQueryItem(name: "date", value: dateFormatter.string(from: eventWithDate.dateSection)), URLQueryItem(name: "title", value: eventWithDate.event.title)]
+            let queryItems = [URLQueryItem(name: "date", value: dateFormatter.string(from: event.startDate)), URLQueryItem(name: "title", value: event.title)]
             var fantasticalUrlComp = URLComponents()
             fantasticalUrlComp.scheme = "x-fantastical3"
             fantasticalUrlComp.host = "show"

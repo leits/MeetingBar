@@ -10,11 +10,6 @@ import Cocoa
 import Defaults
 import EventKit
 
-struct EventWithDate {
-    let event: MBEvent
-    let dateSection: Date
-}
-
 struct MeetingLink: Equatable {
     let service: MeetingServices?
     var url: URL
@@ -37,7 +32,8 @@ struct Bookmark: Encodable, Decodable, Hashable {
  * If no m365 links are found, the original text is returned.
  *
  */
-private func cleanupOutlookSafeLinks(text: inout String) -> String {
+private func cleanupOutlookSafeLinks(rawText: String) -> String {
+    var text = rawText
     var links = UtilsRegex.outlookSafeLinkRegex.matches(in: text, range: NSRange(text.startIndex..., in: text))
     if !links.isEmpty {
         repeat {
@@ -90,10 +86,10 @@ func getRegexForService(_ service: MeetingServices) -> NSRegularExpression? {
     return nil
 }
 
-func getGmailAccount(_ event: MBEvent) -> String? {
+func getEmailAccount(_ source: String?) -> String? {
     // Hacky and likely to break, but should work until Apple changes something
     let regex = UtilsRegex.emailAddress
-    if let text = event.calendar.source {
+    if let text = source {
         let resultsIterator = regex.matches(in: text, range: NSRange(text.startIndex..., in: text))
         let resultsMap = resultsIterator.map { String(text[Range($0.range(at: 1), in: text)!]) }
         if !resultsMap.isEmpty {
@@ -103,12 +99,12 @@ func getGmailAccount(_ event: MBEvent) -> String? {
     return nil
 }
 
-func detectLink(_ field: inout String) -> MeetingLink? {
-    _ = cleanupOutlookSafeLinks(text: &field)
+func detectLink(_ rawText: String) -> MeetingLink? {
+    let text = cleanupOutlookSafeLinks(rawText: rawText)
 
     for pattern in Defaults[.customRegexes] {
         if let regex = try? NSRegularExpression(pattern: pattern) {
-            if let link = getMatch(text: field, regex: regex) {
+            if let link = getMatch(text: text, regex: regex) {
                 if let url = URL(string: link) {
                     return MeetingLink(service: MeetingServices.other, url: url)
                 }
@@ -118,7 +114,7 @@ func detectLink(_ field: inout String) -> MeetingLink? {
 
     for service in MeetingServices.allCases {
         if let regex = getRegexForService(service) {
-            if let link = getMatch(text: field, regex: regex) {
+            if let link = getMatch(text: text, regex: regex) {
                 if let url = URL(string: link) {
                     return MeetingLink(service: service, url: url)
                 }
@@ -128,60 +124,9 @@ func detectLink(_ field: inout String) -> MeetingLink? {
     return nil
 }
 
-/**
- * this method will collect text from the location, url and notes field of an event and try to find a known meeting url link.
- * As meeting links can be part of a outlook safe url, we will extract the original link from outlook safe links.
- */
-func getMeetingLink(_ event: MBEvent) -> MeetingLink? {
-    var linkFields: [String] = []
-
-    if let location = event.location {
-        linkFields.append(location)
-    }
-
-    if let url = event.url {
-        linkFields.append(url.absoluteString)
-    }
-
-    if let notes = event.notes {
-        linkFields.append(notes)
-    }
-
-    for var field in linkFields {
-        var meetingLink = detectLink(&field)
-        if meetingLink != nil {
-            if meetingLink?.service == .meet,
-               let account = getGmailAccount(event),
-               let urlEncodedAccount = account.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
-            {
-                let url = URL(string: (meetingLink?.url.absoluteString)! + "?authuser=\(urlEncodedAccount)")!
-                meetingLink?.url = url
-            }
-            return meetingLink
-        }
-    }
-
-    return nil
-}
-
-func detectLinks(text: String) -> [URL] {
-    let types: NSTextCheckingResult.CheckingType = .link
-
-    do {
-        let detector = try NSDataDetector(types: types.rawValue)
-
-        let matches = detector.matches(in: text, options: .reportCompletion, range: NSRange(location: 0, length: text.count))
-        return matches.compactMap { $0.url }
-    } catch {
-        debugPrint(error.localizedDescription)
-    }
-
-    return []
-}
-
 func openEvent(_ event: MBEvent) {
     let eventTitle = event.title
-    if let meeting = getMeetingLink(event) {
+    if let meetingLink = event.meetingLink {
         if Defaults[.runJoinEventScript], Defaults[.joinEventScriptLocation] != nil {
             if let url = Defaults[.joinEventScriptLocation]?.appendingPathComponent("joinEventScript.scpt") {
                 let task = try! NSUserAppleScriptTask(url: url)
@@ -192,7 +137,7 @@ func openEvent(_ event: MBEvent) {
                 }
             }
         }
-        openMeetingURL(meeting.service, meeting.url, nil)
+        openMeetingURL(meetingLink.service, meetingLink.url, nil)
     } else if let eventUrl = event.url {
         eventUrl.openInDefaultBrowser()
     } else {
@@ -372,14 +317,11 @@ func getNextEvent(events: [MBEvent]) -> MBEvent? {
             continue
         } else {
             if Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show_inactive_without_meeting_link {
-                let meetingLink = getMeetingLink(event)
-                if meetingLink == nil {
+                if event.meetingLink == nil {
                     continue
                 }
             } else if Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.hide_without_meeting_link {
-                let result = getMeetingLink(event)
-
-                if result?.url == nil {
+                if event.meetingLink?.url == nil {
                     continue
                 }
             }
@@ -414,6 +356,11 @@ func getNextEvent(events: [MBEvent]) -> MBEvent? {
 
 func checkIsFantasticalInstalled() -> Bool {
     NSWorkspace.shared.urlForApplication(withBundleIdentifier: "com.flexibits.fantastical2.mac") != nil
+}
+
+func getClipboardContent() -> String {
+    let pasteboard = NSPasteboard.general
+    return pasteboard.string(forType: .string) ?? ""
 }
 
 func getIconForMeetingService(_ meetingService: MeetingServices?) -> NSImage {
