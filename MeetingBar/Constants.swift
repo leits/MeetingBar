@@ -264,7 +264,7 @@ enum JoinEventNotificationTime: Int, Codable {
 }
 
 enum UtilsRegex {
-    static let emailAddress = try! NSRegularExpression(pattern: #""mailto:(.+@.+)""#)
+    static let emailAddress = try! NSRegularExpression(pattern: #"(.+@.+)"#)
     static let outlookSafeLinkRegex = try! NSRegularExpression(pattern: #"https://[\S]+\.safelinks\.protection\.outlook\.com/[\S]+url=([\S]*)"#)
 }
 
