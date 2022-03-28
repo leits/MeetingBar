@@ -200,13 +200,6 @@ func openEvent(_ event: MBEvent) {
     }
 }
 
-func getEventParticipantStatus(_ event: MBEvent) -> MBEventAttendeeStatus? {
-    if let currentUser = event.attendees.first(where: { $0.isCurrentUser }) {
-        return currentUser.status
-    }
-    return MBEventAttendeeStatus.unknown
-}
-
 func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?) {
     switch service {
     case .jitsi:
@@ -392,14 +385,12 @@ func getNextEvent(events: [MBEvent]) -> MBEvent? {
             }
         }
 
-        if let status = getEventParticipantStatus(event) {
-            if status == .declined { // Skip event if declined
-                continue
-            }
+        if event.participationStatus == .declined { // Skip event if declined
+            continue
+        }
 
-            if status == .pending, Defaults[.showPendingEvents] == PendingEventsAppereance.hide || Defaults[.showPendingEvents] == PendingEventsAppereance.show_inactive {
-                continue
-            }
+        if event.participationStatus == .pending, Defaults[.showPendingEvents] == PendingEventsAppereance.hide || Defaults[.showPendingEvents] == PendingEventsAppereance.show_inactive {
+            continue
         }
 
         if event.status == .canceled {

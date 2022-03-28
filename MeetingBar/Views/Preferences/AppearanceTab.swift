@@ -148,7 +148,7 @@ struct EventsSection: View {
             HStack {
                 Picker("preferences_appearance_events_show_events_for_title".loco(), selection: $showEventsForPeriod) {
                     Text("preferences_appearance_events_show_events_for_today_value".loco()).tag(ShowEventsForPeriod.today)
-//                    Text("preferences_appearance_events_show_events_for_today_tomorrow_value".loco()).tag(ShowEventsForPeriod.today_n_tomorrow)
+                    Text("preferences_appearance_events_show_events_for_today_tomorrow_value".loco()).tag(ShowEventsForPeriod.today_n_tomorrow)
                 }.frame(width: 300)
             }
 

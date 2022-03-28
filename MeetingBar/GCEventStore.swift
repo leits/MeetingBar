@@ -105,6 +105,7 @@ class MBEvent {
     let calendar: MBCalendar
     let title: String
     var status: MBEventStatus = .none
+    var participationStatus: MBEventAttendeeStatus = .unknown
     var organizer: MBEventOrganizer?
     let url: URL?
     let notes: String?
@@ -142,7 +143,11 @@ class MBEvent {
                 let attendee = MBEventAttendee(json: raw_attendee)
                 attendees.append(attendee)
             }
-        } else {}
+        }
+
+        if let currentUser = attendees.first(where: { $0.isCurrentUser }) {
+            participationStatus = currentUser.status
+        }
 
         if json["start"]["dateTime"].exists(), json["end"]["dateTime"].exists() {
             let formatter = ISO8601DateFormatter()
@@ -223,7 +228,7 @@ class GCEventStore: NSObject, OIDExternalUserAgent {
         }
     }
 
-    func getCalendarEventsForDate(calendar: MBCalendar, dateFrom: Date, dateTo: Date) -> Promise<[MBEvent]> {
+    func getCalendarEventsForDateRange(calendar: MBCalendar, dateFrom: Date, dateTo: Date) -> Promise<[MBEvent]> {
         return Promise { seal in
             guard let auth = self.auth else {
                 seal.reject(NSError(domain: "GoogleSignIn", code: 0, userInfo: nil))
@@ -265,12 +270,12 @@ class GCEventStore: NSObject, OIDExternalUserAgent {
         }
     }
 
-    func loadEventsForDate(calendars: [MBCalendar], dateFrom: Date, dateTo: Date) -> Promise<[MBEvent]> {
+    func loadEventsForDateRange(calendars: [MBCalendar], dateFrom: Date, dateTo: Date) -> Promise<[MBEvent]> {
         return Promise { seal in
             var fetchTasks: [Promise<[MBEvent]>] = []
 
             for calendar in calendars {
-                let task = GCEventStore.shared.getCalendarEventsForDate(calendar: calendar, dateFrom: dateFrom, dateTo: dateTo)
+                let task = GCEventStore.shared.getCalendarEventsForDateRange(calendar: calendar, dateFrom: dateFrom, dateTo: dateTo)
                 fetchTasks.append(task)
             }
 
@@ -416,8 +421,7 @@ func filterEvents(_ events: [MBEvent]) -> [MBEvent] {
             }
         }
 
-        let status = getEventParticipantStatus(calendarEvent)
-        if status == .pending, Defaults[.showPendingEvents] == .hide {
+        if calendarEvent.participationStatus == .pending, Defaults[.showPendingEvents] == .hide {
             addEvent = false
         }
 

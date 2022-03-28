@@ -95,8 +95,16 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
 
     func loadEvents() {
         let dateFrom = Calendar.current.startOfDay(for: Date())
-        let dateTo = Calendar.current.date(byAdding: .day, value: 1, to: dateFrom)!
-        _ = GCEventStore.shared.loadEventsForDate(calendars: calendars.filter { $0.selected }, dateFrom: dateFrom, dateTo: dateTo).done { events in
+        var dateTo: Date
+
+        switch Defaults[.showEventsForPeriod] {
+        case .today:
+            dateTo = Calendar.current.date(byAdding: .day, value: 1, to: dateFrom)!
+        case .today_n_tomorrow:
+            dateTo = Calendar.current.date(byAdding: .day, value: 2, to: dateFrom)!
+        }
+
+        _ = GCEventStore.shared.loadEventsForDateRange(calendars: calendars.filter { $0.selected }, dateFrom: dateFrom, dateTo: dateTo).done { events in
             self.events = filterEvents(events)
             self.updateTitle()
             self.updateMenu()
@@ -203,7 +211,6 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
 
                 // create an NSMutableAttributedString that we'll append everything to
                 let menuTitle = NSMutableAttributedString()
-                let eventStatus = getEventParticipantStatus(nextEvent)
 
                 if Defaults[.eventTimeFormat] != EventTimeFormat.show_under_title || Defaults[.eventTitleFormat] == .none {
                     var eventTitle = title
@@ -214,9 +221,9 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
                     var styles = [NSAttributedString.Key: Any]()
                     styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: 13)
 
-                    if eventStatus == .pending, Defaults[.showPendingEvents] == PendingEventsAppereance.show_inactive {
+                    if nextEvent.participationStatus == .pending, Defaults[.showPendingEvents] == PendingEventsAppereance.show_inactive {
                         styles[NSAttributedString.Key.foregroundColor] = NSColor.lightGray
-                    } else if eventStatus == .pending, Defaults[.showPendingEvents] == PendingEventsAppereance.show_underlined {
+                    } else if nextEvent.participationStatus == .pending, Defaults[.showPendingEvents] == PendingEventsAppereance.show_underlined {
                         styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
                     }
 
@@ -230,9 +237,9 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
                     styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: 12)
                     styles[NSAttributedString.Key.baselineOffset] = -3
 
-                    if eventStatus == .pending, Defaults[.showPendingEvents] == PendingEventsAppereance.show_inactive {
+                    if nextEvent.participationStatus == .pending, Defaults[.showPendingEvents] == PendingEventsAppereance.show_inactive {
                         styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
-                    } else if eventStatus == .pending, Defaults[.showPendingEvents] == PendingEventsAppereance.show_underlined {
+                    } else if nextEvent.participationStatus == .pending, Defaults[.showPendingEvents] == PendingEventsAppereance.show_underlined {
                         styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
                     }
 
@@ -257,16 +264,19 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
 
         if !calendars.filter({ $0.selected }).isEmpty {
             let today = Date()
-            createDateSection(date: today, title: "status_bar_section_today".loco(), events: events)
-//            switch Defaults[.showEventsForPeriod] {
-//            case .today:
-//                createDateSection(date: today, title: "status_bar_section_today".loco())
-//            case .today_n_tomorrow:
-//                let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today)!
-//                createDateSection(date: today, title: "status_bar_section_today".loco())
-//                statusItemMenu.addItem(NSMenuItem.separator())
-//                createDateSection(date: tomorrow, title: "status_bar_section_tomorrow".loco())
-//            }
+            switch Defaults[.showEventsForPeriod] {
+            case .today:
+                createDateSection(date: today, title: "status_bar_section_today".loco(), events: events)
+            case .today_n_tomorrow:
+                let todayEvents = events.filter { Calendar.current.isDate($0.startDate, inSameDayAs: today) }
+                createDateSection(date: today, title: "status_bar_section_today".loco(), events: todayEvents)
+
+                statusItemMenu.addItem(NSMenuItem.separator())
+
+                let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today)!
+                let tomorrowEvents = events.filter { Calendar.current.isDate($0.startDate, inSameDayAs: tomorrow) }
+                createDateSection(date: tomorrow, title: "status_bar_section_tomorrow".loco(), events: tomorrowEvents)
+            }
         } else {
             let text = "status_bar_empty_calendar_message".loco()
             let item = statusItemMenu.addItem(withTitle: "", action: nil, keyEquivalent: "")
@@ -414,12 +424,11 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
     }
 
     func createEventItem(event: MBEvent, dateSection: Date) {
-        let eventParticipantStatus = getEventParticipantStatus(event)
         let eventStatus = event.status
 
         let now = Date()
 
-        if eventParticipantStatus == .declined || eventStatus == .canceled, Defaults[.declinedEventsAppereance] == .hide {
+        if event.participationStatus == .declined || eventStatus == .canceled, Defaults[.declinedEventsAppereance] == .hide {
             return
         }
 
@@ -482,7 +491,7 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
         var shouldShowAsActive = true
         var styles = [NSAttributedString.Key: Any]()
 
-        if eventParticipantStatus == .declined || eventStatus == .canceled {
+        if event.participationStatus == .declined || eventStatus == .canceled {
             if Defaults[.declinedEventsAppereance] == .show_inactive {
                 styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
             } else {
@@ -499,7 +508,7 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
             }
         }
 
-        if eventParticipantStatus == .pending {
+        if event.participationStatus == .pending {
             if Defaults[.showPendingEvents] == PendingEventsAppereance.show_inactive {
                 styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
             } else if Defaults[.showPendingEvents] == PendingEventsAppereance.show_underlined {
@@ -574,29 +583,23 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
             eventMenu.addItem(NSMenuItem.separator())
 
             // Status
-            if eventParticipantStatus != nil {
-                var status: String
-                switch eventParticipantStatus {
-                case .accepted:
-                    status = "status_bar_submenu_status_accepted".loco()
-                case .declined:
-                    status = "status_bar_submenu_status_declined".loco()
-                case .tentative:
-                    status = "status_bar_submenu_status_tentative".loco()
-                case .pending:
-                    status = "status_bar_submenu_status_pending".loco()
-                case .unknown:
-                    status = "status_bar_submenu_status_unknown".loco()
-                default:
-                    if let eventStatus = eventParticipantStatus {
-                        status = "status_bar_submenu_status_default_extended".loco(String(describing: eventStatus))
-                    } else {
-                        status = "status_bar_submenu_status_default_simple".loco()
-                    }
-                }
-                eventMenu.addItem(withTitle: "status_bar_submenu_status_title".loco(status), action: nil, keyEquivalent: "")
-                eventMenu.addItem(NSMenuItem.separator())
+            var status: String
+            switch event.participationStatus {
+            case .accepted:
+                status = "status_bar_submenu_status_accepted".loco()
+            case .declined:
+                status = "status_bar_submenu_status_declined".loco()
+            case .tentative:
+                status = "status_bar_submenu_status_tentative".loco()
+            case .pending:
+                status = "status_bar_submenu_status_pending".loco()
+            case .unknown:
+                status = "status_bar_submenu_status_unknown".loco()
+            default:
+                status = "status_bar_submenu_status_default_extended".loco(String(describing: eventStatus))
             }
+            eventMenu.addItem(withTitle: "status_bar_submenu_status_title".loco(status), action: nil, keyEquivalent: "")
+            eventMenu.addItem(NSMenuItem.separator())
 
             // Duration
             if !event.isAllDay {
