@@ -8,188 +8,20 @@
 
 import AppAuthCore
 import AppKit
-import Defaults
 import Foundation
 import GTMAppAuth
 import PromiseKit
 import SwiftyJSON
 
-class MBCalendar: Hashable {
-    let title: String
-    let calendarIdentifier: String
-    let source: String?
-    var selected: Bool = false
-    let color: NSColor
+let GoogleClientNumber = ""
+let GoogleClientSecret = ""
 
-    init(json: JSON, source: String?) {
-        self.source = source
-        title = json["summary"].stringValue
-        calendarIdentifier = json["id"].stringValue
-        color = hexStringToUIColor(hex: json["backgroundColor"].stringValue)
-    }
-
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(calendarIdentifier)
-    }
-
-    static func == (lhs: MBCalendar, rhs: MBCalendar) -> Bool {
-        lhs.calendarIdentifier == rhs.calendarIdentifier
-    }
-}
-
-enum MBEventStatus: Int {
-    case none = 0
-    case confirmed = 1
-    case tentative = 2
-    case canceled = 3
-}
-
-class MBEventOrganizer {
-    let name: String
-    let email: String
-
-    init(json: JSON) {
-        email = json["email"].string ?? ""
-        name = json["displayName"].string ?? email
-    }
-}
-
-enum MBEventAttendeeStatus: Int {
-    case unknown = 0
-    case pending = 1
-    case accepted = 2
-    case declined = 3
-    case tentative = 4
-    case delegated = 5
-    case completed = 6
-    case inProcess = 7
-}
-
-class MBEventAttendee {
-    let name: String
-    let email: String?
-    let status: MBEventAttendeeStatus
-    var optional: Bool = false
-    let isCurrentUser: Bool
-
-    init(json: JSON) {
-        email = json["email"].string
-        name = json["displayName"].string ?? email ?? "status_bar_submenu_attendees_no_name".loco()
-
-        if json["optional"].exists() {
-            optional = json["optional"].boolValue
-        }
-        if json["self"].exists() {
-            isCurrentUser = json["self"].boolValue
-        } else {
-            isCurrentUser = false
-        }
-
-        let raw_satus = json["responseStatus"].string
-        if raw_satus == "accepted" {
-            status = .accepted
-        } else if raw_satus == "declined" {
-            status = .declined
-        } else if raw_satus == "tentative" {
-            status = .tentative
-        } else if raw_satus == "needsAction" {
-            status = .inProcess
-        } else {
-            status = .unknown
-        }
-    }
-}
-
-class MBEvent {
-    let eventIdentifier: String
-    let calendar: MBCalendar
-    let title: String
-    var status: MBEventStatus = .none
-    var participationStatus: MBEventAttendeeStatus = .unknown
-    var meetingLink: MeetingLink?
-    var organizer: MBEventOrganizer?
-    let url: URL?
-    let notes: String?
-    let hasNotes: Bool
-    let location: String?
-    let startDate: Date
-    let endDate: Date
-    let isAllDay: Bool
-    var attendees: [MBEventAttendee] = []
-
-    init(json: JSON, calendar: MBCalendar) {
-        self.calendar = calendar
-        eventIdentifier = json["id"].stringValue
-        title = json["summary"].string ?? "status_bar_no_title".loco()
-        if let raw_satus = json["status"].string {
-            if raw_satus == "confirmed" {
-                status = .confirmed
-            } else if raw_satus == "tentative" {
-                status = .tentative
-            } else if raw_satus == "cancelled" {
-                status = .canceled
-            }
-        }
-        notes = json["description"].string
-        hasNotes = json["description"].exists()
-        location = json["location"].string
-        url = URL(string: json["hangoutLink"].string ?? "")
-
-        if json["organizer"].exists() {
-            organizer = MBEventOrganizer(json: json["organizer"])
-        }
-
-        if json["attendees"].exists() {
-            for (_, raw_attendee) in json["attendees"] {
-                let attendee = MBEventAttendee(json: raw_attendee)
-                attendees.append(attendee)
-            }
-        }
-
-        if let currentUser = attendees.first(where: { $0.isCurrentUser }) {
-            participationStatus = currentUser.status
-        }
-
-        if json["start"]["dateTime"].exists(), json["end"]["dateTime"].exists() {
-            let formatter = ISO8601DateFormatter()
-            startDate = formatter.date(from: json["start"]["dateTime"].stringValue)!
-            endDate = formatter.date(from: json["end"]["dateTime"].stringValue)!
-            isAllDay = false
-        } else {
-            let formatter = DateFormatter()
-            formatter.dateFormat = "yyyy-MM-dd"
-            startDate = formatter.date(from: json["start"]["date"].stringValue)!
-            endDate = formatter.date(from: json["end"]["date"].stringValue)!
-            isAllDay = true
-        }
-
-        let linkFields = [
-            location,
-            url?.absoluteString,
-            notes,
-        ].compactMap { $0 }
-
-        for linkField in linkFields {
-            if var detectedLink = detectLink(linkField) {
-                if detectedLink.service == .meet,
-                   let account = getEmailAccount(calendar.source),
-                   let urlEncodedAccount = account.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
-                {
-                    detectedLink.url = URL(string: (detectedLink.url.absoluteString) + "?authuser=\(urlEncodedAccount)")!
-                }
-                meetingLink = detectedLink
-                break
-            }
-        }
-    }
-}
-
-class GCEventStore: NSObject, OIDExternalUserAgent {
+class GCEventStore: NSObject, EventStore, OIDExternalUserAgent {
     static let kYourClientNumer = GoogleClientNumber
     static let kIssuer = "https://accounts.google.com"
     static let kClientID = "\(GoogleClientNumber).apps.googleusercontent.com"
     static let kClientSecret = GoogleClientSecret
-    static let kRedirectURI = "com.googleusercontent.apps.\(GoogleClientNumber):/oauthredirect"
+    static let kRedirectURI = "com.googleusercontent.afpps.\(GoogleClientNumber):/oauthredirect"
     static let kExampleAuthorizerKey = "REPLACE_BY_YOUR_AUTHORIZATION_KEY"
 
     var currentAuthorizationFlow: OIDExternalUserAgentSession?
@@ -199,7 +31,7 @@ class GCEventStore: NSObject, OIDExternalUserAgent {
     var auth: GTMAppAuthFetcherAuthorization?
 
     var isAuthed: Bool {
-        return auth != nil
+        auth != nil
     }
 
     override private init() {
@@ -207,8 +39,8 @@ class GCEventStore: NSObject, OIDExternalUserAgent {
         loadState()
     }
 
-    func getAllCalendars() -> Promise<[MBCalendar]> {
-        return Promise { seal in
+    func fetchAllCalendars() -> Promise<[MBCalendar]> {
+        Promise { seal in
 
             loadState()
 
@@ -234,7 +66,14 @@ class GCEventStore: NSObject, OIDExternalUserAgent {
                     if let data = data {
                         do {
                             let json = try JSON(data: data)
-                            let calendars = json["items"].map { MBCalendar(json: $1, source: auth.userEmail) }
+
+                            var calendars: [MBCalendar] = []
+
+                            for (_, item) in json["items"] {
+                                let calendar = MBCalendar(title: item["summary"].stringValue, ID: item["id"].stringValue, source: auth.userEmail, email: auth.userEmail, color: hexStringToUIColor(hex: item["backgroundColor"].stringValue))
+
+                                calendars.append(calendar)
+                            }
                             return seal.fulfill(calendars)
                         } catch {
                             NSLog(error.localizedDescription)
@@ -249,7 +88,7 @@ class GCEventStore: NSObject, OIDExternalUserAgent {
     }
 
     func getCalendarEventsForDateRange(calendar: MBCalendar, dateFrom: Date, dateTo: Date) -> Promise<[MBEvent]> {
-        return Promise { seal in
+        Promise { seal in
             guard let auth = self.auth else {
                 seal.reject(NSError(domain: "GoogleSignIn", code: 0, userInfo: nil))
                 return
@@ -260,7 +99,7 @@ class GCEventStore: NSObject, OIDExternalUserAgent {
             let timeMin = formatter.string(from: dateFrom)
             let timeMax = formatter.string(from: dateTo)
 
-            if let url = URL(string: "https://www.googleapis.com/calendar/v3/calendars/\(calendar.calendarIdentifier)/events?singleEvents=true&orderBy=startTime&timeMax=\(timeMax)&timeMin=\(timeMin)") {
+            if let url = URL(string: "https://www.googleapis.com/calendar/v3/calendars/\(calendar.ID)/events?singleEvents=true&orderBy=startTime&timeMax=\(timeMax)&timeMin=\(timeMin)") {
                 let service = GTMSessionFetcherService()
                 service.authorizer = auth
                 NSLog("Request GoogleAPI")
@@ -277,7 +116,79 @@ class GCEventStore: NSObject, OIDExternalUserAgent {
                     if let data = data {
                         do {
                             let json = try JSON(data: data)
-                            let events = json["items"].map { MBEvent(json: $1, calendar: calendar) }
+                            var events: [MBEvent] = []
+
+                            for (_, item) in json["items"] {
+                                let eventID = item["id"].stringValue
+                                let title = item["summary"].string
+                                var status: MBEventStatus
+                                switch item["status"].string {
+                                case "confirmed":
+                                    status = .confirmed
+                                case "tentative":
+                                    status = .tentative
+                                case "cancelled":
+                                    status = .canceled
+                                default:
+                                    status = .none
+                                }
+
+                                let notes = item["description"].string
+                                let location = item["location"].string
+                                let url = URL(string: item["hangoutLink"].string ?? "")
+
+                                let organizer = MBEventOrganizer(email: item["organizer"]["email"].string, name: item["organizer"]["name"].string)
+
+                                var attendees: [MBEventAttendee] = []
+                                for (_, jsonAttendee) in item["attendees"] {
+                                    let email = jsonAttendee["email"].string
+                                    let name = jsonAttendee["displayName"].string
+                                    let optional = jsonAttendee["optional"].bool ?? false
+                                    let isCurrentUser = jsonAttendee["self"].bool ?? false
+
+                                    var attendeeStatus: MBEventAttendeeStatus
+                                    switch jsonAttendee["responseStatus"].string {
+                                    case "accepted":
+                                        attendeeStatus = .accepted
+                                    case "declined":
+                                        attendeeStatus = .declined
+                                    case "tentative":
+                                        attendeeStatus = .tentative
+                                    case "needsAction":
+                                        attendeeStatus = .inProcess
+                                    default:
+                                        attendeeStatus = .unknown
+                                    }
+                                    let attendee = MBEventAttendee(email: email, name: name, status: attendeeStatus, optional: optional, isCurrentUser: isCurrentUser)
+                                    attendees.append(attendee)
+                                }
+
+                                var startDate: Date
+                                var endDate: Date
+                                var isAllDay: Bool
+
+                                if item["start"]["dateTime"].exists(), item["end"]["dateTime"].exists() {
+                                    let formatter = ISO8601DateFormatter()
+                                    startDate = formatter.date(from: item["start"]["dateTime"].stringValue)!
+                                    endDate = formatter.date(from: item["end"]["dateTime"].stringValue)!
+                                    isAllDay = false
+                                } else {
+                                    let formatter = DateFormatter()
+                                    formatter.dateFormat = "yyyy-MM-dd"
+                                    startDate = formatter.date(from: item["start"]["date"].stringValue)!
+                                    endDate = formatter.date(from: item["end"]["date"].stringValue)!
+                                    isAllDay = true
+                                }
+
+                                let event = MBEvent(
+                                    ID: eventID, title: title, status: status,
+                                    notes: notes, location: location, url: url,
+                                    organizer: organizer, attendees: attendees,
+                                    startDate: startDate, endDate: endDate,
+                                    isAllDay: isAllDay, calendar: calendar
+                                )
+                                events.append(event)
+                            }
                             return seal.fulfill(events)
                         } catch {
                             seal.reject(error)
@@ -290,8 +201,8 @@ class GCEventStore: NSObject, OIDExternalUserAgent {
         }
     }
 
-    func loadEventsForDateRange(calendars: [MBCalendar], dateFrom: Date, dateTo: Date) -> Promise<[MBEvent]> {
-        return Promise { seal in
+    func fetchEventsForDateRange(calendars: [MBCalendar], dateFrom: Date, dateTo: Date) -> Promise<[MBEvent]> {
+        Promise { seal in
             var fetchTasks: [Promise<[MBEvent]>] = []
 
             for calendar in calendars {
@@ -315,7 +226,7 @@ class GCEventStore: NSObject, OIDExternalUserAgent {
     }
 
     func signIn() -> Promise<Void> {
-        return Promise { seal in
+        Promise { seal in
             if self.auth != nil, self.auth!.canAuthorize() {
                 seal.fulfill(())
             } else {
@@ -357,7 +268,7 @@ class GCEventStore: NSObject, OIDExternalUserAgent {
     }
 
     func signOut() -> Promise<Void> {
-        return Promise { seal in
+        Promise { seal in
             self.setAuthorization(auth: nil)
             seal.fulfill(())
         }
@@ -400,51 +311,4 @@ class GCEventStore: NSObject, OIDExternalUserAgent {
     func dismiss(animated _: Bool, completion: @escaping () -> Void) {
         completion()
     }
-}
-
-func filterEvents(_ events: [MBEvent]) -> [MBEvent] {
-    let showAlldayEvents: Bool = Defaults[.allDayEvents] == AlldayEventsAppereance.show
-
-    // TODO: Шось треба зробити з тим блятьським isSameDayAs
-    let calendarEvents = events.filter { ($0.isAllDay && showAlldayEvents) || true } // || Calendar.current.isDate($0.startDate, inSameDayAs: Date())  }
-
-    var filteredCalendarEvents: [MBEvent] = []
-
-    for calendarEvent in calendarEvents {
-        for pattern in Defaults[.filterEventRegexes] {
-            if let regex = try? NSRegularExpression(pattern: pattern) {
-                if !hasMatch(text: calendarEvent.title, regex: regex) {
-                    continue
-                }
-            }
-        }
-
-        var addEvent = false
-        if calendarEvent.isAllDay {
-            if Defaults[.allDayEvents] == AlldayEventsAppereance.show {
-                addEvent = true
-            } else if Defaults[.allDayEvents] == AlldayEventsAppereance.show_with_meeting_link_only {
-                if calendarEvent.meetingLink?.url != nil {
-                    addEvent = true
-                }
-            }
-        } else {
-            if Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.hide_without_meeting_link {
-                if calendarEvent.meetingLink?.url != nil {
-                    addEvent = true
-                }
-            } else {
-                addEvent = true
-            }
-        }
-
-        if calendarEvent.participationStatus == .pending, Defaults[.showPendingEvents] == .hide {
-            addEvent = false
-        }
-
-        if addEvent {
-            filteredCalendarEvents.append(calendarEvent)
-        }
-    }
-    return filteredCalendarEvents
 }

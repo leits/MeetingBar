@@ -84,9 +84,9 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
     }
 
     func loadCalendars() {
-        _ = GCEventStore.shared.getAllCalendars().done { calendars in
+        _ = appdelegate.eventStore.fetchAllCalendars().done { calendars in
             for calendar in calendars {
-                calendar.selected = Defaults[.selectedCalendarIDs].contains(calendar.calendarIdentifier)
+                calendar.selected = Defaults[.selectedCalendarIDs].contains(calendar.ID)
             }
             self.calendars = calendars
             self.loadEvents()
@@ -104,7 +104,7 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
             dateTo = Calendar.current.date(byAdding: .day, value: 2, to: dateFrom)!
         }
 
-        _ = GCEventStore.shared.loadEventsForDateRange(calendars: calendars.filter { $0.selected }, dateFrom: dateFrom, dateTo: dateTo).done { events in
+        _ = appdelegate.eventStore.fetchEventsForDateRange(calendars: calendars.filter(\.selected), dateFrom: dateFrom, dateTo: dateTo).done { events in
             self.events = filterEvents(events)
             self.updateTitle()
             self.updateMenu()
@@ -122,7 +122,7 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
         var time = ""
         var nextEvent: MBEvent!
         let nextEventState: NextEventState
-        if !calendars.filter({ $0.selected }).isEmpty {
+        if !calendars.filter(\.selected).isEmpty {
             nextEvent = getNextEvent(events: events)
             nextEventState = {
                 guard let nextEvent = nextEvent else {
@@ -183,7 +183,7 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
                 }
             }
 
-            if currentStatusBarEvent?.eventIdentifier != nextEvent?.eventIdentifier {
+            if currentStatusBarEvent?.ID != nextEvent?.ID {
                 if nextEvent == nil || (nextEvent!).startDate.timeIntervalSinceNow <= 0 {
                     currentStatusBarEvent = nextEvent
                     updateMenu()
@@ -261,7 +261,7 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
         statusItemMenu.autoenablesItems = false
         statusItemMenu.removeAllItems()
 
-        if !calendars.filter({ $0.selected }).isEmpty {
+        if !calendars.filter(\.selected).isEmpty {
             let today = Date()
             switch Defaults[.showEventsForPeriod] {
             case .today:
@@ -298,7 +298,7 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
     }
 
     func createJoinSection() {
-        if !calendars.filter({ $0.selected }).isEmpty {
+        if !calendars.filter(\.selected).isEmpty {
             if let nextEvent = getNextEvent(events: events) {
                 let now = Date()
                 var itemTitle: String
@@ -628,8 +628,8 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
             }
 
             // Notes
-            if event.hasNotes {
-                let notes = cleanUpNotes(event.notes ?? "")
+            if var notes = event.notes {
+                notes = cleanUpNotes(notes)
                 if !notes.isEmpty {
                     eventMenu.addItem(withTitle: "status_bar_submenu_notes_title".loco(), action: nil, keyEquivalent: "")
                     let item = eventMenu.addItem(withTitle: "", action: nil, keyEquivalent: "")
@@ -640,7 +640,7 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
             }
 
             // Attendees
-            if event.attendees.count != 0 {
+            if !event.attendees.isEmpty {
                 let sortedAttendees = event.attendees.sorted { $0.status.rawValue < $1.status.rawValue }
                 eventMenu.addItem(withTitle: "status_bar_submenu_attendees_title".loco(sortedAttendees.count), action: nil, keyEquivalent: "")
                 for attendee in sortedAttendees {
@@ -684,7 +684,7 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
 
             // Open in App
             let openItem = eventMenu.addItem(withTitle: "status_bar_submenu_open_in_calendar".loco(), action: #selector(AppDelegate.openEventInCalendar), keyEquivalent: "")
-            openItem.representedObject = event.eventIdentifier
+            openItem.representedObject = event.ID
 
             // Open in fanctastical if fantastical is installed
             if isFantasticalInstalled {

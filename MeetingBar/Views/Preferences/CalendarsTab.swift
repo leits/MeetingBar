@@ -34,12 +34,12 @@ struct CalendarsTab: View {
                     Section {
                         List {
                             Section(header: Text("Google Calendar API")) {
-                                ForEach(self.calendars, id: \.calendarIdentifier) { calendar in
-                                    CalendarRow(title: calendar.title, isSelected: self.selectedCalendarIDs.contains(calendar.calendarIdentifier), color: Color(calendar.color)) {
-                                        if self.selectedCalendarIDs.contains(calendar.calendarIdentifier) {
-                                            self.selectedCalendarIDs.removeAll { $0 == calendar.calendarIdentifier }
+                                ForEach(self.calendars, id: \.ID) { calendar in
+                                    CalendarRow(title: calendar.title, isSelected: self.selectedCalendarIDs.contains(calendar.ID), color: Color(calendar.color)) {
+                                        if self.selectedCalendarIDs.contains(calendar.ID) {
+                                            self.selectedCalendarIDs.removeAll { $0 == calendar.ID }
                                         } else {
-                                            self.selectedCalendarIDs.append(calendar.calendarIdentifier)
+                                            self.selectedCalendarIDs.append(calendar.ID)
                                         }
                                     }
                                 }

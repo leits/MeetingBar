@@ -61,7 +61,7 @@ func getMatch(text: String, regex: NSRegularExpression) -> String? {
 }
 
 func hasMatch(text: String, regex: NSRegularExpression) -> Bool {
-    return regex.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)) != nil
+    regex.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)) != nil
 }
 
 func cleanUpNotes(_ notes: String) -> String {
@@ -220,7 +220,7 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?
 }
 
 func compareVersions(_ version_x: String, _ version_y: String) -> Bool {
-    return version_x.compare(version_y, options: .numeric) == .orderedDescending
+    version_x.compare(version_y, options: .numeric) == .orderedDescending
 }
 
 func bundleIdentifier(forAppName appName: String) -> String? {

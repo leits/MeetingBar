@@ -20,6 +20,7 @@ import PromiseKit
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDelegate {
     var statusBarItem: StatusBarItemController!
+    var eventStore: EventStore!
 
     var selectedCalendarIDsObserver: DefaultsObservation?
     var showEventDetailsObserver: DefaultsObservation?
@@ -59,8 +60,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     var changelogWindow: NSWindow!
 
     func applicationDidFinishLaunching(_: Notification) {
-        NSAppleEventManager.shared().setEventHandler(self, andSelector: #selector(handleURLEvent(getURLEvent:replyEvent:)), forEventClass: AEEventClass(kInternetEventClass), andEventID: AEEventID(kAEGetURL))
-
         // AppStore sync
         completeStoreTransactions()
         checkAppSource()
@@ -73,12 +72,22 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             Defaults[.appVersion] = appVersion
         }
 
-        if GCEventStore.shared.isAuthed {
+        if true {
+            eventStore = GCEventStore.shared
+
+            NSAppleEventManager.shared().setEventHandler(self, andSelector: #selector(handleURLEvent(getURLEvent:replyEvent:)), forEventClass: AEEventClass(kInternetEventClass), andEventID: AEEventID(kAEGetURL))
+        } else {
+            eventStore = EKEventStore.shared
+
+            NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.eventStoreChanged), name: .EKEventStoreChanged, object: EKEventStore.shared)
+        }
+
+        if eventStore.isAuthed {
             setup()
         } else {
             Defaults[.selectedCalendarIDs] = []
             setup()
-            _ = GCEventStore.shared.signIn().done {
+            _ = eventStore.signIn().done {
                 self.statusBarItem.loadCalendars()
             }
         }
@@ -143,8 +152,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         KeyboardShortcuts.onKeyUp(for: .toggleMeetingTitleVisibilityShortcut) {
             Defaults[.hideMeetingTitle].toggle()
         }
-
-//        NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.eventStoreChanged), name: .EKEventStoreChanged, object: statusBarItem.eventStore)
 
         showEventDetailsObserver = Defaults.observe(.showEventDetails) { change in
             if change.oldValue != change.newValue {
@@ -363,7 +370,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                     // built-in method EKEventStore.event(withIdentifier:) is broken
                     // temporary allow to open only the last event
                     if let nextEvent = getNextEvent(events: statusBarItem.events) {
-                        if nextEvent.eventIdentifier == (eventID as! String) {
+                        if nextEvent.ID == (eventID as! String) {
                             NSLog("Join \(nextEvent.title) event from notication")
                             openEvent(nextEvent)
                         }
@@ -407,6 +414,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
  * MARK: - Actions
  * ------------------------
  */
+
 extension AppDelegate {
     @objc
     func handleURLEvent(getURLEvent event: NSAppleEventDescriptor, replyEvent _: NSAppleEventDescriptor) {
@@ -473,12 +481,12 @@ extension AppDelegate {
         statusBarItem.updateMenu()
     }
 
-//    @objc
-//    func eventStoreChanged(_: NSNotification) {
-//        NSLog("Store changed. Update status bar menu.")
-//        statusBarItem.updateTitle()
-//        statusBarItem.updateMenu()
-//    }
+    @objc
+    func eventStoreChanged(_: NSNotification) {
+        NSLog("Store changed. Update status bar menu.")
+        statusBarItem.updateTitle()
+        statusBarItem.updateMenu()
+    }
 
     @objc
     private func fetchEvents() {

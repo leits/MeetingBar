@@ -143,7 +143,7 @@ func scheduleEventNotification(_ event: MBEvent) {
     }
     content.categoryIdentifier = "EVENT"
     content.sound = UNNotificationSound.default
-    content.userInfo = ["eventID": event.eventIdentifier]
+    content.userInfo = ["eventID": event.ID]
     content.threadIdentifier = "meetingbar"
 
     let trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeInterval, repeats: false)
