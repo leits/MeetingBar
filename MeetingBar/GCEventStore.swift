@@ -13,16 +13,16 @@ import GTMAppAuth
 import PromiseKit
 import SwiftyJSON
 
-let GoogleClientNumber = ""
-let GoogleClientSecret = ""
+let GoogleClientNumber = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_CLIENT_NUMBER") as! String
+let GoogleClientSecret = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_CLIENT_SECRET") as! String
+let GoogleAuthKeychainName = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_AUTH_KEYCHAIN_NAME") as! String
 
 class GCEventStore: NSObject, EventStore, OIDExternalUserAgent {
-    static let kYourClientNumer = GoogleClientNumber
     static let kIssuer = "https://accounts.google.com"
     static let kClientID = "\(GoogleClientNumber).apps.googleusercontent.com"
     static let kClientSecret = GoogleClientSecret
-    static let kRedirectURI = "com.googleusercontent.afpps.\(GoogleClientNumber):/oauthredirect"
-    static let kExampleAuthorizerKey = "REPLACE_BY_YOUR_AUTHORIZATION_KEY"
+    static let kRedirectURI = "com.googleusercontent.apps.\(GoogleClientNumber):/oauthredirect"
+    static let AuthKeychainName = GoogleAuthKeychainName
 
     var currentAuthorizationFlow: OIDExternalUserAgentSession?
 
@@ -244,7 +244,7 @@ class GCEventStore: NSObject, EventStore, OIDExternalUserAgent {
                     let request = OIDAuthorizationRequest(configuration: config,
                                                           clientId: Self.kClientID,
                                                           clientSecret: Self.kClientSecret,
-                                                          scopes: ["email", "https://www.googleapis.com/auth/calendar.readonly", "https://www.googleapis.com/auth/calendar.events.readonly"],
+                                                          scopes: ["email", "https://www.googleapis.com/auth/calendar.calendarlist.readonly", "https://www.googleapis.com/auth/calendar.events.readonly"],
                                                           redirectURL: URL(string: Self.kRedirectURI)!,
                                                           responseType: OIDResponseTypeCode,
                                                           additionalParameters: nil)
@@ -280,21 +280,21 @@ class GCEventStore: NSObject, EventStore, OIDExternalUserAgent {
     }
 
     private func loadState() {
-        if let auth = GTMAppAuthFetcherAuthorization(fromKeychainForName: Self.kExampleAuthorizerKey) {
+        if let auth = GTMAppAuthFetcherAuthorization(fromKeychainForName: Self.AuthKeychainName) {
             setAuthorization(auth: auth)
         }
     }
 
     private func saveState() {
         guard let auth = auth else {
-            GTMAppAuthFetcherAuthorization.removeFromKeychain(forName: Self.kExampleAuthorizerKey)
+            GTMAppAuthFetcherAuthorization.removeFromKeychain(forName: Self.AuthKeychainName)
             return
         }
 
         if auth.canAuthorize() {
-            GTMAppAuthFetcherAuthorization.save(auth, toKeychainForName: Self.kExampleAuthorizerKey)
+            GTMAppAuthFetcherAuthorization.save(auth, toKeychainForName: Self.AuthKeychainName)
         } else {
-            GTMAppAuthFetcherAuthorization.removeFromKeychain(forName: Self.kExampleAuthorizerKey)
+            GTMAppAuthFetcherAuthorization.removeFromKeychain(forName: Self.AuthKeychainName)
         }
     }
 
