@@ -76,12 +76,13 @@ class Scripts: NSObject {
 
         if let nextEvent = nextEvent(eventStore: eventStore) {
             let now = Date()
-
-            let notificationTime = Double(Defaults[.joinEventNotificationTime].rawValue)
             let timeInterval = nextEvent.startDate.timeIntervalSince(now)
-            let scriptNonAlldayCandidate = timeInterval > 0 && timeInterval < notificationTime
 
             let startEndRange = nextEvent.startDate ... nextEvent.endDate
+
+            let notificationTime = Double(Defaults[.joinEventNotificationTime].rawValue)
+            let scriptNonAlldayCandidate = (timeInterval > 0 && timeInterval < notificationTime) || startEndRange.contains(now)
+
             let scriptAllDayCandidate = nextEvent.isAllDay && startEndRange.contains(now)
 
             if scriptNonAlldayCandidate || scriptAllDayCandidate {
