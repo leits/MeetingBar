@@ -24,6 +24,7 @@ let meetings = [
     MeetingLink(service: .pop, url: URL(string: "https://pop.com/j/810-218-630")!),
     MeetingLink(service: .gong, url: URL(string: "https://join.gong.io/mycompany/ryker.morgan")!),
     MeetingLink(service: .chorus, url: URL(string: "https://go.chorus.ai/1234567890")!),
+    MeetingLink(service: .livestorm, url: URL(string: "https://app.livestorm.com/p/cc113fd5-5de1-406-ba74-85c4892530/live?s=0231a8fb-fce9-48b0-9263-525f4234234234")!),
 ]
 
 class HelpersTests: XCTestCase {

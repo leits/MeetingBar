@@ -4,7 +4,7 @@
 
 > unreleased
 
-- Added integration with Pop, Chorus & Gong
+- Added integration with Pop, Livestorm, Chorus & Gong
 
 ## Version 3.10.0
 

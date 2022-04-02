@@ -585,6 +585,10 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
             image = NSImage(named: "chorus_icon")!
             image!.size = NSSize(width: 16, height: 16)
 
+        case .some(.livestorm):
+            image = NSImage(named: "livestorm_icon")!
+            image!.size = NSSize(width: 16, height: 16)
+
         case .some(.gong):
             image = NSImage(named: "gong_icon")!
             image!.size = NSSize(width: 16, height: 16)

@@ -73,6 +73,7 @@ struct LinksRegex {
     let chorus = try! NSRegularExpression(pattern: #"https?://go\.chorus\.ai/.*"#)
     let pop = try! NSRegularExpression(pattern: #"https?://pop.com/j/[0-9-]+"#)
     let gong = try! NSRegularExpression(pattern: #"https?://join\.gong\.io/.*"#)
+    let livestorm = try! NSRegularExpression(pattern: #"https?://app\.livestorm\.com/p/.*/live.*"#)
 }
 
 enum CreateMeetingLinks {
@@ -151,6 +152,7 @@ enum MeetingServices: String, Codable, CaseIterable {
     case pop = "Pop"
     case chorus = "Chorus"
     case gong = "Gong"
+    case livestorm = "Livestorm"
     case facetimeaudio = "Facetime Audio"
     case youtube = "YouTube"
     case vonageMeetings = "Vonage Meetings"
@@ -167,7 +169,6 @@ enum MeetingServices: String, Codable, CaseIterable {
     case feishu = "Feishu"
     case vimeo_showcases = "Vimeo Showcases"
     case ovice = "oVice"
-    case pop = "Pop"
     case other = "Other"
 
     var localizedValue: String {
