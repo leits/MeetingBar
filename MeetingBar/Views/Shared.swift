@@ -31,14 +31,11 @@ struct AutomaticEventJoinPicker: View {
             }.frame(width: 220, alignment: .leading).labelsHidden().disabled(!automaticEventJoin)
         }
 
-        if (automaticEventJoin) {
+        if automaticEventJoin {
             Text("shared_automatic_event_join_tip".loco()).foregroundColor(Color.gray).font(.system(size: 12))
         }
-        
     }
 }
-
-
 
 struct JoinEventNotificationPicker: View {
     @Default(.joinEventNotification) var joinEventNotification

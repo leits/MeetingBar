@@ -5,11 +5,10 @@
 //  Created by Jens Goldhammer on 17.01.21.
 //  Copyright © 2021 Andrii Leitsius. All rights reserved.
 //
-
-import Foundation
 import Carbon
 import Defaults
 import EventKit
+import Foundation
 
 class Scripts: NSObject {
     var eventStore: EKEventStore
@@ -32,6 +31,7 @@ class Scripts: NSObject {
          */
         case meetingEnd
     }
+
     /**
     * we will schedule a common task to check if we have to execute the apple script for event starts..
     * -  a new meeting is started within the timeframe of the notification timebox, but not later as the beginning of the meeting.
@@ -56,13 +56,13 @@ class Scripts: NSObject {
 
         NSLog("Firing reccuring runscriptfornextmeeting")
 
-        if let nextEvent = nextEvent(eventStore:eventStore) {
+        if let nextEvent = nextEvent(eventStore: eventStore) {
             let now = Date()
             let notificationTime = Double(Defaults[.joinEventNotificationTime].rawValue)
             let timeInterval = nextEvent.startDate.timeIntervalSince(now)
             let scriptNonAlldayCandidate = timeInterval > 0 && timeInterval < notificationTime
 
-            let startEndRange = nextEvent.startDate...nextEvent.endDate
+            let startEndRange = nextEvent.startDate ... nextEvent.endDate
             let scriptAllDayCandidate = nextEvent.isAllDay && startEndRange.contains(now)
 
             if scriptNonAlldayCandidate || scriptAllDayCandidate {
@@ -73,7 +73,7 @@ class Scripts: NSObject {
                 var alreadyExecuted = matchedEvent != nil
 
                 // if a script was executed already for the event, but the start date is different, we will remove the the current event from the scheduled events, so that we can run the script again -> this is an edge case when the event was already notified for, but scheduled for a later time.
-                if  alreadyExecuted && events[matchedEvent!].lastModifiedDate != nextEvent.lastModifiedDate {
+                if alreadyExecuted, events[matchedEvent!].lastModifiedDate != nextEvent.lastModifiedDate {
                     events.remove(at: matchedEvent!)
                     alreadyExecuted = false
                 }
@@ -91,7 +91,6 @@ class Scripts: NSObject {
             }
         }
     }
-
 
     /**
      * create the parameters for the apple event which can be used in the apple script.
@@ -197,7 +196,6 @@ class Scripts: NSObject {
         runMeetingStartsScript(event: sampleEvent, type: .meetingStart)
     }
 
-
     private func createParticipant(email: String) -> EKParticipant? {
         let clazz: AnyClass? = NSClassFromString("EKAttendee")
         if let type = clazz as? NSObject.Type {
@@ -207,7 +205,4 @@ class Scripts: NSObject {
         }
         return nil
     }
-
-
-    
 }

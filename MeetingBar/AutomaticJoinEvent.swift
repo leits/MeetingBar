@@ -6,10 +6,10 @@
 //  Copyright © 2022 Andrii Leitsius. All rights reserved.
 //
 
-import Foundation
 import Carbon
 import Defaults
 import EventKit
+import Foundation
 
 class AutomaticJoinEvent: NSObject {
     var eventStore: EKEventStore
@@ -42,31 +42,30 @@ class AutomaticJoinEvent: NSObject {
 
         NSLog("Firing reccuring runScriptsForAutomaticMeetingJoin")
 
-        if let nextEvent = nextEvent(eventStore:eventStore) {
+        if let nextEvent = nextEvent(eventStore: eventStore) {
             let now = Date()
             let notificationTime = Double(Defaults[.automaticEventJoinTime].rawValue)
             let timeInterval = nextEvent.startDate.timeIntervalSince(now)
             let scriptNonAlldayCandidate = timeInterval > 0 && timeInterval < notificationTime
 
-            let startEndRange = nextEvent.startDate...nextEvent.endDate
+            let startEndRange = nextEvent.startDate ... nextEvent.endDate
             let scriptAllDayCandidate = nextEvent.isAllDay && startEndRange.contains(now)
 
             if scriptNonAlldayCandidate || scriptAllDayCandidate {
                 var events = Defaults[.automaticJoinedEvents]
-                
+
                 let matchedEvent = events.firstIndex { $0.id == nextEvent.eventIdentifier }
 
                 // was a script for the event identified by id already scheduled?
                 var alreadyExecuted = matchedEvent != nil
 
                 // if a script was executed already for the event, but the start date is different, we will remove the the current event from the scheduled events, so that we can run the script again -> this is an edge case when the event was already notified for, but scheduled for a later time.
-                if  alreadyExecuted && events[matchedEvent!].lastModifiedDate != nextEvent.lastModifiedDate {
+                if alreadyExecuted, events[matchedEvent!].lastModifiedDate != nextEvent.lastModifiedDate {
                     events.remove(at: matchedEvent!)
                     alreadyExecuted = false
                 }
 
                 if !alreadyExecuted {
-                
                     openEvent(nextEvent)
 
                     // append the new event to already executed events
@@ -79,5 +78,4 @@ class AutomaticJoinEvent: NSObject {
             }
         }
     }
-    
 }

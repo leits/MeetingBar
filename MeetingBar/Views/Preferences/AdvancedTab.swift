@@ -73,6 +73,7 @@ struct ScriptSection: View {
                 }
         }
     }
+
     /**
      * triggers a sample script
      */

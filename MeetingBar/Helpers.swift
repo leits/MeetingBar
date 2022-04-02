@@ -10,7 +10,6 @@ import Cocoa
 import Defaults
 import EventKit
 
-
 struct EventWithDate {
     let event: EKEvent
     let dateSection: Date
@@ -26,7 +25,6 @@ struct Bookmark: Encodable, Decodable, Hashable {
     var service: MeetingServices
     var url: String
 }
-
 
 struct Event: Encodable, Decodable, Hashable {
     var id: String
