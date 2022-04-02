@@ -25,16 +25,34 @@ class AutomaticJoinEvent: NSObject {
     * - All day events will be reported the first time when the current time is within the timeframe of the allday event (which can be several days).
     */
     func scheduleRunScriptForAutomaticMeetingJoin() {
-        let timer = Timer(timeInterval: 10 * 1, target: self, selector: #selector(runScriptsForAutomaticMeetingJoin), userInfo: nil, repeats: true)
+        let timer = Timer(timeInterval: 30 * 1, target: self, selector: #selector(runScriptsForAutomaticMeetingJoin), userInfo: nil, repeats: true)
         RunLoop.current.add(timer, forMode: .common)
     }
 
     /**
+     * cleanup the passed events from the
+     */
+    private func cleanupPassedEvents() {
+        let eventCleanupCandidates = Defaults[.automaticJoinedEvents]
+        var cleanedEvents: [Event] = []
+
+        for event in eventCleanupCandidates {
+            if event.eventEndDate.timeIntervalSinceNow > 0 {
+                cleanedEvents.append(event)
+            }
+        }
+
+        Defaults[.automaticJoinedEvents] = cleanedEvents
+    }
+
+    /**
      *
-     * automatically join meetings by
+     * automatically join meetings by open the event in the configured application
      */
     @objc
     private func runScriptsForAutomaticMeetingJoin() {
+        cleanupPassedEvents()
+
         // only run if the user has activated it.
         if !Defaults[.automaticEventJoin] {
             return
@@ -70,7 +88,8 @@ class AutomaticJoinEvent: NSObject {
 
                     // append the new event to already executed events
                     events.append(Event(id: nextEvent.eventIdentifier,
-                                        lastModifiedDate: nextEvent.lastModifiedDate!))
+                                        lastModifiedDate: nextEvent.lastModifiedDate!,
+                                        eventEndDate: nextEvent.endDate!))
 
                     // save the executed events again
                     Defaults[.automaticJoinedEvents] = events

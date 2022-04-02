@@ -43,12 +43,30 @@ class Scripts: NSObject {
     }
 
     /**
+     * cleanup the passed events from the
+     */
+    private func cleanupPassedEvents() {
+        let eventCleanupCandidates = Defaults[.processedEvents]
+        var cleanedEvents: [Event] = []
+
+        for event in eventCleanupCandidates {
+            if event.eventEndDate.timeIntervalSinceNow > 0 {
+                cleanedEvents.append(event)
+            }
+        }
+
+        Defaults[.automaticJoinedEvents] = cleanedEvents
+    }
+
+    /**
      *
      * We will store the already executed events in the userdefaults as event array. The event contains the unique id and the last modified date of the event.
      * If the last modified date has changed, e.g. to shift the appointment to another time, we will execute the apple script again
      */
     @objc
     private func runScriptsForMeetingStart() {
+        cleanupPassedEvents()
+
         // only run if the user has activated it.
         if !Defaults[.runAutomaticEventScript] {
             return
@@ -58,6 +76,7 @@ class Scripts: NSObject {
 
         if let nextEvent = nextEvent(eventStore: eventStore) {
             let now = Date()
+
             let notificationTime = Double(Defaults[.joinEventNotificationTime].rawValue)
             let timeInterval = nextEvent.startDate.timeIntervalSince(now)
             let scriptNonAlldayCandidate = timeInterval > 0 && timeInterval < notificationTime
@@ -83,7 +102,7 @@ class Scripts: NSObject {
 
                     // append the new event to already executed events
                     events.append(Event(id: nextEvent.eventIdentifier,
-                                        lastModifiedDate: nextEvent.lastModifiedDate!))
+                                        lastModifiedDate: nextEvent.lastModifiedDate!, eventEndDate: nextEvent.endDate))
 
                     // save the executed events again
                     Defaults[.processedEvents] = events

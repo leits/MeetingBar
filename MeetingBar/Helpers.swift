@@ -29,6 +29,7 @@ struct Bookmark: Encodable, Decodable, Hashable {
 struct Event: Encodable, Decodable, Hashable {
     var id: String
     var lastModifiedDate: Date
+    var eventEndDate: Date
 }
 
 /**
