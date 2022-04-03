@@ -144,7 +144,7 @@
 "preferences_advanced_wrong_location_message" = "Veuillez sélectionner le dossier Utilisateur → Bibliothèque → Scripts d'application → leits.MeetingBar";
 "preferences_advanced_wrong_location_title" = "Mauvais emplacement";
 "preferences_advanced_save_script_button" = "Enregistrer le script";
-"preferences_advanced_apple_script_placeholder" = "# écrire votre script ici\ndites à l'application « Musique » de se mettre en pause";
+"preferences_advanced_apple_script_placeholder" = "# écrire votre script ici\ntell application \"Music\" to pause";
 "preferences_advanced_apple_script_checkmark" = "Exécuter AppleScript lors de la participation à une réunion";
 
 // MARK: - Preferences Advanced

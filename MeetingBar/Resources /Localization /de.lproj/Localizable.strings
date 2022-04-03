@@ -186,7 +186,7 @@
 "preferences_advanced_wrong_location_message" = "Bitte wählen Sie den Ordner Benutzer → Bibliothek → Anwendungsskripte → leits.MeetingBar";
 "preferences_advanced_wrong_location_title" = "Falscher Ort";
 "preferences_advanced_save_script_button" = "Skript speichern";
-"preferences_advanced_apple_script_placeholder" = "# Schreibe Dein Skript hier\nAnwendung „Musik“ zum Anhalten auffordern";
+"preferences_advanced_apple_script_placeholder" = "# Schreibe Dein Skript hier\ntell application \"Music\" to pause";
 "preferences_advanced_apple_script_checkmark" = "AppleScript beim Betreten eines Meetings ausführen";
 
 // MARK: - Preferences Advanced
