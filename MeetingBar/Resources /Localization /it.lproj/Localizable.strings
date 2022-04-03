@@ -13,7 +13,6 @@
 "general_delete" = "Elimina";
 "general_save" = "Salva";
 "general_meeting" = "Riunione";
-
 "create_meeting_error_title" = "Non posso creare una nuova riunione";
 "create_meeting_error_message" = "URL personalizzato \"%@\" mancante o invalido. Aggiungine uno nelle preferenze dell'app.";
 "next_meeting_empty_title" = "Non ci sono riunioni oggi";
@@ -170,7 +169,7 @@
 
 "preferences_advanced_setting_warning" = "⚠️ Usa queste impostazioni solo se capisci cosa fanno";
 "preferences_advanced_apple_script_checkmark" = "Esegui AppleScript quando ti unisci a una riunione";
-"preferences_advanced_apple_script_placeholder" = "# scrivi il tuo script qui\nchiedi all'applicazione \"Music\" di mettere in pausa";
+"preferences_advanced_apple_script_placeholder" = "# scrivi il tuo script qui\ntell application \"Music\" to pause";
 "preferences_advanced_save_script_button" = "Salva script";
 "preferences_advanced_wrong_location_title" = "Posizione sbagliata";
 "preferences_advanced_wrong_location_message" = "Selezionare la cartella Utente → Libreria → Script dell'applicazione → leits.MeetingBar";
@@ -275,14 +274,12 @@
 
 // MARK: - Constants
 "constants_create_meeting_service_url" = "URL personale";
-
 "constants_meeting_service_phone" = "Numero di telefono";
 "constants_meeting_service_zoom_native" = "Zoom nativo";
 "constants_meeting_service_skype4biz" = "Skype per Business";
 "constants_meeting_service_skype4biz_selfhosted" = "Skype per Business (SH)";
 "constants_meeting_service_other" = "Altro";
 "constants_meeting_service_url" = "URL";
-
 "constants_browser_brave" = "Brave";
 "constants_browser_chrome" = "Google Chrome";
 "constants_browser_chromium" = "Chromium";
