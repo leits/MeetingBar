@@ -501,63 +501,40 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                     }
                 }
             }
-        case "SNOOZE_UNTIL_START_TIME", UNNotificationDefaultActionIdentifier:
-            if response.notification.request.content.categoryIdentifier == "EVENT" || response.notification.request.content.categoryIdentifier == "SNOOZE_EVENT" {
-                if let eventID = response.notification.request.content.userInfo["eventID"] {
-                    // built-in method EKEventStore.event(withIdentifier:) is broken
-                    // temporary allow to open only the last event
-                    if let nextEvent = statusBarItem.eventStore.getNextEvent(calendars: statusBarItem.calendars) {
-                        if nextEvent.eventIdentifier == (eventID as! String) {
-                            NSLog("Snooze event until start")
-                            snoozeEventNotification(nextEvent, .untilStart)
-                        }
-                    }
-                }
-            }
-        case "SNOOZE_5_MIN", UNNotificationDefaultActionIdentifier:
-            if response.notification.request.content.categoryIdentifier == "EVENT" || response.notification.request.content.categoryIdentifier == "SNOOZE_EVENT" {
-                if let eventID = response.notification.request.content.userInfo["eventID"] {
-                    // built-in method EKEventStore.event(withIdentifier:) is broken
-                    // temporary allow to open only the last event
-                    if let nextEvent = statusBarItem.eventStore.getNextEvent(calendars: statusBarItem.calendars) {
-                        if nextEvent.eventIdentifier == (eventID as! String) {
-                            NSLog("Snooze event for 5 mins")
-                            snoozeEventNotification(nextEvent, .fiveMinuteLater)
-                        }
-                    }
-                }
-            }
-        case "SNOOZE_15_MIN", UNNotificationDefaultActionIdentifier:
-            if response.notification.request.content.categoryIdentifier == "EVENT" || response.notification.request.content.categoryIdentifier == "SNOOZE_EVENT" {
-                if let eventID = response.notification.request.content.userInfo["eventID"] {
-                    // built-in method EKEventStore.event(withIdentifier:) is broken
-                    // temporary allow to open only the last event
-                    if let nextEvent = statusBarItem.eventStore.getNextEvent(calendars: statusBarItem.calendars) {
-                        if nextEvent.eventIdentifier == (eventID as! String) {
-                            NSLog("Snooze event for 15 mins")
-                            snoozeEventNotification(nextEvent, .fifteenMinuteLater)
-                        }
-                    }
-                }
-            }
-        case "SNOOZE_30_MIN", UNNotificationDefaultActionIdentifier:
-            if response.notification.request.content.categoryIdentifier == "EVENT" || response.notification.request.content.categoryIdentifier == "SNOOZE_EVENT" {
-                if let eventID = response.notification.request.content.userInfo["eventID"] {
-                    // built-in method EKEventStore.event(withIdentifier:) is broken
-                    // temporary allow to open only the last event
-                    if let nextEvent = statusBarItem.eventStore.getNextEvent(calendars: statusBarItem.calendars) {
-                        if nextEvent.eventIdentifier == (eventID as! String) {
-                            NSLog("Snooze event for 30 mins")
-                            snoozeEventNotification(nextEvent, .thirtyMinuteLater)
-                        }
-                    }
-                }
-            }
+        case NotificationEventTimeAction.untilStart.rawValue, UNNotificationDefaultActionIdentifier:
+            handleSnoozeEvent(response, NotificationEventTimeAction.untilStart)
+        case NotificationEventTimeAction.fiveMinuteLater.rawValue, UNNotificationDefaultActionIdentifier:
+            handleSnoozeEvent(response, NotificationEventTimeAction.fiveMinuteLater)
+        case NotificationEventTimeAction.tenMinuteLater.rawValue, UNNotificationDefaultActionIdentifier:
+            handleSnoozeEvent(response, NotificationEventTimeAction.tenMinuteLater)
+        case NotificationEventTimeAction.fifteenMinuteLater.rawValue, UNNotificationDefaultActionIdentifier:
+            handleSnoozeEvent(response, NotificationEventTimeAction.fifteenMinuteLater)
+        case NotificationEventTimeAction.thirtyMinuteLater.rawValue, UNNotificationDefaultActionIdentifier:
+            handleSnoozeEvent(response, NotificationEventTimeAction.thirtyMinuteLater)
         default:
             break
         }
 
         completionHandler()
+    }
+    
+    func handleSnoozeEvent(_ response: UNNotificationResponse, _ action: NotificationEventTimeAction) {
+        if response.notification.request.content.categoryIdentifier == "EVENT" || response.notification.request.content.categoryIdentifier == "SNOOZE_EVENT" {
+            if let eventID = response.notification.request.content.userInfo["eventID"] {
+                // built-in method EKEventStore.event(withIdentifier:) is broken
+                // temporary allow to open only the last event
+                if let nextEvent = statusBarItem.eventStore.getNextEvent(calendars: statusBarItem.calendars) {
+                    if nextEvent.eventIdentifier == (eventID as! String) {
+                        if action.durationInSeconds == 0 {
+                            NSLog("Snooze event until start")
+                        } else {
+                            NSLog("Snooze event for \(action.durationInMins) mins")
+                        }
+                        snoozeEventNotification(nextEvent, action)
+                    }
+                }
+            }
+        }
     }
 
     @objc

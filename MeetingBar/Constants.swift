@@ -263,11 +263,31 @@ enum JoinEventNotificationTime: Int, Codable {
     case fiveMinuteBefore = 300
 }
 
-enum SnoozeEventNotificationTime: Int, Codable {
-    case untilStart = 0
-    case fiveMinuteLater = 300
-    case fifteenMinuteLater = 900
-    case thirtyMinuteLater = 3600
+enum NotificationEventTimeAction: String, Codable {
+    case untilStart = "SNOOZE_UNTIL_START_TIME"
+    case fiveMinuteLater = "SNOOZE_FOR_5_MIN"
+    case tenMinuteLater = "SNOOZE_FOR_10_MIN"
+    case fifteenMinuteLater = "SNOOZE_FOR_15_MIN"
+    case thirtyMinuteLater = "SNOOZE_FOR_30_MIN"
+    
+    var durationInSeconds: Int {
+        switch self {
+        case .untilStart:
+            return 0
+        case .fiveMinuteLater:
+            return 300
+        case .tenMinuteLater:
+            return 600
+        case .fifteenMinuteLater:
+            return 900
+        case .thirtyMinuteLater:
+            return 1800
+        }
+    }
+    
+    var durationInMins: Int {
+        return self.durationInSeconds / 60
+    }
 }
 
 enum UtilsRegex {

@@ -21,30 +21,34 @@ func registerNotificationCategories() {
                                             title: "Join",
                                             options: .foreground)
 
-    let snoozeUntilStartTime = UNNotificationAction(identifier: "SNOOZE_UNTIL_START_TIME",
+    let snoozeUntilStartTime = UNNotificationAction(identifier: NotificationEventTimeAction.untilStart.rawValue,
                                                     title: "Snooze until start time",
                                                     options: .foreground)
 
-    let snooze5Min = UNNotificationAction(identifier: "SNOOZE_5_MIN",
-                                          title: "Snooze for 5 min",
+    let snooze5Min = UNNotificationAction(identifier: NotificationEventTimeAction.fiveMinuteLater.rawValue,
+                                          title: "Snooze for \(NotificationEventTimeAction.fiveMinuteLater.durationInMins) min",
+                                          options: .foreground)
+    
+    let snooze10Min = UNNotificationAction(identifier: NotificationEventTimeAction.tenMinuteLater.rawValue,
+                                          title: "Snooze for \(NotificationEventTimeAction.tenMinuteLater.durationInMins) min",
                                           options: .foreground)
 
-    let snooze15Min = UNNotificationAction(identifier: "SNOOZE_15_MIN",
-                                           title: "Snooze for 15 min",
+    let snooze15Min = UNNotificationAction(identifier: NotificationEventTimeAction.fifteenMinuteLater.rawValue,
+                                           title: "Snooze for \(NotificationEventTimeAction.fifteenMinuteLater.durationInMins) min",
                                            options: .foreground)
 
-    let snooze30Min = UNNotificationAction(identifier: "SNOOZE_30_MIN",
-                                           title: "Snooze for 30 min",
+    let snooze30Min = UNNotificationAction(identifier: NotificationEventTimeAction.thirtyMinuteLater.rawValue,
+                                           title: "Snooze for \(NotificationEventTimeAction.thirtyMinuteLater.durationInMins) min",
                                            options: .foreground)
 
     let eventCategory = UNNotificationCategory(identifier: "EVENT",
-                                               actions: [acceptAction, snooze5Min, snooze15Min, snooze30Min, snoozeUntilStartTime],
+                                               actions: [acceptAction, snoozeUntilStartTime, snooze5Min, snooze10Min, snooze15Min, snooze30Min],
                                                intentIdentifiers: [],
                                                hiddenPreviewsBodyPlaceholder: "",
                                                options: [.customDismissAction, .hiddenPreviewsShowTitle])
 
     let snoozeEventCategory = UNNotificationCategory(identifier: "SNOOZE_EVENT",
-                                                     actions: [acceptAction, snooze5Min, snooze15Min, snooze30Min],
+                                                     actions: [acceptAction, snooze5Min, snooze10Min, snooze15Min, snooze30Min],
                                                      intentIdentifiers: [],
                                                      hiddenPreviewsBodyPlaceholder: "",
                                                      options: [.customDismissAction, .hiddenPreviewsShowTitle])
@@ -176,13 +180,13 @@ func scheduleEventNotification(_ event: EKEvent) {
     }
 }
 
-func snoozeEventNotification(_ event: EKEvent, _ interval: SnoozeEventNotificationTime) {
+func snoozeEventNotification(_ event: EKEvent, _ interval: NotificationEventTimeAction) {
     requestNotificationAuthorization() // By the apple best practices
     removePendingNotificationRequests()
 
     let now = Date()
     let center = UNUserNotificationCenter.current()
-    var timeInterval = Double(interval.rawValue)
+    var timeInterval = Double(interval.durationInSeconds)
     let content = UNMutableNotificationContent()
 
     if Defaults[.hideMeetingTitle] {
