@@ -14,24 +14,6 @@ struct JoinEventNotificationPicker: View {
     @Default(.joinEventNotification) var joinEventNotification
     @Default(.joinEventNotificationTime) var joinEventNotificationTime
 
-    func checkNotificationSettings() -> (Bool, Bool) {
-        var noAlertStyle = false
-        var notificationsDisabled = false
-
-        let center = UNUserNotificationCenter.current()
-        let group = DispatchGroup()
-        group.enter()
-
-        center.getNotificationSettings { notificationSettings in
-            noAlertStyle = notificationSettings.alertStyle != UNAlertStyle.alert
-            notificationsDisabled = notificationSettings.authorizationStatus == UNAuthorizationStatus.denied
-            group.leave()
-        }
-
-        group.wait()
-        return (noAlertStyle, notificationsDisabled)
-    }
-
     var body: some View {
         HStack {
             Toggle("shared_send_notification_toggle".loco(), isOn: $joinEventNotification)
@@ -52,6 +34,24 @@ struct JoinEventNotificationPicker: View {
             Text("shared_send_notification_disabled_tip".loco()).foregroundColor(Color.gray).font(.system(size: 12))
         }
     }
+}
+
+func checkNotificationSettings() -> (Bool, Bool) {
+    var noAlertStyle = false
+    var notificationsDisabled = false
+
+    let center = UNUserNotificationCenter.current()
+    let group = DispatchGroup()
+    group.enter()
+
+    center.getNotificationSettings { notificationSettings in
+        noAlertStyle = notificationSettings.alertStyle != UNAlertStyle.alert
+        notificationsDisabled = notificationSettings.authorizationStatus == UNAuthorizationStatus.denied
+        group.leave()
+    }
+
+    group.wait()
+    return (noAlertStyle, notificationsDisabled)
 }
 
 struct LaunchAtLoginANDPreferredLanguagePicker: View {

@@ -28,9 +28,24 @@ func registerNotificationCategories() {
                                hiddenPreviewsBodyPlaceholder: "",
                                options: [.customDismissAction, .hiddenPreviewsShowTitle])
 
+    let stopNotificationAction = UNNotificationAction(identifier: "STOP_ACTION",
+                                                      title: "Stop notifications",
+                                                      options: .foreground)
+
+    let openPreferencesAction = UNNotificationAction(identifier: "OPEN_PREFERENCES",
+                                                     title: "Open Preferences",
+                                                     options: .foreground)
+
+    let notificationsCategory =
+        UNNotificationCategory(identifier: "STATUSBAR",
+                               actions: [openPreferencesAction, stopNotificationAction],
+                               intentIdentifiers: [],
+                               hiddenPreviewsBodyPlaceholder: "",
+                               options: [.customDismissAction, .hiddenPreviewsShowTitle])
+
     let notificationCenter = UNUserNotificationCenter.current()
 
-    notificationCenter.setNotificationCategories([eventCategory])
+    notificationCenter.setNotificationCategories([eventCategory, notificationsCategory])
 
     notificationCenter.getNotificationCategories { categories in
         for category in categories {
@@ -39,7 +54,7 @@ func registerNotificationCategories() {
     }
 }
 
-func sendUserNotification(_ title: String, _ text: String) {
+func sendUserNotification(_ title: String, _ text: String, _ categoryIdentier: String?) {
     requestNotificationAuthorization() // By the apple best practices
 
     NSLog("Send notification: \(title) - \(text)")
@@ -48,8 +63,19 @@ func sendUserNotification(_ title: String, _ text: String) {
     let content = UNMutableNotificationContent()
     content.title = title
     content.body = text
+    if categoryIdentier != nil {
+        content.categoryIdentifier = categoryIdentier!
+    }
 
-    let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
+    let identifier: String
+    if categoryIdentier != nil {
+        identifier = categoryIdentier!
+    } else {
+        identifier = UUID().uuidString
+    }
+
+    let request = UNNotificationRequest(identifier: identifier, content: content, trigger: nil)
+    UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: [identifier])
 
     center.add(request) { error in
         if let error = error {
@@ -88,7 +114,7 @@ func sendNotification(_ title: String, _ text: String) {
     requestNotificationAuthorization() // By the apple best practices
 
     if notificationsEnabled() {
-        sendUserNotification(title, text)
+        sendUserNotification(title, text, nil)
     } else {
         displayAlert(title: title, text: text)
     }
