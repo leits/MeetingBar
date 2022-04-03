@@ -95,6 +95,7 @@ struct ChangelogView: View {
                 }
                 if compareVersions("3.11.0", lastRevisedVersionInChangelog) {
                     Section(header: Text("Version 3.11.0")) {
+                        Text("• Added integration with Pop")
                         Text("😴 Added feature to snooze the notification")
                     }
                 }

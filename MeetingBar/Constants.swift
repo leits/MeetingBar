@@ -70,6 +70,7 @@ struct LinksRegex {
     let vimeo_showcases = try! NSRegularExpression(pattern: #"https://vimeo\.com/showcase/[0-9]+"#)
     let ovice = try! NSRegularExpression(pattern: #"https://([a-z0-9-.]+)?ovice\.in/[^\s]*"#)
     let facetime = try! NSRegularExpression(pattern: #"https://facetime\.apple\.com/join[^\s]*"#)
+    let pop = try! NSRegularExpression(pattern: #"https?://pop.com/j/[0-9-]+"#)
 }
 
 enum CreateMeetingLinks {
@@ -161,6 +162,7 @@ enum MeetingServices: String, Codable, CaseIterable {
     case feishu = "Feishu"
     case vimeo_showcases = "Vimeo Showcases"
     case ovice = "oVice"
+    case pop = "Pop"
     case other = "Other"
 
     var localizedValue: String {
