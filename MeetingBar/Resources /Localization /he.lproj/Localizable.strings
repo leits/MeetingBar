@@ -114,7 +114,7 @@
 "preferences_calendars_add_account_description" = "לוחות השנה שדרושים לך לא נמצאים?";
 "preferences_calendars_add_account_button" = "הוספת חשבון";
 "preferences_advanced_apple_script_checkmark" = "להפעיל AppleScript בעת הצטרפות לפגישה";
-"preferences_advanced_apple_script_placeholder" = "# write your script here\ntell application \"Music\" to pause";
+"preferences_advanced_apple_script_placeholder" = "# כאן ניתן לכתוב את הסקריפט שלך\ntell application \"Music\" to pause";
 "preferences_advanced_save_script_button" = "שמירת הסקריפט";
 "preferences_advanced_wrong_location_title" = "מיקום שגוי";
 
