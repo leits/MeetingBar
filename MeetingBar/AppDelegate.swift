@@ -517,7 +517,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
         completionHandler()
     }
-    
+
     func handleSnoozeEvent(_ response: UNNotificationResponse, _ action: NotificationEventTimeAction) {
         if response.notification.request.content.categoryIdentifier == "EVENT" || response.notification.request.content.categoryIdentifier == "SNOOZE_EVENT" {
             if let eventID = response.notification.request.content.userInfo["eventID"] {

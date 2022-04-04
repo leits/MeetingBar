@@ -275,7 +275,7 @@ enum NotificationEventTimeAction: String, Codable {
     case tenMinuteLater = "SNOOZE_FOR_10_MIN"
     case fifteenMinuteLater = "SNOOZE_FOR_15_MIN"
     case thirtyMinuteLater = "SNOOZE_FOR_30_MIN"
-    
+
     var durationInSeconds: Int {
         switch self {
         case .untilStart:
@@ -290,9 +290,9 @@ enum NotificationEventTimeAction: String, Codable {
             return 1800
         }
     }
-    
+
     var durationInMins: Int {
-        return self.durationInSeconds / 60
+        return durationInSeconds / 60
     }
 }
 
