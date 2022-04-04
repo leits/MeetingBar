@@ -78,7 +78,7 @@
 "status_bar_section_join_current_meeting" = "Join current event meeting";
 "preferences_advanced_regex_title" = "Egendefinerte regulære uttrykk for møtelenke";
 "preferences_advanced_wrong_location_message" = "Velg Bruker → Bibliotek → Programskript → leits.MeetingBar-mappen";
-"preferences_advanced_apple_script_placeholder" = "# skriv ditt skript her\nfortell programmet «Musikk» at det skal ta pause";
+"preferences_advanced_apple_script_placeholder" = "# skriv ditt skript her\ntell application \"Music\" to pause";
 "preferences_advanced_apple_script_checkmark" = "Kjør AppleScript når du tar del i møtet";
 "preferences_advanced_event_regex_title" = "Custom regexes to filter out meetings";
 

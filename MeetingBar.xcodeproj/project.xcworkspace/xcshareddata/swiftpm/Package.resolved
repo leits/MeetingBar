@@ -1,34 +1,32 @@
 {
-  "object": {
-    "pins": [
-      {
-        "package": "Defaults",
-        "repositoryURL": "https://github.com/sindresorhus/Defaults",
-        "state": {
-          "branch": null,
-          "revision": "229dea452fee8d2205f56a12e5c21dfec00948f2",
-          "version": "4.2.2"
-        }
-      },
-      {
-        "package": "KeyboardShortcuts",
-        "repositoryURL": "https://github.com/sindresorhus/KeyboardShortcuts",
-        "state": {
-          "branch": null,
-          "revision": "9bc72c441c713362a137ecbb4104920655a9aa5e",
-          "version": "1.4.0"
-        }
-      },
-      {
-        "package": "SwiftyStoreKit",
-        "repositoryURL": "https://github.com/bizz84/SwiftyStoreKit.git",
-        "state": {
-          "branch": null,
-          "revision": "9ce911639680113dac9b554d6243e406a9758ebe",
-          "version": "0.16.4"
-        }
+  "pins" : [
+    {
+      "identity" : "defaults",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/sindresorhus/Defaults",
+      "state" : {
+        "revision" : "229dea452fee8d2205f56a12e5c21dfec00948f2",
+        "version" : "4.2.2"
       }
-    ]
-  },
-  "version": 1
+    },
+    {
+      "identity" : "keyboardshortcuts",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/sindresorhus/KeyboardShortcuts",
+      "state" : {
+        "revision" : "9bc72c441c713362a137ecbb4104920655a9aa5e",
+        "version" : "1.4.0"
+      }
+    },
+    {
+      "identity" : "swiftystorekit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/bizz84/SwiftyStoreKit.git",
+      "state" : {
+        "revision" : "9ce911639680113dac9b554d6243e406a9758ebe",
+        "version" : "0.16.4"
+      }
+    }
+  ],
+  "version" : 2
 }
