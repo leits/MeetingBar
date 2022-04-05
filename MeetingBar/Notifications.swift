@@ -28,10 +28,10 @@ func registerNotificationCategories() {
     let snooze5Min = UNNotificationAction(identifier: NotificationEventTimeAction.fiveMinuteLater.rawValue,
                                           title: "Snooze for \(NotificationEventTimeAction.fiveMinuteLater.durationInMins) min",
                                           options: .foreground)
-    
+
     let snooze10Min = UNNotificationAction(identifier: NotificationEventTimeAction.tenMinuteLater.rawValue,
-                                          title: "Snooze for \(NotificationEventTimeAction.tenMinuteLater.durationInMins) min",
-                                          options: .foreground)
+                                           title: "Snooze for \(NotificationEventTimeAction.tenMinuteLater.durationInMins) min",
+                                           options: .foreground)
 
     let snooze15Min = UNNotificationAction(identifier: NotificationEventTimeAction.fifteenMinuteLater.rawValue,
                                            title: "Snooze for \(NotificationEventTimeAction.fifteenMinuteLater.durationInMins) min",
