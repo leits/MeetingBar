@@ -54,7 +54,7 @@ func registerNotificationCategories() {
     }
 }
 
-func sendUserNotification(_ title: String, _ text: String, _ categoryIdentier: String?) {
+func sendUserNotification(_ title: String, _ text: String, _ categoryIdentier: String? = nil) {
     requestNotificationAuthorization() // By the apple best practices
 
     NSLog("Send notification: \(title) - \(text)")

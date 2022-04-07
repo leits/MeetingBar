@@ -46,8 +46,8 @@
 "preferences_general_shortcut_join_next" = "Join next meeting:";
 "preferences_general_shortcut_join_from_clipboard" = "Join meeting from clipboard:";
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "Toggle title visibility in status bar:";
-"preferences_general_hidden_notification_toggle" = "Notify about hidden meetingbar in status bar";
-"preferences_general_hidden_notification_toggle_tip" = "The status bar in macos has only space for a specific amount of app icons. If there are too many icons to be displayed, some apps will disappear automatically.";
+"preferences_general_hidden_notification_toggle" = "Notify if menu bar icon becomes invisible.";
+"preferences_general_hidden_notification_toggle_tip" = "The menu bar in macOS has only space for a certain amount of app icons. If there are too many icons, some apps will disappear automatically.";
 "preferences_general_meeting_bar_description" = "MeetingBar is an open-source app created by Andrii Leitsius\nFor smoother and easier online meetings";
 "preferences_general_external_patronage" = "Patronage";
 "preferences_general_external_gitHub" = "GitHub";
@@ -316,8 +316,8 @@
 "notifications_event_start_one_minute_body" = "The event starts in one minute";
 "notifications_event_start_three_minutes_body" = "The event starts in three minutes";
 "notifications_event_start_five_minutes_body" = "The event starts in five minutes";
-"notifications_meetingbar_invisible_title" = "Meetingbar invisible now";
-"notifications_meetingbar_invisible_body" = "Meetingbar Menuitem is hidden due to low space in the status bar. You can adjust the settings around the status bar in the preference dialog under Appearance.";
+"notifications_meetingbar_invisible_title" = "MeetingBar became invisible";
+"notifications_meetingbar_invisible_body" = "The menu bar entry has been hidden by macOS because there is not enough space to display it. You can adjust the size of the menu bar entry in the preferences.";
 
 
 // MARK: - Link open
