@@ -22,6 +22,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     var statusBarItem: StatusBarItemController!
     var eventStore: EventStore!
 
+    var eventStoreProviderObserver: DefaultsObservation?
     var selectedCalendarIDsObserver: DefaultsObservation?
 
     var launchAtLoginObserver: DefaultsObservation?
@@ -49,31 +50,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             Defaults[.appVersion] = appVersion
         }
 
-        if true {
-            eventStore = GCEventStore.shared
-
-            NSAppleEventManager.shared().setEventHandler(self, andSelector: #selector(handleURLEvent(getURLEvent:replyEvent:)), forEventClass: AEEventClass(kInternetEventClass), andEventID: AEEventID(kAEGetURL))
-        } else {
-            eventStore = EKEventStore.shared
-
-            NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.eventStoreChanged), name: .EKEventStoreChanged, object: EKEventStore.shared)
-        }
-
-        if eventStore.isAuthed {
+        if Defaults[.onboardingCompleted] {
+            setEventStoreProvider(provider: Defaults[.eventStoreProvider])
             setup()
         } else {
-            Defaults[.selectedCalendarIDs] = []
-            setup()
-            _ = eventStore.signIn().done {
-                self.statusBarItem.loadCalendars()
-            }
+            openOnboardingWindow()
         }
-
-//        if Defaults[.onboardingCompleted], GCEventStore.shared.isAuthed {
-//            setup()
-//        } else {
-//            openOnboardingWindow()
-//        }
 
         // When our main application starts, we have to kill
         // the auto launcher application if it's still running.
@@ -99,7 +81,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         registerNotificationCategories()
         UNUserNotificationCenter.current().delegate = self
 
-        statusBarItem.loadCalendars()
+        _ = eventStore.signIn().done {
+            self.statusBarItem.loadCalendars()
+        }
 
         scheduleUpdateStatusBarItem()
         scheduleFetchEvents()
@@ -175,6 +159,23 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                     removePendingNotificationRequests()
                 }
             }
+        }
+    }
+
+    func setEventStoreProvider(provider: eventStoreProvider) {
+        Defaults[.eventStoreProvider] = provider
+        switch provider {
+        case .MacOSEventKit:
+            eventStore = EKEventStore.shared
+
+            NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.eventStoreChanged), name: .EKEventStoreChanged, object: EKEventStore.shared)
+
+            NSAppleEventManager.shared().removeEventHandler(forEventClass: AEEventClass(kInternetEventClass), andEventID: AEEventID(kAEGetURL))
+        case .GoogleCalendar:
+            eventStore = GCEventStore.shared
+
+            NotificationCenter.default.removeObserver(self, name: .EKEventStoreChanged, object: EKEventStore.shared)
+            NSAppleEventManager.shared().setEventHandler(self, andSelector: #selector(handleURLEvent(getURLEvent:replyEvent:)), forEventClass: AEEventClass(kInternetEventClass), andEventID: AEEventID(kAEGetURL))
         }
     }
 
@@ -318,8 +319,8 @@ extension AppDelegate {
     @objc
     func eventStoreChanged(_: NSNotification) {
         NSLog("Store changed. Update status bar menu.")
-        statusBarItem.updateTitle()
-        statusBarItem.updateMenu()
+        statusBarItem?.updateTitle()
+        statusBarItem?.updateMenu()
     }
 
     @objc

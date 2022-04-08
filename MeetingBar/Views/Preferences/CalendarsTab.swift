@@ -12,29 +12,28 @@ import SwiftUI
 import Defaults
 
 struct CalendarsTab: View {
-    @State var calendars: [MBCalendar] = []
+    @State var calendarsBySource: [String: [MBCalendar]] = [:]
     @State var showingAddAcountModal = false
 
+    let appDelegate = NSApplication.shared.delegate as! AppDelegate?
+
+    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+
     @Default(.selectedCalendarIDs) var selectedCalendarIDs
+    @Default(.eventStoreProvider) var eventStoreProvider
 
     var body: some View {
-        VStack {
+        VStack(alignment: .leading) {
             HStack {
                 Text("preferences_calendars_select_calendars_title".loco())
                 Spacer()
-                Button(action: self.loadCalendarList) {
-                    let image = Image(nsImage: NSImage(named: NSImage.refreshTemplateName)!)
-                    if #available(OSX 11.0, *) {
-                        image.offset(x: 0.0, y: 2.0)
-                    }
-                }
             }
-            VStack(alignment: .leading, spacing: 15) {
+            VStack(spacing: 15) {
                 Form {
-                    Section {
-                        List {
-                            Section(header: Text("Google Calendar API")) {
-                                ForEach(self.calendars, id: \.ID) { calendar in
+                    List {
+                        ForEach(Array(self.calendarsBySource.keys), id: \.self) { source in
+                            Section(header: Text(source)) {
+                                ForEach(self.calendarsBySource[source]!, id: \.ID) { calendar in
                                     CalendarRow(title: calendar.title, isSelected: self.selectedCalendarIDs.contains(calendar.ID), color: Color(calendar.color)) {
                                         if self.selectedCalendarIDs.contains(calendar.ID) {
                                             self.selectedCalendarIDs.removeAll { $0 == calendar.ID }
@@ -44,25 +43,55 @@ struct CalendarsTab: View {
                                     }
                                 }
                             }
-                        }.listStyle(SidebarListStyle())
-                    }
+                        }
+                    }.listStyle(SidebarListStyle())
                 }
             }.border(Color.gray)
-            HStack {
-                Text("preferences_calendars_add_account_description".loco())
-                Button("preferences_calendars_add_account_button".loco()) { self.showingAddAcountModal.toggle() }
-                    .sheet(isPresented: $showingAddAcountModal) {
-                        AddAccountModal()
+            Divider()
+
+            VStack(alignment: .leading) {
+                HStack {
+                    Text("Calendars source").font(.headline).bold()
+                }
+                HStack {
+                    if eventStoreProvider == .GoogleCalendar {
+                        Text("Google Calendar API")
+                        Button("Change Google Account") {
+                            _ = appDelegate!.eventStore.signOut().done {
+                                changeEventStoreProvider(.GoogleCalendar)
+                            }
+                        }
+                        Spacer()
+
+                        Button("Switch to MacOS Calendar") { changeEventStoreProvider(.MacOSEventKit) }
+                    } else if eventStoreProvider == .MacOSEventKit {
+                        Text("MacOS Calendar app")
+                        Button("preferences_calendars_add_account_button".loco()) { self.showingAddAcountModal.toggle() }
+                            .sheet(isPresented: $showingAddAcountModal) {
+                                AddAccountModal()
+                            }
+                        Spacer()
+                        Button("Switch to Google Calendar API") { changeEventStoreProvider(.GoogleCalendar) }
                     }
-                Spacer()
+                }.padding(.horizontal, 10)
             }
-        }.onAppear { self.loadCalendarList() }.padding()
+        }.onReceive(timer) { _ in loadCalendarList() }.padding()
+    }
+
+    func changeEventStoreProvider(_ provider: eventStoreProvider) {
+        selectedCalendarIDs = []
+        appDelegate!.statusBarItem.calendars = []
+        appDelegate!.statusBarItem.events = []
+
+        appDelegate!.setEventStoreProvider(provider: provider)
+
+        _ = appDelegate!.eventStore.signIn().done {
+            appDelegate!.statusBarItem.loadCalendars()
+        }
     }
 
     func loadCalendarList() {
-        if let app = NSApplication.shared.delegate as! AppDelegate? {
-            calendars = app.statusBarItem.calendars
-        }
+        calendarsBySource = Dictionary(grouping: appDelegate!.statusBarItem.calendars) { $0.source }
     }
 }
 

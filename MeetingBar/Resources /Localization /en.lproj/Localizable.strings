@@ -163,7 +163,7 @@
 
 "preferences_calendars_select_calendars_title" = "Select calendars to show events in status bar";
 "preferences_calendars_add_account_description" = "Can't find the calendar you need?";
-"preferences_calendars_add_account_button" = "Add account";
+"preferences_calendars_add_account_button" = "Add calendar account";
 "preferences_calendars_add_account_modal" = "To add external calendars:\n1. Open the default calendar app\n2. Click 'Add Account' in the menu\n3. Choose and connect your account";
 
 // MARK: - Preferences Advanced

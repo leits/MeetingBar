@@ -17,8 +17,14 @@ extension EKEventStore: EventStore {
     }
 
     func signIn() -> Promise<Void> {
-        Promise { _ in
-            EKEventStore().requestAccess(to: .event) { _, _ in }
+        Promise { seal in
+            EKEventStore.shared.requestAccess(to: .event) { granted, _ in
+                if granted {
+                    seal.fulfill(())
+                } else {
+                    seal.reject(NSError())
+                }
+            }
         }
     }
 
@@ -28,7 +34,6 @@ extension EKEventStore: EventStore {
 
     func fetchAllCalendars() -> Promise<[MBCalendar]> {
         Promise { seal in
-
             var allCalendars: [MBCalendar] = []
 
             for calendar in EKEventStore.shared.calendars(for: .event) {

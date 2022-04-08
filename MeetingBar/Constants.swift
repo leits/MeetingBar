@@ -11,6 +11,11 @@ import Cocoa
 var systemDefaultBrowser = Browser(name: "Default Browser", path: "")
 var MeetInOneBrowser = Browser(name: "MeetInOne", path: "")
 
+enum eventStoreProvider: String, Codable {
+    case MacOSEventKit = "MacOS Calendar App"
+    case GoogleCalendar = "Google Calendar API"
+}
+
 enum statusbarEventTitleLengthLimits {
     static let min = 5
     static let max = 55

@@ -45,8 +45,7 @@ class GCEventStore: NSObject, EventStore, OIDExternalUserAgent {
             loadState()
 
             guard let auth = self.auth else {
-                seal.reject(NSError(domain: "GoogleSignIn", code: 0, userInfo: nil))
-                return
+                return seal.fulfill([])
             }
 
             if let url = URL(string: "https://www.googleapis.com/calendar/v3/users/me/calendarList") {

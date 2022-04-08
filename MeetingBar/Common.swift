@@ -26,7 +26,7 @@ protocol EventStore {
 class MBCalendar: Hashable {
     let title: String
     let ID: String
-    let source: String?
+    let source: String
     let email: String?
     var selected: Bool = false
     let color: NSColor
@@ -34,7 +34,7 @@ class MBCalendar: Hashable {
     init(title: String, ID: String, source: String?, email: String?, color: NSColor) {
         self.title = title
         self.ID = ID
-        self.source = source
+        self.source = source ?? "unknown"
         self.email = email
         self.color = color
     }

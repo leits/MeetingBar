@@ -19,6 +19,7 @@ extension Defaults.Keys {
     static let calendarTitle = Key<String>("calendarTitle", default: "") // Backward compatibility
     static let selectedCalendars = Key<[String]>("selectedCalendars", default: []) // Backward compatibility
     static let selectedCalendarIDs = Key<[String]>("selectedCalendarIDs", default: [])
+    static let eventStoreProvider = Key<eventStoreProvider>("eventStoreProvider", default: .MacOSEventKit)
 
     static let onboardingCompleted = Key<Bool>("onboardingCompleted", default: false)
 
