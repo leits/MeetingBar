@@ -18,6 +18,8 @@ protocol EventStore {
 
     func signOut() -> Promise<Void>
 
+    func refreshSources()
+
     func fetchAllCalendars() -> Promise<[MBCalendar]>
 
     func fetchEventsForDateRange(calendars: [MBCalendar], dateFrom: Date, dateTo: Date) -> Promise<[MBEvent]>

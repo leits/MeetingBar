@@ -32,6 +32,10 @@ extension EKEventStore: EventStore {
         Promise { _ in }
     }
 
+    func refreshSources() {
+        EKEventStore.shared.refreshSourcesIfNecessary()
+    }
+
     func fetchAllCalendars() -> Promise<[MBCalendar]> {
         Promise { seal in
             var allCalendars: [MBCalendar] = []

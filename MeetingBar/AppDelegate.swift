@@ -310,10 +310,8 @@ extension AppDelegate {
 
     @objc
     func refreshSources() {
-//        TODO: fix refresh sources
-//        statusBarItem.eventStore.refreshSourcesIfNecessary()
-        statusBarItem.updateTitle()
-        statusBarItem.updateMenu()
+        eventStore.refreshSources()
+        statusBarItem.loadCalendars()
     }
 
     @objc
