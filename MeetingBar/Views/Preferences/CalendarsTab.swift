@@ -86,7 +86,9 @@ struct CalendarsTab: View {
         appDelegate!.setEventStoreProvider(provider: provider)
 
         _ = appDelegate!.eventStore.signIn().done {
-            appDelegate!.statusBarItem.loadCalendars()
+            DispatchQueue.main.async {
+                appDelegate!.statusBarItem.loadCalendars()
+            }
         }
     }
 

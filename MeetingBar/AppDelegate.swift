@@ -319,8 +319,10 @@ extension AppDelegate {
     @objc
     func eventStoreChanged(_: NSNotification) {
         NSLog("Store changed. Update status bar menu.")
-        statusBarItem?.updateTitle()
-        statusBarItem?.updateMenu()
+        DispatchQueue.main.async {
+            self.statusBarItem?.updateTitle()
+            self.statusBarItem?.updateMenu()
+        }
     }
 
     @objc
