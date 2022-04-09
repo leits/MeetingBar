@@ -18,7 +18,7 @@ struct MeetingLink: Equatable {
 struct Bookmark: Encodable, Decodable, Hashable {
     var name: String
     var service: MeetingServices
-    var url: String
+    var url: URL
 }
 
 /**

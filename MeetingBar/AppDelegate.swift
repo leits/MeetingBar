@@ -383,10 +383,7 @@ extension AppDelegate {
     func joinBookmark(sender: NSMenuItem) {
         NSLog("Called to join bookmark")
         if let bookmark: Bookmark = sender.representedObject as? Bookmark {
-            guard let url = URL(string: bookmark.url) else {
-                return
-            }
-            openMeetingURL(bookmark.service, url, nil)
+            openMeetingURL(bookmark.service, bookmark.url, nil)
         }
     }
 

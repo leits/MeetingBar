@@ -127,12 +127,17 @@ struct AddBookmarkModal: View {
                     Text("general_cancel".loco())
                 }
                 Button(action: {
-                    if let bookmark = bookmarks.first(where: { $0.url == url }) {
+                    if let bookmark = bookmarks.first(where: { $0.url.absoluteString == url }) {
                         error_msg = "preferences_bookmarks_new_bookmark_already_exist".loco(bookmark.name, url)
                         showingAlert = true
                     } else {
                         self.presentationMode.wrappedValue.dismiss()
-                        let bookmark = Bookmark(name: name, service: service, url: url)
+                        guard let bookmarkURL = URL(string: url) else {
+                            error_msg = "preferences_services_create_meeting_custom_url_placeholder".loco()
+                            showingAlert = true
+                            return
+                        }
+                        let bookmark = Bookmark(name: name, service: service, url: bookmarkURL)
                         bookmarks.append(bookmark)
                     }
                 }) {
