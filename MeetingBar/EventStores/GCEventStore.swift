@@ -1,5 +1,5 @@
 //
-//  GCal.swift
+//  GCEventStore.swift
 //  MeetingBar
 //
 //  Created by Andrii Leitsius on 21.11.2021.
@@ -18,11 +18,11 @@ let GoogleClientSecret = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_CLIENT
 let GoogleAuthKeychainName = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_AUTH_KEYCHAIN_NAME") as! String
 
 class GCEventStore: NSObject, EventStore, OIDExternalUserAgent {
-    static let kIssuer = "https://accounts.google.com"
-    static let kClientID = "\(GoogleClientNumber).apps.googleusercontent.com"
-    static let kClientSecret = GoogleClientSecret
-    static let kRedirectURI = "com.googleusercontent.apps.\(GoogleClientNumber):/oauthredirect"
-    static let AuthKeychainName = GoogleAuthKeychainName
+    private static let kIssuer = "https://accounts.google.com"
+    private static let kClientID = "\(GoogleClientNumber).apps.googleusercontent.com"
+    private static let kClientSecret = GoogleClientSecret
+    private static let kRedirectURI = "com.googleusercontent.apps.\(GoogleClientNumber):/oauthredirect"
+    private static let AuthKeychainName = GoogleAuthKeychainName
 
     var currentAuthorizationFlow: OIDExternalUserAgentSession?
 
@@ -88,7 +88,7 @@ class GCEventStore: NSObject, EventStore, OIDExternalUserAgent {
         }
     }
 
-    func getCalendarEventsForDateRange(calendar: MBCalendar, dateFrom: Date, dateTo: Date) -> Promise<[MBEvent]> {
+    private func getCalendarEventsForDateRange(calendar: MBCalendar, dateFrom: Date, dateTo: Date) -> Promise<[MBEvent]> {
         Promise { seal in
             guard let auth = self.auth else {
                 seal.reject(NSError(domain: "GoogleSignIn", code: 0, userInfo: nil))

@@ -10,11 +10,6 @@ import Cocoa
 import Defaults
 import EventKit
 
-struct MeetingLink: Equatable {
-    let service: MeetingServices?
-    var url: URL
-}
-
 struct Bookmark: Encodable, Decodable, Hashable {
     var name: String
     var service: MeetingServices
@@ -60,10 +55,6 @@ func getMatch(text: String, regex: NSRegularExpression) -> String? {
     return nil
 }
 
-func hasMatch(text: String, regex: NSRegularExpression) -> Bool {
-    regex.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)) != nil
-}
-
 func cleanUpNotes(_ notes: String) -> String {
     let zoomSeparator = "\n──────────"
     let meetSeparator = "-::~:~::~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~::~:~::-"
@@ -74,13 +65,26 @@ func cleanUpNotes(_ notes: String) -> String {
     return cleanNotes
 }
 
-func getRegexForService(_ service: MeetingServices) -> NSRegularExpression? {
-    let regexes = LinksRegex()
-    let mirror = Mirror(reflecting: regexes)
+func detectLink(_ rawText: String) -> MeetingLink? {
+    let text = cleanupOutlookSafeLinks(rawText: rawText)
 
-    for child in mirror.children {
-        if child.label == String(describing: service) {
-            return child.value as? NSRegularExpression
+    for pattern in Defaults[.customRegexes] {
+        if let regex = try? NSRegularExpression(pattern: pattern) {
+            if let link = getMatch(text: text, regex: regex) {
+                if let url = URL(string: link) {
+                    return MeetingLink(service: MeetingServices.other, url: url)
+                }
+            }
+        }
+    }
+
+    for service in MeetingServices.allCases {
+        if let regex = getRegexForMeetingService(service) {
+            if let link = getMatch(text: text, regex: regex) {
+                if let url = URL(string: link) {
+                    return MeetingLink(service: service, url: url)
+                }
+            }
         }
     }
     return nil
@@ -99,126 +103,6 @@ func getEmailAccount(_ source: String?) -> String? {
     return nil
 }
 
-func detectLink(_ rawText: String) -> MeetingLink? {
-    let text = cleanupOutlookSafeLinks(rawText: rawText)
-
-    for pattern in Defaults[.customRegexes] {
-        if let regex = try? NSRegularExpression(pattern: pattern) {
-            if let link = getMatch(text: text, regex: regex) {
-                if let url = URL(string: link) {
-                    return MeetingLink(service: MeetingServices.other, url: url)
-                }
-            }
-        }
-    }
-
-    for service in MeetingServices.allCases {
-        if let regex = getRegexForService(service) {
-            if let link = getMatch(text: text, regex: regex) {
-                if let url = URL(string: link) {
-                    return MeetingLink(service: service, url: url)
-                }
-            }
-        }
-    }
-    return nil
-}
-
-func openEvent(_ event: MBEvent) {
-    let eventTitle = event.title
-    if let meetingLink = event.meetingLink {
-        if Defaults[.runJoinEventScript], Defaults[.joinEventScriptLocation] != nil {
-            if let url = Defaults[.joinEventScriptLocation]?.appendingPathComponent("joinEventScript.scpt") {
-                let task = try! NSUserAppleScriptTask(url: url)
-                task.execute { error in
-                    if let error = error {
-                        sendNotification("status_bar_error_apple_script_title".loco(), error.localizedDescription)
-                    }
-                }
-            }
-        }
-        openMeetingURL(meetingLink.service, meetingLink.url, nil)
-    } else if let eventUrl = event.url {
-        eventUrl.openInDefaultBrowser()
-    } else {
-        sendNotification("status_bar_error_link_missed_title".loco(eventTitle), "status_bar_error_link_missed_message".loco())
-    }
-}
-
-func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?) {
-    switch service {
-    case .jitsi:
-        if Defaults[.useAppForJitsiLinks] {
-            var jitsiAppUrl = URLComponents(url: url, resolvingAgainstBaseURL: false)!
-            jitsiAppUrl.scheme = "jitsi-meet"
-            let result = jitsiAppUrl.url!.openInDefaultBrowser()
-            if !result {
-                sendNotification("status_bar_error_jitsi_link_title".loco(), "status_bar_error_jitsi_link_message".loco())
-                url.openInDefaultBrowser()
-            }
-        } else {
-            url.openIn(browser: browser ?? systemDefaultBrowser)
-        }
-    case .meet:
-        let browser = browser ?? Defaults[.meetBrowser]
-        if browser == MeetInOneBrowser {
-            let meetInOneUrl = URL(string: "meetinone://url=" + url.absoluteString)!
-            meetInOneUrl.openInDefaultBrowser()
-        } else {
-            url.openIn(browser: browser)
-        }
-
-    case .teams:
-        if Defaults[.useAppForTeamsLinks] {
-            var teamsAppURL = URLComponents(url: url, resolvingAgainstBaseURL: false)!
-            teamsAppURL.scheme = "msteams"
-            let result = teamsAppURL.url!.openInDefaultBrowser()
-            if !result {
-                sendNotification("status_bar_error_teams_link_title".loco(), "status_bar_error_teams_link_message".loco())
-                url.openInDefaultBrowser()
-            }
-        } else {
-            url.openIn(browser: browser ?? systemDefaultBrowser)
-        }
-
-    case .zoom, .zoomgov:
-        if Defaults[.useAppForZoomLinks] {
-            if url.absoluteString.contains("/my/") {
-                url.openIn(browser: browser ?? systemDefaultBrowser)
-            }
-            let urlString = url.absoluteString.replacingOccurrences(of: "?", with: "&").replacingOccurrences(of: "/j/", with: "/join?confno=")
-            var zoomAppUrl = URLComponents(url: URL(string: urlString)!, resolvingAgainstBaseURL: false)!
-            zoomAppUrl.scheme = "zoommtg"
-            let result = zoomAppUrl.url!.openInDefaultBrowser()
-            if !result {
-                sendNotification("status_bar_error_zoom_app_link_title".loco(), "status_bar_error_zoom_app_link_message".loco())
-                url.openInDefaultBrowser()
-            }
-        } else {
-            url.openIn(browser: browser ?? systemDefaultBrowser)
-        }
-    case .zoom_native:
-        let result = url.openInDefaultBrowser()
-        if !result {
-            sendNotification("status_bar_error_zoom_native_link_title".loco(), "status_bar_error_zoom_native_link_message".loco())
-
-            let urlString = url.absoluteString.replacingFirstOccurrence(of: "&", with: "?").replacingOccurrences(of: "/join?confno=", with: "/j/")
-            var zoomBrowserUrl = URLComponents(url: URL(string: urlString)!, resolvingAgainstBaseURL: false)!
-            zoomBrowserUrl.scheme = "https"
-            zoomBrowserUrl.url!.openInDefaultBrowser()
-        }
-    case .facetime:
-        NSWorkspace.shared.open(URL(string: "facetime://" + url.absoluteString)!)
-    case .facetimeaudio:
-        NSWorkspace.shared.open(URL(string: "facetime-audio://" + url.absoluteString)!)
-    case .phone:
-        NSWorkspace.shared.open(URL(string: "tel://" + url.absoluteString)!)
-
-    default:
-        url.openIn(browser: browser ?? systemDefaultBrowser)
-    }
-}
-
 func compareVersions(_ version_x: String, _ version_y: String) -> Bool {
     version_x.compare(version_y, options: .numeric) == .orderedDescending
 }
@@ -233,9 +117,6 @@ func bundleIdentifier(forAppName appName: String) -> String? {
     return nil
 }
 
-/**
- * adds the default browsers for the browser dialog
- */
 func addInstalledBrowser() {
     let existingBrowsers = Defaults[.browsers]
 
@@ -250,19 +131,6 @@ func addInstalledBrowser() {
             }
         }
     }
-}
-
-func emailEventAttendees(_ event: MBEvent) {
-    let service = NSSharingService(named: NSSharingService.Name.composeEmail)!
-    var recipients: [String] = []
-    for attendee in event.attendees {
-        if let email = attendee.email {
-            recipients.append(email)
-        }
-    }
-    service.recipients = recipients
-    service.subject = event.title
-    service.perform(withItems: [])
 }
 
 func hexStringToUIColor(hex: String) -> NSColor {
@@ -287,289 +155,101 @@ func hexStringToUIColor(hex: String) -> NSColor {
     )
 }
 
-func getNextEvent(events: [MBEvent]) -> MBEvent? {
-    var nextEvent: MBEvent?
+func createNSViewFromText(text: String) -> NSView {
+    // Create views
+    let paddingView = NSView()
+    let textView = NSTextView()
+    paddingView.addSubview(textView)
 
-    let now = Date()
-    let startPeriod = Calendar.current.date(byAdding: .minute, value: 1, to: now)!
-    var endPeriod: Date
+    // Text styling
+    let paragraphStyle = NSMutableParagraphStyle()
+    paragraphStyle.lineBreakMode = NSLineBreakMode.byWordWrapping
+    textView.textStorage?.setAttributedString(
+        text.splitWithNewLineAttributedString(
+            with: [
+                NSAttributedString.Key.paragraphStyle: paragraphStyle,
+                NSAttributedString.Key.font: NSFont.systemFont(ofSize: 14),
+            ],
+            maxWidth: 300.0
+        )
+        .withLinksEnabled()
+    )
+    textView.backgroundColor = .clear
+    textView.textColor = .textColor
 
-    let todayMidnight = Calendar.current.startOfDay(for: now)
-    switch Defaults[.showEventsForPeriod] {
-    case .today:
-        endPeriod = Calendar.current.date(byAdding: .day, value: 1, to: todayMidnight)!
-    case .today_n_tomorrow:
-        endPeriod = Calendar.current.date(byAdding: .day, value: 2, to: todayMidnight)!
-    }
-
-    var nextEvents = events.filter { $0.endDate > startPeriod && $0.startDate < endPeriod }
-
-    // Filter out personal events, if not marked as 'active'
-    if Defaults[.personalEventsAppereance] != .show_active {
-        nextEvents = nextEvents.filter { $0.attendees.count > 0 }
-    }
-
-    // If the current event is still going on,
-    // but the next event is closer than 13 minutes later
-    // then show the next event
-    for event in nextEvents {
-        if event.isAllDay {
-            continue
+    // Adjust frame layout for padding
+    if let textContainer = textView.textContainer {
+        textView.layoutManager?.ensureLayout(for: textContainer)
+        if let frame = textView.layoutManager?.usedRect(for: textContainer) {
+            // There's 10pt of padding seemingly built into the left side,
+            // no such thing on the right so we go 20pt to match the left side
+            textView.frame = NSRect(x: 10.0, y: 0.0, width: frame.width, height: frame.height)
+            paddingView.frame = NSRect(x: 0.0, y: 0.0, width: frame.width + 20, height: frame.height)
         } else {
-            if Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show_inactive_without_meeting_link {
-                if event.meetingLink == nil {
-                    continue
-                }
-            } else if Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.hide_without_meeting_link {
-                if event.meetingLink?.url == nil {
-                    continue
-                }
-            }
+            // Backup layout if we couldn't calculate frame
+            textView.autoresizingMask = [.width, .height]
         }
-
-        if event.participationStatus == .declined { // Skip event if declined
-            continue
-        }
-
-        if event.participationStatus == .pending, Defaults[.showPendingEvents] == PendingEventsAppereance.hide || Defaults[.showPendingEvents] == PendingEventsAppereance.show_inactive {
-            continue
-        }
-
-        if event.status == .canceled {
-            continue
-        } else {
-            if nextEvent == nil {
-                nextEvent = event
-                continue
-            } else {
-                let soon = now.addingTimeInterval(780) // 13 min from now
-                if event.startDate < soon {
-                    nextEvent = event
-                } else {
-                    break
-                }
-            }
-        }
+    } else {
+        // Backup layout if we couldn't calculate frame
+        textView.autoresizingMask = [.width, .height]
     }
-    return nextEvent
+    return paddingView
 }
+
+/*
+ * -----------------------
+ * MARK: - Fantastical
+ * ------------------------
+ */
 
 func checkIsFantasticalInstalled() -> Bool {
     NSWorkspace.shared.urlForApplication(withBundleIdentifier: "com.flexibits.fantastical2.mac") != nil
 }
+
+func openInFantastical(startDate: Date, title: String) {
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "yyyy-MM-dd"
+
+    let queryItems = [URLQueryItem(name: "date", value: dateFormatter.string(from: startDate)), URLQueryItem(name: "title", value: title)]
+    var fantasticalUrlComp = URLComponents()
+    fantasticalUrlComp.scheme = "x-fantastical3"
+    fantasticalUrlComp.host = "show"
+    fantasticalUrlComp.queryItems = queryItems
+
+    let fantasticalUrl = fantasticalUrlComp.url!
+    fantasticalUrl.openInDefaultBrowser()
+}
+
+/*
+ * -----------------------
+ * MARK: - Clipboard
+ * ------------------------
+ */
 
 func getClipboardContent() -> String {
     let pasteboard = NSPasteboard.general
     return pasteboard.string(forType: .string) ?? ""
 }
 
-func getIconForMeetingService(_ meetingService: MeetingServices?) -> NSImage {
-    var image = NSImage(named: "no_online_session")!
-    image.size = NSSize(width: 16, height: 16)
+func openLinkFromClipboard() {
+    let clipboardContent = getClipboardContent()
 
-    switch meetingService {
-    // tested and verified
-    case .some(.teams):
-        image = NSImage(named: "ms_teams_icon")!
-        image.size = NSSize(width: 16, height: 16)
+    if !clipboardContent.isEmpty {
+        let meetingLink = detectLink(clipboardContent)
 
-    // tested and verified
-    case .some(.meet), .some(.meetStream):
-        image = NSImage(named: "google_meet_icon")!
-        image.size = NSSize(width: 16, height: 13.2)
-
-    // tested and verified -> deprecated, can be removed because hangouts was replaced by google meet
-    case .some(.hangouts):
-        image = NSImage(named: "google_hangouts_icon")!
-        image.size = NSSize(width: 16, height: 17.8)
-
-    // tested and verified
-    case .some(.zoom), .some(.zoomgov), .some(.zoom_native):
-        image = NSImage(named: "zoom_icon")!
-        image.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.webex):
-        image = NSImage(named: "webex_icon")!
-        image.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.jitsi):
-        image = NSImage(named: "jitsi_icon")!
-        image.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.chime):
-        image = NSImage(named: "amazon_chime_icon")!
-        image.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.ringcentral):
-        image = NSImage(named: "ringcentral_icon")!
-        image.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.gotomeeting):
-        image = NSImage(named: "gotomeeting_icon")!
-        image.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.gotowebinar):
-        image = NSImage(named: "gotowebinar_icon")!
-        image.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.bluejeans):
-        image = NSImage(named: "bluejeans_icon")!
-        image.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.eight_x_eight):
-        image = NSImage(named: "8x8_icon")!
-        image.size = NSSize(width: 16, height: 8)
-
-    // tested and verified
-    case .some(.demio):
-        image = NSImage(named: "demio_icon")!
-        image.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.join_me):
-        image = NSImage(named: "joinme_icon")!
-        image.size = NSSize(width: 16, height: 10)
-
-    // tested and verified
-    case .some(.whereby):
-        image = NSImage(named: "whereby_icon")!
-        image.size = NSSize(width: 16, height: 18)
-
-    // tested and verified
-    case .some(.uberconference):
-        image = NSImage(named: "uberconference_icon")!
-        image.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.blizz), .some(.teamviewer_meeting):
-        image = NSImage(named: "teamviewer_meeting_icon")!
-        image.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.vsee):
-        image = NSImage(named: "vsee_icon")!
-        image.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.starleaf):
-        image = NSImage(named: "starleaf_icon")!
-        image.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.duo):
-        image = NSImage(named: "google_duo_icon")!
-        image.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.voov):
-        image = NSImage(named: "voov_icon")!
-        image.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.skype):
-        image = NSImage(named: "skype_icon")!
-        image.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.skype4biz), .some(.skype4biz_selfhosted):
-        image = NSImage(named: "skype_business_icon")!
-        image.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.lifesize):
-        image = NSImage(named: "lifesize_icon")!
-        image.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.facebook_workspace):
-        image = NSImage(named: "facebook_workplace_icon")!
-        image.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.youtube):
-        image = NSImage(named: "youtube_icon")!
-        image.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.coscreen):
-        image = NSImage(named: "coscreen_icon")!
-        image.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.vowel):
-        image = NSImage(named: "vowel_icon")!
-        image.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.zhumu):
-        image = NSImage(named: "zhumu_icon")!
-        image.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.lark):
-        image = NSImage(named: "lark_icon")!
-        image.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.feishu):
-        image = NSImage(named: "feishu_icon")!
-        image.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.vimeo_showcases):
-        image = NSImage(named: "vimeo_icon")!
-        image.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.ovice):
-        image = NSImage(named: "ovice_icon")!
-        image.size = NSSize(width: 16, height: 16)
-
-    case .some(.facetime):
-        image = NSImage(named: "facetime_icon")!
-        image.size = NSSize(width: 16, height: 16)
-
-    case .some(.pop):
-        image = NSImage(named: "pop_icon")!
-        image.size = NSSize(width: 16, height: 16)
-
-    case .some(.chorus):
-        image = NSImage(named: "chorus_icon")!
-        image.size = NSSize(width: 16, height: 16)
-
-    case .some(.livestorm):
-        image = NSImage(named: "livestorm_icon")!
-        image.size = NSSize(width: 16, height: 16)
-
-    case .some(.gong):
-        image = NSImage(named: "gong_icon")!
-        image.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .none:
-        image = NSImage(named: "no_online_session")!
-        image.size = NSSize(width: 16, height: 16)
-
-    // tested and verified
-    case .some(.vonageMeetings):
-        image = NSImage(named: "vonage_icon")!
-        image.size = NSSize(width: 16, height: 16)
-
-    case .some(.url):
-        image = NSImage(named: NSImage.touchBarOpenInBrowserTemplateName)!
-        image.size = NSSize(width: 16, height: 16)
-
-    default:
-        break
+        if let meetingLink = meetingLink {
+            openMeetingURL(meetingLink.service, meetingLink.url, nil)
+        } else {
+            let validUrl = NSURL(string: clipboardContent)
+            if validUrl != nil {
+                URL(string: clipboardContent)?.openInDefaultBrowser()
+            } else {
+                sendNotification("No valid url",
+                                 "Clipboard has no meeting link, so the meeting cannot be started")
+            }
+        }
+    } else {
+        sendNotification("Clipboard is empty",
+                         "Clipboard has no content, so the meeting cannot be started...")
     }
-
-    return image
 }

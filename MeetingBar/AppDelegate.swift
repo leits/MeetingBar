@@ -62,8 +62,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         postNotificationForAutoLauncher()
     }
 
-    /// Sending a notification to AutoLauncher app
-    /// about main application running status
+    /// Sending a notification to AutoLauncher app about main application running status
     private func postNotificationForAutoLauncher() {
         let runningApps = NSWorkspace.shared.runningApplications
         let isRunning = runningApps.contains { $0.bundleIdentifier == AutoLauncher.bundleIdentifier }
@@ -93,12 +92,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
 
         // Shortcuts
-        KeyboardShortcuts.onKeyUp(for: .createMeetingShortcut) {
-            self.createMeeting()
-        }
+        KeyboardShortcuts.onKeyUp(for: .createMeetingShortcut, action: createMeeting)
 
         KeyboardShortcuts.onKeyUp(for: .joinEventShortcut) {
-            self.joinNextMeeting()
+            self.statusBarItem.joinNextMeeting()
         }
 
         KeyboardShortcuts.onKeyUp(for: .openMenuShortcut) {
@@ -107,9 +104,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             self.statusBarItem.statusItem.button?.performClick(nil) // ...and click
         }
 
-        KeyboardShortcuts.onKeyUp(for: .openClipboardShortcut) {
-            self.openLinkFromClipboard()
-        }
+        KeyboardShortcuts.onKeyUp(for: .openClipboardShortcut, action: openLinkFromClipboard)
 
         KeyboardShortcuts.onKeyUp(for: .toggleMeetingTitleVisibilityShortcut) {
             Defaults[.hideMeetingTitle].toggle()
@@ -169,7 +164,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             eventStore = EKEventStore.shared
 
             NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.eventStoreChanged), name: .EKEventStoreChanged, object: EKEventStore.shared)
-
             NSAppleEventManager.shared().removeEventHandler(forEventClass: AEEventClass(kInternetEventClass), andEventID: AEEventID(kAEGetURL))
         case .GoogleCalendar:
             eventStore = GCEventStore.shared
@@ -178,6 +172,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             NSAppleEventManager.shared().setEventHandler(self, andSelector: #selector(handleURLEvent(getURLEvent:replyEvent:)), forEventClass: AEEventClass(kInternetEventClass), andEventID: AEEventID(kAEGetURL))
         }
     }
+
+    /*
+     * -----------------------
+     * MARK: - Scheduled tasks
+     * ------------------------
+     */
 
     private func scheduleFetchEvents() {
         let timer = Timer(timeInterval: 60, target: self, selector: #selector(fetchEvents), userInfo: nil, repeats: true)
@@ -189,14 +189,18 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         RunLoop.current.add(timer, forMode: .common)
     }
 
-    /**
-     * implementation is necessary to show notifications even when the app has focus!
+    /*
+     * -----------------------
+     * MARK: - User Notification Center
+     * ------------------------
      */
+
+    /// Implementation is necessary to show notifications even when the app has focus!
     func userNotificationCenter(_: UNUserNotificationCenter, willPresent _: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         completionHandler([.alert, .badge, .sound])
     }
 
-    internal func userNotificationCenter(_: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+    func userNotificationCenter(_: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         switch response.actionIdentifier {
         case "JOIN_ACTION", UNNotificationDefaultActionIdentifier:
             if response.notification.request.content.categoryIdentifier == "EVENT" {
@@ -207,7 +211,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                     if let nextEvent = getNextEvent(events: statusBarItem.events) {
                         if nextEvent.ID == (eventID as! String) {
                             NSLog("Join \(nextEvent.title) event from notication")
-                            openEvent(nextEvent)
+                            nextEvent.openMeeting()
                         }
                     }
                 }
@@ -219,9 +223,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         completionHandler()
     }
 
+    /*
+     * -----------------------
+     * MARK: - Windows
+     * ------------------------
+     */
+
     func openOnboardingWindow() {
         NSLog("Open onboarding window")
-
         let contentView = OnboardingView()
         if onboardingWindow != nil {
             onboardingWindow.close()
@@ -241,217 +250,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         onboardingWindow.level = NSWindow.Level.floating
         onboardingWindow.center()
         onboardingWindow.orderFrontRegardless()
-    }
-}
-
-/*
- * -----------------------
- * MARK: - Actions
- * ------------------------
- */
-
-extension AppDelegate {
-    @objc
-    func handleURLEvent(getURLEvent event: NSAppleEventDescriptor, replyEvent _: NSAppleEventDescriptor) {
-        if let string = event.paramDescriptor(forKeyword: keyDirectObject)?.stringValue,
-           let url = URL(string: string)
-        {
-            GCEventStore.shared
-                .currentAuthorizationFlow?.resumeExternalUserAgentFlow(with: url)
-        }
-    }
-
-    @objc
-    func windowClosed(notification: NSNotification) {
-        let window = notification.object as? NSWindow
-        if let windowTitle = window?.title {
-            if windowTitle == WindowTitles.onboarding, !Defaults[.onboardingCompleted] {
-                NSApplication.shared.terminate(self)
-            } else if windowTitle == WindowTitles.changelog {
-                Defaults[.lastRevisedVersionInChangelog] = Defaults[.appVersion]
-                statusBarItem.updateMenu()
-            }
-        }
-    }
-
-    /**
-     * tries to open the link from the macos system clipboard.
-     */
-    @objc
-    func openLinkFromClipboard() {
-        NSLog("Check macos clipboard for link")
-        let clipboardContent = getClipboardContent()
-        NSLog("Found \(clipboardContent) in clipboard")
-
-        if !clipboardContent.isEmpty {
-            let meetingLink = detectLink(clipboardContent)
-
-            if let meetingLink = meetingLink {
-                openMeetingURL(meetingLink.service, meetingLink.url, nil)
-            } else {
-                let validUrl = NSURL(string: clipboardContent)
-                if validUrl != nil {
-                    URL(string: clipboardContent)?.openInDefaultBrowser()
-                } else {
-                    sendNotification("No valid url",
-                                     "Clipboard has no meeting link, so the meeting cannot be started")
-                }
-            }
-        } else {
-            sendNotification("Clipboard is empty",
-                             "Clipboard has no content, so the meeting cannot be started...")
-        }
-    }
-
-    @objc
-    func toggleMeetingTitleVisibility() {
-        Defaults[.hideMeetingTitle].toggle()
-    }
-
-    @objc
-    func refreshSources() {
-        eventStore.refreshSources()
-        statusBarItem.loadCalendars()
-    }
-
-    @objc
-    func eventStoreChanged(_: NSNotification) {
-        NSLog("Store changed. Update status bar menu.")
-        DispatchQueue.main.async {
-            self.statusBarItem?.updateTitle()
-            self.statusBarItem?.updateMenu()
-        }
-    }
-
-    @objc
-    private func fetchEvents() {
-        NSLog("Firing reccuring fetchEvents")
-        DispatchQueue.main.async {
-            self.statusBarItem.loadCalendars()
-            self.statusBarItem.loadEvents()
-        }
-    }
-
-    @objc
-    private func updateStatusBarItem() {
-//        NSLog("Firing reccuring updateStatusBarItem")
-        DispatchQueue.main.async {
-            self.statusBarItem.updateTitle()
-            self.statusBarItem.updateMenu()
-        }
-    }
-
-    @objc
-    func createMeeting(_: Any? = nil) {
-        NSLog("Create meeting in \(Defaults[.createMeetingService].rawValue)")
-        let browser: Browser = Defaults[.browserForCreateMeeting]
-
-        switch Defaults[.createMeetingService] {
-        case .meet:
-            openMeetingURL(MeetingServices.meet, CreateMeetingLinks.meet, browser)
-        case .zoom:
-            openMeetingURL(MeetingServices.zoom, CreateMeetingLinks.zoom, browser)
-        case .teams:
-            openMeetingURL(MeetingServices.teams, CreateMeetingLinks.teams, browser)
-        case .jam:
-            openMeetingURL(MeetingServices.jam, CreateMeetingLinks.jam, browser)
-        case .coscreen:
-            openMeetingURL(MeetingServices.coscreen, CreateMeetingLinks.coscreen, browser)
-        case .gcalendar:
-            openMeetingURL(nil, CreateMeetingLinks.gcalendar, browser)
-        case .outlook_office365:
-            openMeetingURL(nil, CreateMeetingLinks.outlook_office365, browser)
-        case .outlook_live:
-            openMeetingURL(nil, CreateMeetingLinks.outlook_live, browser)
-        case .url:
-            var url: String = Defaults[.createMeetingServiceUrl]
-            let checkedUrl = NSURL(string: url)
-
-            if !url.isEmpty, checkedUrl != nil {
-                openMeetingURL(nil, URL(string: url)!, browser)
-            } else {
-                if !url.isEmpty {
-                    url += " "
-                }
-
-                sendNotification("create_meeting_error_title".loco(), "create_meeting_error_message".loco(url))
-            }
-        }
-    }
-
-    @objc
-    func joinBookmark(sender: NSMenuItem) {
-        NSLog("Called to join bookmark")
-        if let bookmark: Bookmark = sender.representedObject as? Bookmark {
-            openMeetingURL(bookmark.service, bookmark.url, nil)
-        }
-    }
-
-    @objc
-    func joinNextMeeting(_: NSStatusBarButton? = nil) {
-        if let nextEvent = getNextEvent(events: statusBarItem.events) {
-            NSLog("Join next event")
-            openEvent(nextEvent)
-        } else {
-            NSLog("No next event")
-            sendNotification("next_meeting_empty_title".loco(), "next_meeting_empty_message".loco())
-        }
-    }
-
-    @objc
-    func clickOnEvent(sender: NSMenuItem) {
-        NSLog("Click on event (\(sender.title))!")
-        let event: MBEvent = sender.representedObject as! MBEvent
-        openEvent(event)
-    }
-
-    @objc
-    func openEventInCalendar(sender: NSMenuItem) {
-        if let identifier = sender.representedObject as? String {
-            let url = URL(string: "ical://ekevent/\(identifier)")!
-            url.openInDefaultBrowser()
-        }
-    }
-
-    @objc
-    func copyEventMeetingLink(sender: NSMenuItem) {
-        if let event: MBEvent = sender.representedObject as? MBEvent {
-            let eventTitle = event.title
-            if let meetingLink = event.meetingLink {
-                NSPasteboard.general.clearContents()
-                NSPasteboard.general.setString(meetingLink.url.absoluteString, forType: .string)
-            } else {
-                sendNotification("status_bar_error_link_missed_title".loco(eventTitle), "status_bar_error_link_missed_message".loco())
-            }
-        }
-    }
-
-    @objc
-    func emailAttendees(sender: NSMenuItem) {
-        if let event: MBEvent = sender.representedObject as? MBEvent {
-            emailEventAttendees(event)
-        }
-    }
-
-    /**
-     * opens an event in the fantastical app. It uses the x-fantastical url handler which is not fully described on the fantastical website,
-     * but was confirmed in the github ticket.
-     */
-    @objc
-    func openEventInFantastical(sender: NSMenuItem) {
-        if let event: MBEvent = sender.representedObject as? MBEvent {
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd"
-
-            let queryItems = [URLQueryItem(name: "date", value: dateFormatter.string(from: event.startDate)), URLQueryItem(name: "title", value: event.title)]
-            var fantasticalUrlComp = URLComponents()
-            fantasticalUrlComp.scheme = "x-fantastical3"
-            fantasticalUrlComp.host = "show"
-            fantasticalUrlComp.queryItems = queryItems
-
-            let fantasticalUrl = fantasticalUrlComp.url!
-            fantasticalUrl.openInDefaultBrowser()
-        }
     }
 
     @objc
@@ -505,6 +303,62 @@ extension AppDelegate {
 
         preferencesWindow.center()
         preferencesWindow.orderFrontRegardless()
+    }
+
+    @objc
+    func windowClosed(notification: NSNotification) {
+        let window = notification.object as? NSWindow
+        if let windowTitle = window?.title {
+            if windowTitle == WindowTitles.onboarding, !Defaults[.onboardingCompleted] {
+                NSApplication.shared.terminate(self)
+            } else if windowTitle == WindowTitles.changelog {
+                Defaults[.lastRevisedVersionInChangelog] = Defaults[.appVersion]
+                statusBarItem.updateMenu()
+            }
+        }
+    }
+
+    /*
+     * -----------------------
+     * MARK: - Actions
+     * ------------------------
+     */
+
+    @objc
+    func handleURLEvent(getURLEvent event: NSAppleEventDescriptor, replyEvent _: NSAppleEventDescriptor) {
+        if let string = event.paramDescriptor(forKeyword: keyDirectObject)?.stringValue,
+           let url = URL(string: string)
+        {
+            GCEventStore.shared
+                .currentAuthorizationFlow?.resumeExternalUserAgentFlow(with: url)
+        }
+    }
+
+    @objc
+    func eventStoreChanged(_: NSNotification) {
+        NSLog("Store changed. Update status bar menu.")
+        DispatchQueue.main.async {
+            self.statusBarItem?.updateTitle()
+            self.statusBarItem?.updateMenu()
+        }
+    }
+
+    @objc
+    private func fetchEvents() {
+        NSLog("Firing reccuring fetchEvents")
+        DispatchQueue.main.async {
+            self.statusBarItem.loadCalendars()
+            self.statusBarItem.loadEvents()
+        }
+    }
+
+    @objc
+    private func updateStatusBarItem() {
+        NSLog("Firing reccuring updateStatusBarItem")
+        DispatchQueue.main.async {
+            self.statusBarItem.updateTitle()
+            self.statusBarItem.updateMenu()
+        }
     }
 
     @objc

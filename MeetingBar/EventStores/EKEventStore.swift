@@ -1,5 +1,5 @@
 //
-//  EventStore.swift
+//  EKEventStore.swift
 //  MeetingBar
 //
 //  Created by Andrii Leitsius on 12.06.2020.
@@ -10,7 +10,7 @@ import PromiseKit
 import SwiftyJSON
 
 extension EKEventStore: EventStore {
-    static let shared = EKEventStore()
+    static let shared = initEKEventStore()
 
     var isAuthed: Bool {
         EKEventStore.authorizationStatus(for: .event) == .authorized
@@ -120,4 +120,13 @@ extension EKEventStore: EventStore {
             seal.fulfill(events)
         }
     }
+}
+
+func initEKEventStore() -> EKEventStore {
+    let eventStore = EKEventStore()
+
+    var sources = eventStore.sources
+    sources.append(contentsOf: eventStore.delegateSources)
+
+    return EKEventStore(sources: sources)
 }

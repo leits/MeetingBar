@@ -1,54 +1,13 @@
 //
-//  Common.swift
+//  Event.swift
 //  MeetingBar
 //
-//  Created by Andrii Leitsius on 28.03.2022.
+//  Created by Andrii Leitsius on 09.04.2022.
 //  Copyright © 2022 Andrii Leitsius. All rights reserved.
 //
 
 import AppKit
 import Defaults
-import PromiseKit
-import SwiftyJSON
-
-protocol EventStore {
-    var isAuthed: Bool { get }
-
-    func signIn() -> Promise<Void>
-
-    func signOut() -> Promise<Void>
-
-    func refreshSources()
-
-    func fetchAllCalendars() -> Promise<[MBCalendar]>
-
-    func fetchEventsForDateRange(calendars: [MBCalendar], dateFrom: Date, dateTo: Date) -> Promise<[MBEvent]>
-}
-
-class MBCalendar: Hashable {
-    let title: String
-    let ID: String
-    let source: String
-    let email: String?
-    var selected: Bool = false
-    let color: NSColor
-
-    init(title: String, ID: String, source: String?, email: String?, color: NSColor) {
-        self.title = title
-        self.ID = ID
-        self.source = source ?? "unknown"
-        self.email = email
-        self.color = color
-    }
-
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(ID)
-    }
-
-    static func == (lhs: MBCalendar, rhs: MBCalendar) -> Bool {
-        lhs.ID == rhs.ID
-    }
-}
 
 enum MBEventStatus: Int {
     case none = 0
@@ -149,6 +108,39 @@ class MBEvent {
             }
         }
     }
+
+    func emailAttendees() {
+        let service = NSSharingService(named: NSSharingService.Name.composeEmail)!
+        var recipients: [String] = []
+        for attendee in attendees {
+            if let email = attendee.email {
+                recipients.append(email)
+            }
+        }
+        service.recipients = recipients
+        service.subject = title
+        service.perform(withItems: [])
+    }
+
+    func openMeeting() {
+        if let meetingLink = meetingLink {
+            if Defaults[.runJoinEventScript], Defaults[.joinEventScriptLocation] != nil {
+                if let url = Defaults[.joinEventScriptLocation]?.appendingPathComponent("joinEventScript.scpt") {
+                    let task = try! NSUserAppleScriptTask(url: url)
+                    task.execute { error in
+                        if let error = error {
+                            sendNotification("status_bar_error_apple_script_title".loco(), error.localizedDescription)
+                        }
+                    }
+                }
+            }
+            openMeetingURL(meetingLink.service, meetingLink.url, nil)
+        } else if let eventUrl = url {
+            eventUrl.openInDefaultBrowser()
+        } else {
+            sendNotification("status_bar_error_link_missed_title".loco(title), "status_bar_error_link_missed_message".loco())
+        }
+    }
 }
 
 func filterEvents(_ events: [MBEvent]) -> [MBEvent] {
@@ -158,7 +150,8 @@ func filterEvents(_ events: [MBEvent]) -> [MBEvent] {
         // Filter events base on custom user regexes
         for pattern in Defaults[.filterEventRegexes] {
             if let regex = try? NSRegularExpression(pattern: pattern) {
-                if !hasMatch(text: calendarEvent.title, regex: regex) {
+                let hasMatch = regex.firstMatch(in: calendarEvent.title, range: NSRange(calendarEvent.title.startIndex..., in: calendarEvent.title)) != nil
+                if !hasMatch {
                     continue
                 }
             }
@@ -195,4 +188,71 @@ func filterEvents(_ events: [MBEvent]) -> [MBEvent] {
         filteredCalendarEvents.append(calendarEvent)
     }
     return filteredCalendarEvents
+}
+
+func getNextEvent(events: [MBEvent]) -> MBEvent? {
+    var nextEvent: MBEvent?
+
+    let now = Date()
+    let startPeriod = Calendar.current.date(byAdding: .minute, value: 1, to: now)!
+    var endPeriod: Date
+
+    let todayMidnight = Calendar.current.startOfDay(for: now)
+    switch Defaults[.showEventsForPeriod] {
+    case .today:
+        endPeriod = Calendar.current.date(byAdding: .day, value: 1, to: todayMidnight)!
+    case .today_n_tomorrow:
+        endPeriod = Calendar.current.date(byAdding: .day, value: 2, to: todayMidnight)!
+    }
+
+    var nextEvents = events.filter { $0.endDate > startPeriod && $0.startDate < endPeriod }
+
+    // Filter out personal events, if not marked as 'active'
+    if Defaults[.personalEventsAppereance] != .show_active {
+        nextEvents = nextEvents.filter { $0.attendees.count > 0 }
+    }
+
+    // If the current event is still going on,
+    // but the next event is closer than 13 minutes later
+    // then show the next event
+    for event in nextEvents {
+        if event.isAllDay {
+            continue
+        } else {
+            if Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show_inactive_without_meeting_link {
+                if event.meetingLink == nil {
+                    continue
+                }
+            } else if Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.hide_without_meeting_link {
+                if event.meetingLink?.url == nil {
+                    continue
+                }
+            }
+        }
+
+        if event.participationStatus == .declined { // Skip event if declined
+            continue
+        }
+
+        if event.participationStatus == .pending, Defaults[.showPendingEvents] == PendingEventsAppereance.hide || Defaults[.showPendingEvents] == PendingEventsAppereance.show_inactive {
+            continue
+        }
+
+        if event.status == .canceled {
+            continue
+        } else {
+            if nextEvent == nil {
+                nextEvent = event
+                continue
+            } else {
+                let soon = now.addingTimeInterval(780) // 13 min from now
+                if event.startDate < soon {
+                    nextEvent = event
+                } else {
+                    break
+                }
+            }
+        }
+    }
+    return nextEvent
 }
