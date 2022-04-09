@@ -105,7 +105,8 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
         }
 
         _ = appdelegate.eventStore.fetchEventsForDateRange(calendars: calendars.filter(\.selected), dateFrom: dateFrom, dateTo: dateTo).done { events in
-            self.events = filterEvents(events)
+            let filteredEvents = filterEvents(events)
+            self.events = filteredEvents.sorted(by: { $0.startDate.compare($1.startDate) == .orderedAscending })
             self.updateTitle()
             self.updateMenu()
         }
