@@ -295,6 +295,32 @@ func getRegexForMeetingService(_ service: MeetingServices) -> NSRegularExpressio
     return nil
 }
 
+
+func detectMeetingLink(_ rawText: String) -> MeetingLink? {
+    let text = cleanupOutlookSafeLinks(rawText: rawText)
+
+    for pattern in Defaults[.customRegexes] {
+        if let regex = try? NSRegularExpression(pattern: pattern) {
+            if let link = getMatch(text: text, regex: regex) {
+                if let url = URL(string: link) {
+                    return MeetingLink(service: MeetingServices.other, url: url)
+                }
+            }
+        }
+    }
+
+    for service in MeetingServices.allCases {
+        if let regex = getRegexForMeetingService(service) {
+            if let link = getMatch(text: text, regex: regex) {
+                if let url = URL(string: link) {
+                    return MeetingLink(service: service, url: url)
+                }
+            }
+        }
+    }
+    return nil
+}
+
 func getIconForMeetingService(_ meetingService: MeetingServices?) -> NSImage {
     var image = NSImage(named: "no_online_session")!
     image.size = NSSize(width: 16, height: 16)

@@ -29,13 +29,9 @@ let meetings = [
 
 class HelpersTests: XCTestCase {
     func testGetMeetingLink() throws {
-        let store = EKEventStore()
-        let event = EKEvent(eventStore: store)
-        event.calendar = store.defaultCalendarForNewEvents
 
         for meeting in meetings {
-            event.notes = meeting.url.absoluteString
-            let result = getMeetingLink(event)
+            let result = detectMeetingLink(meeting.url.absoluteString)
 
             XCTAssertNotNil(result)
             XCTAssertEqual(result, meeting)

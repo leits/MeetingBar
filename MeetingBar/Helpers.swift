@@ -27,7 +27,7 @@ struct Bookmark: Encodable, Decodable, Hashable {
  * If no m365 links are found, the original text is returned.
  *
  */
-private func cleanupOutlookSafeLinks(rawText: String) -> String {
+func cleanupOutlookSafeLinks(rawText: String) -> String {
     var text = rawText
     var links = UtilsRegex.outlookSafeLinkRegex.matches(in: text, range: NSRange(text.startIndex..., in: text))
     if !links.isEmpty {
@@ -65,30 +65,6 @@ func cleanUpNotes(_ notes: String) -> String {
     return cleanNotes
 }
 
-func detectLink(_ rawText: String) -> MeetingLink? {
-    let text = cleanupOutlookSafeLinks(rawText: rawText)
-
-    for pattern in Defaults[.customRegexes] {
-        if let regex = try? NSRegularExpression(pattern: pattern) {
-            if let link = getMatch(text: text, regex: regex) {
-                if let url = URL(string: link) {
-                    return MeetingLink(service: MeetingServices.other, url: url)
-                }
-            }
-        }
-    }
-
-    for service in MeetingServices.allCases {
-        if let regex = getRegexForMeetingService(service) {
-            if let link = getMatch(text: text, regex: regex) {
-                if let url = URL(string: link) {
-                    return MeetingLink(service: service, url: url)
-                }
-            }
-        }
-    }
-    return nil
-}
 
 func getEmailAccount(_ source: String?) -> String? {
     // Hacky and likely to break, but should work until Apple changes something
@@ -235,7 +211,7 @@ func openLinkFromClipboard() {
     let clipboardContent = getClipboardContent()
 
     if !clipboardContent.isEmpty {
-        let meetingLink = detectLink(clipboardContent)
+        let meetingLink = detectMeetingLink(clipboardContent)
 
         if let meetingLink = meetingLink {
             openMeetingURL(meetingLink.service, meetingLink.url, nil)
