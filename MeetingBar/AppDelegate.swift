@@ -23,7 +23,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     var eventStore: EventStore!
 
     var eventStoreProviderObserver: DefaultsObservation?
-    var selectedCalendarIDsObserver: DefaultsObservation?
 
     var launchAtLoginObserver: DefaultsObservation?
     var preferredLanguageObserver: DefaultsObservation?
@@ -31,6 +30,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     var meetingTitleVisibilityObserver: DefaultsObservation?
     var joinEventNotificationObserver: DefaultsObservation?
 
+    var eventFiltersObserver: DefaultsObservation?
     var appearanceSettingsObserver: DefaultsObservation?
 
     var preferencesWindow: NSWindow!
@@ -111,7 +111,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
 
         // Settings change observers
-        appearanceSettingsObserver = Defaults.observe(keys: .statusbarEventTitleLength, .eventTimeFormat, .eventTitleIconFormat, .showEventMaxTimeUntilEventThreshold, .showEventMaxTimeUntilEventEnabled, .showEventDetails, .shortenEventTitle, .menuEventTitleLength, .showEventEndTime, .disablePastEvents, .showMeetingServiceIcon, .timeFormat, .bookmarks, .pastEventsAppereance, .declinedEventsAppereance, .showPendingEvents, .allDayEvents, .nonAllDayEvents, .eventTitleFormat, .personalEventsAppereance, .showEventsForPeriod) {
+        appearanceSettingsObserver = Defaults.observe(keys: .statusbarEventTitleLength, .eventTimeFormat, .eventTitleIconFormat, .showEventMaxTimeUntilEventThreshold, .showEventMaxTimeUntilEventEnabled, .showEventDetails, .shortenEventTitle, .menuEventTitleLength, .showEventEndTime, .showMeetingServiceIcon, .timeFormat, .bookmarks, .eventTitleFormat) {
             self.statusBarItem.updateTitle()
             self.statusBarItem.updateMenu()
         }
@@ -133,10 +133,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                 SMLoginItemSetEnabled(AutoLauncher.bundleIdentifier as CFString, change.newValue)
             }
         }
-        selectedCalendarIDsObserver = Defaults.observe(.selectedCalendarIDs) { change in
-            if change.oldValue != change.newValue {
-                self.statusBarItem.loadCalendars()
-            }
+        eventFiltersObserver = Defaults.observe(keys: .selectedCalendarIDs, .showEventsForPeriod, .disablePastEvents, .pastEventsAppereance, .declinedEventsAppereance, .showPendingEvents, .allDayEvents, .nonAllDayEvents, .personalEventsAppereance, .showEventsForPeriod) {
+            self.statusBarItem.loadCalendars()
         }
         preferredLanguageObserver = Defaults.observe(.preferredLanguage) { change in
             if I18N.instance.changeLanguage(to: change.newValue) {
