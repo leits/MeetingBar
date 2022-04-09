@@ -17,9 +17,10 @@ jobs:
   Tests:
     runs-on: macOS-latest
     steps:
-      - uses: maxim-lobanov/setup-xcode@v1
+      - name: "Select Xcode 12.0.0"
+        uses: devbotsxyz/xcode-select@master
         with:
-          xcode-version: latest-stable
+          version: "12.0.0"
       - uses: actions/checkout@v1
       - name: Install xcbeautify
         run: brew install xcbeautify
