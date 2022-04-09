@@ -31,7 +31,7 @@
 		1452C9D825AF889A00C46CDF /* WelcomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1452C9D725AF889A00C46CDF /* WelcomeScreen.swift */; };
 		1452C9DC25AF88EF00C46CDF /* AccessScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1452C9DB25AF88EF00C46CDF /* AccessScreen.swift */; };
 		1452C9E025AF894E00C46CDF /* CalendarsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1452C9DF25AF894E00C46CDF /* CalendarsScreen.swift */; };
-		14619A1E25EC26DF00F3098F /* HelpersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14619A1D25EC26DF00F3098F /* HelpersTests.swift */; };
+		14619A1E25EC26DF00F3098F /* MeetingServicesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14619A1D25EC26DF00F3098F /* MeetingServicesTests.swift */; };
 		14879B2B24E6889C00DB0A7E /* Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14879B2A24E6889C00DB0A7E /* Notifications.swift */; };
 		148E47E824F400C400399929 /* Onboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 148E47E724F400C400399929 /* Onboarding.swift */; };
 		14B08ACE2749A57B002E3892 /* GTMAppAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 14B08ACD2749A57B002E3892 /* GTMAppAuth */; };
@@ -50,6 +50,7 @@
 		46E4794C2801D53B00B48059 /* MeetingServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E4794B2801D53B00B48059 /* MeetingServices.swift */; };
 		46E4794E2802141800B48059 /* Calendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E4794D2802141800B48059 /* Calendar.swift */; };
 		46E479502802155700B48059 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E4794F2802155700B48059 /* Event.swift */; };
+		46E4795228023A0C00B48059 /* HelpersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E4795128023A0C00B48059 /* HelpersTests.swift */; };
 		A7B68FA325CDE9E200CA3A68 /* URL.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B68FA225CDE9E200CA3A68 /* URL.swift */; };
 		E23954682628BF89003ECCB3 /* BrowserConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E23954672628BF89003ECCB3 /* BrowserConfigView.swift */; };
 		E249D534259BBC3800429BF1 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = E249D533259BBC3800429BF1 /* String.swift */; };
@@ -107,7 +108,7 @@
 		1452C9DB25AF88EF00C46CDF /* AccessScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessScreen.swift; sourceTree = "<group>"; };
 		1452C9DF25AF894E00C46CDF /* CalendarsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarsScreen.swift; sourceTree = "<group>"; };
 		14619A1B25EC26DF00F3098F /* MeetingBarTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MeetingBarTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		14619A1D25EC26DF00F3098F /* HelpersTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpersTests.swift; sourceTree = "<group>"; };
+		14619A1D25EC26DF00F3098F /* MeetingServicesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingServicesTests.swift; sourceTree = "<group>"; };
 		14619A1F25EC26DF00F3098F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		14879B2A24E6889C00DB0A7E /* Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = "<group>"; };
 		148E47E724F400C400399929 /* Onboarding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Onboarding.swift; sourceTree = "<group>"; };
@@ -133,6 +134,7 @@
 		46E4794B2801D53B00B48059 /* MeetingServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingServices.swift; sourceTree = "<group>"; };
 		46E4794D2802141800B48059 /* Calendar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Calendar.swift; sourceTree = "<group>"; };
 		46E4794F2802155700B48059 /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
+		46E4795128023A0C00B48059 /* HelpersTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpersTests.swift; sourceTree = "<group>"; };
 		A7B68FA225CDE9E200CA3A68 /* URL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URL.swift; sourceTree = "<group>"; };
 		D6D68C5327BCF93D009E8469 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Localizable.strings; sourceTree = "<group>"; };
 		E23954672628BF89003ECCB3 /* BrowserConfigView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrowserConfigView.swift; sourceTree = "<group>"; };
@@ -280,7 +282,8 @@
 		14619A1C25EC26DF00F3098F /* MeetingBarTests */ = {
 			isa = PBXGroup;
 			children = (
-				14619A1D25EC26DF00F3098F /* HelpersTests.swift */,
+				14619A1D25EC26DF00F3098F /* MeetingServicesTests.swift */,
+				46E4795128023A0C00B48059 /* HelpersTests.swift */,
 				14619A1F25EC26DF00F3098F /* Info.plist */,
 			);
 			path = MeetingBarTests;
@@ -552,7 +555,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				14619A1E25EC26DF00F3098F /* HelpersTests.swift in Sources */,
+				14619A1E25EC26DF00F3098F /* MeetingServicesTests.swift in Sources */,
+				46E4795228023A0C00B48059 /* HelpersTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

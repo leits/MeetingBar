@@ -65,16 +65,10 @@ func cleanUpNotes(_ notes: String) -> String {
     return cleanNotes
 }
 
-
 func getEmailAccount(_ source: String?) -> String? {
     // Hacky and likely to break, but should work until Apple changes something
-    let regex = UtilsRegex.emailAddress
     if let text = source {
-        let resultsIterator = regex.matches(in: text, range: NSRange(text.startIndex..., in: text))
-        let resultsMap = resultsIterator.map { String(text[Range($0.range(at: 1), in: text)!]) }
-        if !resultsMap.isEmpty {
-            return resultsMap.first
-        }
+        return getMatch(text: text, regex: UtilsRegex.emailAddress)
     }
     return nil
 }

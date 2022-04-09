@@ -295,7 +295,6 @@ func getRegexForMeetingService(_ service: MeetingServices) -> NSRegularExpressio
     return nil
 }
 
-
 func detectMeetingLink(_ rawText: String) -> MeetingLink? {
     let text = cleanupOutlookSafeLinks(rawText: rawText)
 

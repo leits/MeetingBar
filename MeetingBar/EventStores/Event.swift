@@ -96,7 +96,7 @@ class MBEvent {
         ].compactMap { $0 }
 
         for linkField in linkFields {
-            if var detectedLink = detectLink(linkField) {
+            if var detectedLink = detectMeetingLink(linkField) {
                 if detectedLink.service == .meet,
                    let account = getEmailAccount(calendar.source),
                    let urlEncodedAccount = account.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
