@@ -5,6 +5,7 @@
 > unreleased
 
 - Added integration with Pop, Livestorm, Chorus & Gong
+- Fix readability of the statusbar text in multi-screen setups (#354)
 - Added feature to snooze the notification
 
 ## Version 3.10.0
