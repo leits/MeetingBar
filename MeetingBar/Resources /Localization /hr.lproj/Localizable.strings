@@ -169,7 +169,7 @@
 
 "preferences_advanced_setting_warning" = "⚠️ Koristi ove postavke samo ako razumiješ što rade";
 "preferences_advanced_apple_script_checkmark" = "Pokreni AppleScript kad se pridružuješ sastanku";
-"preferences_advanced_apple_script_placeholder" = "# ovdje upiši tvoja skripta\nnaredi programu „Music” da zaustavi reprodukciju";
+"preferences_advanced_apple_script_placeholder" = "# ovdje upiši tvoja skripta\ntell application \"Music\" to pause";
 "preferences_advanced_save_script_button" = "Spremi skripta";
 "preferences_advanced_wrong_location_title" = "Krivo mjesto";
 "preferences_advanced_wrong_location_message" = "Odaberi Korisnici → Medijateka → Application Scripts → leits.MeetingBar mapa";
