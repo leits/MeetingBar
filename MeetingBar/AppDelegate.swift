@@ -201,7 +201,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     func userNotificationCenter(_: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         switch response.actionIdentifier {
         case "JOIN_ACTION", UNNotificationDefaultActionIdentifier:
-            if response.notification.request.content.categoryIdentifier == "EVENT" {
+            if response.notification.request.content.categoryIdentifier == "EVENT" || response.notification.request.content.categoryIdentifier == "SNOOZE_EVENT" {
                 if let eventID = response.notification.request.content.userInfo["eventID"] {
                     // TODO: Allow to open event from any notification
                     // built-in method EKEventStore.event(withIdentifier:) is broken
@@ -214,11 +214,40 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                     }
                 }
             }
+        case NotificationEventTimeAction.untilStart.rawValue, UNNotificationDefaultActionIdentifier:
+            handleSnoozeEvent(response, NotificationEventTimeAction.untilStart)
+        case NotificationEventTimeAction.fiveMinuteLater.rawValue, UNNotificationDefaultActionIdentifier:
+            handleSnoozeEvent(response, NotificationEventTimeAction.fiveMinuteLater)
+        case NotificationEventTimeAction.tenMinuteLater.rawValue, UNNotificationDefaultActionIdentifier:
+            handleSnoozeEvent(response, NotificationEventTimeAction.tenMinuteLater)
+        case NotificationEventTimeAction.fifteenMinuteLater.rawValue, UNNotificationDefaultActionIdentifier:
+            handleSnoozeEvent(response, NotificationEventTimeAction.fifteenMinuteLater)
+        case NotificationEventTimeAction.thirtyMinuteLater.rawValue, UNNotificationDefaultActionIdentifier:
+            handleSnoozeEvent(response, NotificationEventTimeAction.thirtyMinuteLater)
         default:
             break
         }
 
         completionHandler()
+    }
+
+    func handleSnoozeEvent(_ response: UNNotificationResponse, _ action: NotificationEventTimeAction) {
+        if response.notification.request.content.categoryIdentifier == "EVENT" || response.notification.request.content.categoryIdentifier == "SNOOZE_EVENT" {
+            if let eventID = response.notification.request.content.userInfo["eventID"] {
+                // built-in method EKEventStore.event(withIdentifier:) is broken
+                // temporary allow to open only the last event
+                if let nextEvent = getNextEvent(events: statusBarItem.events) {
+                    if nextEvent.ID == (eventID as! String) {
+                        if action.durationInSeconds == 0 {
+                            NSLog("Snooze event until start")
+                        } else {
+                            NSLog("Snooze event for \(action.durationInMins) mins")
+                        }
+                        snoozeEventNotification(nextEvent, action)
+                    }
+                }
+            }
+        }
     }
 
     /*

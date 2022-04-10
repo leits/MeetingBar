@@ -311,6 +311,7 @@
 // MARK: - Notifications
 
 "notifications_event_start_soon_body" = "The event starts soon";
+"notifications_event_started_body" = "The event has started";
 "notifications_event_start_one_minute_body" = "The event starts in one minute";
 "notifications_event_start_three_minutes_body" = "The event starts in three minutes";
 "notifications_event_start_five_minutes_body" = "The event starts in five minutes";

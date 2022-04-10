@@ -98,6 +98,33 @@ enum JoinEventNotificationTime: Int, Codable {
     case fiveMinuteBefore = 300
 }
 
+enum NotificationEventTimeAction: String, Codable {
+    case untilStart = "SNOOZE_UNTIL_START_TIME"
+    case fiveMinuteLater = "SNOOZE_FOR_5_MIN"
+    case tenMinuteLater = "SNOOZE_FOR_10_MIN"
+    case fifteenMinuteLater = "SNOOZE_FOR_15_MIN"
+    case thirtyMinuteLater = "SNOOZE_FOR_30_MIN"
+
+    var durationInSeconds: Int {
+        switch self {
+        case .untilStart:
+            return 0
+        case .fiveMinuteLater:
+            return 300
+        case .tenMinuteLater:
+            return 600
+        case .fifteenMinuteLater:
+            return 900
+        case .thirtyMinuteLater:
+            return 1800
+        }
+    }
+
+    var durationInMins: Int {
+        return durationInSeconds / 60
+    }
+}
+
 enum UtilsRegex {
     static let emailAddress = try! NSRegularExpression(pattern: #"(\S+@\S+)"#)
     static let outlookSafeLinkRegex = try! NSRegularExpression(pattern: #"https://[\S]+\.safelinks\.protection\.outlook\.com/[\S]+url=([\S]*)"#)

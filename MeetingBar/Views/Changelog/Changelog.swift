@@ -97,6 +97,7 @@ struct ChangelogView: View {
                     Section(header: Text("Version 3.11.0")) {
                         Text("• Added integration with Pop, Livestorm, Chorus & Gong")
                         Text("• Fix readability of the statusbar text in multi-screen setups (#354)")
+                        Text("😴 Added feature to snooze the notification")
                     }
                 }
 
