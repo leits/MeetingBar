@@ -5,6 +5,7 @@
 > unreleased
 
 - Added integration with Pop, Livestorm, Chorus & Gong
+- Detect hidden menubar icon (#429)
 
 ## Version 3.10.0
 

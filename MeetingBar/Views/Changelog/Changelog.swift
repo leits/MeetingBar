@@ -96,6 +96,7 @@ struct ChangelogView: View {
                 if compareVersions("3.11.0", lastRevisedVersionInChangelog) {
                     Section(header: Text("Version 3.11.0")) {
                         Text("• Added integration with Pop, Livestorm, Chorus & Gong")
+                        Text("• Detect hidden menubar icon (#429)")
                     }
                 }
 
