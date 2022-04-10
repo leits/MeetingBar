@@ -98,6 +98,7 @@ struct ChangelogView: View {
                         Text("• Added integration with Pop, Livestorm, Chorus & Gong")
                         Text("• Fix readability of the statusbar text in multi-screen setups (#354)")
                         Text("• Detect hidden menubar icon (#429)")
+                        Text("😴 Added feature to snooze the notification (#)")
                     }
                 }
 

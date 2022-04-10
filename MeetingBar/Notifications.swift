@@ -21,12 +21,37 @@ func registerNotificationCategories() {
                                             title: "notifications_meetingbar_join_event_action".loco(),
                                             options: .foreground)
 
-    let eventCategory =
-        UNNotificationCategory(identifier: "EVENT",
-                               actions: [acceptAction],
-                               intentIdentifiers: [],
-                               hiddenPreviewsBodyPlaceholder: "",
-                               options: [.customDismissAction, .hiddenPreviewsShowTitle])
+    let snoozeUntilStartTime = UNNotificationAction(identifier: NotificationEventTimeAction.untilStart.rawValue,
+                                                    title: "Snooze until start time",
+                                                    options: .foreground)
+
+    let snooze5Min = UNNotificationAction(identifier: NotificationEventTimeAction.fiveMinuteLater.rawValue,
+                                          title: "Snooze for \(NotificationEventTimeAction.fiveMinuteLater.durationInMins) min",
+                                          options: .foreground)
+
+    let snooze10Min = UNNotificationAction(identifier: NotificationEventTimeAction.tenMinuteLater.rawValue,
+                                           title: "Snooze for \(NotificationEventTimeAction.tenMinuteLater.durationInMins) min",
+                                           options: .foreground)
+
+    let snooze15Min = UNNotificationAction(identifier: NotificationEventTimeAction.fifteenMinuteLater.rawValue,
+                                           title: "Snooze for \(NotificationEventTimeAction.fifteenMinuteLater.durationInMins) min",
+                                           options: .foreground)
+
+    let snooze30Min = UNNotificationAction(identifier: NotificationEventTimeAction.thirtyMinuteLater.rawValue,
+                                           title: "Snooze for \(NotificationEventTimeAction.thirtyMinuteLater.durationInMins) min",
+                                           options: .foreground)
+
+    let eventCategory = UNNotificationCategory(identifier: "EVENT",
+                                               actions: [acceptAction, snoozeUntilStartTime, snooze5Min, snooze10Min, snooze15Min, snooze30Min],
+                                               intentIdentifiers: [],
+                                               hiddenPreviewsBodyPlaceholder: "",
+                                               options: [.customDismissAction, .hiddenPreviewsShowTitle])
+
+    let snoozeEventCategory = UNNotificationCategory(identifier: "SNOOZE_EVENT",
+                                                     actions: [acceptAction, snooze5Min, snooze10Min, snooze15Min, snooze30Min],
+                                                     intentIdentifiers: [],
+                                                     hiddenPreviewsBodyPlaceholder: "",
+                                                     options: [.customDismissAction, .hiddenPreviewsShowTitle])
 
     let openPreferencesAction = UNNotificationAction(identifier: "OPEN_PREFERENCES",
                                                      title: "notifications_meetingbar_hidden_open_preferences_action".loco(),
@@ -45,7 +70,7 @@ func registerNotificationCategories() {
 
     let notificationCenter = UNUserNotificationCenter.current()
 
-    notificationCenter.setNotificationCategories([eventCategory, notificationsCategory])
+    notificationCenter.setNotificationCategories([eventCategory, notificationsCategory, snoozeEventCategory])
 
     notificationCenter.getNotificationCategories { categories in
         for category in categories {
@@ -177,6 +202,42 @@ func scheduleEventNotification(_ event: EKEvent) {
     center.add(request) { error in
         if let error = error {
             NSLog("%@", "request \(request.identifier) could not be added because of error \(error)")
+        }
+    }
+}
+
+func snoozeEventNotification(_ event: EKEvent, _ interval: NotificationEventTimeAction) {
+    requestNotificationAuthorization() // By the apple best practices
+    removePendingNotificationRequests()
+
+    let now = Date()
+    let center = UNUserNotificationCenter.current()
+    var timeInterval = Double(interval.durationInSeconds)
+    let content = UNMutableNotificationContent()
+
+    if Defaults[.hideMeetingTitle] {
+        content.title = "general_meeting".loco()
+    } else {
+        content.title = event.title
+    }
+
+    if interval == .untilStart {
+        timeInterval = event.startDate.timeIntervalSince(now)
+    }
+
+    content.categoryIdentifier = "SNOOZE_EVENT"
+    content.sound = UNNotificationSound.default
+    content.userInfo = ["eventID": event.eventIdentifier!]
+    content.threadIdentifier = "meetingbar"
+    content.body = "notifications_event_started_body".loco()
+
+    let trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeInterval, repeats: false)
+    let request = UNNotificationRequest(identifier: "NEXT_EVENT", content: content, trigger: trigger)
+    center.add(request) { error in
+        if let error = error {
+            NSLog("%@", "request \(request) could not be added because of error \(error)")
+        } else {
+            NSLog("%@", "request \(request) was added")
         }
     }
 }
