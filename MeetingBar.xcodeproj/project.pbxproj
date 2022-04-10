@@ -37,7 +37,6 @@
 		14B08ACE2749A57B002E3892 /* GTMAppAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 14B08ACD2749A57B002E3892 /* GTMAppAuth */; };
 		14B08AD02749AB96002E3892 /* GCEventStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14B08ACF2749AB96002E3892 /* GCEventStore.swift */; };
 		14B08AD42749AEF3002E3892 /* PromiseKit in Frameworks */ = {isa = PBXBuildFile; productRef = 14B08AD32749AEF3002E3892 /* PromiseKit */; };
-		14B08AD72749AFEE002E3892 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = 14B08AD62749AFEE002E3892 /* SwiftyJSON */; };
 		14C59B8525CF45340019C9E4 /* AppStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14C59B8425CF45340019C9E4 /* AppStore.swift */; };
 		14E4110E246F2F9200F73ACF /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14E4110D246F2F9200F73ACF /* Preferences.swift */; };
 		1BF37A9A2604C8960053D53C /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1BF37A9C2604C8960053D53C /* Localizable.strings */; };
@@ -153,7 +152,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				40DC7054250E5E1000217DD9 /* ServiceManagement.framework in Frameworks */,
-				14B08AD72749AFEE002E3892 /* SwiftyJSON in Frameworks */,
 				14B08AD42749AEF3002E3892 /* PromiseKit in Frameworks */,
 				14B08ACE2749A57B002E3892 /* GTMAppAuth in Frameworks */,
 				1418907C26F23CCD00DCD9B1 /* KeyboardShortcuts in Frameworks */,
@@ -381,7 +379,6 @@
 				1418907E26F23CF600DCD9B1 /* Defaults */,
 				14B08ACD2749A57B002E3892 /* GTMAppAuth */,
 				14B08AD32749AEF3002E3892 /* PromiseKit */,
-				14B08AD62749AFEE002E3892 /* SwiftyJSON */,
 			);
 			productName = MeetingBar;
 			productReference = 144C01792462D0C3000C9FFC /* MeetingBar.app */;
@@ -471,7 +468,6 @@
 				1418907D26F23CF600DCD9B1 /* XCRemoteSwiftPackageReference "Defaults" */,
 				14B08ACC2749A57B002E3892 /* XCRemoteSwiftPackageReference "GTMAppAuth" */,
 				14B08AD22749AEF3002E3892 /* XCRemoteSwiftPackageReference "PromiseKit" */,
-				14B08AD52749AFEE002E3892 /* XCRemoteSwiftPackageReference "SwiftyJSON" */,
 			);
 			productRefGroup = 144C017A2462D0C3000C9FFC /* Products */;
 			projectDirPath = "";
@@ -955,14 +951,6 @@
 				minimumVersion = 6.16.2;
 			};
 		};
-		14B08AD52749AFEE002E3892 /* XCRemoteSwiftPackageReference "SwiftyJSON" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/SwiftyJSON/SwiftyJSON";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 4.2.0;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -990,11 +978,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 14B08AD22749AEF3002E3892 /* XCRemoteSwiftPackageReference "PromiseKit" */;
 			productName = PromiseKit;
-		};
-		14B08AD62749AFEE002E3892 /* SwiftyJSON */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 14B08AD52749AFEE002E3892 /* XCRemoteSwiftPackageReference "SwiftyJSON" */;
-			productName = SwiftyJSON;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

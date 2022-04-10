@@ -11,7 +11,6 @@ import AppKit
 import Foundation
 import GTMAppAuth
 import PromiseKit
-import SwiftyJSON
 
 let GoogleClientNumber = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_CLIENT_NUMBER") as! String
 let GoogleClientSecret = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_CLIENT_SECRET") as! String
@@ -66,16 +65,23 @@ class GCEventStore: NSObject, EventStore, OIDExternalUserAgent {
 
                     if let data = data {
                         do {
-                            let json = try JSON(data: data)
+                            let data = Data(data)
 
-                            var calendars: [MBCalendar] = []
+                            if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+                                var calendars: [MBCalendar] = []
 
-                            for (_, item) in json["items"] {
-                                let calendar = MBCalendar(title: item["summary"].stringValue, ID: item["id"].stringValue, source: auth.userEmail, email: auth.userEmail, color: hexStringToUIColor(hex: item["backgroundColor"].stringValue))
+                                for item in json["items"] as! [[String: Any]] {
+                                    let title = item["summary"] as? String ?? ""
+                                    let calendarID = item["id"] as? String ?? ""
+                                    let backgroundColor = item["backgroundColor"] as? String ?? ""
 
-                                calendars.append(calendar)
+                                    let calendar = MBCalendar(title: title, ID: calendarID, source: auth.userEmail, email: auth.userEmail, color: hexStringToUIColor(hex: backgroundColor))
+
+                                    calendars.append(calendar)
+                                }
+
+                                return seal.fulfill(calendars)
                             }
-                            return seal.fulfill(calendars)
                         } catch {
                             NSLog(error.localizedDescription)
                             seal.reject(error)
@@ -116,81 +122,90 @@ class GCEventStore: NSObject, EventStore, OIDExternalUserAgent {
 
                     if let data = data {
                         do {
-                            let json = try JSON(data: data)
-                            var events: [MBEvent] = []
+                            let data = Data(data)
 
-                            for (_, item) in json["items"] {
-                                let eventID = item["id"].stringValue
-                                let title = item["summary"].string
-                                var status: MBEventStatus
-                                switch item["status"].string {
-                                case "confirmed":
-                                    status = .confirmed
-                                case "tentative":
-                                    status = .tentative
-                                case "cancelled":
-                                    status = .canceled
-                                default:
-                                    status = .none
-                                }
+                            if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+                                var events: [MBEvent] = []
 
-                                let notes = item["description"].string
-                                let location = item["location"].string
-                                let url = URL(string: item["hangoutLink"].string ?? "")
-
-                                let organizer = MBEventOrganizer(email: item["organizer"]["email"].string, name: item["organizer"]["name"].string)
-
-                                var attendees: [MBEventAttendee] = []
-                                for (_, jsonAttendee) in item["attendees"] {
-                                    let email = jsonAttendee["email"].string
-                                    let name = jsonAttendee["displayName"].string
-                                    let optional = jsonAttendee["optional"].bool ?? false
-                                    let isCurrentUser = jsonAttendee["self"].bool ?? false
-
-                                    var attendeeStatus: MBEventAttendeeStatus
-                                    switch jsonAttendee["responseStatus"].string {
-                                    case "accepted":
-                                        attendeeStatus = .accepted
-                                    case "declined":
-                                        attendeeStatus = .declined
+                                for item in json["items"] as! [[String: Any]] {
+                                    let eventID = item["id"] as! String
+                                    let title = item["summary"] as? String
+                                    var status: MBEventStatus
+                                    switch item["status"] as? String {
+                                    case "confirmed":
+                                        status = .confirmed
                                     case "tentative":
-                                        attendeeStatus = .tentative
-                                    case "needsAction":
-                                        attendeeStatus = .inProcess
+                                        status = .tentative
+                                    case "cancelled":
+                                        status = .canceled
                                     default:
-                                        attendeeStatus = .unknown
+                                        status = .none
                                     }
-                                    let attendee = MBEventAttendee(email: email, name: name, status: attendeeStatus, optional: optional, isCurrentUser: isCurrentUser)
-                                    attendees.append(attendee)
+
+                                    let notes = item["description"] as? String
+                                    let location = item["location"] as? String
+                                    let url = URL(string: item["hangoutLink"] as? String ?? "")
+
+                                    let organizerRaw = item["organizer"] as? [String: String]
+                                    let organizer = MBEventOrganizer(email: organizerRaw?["email"], name: organizerRaw?["name"])
+
+                                    var attendees: [MBEventAttendee] = []
+                                    let rawAttendees = item["attendees"] as? [[String: Any]] ?? []
+                                    for jsonAttendee in rawAttendees {
+                                        let email = jsonAttendee["email"] as? String
+                                        let name = jsonAttendee["displayName"] as? String
+                                        let optional = jsonAttendee["optional"] as? Bool ?? false
+                                        let isCurrentUser = jsonAttendee["self"] as? Bool ?? false
+
+                                        var attendeeStatus: MBEventAttendeeStatus
+                                        switch jsonAttendee["responseStatus"] as? String {
+                                        case "accepted":
+                                            attendeeStatus = .accepted
+                                        case "declined":
+                                            attendeeStatus = .declined
+                                        case "tentative":
+                                            attendeeStatus = .tentative
+                                        case "needsAction":
+                                            attendeeStatus = .inProcess
+                                        default:
+                                            attendeeStatus = .unknown
+                                        }
+                                        let attendee = MBEventAttendee(email: email, name: name, status: attendeeStatus, optional: optional, isCurrentUser: isCurrentUser)
+                                        attendees.append(attendee)
+                                    }
+
+                                    var startDate: Date
+                                    var endDate: Date
+                                    var isAllDay: Bool
+
+                                    let itemStart = item["start"] as! [String: String]
+                                    let itemEnd = item["end"] as! [String: String]
+
+                                    if let startDateTime = itemStart["dateTime"], let endDateTime = itemEnd["dateTime"] {
+                                        let formatter = ISO8601DateFormatter()
+                                        startDate = formatter.date(from: startDateTime)!
+                                        endDate = formatter.date(from: endDateTime)!
+                                        isAllDay = false
+                                    } else {
+                                        let formatter = DateFormatter()
+                                        formatter.dateFormat = "yyyy-MM-dd"
+                                        startDate = formatter.date(from: itemStart["date"]!)!
+                                        endDate = formatter.date(from: itemEnd["date"]!)!
+                                        isAllDay = true
+                                    }
+
+                                    let event = MBEvent(
+                                        ID: eventID, title: title, status: status,
+                                        notes: notes, location: location, url: url,
+                                        organizer: organizer, attendees: attendees,
+                                        startDate: startDate, endDate: endDate,
+                                        isAllDay: isAllDay, calendar: calendar
+                                    )
+                                    events.append(event)
                                 }
 
-                                var startDate: Date
-                                var endDate: Date
-                                var isAllDay: Bool
-
-                                if item["start"]["dateTime"].exists(), item["end"]["dateTime"].exists() {
-                                    let formatter = ISO8601DateFormatter()
-                                    startDate = formatter.date(from: item["start"]["dateTime"].stringValue)!
-                                    endDate = formatter.date(from: item["end"]["dateTime"].stringValue)!
-                                    isAllDay = false
-                                } else {
-                                    let formatter = DateFormatter()
-                                    formatter.dateFormat = "yyyy-MM-dd"
-                                    startDate = formatter.date(from: item["start"]["date"].stringValue)!
-                                    endDate = formatter.date(from: item["end"]["date"].stringValue)!
-                                    isAllDay = true
-                                }
-
-                                let event = MBEvent(
-                                    ID: eventID, title: title, status: status,
-                                    notes: notes, location: location, url: url,
-                                    organizer: organizer, attendees: attendees,
-                                    startDate: startDate, endDate: endDate,
-                                    isAllDay: isAllDay, calendar: calendar
-                                )
-                                events.append(event)
+                                return seal.fulfill(events)
                             }
-                            return seal.fulfill(events)
                         } catch {
                             seal.reject(error)
                         }
