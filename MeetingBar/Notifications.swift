@@ -31,11 +31,10 @@ func registerNotificationCategories() {
     let openPreferencesAction = UNNotificationAction(identifier: "OPEN_PREFERENCES",
                                                      title: "notifications_meetingbar_hidden_open_preferences_action".loco(),
                                                      options: .foreground)
-    
+
     let stopNotificationAction = UNNotificationAction(identifier: "STOP_APP_HIDDEN_NOTIFICATON_ACTION",
                                                       title: "notifications_meetingbar_hidden_stop_notifications_action".loco(),
                                                       options: .foreground)
-
 
     let notificationsCategory =
         UNNotificationCategory(identifier: "STATUSBAR",
