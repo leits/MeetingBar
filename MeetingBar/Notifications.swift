@@ -18,7 +18,7 @@ func requestNotificationAuthorization() {
 
 func registerNotificationCategories() {
     let acceptAction = UNNotificationAction(identifier: "JOIN_ACTION",
-                                            title: "Join",
+                                            title: "notifications_meetingbar_join_event_action".loco(),
                                             options: .foreground)
 
     let eventCategory =
@@ -28,13 +28,14 @@ func registerNotificationCategories() {
                                hiddenPreviewsBodyPlaceholder: "",
                                options: [.customDismissAction, .hiddenPreviewsShowTitle])
 
-    let stopNotificationAction = UNNotificationAction(identifier: "STOP_ACTION",
-                                                      title: "Stop notifications",
+    let openPreferencesAction = UNNotificationAction(identifier: "OPEN_PREFERENCES",
+                                                     title: "notifications_meetingbar_hidden_open_preferences_action".loco(),
+                                                     options: .foreground)
+    
+    let stopNotificationAction = UNNotificationAction(identifier: "STOP_APP_HIDDEN_NOTIFICATON_ACTION",
+                                                      title: "notifications_meetingbar_hidden_stop_notifications_action".loco(),
                                                       options: .foreground)
 
-    let openPreferencesAction = UNNotificationAction(identifier: "OPEN_PREFERENCES",
-                                                     title: "Open Preferences",
-                                                     options: .foreground)
 
     let notificationsCategory =
         UNNotificationCategory(identifier: "STATUSBAR",

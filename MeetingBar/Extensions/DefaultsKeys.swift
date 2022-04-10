@@ -39,7 +39,9 @@ extension Defaults.Keys {
 
     static let hideMeetingTitle = Key<Bool>("hideMeetingTitle", default: false)
 
-    static let sendHiddenNotification = Key<Bool>("sendHiddenNotification", default: false)
+    // setting if the user wants to be warned about the hidden meetingbar icon in the global menubar/status bar
+    // the default is now enabled because users are sometimes confused starting meetingbar while no app icon is visible
+    static let notificationForHiddenAppInMenubar = Key<Bool>("notificationForHiddenAppInMenubar", default: true)
 
     // Menu Appearance
     // if the event title in the menu should be shortened or not -> the length will be stored in field menuEventTitleLength

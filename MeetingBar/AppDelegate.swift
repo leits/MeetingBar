@@ -501,9 +501,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                     }
                 }
             }
-        case "STOP_ACTION", UNNotificationDefaultActionIdentifier:
+        case "STOP_APP_HIDDEN_NOTIFICATON_ACTION", UNNotificationDefaultActionIdentifier:
             if response.notification.request.content.categoryIdentifier == "STATUSBAR" {
-                Defaults[.sendHiddenNotification] = false
+                Defaults[.notificationForHiddenAppInMenubar] = false
             }
 
         case "OPEN_PREFERENCES", UNNotificationDefaultActionIdentifier:

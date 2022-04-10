@@ -34,19 +34,19 @@ struct GeneralTab: View {
  * settings for notifications of all kinds
  */
 struct NotificationsSection: View {
-    @Default(.sendHiddenNotification) var sendHiddenNotification
+    @Default(.notificationForHiddenAppInMenubar) var notificationForHiddenAppInMenubar
 
     var body: some View {
-        Toggle("preferences_general_hidden_notification_toggle".loco(), isOn: $sendHiddenNotification)
+        Toggle("preferences_general_hidden_notification_toggle".loco(), isOn: $notificationForHiddenAppInMenubar)
         Text("preferences_general_hidden_notification_toggle_tip".loco()).foregroundColor(Color.gray).font(.system(size: 12))
 
         let (noAlertStyle, disabled) = checkNotificationSettings()
 
-        if noAlertStyle && !disabled && sendHiddenNotification {
+        if noAlertStyle && !disabled && notificationForHiddenAppInMenubar {
             Text("shared_send_notification_no_alert_style_tip".loco()).foregroundColor(Color.gray).font(.system(size: 12))
         }
 
-        if disabled && sendHiddenNotification {
+        if disabled && notificationForHiddenAppInMenubar {
             Text("shared_send_notification_disabled_tip".loco()).foregroundColor(Color.gray).font(.system(size: 12))
         }
     }

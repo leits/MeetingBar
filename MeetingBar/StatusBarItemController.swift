@@ -67,7 +67,7 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
             }
 
             let isHidden = self.statusItem.button!.window?.occlusionState.contains(.visible) == false
-            if isHidden, Defaults[.sendHiddenNotification] {
+            if isHidden, Defaults[.notificationForHiddenAppInMenubar] {
                 sendUserNotification("notifications_meetingbar_invisible_title".loco(), "notifications_meetingbar_invisible_body".loco(), "STATUSBAR")
             }
         }
