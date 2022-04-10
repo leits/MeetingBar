@@ -111,12 +111,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
 
         // Settings change observers
-        appearanceSettingsObserver = Defaults.observe(keys: .statusbarEventTitleLength, .eventTimeFormat, .eventTitleIconFormat, .showEventMaxTimeUntilEventThreshold, .showEventMaxTimeUntilEventEnabled, .showEventDetails, .shortenEventTitle, .menuEventTitleLength, .showEventEndTime, .showMeetingServiceIcon, .timeFormat, .bookmarks, .eventTitleFormat) {
+        appearanceSettingsObserver = Defaults.observe(keys: .statusbarEventTitleLength, .eventTimeFormat, .eventTitleIconFormat, .showEventMaxTimeUntilEventThreshold, .showEventMaxTimeUntilEventEnabled, .showEventDetails, .shortenEventTitle, .menuEventTitleLength, .showEventEndTime, .showMeetingServiceIcon, .timeFormat, .bookmarks, .eventTitleFormat, options: []) {
             self.statusBarItem.updateTitle()
             self.statusBarItem.updateMenu()
         }
 
-        meetingTitleVisibilityObserver = Defaults.observe(.hideMeetingTitle) { change in
+        meetingTitleVisibilityObserver = Defaults.observe(.hideMeetingTitle, options: []) { change in
             if change.oldValue != change.newValue {
                 self.statusBarItem.updateMenu()
                 self.statusBarItem.updateTitle()
@@ -128,21 +128,21 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                 }
             }
         }
-        launchAtLoginObserver = Defaults.observe(.launchAtLogin) { change in
+        launchAtLoginObserver = Defaults.observe(.launchAtLogin, options: []) { change in
             if change.oldValue != change.newValue {
                 SMLoginItemSetEnabled(AutoLauncher.bundleIdentifier as CFString, change.newValue)
             }
         }
-        eventFiltersObserver = Defaults.observe(keys: .selectedCalendarIDs, .showEventsForPeriod, .disablePastEvents, .pastEventsAppereance, .declinedEventsAppereance, .showPendingEvents, .allDayEvents, .nonAllDayEvents, .personalEventsAppereance, .showEventsForPeriod) {
+        eventFiltersObserver = Defaults.observe(keys: .selectedCalendarIDs, .showEventsForPeriod, .disablePastEvents, .pastEventsAppereance, .declinedEventsAppereance, .showPendingEvents, .allDayEvents, .nonAllDayEvents, .personalEventsAppereance, .showEventsForPeriod, options: []) {
             self.statusBarItem.loadCalendars()
         }
-        preferredLanguageObserver = Defaults.observe(.preferredLanguage) { change in
+        preferredLanguageObserver = Defaults.observe(.preferredLanguage, options: []) { change in
             if I18N.instance.changeLanguage(to: change.newValue) {
                 self.statusBarItem.updateTitle()
                 self.statusBarItem.updateMenu()
             }
         }
-        joinEventNotificationObserver = Defaults.observe(.joinEventNotification) { change in
+        joinEventNotificationObserver = Defaults.observe(.joinEventNotification, options: []) { change in
             if change.oldValue != change.newValue {
                 if change.newValue == true {
                     if let nextEvent = getNextEvent(events: self.statusBarItem.events) {
