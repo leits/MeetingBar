@@ -221,10 +221,9 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
 
                     var styles = [NSAttributedString.Key: Any]()
                     styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: 13)
+                    styles[NSAttributedString.Key.foregroundColor] = NSColor.white
 
-                    if eventStatus == .pending, Defaults[.showPendingEvents] == PendingEventsAppereance.show_inactive {
-                        styles[NSAttributedString.Key.foregroundColor] = NSColor.lightGray
-                    } else if eventStatus == .pending, Defaults[.showPendingEvents] == PendingEventsAppereance.show_underlined {
+                    if eventStatus == .pending, Defaults[.showPendingEvents] == PendingEventsAppereance.show_underlined {
                         styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
                     }
 
