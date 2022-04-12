@@ -16,6 +16,12 @@ struct Bookmark: Encodable, Decodable, Hashable {
     var url: URL
 }
 
+struct Event: Encodable, Decodable, Hashable {
+    var id: String
+    var lastModifiedDate: Date
+    var eventEndDate: Date
+}
+
 /**
  * this method will extract m365 safe links if any of these links are found in the given text..
  * The method will extract the real url from safe links and decode it, so that the following regex logic can detect the meeting service.

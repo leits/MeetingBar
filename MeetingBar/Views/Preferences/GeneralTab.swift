@@ -16,16 +16,21 @@ struct GeneralTab: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
-            Spacer()
-            LaunchAtLoginANDPreferredLanguagePicker()
-            Divider()
-            JoinEventNotificationPicker()
-            Divider()
-            NotificationsSection()
-            Divider()
-            ShortcutsSection()
-            Divider()
-            PatronageAppSection()
+            Section {
+                Spacer()
+                LaunchAtLoginANDPreferredLanguagePicker()
+                Divider()
+                JoinEventNotificationPicker()
+                Divider()
+            }
+            Section {
+                NotificationsSection()
+                AutomaticEventJoinPicker()
+                Divider()
+                ShortcutsSection()
+                Divider()
+                PatronageAppSection()
+            }
         }.padding()
     }
 }

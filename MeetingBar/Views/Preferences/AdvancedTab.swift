@@ -29,28 +29,57 @@ struct AdvancedTab: View {
 }
 
 struct ScriptSection: View {
+    @Default(.runAutomaticEventScript) var runAutomaticEventScript
+    @Default(.automaticEventScriptTime) var automaticEventScriptTime
     @Default(.runJoinEventScript) var runJoinEventScript
     @Default(.joinEventScript) var joinEventScript
 
     @State private var script = Defaults[.joinEventScript]
     @State private var showingAlert = false
 
+    let scriptPath = try! FileManager.default.url(for: .applicationScriptsDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+
     var body: some View {
-        HStack {
-            Toggle("preferences_advanced_apple_script_checkmark".loco(), isOn: $runJoinEventScript)
-            Spacer()
-            if script != joinEventScript {
-                Button(action: saveScript) {
-                    Text("preferences_advanced_save_script_button".loco())
+        VStack(alignment: .leading) {
+            HStack {
+                Toggle("Run AppleScript automatically when a meeting starts", isOn: $runAutomaticEventScript)
+                Picker("", selection: $automaticEventScriptTime) {
+                    Text("when event starts").tag(EventScriptExecutionTime.atStart)
+                    Text("1 minute before").tag(EventScriptExecutionTime.minuteBefore)
+                    Text("2 minutes before").tag(EventScriptExecutionTime.twoMinutesBefore)
+                    Text("3 minutes before").tag(EventScriptExecutionTime.threeMinuteBefore)
+                    Text("5 minutes before").tag(EventScriptExecutionTime.fiveMinuteBefore)
+                }.frame(width: 150, alignment: .leading).labelsHidden().disabled(!runAutomaticEventScript)
+                Spacer()
+                Button(action: runSampleScript) {
+                    Text("Test script")
                 }
             }
-        }.frame(height: 15)
-        NSScrollableTextViewWrapper(text: $script).padding(.leading, 19)
-            .alert(isPresented: $showingAlert) {
-                Alert(title: Text("preferences_advanced_wrong_location_title".loco()),
-                      message: Text("preferences_advanced_wrong_location_message".loco()),
-                      dismissButton: .default(Text("preferences_advanced_wrong_location_button".loco())))
+            HStack {
+                Toggle("preferences_advanced_apple_script_checkmark".loco(), isOn: $runJoinEventScript)
+                Spacer()
+                if script != joinEventScript {
+                    Button(action: saveScript) {
+                        Text("preferences_advanced_save_script_button".loco())
+                    }
+                }
             }
+
+            NSScrollableTextViewWrapper(text: $script).padding(.leading, 19)
+                .alert(isPresented: $showingAlert) {
+                    Alert(title: Text("preferences_advanced_wrong_location_title".loco()),
+                          message: Text("preferences_advanced_wrong_location_message".loco()),
+                          dismissButton: .default(Text("preferences_advanced_wrong_location_button".loco())))
+                }
+        }
+    }
+
+    /**
+     * triggers a sample script
+     */
+    func runSampleScript() {
+        let scripts = Scripts()
+        scripts.runAppleScriptForSampleEvent()
     }
 
     func saveScript() {

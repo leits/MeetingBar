@@ -10,6 +10,33 @@ import Defaults
 import SwiftUI
 import UserNotifications
 
+/**
+ * users can decide to automatically open events in the configured application
+ */
+struct AutomaticEventJoinPicker: View {
+    @Default(.automaticEventJoin) var automaticEventJoin
+    @Default(.automaticEventJoinTime) var automaticEventJoinTime
+
+    var body: some View {
+        HStack {
+            Toggle("shared_automatic_event_join_toggle".loco(), isOn: $automaticEventJoin)
+            Picker("", selection: $automaticEventJoinTime) {
+                Text("shared_automatic_event_join_directly_value".loco()).tag(AutomaticEventJoinTime.atStart)
+                Text("shared_automatic_event_join_one_minute_value".loco()).tag(AutomaticEventJoinTime.minuteBefore)
+                Text("shared_automatic_event_join_two_minutes_value".loco()).tag(AutomaticEventJoinTime.twoMinutesBefore)
+                Text("shared_automatic_event_join_three_minutes_value".loco()).tag(AutomaticEventJoinTime.threeMinutesBefore)
+                Text("shared_automatic_event_join_four_minutes_value".loco()).tag(AutomaticEventJoinTime.fourMinutesBefore)
+                Text("shared_automatic_event_join_five_minutes_value".loco()).tag(AutomaticEventJoinTime.fiveMinutesBefore)
+                Text("shared_automatic_event_join_ten_minutes_value".loco()).tag(AutomaticEventJoinTime.tenMinutesBefore)
+            }.frame(width: 220, alignment: .leading).labelsHidden().disabled(!automaticEventJoin)
+        }
+
+        if automaticEventJoin {
+            Text("shared_automatic_event_join_tip".loco()).foregroundColor(Color.gray).font(.system(size: 12))
+        }
+    }
+}
+
 struct JoinEventNotificationPicker: View {
     @Default(.joinEventNotification) var joinEventNotification
     @Default(.joinEventNotificationTime) var joinEventNotificationTime

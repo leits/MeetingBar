@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		01044AE127EA695A0070512E /* AutomaticJoinEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01044AE027EA695A0070512E /* AutomaticJoinEvent.swift */; };
+		01E0EA8027F393B300237F14 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E0EA7F27F393B300237F14 /* Date.swift */; };
 		140D84322493A3FE0055E1CE /* StatusBarItemController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 140D84312493A3FE0055E1CE /* StatusBarItemController.swift */; };
 		140D84342493A4180055E1CE /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 140D84332493A4180055E1CE /* Constants.swift */; };
 		140D843A2493A6240055E1CE /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 140D84392493A6240055E1CE /* Helpers.swift */; };
@@ -53,6 +55,7 @@
 		A7B68FA325CDE9E200CA3A68 /* URL.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B68FA225CDE9E200CA3A68 /* URL.swift */; };
 		E23954682628BF89003ECCB3 /* BrowserConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E23954672628BF89003ECCB3 /* BrowserConfigView.swift */; };
 		E249D534259BBC3800429BF1 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = E249D533259BBC3800429BF1 /* String.swift */; };
+		E26A0BFC263449E300F117A9 /* Scripts.swift in Sources */ = {isa = PBXBuildFile; fileRef = E26A0BFB263449E300F117A9 /* Scripts.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -79,6 +82,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		01044AE027EA695A0070512E /* AutomaticJoinEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutomaticJoinEvent.swift; sourceTree = "<group>"; };
+		01E0EA7F27F393B300237F14 /* Date.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
 		140D84312493A3FE0055E1CE /* StatusBarItemController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBarItemController.swift; sourceTree = "<group>"; };
 		140D84332493A4180055E1CE /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		140D84392493A6240055E1CE /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
@@ -138,6 +143,7 @@
 		D6D68C5327BCF93D009E8469 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Localizable.strings; sourceTree = "<group>"; };
 		E23954672628BF89003ECCB3 /* BrowserConfigView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrowserConfigView.swift; sourceTree = "<group>"; };
 		E249D533259BBC3800429BF1 /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
+		E26A0BFB263449E300F117A9 /* Scripts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Scripts.swift; sourceTree = "<group>"; };
 		E2AE715525AA54A600D3C7CF /* DevTeamOverride.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = DevTeamOverride.xcconfig; sourceTree = "<group>"; };
 		E48FB770279B3A820071CC5A /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		E4DD0F0A2529D0D20029E395 /* Project-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Project-Release.xcconfig"; sourceTree = "<group>"; };
@@ -211,6 +217,7 @@
 		144C017B2462D0C3000C9FFC /* MeetingBar */ = {
 			isa = PBXGroup;
 			children = (
+				E26A0BFB263449E300F117A9 /* Scripts.swift */,
 				1BF37A902604C8050053D53C /* Resources  */,
 				144C017C2462D0C3000C9FFC /* AppDelegate.swift */,
 				1452C9AD25AF5B1000C46CDF /* Views */,
@@ -228,6 +235,7 @@
 				144C01802462D0C5000C9FFC /* Assets.xcassets */,
 				144C01892462D0C5000C9FFC /* MeetingBar.entitlements */,
 				1BF37AA42604F7E00053D53C /* I18N.swift */,
+				01044AE027EA695A0070512E /* AutomaticJoinEvent.swift */,
 			);
 			path = MeetingBar;
 			sourceTree = "<group>";
@@ -290,6 +298,7 @@
 		149AD20F25A8967C004976F1 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				01E0EA7F27F393B300237F14 /* Date.swift */,
 				140D84402493B8030055E1CE /* KeyboardShortcutsNames.swift */,
 				140D843E2493B7CB0055E1CE /* DefaultsKeys.swift */,
 				E249D533259BBC3800429BF1 /* String.swift */,
@@ -518,6 +527,7 @@
 				1435E44C260954D00071B188 /* Changelog.swift in Sources */,
 				1452C9D225AF86E700C46CDF /* AdvancedTab.swift in Sources */,
 				A7B68FA325CDE9E200CA3A68 /* URL.swift in Sources */,
+				01E0EA8027F393B300237F14 /* Date.swift in Sources */,
 				1452C9DC25AF88EF00C46CDF /* AccessScreen.swift in Sources */,
 				14C59B8525CF45340019C9E4 /* AppStore.swift in Sources */,
 				1452C9C625AF85B400C46CDF /* ServicesTab.swift in Sources */,
@@ -527,6 +537,7 @@
 				46E4794C2801D53B00B48059 /* MeetingServices.swift in Sources */,
 				140D843A2493A6240055E1CE /* Helpers.swift in Sources */,
 				46E479502802155700B48059 /* Event.swift in Sources */,
+				E26A0BFC263449E300F117A9 /* Scripts.swift in Sources */,
 				144C017D2462D0C3000C9FFC /* AppDelegate.swift in Sources */,
 				1452C9C225AF854000C46CDF /* AppearanceTab.swift in Sources */,
 				1452C9B525AF5CE700C46CDF /* GeneralTab.swift in Sources */,
@@ -540,6 +551,7 @@
 				140D843D2493B7BF0055E1CE /* EKEventStore.swift in Sources */,
 				1452C9CE25AF868E00C46CDF /* CalendarsTab.swift in Sources */,
 				14E4110E246F2F9200F73ACF /* Preferences.swift in Sources */,
+				01044AE127EA695A0070512E /* AutomaticJoinEvent.swift in Sources */,
 				1452C9CA25AF861300C46CDF /* BookmarksTab.swift in Sources */,
 				140D84322493A3FE0055E1CE /* StatusBarItemController.swift in Sources */,
 				14B08AD02749AB96002E3892 /* GCEventStore.swift in Sources */,

@@ -24,8 +24,16 @@ extension Defaults.Keys {
     static let showEventsForPeriod = Key<ShowEventsForPeriod>("showEventsForPeriod", default: .today)
     static let joinEventNotification = Key<Bool>("joinEventNotification", default: true)
     static let joinEventNotificationTime = Key<JoinEventNotificationTime>("joinEventNotificationTime", default: .atStart)
+
+    static let automaticEventJoin = Key<Bool>("automaticEventJoin", default: false)
+    static let automaticEventJoinTime = Key<AutomaticEventJoinTime>("automaticEventJoinTime", default: .atStart)
+
     static let launchAtLogin = Key<Bool>("launchAtLogin", default: false)
     static let preferredLanguage = Key<AppLanguage>("preferredLanguage", default: .system)
+
+    static let processedEvents = Key<[Event]>("processedEvents", default: [])
+
+    static let automaticJoinedEvents = Key<[Event]>("automaticJoinedEvents", default: [])
 
     // Status Bar Appearance
     static let eventTitleFormat = Key<EventTitleFormat>("eventTitleFormat", default: .show)
@@ -101,6 +109,9 @@ extension Defaults.Keys {
     static let joinEventScriptLocation = Key<URL?>("joinEventScriptLocation", default: nil)
     static let runJoinEventScript = Key<Bool>("runAppleScriptWhenJoiningEvent", default: false)
     static let joinEventScript = Key<String>("joinEventScript", default: "preferences_advanced_apple_script_placeholder".loco())
+    static let runAutomaticEventScript = Key<Bool>("runAutomaticEventScript", default: false)
+    static let automaticEventScriptTime = Key<EventScriptExecutionTime>("automaticEventScriptTime", default: .atStart)
+
     static let customRegexes = Key<[String]>("customRegexes", default: [])
     static let filterEventRegexes = Key<[String]>("filterEventRegexes", default: [])
 }

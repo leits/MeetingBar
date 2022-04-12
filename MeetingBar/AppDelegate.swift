@@ -84,8 +84,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             self.statusBarItem.loadCalendars()
         }
 
-        scheduleUpdateStatusBarItem()
-        scheduleFetchEvents()
+        // TODO: Fix scripts
+        Scripts().scheduleRunScriptForMeetingStart()
+        AutomaticJoinEvent().scheduleRunScriptForAutomaticMeetingJoin()
+        //
 
         if Defaults[.browsers].isEmpty {
             addInstalledBrowser()
