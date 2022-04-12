@@ -88,13 +88,11 @@ func sendUserNotification(_ title: String, _ text: String, _ categoryIdentier: S
     let content = UNMutableNotificationContent()
     content.title = title
     content.body = text
-    if categoryIdentier != nil {
-        content.categoryIdentifier = categoryIdentier!
-    }
 
     let identifier: String
-    if categoryIdentier != nil {
-        identifier = categoryIdentier!
+    if let categoryIdentier = categoryIdentier {
+        content.categoryIdentifier = categoryIdentier
+        identifier = categoryIdentier
     } else {
         identifier = UUID().uuidString
     }
@@ -139,7 +137,7 @@ func sendNotification(_ title: String, _ text: String) {
     requestNotificationAuthorization() // By the apple best practices
 
     if notificationsEnabled() {
-        sendUserNotification(title, text, nil)
+        sendUserNotification(title, text)
     } else {
         displayAlert(title: title, text: text)
     }
