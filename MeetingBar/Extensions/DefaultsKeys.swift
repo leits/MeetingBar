@@ -16,9 +16,8 @@ extension Defaults.Keys {
     static let isInstalledFromAppStore = Key<Bool>("isInstalledFromAppStore", default: false)
     static let patronageDuration = Key<Int>("patronageDuration", default: 0)
 
-    static let calendarTitle = Key<String>("calendarTitle", default: "") // Backward compatibility
-    static let selectedCalendars = Key<[String]>("selectedCalendars", default: []) // Backward compatibility
     static let selectedCalendarIDs = Key<[String]>("selectedCalendarIDs", default: [])
+    static let eventStoreProvider = Key<eventStoreProvider>("eventStoreProvider", default: .MacOSEventKit)
 
     static let onboardingCompleted = Key<Bool>("onboardingCompleted", default: false)
 
@@ -29,12 +28,10 @@ extension Defaults.Keys {
     static let preferredLanguage = Key<AppLanguage>("preferredLanguage", default: .system)
 
     // Status Bar Appearance
-    static let showEventTitleInStatusBar = Key<Bool?>("showEventTitleInStatusBar") // Backward compatibility
     static let eventTitleFormat = Key<EventTitleFormat>("eventTitleFormat", default: .show)
     static let eventTimeFormat = Key<EventTimeFormat>("eventTimeFormat", default: .show)
 
     static let eventTitleIconFormat = Key<EventTitleIconFormat>("eventTitleIconFormat", default: .none)
-    static let titleLength = Key<Double?>("titleLength", default: nil) // Backward compatibility
     static let statusbarEventTitleLength = Key<Int>("statusbarEventTitleLength", default: statusbarEventTitleLengthLimits.max)
 
     static let hideMeetingTitle = Key<Bool>("hideMeetingTitle", default: false)
@@ -92,8 +89,6 @@ extension Defaults.Keys {
      */
     static let browserForCreateMeeting = Key<Browser>("browserForCreateMeeting", default: systemDefaultBrowser)
 
-    static let browserForMeetLinks = Key<DeprecatedBrowser?>("browserForMeetLinks", default: nil) // Backward compatibility
-    static let useChromeForMeetLinks = Key<Bool?>("useChromeForMeetLinks") // Backward compatibility
     static let useAppForZoomLinks = Key<Bool>("useAppForZoomLinks", default: false)
     static let useAppForTeamsLinks = Key<Bool>("useAppForTeamsLinks", default: false)
     static let useAppForJitsiLinks = Key<Bool>("useAppForJitsiLinks", default: false)

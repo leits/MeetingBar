@@ -134,7 +134,7 @@ func displayAlert(title: String, text: String) {
     userAlert.runModal()
 }
 
-func scheduleEventNotification(_ event: EKEvent) {
+func scheduleEventNotification(_ event: MBEvent) {
     requestNotificationAuthorization() // By the apple best practices
 
     let now = Date()
@@ -168,7 +168,7 @@ func scheduleEventNotification(_ event: EKEvent) {
     }
     content.categoryIdentifier = "EVENT"
     content.sound = UNNotificationSound.default
-    content.userInfo = ["eventID": event.eventIdentifier!]
+    content.userInfo = ["eventID": event.ID]
     content.threadIdentifier = "meetingbar"
 
     let trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeInterval, repeats: false)
@@ -180,7 +180,7 @@ func scheduleEventNotification(_ event: EKEvent) {
     }
 }
 
-func snoozeEventNotification(_ event: EKEvent, _ interval: NotificationEventTimeAction) {
+func snoozeEventNotification(_ event: MBEvent, _ interval: NotificationEventTimeAction) {
     requestNotificationAuthorization() // By the apple best practices
     removePendingNotificationRequests()
 
@@ -201,7 +201,7 @@ func snoozeEventNotification(_ event: EKEvent, _ interval: NotificationEventTime
 
     content.categoryIdentifier = "SNOOZE_EVENT"
     content.sound = UNNotificationSound.default
-    content.userInfo = ["eventID": event.eventIdentifier!]
+    content.userInfo = ["eventID": event.ID]
     content.threadIdentifier = "meetingbar"
     content.body = "notifications_event_started_body".loco()
 
