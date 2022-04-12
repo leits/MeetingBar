@@ -85,8 +85,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
 
         // TODO: Fix scripts
-        Scripts().scheduleRunScriptForMeetingStart()
-        AutomaticJoinEvent().scheduleRunScriptForAutomaticMeetingJoin()
+        Scripts(self).scheduleRunScriptForMeetingStart()
+        AutomaticJoinEvent(self).scheduleRunScriptForAutomaticMeetingJoin()
         //
 
         if Defaults[.browsers].isEmpty {

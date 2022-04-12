@@ -11,11 +11,10 @@ import EventKit
 import Foundation
 
 class Scripts: NSObject {
-    var eventStore: EKEventStore
+    var app: AppDelegate
 
-    override
-    init() {
-        eventStore = initEventStore()
+    init(_ appDelegate: AppDelegate) {
+        app = appDelegate
     }
 
     /**
@@ -33,10 +32,10 @@ class Scripts: NSObject {
     }
 
     /**
-    * we will schedule a common task to check if we have to execute the apple script for event starts..
-    * -  a new meeting is started within the timeframe of the notification timebox, but not later as the beginning of the meeting.
-    * - All day events will be reported the first time when the current time is within the timeframe of the allday event (which can be several days).
-    */
+     * we will schedule a common task to check if we have to execute the apple script for event starts..
+     * -  a new meeting is started within the timeframe of the notification timebox, but not later as the beginning of the meeting.
+     * - All day events will be reported the first time when the current time is within the timeframe of the allday event (which can be several days).
+     */
     func scheduleRunScriptForMeetingStart() {
         let timer = Timer(timeInterval: 60 * 1, target: self, selector: #selector(runScriptsForMeetingStart), userInfo: nil, repeats: true)
         RunLoop.current.add(timer, forMode: .common)
@@ -74,7 +73,7 @@ class Scripts: NSObject {
 
         NSLog("Firing reccuring runscriptfornextmeeting")
 
-        if let nextEvent = nextEvent(eventStore: eventStore) {
+        if let nextEvent = getNextEvent(events: app.statusBarItem.events) {
             let now = Date()
             let timeInterval = nextEvent.startDate.timeIntervalSince(now)
 
@@ -87,7 +86,7 @@ class Scripts: NSObject {
 
             if scriptNonAlldayCandidate || scriptAllDayCandidate {
                 var events = Defaults[.processedEvents]
-                let matchedEvent = events.firstIndex { $0.id == nextEvent.eventIdentifier }
+                let matchedEvent = events.firstIndex { $0.id == nextEvent.ID }
 
                 // was a script for the event identified by id already scheduled?
                 var alreadyExecuted = matchedEvent != nil
@@ -102,7 +101,7 @@ class Scripts: NSObject {
                     runMeetingStartsScript(event: nextEvent, type: ScriptType.meetingStart)
 
                     // append the new event to already executed events
-                    events.append(Event(id: nextEvent.eventIdentifier,
+                    events.append(Event(id: nextEvent.ID,
                                         lastModifiedDate: nextEvent.lastModifiedDate!, eventEndDate: nextEvent.endDate))
 
                     // save the executed events again
@@ -121,24 +120,24 @@ class Scripts: NSObject {
      * 4. parameter - start date of the event (date)
      * 5 .parameter - end date of the event (date)
      * 6. parameter - location (string) - if no location is set, the value will be "EMPTY"
-     * 7. parameter - repeating event (bool) - true if it is part of an repeating event, false for single event
+     * 7. parameter - recurrent event (bool) - true if it is part of an recurrent event, false for single event
      * 8. parameter - attendee count (int32) - number of attendees- 0 for events without attendees
      * 9. parameter - meeting url (string) - the url to the meeting found in notes, url or location - only one meeting url is supported - if no meeting url is set, the value will be "EMPTY"
      * 10. parameter - meeting service (string), e.g teams or zoom- if no meeting is found, the meeting service value is "EMPTY"
      * 11. parameter - meeting notes (string)- if no notes are set, value "EMPTY" will be used
      */
-    func createParameters(event: EKEvent) -> NSAppleEventDescriptor {
+    func createParameters(event: MBEvent) -> NSAppleEventDescriptor {
         let parameters = NSAppleEventDescriptor.list()
-        parameters.insert(NSAppleEventDescriptor(string: event.eventIdentifier), at: 0)
-        parameters.insert(NSAppleEventDescriptor(string: event.title ?? "EMPTY"), at: 0)
+        parameters.insert(NSAppleEventDescriptor(string: event.ID), at: 0)
+        parameters.insert(NSAppleEventDescriptor(string: event.title), at: 0)
         parameters.insert(NSAppleEventDescriptor(boolean: event.isAllDay), at: 0)
         parameters.insert(NSAppleEventDescriptor(date: event.startDate), at: 0)
         parameters.insert(NSAppleEventDescriptor(date: event.endDate), at: 0)
         parameters.insert(NSAppleEventDescriptor(string: event.location ?? "EMPTY"), at: 0)
-        parameters.insert(NSAppleEventDescriptor(boolean: event.hasRecurrenceRules), at: 0)
-        parameters.insert(NSAppleEventDescriptor(int32: Int32(event.attendees?.count ?? 0)), at: 0)
+        parameters.insert(NSAppleEventDescriptor(boolean: event.recurrent), at: 0)
+        parameters.insert(NSAppleEventDescriptor(int32: Int32(event.attendees.count)), at: 0)
 
-        if let meetingLink = getMeetingLink(event) {
+        if let meetingLink = event.meetingLink {
             parameters.insert(NSAppleEventDescriptor(string: meetingLink.url.absoluteString), at: 0)
             parameters.insert(NSAppleEventDescriptor(string: meetingLink.service!.rawValue), at: 0)
         } else {
@@ -156,8 +155,8 @@ class Scripts: NSObject {
      * runs the predefined script with parameters.
      *
      */
-    func runMeetingStartsScript(event: EKEvent, type: ScriptType) {
-        NSLog("Run apple script for event \(String(describing: event.eventIdentifier))")
+    func runMeetingStartsScript(event: MBEvent, type: ScriptType) {
+        NSLog("Run apple script for event \(String(describing: event.ID))")
 
         let parameters = createParameters(event: event)
 
@@ -194,35 +193,35 @@ class Scripts: NSObject {
         }
     }
 
-    /**
-     * runs the apple script with a sample event for enduser testing from the preferences dialog.
-     * This method will create an in memory event and use the parameter to execute the apple script.
-     */
-    public func runAppleScriptForSampleEvent() {
-        let sampleEvent = EKEvent()
-        sampleEvent.title = "Sample meeting title"
-        sampleEvent.isAllDay = false
-        sampleEvent.startDate = Date() + 5 * 60
-        sampleEvent.endDate = sampleEvent.startDate + 60 * 60
-        sampleEvent.url = URL(string: "https://teams.microsoft.com/l/meetup-join/sampleLinkNotWorking")
-        sampleEvent.location = "Onlinemeeting"
-        sampleEvent.notes = "Don't forget to bring the meeting memos"
-
-        var attendees = [EKParticipant]()
-        if let attendee = createParticipant(email: "testing@gmail.com") {
-            attendees.append(attendee)
-        }
-        sampleEvent.setValue(attendees, forKey: "attendees")
-        runMeetingStartsScript(event: sampleEvent, type: .meetingStart)
-    }
-
-    private func createParticipant(email: String) -> EKParticipant? {
-        let clazz: AnyClass? = NSClassFromString("EKAttendee")
-        if let type = clazz as? NSObject.Type {
-            let attendee = type.init()
-            attendee.setValue(email, forKey: "emailAddress")
-            return attendee as? EKParticipant
-        }
-        return nil
-    }
+//    /**
+//     * runs the apple script with a sample event for enduser testing from the preferences dialog.
+//     * This method will create an in memory event and use the parameter to execute the apple script.
+//     */
+//    public func runAppleScriptForSampleEvent() {
+//        let sampleEvent = EKEvent()
+//        sampleEvent.title = "Sample meeting title"
+//        sampleEvent.isAllDay = false
+//        sampleEvent.startDate = Date() + 5 * 60
+//        sampleEvent.endDate = sampleEvent.startDate + 60 * 60
+//        sampleEvent.url = URL(string: "https://teams.microsoft.com/l/meetup-join/sampleLinkNotWorking")
+//        sampleEvent.location = "Onlinemeeting"
+//        sampleEvent.notes = "Don't forget to bring the meeting memos"
+//
+//        var attendees = [EKParticipant]()
+//        if let attendee = createParticipant(email: "testing@gmail.com") {
+//            attendees.append(attendee)
+//        }
+//        sampleEvent.setValue(attendees, forKey: "attendees")
+//        runMeetingStartsScript(event: sampleEvent, type: .meetingStart)
+//    }
+//
+//    private func createParticipant(email: String) -> EKParticipant? {
+//        let clazz: AnyClass? = NSClassFromString("EKAttendee")
+//        if let type = clazz as? NSObject.Type {
+//            let attendee = type.init()
+//            attendee.setValue(email, forKey: "emailAddress")
+//            return attendee as? EKParticipant
+//        }
+//        return nil
+//    }
 }

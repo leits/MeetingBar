@@ -12,18 +12,17 @@ import EventKit
 import Foundation
 
 class AutomaticJoinEvent: NSObject {
-    var eventStore: EKEventStore
+    var app: AppDelegate
 
-    override
-    init() {
-        eventStore = initEventStore()
+    init(_ appDelegate: AppDelegate) {
+        app = appDelegate
     }
 
     /**
-    * we will schedule a common task to check if we have to execute the apple script for event starts..
-    * -  a new meeting is started within the timeframe of the notification timebox, but not later as the beginning of the meeting.
-    * - All day events will be reported the first time when the current time is within the timeframe of the allday event (which can be several days).
-    */
+     * we will schedule a common task to check if we have to execute the apple script for event starts..
+     * -  a new meeting is started within the timeframe of the notification timebox, but not later as the beginning of the meeting.
+     * - All day events will be reported the first time when the current time is within the timeframe of the allday event (which can be several days).
+     */
     func scheduleRunScriptForAutomaticMeetingJoin() {
         let timer = Timer(timeInterval: 30 * 1, target: self, selector: #selector(runScriptsForAutomaticMeetingJoin), userInfo: nil, repeats: true)
         RunLoop.current.add(timer, forMode: .common)
@@ -60,7 +59,7 @@ class AutomaticJoinEvent: NSObject {
 
         NSLog("Firing reccuring runScriptsForAutomaticMeetingJoin")
 
-        if let nextEvent = nextEvent(eventStore: eventStore) {
+        if let nextEvent = getNextEvent(events: app.statusBarItem.events) {
             let now = Date()
             let notificationTime = Double(Defaults[.automaticEventJoinTime].rawValue)
 
@@ -74,7 +73,7 @@ class AutomaticJoinEvent: NSObject {
             if scriptNonAlldayCandidate || scriptAllDayCandidate {
                 var events = Defaults[.automaticJoinedEvents]
 
-                let matchedEvent = events.firstIndex { $0.id == nextEvent.eventIdentifier }
+                let matchedEvent = events.firstIndex { $0.id == nextEvent.ID }
 
                 // was a script for the event identified by id already scheduled?
                 var alreadyExecuted = matchedEvent != nil
@@ -86,12 +85,12 @@ class AutomaticJoinEvent: NSObject {
                 }
 
                 if !alreadyExecuted {
-                    openEvent(nextEvent)
+                    nextEvent.openMeeting()
 
                     // append the new event to already executed events
-                    events.append(Event(id: nextEvent.eventIdentifier,
+                    events.append(Event(id: nextEvent.ID,
                                         lastModifiedDate: nextEvent.lastModifiedDate!,
-                                        eventEndDate: nextEvent.endDate!))
+                                        eventEndDate: nextEvent.endDate))
 
                     // save the executed events again
                     Defaults[.automaticJoinedEvents] = events

@@ -129,6 +129,9 @@ class GCEventStore: NSObject, EventStore, OIDExternalUserAgent {
 
                                 for item in json["items"] as! [[String: Any]] {
                                     let eventID = item["id"] as! String
+
+                                    let formatter = ISO8601DateFormatter()
+                                    let lastModifiedDate = formatter.date(from: item["updated"] as? String ?? "")
                                     let title = item["summary"] as? String
                                     var status: MBEventStatus
                                     switch item["status"] as? String {
@@ -194,12 +197,16 @@ class GCEventStore: NSObject, EventStore, OIDExternalUserAgent {
                                         isAllDay = true
                                     }
 
+                                    let recurrent = (item["recurringEventId"] != nil) ? true : false
+
                                     let event = MBEvent(
-                                        ID: eventID, title: title, status: status,
+                                        ID: eventID, lastModifiedDate: lastModifiedDate,
+                                        title: title, status: status,
                                         notes: notes, location: location, url: url,
                                         organizer: organizer, attendees: attendees,
                                         startDate: startDate, endDate: endDate,
-                                        isAllDay: isAllDay, calendar: calendar
+                                        isAllDay: isAllDay, recurrent: recurrent,
+                                        calendar: calendar
                                     )
                                     events.append(event)
                                 }

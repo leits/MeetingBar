@@ -109,11 +109,11 @@ extension EKEventStore: EventStore {
                 }
 
                 let event = MBEvent(
-                    ID: rawEvent.calendarItemIdentifier, title: rawEvent.title, status: status,
-                    notes: rawEvent.notes, location: rawEvent.location, url: rawEvent.url,
-                    organizer: organizer, attendees: attendees,
+                    ID: rawEvent.calendarItemIdentifier, lastModifiedDate: rawEvent.lastModifiedDate,
+                    title: rawEvent.title, status: status, notes: rawEvent.notes, location: rawEvent.location,
+                    url: rawEvent.url, organizer: organizer, attendees: attendees,
                     startDate: rawEvent.startDate, endDate: rawEvent.endDate,
-                    isAllDay: rawEvent.isAllDay, calendar: calendar
+                    isAllDay: rawEvent.isAllDay, recurrent: rawEvent.hasRecurrenceRules, calendar: calendar
                 )
                 events.append(event)
             }

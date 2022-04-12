@@ -55,6 +55,7 @@ class MBEventAttendee {
 
 class MBEvent {
     let ID: String
+    let lastModifiedDate: Date?
     let calendar: MBCalendar
     let title: String
     var status: MBEventStatus
@@ -67,11 +68,13 @@ class MBEvent {
     let startDate: Date
     let endDate: Date
     let isAllDay: Bool
+    let recurrent: Bool
     var attendees: [MBEventAttendee] = []
 
-    init(ID: String, title: String?, status: MBEventStatus, notes: String?, location: String?, url: URL?, organizer: MBEventOrganizer?, attendees: [MBEventAttendee] = [], startDate: Date, endDate: Date, isAllDay: Bool, calendar: MBCalendar) {
+    init(ID: String, lastModifiedDate: Date?, title: String?, status: MBEventStatus, notes: String?, location: String?, url: URL?, organizer: MBEventOrganizer?, attendees: [MBEventAttendee] = [], startDate: Date, endDate: Date, isAllDay: Bool, recurrent: Bool, calendar: MBCalendar) {
         self.calendar = calendar
         self.ID = ID
+        self.lastModifiedDate = lastModifiedDate
         self.title = title ?? "status_bar_no_title".loco()
         self.status = status
 
@@ -84,6 +87,7 @@ class MBEvent {
         self.startDate = startDate
         self.endDate = endDate
         self.isAllDay = isAllDay
+        self.recurrent = recurrent
 
         if let currentUser = attendees.first(where: { $0.isCurrentUser }) {
             participationStatus = currentUser.status
