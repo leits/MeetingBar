@@ -42,11 +42,11 @@ struct NotificationsSection: View {
 
         let (noAlertStyle, disabled) = checkNotificationSettings()
 
-        if noAlertStyle && !disabled && notificationForHiddenAppInMenubar {
+        if noAlertStyle, !disabled, notificationForHiddenAppInMenubar {
             Text("shared_send_notification_no_alert_style_tip".loco()).foregroundColor(Color.gray).font(.system(size: 12))
         }
 
-        if disabled && notificationForHiddenAppInMenubar {
+        if disabled, notificationForHiddenAppInMenubar {
             Text("shared_send_notification_disabled_tip".loco()).foregroundColor(Color.gray).font(.system(size: 12))
         }
     }

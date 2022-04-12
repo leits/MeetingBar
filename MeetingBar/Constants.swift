@@ -121,7 +121,7 @@ enum NotificationEventTimeAction: String, Codable {
     }
 
     var durationInMins: Int {
-        return durationInSeconds / 60
+        durationInSeconds / 60
     }
 }
 
