@@ -139,7 +139,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         eventFiltersObserver = Defaults.observe(keys: .selectedCalendarIDs, .showEventsForPeriod, .disablePastEvents, .pastEventsAppereance, .declinedEventsAppereance, .showPendingEvents, .allDayEvents, .nonAllDayEvents, .personalEventsAppereance, .showEventsForPeriod, options: []) {
             self.statusBarItem.loadCalendars()
         }
-        preferredLanguageObserver = Defaults.observe(.preferredLanguage, options: []) { change in
+        preferredLanguageObserver = Defaults.observe(.preferredLanguage) { change in
             if I18N.instance.changeLanguage(to: change.newValue) {
                 self.statusBarItem.updateTitle()
                 self.statusBarItem.updateMenu()
