@@ -83,7 +83,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         _ = eventStore.signIn().done {
             self.statusBarItem.loadCalendars()
         }
-
+        scheduleUpdateStatusBarItem()
+        scheduleFetchEvents()
         // TODO: Fix scripts
         Scripts(self).scheduleRunScriptForMeetingStart()
         AutomaticJoinEvent(self).scheduleRunScriptForAutomaticMeetingJoin()
