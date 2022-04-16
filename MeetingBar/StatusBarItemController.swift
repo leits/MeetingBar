@@ -127,15 +127,12 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
                 title = "🏁"
             case let .nextEvent(event):
                 (title, time) = createEventStatusString(event)
-                if Defaults[.joinEventNotification] {
-                    scheduleEventNotification(event)
-                }
+                scheduleEventNotification(event)
+                
             case let .afterThreshold(event):
                 // Not sure, what the title should be in this case.
                 title = "⏰"
-                if Defaults[.joinEventNotification] {
-                    scheduleEventNotification(event)
-                }
+                scheduleEventNotification(event)
             }
         } else {
             NSLog("No loaded calendars")

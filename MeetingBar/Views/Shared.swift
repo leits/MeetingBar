@@ -13,6 +13,8 @@ import UserNotifications
 struct JoinEventNotificationPicker: View {
     @Default(.joinEventNotification) var joinEventNotification
     @Default(.joinEventNotificationTime) var joinEventNotificationTime
+    @Default(.eventEndsNotification) var eventEndsNotification
+    @Default(.eventEndsNotificationTime) var eventEndsNotificationTime
 
     func checkNotificationSettings() -> (Bool, Bool) {
         var noAlertStyle = false
@@ -41,6 +43,16 @@ struct JoinEventNotificationPicker: View {
                 Text("shared_send_notification_three_minute_value".loco()).tag(JoinEventNotificationTime.threeMinuteBefore)
                 Text("shared_send_notification_five_minute_value".loco()).tag(JoinEventNotificationTime.fiveMinuteBefore)
             }.frame(width: 220, alignment: .leading).labelsHidden().disabled(!joinEventNotification)
+            
+            Toggle("shared_send_end_notification_toggle".loco(), isOn: $eventEndsNotification)
+            Picker("", selection: $eventEndsNotificationTime) {
+                Text("shared_send_event_end_notification_directly_value".loco()).tag(EventEndsNotificationTime.atEnd)
+                Text("shared_send_event_end_notification_one_minute_value".loco()).tag(EventEndsNotificationTime.minuteBefore)
+                Text("shared_send_event_end_notification_two_minutes_value".loco()).tag(EventEndsNotificationTime.twoMinutesBefore)
+                Text("shared_send_event_end_notification_three_minutes_value".loco()).tag(EventEndsNotificationTime.threeMinutesBefore)
+                Text("shared_send_event_end_notification_five_minutes_value".loco()).tag(EventEndsNotificationTime.fiveMinutesBefore)
+            }.frame(width: 220, alignment: .leading).labelsHidden().disabled(!joinEventNotification)
+            
         }
         let (noAlertStyle, disabled) = checkNotificationSettings()
 

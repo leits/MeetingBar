@@ -25,6 +25,10 @@ extension Defaults.Keys {
     static let showEventsForPeriod = Key<ShowEventsForPeriod>("showEventsForPeriod", default: .today)
     static let joinEventNotification = Key<Bool>("joinEventNotification", default: true)
     static let joinEventNotificationTime = Key<JoinEventNotificationTime>("joinEventNotificationTime", default: .atStart)
+    
+    static let eventEndsNotification = Key<Bool>("eventEndsNotification", default: true)
+    static let eventEndsNotificationTime = Key<EventEndsNotificationTime>("eventEndsNotificationTime", default: .atEnd)
+    
     static let launchAtLogin = Key<Bool>("launchAtLogin", default: false)
     static let preferredLanguage = Key<AppLanguage>("preferredLanguage", default: .system)
 

@@ -269,6 +269,15 @@ enum JoinEventNotificationTime: Int, Codable {
     case fiveMinuteBefore = 300
 }
 
+enum EventEndsNotificationTime: Int, Codable {
+    case atEnd = 5
+    case minuteBefore = 60
+    case twoMinutesBefore = 120
+    case threeMinutesBefore = 180
+    case fiveMinutesBefore = 300
+    case tenMinutesBefore = 600
+}
+
 enum NotificationEventTimeAction: String, Codable {
     case untilStart = "SNOOZE_UNTIL_START_TIME"
     case fiveMinuteLater = "SNOOZE_FOR_5_MIN"

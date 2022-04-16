@@ -135,6 +135,22 @@ func displayAlert(title: String, text: String) {
 }
 
 func scheduleEventNotification(_ event: EKEvent) {
+    
+    if Defaults[.joinEventNotification] {
+        scheduleEventStartNotification(event);
+    }
+    
+    if Defaults[.eventEndsNotification] {
+        scheduleEventEndNotification(event);
+    }
+    
+}
+
+/**
+ * schedules the notification for the start of the next meeting.
+ * It allows to open the meeting
+ */
+func scheduleEventStartNotification(_ event: EKEvent) {
     requestNotificationAuthorization() // By the apple best practices
 
     let now = Date()
@@ -145,7 +161,7 @@ func scheduleEventNotification(_ event: EKEvent) {
         return
     }
 
-    removePendingNotificationRequests()
+    removePendingNotificationRequests("NEXT_EVENT")
 
     let center = UNUserNotificationCenter.current()
 
@@ -173,6 +189,60 @@ func scheduleEventNotification(_ event: EKEvent) {
 
     let trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeInterval, repeats: false)
     let request = UNNotificationRequest(identifier: "NEXT_EVENT", content: content, trigger: trigger)
+    center.add(request) { error in
+        if let error = error {
+            NSLog("%@", "request \(request.identifier) could not be added because of error \(error)")
+        }
+    }
+}
+
+/**
+ * schedules the notification for the next event end.
+ */
+func scheduleEventEndNotification(_ event: EKEvent) {
+    requestNotificationAuthorization() // By the apple best practices
+
+    let now = Date()
+    let notificationTime = Double(Defaults[.eventEndsNotificationTime].rawValue)
+    let timeInterval = event.endDate.timeIntervalSince(now) - notificationTime
+
+    if timeInterval < 0.5 {
+        return
+    }
+
+    removePendingNotificationRequests("EVENT_ENDS")
+
+    let center = UNUserNotificationCenter.current()
+
+    let content = UNMutableNotificationContent()
+    if Defaults[.hideMeetingTitle] {
+        content.title = "general_meeting".loco()
+    } else {
+        content.title = event.title
+    }
+
+    switch Defaults[.eventEndsNotificationTime] {
+    case .atEnd:
+        content.body = "notifications_event_ends_soon_body".loco()
+    case .minuteBefore:
+        content.body = "notifications_event_ends_one_minute_body".loco()
+    case .twoMinutesBefore:
+        content.body = "notifications_event_ends_three_minutes_body".loco()
+    case .threeMinutesBefore:
+        content.body = "notifications_event_ends_three_minutes_body".loco()
+    case .fiveMinutesBefore:
+        content.body = "notifications_event_ends_five_minutes_body".loco()
+    case .tenMinutesBefore:
+        content.body = "notifications_event_ends_five_minutes_body".loco()
+    }
+    
+    content.categoryIdentifier = "EVENT"
+    content.sound = UNNotificationSound.default
+    content.userInfo = ["eventID": event.eventIdentifier!]
+    content.threadIdentifier = "meetingbar"
+
+    let trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeInterval, repeats: false)
+    let request = UNNotificationRequest(identifier: "EVENT_ENDS", content: content, trigger: trigger)
     center.add(request) { error in
         if let error = error {
             NSLog("%@", "request \(request.identifier) could not be added because of error \(error)")
@@ -216,9 +286,13 @@ func snoozeEventNotification(_ event: EKEvent, _ interval: NotificationEventTime
     }
 }
 
-func removePendingNotificationRequests() {
+func removePendingNotificationRequests(identifier:String?) {
     let center = UNUserNotificationCenter.current()
-    center.removeAllPendingNotificationRequests()
+    if identifier != nil {
+        center.removePendingNotificationRequests(withIdentifiers: [identifier])
+    } else {
+        center.removeAllPendingNotificationRequests()
+    }
 }
 
 func removeDeliveredNotifications() {

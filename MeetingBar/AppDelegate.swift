@@ -402,12 +402,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                 self.statusBarItem.updateMenu()
             }
         }
+        
         joinEventNotificationObserver = Defaults.observe(.joinEventNotification) { change in
             if change.oldValue != change.newValue {
                 NSLog("Changed joinEventNotification from \(change.oldValue) to \(change.newValue)")
                 if change.newValue == true {
                     if let nextEvent = self.statusBarItem.eventStore.getNextEvent(calendars: self.statusBarItem.calendars) {
-                        scheduleEventNotification(nextEvent)
+                        scheduleEventStartNotification(nextEvent)
                     }
                 } else {
                     removePendingNotificationRequests()
