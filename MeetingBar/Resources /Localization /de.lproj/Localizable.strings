@@ -1,7 +1,7 @@
 
 
 "link_url_cant_open_message" = "Sicherstellen, dass %@ installiert ist oder in den Einstellungen festlegen, dass diese Links im Webbrowser geöffnet werden.";
-"preferences_general_meeting_bar_description" = "MeetingBar ist eine quelloffene App, die von Andrii Leitsius entwickelt wurde.\nFür reibungslosere und einfachere Online-Meetings";
+"preferences_general_meeting_bar_description" = "MeetingBar ist eine quelloffene App, die von Andrii Leitsius 🇺🇦 entwickelt wurde.\nFür reibungslosere und einfachere Online-Meetings";
 
 // MARK: - Notifications
 
@@ -9,6 +9,9 @@
 "notifications_event_start_one_minute_body" = "Das Ereignis beginnt in einer Minute";
 "notifications_event_start_three_minutes_body" = "Das Ereignis beginnt in drei Minuten";
 "notifications_event_start_five_minutes_body" = "Das Ereignis beginnt in fünf Minuten";
+"notifications_meetingbar_hidden_open_preferences_action" = "Open Preferences";
+"notifications_meetingbar_hidden_stop_notifications_action" = "Stop notifications";
+"notifications_meetingbar_join_event_action" = "Join";
 "store_patronage_purchase_cloud_service_network_connection_failed" = "Es konnte keine Verbindung zum Netzwerk hergestellt werden";
 "store_patronage_purchase_cloud_service_permission_denied_message" = "Der Zugriff auf Cloud-Service-Informationen ist nicht erlaubt";
 "store_patronage_purchase_store_product_not_available_message" = "Das Produkt ist im aktuellen Schaufenster nicht verfügbar";
@@ -260,10 +263,10 @@
 "constants_create_meeting_service_url" = "Benutzerdefinierte URL";
 
 // MARK: - Constants
-"shared_send_notification_five_minute_value" = "5 Minuten vorher";
-"shared_send_notification_three_minute_value" = "3 Minuten vorher";
-"shared_send_notification_one_minute_value" = "1 Minute vorher";
-"shared_send_notification_directly_value" = "zum Ereignisstart";
+"general_five_minute_before" = "5 Minuten vorher";
+"general_three_minute_before" = "3 Minuten vorher";
+"general_one_minute_before" = "1 Minute vorher";
+"general_when_event_starts" = "zum Ereignisstart";
 
 // MARK: - Shared
 

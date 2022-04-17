@@ -18,6 +18,9 @@
 "notifications_event_start_one_minute_body" = "The event starts in one minute";
 "notifications_event_start_three_minutes_body" = "Begivenheten starter om tre minutter";
 "notifications_event_start_five_minutes_body" = "Begivenheten starter om fem minutter";
+"notifications_meetingbar_hidden_open_preferences_action" = "Open Preferences";
+"notifications_meetingbar_hidden_stop_notifications_action" = "Stop notifications";
+"notifications_meetingbar_join_event_action" = "Join";
 "store_patronage_purchase_cloud_service_revoked_message" = "Bruker har nektet tilgang for bruk av denne skytjenesten";
 "store_patronage_purchase_cloud_service_network_connection_failed" = "Kunne ikke koble til nettverket";
 "store_patronage_purchase_cloud_service_permission_denied_message" = "Tilgang til skytjenesteinfo tillates ikke";
@@ -33,7 +36,7 @@
 "constants_meeting_service_other" = "Annet";
 
 // MARK: - Constants
-"shared_send_notification_directly_value" = "når begivenheten starter";
+"general_when_event_starts" = "når begivenheten starter";
 
 // MARK: - Shared
 
@@ -101,7 +104,7 @@
 "preferences_appearance_events_value_hide_without_meeting_link" = "skjul alle uten møtelenker";
 "preferences_appearance_events_value_inactive_without_meeting_link" = "vis dem uten møtelenker som inaktive";
 "preferences_general_external_patronage" = "Kronerulling";
-"preferences_general_meeting_bar_description" = "MeetingBar er et fritt program laget av Andrii Leitsius\nProgrammet tar sikte på å gjøre din opplevelse med nettbaserte møter smidigere og enklere";
+"preferences_general_meeting_bar_description" = "MeetingBar er et fritt program laget av Andrii Leitsius 🇺🇦\nProgrammet tar sikte på å gjøre din opplevelse med nettbaserte møter smidigere og enklere";
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "Veksle visning av tittel i statusfelt:";
 "preferences_general_shortcut_join_from_clipboard" = "Ta del i møte fra utklippstavle:";
 "windows_title_changelog" = "MeetingBar Hva er nytt";
@@ -132,9 +135,9 @@
 "constants_meeting_service_url" = "Nettadresse";
 "constants_meeting_service_phone" = "Telefon";
 "constants_create_meeting_service_url" = "Egendefinert nettadresse";
-"shared_send_notification_five_minute_value" = "fem minutter før";
-"shared_send_notification_three_minute_value" = "tre minutter før";
-"shared_send_notification_one_minute_value" = "ett minutt før";
+"general_five_minute_before" = "fem minutter før";
+"general_three_minute_before" = "tre minutter før";
+"general_one_minute_before" = "ett minutt før";
 "access_screen_access_denied_system_preferences_button" = "Systeminnstillinger";
 "access_screen_access_screen_access_denied_go_to_title" = "Gå til";
 

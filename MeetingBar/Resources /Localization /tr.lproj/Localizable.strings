@@ -222,7 +222,7 @@
 
 "window_title_preferences" = "MeetingBar Tercihler";
 "preferences_general_shortcut_join_next" = "Sonraki toplantıya katıl:";
-"preferences_general_meeting_bar_description" = "MeetingBar, sorunsuz ve kolay çevrimiçi toplantılar için,\nAndrii Leitsius tarafından geliştirilmiş bir açık kaynak projesidir.";
+"preferences_general_meeting_bar_description" = "MeetingBar, sorunsuz ve kolay çevrimiçi toplantılar için,\nAndrii Leitsius 🇺🇦 tarafından geliştirilmiş bir açık kaynak projesidir.";
 "preferences_general_patron_three_months" = "3 aylık – 2.99 USD";
 "preferences_general_patron_six_months" = "6 aylık – 5.99 USD";
 "preferences_appearance_events_without_guest_title" = "Misafirsiz etkinlikler:";
@@ -292,12 +292,12 @@
 // MARK: - Shared
 
 "shared_send_notification_toggle" = "Sonraki toplantıya katılmak için bildirim gönder";
-"shared_send_notification_directly_value" = "toplantı başladığında";
+"general_when_event_starts" = "toplantı başladığında";
 "calendars_screen_start_button" = "Uygulamayı kullanmaya başla";
 "access_screen_access_denied_system_preferences_button" = "Sistem Tercihleri";
-"shared_send_notification_one_minute_value" = "1 dakika önce";
-"shared_send_notification_three_minute_value" = "3 dakika önce";
-"shared_send_notification_five_minute_value" = "5 dakika önce";
+"general_one_minute_before" = "1 dakika önce";
+"general_three_minute_before" = "3 dakika önce";
+"general_five_minute_before" = "5 dakika önce";
 "shared_send_notification_disabled_tip" = "⚠️ macOS bildirim ayarlarınız MeetingBar için kapalı durumda. Toplantıları takip etmek için macOS sistem tercihlerinden bildirimleri açın.";
 "constants_meeting_service_phone" = "Telefon numarası";
 "constants_browser_brave" = "Brave";
@@ -316,3 +316,6 @@
 "link_url_cant_open_message" = "%@ yüklü olduğundan emin olun veya bu bağlantıyı bir tarayıcıda açın.";
 "preferences_general_feedback_title" = "Eğer soru veya geribildiriminiz varsa,\nlütfen iletişim kurmaktan çekinmeyin:";
 "status_bar_section_refresh_sources" = "Kaynakları yenile";
+"notifications_meetingbar_hidden_open_preferences_action" = "Open Preferences";
+"notifications_meetingbar_hidden_stop_notifications_action" = "Stop notifications";
+"notifications_meetingbar_join_event_action" = "Join";

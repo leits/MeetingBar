@@ -35,6 +35,9 @@
 "notifications_event_start_one_minute_body" = "L'évènement commence dans une minute";
 "notifications_event_start_three_minutes_body" = "L'évènement commence dans trois minutes";
 "notifications_event_start_five_minutes_body" = "L'évènement commence dans cinq minutes";
+"notifications_meetingbar_hidden_open_preferences_action" = "Open Preferences";
+"notifications_meetingbar_hidden_stop_notifications_action" = "Stop notifications";
+"notifications_meetingbar_join_event_action" = "Join";
 "store_patronage_purchase_cloud_service_revoked_message" = "L'utilisateur a révoqué l'autorisation d'utiliser ce service dans le nuage";
 "store_patronage_purchase_cloud_service_network_connection_failed" = "Impossible de se connecter au réseau";
 "store_patronage_purchase_cloud_service_permission_denied_message" = "L'accès aux informations sur les services en nuage n'est pas autorisé";
@@ -64,10 +67,10 @@
 // MARK: - Constants
 "shared_send_notification_disabled_tip" = "⚠️ Vos paramètres de notification macOS pour MeetingBar sont désactivés. Activez les notifications dans les paramètres système de macOS pour garder une trace des réunions.";
 "shared_send_notification_no_alert_style_tip" = "⚠️ Vos paramètres de notification macOS pour MeetingBar ne sont pas réglés sur alerte. Faites-le si vous voulez des notifications persistantes.";
-"shared_send_notification_five_minute_value" = "5 minutes avant";
-"shared_send_notification_three_minute_value" = "3 minutes avant";
-"shared_send_notification_one_minute_value" = "1 minute avant";
-"shared_send_notification_directly_value" = "quand l'évènement commence";
+"general_five_minute_before" = "5 minutes avant";
+"general_three_minute_before" = "3 minutes avant";
+"general_one_minute_before" = "1 minute avant";
+"general_when_event_starts" = "quand l'évènement commence";
 
 // MARK: - Shared
 
@@ -267,7 +270,7 @@
 "preferences_general_external_contact" = "Contact";
 "preferences_general_external_gitHub" = "GitHub";
 "preferences_general_external_patronage" = "Mécénat";
-"preferences_general_meeting_bar_description" = "MeetingBar est une application à code source ouvert créée par Andrii Leitsius.\nPour des réunions en ligne plus faciles et plus fluides";
+"preferences_general_meeting_bar_description" = "MeetingBar est une application à code source ouvert créée par Andrii Leitsius 🇺🇦\nPour des réunions en ligne plus faciles et plus fluides";
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "Basculer la visibilité du titre dans la barre d'état :";
 "preferences_general_shortcut_join_from_clipboard" = "Rejoindre la réunion à partir du presse-papier :";
 "preferences_general_shortcut_join_next" = "Rejoindre la prochaine réunion :";

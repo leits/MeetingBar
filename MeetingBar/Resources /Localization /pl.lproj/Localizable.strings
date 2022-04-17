@@ -45,7 +45,7 @@
 "preferences_general_shortcut_join_next" = "Dołącz do następnego spotkania:";
 "preferences_general_shortcut_join_from_clipboard" = "Dołącz do spotkania ze schowka:";
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "Przełącz widoczność tytułu na pasku stanu:";
-"preferences_general_meeting_bar_description" = "MeetingBar to aplikacja open-source stworzona przez Andrii Leitsius\n dla płynniejszych i łatwiejszych spotkań online";
+"preferences_general_meeting_bar_description" = "MeetingBar to aplikacja open-source stworzona przez Andrii Leitsius 🇺🇦\n dla płynniejszych i łatwiejszych spotkań online";
 "preferences_general_external_patronage" = "Patronat";
 "preferences_general_external_gitHub" = "GitHub";
 "preferences_general_external_contact" = "Kontakt";
@@ -258,10 +258,10 @@
 // MARK: - Shared
 
 "shared_send_notification_toggle" = "Wyślij powiadomienie, aby dołączyć do następnego spotkania wydarzenia";
-"shared_send_notification_directly_value" = "gdy wydarzenie się rozpocznie";
-"shared_send_notification_one_minute_value" = "1 minutę przed";
-"shared_send_notification_three_minute_value" = "3 minuty przed";
-"shared_send_notification_five_minute_value" = "5 minut przed";
+"general_when_event_starts" = "gdy wydarzenie się rozpocznie";
+"general_one_minute_before" = "1 minutę przed";
+"general_three_minute_before" = "3 minuty przed";
+"general_five_minute_before" = "5 minut przed";
 "shared_send_notification_no_alert_style_tip" = "⚠️ Twoje ustawienia powiadomień macOS dla MeetingBar nie są ustawione na alert. Zrób to, jeśli chcesz mieć trwałe powiadomienia.";
 "shared_send_notification_disabled_tip" = "⚠️ Twoje ustawienia powiadomień macOS dla MeetingBar są wyłączone. Włącz powiadomienia w ustawieniach systemowych macOS, aby śledzić spotkania.";
 
@@ -304,6 +304,9 @@
 "notifications_event_start_one_minute_body" = "Wydarzenie rozpoczyna się za minutę";
 "notifications_event_start_three_minutes_body" = "Wydarzenie rozpoczyna się za trzy minuty";
 "notifications_event_start_five_minutes_body" = "Wydarzenie rozpoczyna się za pięć minut";
+"notifications_meetingbar_hidden_open_preferences_action" = "Open Preferences";
+"notifications_meetingbar_hidden_stop_notifications_action" = "Stop notifications";
+"notifications_meetingbar_join_event_action" = "Join";
 
 // MARK: - Link open
 
