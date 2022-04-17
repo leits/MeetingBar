@@ -55,7 +55,7 @@ class GCEventStore: NSObject, EventStore, OIDExternalUserAgent {
                 service.authorizer = auth
                 service.fetcher(with: url).beginFetch { data, error in
                     if error != nil {
-                        if (error as NSError?)?.domain == OIDOAuthTokenErrorDomain {
+                        if [OIDOAuthTokenErrorDomain, OIDHTTPErrorDomain].contains((error as NSError?)?.domain) {
                             self.setAuthorization(auth: nil)
                         }
                         NSLog(error?.localizedDescription ?? "")
@@ -112,7 +112,7 @@ class GCEventStore: NSObject, EventStore, OIDExternalUserAgent {
                 NSLog("Request GoogleAPI")
                 service.fetcher(with: url).beginFetch { data, error in
                     if error != nil {
-                        if (error as NSError?)?.domain == OIDOAuthTokenErrorDomain {
+                        if [OIDOAuthTokenErrorDomain, OIDHTTPErrorDomain].contains((error as NSError?)?.domain) {
                             self.setAuthorization(auth: nil)
                         }
                         NSLog(error?.localizedDescription ?? "")

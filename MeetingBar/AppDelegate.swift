@@ -85,9 +85,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
         scheduleUpdateStatusBarItem()
         scheduleFetchEvents()
-        // TODO: Fix scripts
-        Scripts(self).scheduleRunScriptForMeetingStart()
-        AutomaticJoinEvent(self).scheduleRunScriptForAutomaticMeetingJoin()
+        // ActionsOnEventStart
+        ActionsOnEventStart(self).startWatching()
         //
 
         if Defaults[.browsers].isEmpty {
@@ -217,10 +216,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                     }
                 }
             }
-        case "STOP_APP_HIDDEN_NOTIFICATON_ACTION", UNNotificationDefaultActionIdentifier:
-            if response.notification.request.content.categoryIdentifier == "STATUSBAR" {
-                Defaults[.notificationForHiddenAppInMenubar] = false
-            }
+//        case "STOP_APP_HIDDEN_NOTIFICATON_ACTION", UNNotificationDefaultActionIdentifier:
+//            if response.notification.request.content.categoryIdentifier == "STATUSBAR" {
+//                Defaults[.notificationForHiddenAppInMenubar] = false
+//            }
 
         case "OPEN_PREFERENCES", UNNotificationDefaultActionIdentifier:
             if response.notification.request.content.categoryIdentifier == "STATUSBAR" {

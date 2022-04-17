@@ -29,58 +29,95 @@ struct AdvancedTab: View {
 }
 
 struct ScriptSection: View {
-    @Default(.runAutomaticEventScript) var runAutomaticEventScript
-    @Default(.automaticEventScriptTime) var automaticEventScriptTime
+    @Default(.runEventStartScript) var runEventStartScript
+    @Default(.eventStartScriptLocation) var eventStartScriptLocation
+    @Default(.eventStartScript) var eventStartScript
+    @Default(.eventStartScriptTime) var eventStartScriptTime
+
+    @State private var showingRunEventStartScriptModal = false
+
     @Default(.runJoinEventScript) var runJoinEventScript
+    @Default(.joinEventScriptLocation) var joinEventScriptLocation
     @Default(.joinEventScript) var joinEventScript
 
-    @State private var script = Defaults[.joinEventScript]
-    @State private var showingAlert = false
-
-    let scriptPath = try! FileManager.default.url(for: .applicationScriptsDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+    @State private var showingJoinEventScriptModal = false
 
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
-                Toggle("Run AppleScript automatically when a meeting starts", isOn: $runAutomaticEventScript)
-                Picker("", selection: $automaticEventScriptTime) {
-                    Text("when event starts").tag(EventScriptExecutionTime.atStart)
-                    Text("1 minute before").tag(EventScriptExecutionTime.minuteBefore)
-                    Text("2 minutes before").tag(EventScriptExecutionTime.twoMinutesBefore)
-                    Text("3 minutes before").tag(EventScriptExecutionTime.threeMinuteBefore)
-                    Text("5 minutes before").tag(EventScriptExecutionTime.fiveMinuteBefore)
-                }.frame(width: 150, alignment: .leading).labelsHidden().disabled(!runAutomaticEventScript)
+                Toggle("Run AppleScript automatically", isOn: $runEventStartScript)
+                Picker("", selection: $eventStartScriptTime) {
+                    Text("general_when_event_starts".loco()).tag(EventScriptExecutionTime.atStart)
+                    Text("general_one_minute_before".loco()).tag(EventScriptExecutionTime.minuteBefore)
+                    Text("general_three_minute_before".loco()).tag(EventScriptExecutionTime.threeMinuteBefore)
+                    Text("general_five_minute_before".loco()).tag(EventScriptExecutionTime.fiveMinuteBefore)
+                }.frame(width: 150, alignment: .leading).labelsHidden().disabled(!runEventStartScript)
                 Spacer()
-                Button(action: runSampleScript) {
-                    Text("Test script")
+                if runEventStartScript {
+                    Button(action: runSampleScript) {
+                        Text("Test on next event")
+                    }
+                    Button("Edit script") { showingRunEventStartScriptModal = true }
                 }
+            }.sheet(isPresented: $showingRunEventStartScriptModal) {
+                EditScriptModal(script: $eventStartScript, scriptLocation: $eventStartScriptLocation, scriptName: "eventStartScript.scpt")
             }
+            Divider()
             HStack {
                 Toggle("preferences_advanced_apple_script_checkmark".loco(), isOn: $runJoinEventScript)
                 Spacer()
-                if script != joinEventScript {
-                    Button(action: saveScript) {
-                        Text("preferences_advanced_save_script_button".loco())
-                    }
+                if runJoinEventScript {
+                    Button("Edit script") { showingJoinEventScriptModal = true }
                 }
+            }.sheet(isPresented: $showingJoinEventScriptModal) {
+                EditScriptModal(script: $joinEventScript, scriptLocation: $joinEventScriptLocation, scriptName: "joinEventScript.scpt")
             }
-
-            NSScrollableTextViewWrapper(text: $script).padding(.leading, 19)
-                .alert(isPresented: $showingAlert) {
-                    Alert(title: Text("preferences_advanced_wrong_location_title".loco()),
-                          message: Text("preferences_advanced_wrong_location_message".loco()),
-                          dismissButton: .default(Text("preferences_advanced_wrong_location_button".loco())))
-                }
         }
     }
 
-    /**
-     * triggers a sample script
-     */
     func runSampleScript() {
-        // TODO: fix sample script
-//        let scripts = Scripts()
-//        scripts.runAppleScriptForSampleEvent()
+        if let app = NSApplication.shared.delegate as! AppDelegate? {
+            runAppleScriptForNextEvent(events: app.statusBarItem.events)
+        }
+    }
+}
+
+struct EditScriptModal: View {
+    @Environment(\.presentationMode) var presentationMode
+
+    @Binding var script: String
+    @Binding var scriptLocation: URL?
+    var scriptName: String
+
+    @State var editedScript: String = ""
+
+    @State private var showingAlert = false
+    @State private var error_msg = ""
+
+    var body: some View {
+        VStack {
+            Spacer()
+            Text("Edit script")
+            Spacer()
+            NSScrollableTextViewWrapper(text: $editedScript).padding(.leading, 19)
+            Spacer()
+            HStack {
+                Button(action: cancel) {
+                    Text("general_cancel".loco())
+                }
+                Spacer()
+                Button(action: saveScript) {
+                    Text("general_save".loco())
+                }.disabled(self.editedScript == self.script)
+            }
+            Spacer()
+        }.padding().frame(width: 500, height: 500)
+            .onAppear { self.editedScript = self.script }
+            .alert(isPresented: $showingAlert) {
+                Alert(title: Text("preferences_advanced_wrong_location_title".loco()),
+                      message: Text("preferences_advanced_wrong_location_message".loco()),
+                      dismissButton: .default(Text("preferences_advanced_wrong_location_button".loco())))
+            }
     }
 
     func saveScript() {
@@ -99,17 +136,21 @@ struct ScriptSection: View {
                     showingAlert = true
                     return
                 }
-                Defaults[.joinEventScriptLocation] = openPanel.url
-                if let filepath = openPanel.url?.appendingPathComponent("joinEventScript.scpt") {
+                scriptLocation = openPanel.url
+                if let filepath = openPanel.url?.appendingPathComponent(scriptName) {
                     do {
-                        try script.write(to: filepath, atomically: true, encoding: String.Encoding.utf8)
-                        NSLog("Script saved")
-                        joinEventScript = script
+                        try editedScript.write(to: filepath, atomically: true, encoding: String.Encoding.utf8)
+                        script = editedScript
+                        presentationMode.wrappedValue.dismiss()
                     } catch {}
                 }
             }
             openPanel.close()
         }
+    }
+
+    func cancel() {
+        presentationMode.wrappedValue.dismiss()
     }
 }
 

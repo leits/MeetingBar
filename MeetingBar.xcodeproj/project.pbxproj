@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		01044AE127EA695A0070512E /* AutomaticJoinEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01044AE027EA695A0070512E /* AutomaticJoinEvent.swift */; };
+		01044AE127EA695A0070512E /* ActionsOnEventStart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01044AE027EA695A0070512E /* ActionsOnEventStart.swift */; };
 		01E0EA8027F393B300237F14 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E0EA7F27F393B300237F14 /* Date.swift */; };
 		140D84322493A3FE0055E1CE /* StatusBarItemController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 140D84312493A3FE0055E1CE /* StatusBarItemController.swift */; };
 		140D84342493A4180055E1CE /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 140D84332493A4180055E1CE /* Constants.swift */; };
@@ -82,7 +82,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		01044AE027EA695A0070512E /* AutomaticJoinEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutomaticJoinEvent.swift; sourceTree = "<group>"; };
+		01044AE027EA695A0070512E /* ActionsOnEventStart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionsOnEventStart.swift; sourceTree = "<group>"; };
 		01E0EA7F27F393B300237F14 /* Date.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
 		140D84312493A3FE0055E1CE /* StatusBarItemController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBarItemController.swift; sourceTree = "<group>"; };
 		140D84332493A4180055E1CE /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
@@ -235,7 +235,7 @@
 				144C01802462D0C5000C9FFC /* Assets.xcassets */,
 				144C01892462D0C5000C9FFC /* MeetingBar.entitlements */,
 				1BF37AA42604F7E00053D53C /* I18N.swift */,
-				01044AE027EA695A0070512E /* AutomaticJoinEvent.swift */,
+				01044AE027EA695A0070512E /* ActionsOnEventStart.swift */,
 			);
 			path = MeetingBar;
 			sourceTree = "<group>";
@@ -551,7 +551,7 @@
 				140D843D2493B7BF0055E1CE /* EKEventStore.swift in Sources */,
 				1452C9CE25AF868E00C46CDF /* CalendarsTab.swift in Sources */,
 				14E4110E246F2F9200F73ACF /* Preferences.swift in Sources */,
-				01044AE127EA695A0070512E /* AutomaticJoinEvent.swift in Sources */,
+				01044AE127EA695A0070512E /* ActionsOnEventStart.swift in Sources */,
 				1452C9CA25AF861300C46CDF /* BookmarksTab.swift in Sources */,
 				140D84322493A3FE0055E1CE /* StatusBarItemController.swift in Sources */,
 				14B08AD02749AB96002E3892 /* GCEventStore.swift in Sources */,

@@ -21,13 +21,10 @@ struct AutomaticEventJoinPicker: View {
         HStack {
             Toggle("shared_automatic_event_join_toggle".loco(), isOn: $automaticEventJoin)
             Picker("", selection: $automaticEventJoinTime) {
-                Text("shared_automatic_event_join_directly_value".loco()).tag(AutomaticEventJoinTime.atStart)
-                Text("shared_automatic_event_join_one_minute_value".loco()).tag(AutomaticEventJoinTime.minuteBefore)
-                Text("shared_automatic_event_join_two_minutes_value".loco()).tag(AutomaticEventJoinTime.twoMinutesBefore)
-                Text("shared_automatic_event_join_three_minutes_value".loco()).tag(AutomaticEventJoinTime.threeMinutesBefore)
-                Text("shared_automatic_event_join_four_minutes_value".loco()).tag(AutomaticEventJoinTime.fourMinutesBefore)
-                Text("shared_automatic_event_join_five_minutes_value".loco()).tag(AutomaticEventJoinTime.fiveMinutesBefore)
-                Text("shared_automatic_event_join_ten_minutes_value".loco()).tag(AutomaticEventJoinTime.tenMinutesBefore)
+                Text("general_when_event_starts".loco()).tag(AutomaticEventJoinTime.atStart)
+                Text("general_one_minute_before".loco()).tag(AutomaticEventJoinTime.minuteBefore)
+                Text("general_three_minute_before".loco()).tag(AutomaticEventJoinTime.threeMinuteBefore)
+                Text("general_five_minute_before".loco()).tag(AutomaticEventJoinTime.fiveMinuteBefore)
             }.frame(width: 220, alignment: .leading).labelsHidden().disabled(!automaticEventJoin)
         }
 
@@ -45,10 +42,10 @@ struct JoinEventNotificationPicker: View {
         HStack {
             Toggle("shared_send_notification_toggle".loco(), isOn: $joinEventNotification)
             Picker("", selection: $joinEventNotificationTime) {
-                Text("shared_send_notification_directly_value".loco()).tag(JoinEventNotificationTime.atStart)
-                Text("shared_send_notification_one_minute_value".loco()).tag(JoinEventNotificationTime.minuteBefore)
-                Text("shared_send_notification_three_minute_value".loco()).tag(JoinEventNotificationTime.threeMinuteBefore)
-                Text("shared_send_notification_five_minute_value".loco()).tag(JoinEventNotificationTime.fiveMinuteBefore)
+                Text("general_when_event_starts".loco()).tag(JoinEventNotificationTime.atStart)
+                Text("general_one_minute_before".loco()).tag(JoinEventNotificationTime.minuteBefore)
+                Text("general_three_minute_before".loco()).tag(JoinEventNotificationTime.threeMinuteBefore)
+                Text("general_five_minute_before".loco()).tag(JoinEventNotificationTime.fiveMinuteBefore)
             }.frame(width: 220, alignment: .leading).labelsHidden().disabled(!joinEventNotification)
         }
         let (noAlertStyle, disabled) = checkNotificationSettings()
