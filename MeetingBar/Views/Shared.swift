@@ -104,6 +104,7 @@ struct LaunchAtLoginANDPreferredLanguagePicker: View {
                     Group {
                         Text("Русский").tag(AppLanguage.russian)
                         Text("Türkçe").tag(AppLanguage.turkish)
+                        Text("Italiano").tag(AppLanguage.italian)
                     }
                 }
             }.frame(width: 250)

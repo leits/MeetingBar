@@ -163,6 +163,7 @@ enum AppLanguage: String, Codable {
     case polish = "pl"
     case hebrew = "he"
     case turkish = "tr"
+    case italian = "it"
 }
 
 struct Browser: Encodable, Decodable, Hashable {
