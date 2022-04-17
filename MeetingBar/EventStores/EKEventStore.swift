@@ -7,7 +7,6 @@
 //
 import EventKit
 import PromiseKit
-import SwiftyJSON
 
 extension EKEventStore: EventStore {
     static let shared = initEKEventStore()

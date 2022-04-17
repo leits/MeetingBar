@@ -2,12 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>GOOGLE_CLIENT_SECRET</key>
-	<string>$(GOOGLE_CLIENT_SECRET)</string>
-	<key>GOOGLE_CLIENT_NUMBER</key>
-	<string>$(GOOGLE_CLIENT_NUMBER)</string>
-	<key>GOOGLE_AUTH_KEYCHAIN_NAME</key>
-	<string>$(GOOGLE_AUTH_KEYCHAIN_NAME)</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleExecutable</key>
@@ -37,6 +31,12 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>GOOGLE_AUTH_KEYCHAIN_NAME</key>
+	<string>$(GOOGLE_AUTH_KEYCHAIN_NAME)</string>
+	<key>GOOGLE_CLIENT_NUMBER</key>
+	<string>$(GOOGLE_CLIENT_NUMBER)</string>
+	<key>GOOGLE_CLIENT_SECRET</key>
+	<string>$(GOOGLE_CLIENT_SECRET)</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.productivity</string>
 	<key>LSMinimumSystemVersion</key>

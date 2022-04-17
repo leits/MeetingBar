@@ -9,7 +9,6 @@
 import AppKit
 import Defaults
 import PromiseKit
-import SwiftyJSON
 
 enum eventStoreProvider: String, Codable {
     case MacOSEventKit = "MacOS Calendar App"
