@@ -17,6 +17,10 @@ jobs:
   Tests:
     runs-on: macOS-latest
     steps:
+      - name: "Select Xcode 13.0.0"
+        uses: devbotsxyz/xcode-select@v1
+        with:
+          version: "13"
       - uses: actions/checkout@v1
       - name: Install xcbeautify
         run: brew install xcbeautify

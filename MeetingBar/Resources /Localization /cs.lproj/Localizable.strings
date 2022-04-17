@@ -15,6 +15,9 @@
 "notifications_event_start_one_minute_body" = "Událost začíná za minutu";
 "notifications_event_start_three_minutes_body" = "Událost začíná za tři minuty";
 "notifications_event_start_five_minutes_body" = "Událost začíná za pět minut";
+"notifications_meetingbar_hidden_open_preferences_action" = "Open Preferences";
+"notifications_meetingbar_hidden_stop_notifications_action" = "Stop notifications";
+"notifications_meetingbar_join_event_action" = "Join";
 "store_patronage_purchase_cloud_service_revoked_message" = "Uživatel zrušil oprávnění k používání této cloudové služby";
 "store_patronage_purchase_cloud_service_network_connection_failed" = "Nepodařilo se připojit k síti";
 "store_patronage_purchase_cloud_service_permission_denied_message" = "Přístup k informacím o cloudové službě není povolen";
@@ -50,10 +53,10 @@
 // MARK: - Constants
 "shared_send_notification_disabled_tip" = "⚠️ Oznámení pro MeetingBar v macOS jsou vypnuta. Abyste měli přehled o schůzkách, povolte oznámení v předvolbách macOS.";
 "shared_send_notification_no_alert_style_tip" = "⚠️ Styl oznámení pro MeetingBar v macOS není nastaven na Upozornění. Pokud chcete dostávat trvalá oznámení, vyberte styl Upozornění.";
-"shared_send_notification_five_minute_value" = "5 minut předem";
-"shared_send_notification_three_minute_value" = "3 minuty předem";
-"shared_send_notification_one_minute_value" = "1 minutu předem";
-"shared_send_notification_directly_value" = "když schůzka začne";
+"general_five_minute_before" = "5 minut předem";
+"general_three_minute_before" = "3 minuty předem";
+"general_one_minute_before" = "1 minutu předem";
+"general_when_event_starts" = "když schůzka začne";
 
 // MARK: - Shared
 
@@ -270,7 +273,7 @@
 "preferences_general_external_contact" = "Kontakt";
 "preferences_general_external_gitHub" = "GitHub";
 "preferences_general_external_patronage" = "Členství";
-"preferences_general_meeting_bar_description" = "MeetingBar je open-source aplikace, kterou vytvořil Andrii Leitsius\nCílem aplikace je usnadnit a zjednodušit práci s online schůzkami";
+"preferences_general_meeting_bar_description" = "MeetingBar je open-source aplikace, kterou vytvořil Andrii Leitsius 🇺🇦\nCílem aplikace je usnadnit a zjednodušit práci s online schůzkami";
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "Přepnout viditelnost nadpisu v řádku nabídek:";
 "preferences_general_shortcut_join_from_clipboard" = "Připojit se ke schůzce ze schránky:";
 "preferences_general_shortcut_join_next" = "Připojit se k nadcházející schůzce:";

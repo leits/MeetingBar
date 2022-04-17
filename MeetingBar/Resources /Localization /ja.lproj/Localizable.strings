@@ -48,7 +48,7 @@
 "preferences_general_shortcut_join_next" = "次のミーティングに参加:";
 "preferences_general_shortcut_join_from_clipboard" = "クリップボードからミーティングに参加:";
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "ステータスバーのタイトル表示をトグルする:";
-"preferences_general_meeting_bar_description" = "MeetingBar は Andrii Leitsius によって開発されたオープンソースアプリケーションです。\nオンラインミーティングをスムーズで簡単にします。";
+"preferences_general_meeting_bar_description" = "MeetingBar は Andrii Leitsius 🇺🇦 によって開発されたオープンソースアプリケーションです。\nオンラインミーティングをスムーズで簡単にします。";
 "preferences_general_external_patronage" = "パトロンになる";
 "preferences_general_external_gitHub" = "GitHub";
 "preferences_general_external_contact" = "お問い合わせ";
@@ -277,10 +277,10 @@
 
 
 "shared_send_notification_toggle" = "イベント開始前に通知する";
-"shared_send_notification_directly_value" = "イベントが始まったとき";
-"shared_send_notification_one_minute_value" = "1分前";
-"shared_send_notification_three_minute_value" = "3分前";
-"shared_send_notification_five_minute_value" = "5分前";
+"general_when_event_starts" = "イベントが始まったとき";
+"general_one_minute_before" = "1分前";
+"general_three_minute_before" = "3分前";
+"general_five_minute_before" = "5分前";
 "shared_send_notification_no_alert_style_tip" = "⚠️ MeetingBar の macOS の通知設定は、通知パネルに設定されていません。持続的な通知を利用する場合は、通知パネルに設定してください。";
 "shared_send_notification_disabled_tip" = "⚠️ MeetingBar の macOS の通知設定が現在オフになっています。ミーティングを見逃さないために、 macOS のシステム設定で通知を有効にしてください。";
 
@@ -324,6 +324,9 @@
 "notifications_event_start_one_minute_body" = "イベント開始1分前";
 "notifications_event_start_three_minutes_body" = "イベント開始3分前";
 "notifications_event_start_five_minutes_body" = "イベント開始5分前";
+"notifications_meetingbar_hidden_open_preferences_action" = "Open Preferences";
+"notifications_meetingbar_hidden_stop_notifications_action" = "Stop notifications";
+"notifications_meetingbar_join_event_action" = "Join";
 
 // MARK: - Link open
 

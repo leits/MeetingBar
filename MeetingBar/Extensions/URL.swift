@@ -41,7 +41,7 @@ extension URL {
         if result {
             NSLog("Opening \(self) in default browser")
         } else {
-            NSLog("Can't open \(self) in default browser")
+            sendNotification("link_url_cant_open_title".loco("preferences_services_link_default_browser_value".loco()), "preferences_services_create_meeting_custom_url_placeholder".loco())
         }
         return result
     }

@@ -1,0 +1,532 @@
+//
+//  Meeting.swift
+//  MeetingBar
+//
+//  Created by Andrii Leitsius on 09.04.2022.
+//  Copyright © 2022 Andrii Leitsius. All rights reserved.
+//
+
+import AppKit
+import Defaults
+import Foundation
+
+enum MeetingServices: String, Codable, CaseIterable {
+    case phone = "Phone"
+    case meet = "Google Meet"
+    case hangouts = "Google Hangouts"
+    case zoom = "Zoom"
+    case zoom_native = "Zoom native"
+    case teams = "Microsoft Teams"
+    case webex = "Cisco Webex"
+    case jitsi = "Jitsi"
+    case chime = "Amazon Chime"
+    case ringcentral = "Ring Central"
+    case gotomeeting = "GoToMeeting"
+    case gotowebinar = "GoToWebinar"
+    case bluejeans = "BlueJeans"
+    case eight_x_eight = "8x8"
+    case demio = "Demio"
+    case join_me = "Join.me"
+    case zoomgov = "ZoomGov"
+    case whereby = "Whereby"
+    case uberconference = "Uber Conference"
+    case blizz = "Blizz"
+    case teamviewer_meeting = "Teamviewer Meeting"
+    case vsee = "VSee"
+    case starleaf = "StarLeaf"
+    case duo = "Google Duo"
+    case voov = "Tencent VooV"
+    case facebook_workspace = "Facebook Workspace"
+    case lifesize = "Lifesize"
+    case skype = "Skype"
+    case skype4biz = "Skype For Business"
+    case skype4biz_selfhosted = "Skype For Business (SH)"
+    case facetime = "Facetime"
+    case pop = "Pop"
+    case chorus = "Chorus"
+    case gong = "Gong"
+    case livestorm = "Livestorm"
+    case facetimeaudio = "Facetime Audio"
+    case youtube = "YouTube"
+    case vonageMeetings = "Vonage Meetings"
+    case meetStream = "Google Meet Stream"
+    case around = "Around"
+    case jam = "Jam"
+    case discord = "Discord"
+    case blackboard_collab = "Blackboard Collaborate"
+    case url = "Any Link"
+    case coscreen = "CoScreen"
+    case vowel = "Vowel"
+    case zhumu = "Zhumu"
+    case lark = "Lark"
+    case feishu = "Feishu"
+    case vimeo_showcases = "Vimeo Showcases"
+    case ovice = "oVice"
+    case other = "Other"
+
+    var localizedValue: String {
+        switch self {
+        case .phone:
+            return "constants_meeting_service_phone".loco()
+        case .zoom_native:
+            return "constants_meeting_service_zoom_native".loco()
+        case .skype4biz:
+            return "constants_meeting_service_skype4biz".loco()
+        case .skype4biz_selfhosted:
+            return "constants_meeting_service_skype4biz_selfhosted".loco()
+        case .other:
+            return "constants_meeting_service_other".loco()
+        case .url:
+            return "constants_meeting_service_url".loco()
+        default:
+            return rawValue
+        }
+    }
+}
+
+struct MeetingLink: Equatable {
+    let service: MeetingServices?
+    var url: URL
+}
+
+enum CreateMeetingLinks {
+    static var meet = URL(string: "https://meet.google.com/new")!
+    static var zoom = URL(string: "https://zoom.us/start?confno=123456789&zc=0")!
+    static var teams = URL(string: "https://teams.microsoft.com/l/meeting/new?subject=")!
+    static var jam = URL(string: "https://jam.systems/new")!
+    static var coscreen = URL(string: "https://cs.new")!
+    static var gcalendar = URL(string: "https://calendar.google.com/calendar/u/0/r/eventedit")!
+    static var outlook_live = URL(string: "https://outlook.live.com/calendar/0/action/compose")!
+    static var outlook_office365 = URL(string: "https://outlook.office365.com/calendar/0/action/compose")!
+}
+
+enum CreateMeetingServices: String, Codable, CaseIterable {
+    case meet = "Google Meet"
+    case zoom = "Zoom"
+    case teams = "Microsoft Teams"
+    case jam = "Jam"
+    case coscreen = "CoScreen"
+    case gcalendar = "Google Calendar"
+    case outlook_live = "Outlook Live"
+    case outlook_office365 = "Outlook Office365"
+    case url = "Custom url"
+
+    var localizedValue: String {
+        switch self {
+        case .url:
+            return "constants_create_meeting_service_url".loco()
+        default:
+            return rawValue
+        }
+    }
+}
+
+func createMeeting() {
+    NSLog("Create meeting in \(Defaults[.createMeetingService].rawValue)")
+    let browser: Browser = Defaults[.browserForCreateMeeting]
+
+    switch Defaults[.createMeetingService] {
+    case .meet:
+        openMeetingURL(MeetingServices.meet, CreateMeetingLinks.meet, browser)
+    case .zoom:
+        openMeetingURL(MeetingServices.zoom, CreateMeetingLinks.zoom, browser)
+    case .teams:
+        openMeetingURL(MeetingServices.teams, CreateMeetingLinks.teams, browser)
+    case .jam:
+        openMeetingURL(MeetingServices.jam, CreateMeetingLinks.jam, browser)
+    case .coscreen:
+        openMeetingURL(MeetingServices.coscreen, CreateMeetingLinks.coscreen, browser)
+    case .gcalendar:
+        openMeetingURL(nil, CreateMeetingLinks.gcalendar, browser)
+    case .outlook_office365:
+        openMeetingURL(nil, CreateMeetingLinks.outlook_office365, browser)
+    case .outlook_live:
+        openMeetingURL(nil, CreateMeetingLinks.outlook_live, browser)
+    case .url:
+        var url: String = Defaults[.createMeetingServiceUrl]
+        let checkedUrl = NSURL(string: url)
+
+        if !url.isEmpty, checkedUrl != nil {
+            openMeetingURL(nil, URL(string: url)!, browser)
+        } else {
+            if !url.isEmpty {
+                url += " "
+            }
+
+            sendNotification("create_meeting_error_title".loco(), "create_meeting_error_message".loco(url))
+        }
+    }
+}
+
+func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?) {
+    switch service {
+    case .jitsi:
+        if Defaults[.useAppForJitsiLinks] {
+            var jitsiAppUrl = URLComponents(url: url, resolvingAgainstBaseURL: false)!
+            jitsiAppUrl.scheme = "jitsi-meet"
+            let result = jitsiAppUrl.url!.openInDefaultBrowser()
+            if !result {
+                sendNotification("status_bar_error_jitsi_link_title".loco(), "status_bar_error_jitsi_link_message".loco())
+                url.openInDefaultBrowser()
+            }
+        } else {
+            url.openIn(browser: browser ?? systemDefaultBrowser)
+        }
+    case .meet:
+        let browser = browser ?? Defaults[.meetBrowser]
+        if browser == MeetInOneBrowser {
+            let meetInOneUrl = URL(string: "meetinone://url=" + url.absoluteString)!
+            meetInOneUrl.openInDefaultBrowser()
+        } else {
+            url.openIn(browser: browser)
+        }
+
+    case .teams:
+        if Defaults[.useAppForTeamsLinks] {
+            var teamsAppURL = URLComponents(url: url, resolvingAgainstBaseURL: false)!
+            teamsAppURL.scheme = "msteams"
+            let result = teamsAppURL.url!.openInDefaultBrowser()
+            if !result {
+                sendNotification("status_bar_error_teams_link_title".loco(), "status_bar_error_teams_link_message".loco())
+                url.openInDefaultBrowser()
+            }
+        } else {
+            url.openIn(browser: browser ?? systemDefaultBrowser)
+        }
+
+    case .zoom, .zoomgov:
+        if Defaults[.useAppForZoomLinks] {
+            if url.absoluteString.contains("/my/") {
+                url.openIn(browser: browser ?? systemDefaultBrowser)
+            }
+            let urlString = url.absoluteString.replacingOccurrences(of: "?", with: "&").replacingOccurrences(of: "/j/", with: "/join?confno=")
+            var zoomAppUrl = URLComponents(url: URL(string: urlString)!, resolvingAgainstBaseURL: false)!
+            zoomAppUrl.scheme = "zoommtg"
+            let result = zoomAppUrl.url!.openInDefaultBrowser()
+            if !result {
+                sendNotification("status_bar_error_zoom_app_link_title".loco(), "status_bar_error_zoom_app_link_message".loco())
+                url.openInDefaultBrowser()
+            }
+        } else {
+            url.openIn(browser: browser ?? systemDefaultBrowser)
+        }
+    case .zoom_native:
+        let result = url.openInDefaultBrowser()
+        if !result {
+            sendNotification("status_bar_error_zoom_native_link_title".loco(), "status_bar_error_zoom_native_link_message".loco())
+
+            let urlString = url.absoluteString.replacingFirstOccurrence(of: "&", with: "?").replacingOccurrences(of: "/join?confno=", with: "/j/")
+            var zoomBrowserUrl = URLComponents(url: URL(string: urlString)!, resolvingAgainstBaseURL: false)!
+            zoomBrowserUrl.scheme = "https"
+            zoomBrowserUrl.url!.openInDefaultBrowser()
+        }
+    case .facetime:
+        NSWorkspace.shared.open(URL(string: "facetime://" + url.absoluteString)!)
+    case .facetimeaudio:
+        NSWorkspace.shared.open(URL(string: "facetime-audio://" + url.absoluteString)!)
+    case .phone:
+        NSWorkspace.shared.open(URL(string: "tel://" + url.absoluteString)!)
+
+    default:
+        url.openIn(browser: browser ?? systemDefaultBrowser)
+    }
+}
+
+struct LinksRegex {
+    let meet = try! NSRegularExpression(pattern: #"https?://meet.google.com/[a-z-]+"#)
+    let hangouts = try! NSRegularExpression(pattern: #"https?://hangouts.google.com/[^\s]*"#)
+    let zoom = try! NSRegularExpression(pattern: #"https?:\/\/(?:[a-zA-Z0-9-.]+)?zoom.(?:us|com.cn)\/(?:j|my|w)\/[-a-zA-Z0-9()@:%_\+.~#?&=\/]*"#)
+    let zoom_native = try! NSRegularExpression(pattern: #"zoommtg://([a-z0-9-.]+)?zoom\.(us|com\.cn)/join[-a-zA-Z0-9()@:%_\+.~#?&=\/]*"#)
+    let teams = try! NSRegularExpression(pattern: #"https?://teams\.microsoft\.com/l/meetup-join/[a-zA-Z0-9_%\/=\-\+\.?]+"#)
+    let webex = try! NSRegularExpression(pattern: #"https?://([a-z0-9-.]+)?webex\.com/[^\s]*"#)
+    let jitsi = try! NSRegularExpression(pattern: #"https?://meet\.jit\.si/[^\s]*"#)
+    let chime = try! NSRegularExpression(pattern: #"https?://([a-z0-9-.]+)?chime\.aws/[0-9]*"#)
+    let ringcentral = try! NSRegularExpression(pattern: #"https?://([a-z0-9.]+)?ringcentral\.com/[^\s]*"#)
+    let gotomeeting = try! NSRegularExpression(pattern: #"https?://([a-z0-9.]+)?gotomeeting\.com/[^\s]*"#)
+    let gotowebinar = try! NSRegularExpression(pattern: #"https?://([a-z0-9.]+)?gotowebinar\.com/[^\s]*"#)
+    let bluejeans = try! NSRegularExpression(pattern: #"https?://([a-z0-9.]+)?bluejeans\.com/[^\s]*"#)
+    let eight_x_eight = try! NSRegularExpression(pattern: #"https?://8x8\.vc/[^\s]*"#)
+    let demio = try! NSRegularExpression(pattern: #"https?://event\.demio\.com/[^\s]*"#)
+    let join_me = try! NSRegularExpression(pattern: #"https?://join\.me/[^\s]*"#)
+    let zoomgov = try! NSRegularExpression(pattern: #"https?://([a-z0-9.]+)?zoomgov\.com/j/[a-zA-Z0-9?&=]+"#)
+    let whereby = try! NSRegularExpression(pattern: #"https?://whereby\.com/[^\s]*"#)
+    let uberconference = try! NSRegularExpression(pattern: #"https?://uberconference\.com/[^\s]*"#)
+    let blizz = try! NSRegularExpression(pattern: #"https?://go\.blizz\.com/[^\s]*"#)
+    let teamviewer_meeting = try! NSRegularExpression(pattern: #"https?://go\.teamviewer\.com/[^\s]*"#)
+    let vsee = try! NSRegularExpression(pattern: #"https?://vsee\.com/[^\s]*"#)
+    let starleaf = try! NSRegularExpression(pattern: #"https?://meet\.starleaf\.com/[^\s]*"#)
+    let duo = try! NSRegularExpression(pattern: #"https?://duo\.app\.goo\.gl/[^\s]*"#)
+    let voov = try! NSRegularExpression(pattern: #"https?://voovmeeting\.com/[^\s]*"#)
+    let facebook_workspace = try! NSRegularExpression(pattern: #"https?://([a-z0-9-.]+)?workplace\.com/[^\s]+"#)
+    let skype = try! NSRegularExpression(pattern: #"https?://join\.skype\.com/[^\s]*"#)
+    let skype4biz = try! NSRegularExpression(pattern: #"https?://meet\.lync\.com/[^\s]*"#)
+    let skype4biz_selfhosted = try! NSRegularExpression(pattern: #"https?:\/\/(meet|join)\.[^\s]*\/[a-z0-9.]+/meet\/[A-Za-z0-9./]+"#)
+    let lifesize = try! NSRegularExpression(pattern: #"https?://call\.lifesizecloud\.com/[^\s]*"#)
+    let youtube = try! NSRegularExpression(pattern: #"https?://((www|m)\.)?(youtube\.com|youtu\.be)/[^\s]*"#)
+    let vonageMeetings = try! NSRegularExpression(pattern: #"https?://meetings\.vonage\.com/[0-9]{9}"#)
+    let meetStream = try! NSRegularExpression(pattern: #"https?://stream\.meet\.google\.com/stream/[a-z0-9-]+"#)
+    let around = try! NSRegularExpression(pattern: #"https?://(meet.)?around\.co/[^\s]*"#)
+    let jam = try! NSRegularExpression(pattern: #"https?://jam\.systems/[^\s]*"#)
+    let discord = try! NSRegularExpression(pattern: #"(http|https|discord)://(www\.)?(canary\.)?discord(app)?\.([a-zA-Z]{2,})(.+)?"#)
+    let blackboard_collab = try! NSRegularExpression(pattern: #"https?://us\.bbcollab\.com/[^\s]*"#)
+    let coscreen = try! NSRegularExpression(pattern: #"https?://join\.coscreen\.co/[^\s]*"#)
+    let vowel = try! NSRegularExpression(pattern: #"https?://([a-z0-9.]+)?vowel\.com/#/g/[^\s]*"#)
+    let zhumu = try! NSRegularExpression(pattern: #"https://welink\.zhumu\.com/j/[0-9]+?pwd=[a-zA-Z0-9]+"#)
+    let lark = try! NSRegularExpression(pattern: #" https://vc\.larksuite\.com/j/[0-9]+"#)
+    let feishu = try! NSRegularExpression(pattern: #"https://vc\.feishu\.cn/j/[0-9]+"#)
+    let vimeo_showcases = try! NSRegularExpression(pattern: #"https://vimeo\.com/showcase/[0-9]+"#)
+    let ovice = try! NSRegularExpression(pattern: #"https://([a-z0-9-.]+)?ovice\.in/[^\s]*"#)
+    let facetime = try! NSRegularExpression(pattern: #"https://facetime\.apple\.com/join[^\s]*"#)
+    let chorus = try! NSRegularExpression(pattern: #"https?://go\.chorus\.ai/.*"#)
+    let pop = try! NSRegularExpression(pattern: #"https?://pop.com/j/[0-9-]+"#)
+    let gong = try! NSRegularExpression(pattern: #"https?://join\.gong\.io/.*"#)
+    let livestorm = try! NSRegularExpression(pattern: #"https?://app\.livestorm\.com/p/.*/live.*"#)
+}
+
+func getRegexForMeetingService(_ service: MeetingServices) -> NSRegularExpression? {
+    let regexes = LinksRegex()
+    let mirror = Mirror(reflecting: regexes)
+
+    for child in mirror.children {
+        if child.label == String(describing: service) {
+            return child.value as? NSRegularExpression
+        }
+    }
+    return nil
+}
+
+func detectMeetingLink(_ rawText: String) -> MeetingLink? {
+    let text = cleanupOutlookSafeLinks(rawText: rawText)
+
+    for pattern in Defaults[.customRegexes] {
+        if let regex = try? NSRegularExpression(pattern: pattern) {
+            if let link = getMatch(text: text, regex: regex) {
+                if let url = URL(string: link) {
+                    return MeetingLink(service: MeetingServices.other, url: url)
+                }
+            }
+        }
+    }
+
+    for service in MeetingServices.allCases {
+        if let regex = getRegexForMeetingService(service) {
+            if let link = getMatch(text: text, regex: regex) {
+                if let url = URL(string: link) {
+                    return MeetingLink(service: service, url: url)
+                }
+            }
+        }
+    }
+    return nil
+}
+
+func getIconForMeetingService(_ meetingService: MeetingServices?) -> NSImage {
+    var image = NSImage(named: "no_online_session")!
+    image.size = NSSize(width: 16, height: 16)
+
+    switch meetingService {
+    // tested and verified
+    case .some(.teams):
+        image = NSImage(named: "ms_teams_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    // tested and verified
+    case .some(.meet), .some(.meetStream):
+        image = NSImage(named: "google_meet_icon")!
+        image.size = NSSize(width: 16, height: 13.2)
+
+    // tested and verified -> deprecated, can be removed because hangouts was replaced by google meet
+    case .some(.hangouts):
+        image = NSImage(named: "google_hangouts_icon")!
+        image.size = NSSize(width: 16, height: 17.8)
+
+    // tested and verified
+    case .some(.zoom), .some(.zoomgov), .some(.zoom_native):
+        image = NSImage(named: "zoom_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    // tested and verified
+    case .some(.webex):
+        image = NSImage(named: "webex_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    // tested and verified
+    case .some(.jitsi):
+        image = NSImage(named: "jitsi_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    // tested and verified
+    case .some(.chime):
+        image = NSImage(named: "amazon_chime_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    // tested and verified
+    case .some(.ringcentral):
+        image = NSImage(named: "ringcentral_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    // tested and verified
+    case .some(.gotomeeting):
+        image = NSImage(named: "gotomeeting_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    // tested and verified
+    case .some(.gotowebinar):
+        image = NSImage(named: "gotowebinar_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    // tested and verified
+    case .some(.bluejeans):
+        image = NSImage(named: "bluejeans_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    // tested and verified
+    case .some(.eight_x_eight):
+        image = NSImage(named: "8x8_icon")!
+        image.size = NSSize(width: 16, height: 8)
+
+    // tested and verified
+    case .some(.demio):
+        image = NSImage(named: "demio_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    // tested and verified
+    case .some(.join_me):
+        image = NSImage(named: "joinme_icon")!
+        image.size = NSSize(width: 16, height: 10)
+
+    // tested and verified
+    case .some(.whereby):
+        image = NSImage(named: "whereby_icon")!
+        image.size = NSSize(width: 16, height: 18)
+
+    // tested and verified
+    case .some(.uberconference):
+        image = NSImage(named: "uberconference_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    // tested and verified
+    case .some(.blizz), .some(.teamviewer_meeting):
+        image = NSImage(named: "teamviewer_meeting_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    // tested and verified
+    case .some(.vsee):
+        image = NSImage(named: "vsee_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    // tested and verified
+    case .some(.starleaf):
+        image = NSImage(named: "starleaf_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    // tested and verified
+    case .some(.duo):
+        image = NSImage(named: "google_duo_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    // tested and verified
+    case .some(.voov):
+        image = NSImage(named: "voov_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    // tested and verified
+    case .some(.skype):
+        image = NSImage(named: "skype_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    // tested and verified
+    case .some(.skype4biz), .some(.skype4biz_selfhosted):
+        image = NSImage(named: "skype_business_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    // tested and verified
+    case .some(.lifesize):
+        image = NSImage(named: "lifesize_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    // tested and verified
+    case .some(.facebook_workspace):
+        image = NSImage(named: "facebook_workplace_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    // tested and verified
+    case .some(.youtube):
+        image = NSImage(named: "youtube_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    // tested and verified
+    case .some(.coscreen):
+        image = NSImage(named: "coscreen_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    // tested and verified
+    case .some(.vowel):
+        image = NSImage(named: "vowel_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    // tested and verified
+    case .some(.zhumu):
+        image = NSImage(named: "zhumu_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    // tested and verified
+    case .some(.lark):
+        image = NSImage(named: "lark_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    // tested and verified
+    case .some(.feishu):
+        image = NSImage(named: "feishu_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    // tested and verified
+    case .some(.vimeo_showcases):
+        image = NSImage(named: "vimeo_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    // tested and verified
+    case .some(.ovice):
+        image = NSImage(named: "ovice_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    case .some(.facetime):
+        image = NSImage(named: "facetime_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    case .some(.pop):
+        image = NSImage(named: "pop_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    case .some(.chorus):
+        image = NSImage(named: "chorus_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    case .some(.livestorm):
+        image = NSImage(named: "livestorm_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    case .some(.gong):
+        image = NSImage(named: "gong_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    // tested and verified
+    case .none:
+        image = NSImage(named: "no_online_session")!
+        image.size = NSSize(width: 16, height: 16)
+
+    // tested and verified
+    case .some(.vonageMeetings):
+        image = NSImage(named: "vonage_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    case .some(.url):
+        image = NSImage(named: NSImage.touchBarOpenInBrowserTemplateName)!
+        image.size = NSSize(width: 16, height: 16)
+
+    default:
+        break
+    }
+
+    return image
+}

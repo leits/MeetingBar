@@ -66,7 +66,7 @@ struct ServicesTab: View {
                     }
                     return lhs.localizedValue < rhs.localizedValue
                 }
-                .map { $0.localizedValue }
+                .map(\.localizedValue)
                 .joined(separator: ", ")
 
                 Text("preferences_services_supported_links_list".loco(services))

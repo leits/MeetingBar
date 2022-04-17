@@ -16,9 +16,8 @@ extension Defaults.Keys {
     static let isInstalledFromAppStore = Key<Bool>("isInstalledFromAppStore", default: false)
     static let patronageDuration = Key<Int>("patronageDuration", default: 0)
 
-    static let calendarTitle = Key<String>("calendarTitle", default: "") // Backward compatibility
-    static let selectedCalendars = Key<[String]>("selectedCalendars", default: []) // Backward compatibility
     static let selectedCalendarIDs = Key<[String]>("selectedCalendarIDs", default: [])
+    static let eventStoreProvider = Key<eventStoreProvider>("eventStoreProvider", default: .MacOSEventKit)
 
     static let onboardingCompleted = Key<Bool>("onboardingCompleted", default: false)
 
@@ -28,24 +27,23 @@ extension Defaults.Keys {
 
     static let automaticEventJoin = Key<Bool>("automaticEventJoin", default: false)
     static let automaticEventJoinTime = Key<AutomaticEventJoinTime>("automaticEventJoinTime", default: .atStart)
+    static let processedEventsForAutoJoin = Key<[ProcessedEvent]>("processedEventsForAutoJoin", default: [])
 
     static let launchAtLogin = Key<Bool>("launchAtLogin", default: false)
     static let preferredLanguage = Key<AppLanguage>("preferredLanguage", default: .system)
 
-    static let processedEvents = Key<[Event]>("processedEvents", default: [])
-
-    static let automaticJoinedEvents = Key<[Event]>("automaticJoinedEvents", default: [])
-
     // Status Bar Appearance
-    static let showEventTitleInStatusBar = Key<Bool?>("showEventTitleInStatusBar") // Backward compatibility
     static let eventTitleFormat = Key<EventTitleFormat>("eventTitleFormat", default: .show)
     static let eventTimeFormat = Key<EventTimeFormat>("eventTimeFormat", default: .show)
 
     static let eventTitleIconFormat = Key<EventTitleIconFormat>("eventTitleIconFormat", default: .none)
-    static let titleLength = Key<Double?>("titleLength", default: nil) // Backward compatibility
     static let statusbarEventTitleLength = Key<Int>("statusbarEventTitleLength", default: statusbarEventTitleLengthLimits.max)
 
     static let hideMeetingTitle = Key<Bool>("hideMeetingTitle", default: false)
+
+//    // setting if the user wants to be warned about the hidden meetingbar icon in the global menubar/status bar
+//    // the default is now enabled because users are sometimes confused starting meetingbar while no app icon is visible
+//    static let notificationForHiddenAppInMenubar = Key<Bool>("notificationForHiddenAppInMenubar", default: true)
 
     // Menu Appearance
     // if the event title in the menu should be shortened or not -> the length will be stored in field menuEventTitleLength
@@ -100,8 +98,6 @@ extension Defaults.Keys {
      */
     static let browserForCreateMeeting = Key<Browser>("browserForCreateMeeting", default: systemDefaultBrowser)
 
-    static let browserForMeetLinks = Key<DeprecatedBrowser?>("browserForMeetLinks", default: nil) // Backward compatibility
-    static let useChromeForMeetLinks = Key<Bool?>("useChromeForMeetLinks") // Backward compatibility
     static let useAppForZoomLinks = Key<Bool>("useAppForZoomLinks", default: false)
     static let useAppForTeamsLinks = Key<Bool>("useAppForTeamsLinks", default: false)
     static let useAppForJitsiLinks = Key<Bool>("useAppForJitsiLinks", default: false)
@@ -110,8 +106,12 @@ extension Defaults.Keys {
     static let joinEventScriptLocation = Key<URL?>("joinEventScriptLocation", default: nil)
     static let runJoinEventScript = Key<Bool>("runAppleScriptWhenJoiningEvent", default: false)
     static let joinEventScript = Key<String>("joinEventScript", default: "preferences_advanced_apple_script_placeholder".loco())
-    static let runAutomaticEventScript = Key<Bool>("runAutomaticEventScript", default: false)
-    static let automaticEventScriptTime = Key<EventScriptExecutionTime>("automaticEventScriptTime", default: .atStart)
+
+    static let eventStartScriptLocation = Key<URL?>("eventStartScriptLocation", default: nil)
+    static let runEventStartScript = Key<Bool>("runEventStartScript", default: false)
+    static let eventStartScriptTime = Key<EventScriptExecutionTime>("eventStartScriptTime", default: .atStart)
+    static let eventStartScript = Key<String>("eventStartScript", default: eventStartScriptPlaceholder)
+    static let processedEventsForRunScriptOnEventStart = Key<[ProcessedEvent]>("processedEventsForRunScriptOnEventStart", default: [])
 
     static let customRegexes = Key<[String]>("customRegexes", default: [])
     static let filterEventRegexes = Key<[String]>("filterEventRegexes", default: [])

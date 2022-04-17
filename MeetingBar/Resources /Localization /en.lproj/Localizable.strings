@@ -14,6 +14,11 @@
 "general_save" = "Save";
 "general_meeting" = "Meeting";
 
+"general_when_event_starts" = "when event starts";
+"general_one_minute_before" = "1 minute before";
+"general_three_minute_before" = "3 minutes before";
+"general_five_minute_before" = "5 minutes before";
+
 "create_meeting_error_title" = "Cannot create new meeting";
 "create_meeting_error_message" = "Custom URL \"%@\" missing or invalid. Add one in the app preferences.";
 "next_meeting_empty_title" = "There are no upcoming meetings today";
@@ -46,7 +51,9 @@
 "preferences_general_shortcut_join_next" = "Join next meeting:";
 "preferences_general_shortcut_join_from_clipboard" = "Join meeting from clipboard:";
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "Toggle title visibility in status bar:";
-"preferences_general_meeting_bar_description" = "MeetingBar is an open-source app created by Andrii Leitsius\nFor smoother and easier online meetings";
+"preferences_general_hidden_notification_toggle" = "Notify if menu bar icon becomes invisible";
+"preferences_general_hidden_notification_toggle_tip" = "The menu bar in macOS has only space for a certain amount of app icons. If there are too many icons, some apps will disappear automatically.";
+"preferences_general_meeting_bar_description" = "MeetingBar is an open-source app\ncreated by Andrii Leitsius 🇺🇦\nFor smoother and easier online meetings";
 "preferences_general_external_patronage" = "Patronage";
 "preferences_general_external_gitHub" = "GitHub";
 "preferences_general_external_contact" = "Contact";
@@ -163,7 +170,7 @@
 
 "preferences_calendars_select_calendars_title" = "Select calendars to show events in status bar";
 "preferences_calendars_add_account_description" = "Can't find the calendar you need?";
-"preferences_calendars_add_account_button" = "Add account";
+"preferences_calendars_add_account_button" = "Add calendar account";
 "preferences_calendars_add_account_modal" = "To add external calendars:\n1. Open the default calendar app\n2. Click 'Add Account' in the menu\n3. Choose and connect your account";
 
 // MARK: - Preferences Advanced
@@ -266,21 +273,10 @@
 // MARK: - Shared
 
 "shared_send_notification_toggle" = "Send notification to join next event meeting";
-"shared_send_notification_directly_value" = "when event starts";
-"shared_send_notification_one_minute_value" = "1 minute before";
-"shared_send_notification_three_minute_value" = "3 minutes before";
-"shared_send_notification_five_minute_value" = "5 minutes before";
 "shared_send_notification_no_alert_style_tip" = "⚠️ Your macOS notification settings for MeetingBar are not set to alert. Do so if you want persistent notifications.";
 "shared_send_notification_disabled_tip" = "⚠️ Your macOS notification settings for MeetingBar are off. Turn on notifications in the macOS system settings to keep track of meetings.";
 "shared_automatic_event_join_toggle" = "Automatic join next event meeting";
-"shared_automatic_event_join_directly_value" = "when event starts";
-"shared_automatic_event_join_one_minute_value" = "1 minute before";
-"shared_automatic_event_join_two_minutes_value" = "2 minutes before";
-"shared_automatic_event_join_three_minutes_value" = "3 minutes before";
-"shared_automatic_event_join_four_minutes_value" = "4 minutes before";
-"shared_automatic_event_join_five_minutes_value" = "5 minutes before";
-"shared_automatic_event_join_ten_minutes_value" = "10 minutes before";
-"shared_automatic_event_join_tip" = "This setting will automatically open your next meeting in your configured app or browser. Please keep that in mind!";
+"shared_automatic_event_join_tip" = "This setting will automatically open your next meeting in your configured app or browser";
 
 // MARK: - Constants
 "constants_create_meeting_service_url" = "Custom URL";
@@ -320,9 +316,16 @@
 // MARK: - Notifications
 
 "notifications_event_start_soon_body" = "The event starts soon";
+"notifications_event_started_body" = "The event has started";
 "notifications_event_start_one_minute_body" = "The event starts in one minute";
 "notifications_event_start_three_minutes_body" = "The event starts in three minutes";
 "notifications_event_start_five_minutes_body" = "The event starts in five minutes";
+"notifications_meetingbar_invisible_title" = "MeetingBar became invisible";
+"notifications_meetingbar_invisible_body" = "The menu bar entry has been hidden by macOS because there is not enough space to display it. You can adjust the size of the menu bar entry in the preferences.";
+"notifications_meetingbar_hidden_open_preferences_action" = "Open Preferences";
+"notifications_meetingbar_hidden_stop_notifications_action" = "Stop notifications";
+"notifications_meetingbar_join_event_action" = "Join";
+
 
 // MARK: - Link open
 

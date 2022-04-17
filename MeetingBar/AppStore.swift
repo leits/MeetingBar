@@ -56,7 +56,7 @@ func restorePatronagePurchases() {
     Defaults[.patronageDuration] = 0
     SwiftyStoreKit.restorePurchases(atomically: true) { results in
         if !results.restoreFailedPurchases.isEmpty {
-            print("Restore Failed: \(results.restoreFailedPurchases)")
+            NSLog("Restore Failed: \(results.restoreFailedPurchases)")
         } else if !results.restoredPurchases.isEmpty {
             for purchase in results.restoredPurchases {
                 let restorePatronageDuration = getPatronageDurationFromProductID(purchase.productId)

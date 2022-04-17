@@ -45,7 +45,7 @@
 "preferences_general_shortcut_join_next" = "Pridruži se sljedećem sastanku:";
 "preferences_general_shortcut_join_from_clipboard" = "Pridruži se sastanku iz međuspremnika:";
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "Uključi/isključi prikaz naslova u traci stanja:";
-"preferences_general_meeting_bar_description" = "MeetingBar je program otvorenog koda za jednostavnije održavanje\nsastanaka online. Autor programa je Andrii Leitsius.";
+"preferences_general_meeting_bar_description" = "MeetingBar je program otvorenog koda za jednostavnije održavanje\nsastanaka online. Autor programa je Andrii Leitsius 🇺🇦";
 "preferences_general_external_patronage" = "Pokroviteljstvo";
 "preferences_general_external_gitHub" = "GitHub";
 "preferences_general_external_contact" = "Kontakt";
@@ -263,10 +263,10 @@
 // MARK: - Shared
 
 "shared_send_notification_toggle" = "Pošalji obavijest za pridruživanje sljedećem sastanku";
-"shared_send_notification_directly_value" = "kad sastanak počne";
-"shared_send_notification_one_minute_value" = "1 minutu prije";
-"shared_send_notification_three_minute_value" = "3 minute prije";
-"shared_send_notification_five_minute_value" = "5 minuta prije";
+"general_when_event_starts" = "kad sastanak počne";
+"general_one_minute_before" = "1 minutu prije";
+"general_three_minute_before" = "3 minute prije";
+"general_five_minute_before" = "5 minuta prije";
 "shared_send_notification_no_alert_style_tip" = "⚠️ Tvoje macOS postavke obavještavanja za MeetingBar trenutačno nisu postavljene na upozoravanje. Aktiviraj upozorenja ako želiš dobivati obavijesti.";
 "shared_send_notification_disabled_tip" = "⚠️ Tvoje macOS postavke obavještavanja za MeetingBar trenutačno su isključene. Za praćenje sastanaka uključi obavijesti u postavkama macOS sustava.";
 
@@ -309,6 +309,9 @@
 "notifications_event_start_one_minute_body" = "Događaj počinje za jednu minutu";
 "notifications_event_start_three_minutes_body" = "Događaj počinje za tri minute";
 "notifications_event_start_five_minutes_body" = "Događaj počinje za pet minuta";
+"notifications_meetingbar_hidden_open_preferences_action" = "Open Preferences";
+"notifications_meetingbar_hidden_stop_notifications_action" = "Stop notifications";
+"notifications_meetingbar_join_event_action" = "Join";
 
 // MARK: - Link open
 

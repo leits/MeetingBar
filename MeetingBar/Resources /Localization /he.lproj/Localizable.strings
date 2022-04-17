@@ -21,7 +21,7 @@
 "preferences_general_shortcut_join_next" = "הצטרפות לפגישה הבאה:";
 "preferences_general_shortcut_join_from_clipboard" = "הצטרפות לפגישה שבלוח הגזירים:";
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "החלפת מצב הצגת הכותרת בשורת המצב:";
-"preferences_general_meeting_bar_description" = "MeetingBar הוא יישום בקוד פתוח שנוצר על ידי Andrii Leitsius\nלפגישות מקוונות פשוטות וחלקות יותר";
+"preferences_general_meeting_bar_description" = "MeetingBar הוא יישום בקוד פתוח שנוצר על ידי Andrii Leitsius 🇺🇦\nלפגישות מקוונות פשוטות וחלקות יותר";
 "preferences_general_external_patronage" = "Patronage";
 "preferences_general_external_gitHub" = "GitHub";
 "preferences_general_external_contact" = "יצירת קשר";
@@ -186,9 +186,9 @@
 // MARK: - Shared
 
 "shared_send_notification_toggle" = "לשלוח התראה להצטרף לפגישת האירוע הבאה שלך";
-"shared_send_notification_directly_value" = "כאשר אירוע מתחיל";
-"shared_send_notification_one_minute_value" = "דקה לפני";
-"shared_send_notification_three_minute_value" = "3 דקות לפני";
+"general_when_event_starts" = "כאשר אירוע מתחיל";
+"general_one_minute_before" = "דקה לפני";
+"general_three_minute_before" = "3 דקות לפני";
 "constants_create_meeting_service_url" = "כתובת משלך";
 "constants_meeting_service_skype4biz_selfhosted" = "Skype לעסקים (אירוח עצמי)";
 "constants_meeting_service_zoom_native" = "Zoom טבעי";
@@ -295,7 +295,7 @@
 "status_bar_event_status_in" = "בעוד %@";
 "access_screen_access_denied_system_preferences_button" = "העדפות המערכת";
 "access_screen_access_denied_checkbox_title" = "ולבחור את תיבת הסימון שליד MeetingBar.";
-"shared_send_notification_five_minute_value" = "5 דקות לפני";
+"general_five_minute_before" = "5 דקות לפני";
 "constants_meeting_service_phone" = "מספר טלפון";
 "constants_meeting_service_skype4biz" = "Skype לעסקים";
 "constants_browser_vivaldi" = "Vivaldi";
@@ -306,5 +306,8 @@
 // MARK: - Notifications
 
 "notifications_event_start_soon_body" = "האירוע מתחיל בקרוב";
+"notifications_meetingbar_hidden_open_preferences_action" = "Open Preferences";
+"notifications_meetingbar_hidden_stop_notifications_action" = "Stop notifications";
+"notifications_meetingbar_join_event_action" = "Join";
 "preferences_advanced_event_regex_title" = "ביטויים רגולריים משלך לסינון הודעות";
 "status_bar_section_refresh_sources" = "רענון המקורות";

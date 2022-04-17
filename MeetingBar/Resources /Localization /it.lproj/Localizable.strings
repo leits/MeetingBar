@@ -45,7 +45,7 @@
 "preferences_general_shortcut_join_next" = "Entra nella prossima riunione:";
 "preferences_general_shortcut_join_from_clipboard" = "Entra nella riunione da link copiato:";
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "Attiva/disattiva la visibilità del titolo nella barra di stato:";
-"preferences_general_meeting_bar_description" = "MeetingBar è un'app open source creata da Andrii Leitsius\nPer riunioni online più fluide e semplici";
+"preferences_general_meeting_bar_description" = "MeetingBar è un'app open source creata da Andrii Leitsius 🇺🇦\nPer riunioni online più fluide e semplici";
 "preferences_general_external_patronage" = "Patronage";
 "preferences_general_external_gitHub" = "GitHub";
 "preferences_general_external_contact" = "Contact";
@@ -265,10 +265,10 @@
 // MARK: - Shared
 
 "shared_send_notification_toggle" = "Invia una notifica per partecipare alla prossima riunione";
-"shared_send_notification_directly_value" = "quando inizia";
-"shared_send_notification_one_minute_value" = "1 minuto prima";
-"shared_send_notification_three_minute_value" = "3 minuti prima";
-"shared_send_notification_five_minute_value" = "5 minuti prima";
+"general_when_event_starts" = "quando inizia";
+"general_one_minute_before" = "1 minuto prima";
+"general_three_minute_before" = "3 minuti prima";
+"general_five_minute_before" = "5 minuti prima";
 "shared_send_notification_no_alert_style_tip" = "⚠️ Le impostazioni per le notifiche di macOS per MeetingBar non sono impostate per l'avviso. Aggiorna le impostazioni se desideri notifiche persistenti.";
 "shared_send_notification_disabled_tip" = "⚠️ LeLe impostazioni per le notifiche di macOS per MeetingBar sono disattivate. Attiva le notifiche nelle impostazioni di sistema di macOS per tenere traccia delle riunioni.";
 
@@ -311,6 +311,9 @@
 "notifications_event_start_one_minute_body" = "La riunione inizia in un minuto";
 "notifications_event_start_three_minutes_body" = "La riunione inizia in tre minuti";
 "notifications_event_start_five_minutes_body" = "La riunione inizia in cinque minuti";
+"notifications_meetingbar_hidden_open_preferences_action" = "Open Preferences";
+"notifications_meetingbar_hidden_stop_notifications_action" = "Stop notifications";
+"notifications_meetingbar_join_event_action" = "Join";
 
 // MARK: - Link open
 

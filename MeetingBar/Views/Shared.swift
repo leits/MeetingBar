@@ -21,13 +21,10 @@ struct AutomaticEventJoinPicker: View {
         HStack {
             Toggle("shared_automatic_event_join_toggle".loco(), isOn: $automaticEventJoin)
             Picker("", selection: $automaticEventJoinTime) {
-                Text("shared_automatic_event_join_directly_value".loco()).tag(AutomaticEventJoinTime.atStart)
-                Text("shared_automatic_event_join_one_minute_value".loco()).tag(AutomaticEventJoinTime.minuteBefore)
-                Text("shared_automatic_event_join_two_minutes_value".loco()).tag(AutomaticEventJoinTime.twoMinutesBefore)
-                Text("shared_automatic_event_join_three_minutes_value".loco()).tag(AutomaticEventJoinTime.threeMinutesBefore)
-                Text("shared_automatic_event_join_four_minutes_value".loco()).tag(AutomaticEventJoinTime.fourMinutesBefore)
-                Text("shared_automatic_event_join_five_minutes_value".loco()).tag(AutomaticEventJoinTime.fiveMinutesBefore)
-                Text("shared_automatic_event_join_ten_minutes_value".loco()).tag(AutomaticEventJoinTime.tenMinutesBefore)
+                Text("general_when_event_starts".loco()).tag(AutomaticEventJoinTime.atStart)
+                Text("general_one_minute_before".loco()).tag(AutomaticEventJoinTime.minuteBefore)
+                Text("general_three_minute_before".loco()).tag(AutomaticEventJoinTime.threeMinuteBefore)
+                Text("general_five_minute_before".loco()).tag(AutomaticEventJoinTime.fiveMinuteBefore)
             }.frame(width: 220, alignment: .leading).labelsHidden().disabled(!automaticEventJoin)
         }
 
@@ -41,44 +38,44 @@ struct JoinEventNotificationPicker: View {
     @Default(.joinEventNotification) var joinEventNotification
     @Default(.joinEventNotificationTime) var joinEventNotificationTime
 
-    func checkNotificationSettings() -> (Bool, Bool) {
-        var noAlertStyle = false
-        var notificationsDisabled = false
-
-        let center = UNUserNotificationCenter.current()
-        let group = DispatchGroup()
-        group.enter()
-
-        center.getNotificationSettings { notificationSettings in
-            noAlertStyle = notificationSettings.alertStyle != UNAlertStyle.alert
-            notificationsDisabled = notificationSettings.authorizationStatus == UNAuthorizationStatus.denied
-            group.leave()
-        }
-
-        group.wait()
-        return (noAlertStyle, notificationsDisabled)
-    }
-
     var body: some View {
         HStack {
             Toggle("shared_send_notification_toggle".loco(), isOn: $joinEventNotification)
             Picker("", selection: $joinEventNotificationTime) {
-                Text("shared_send_notification_directly_value".loco()).tag(JoinEventNotificationTime.atStart)
-                Text("shared_send_notification_one_minute_value".loco()).tag(JoinEventNotificationTime.minuteBefore)
-                Text("shared_send_notification_three_minute_value".loco()).tag(JoinEventNotificationTime.threeMinuteBefore)
-                Text("shared_send_notification_five_minute_value".loco()).tag(JoinEventNotificationTime.fiveMinuteBefore)
+                Text("general_when_event_starts".loco()).tag(JoinEventNotificationTime.atStart)
+                Text("general_one_minute_before".loco()).tag(JoinEventNotificationTime.minuteBefore)
+                Text("general_three_minute_before".loco()).tag(JoinEventNotificationTime.threeMinuteBefore)
+                Text("general_five_minute_before".loco()).tag(JoinEventNotificationTime.fiveMinuteBefore)
             }.frame(width: 220, alignment: .leading).labelsHidden().disabled(!joinEventNotification)
         }
         let (noAlertStyle, disabled) = checkNotificationSettings()
 
-        if noAlertStyle && !disabled && joinEventNotification {
+        if noAlertStyle, !disabled, joinEventNotification {
             Text("shared_send_notification_no_alert_style_tip".loco()).foregroundColor(Color.gray).font(.system(size: 12))
         }
 
-        if disabled && joinEventNotification {
+        if disabled, joinEventNotification {
             Text("shared_send_notification_disabled_tip".loco()).foregroundColor(Color.gray).font(.system(size: 12))
         }
     }
+}
+
+func checkNotificationSettings() -> (Bool, Bool) {
+    var noAlertStyle = false
+    var notificationsDisabled = false
+
+    let center = UNUserNotificationCenter.current()
+    let group = DispatchGroup()
+    group.enter()
+
+    center.getNotificationSettings { notificationSettings in
+        noAlertStyle = notificationSettings.alertStyle != UNAlertStyle.alert
+        notificationsDisabled = notificationSettings.authorizationStatus == UNAuthorizationStatus.denied
+        group.leave()
+    }
+
+    group.wait()
+    return (noAlertStyle, notificationsDisabled)
 }
 
 struct LaunchAtLoginANDPreferredLanguagePicker: View {
