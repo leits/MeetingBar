@@ -269,6 +269,8 @@
 "general_five_minute_before" = "5 minuta prije";
 "shared_send_notification_no_alert_style_tip" = "⚠️ Tvoje macOS postavke obavještavanja za MeetingBar trenutačno nisu postavljene na upozoravanje. Aktiviraj upozorenja ako želiš dobivati obavijesti.";
 "shared_send_notification_disabled_tip" = "⚠️ Tvoje macOS postavke obavještavanja za MeetingBar trenutačno su isključene. Za praćenje sastanaka uključi obavijesti u postavkama macOS sustava.";
+"shared_automatic_event_join_toggle" = "Automatic join next event meeting";
+"shared_automatic_event_join_tip" = "This setting will automatically open your next meeting in your configured app or browser";
 
 // MARK: - Constants
 "constants_create_meeting_service_url" = "Prilagođeni URL";

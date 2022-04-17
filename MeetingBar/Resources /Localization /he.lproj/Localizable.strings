@@ -194,6 +194,8 @@
 "constants_meeting_service_zoom_native" = "Zoom טבעי";
 "shared_send_notification_no_alert_style_tip" = "⚠️ הגדרות ההתראות ב־macOS שלך עבור MeetingBar לא מוגדרות להוציא התראות. יש לעשות זאת אם מעניין אותך להשתמש בהתראות דביקות.";
 "shared_send_notification_disabled_tip" = "⚠️ הגדרות ההתראות ב־macOS שלך עבור MeetingBar כבויות. יש להפעיל את ההתראות בהגדרות המערכת של macOS כדי לעקוב אחר פגישות.";
+"shared_automatic_event_join_toggle" = "Automatic join next event meeting";
+"shared_automatic_event_join_tip" = "This setting will automatically open your next meeting in your configured app or browser";
 "general_cancel" = "ביטול";
 "general_meeting" = "פגישה";
 

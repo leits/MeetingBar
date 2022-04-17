@@ -67,6 +67,8 @@
 "access_screen_access_denied_checkbox_title" = "a zaškrtněte políčko u položky MeetingBar.";
 "access_screen_access_screen_access_denied_go_to_title" = "Přejděte na";
 "access_screen_access_denied_system_preferences_button" = "Předvolby systému";
+"shared_automatic_event_join_toggle" = "Automatic join next event meeting";
+"shared_automatic_event_join_tip" = "This setting will automatically open your next meeting in your configured app or browser";
 
 // MARK: - Access screen
 

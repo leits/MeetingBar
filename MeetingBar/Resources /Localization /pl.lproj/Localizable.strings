@@ -264,6 +264,8 @@
 "general_five_minute_before" = "5 minut przed";
 "shared_send_notification_no_alert_style_tip" = "⚠️ Twoje ustawienia powiadomień macOS dla MeetingBar nie są ustawione na alert. Zrób to, jeśli chcesz mieć trwałe powiadomienia.";
 "shared_send_notification_disabled_tip" = "⚠️ Twoje ustawienia powiadomień macOS dla MeetingBar są wyłączone. Włącz powiadomienia w ustawieniach systemowych macOS, aby śledzić spotkania.";
+"shared_automatic_event_join_toggle" = "Automatic join next event meeting";
+"shared_automatic_event_join_tip" = "This setting will automatically open your next meeting in your configured app or browser";
 
 // MARK: - Constants
 "constants_create_meeting_service_url" = "Własny URL";

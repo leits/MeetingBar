@@ -79,6 +79,8 @@
 "access_screen_access_screen_access_denied_go_to_title" = "Allez dans les";
 "access_screen_access_denied_checkbox_title" = "et sélectionnez une case à cocher près de MeetingBar.";
 "access_screen_access_denied_system_preferences_button" = "Préférences du système";
+"shared_automatic_event_join_toggle" = "Automatic join next event meeting";
+"shared_automatic_event_join_tip" = "This setting will automatically open your next meeting in your configured app or browser";
 
 // MARK: - Access screen
 

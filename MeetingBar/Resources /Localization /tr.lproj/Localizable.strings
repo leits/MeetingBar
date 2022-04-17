@@ -306,6 +306,8 @@
 "constants_meeting_service_skype4biz_selfhosted" = "Skype For Business (SH)";
 "store_patronage_purchase_cloud_service_permission_denied_message" = "Bulut servis bilgilerine erişim izni verilmedi";
 "notifications_event_start_three_minutes_body" = "Toplantı üç dakika içinde başlıyor";
+"shared_automatic_event_join_toggle" = "Automatic join next event meeting";
+"shared_automatic_event_join_tip" = "This setting will automatically open your next meeting in your configured app or browser";
 
 // MARK: - Link open
 

@@ -271,6 +271,8 @@
 "general_five_minute_before" = "за 5 хвилин до початку";
 "shared_send_notification_no_alert_style_tip" = "⚠️ У системних параметрах сповіщення від MeetingBar зараз не налаштовані як \"Попередження\". Будь ласка, увімкніть \"Попередження\", щоб сповіщення не зникали автоматично.";
 "shared_send_notification_disabled_tip" = "⚠️ Сповіщення від MeetingBar вимкнені у системних параметрах. Будь ласка, увімкніть їх, щоб не проґавити зустріч.";
+"shared_automatic_event_join_toggle" = "Автоматично долучитись до наступної зустрічі";
+"shared_automatic_event_join_tip" = "Це налаштування автоматично відкриє вашу наступну зустрічі у вибраному додатку чи браузері";
 
 // MARK: - Constants
 "constants_create_meeting_service_url" = "Custom url";
