@@ -22,7 +22,6 @@ class ActionsOnEventStart: NSObject {
         RunLoop.current.add(timer!, forMode: .common)
     }
 
-    
     /**
      * we will schedule a common task to check if we have to execute the actions for event starts..
      * -  a new meeting is started within the timeframe of the notification timebox, but not later as the beginning of the meeting.

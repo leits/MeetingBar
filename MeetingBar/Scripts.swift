@@ -8,7 +8,6 @@
 import Carbon
 import Foundation
 
-
 enum ScriptType: String, Codable, CaseIterable {
     /// supported script type when a meeting will start
     case meetingStart
