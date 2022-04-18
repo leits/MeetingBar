@@ -72,7 +72,7 @@ class ActionsOnEventStart: NSObject {
                     if matchedEvent != nil {
                         events = events.filter { $0.id != nextEvent.ID }
                     }
-                    events.append(ProcessedEvent(id: nextEvent.ID, lastModifiedDate: nextEvent.lastModifiedDate!, eventEndDate: nextEvent.endDate))
+                    events.append(ProcessedEvent(id: nextEvent.ID, lastModifiedDate: nextEvent.lastModifiedDate, eventEndDate: nextEvent.endDate))
                     Defaults[.processedEventsForAutoJoin] = events
                 }
             }
@@ -98,7 +98,7 @@ class ActionsOnEventStart: NSObject {
                     if matchedEvent != nil {
                         events = events.filter { $0.id != nextEvent.ID }
                     }
-                    events.append(ProcessedEvent(id: nextEvent.ID, lastModifiedDate: nextEvent.lastModifiedDate!, eventEndDate: nextEvent.endDate))
+                    events.append(ProcessedEvent(id: nextEvent.ID, lastModifiedDate: nextEvent.lastModifiedDate, eventEndDate: nextEvent.endDate))
                     Defaults[.processedEventsForRunScriptOnEventStart] = events
                 }
             }

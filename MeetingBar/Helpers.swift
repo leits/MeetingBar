@@ -18,7 +18,7 @@ struct Bookmark: Encodable, Decodable, Hashable {
 
 struct ProcessedEvent: Encodable, Decodable, Hashable {
     var id: String
-    var lastModifiedDate: Date
+    var lastModifiedDate: Date?
     var eventEndDate: Date
 }
 
