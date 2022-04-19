@@ -65,6 +65,10 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
             guard self.statusItem.isVisible else {
                 return
             }
+            
+            if ScreenRecordPermission.isFullScreen() {
+                return
+            }
 
             let isHidden = self.statusItem.button!.window?.occlusionState.contains(.visible) == false
             if isHidden, Defaults[.notificationForHiddenAppInMenubar] {
@@ -72,7 +76,7 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
             }
         }
     }
-
+    
     @objc
     func menuWillOpen(_: NSMenu) {
         menuIsOpen = true

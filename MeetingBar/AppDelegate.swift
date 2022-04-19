@@ -62,6 +62,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             Defaults[.eventTitleFormat] = oldEventTitleOption ? EventTitleFormat.show : EventTitleFormat.dot
             Defaults[.showEventTitleInStatusBar] = nil
         }
+        
+       
         var calendarTitles: [String] = []
         if Defaults[.calendarTitle] != "" {
             calendarTitles.append(Defaults[.calendarTitle])
