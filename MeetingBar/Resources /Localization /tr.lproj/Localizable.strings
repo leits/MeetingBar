@@ -318,6 +318,4 @@
 "link_url_cant_open_message" = "%@ yüklü olduğundan emin olun veya bu bağlantıyı bir tarayıcıda açın.";
 "preferences_general_feedback_title" = "Eğer soru veya geribildiriminiz varsa,\nlütfen iletişim kurmaktan çekinmeyin:";
 "status_bar_section_refresh_sources" = "Kaynakları yenile";
-"notifications_meetingbar_hidden_open_preferences_action" = "Open Preferences";
-"notifications_meetingbar_hidden_stop_notifications_action" = "Stop notifications";
 "notifications_meetingbar_join_event_action" = "Join";

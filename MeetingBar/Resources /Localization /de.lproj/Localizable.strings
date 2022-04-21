@@ -9,8 +9,6 @@
 "notifications_event_start_one_minute_body" = "Das Ereignis beginnt in einer Minute";
 "notifications_event_start_three_minutes_body" = "Das Ereignis beginnt in drei Minuten";
 "notifications_event_start_five_minutes_body" = "Das Ereignis beginnt in fünf Minuten";
-"notifications_meetingbar_hidden_open_preferences_action" = "Open Preferences";
-"notifications_meetingbar_hidden_stop_notifications_action" = "Stop notifications";
 "notifications_meetingbar_join_event_action" = "Join";
 "store_patronage_purchase_cloud_service_network_connection_failed" = "Es konnte keine Verbindung zum Netzwerk hergestellt werden";
 "store_patronage_purchase_cloud_service_permission_denied_message" = "Der Zugriff auf Cloud-Service-Informationen ist nicht erlaubt";

@@ -53,24 +53,9 @@ func registerNotificationCategories() {
                                                      hiddenPreviewsBodyPlaceholder: "",
                                                      options: [.customDismissAction, .hiddenPreviewsShowTitle])
 
-    let openPreferencesAction = UNNotificationAction(identifier: "OPEN_PREFERENCES",
-                                                     title: "notifications_meetingbar_hidden_open_preferences_action".loco(),
-                                                     options: .foreground)
-
-    let stopNotificationAction = UNNotificationAction(identifier: "STOP_APP_HIDDEN_NOTIFICATON_ACTION",
-                                                      title: "notifications_meetingbar_hidden_stop_notifications_action".loco(),
-                                                      options: .foreground)
-
-    let notificationsCategory =
-        UNNotificationCategory(identifier: "STATUSBAR",
-                               actions: [openPreferencesAction, stopNotificationAction],
-                               intentIdentifiers: [],
-                               hiddenPreviewsBodyPlaceholder: "",
-                               options: [.customDismissAction, .hiddenPreviewsShowTitle])
-
     let notificationCenter = UNUserNotificationCenter.current()
 
-    notificationCenter.setNotificationCategories([eventCategory, notificationsCategory, snoozeEventCategory])
+    notificationCenter.setNotificationCategories([eventCategory, snoozeEventCategory])
 
     notificationCenter.getNotificationCategories { categories in
         for category in categories {

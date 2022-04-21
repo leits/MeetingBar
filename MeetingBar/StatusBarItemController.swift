@@ -49,26 +49,7 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
         statusItemMenu.delegate = self
 
         enableButtonAction()
-        // TODO: Fix or remove detector
-        // detectHiddenMeetingbar()
     }
-
-//    /**
-//     * the observer will find out if the meetingbar icon is dispayed or not in the statusbar
-//     */
-//    func detectHiddenMeetingbar() {
-//        _ = NotificationCenter.default.addObserver(forName: NSWindow.didChangeOcclusionStateNotification, object: statusItem.button!.window, queue: nil) { _ in
-//            // We don't want to report when you manually make it invisible.
-//            guard self.statusItem.isVisible else {
-//                return
-//            }
-//
-//            let isHidden = self.statusItem.button!.window?.occlusionState.contains(.visible) == false
-//            if isHidden, Defaults[.notificationForHiddenAppInMenubar] {
-//                sendUserNotification("notifications_meetingbar_invisible_title".loco(), "notifications_meetingbar_invisible_body".loco(), "STATUSBAR")
-//            }
-//        }
-//    }
 
     @objc
     func menuWillOpen(_: NSMenu) {

@@ -15,8 +15,6 @@
 "notifications_event_start_one_minute_body" = "Událost začíná za minutu";
 "notifications_event_start_three_minutes_body" = "Událost začíná za tři minuty";
 "notifications_event_start_five_minutes_body" = "Událost začíná za pět minut";
-"notifications_meetingbar_hidden_open_preferences_action" = "Open Preferences";
-"notifications_meetingbar_hidden_stop_notifications_action" = "Stop notifications";
 "notifications_meetingbar_join_event_action" = "Join";
 "store_patronage_purchase_cloud_service_revoked_message" = "Uživatel zrušil oprávnění k používání této cloudové služby";
 "store_patronage_purchase_cloud_service_network_connection_failed" = "Nepodařilo se připojit k síti";

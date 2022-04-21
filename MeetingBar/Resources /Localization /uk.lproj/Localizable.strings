@@ -313,8 +313,6 @@
 "notifications_event_start_one_minute_body" = "Подія ропочинається за одну хвилину";
 "notifications_event_start_three_minutes_body" = "Подія ропочинається за три хвилини";
 "notifications_event_start_five_minutes_body" = "Подія ропочинається за п'ять хвилин";
-"notifications_meetingbar_hidden_open_preferences_action" = "Відкрити Налаштування";
-"notifications_meetingbar_hidden_stop_notifications_action" = "Більше не сповіщати";
 "notifications_meetingbar_join_event_action" = "Долучитись";
 
 // MARK: - Link open

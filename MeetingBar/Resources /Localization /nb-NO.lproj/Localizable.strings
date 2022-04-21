@@ -18,8 +18,6 @@
 "notifications_event_start_one_minute_body" = "The event starts in one minute";
 "notifications_event_start_three_minutes_body" = "Begivenheten starter om tre minutter";
 "notifications_event_start_five_minutes_body" = "Begivenheten starter om fem minutter";
-"notifications_meetingbar_hidden_open_preferences_action" = "Open Preferences";
-"notifications_meetingbar_hidden_stop_notifications_action" = "Stop notifications";
 "notifications_meetingbar_join_event_action" = "Join";
 "store_patronage_purchase_cloud_service_revoked_message" = "Bruker har nektet tilgang for bruk av denne skytjenesten";
 "store_patronage_purchase_cloud_service_network_connection_failed" = "Kunne ikke koble til nettverket";
