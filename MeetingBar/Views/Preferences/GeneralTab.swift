@@ -32,7 +32,6 @@ struct GeneralTab: View {
     }
 }
 
-
 struct ShortcutsSection: View {
     @State var showingModal = false
 
