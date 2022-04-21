@@ -21,7 +21,6 @@ struct GeneralTab: View {
                 LaunchAtLoginANDPreferredLanguagePicker()
                 Divider()
                 JoinEventNotificationPicker()
-                AutomaticEventJoinPicker()
                 Divider()
             }
             Section {

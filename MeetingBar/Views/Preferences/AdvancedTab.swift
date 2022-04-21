@@ -13,6 +13,8 @@ import Defaults
 struct AdvancedTab: View {
     var body: some View {
         VStack(alignment: .leading) {
+            AutomaticEventJoinPicker()
+            Divider()
             ScriptSection()
             Divider()
             FilterEventRegexesSection()
@@ -62,7 +64,7 @@ struct ScriptSection: View {
             }.sheet(isPresented: $showingRunEventStartScriptModal) {
                 EditScriptModal(script: $eventStartScript, scriptLocation: $eventStartScriptLocation, scriptName: "eventStartScript.scpt")
             }
-            Divider()
+
             HStack {
                 Toggle("preferences_advanced_apple_script_checkmark".loco(), isOn: $runJoinEventScript)
                 Spacer()
