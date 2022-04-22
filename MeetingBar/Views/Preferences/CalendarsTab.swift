@@ -51,27 +51,27 @@ struct CalendarsTab: View {
 
             VStack(alignment: .leading) {
                 HStack {
-                    Text("Calendars source").font(.headline).bold()
+                    Text("preferences_calendars_provider_section_title".loco()).font(.headline).bold()
                 }
                 HStack {
                     if eventStoreProvider == .GoogleCalendar {
                         Text("Google Calendar API")
-                        Button("Change Google Account") {
+                        Button("preferences_calendars_provider_gcalendar_change_account".loco()) {
                             _ = appDelegate!.eventStore.signOut().done {
                                 changeEventStoreProvider(.GoogleCalendar)
                             }
                         }
                         Spacer()
 
-                        Button("Switch to MacOS Calendar") { changeEventStoreProvider(.MacOSEventKit) }
+                        Button("preferences_calendars_provider_macos_switch".loco()) { changeEventStoreProvider(.MacOSEventKit) }
                     } else if eventStoreProvider == .MacOSEventKit {
-                        Text("MacOS Calendar app")
+                        Text("access_screen_provider_macos_title".loco())
                         Button("preferences_calendars_add_account_button".loco()) { self.showingAddAcountModal.toggle() }
                             .sheet(isPresented: $showingAddAcountModal) {
                                 AddAccountModal()
                             }
                         Spacer()
-                        Button("Switch to Google Calendar API") { changeEventStoreProvider(.GoogleCalendar) }
+                        Button("preferences_calendars_provider_gcalendar_switch".loco()) { changeEventStoreProvider(.GoogleCalendar) }
                     }
                 }.padding(.horizontal, 10)
             }

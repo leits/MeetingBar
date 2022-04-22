@@ -164,12 +164,19 @@
 "preferences_calendars_add_account_description" = "Потрібного календаря немає у списку?";
 "preferences_calendars_add_account_button" = "Додати акаунт";
 "preferences_calendars_add_account_modal" = "Щоб додати нові календарі:\n1. Відкрийте додаток Календар (Calendar App)\n2. Натисніть Додати Акаунт (Add Account) у меню\n3. Виберіть сервіс і приєднайте свій акаунт";
+"preferences_calendars_provider_section_title" = "Провайдер календарів";
+"preferences_calendars_provider_gcalendar_change_account" = "Змінити акаунт Google";
+"preferences_calendars_provider_macos_switch" = "Переключитись на системний Календар";
+"preferences_calendars_provider_gcalendar_switch" = "Переключитись на Google Calendar API";
 
 // MARK: - Preferences Advanced
 
 "preferences_advanced_setting_warning" = "⚠️ Використовуйте ці налаштування, тільки якщо розумієте, що вони роблять";
 "preferences_advanced_apple_script_checkmark" = "Запускати AppleScript при приєднанні до зустрічі";
 "preferences_advanced_apple_script_placeholder" = "# введіть свій скрипт тут\ntell application \"Music\" to pause";
+"preferences_advanced_run_script_on_event_start" = "Запустити AppleScript автоматично";
+"preferences_advanced_test_script_on_next_event" = "Тестувати на наступній зустрічі";
+"preferences_advanced_edit_script" = "Редагувати скрипт";
 "preferences_advanced_save_script_button" = "Зберегти скрипт";
 "preferences_advanced_wrong_location_title" = "Некоректне розташування";
 "preferences_advanced_wrong_location_message" = "Будь ласка, виберіть User > Library > Application Scripts > leits.MeetingBar папку";
@@ -262,6 +269,18 @@
 "access_screen_access_granted_title" = "Запит на доступ до календарів…";
 "access_screen_access_granted_click_ok_title" = "Натисніть \"OK\" у вікні від MacOS.";
 
+"access_screen_provider_picker_label" = "Виберіть провайдера календарів";
+"access_screen_provider_macos_title" = "Системний Календар";
+"access_screen_provider_macos_recomended" = "(рекомендовано)";
+"access_screen_provider_macos_data_source" = "Використовувати дані із системного Календаря";
+"access_screen_provider_macos_number_of_accounts" = "Будь-яка кількість аккаунтів підключених до системного Календаря";
+
+"access_screen_provider_gcalendar_data_source" = "Використовувати дані напряму з Google Calendar";
+"access_screen_provider_gcalendar_number_of_accounts" = "Лише один аккаунт Google";
+"access_screen_provider_gcalendar_sign_in_title" = "Вхід через Google";
+"access_screen_provider_gcalendar_sign_in_description" = "Надайте MeetingBar доступ до ваших календарів у вікні браузеру";
+"access_screen_try_again" = "Спробувати знову";
+
 // MARK: - Shared
 
 "shared_send_notification_toggle" = "Надсилати сповіщення для долучення до зустрічі";
@@ -310,9 +329,11 @@
 // MARK: - Notifications
 
 "notifications_event_start_soon_body" = "Подія невдовзі розпочнеться";
-"notifications_event_start_one_minute_body" = "Подія ропочинається за одну хвилину";
-"notifications_event_start_three_minutes_body" = "Подія ропочинається за три хвилини";
-"notifications_event_start_five_minutes_body" = "Подія ропочинається за п'ять хвилин";
+"notifications_event_start_one_minute_body" = "Подія розпочинається за одну хвилину";
+"notifications_event_start_three_minutes_body" = "Подія розпочинається за три хвилини";
+"notifications_event_start_five_minutes_body" = "Подія розпочинається за п'ять хвилин";
+"notifications_snooze_until_start" = "Сповістити, коли розпочнеться";
+"notifications_snooze_for" = "Сповістити через %@ хвилин";
 "notifications_meetingbar_join_event_action" = "Долучитись";
 
 // MARK: - Link open

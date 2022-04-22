@@ -18,6 +18,8 @@
 "notifications_event_start_one_minute_body" = "The event starts in one minute";
 "notifications_event_start_three_minutes_body" = "Begivenheten starter om tre minutter";
 "notifications_event_start_five_minutes_body" = "Begivenheten starter om fem minutter";
+"notifications_snooze_until_start" = "Snooze until start time";
+"notifications_snooze_for" = "Snooze for %@ min";
 "notifications_meetingbar_join_event_action" = "Join";
 "store_patronage_purchase_cloud_service_revoked_message" = "Bruker har nektet tilgang for bruk av denne skytjenesten";
 "store_patronage_purchase_cloud_service_network_connection_failed" = "Kunne ikke koble til nettverket";
@@ -54,6 +56,18 @@
 "welcome_screen_shortcut_next_meeting_title" = "Ta del i neste begivenhetsmøte med snarveien din:";
 "welcome_screen_login_launch_toggle_title" = "Kjør MeetingBar ved innlogging";
 
+"access_screen_provider_picker_label" = "Select calendars provider";
+"access_screen_provider_macos_title" = "MacOS Calendar app";
+"access_screen_provider_macos_recomended" = "(recomended)";
+"access_screen_provider_macos_data_source" = "Get data from MacOS Calendar app";
+"access_screen_provider_macos_number_of_accounts" = "Any number of any connected accounts";
+
+"access_screen_provider_gcalendar_data_source" = "Get data directly from Google Calendar";
+"access_screen_provider_gcalendar_number_of_accounts" = "Only one Google account";
+"access_screen_provider_gcalendar_sign_in_title" = "Google Sign In";
+"access_screen_provider_gcalendar_sign_in_description" = "Allow MeetingBar access to your calendar in browser window";
+"access_screen_try_again" = "Try again";
+
 // MARK: - Welcome screen
 
 "welcome_screen_greeting_main_title" = "Hei. MeetingBar er et så enkelt program at nesten alt er klart.";
@@ -82,6 +96,9 @@
 "preferences_advanced_regex_title" = "Egendefinerte regulære uttrykk for møtelenke";
 "preferences_advanced_wrong_location_message" = "Velg Bruker → Bibliotek → Programskript → leits.MeetingBar-mappen";
 "preferences_advanced_apple_script_placeholder" = "# skriv ditt skript her\ntell application \"Music\" to pause";
+"preferences_advanced_run_script_on_event_start" = "Run AppleScript automatically";
+"preferences_advanced_test_script_on_next_event" = "Test on next event";
+"preferences_advanced_edit_script" = "Edit script";
 "preferences_advanced_apple_script_checkmark" = "Kjør AppleScript når du tar del i møtet";
 "preferences_advanced_event_regex_title" = "Custom regexes to filter out meetings";
 
@@ -90,6 +107,10 @@
 
 "preferences_advanced_setting_warning" = "⚠️ Kun bruk disse innstillingene hvis du forstår hva de gjør";
 "preferences_calendars_add_account_modal" = "Legg til eksterne kalendere slik:\n1. Åpne forvalgt kalenderprogram\n2. Klikk på «Legg til konto» i menyen\n3. Velg og koble til kontoen din";
+"preferences_calendars_provider_section_title" = "Calendars provider";
+"preferences_calendars_provider_gcalendar_change_account" = "Change Google Account";
+"preferences_calendars_provider_macos_switch" = "Switch to MacOS Calendar";
+"preferences_calendars_provider_gcalendar_switch" = "Switch to Google Calendar API";
 "preferences_bookmarks_new_bookmark_already_exist" = "Et bokmerke med denne lenken/telefonen finnes allerede med navnet %@:\n%@";
 "preferences_configure_browsers_choose_broser_panel_message" = "Velg en nettleser fra hvilken som helst sti.";
 "preferences_configure_browsers_delete_alert_message" = "Ønsker du å slette %@-nettleseroppsettet?";

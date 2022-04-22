@@ -47,7 +47,7 @@ struct ScriptSection: View {
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
-                Toggle("Run AppleScript automatically", isOn: $runEventStartScript)
+                Toggle("preferences_advanced_run_script_on_event_start".loco(), isOn: $runEventStartScript)
                 Picker("", selection: $eventStartScriptTime) {
                     Text("general_when_event_starts".loco()).tag(EventScriptExecutionTime.atStart)
                     Text("general_one_minute_before".loco()).tag(EventScriptExecutionTime.minuteBefore)
@@ -57,9 +57,9 @@ struct ScriptSection: View {
                 Spacer()
                 if runEventStartScript {
                     Button(action: runSampleScript) {
-                        Text("Test on next event")
+                        Text("preferences_advanced_test_script_on_next_event".loco())
                     }
-                    Button("Edit script") { showingRunEventStartScriptModal = true }
+                    Button("preferences_advanced_edit_script".loco()) { showingRunEventStartScriptModal = true }
                 }
             }.sheet(isPresented: $showingRunEventStartScriptModal) {
                 EditScriptModal(script: $eventStartScript, scriptLocation: $eventStartScriptLocation, scriptName: "eventStartScript.scpt")
@@ -69,7 +69,7 @@ struct ScriptSection: View {
                 Toggle("preferences_advanced_apple_script_checkmark".loco(), isOn: $runJoinEventScript)
                 Spacer()
                 if runJoinEventScript {
-                    Button("Edit script") { showingJoinEventScriptModal = true }
+                    Button("preferences_advanced_edit_script".loco()) { showingJoinEventScriptModal = true }
                 }
             }.sheet(isPresented: $showingJoinEventScriptModal) {
                 EditScriptModal(script: $joinEventScript, scriptLocation: $joinEventScriptLocation, scriptName: "joinEventScript.scpt")
@@ -99,7 +99,7 @@ struct EditScriptModal: View {
     var body: some View {
         VStack {
             Spacer()
-            Text("Edit script")
+            Text("preferences_advanced_edit_script".loco())
             Spacer()
             NSScrollableTextViewWrapper(text: $editedScript).padding(.leading, 19)
             Spacer()

@@ -20,21 +20,21 @@ struct AccessScreen: View {
     var body: some View {
         VStack(alignment: .center) {
             if !providerSelected {
-                Text("Select calendars provider").font(.title).bold().padding(.bottom, 30)
+                Text("access_screen_provider_picker_label".loco()).font(.title).bold().padding(.bottom, 30)
                 HStack(alignment: .top) {
                     VStack(spacing: 10) {
                         List {
-                            Button("MacOS Calendar app") { requestAccess(provider: .MacOSEventKit) }
-                            Text("(recomended)").foregroundColor(Color(NSColor.gray))
-                            Text("Get data from MacOS Calendar app")
-                            Text("Any number of any connected accounts")
+                            Button("access_screen_provider_macos_title".loco()) { requestAccess(provider: .MacOSEventKit) }
+                            Text("access_screen_provider_macos_recomended".loco()).foregroundColor(Color(NSColor.gray))
+                            Text("access_screen_provider_macos_data_source".loco())
+                            Text("access_screen_provider_macos_number_of_accounts".loco())
                         }
                     }
                     VStack(spacing: 10) {
                         List {
                             Button("Google Calendar API") { requestAccess(provider: .GoogleCalendar) }.padding(.bottom, 24)
-                            Text("Get data directly from Google Calendar")
-                            Text("Only one Google account")
+                            Text("access_screen_provider_gcalendar_data_source".loco())
+                            Text("access_screen_provider_gcalendar_number_of_accounts".loco())
                         }
                     }
                 }
@@ -42,9 +42,9 @@ struct AccessScreen: View {
                 Spacer()
                 if eventStoreProvider == .GoogleCalendar {
                     VStack(spacing: 20) {
-                        Text("Google Sign In").bold()
-                        Text("Allow MeetingBar access to your calendar in browser window")
-                        Button("Try again") { requestAccess(provider: .GoogleCalendar) }
+                        Text("access_screen_provider_gcalendar_sign_in_title".loco()).bold()
+                        Text("access_screen_provider_gcalendar_sign_in_description".loco())
+                        Button("access_screen_try_again".loco()) { requestAccess(provider: .GoogleCalendar) }
                     }
                 } else {
                     if !requestFailed {

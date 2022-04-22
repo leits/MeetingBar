@@ -26,19 +26,19 @@ func registerNotificationCategories() {
                                                     options: .foreground)
 
     let snooze5Min = UNNotificationAction(identifier: NotificationEventTimeAction.fiveMinuteLater.rawValue,
-                                          title: "Snooze for \(NotificationEventTimeAction.fiveMinuteLater.durationInMins) min",
+                                          title: "notifications_snooze_for".loco(String(NotificationEventTimeAction.fiveMinuteLater.durationInMins)),
                                           options: .foreground)
 
     let snooze10Min = UNNotificationAction(identifier: NotificationEventTimeAction.tenMinuteLater.rawValue,
-                                           title: "Snooze for \(NotificationEventTimeAction.tenMinuteLater.durationInMins) min",
+                                           title: "notifications_snooze_for".loco(String(NotificationEventTimeAction.tenMinuteLater.durationInMins)),
                                            options: .foreground)
 
     let snooze15Min = UNNotificationAction(identifier: NotificationEventTimeAction.fifteenMinuteLater.rawValue,
-                                           title: "Snooze for \(NotificationEventTimeAction.fifteenMinuteLater.durationInMins) min",
+                                           title: "notifications_snooze_for".loco(String(NotificationEventTimeAction.fifteenMinuteLater.durationInMins)),
                                            options: .foreground)
 
     let snooze30Min = UNNotificationAction(identifier: NotificationEventTimeAction.thirtyMinuteLater.rawValue,
-                                           title: "Snooze for \(NotificationEventTimeAction.thirtyMinuteLater.durationInMins) min",
+                                           title: "notifications_snooze_for".loco(String(NotificationEventTimeAction.thirtyMinuteLater.durationInMins)),
                                            options: .foreground)
 
     let eventCategory = UNNotificationCategory(identifier: "EVENT",

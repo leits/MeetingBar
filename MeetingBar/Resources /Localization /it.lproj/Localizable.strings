@@ -164,12 +164,19 @@
 "preferences_calendars_add_account_description" = "Non trovi il calendario che ti serve?";
 "preferences_calendars_add_account_button" = "Aggiungi account";
 "preferences_calendars_add_account_modal" = "Per aggiungere calendari esterni:\n1. Apri l'app calendario di default\n2. Premi 'Aggiungi account' nel menu\n3. Seleziona e connetti i tuoi account";
+"preferences_calendars_provider_section_title" = "Calendars provider";
+"preferences_calendars_provider_gcalendar_change_account" = "Change Google Account";
+"preferences_calendars_provider_macos_switch" = "Switch to MacOS Calendar";
+"preferences_calendars_provider_gcalendar_switch" = "Switch to Google Calendar API";
 
 // MARK: - Preferences Advanced
 
 "preferences_advanced_setting_warning" = "⚠️ Usa queste impostazioni solo se capisci cosa fanno";
 "preferences_advanced_apple_script_checkmark" = "Esegui AppleScript quando ti unisci a una riunione";
 "preferences_advanced_apple_script_placeholder" = "# scrivi il tuo script qui\ntell application \"Music\" to pause";
+"preferences_advanced_run_script_on_event_start" = "Run AppleScript automatically";
+"preferences_advanced_test_script_on_next_event" = "Test on next event";
+"preferences_advanced_edit_script" = "Edit script";
 "preferences_advanced_save_script_button" = "Salva script";
 "preferences_advanced_wrong_location_title" = "Posizione sbagliata";
 "preferences_advanced_wrong_location_message" = "Selezionare la cartella Utente → Libreria → Script dell'applicazione → leits.MeetingBar";
@@ -262,6 +269,18 @@
 "access_screen_access_granted_title" = "Richiesta di accesso ai calendari…";
 "access_screen_access_granted_click_ok_title" = "Seleziona \"OK\" nel popup di macOS.";
 
+"access_screen_provider_picker_label" = "Select calendars provider";
+"access_screen_provider_macos_title" = "MacOS Calendar app";
+"access_screen_provider_macos_recomended" = "(recomended)";
+"access_screen_provider_macos_data_source" = "Get data from MacOS Calendar app";
+"access_screen_provider_macos_number_of_accounts" = "Any number of any connected accounts";
+
+"access_screen_provider_gcalendar_data_source" = "Get data directly from Google Calendar";
+"access_screen_provider_gcalendar_number_of_accounts" = "Only one Google account";
+"access_screen_provider_gcalendar_sign_in_title" = "Google Sign In";
+"access_screen_provider_gcalendar_sign_in_description" = "Allow MeetingBar access to your calendar in browser window";
+"access_screen_try_again" = "Try again";
+
 // MARK: - Shared
 
 "shared_send_notification_toggle" = "Invia una notifica per partecipare alla prossima riunione";
@@ -313,6 +332,8 @@
 "notifications_event_start_one_minute_body" = "La riunione inizia in un minuto";
 "notifications_event_start_three_minutes_body" = "La riunione inizia in tre minuti";
 "notifications_event_start_five_minutes_body" = "La riunione inizia in cinque minuti";
+"notifications_snooze_until_start" = "Snooze until start time";
+"notifications_snooze_for" = "Snooze for %@ min";
 "notifications_meetingbar_join_event_action" = "Join";
 
 // MARK: - Link open

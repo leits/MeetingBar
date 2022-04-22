@@ -164,12 +164,19 @@
 "preferences_calendars_add_account_description" = "Ne možeš pronaći kalendar koji trebaš?";
 "preferences_calendars_add_account_button" = "Dodaj račun";
 "preferences_calendars_add_account_modal" = "Za dodavanje vanjskih kalendara:\n1. Otvori standardni program za kalendare\n2. Pritisni „Dodaj račun” u izborniku\n3. Odaberi i poveži tvoj račun";
+"preferences_calendars_provider_section_title" = "Calendars provider";
+"preferences_calendars_provider_gcalendar_change_account" = "Change Google Account";
+"preferences_calendars_provider_macos_switch" = "Switch to MacOS Calendar";
+"preferences_calendars_provider_gcalendar_switch" = "Switch to Google Calendar API";
 
 // MARK: - Preferences Advanced
 
 "preferences_advanced_setting_warning" = "⚠️ Koristi ove postavke samo ako razumiješ što rade";
 "preferences_advanced_apple_script_checkmark" = "Pokreni AppleScript kad se pridružuješ sastanku";
 "preferences_advanced_apple_script_placeholder" = "# ovdje upiši tvoja skripta\ntell application \"Music\" to pause";
+"preferences_advanced_run_script_on_event_start" = "Run AppleScript automatically";
+"preferences_advanced_test_script_on_next_event" = "Test on next event";
+"preferences_advanced_edit_script" = "Edit script";
 "preferences_advanced_save_script_button" = "Spremi skripta";
 "preferences_advanced_wrong_location_title" = "Krivo mjesto";
 "preferences_advanced_wrong_location_message" = "Odaberi Korisnici → Medijateka → Application Scripts → leits.MeetingBar mapa";
@@ -260,6 +267,18 @@
 "access_screen_access_granted_title" = "Zahtijevamje pristupa kalendarima …";
 "access_screen_access_granted_click_ok_title" = "Pritisni „U redu” u skočnom prozoru MacOS-a.";
 
+"access_screen_provider_picker_label" = "Select calendars provider";
+"access_screen_provider_macos_title" = "MacOS Calendar app";
+"access_screen_provider_macos_recomended" = "(recomended)";
+"access_screen_provider_macos_data_source" = "Get data from MacOS Calendar app";
+"access_screen_provider_macos_number_of_accounts" = "Any number of any connected accounts";
+
+"access_screen_provider_gcalendar_data_source" = "Get data directly from Google Calendar";
+"access_screen_provider_gcalendar_number_of_accounts" = "Only one Google account";
+"access_screen_provider_gcalendar_sign_in_title" = "Google Sign In";
+"access_screen_provider_gcalendar_sign_in_description" = "Allow MeetingBar access to your calendar in browser window";
+"access_screen_try_again" = "Try again";
+
 // MARK: - Shared
 
 "shared_send_notification_toggle" = "Pošalji obavijest za pridruživanje sljedećem sastanku";
@@ -311,6 +330,8 @@
 "notifications_event_start_one_minute_body" = "Događaj počinje za jednu minutu";
 "notifications_event_start_three_minutes_body" = "Događaj počinje za tri minute";
 "notifications_event_start_five_minutes_body" = "Događaj počinje za pet minuta";
+"notifications_snooze_until_start" = "Snooze until start time";
+"notifications_snooze_for" = "Snooze for %@ min";
 "notifications_meetingbar_join_event_action" = "Join";
 
 // MARK: - Link open

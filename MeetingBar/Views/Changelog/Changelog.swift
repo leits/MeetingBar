@@ -103,7 +103,7 @@ struct ChangelogView: View {
                 }
 
             }.listStyle(SidebarListStyle())
-            Button("Close", action: close)
+            Button("general_close".loco(), action: close)
         }.padding()
     }
 

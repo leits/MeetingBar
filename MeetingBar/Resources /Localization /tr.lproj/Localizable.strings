@@ -126,6 +126,10 @@
 "preferences_bookmarks_new_bookmark_already_exist" = "%@ zaten bu linkte/telefon numarası:\n%@";
 "preferences_bookmarks_new_bookmark_error_title" = "Yer imi eklenemedi";
 "preferences_calendars_add_account_modal" = "Harici takvim eklemek için:\n1. Varsayılan takvim uygulamanızı açın\n2. Açılan menüde 'Hesap Ekle' butonuna tıklayın\n3. Hesabınızı seçin ve bağlanın";
+"preferences_calendars_provider_section_title" = "Calendars provider";
+"preferences_calendars_provider_gcalendar_change_account" = "Change Google Account";
+"preferences_calendars_provider_macos_switch" = "Switch to MacOS Calendar";
+"preferences_calendars_provider_gcalendar_switch" = "Switch to Google Calendar API";
 "preferences_advanced_apple_script_checkmark" = "Toplantıya katıldığında AppleScript çalıştır";
 "preferences_advanced_save_script_button" = "Scripti kaydet";
 "preferences_advanced_wrong_location_message" = "Lütfen User → Library → Application Scripts → leits.MeetingBar klasörünü seçin";
@@ -185,6 +189,19 @@
 "access_screen_access_denied_relaunch_title" = "Sonra uygulamayı manuel olarak açın ve kuruluma devam edin.";
 "access_screen_access_granted_title" = "Takvimlere erişim isteği…";
 "access_screen_access_granted_click_ok_title" = "Karşınıza çıkan macOS ekranında \\OK\\ butonuna tıklayın.";
+
+"access_screen_provider_picker_label" = "Select calendars provider";
+"access_screen_provider_macos_title" = "MacOS Calendar app";
+"access_screen_provider_macos_recomended" = "(recomended)";
+"access_screen_provider_macos_data_source" = "Get data from MacOS Calendar app";
+"access_screen_provider_macos_number_of_accounts" = "Any number of any connected accounts";
+
+"access_screen_provider_gcalendar_data_source" = "Get data directly from Google Calendar";
+"access_screen_provider_gcalendar_number_of_accounts" = "Only one Google account";
+"access_screen_provider_gcalendar_sign_in_title" = "Google Sign In";
+"access_screen_provider_gcalendar_sign_in_description" = "Allow MeetingBar access to your calendar in browser window";
+"access_screen_try_again" = "Try again";
+
 "shared_send_notification_no_alert_style_tip" = "⚠️ macOS bildirim ayarlarınız MeetingBar için yapılandırılmamış. Bildirim istiyorsanız bunu açmanız gerekir.";
 
 // MARK: - Constants
@@ -242,6 +259,8 @@
 "preferences_appearance_status_bar_next_event_toggle" = "Sadece şu kadar zaman içinde başlayacak etkinlikleri göster";
 "preferences_appearance_menu_show_event_end_time_value" = "bitiş zamanı";
 "notifications_event_start_five_minutes_body" = "Toplantı beş dakika içinde başlıyor";
+"notifications_snooze_until_start" = "Snooze until start time";
+"notifications_snooze_for" = "Snooze for %@ min";
 
 // MARK: - Preferences Services Browsers Configuration
 
@@ -262,6 +281,9 @@
 
 "preferences_advanced_setting_warning" = "⚠️ Sadece ne yaptğınızı biliyorsanız, bu ayarları kullanın";
 "preferences_advanced_apple_script_placeholder" = "# scriptinizi buraya yazın\ntell application \"Music\" to pause";
+"preferences_advanced_run_script_on_event_start" = "Run AppleScript automatically";
+"preferences_advanced_test_script_on_next_event" = "Test on next event";
+"preferences_advanced_edit_script" = "Edit script";
 "preferences_advanced_regex_title" = "Toplantı bağlantıları için özel regex betikleri";
 
 // MARK: - Status bar
