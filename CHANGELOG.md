@@ -4,7 +4,7 @@
 
 > unreleased
 
-- Added integration with Pop, Livestorm, Chorus & Gong
+- Added integration with Pop, Livestorm, Chorus, Gong & Yandex.Telemost
 - Fix readability of the statusbar text in multi-screen setups (#354)
 - Detect hidden menubar icon (#429)
 - Added feature to snooze the notification
