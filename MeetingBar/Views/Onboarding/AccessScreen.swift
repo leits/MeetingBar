@@ -24,18 +24,34 @@ struct AccessScreen: View {
                 HStack(alignment: .top) {
                     VStack(spacing: 10) {
                         List {
-                            Button("access_screen_provider_macos_title".loco()) { requestAccess(provider: .MacOSEventKit) }
-                            Text("access_screen_provider_macos_recomended".loco()).foregroundColor(Color(NSColor.gray))
-                            Text("access_screen_provider_macos_data_source".loco())
-                            Text("access_screen_provider_macos_number_of_accounts".loco())
+                            Section(header:
+                                        Text("access_screen_provider_macos_title".loco()).font(.headline)
+                                ) {
+                                Text("access_screen_provider_macos_data_source".loco())
+                                Text("access_screen_provider_macos_number_of_accounts".loco())
+                                Text("access_screen_provider_macos_recomended".loco()).foregroundColor(Color(NSColor.gray))
+                            }
                         }
+                        Spacer()
+                        VStack{
+                            Button(action: { requestAccess(provider: .MacOSEventKit) }) {
+                                Text("Use macOS Calendar").font(.headline)
+                            }
+                        }.frame(width: 200, height: 50)
                     }
                     VStack(spacing: 10) {
                         List {
-                            Button("Google Calendar API") { requestAccess(provider: .GoogleCalendar) }.padding(.bottom, 24)
-                            Text("access_screen_provider_gcalendar_data_source".loco())
-                            Text("access_screen_provider_gcalendar_number_of_accounts".loco())
+                            Section(header: Text("Google Calendar API").font(.headline)) {
+                                Text("access_screen_provider_gcalendar_data_source".loco())
+                                Text("access_screen_provider_gcalendar_number_of_accounts".loco())
+                            }
                         }
+                        Spacer()
+                        VStack{
+                            Button(action: { requestAccess(provider: .GoogleCalendar) }, label: {
+                                Image("googleSignInButton").resizable().aspectRatio(contentMode: .fit).frame(width: 150)
+                            }).buttonStyle(PlainButtonStyle())
+                        }.frame(width: 200, height: 50)
                     }
                 }
             } else {
