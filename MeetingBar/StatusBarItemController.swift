@@ -220,7 +220,6 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
 
                     var styles = [NSAttributedString.Key: Any]()
                     styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: 13)
-                    styles[NSAttributedString.Key.foregroundColor] = NSColor.white
 
                     if nextEvent.participationStatus == .pending, Defaults[.showPendingEvents] == PendingEventsAppereance.show_underlined {
                         styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
