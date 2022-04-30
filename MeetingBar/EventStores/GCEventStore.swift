@@ -288,6 +288,7 @@ class GCEventStore: NSObject, EventStore, OIDExternalUserAgent {
 
                         if state != nil {
                             self.setAuthorization(auth: GTMAppAuthFetcherAuthorization(authState: state!))
+                            sendNotification("Google Account connected", "\(self.auth?.userEmail ?? "") is connected")
                             seal.fulfill(())
                         } else {
                             seal.reject(NSError(domain: "GoogleSignIn", code: 0, userInfo: nil))
