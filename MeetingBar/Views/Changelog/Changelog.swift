@@ -93,12 +93,15 @@ struct ChangelogView: View {
                         Text("• Integrations with Facetime, Vimeo Showcases, and oVice")
                     }
                 }
-                if compareVersions("3.11.0", lastRevisedVersionInChangelog) {
-                    Section(header: Text("Version 3.11.0")) {
-                        Text("• Added integration with Pop, Livestorm, Chorus & Gong")
-                        Text("• Fix readability of the statusbar text in multi-screen setups (#354)")
-                        Text("• Detect hidden menubar icon (#429)")
-                        Text("😴 Added feature to snooze the notification (#)")
+                if compareVersions("4.0.0", lastRevisedVersionInChangelog) {
+                    Section(header: Text("Version 4.0")) {
+                        Text("⚡⚡⚡ Direct integration with Google Calendar ⚡⚡⚡")
+                        Text("😴 Notification snooze")
+                        Text("🌍 Translation into Italian")
+                        Text("• Advanced feature to run AppleScript on event start")
+                        Text("• Advanced feature to join events automatically")
+                        Text("• Integration with Pop, Livestorm, Chorus & Gong")
+                        Text("• Fixed readability of the statusbar text in multi-screen setups")
                     }
                 }
 
