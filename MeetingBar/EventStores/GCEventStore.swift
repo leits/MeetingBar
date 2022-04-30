@@ -147,7 +147,15 @@ class GCEventStore: NSObject, EventStore, OIDExternalUserAgent {
 
                                     let notes = item["description"] as? String
                                     let location = item["location"] as? String
-                                    let url = URL(string: item["hangoutLink"] as? String ?? "")
+
+                                    var url: URL?
+                                    if let conferenceData = item["conferenceData"] as? [String: Any] {
+                                        if let entryPoints = conferenceData["entryPoints"] as? [[String: String]] {
+                                            if let videoEntryPoint = entryPoints.first(where: { $0["entryPointType"] == "video" }) {
+                                                url = URL(string: videoEntryPoint["uri"] ?? "")
+                                            }
+                                        }
+                                    }
 
                                     let organizerRaw = item["organizer"] as? [String: String]
                                     let organizer = MBEventOrganizer(email: organizerRaw?["email"], name: organizerRaw?["name"])
