@@ -124,7 +124,9 @@ func sendNotification(_ title: String, _ text: String) {
     if notificationsEnabled() {
         sendUserNotification(title, text)
     } else {
-        displayAlert(title: title, text: text)
+        DispatchQueue.main.async {
+            displayAlert(title: title, text: text)
+        }
     }
 }
 
