@@ -42,7 +42,9 @@ func cleanupOutlookSafeLinks(rawText: String) -> String {
             let safeLinks = links.map { String(text[Range($0.range, in: text)!]) }
             if !safeLinks.isEmpty {
                 let serviceUrl = (text as NSString).substring(with: urlRange)
-                text = text.replacingOccurrences(of: safeLinks[0], with: serviceUrl.decodeUrl()!)
+                if let decodedServiceURL = serviceUrl.decodeUrl() {
+                    text = text.replacingOccurrences(of: safeLinks[0], with: decodedServiceURL)
+                }
             }
             links = UtilsRegex.outlookSafeLinkRegex.matches(in: text, range: NSRange(text.startIndex..., in: text))
         } while !links.isEmpty
