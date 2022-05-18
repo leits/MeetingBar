@@ -40,7 +40,7 @@ extension EKEventStore: EventStore {
             var allCalendars: [MBCalendar] = []
 
             for calendar in EKEventStore.shared.calendars(for: .event) {
-                let calendar = MBCalendar(title: calendar.title, ID: calendar.calendarIdentifier, source: calendar.source.title, email: getEmailAccount(calendar.source.description), color: calendar.color)
+                let calendar = MBCalendar(title: calendar.title, ID: calendar.calendarIdentifier, source: calendar.source.title, email: _getGmailAccount(calendar.source.description), color: calendar.color)
                 allCalendars.append(calendar)
             }
             return seal.fulfill(allCalendars)
@@ -129,4 +129,15 @@ func initEKEventStore() -> EKEventStore {
     sources.append(contentsOf: eventStore.delegateSources)
 
     return EKEventStore(sources: sources)
+}
+
+func _getGmailAccount(_ text: String) -> String? {
+    // Hacky and likely to break, but should work until Apple changes something
+    let regex = try! NSRegularExpression(pattern: #""mailto:(.+@.+)""#)
+    let resultsIterator = regex.matches(in: text, range: NSRange(text.startIndex..., in: text))
+    let resultsMap = resultsIterator.map { String(text[Range($0.range(at: 1), in: text)!]) }
+    if !resultsMap.isEmpty {
+        return resultsMap.first
+    }
+    return nil
 }

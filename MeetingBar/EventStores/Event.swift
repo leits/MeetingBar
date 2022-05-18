@@ -102,7 +102,7 @@ class MBEvent {
         for linkField in linkFields {
             if var detectedLink = detectMeetingLink(linkField) {
                 if detectedLink.service == .meet,
-                   let account = getEmailAccount(calendar.source),
+                   let account = calendar.email,
                    let urlEncodedAccount = account.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
                 {
                     detectedLink.url = URL(string: (detectedLink.url.absoluteString) + "?authuser=\(urlEncodedAccount)")!
