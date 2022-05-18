@@ -102,7 +102,7 @@ extension EKEventStore: EventStore {
                     }
 
                     let optional = rawAttendee.participantRole == .optional
-                    let email = (rawAttendee.url as NSURL).resourceSpecifier
+                    let email = String(describing: rawAttendee.url).replacingOccurrences(of: "mailto:", with: "")
                     let attendee = MBEventAttendee(email: email, name: rawAttendee.name, status: attendeeStatus, optional: optional, isCurrentUser: rawAttendee.isCurrentUser)
 
                     attendees.append(attendee)
