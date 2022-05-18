@@ -25,15 +25,15 @@ struct AccessScreen: View {
                     VStack(spacing: 10) {
                         List {
                             Section(header:
-                                        Text("access_screen_provider_macos_title".loco()).font(.headline)
-                                ) {
+                                Text("access_screen_provider_macos_title".loco()).font(.headline)
+                            ) {
                                 Text("access_screen_provider_macos_data_source".loco())
                                 Text("access_screen_provider_macos_number_of_accounts".loco())
                                 Text("access_screen_provider_macos_recomended".loco()).foregroundColor(Color(NSColor.gray))
                             }
                         }
                         Spacer()
-                        VStack{
+                        VStack {
                             Button(action: { requestAccess(provider: .MacOSEventKit) }) {
                                 Text("Use macOS Calendar").font(.headline)
                             }
@@ -47,7 +47,7 @@ struct AccessScreen: View {
                             }
                         }
                         Spacer()
-                        VStack{
+                        VStack {
                             Button(action: { requestAccess(provider: .GoogleCalendar) }, label: {
                                 Image("googleSignInButton").resizable().aspectRatio(contentMode: .fit).frame(width: 150)
                             }).buttonStyle(PlainButtonStyle())
