@@ -150,13 +150,13 @@ class MBEvent {
 func filterEvents(_ events: [MBEvent]) -> [MBEvent] {
     var filteredCalendarEvents: [MBEvent] = []
 
-    for calendarEvent in events {
+    outerloop: for calendarEvent in events {
         // Filter events base on custom user regexes
         for pattern in Defaults[.filterEventRegexes] {
             if let regex = try? NSRegularExpression(pattern: pattern) {
                 let hasMatch = regex.firstMatch(in: calendarEvent.title, range: NSRange(calendarEvent.title.startIndex..., in: calendarEvent.title)) != nil
-                if !hasMatch {
-                    continue
+                if hasMatch {
+                    continue outerloop
                 }
             }
         }
