@@ -102,6 +102,7 @@ struct ChangelogView: View {
                         Text("• Advanced feature to join events automatically")
                         Text("• Integration with Pop, Livestorm, Chorus & Gong")
                         Text("• Fixed readability of the statusbar text in multi-screen setups")
+                        Text("• Fixed crash due to null emails for event attendees")
                     }
                 }
 

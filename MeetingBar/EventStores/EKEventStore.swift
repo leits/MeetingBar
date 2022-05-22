@@ -107,6 +107,7 @@ extension EKEventStore: EventStore {
                     default:
                         attendeeStatus = .unknown
                     }
+
                     let optional = rawAttendee.participantRole == .optional
                     let email = rawAttendee.safeURL?.absoluteString
                     let attendee = MBEventAttendee(email: email, name: rawAttendee.name, status: attendeeStatus, optional: optional, isCurrentUser: rawAttendee.isCurrentUser)
