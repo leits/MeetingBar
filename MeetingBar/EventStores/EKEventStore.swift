@@ -10,7 +10,7 @@ import PromiseKit
 
 // Ref: https://stackoverflow.com/a/66074963
 extension EKParticipant {
-    public var safeURL: URL? {
+    var safeURL: URL? {
         perform(#selector(getter: EKParticipant.url))?.takeUnretainedValue() as? NSURL? as? URL
     }
 }
