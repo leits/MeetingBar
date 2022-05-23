@@ -110,7 +110,6 @@ extension EKEventStore: EventStore {
 
                     let optional = rawAttendee.participantRole == .optional
                     let email = rawAttendee.safeNSURL?.resourceSpecifier
-                    print(email)
                     let attendee = MBEventAttendee(email: email, name: rawAttendee.name, status: attendeeStatus, optional: optional, isCurrentUser: rawAttendee.isCurrentUser)
 
                     attendees.append(attendee)
