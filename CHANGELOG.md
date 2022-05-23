@@ -8,6 +8,7 @@
 - Fix readability of the statusbar text in multi-screen setups (#354)
 - Detect hidden menubar icon (#429)
 - Added feature to snooze the notification
+- Fix crash due to meeting attendees without an email address (#460)
 
 ## Version 3.10.0
 
