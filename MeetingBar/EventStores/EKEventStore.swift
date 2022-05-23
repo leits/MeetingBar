@@ -8,6 +8,13 @@
 import EventKit
 import PromiseKit
 
+// Ref: https://stackoverflow.com/a/66074963
+extension EKParticipant {
+    var safeURL: URL? {
+        perform(#selector(getter: EKParticipant.url))?.takeUnretainedValue() as? NSURL? as? URL
+    }
+}
+
 extension EKEventStore: EventStore {
     static let shared = initEKEventStore()
 
@@ -102,7 +109,7 @@ extension EKEventStore: EventStore {
                     }
 
                     let optional = rawAttendee.participantRole == .optional
-                    let email = (rawAttendee.url as NSURL).resourceSpecifier
+                    let email = rawAttendee.safeURL?.absoluteString
                     let attendee = MBEventAttendee(email: email, name: rawAttendee.name, status: attendeeStatus, optional: optional, isCurrentUser: rawAttendee.isCurrentUser)
 
                     attendees.append(attendee)
