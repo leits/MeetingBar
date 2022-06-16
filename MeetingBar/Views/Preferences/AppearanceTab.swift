@@ -30,7 +30,7 @@ struct StatusBarSection: View {
     @Default(.statusbarEventTitleLength) var statusbarEventTitleLength
     @Default(.showEventMaxTimeUntilEventThreshold) var showEventMaxTimeUntilEventThreshold
     @Default(.showEventMaxTimeUntilEventEnabled) var showEventMaxTimeUntilEventEnabled
-
+    
     var body: some View {
         Text("preferences_appearance_status_bar_title".loco()).font(.headline).bold()
         Section {
@@ -107,7 +107,8 @@ struct MenuSection: View {
     @Default(.showEventEndTime) var showEventEndTime
     @Default(.showEventDetails) var showEventDetails
     @Default(.showMeetingServiceIcon) var showMeetingServiceIcon
-
+    @Default(.bookmarksCollapseAfter) var bookmarksCollapseAfter
+    
     var body: some View {
         Text("preferences_appearance_menu_title".loco()).font(.headline).bold()
         Section {
@@ -128,6 +129,10 @@ struct MenuSection: View {
                     Toggle("preferences_appearance_menu_show_event_icon_value".loco(), isOn: $showMeetingServiceIcon)
                     Toggle("preferences_appearance_menu_show_event_details_value".loco(), isOn: $showEventDetails)
                 }
+            }
+            HStack {
+                Text("preferences_appearance_menu_collapse_bookmarks_after_title".loco())
+                Stepper("preferences_appearance_menu_collapse_bookmarks_after_stepper".loco(bookmarksCollapseAfter), value: $bookmarksCollapseAfter, in: 0 ... 100, step: 1)
             }
         }.padding(.horizontal, 10)
     }

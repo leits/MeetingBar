@@ -65,6 +65,7 @@ extension Defaults.Keys {
 
     // Bookmarks
     static let bookmarks = Key<[Bookmark]>("bookmarks", default: [])
+    static let bookmarksCollapseAfter = Key<Int>("bookmarksCollapseAfter", default: 3)
 
     // all browser configurations
     static let browsers = Key<[Browser]>("browsers", default: [])

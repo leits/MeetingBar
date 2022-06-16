@@ -113,7 +113,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
 
         // Settings change observers
-        appearanceSettingsObserver = Defaults.observe(keys: .statusbarEventTitleLength, .eventTimeFormat, .eventTitleIconFormat, .showEventMaxTimeUntilEventThreshold, .showEventMaxTimeUntilEventEnabled, .showEventDetails, .shortenEventTitle, .menuEventTitleLength, .showEventEndTime, .showMeetingServiceIcon, .timeFormat, .bookmarks, .eventTitleFormat, options: []) {
+        appearanceSettingsObserver = Defaults.observe(keys: .statusbarEventTitleLength, .eventTimeFormat, .eventTitleIconFormat, .showEventMaxTimeUntilEventThreshold, .showEventMaxTimeUntilEventEnabled, .showEventDetails, .shortenEventTitle, .menuEventTitleLength, .bookmarksCollapseAfter, .showEventEndTime, .showMeetingServiceIcon, .timeFormat, .bookmarks, .eventTitleFormat, options: []) {
             self.statusBarItem.updateTitle()
             self.statusBarItem.updateMenu()
         }

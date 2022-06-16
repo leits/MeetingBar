@@ -709,7 +709,7 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
 
         var bookmarksMenu: NSMenu
 
-        if Defaults[.bookmarks].count > 3 {
+        if Defaults[.bookmarks].count > Defaults[.bookmarksCollapseAfter] {
             bookmarksMenu = NSMenu(title: "status_bar_section_bookmarks_menu".loco())
             bookmarksItem.submenu = bookmarksMenu
         } else {
