@@ -108,7 +108,8 @@
 "preferences_appearance_menu_shorten_event_title_toggle" = "Shorten event title to";
 "preferences_appearance_menu_shorten_event_title_stepper" = "%d characters";
 "preferences_appearance_menu_collapse_bookmarks_after_title" = "Collapse bookmarks menu item after";
-"preferences_appearance_menu_collapse_bookmarks_after_stepper" = "%d entries";
+"preferences_appearance_menu_collapse_bookmarks_after_stepper_plural" = "%d entries";
+"preferences_appearance_menu_collapse_bookmarks_after_stepper_singular" = "%d entry";
 "preferences_appearance_menu_time_format_title" = "Time format:";
 "preferences_appearance_menu_time_format_12_hour_value" = "12-hour (AM/PM)";
 "preferences_appearance_menu_time_format_24_hour_value" = "24-hour";

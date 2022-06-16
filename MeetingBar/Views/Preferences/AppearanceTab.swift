@@ -132,7 +132,9 @@ struct MenuSection: View {
             }
             HStack {
                 Text("preferences_appearance_menu_collapse_bookmarks_after_title".loco())
-                Stepper("preferences_appearance_menu_collapse_bookmarks_after_stepper".loco(bookmarksCollapseAfter), value: $bookmarksCollapseAfter, in: 0 ... 100, step: 1)
+                Stepper(
+                    "preferences_appearance_menu_collapse_bookmarks_after_stepper_\(bookmarksCollapseAfter != 1 ? "plural" : "singular")".loco(bookmarksCollapseAfter),
+                    value: $bookmarksCollapseAfter, in: 0 ... 100, step: 1)
             }
         }.padding(.horizontal, 10)
     }
