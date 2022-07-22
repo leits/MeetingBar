@@ -1,9 +1,11 @@
 # Changelog for Meetingbar
 
-## Version 3.11.0
+For next releases info look here: https://github.com/leits/MeetingBar/releases
 
-> unreleased
+## Version 4.0.0
+> (released)
 
+> Direct integration with Google Calendar API
 - Added integration with Pop, Livestorm, Chorus & Gong
 - Fix readability of the statusbar text in multi-screen setups (#354)
 - Detect hidden menubar icon (#429)
