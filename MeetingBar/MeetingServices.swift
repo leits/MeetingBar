@@ -62,6 +62,7 @@ enum MeetingServices: String, Codable, CaseIterable {
     case feishu = "Feishu"
     case vimeo_showcases = "Vimeo Showcases"
     case ovice = "oVice"
+    case luma = "Luma"
     case other = "Other"
 
     var localizedValue: String {
@@ -281,6 +282,7 @@ struct LinksRegex {
     let pop = try! NSRegularExpression(pattern: #"https?://pop.com/j/[0-9-]+"#)
     let gong = try! NSRegularExpression(pattern: #"https?://join\.gong\.io/.*"#)
     let livestorm = try! NSRegularExpression(pattern: #"https?://app\.livestorm\.com/p/.*/live.*"#)
+    let luma = try! NSRegularExpression(pattern: #"https://lu\.ma/join/[^\s]*"#)
 }
 
 func getRegexForMeetingService(_ service: MeetingServices) -> NSRegularExpression? {
