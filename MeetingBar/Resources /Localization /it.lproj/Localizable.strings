@@ -138,7 +138,7 @@
 "preferences_configure_browsers_modal_add_browser_title" = "Aggiungi browser";
 "preferences_configure_browsers_modal_edit_browser_title" = "Modifica browser";
 "preferences_configure_browsers_modal_add_browser_name" = "Nome";
-"preferences_configure_browsers_modal_add_browser_path" = "Path";
+"preferences_configure_browsers_modal_add_browser_path" = "Percorso";
 "preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "Scegli browser";
 "preferences_configure_browsers_modal_alert_title" = "Non posso aggiungere la configurazione del browser";
 "preferences_configure_browsers_choose_broser_panel_title" = "Seleziona un browser";
@@ -164,19 +164,19 @@
 "preferences_calendars_add_account_description" = "Non trovi il calendario che ti serve?";
 "preferences_calendars_add_account_button" = "Aggiungi account";
 "preferences_calendars_add_account_modal" = "Per aggiungere calendari esterni:\n1. Apri l'app calendario di default\n2. Premi 'Aggiungi account' nel menu\n3. Seleziona e connetti i tuoi account";
-"preferences_calendars_provider_section_title" = "Calendars provider";
-"preferences_calendars_provider_gcalendar_change_account" = "Change Google Account";
-"preferences_calendars_provider_macos_switch" = "Switch to MacOS Calendar";
-"preferences_calendars_provider_gcalendar_switch" = "Switch to Google Calendar API";
+"preferences_calendars_provider_section_title" = "Calendar provider";
+"preferences_calendars_provider_gcalendar_change_account" = "Cambia account Google";
+"preferences_calendars_provider_macos_switch" = "Passa al Calendario macOS";
+"preferences_calendars_provider_gcalendar_switch" = "Passa alle API Google Calendar";
 
 // MARK: - Preferences Advanced
 
 "preferences_advanced_setting_warning" = "⚠️ Usa queste impostazioni solo se capisci cosa fanno";
-"preferences_advanced_apple_script_checkmark" = "Esegui AppleScript quando ti unisci a una riunione";
+"preferences_advanced_apple_script_checkmark" = "Esegui AppleScript quando partecipi a una riunione";
 "preferences_advanced_apple_script_placeholder" = "# scrivi il tuo script qui\ntell application \"Music\" to pause";
-"preferences_advanced_run_script_on_event_start" = "Run AppleScript automatically";
-"preferences_advanced_test_script_on_next_event" = "Test on next event";
-"preferences_advanced_edit_script" = "Edit script";
+"preferences_advanced_run_script_on_event_start" = "Esegui automaticamente AppleScript";
+"preferences_advanced_test_script_on_next_event" = "Prova al prossimo evento";
+"preferences_advanced_edit_script" = "Modifica script";
 "preferences_advanced_save_script_button" = "Salva script";
 "preferences_advanced_wrong_location_title" = "Posizione sbagliata";
 "preferences_advanced_wrong_location_message" = "Selezionare la cartella Utente → Libreria → Script dell'applicazione → leits.MeetingBar";
@@ -196,11 +196,11 @@
 "status_bar_empty_calendar_message" = "Seleziona i tuoi calendari nelle preferenze\nper vedere le tue riunioni";
 "status_bar_section_join_next_meeting" = "Partecipa alla prossima riunione";
 "status_bar_section_join_current_meeting" = "Partecipa alla riunione in corso";
-"status_bar_section_join_from_clipboard" = "Apri riunione dalla clipboard";
+"status_bar_section_join_from_clipboard" = "Apri riunione dagli appunti";
 "status_bar_section_refresh_sources" = "Aggiorna le fonti";
 "status_bar_section_join_create_meeting" = "Crea riunione";
 "status_bar_section_bookmarks_title" = "Segnalibri";
-"status_bar_section_bookmarks_menu" = "Menù egnalibri";
+"status_bar_section_bookmarks_menu" = "Menù segnalibri";
 "status_bar_section_date_nothing" = "Niente per %@";
 "status_bar_event_start_time_all_day" = "Tutto il giorno";
 "status_bar_submenu_calendar_title" = "Calendario: %@";
@@ -232,7 +232,7 @@
 "status_bar_preferences" = "Preferenze";
 "status_bar_quit" = "Chiudi MeetingBar";
 "status_bar_no_title" = "Nessun titolo";
-"status_bar_event_status_now" = "ora (%@ sinistra)";
+"status_bar_event_status_now" = "ora (%@ rimanenti)";
 "status_bar_event_status_in" = "in %@";
 "status_bar_error_apple_script_title" = "errore AppleScript";
 "status_bar_error_link_missed_title" = "Ouch! Non puoi entrare in %@";
@@ -247,8 +247,8 @@
 // MARK: - Welcome screen
 
 "welcome_screen_greeting_main_title" = "Ciao! MeetingBar è un'app così semplice che tutto è quasi pronto.";
-"welcome_screen_greeting_additional_title" = "Facciamola 100% tua!";
-"welcome_screen_login_launch_toggle_title" = "Apri MeetingBar al Login";
+"welcome_screen_greeting_additional_title" = "Rendiamola 100% tua!";
+"welcome_screen_login_launch_toggle_title" = "Apri MeetingBar all'avvio";
 "welcome_screen_shortcut_next_meeting_title" = "Partecipa alla prossima riunione con una scorciatoia:";
 "welcome_screen_ad_hoc_meeting_title" = "Crea riunioni ad hoc in ";
 "welcome_screen_shortcut_ad_hoc_meeting_title" = "con la tua scorciatoia:";
@@ -269,17 +269,17 @@
 "access_screen_access_granted_title" = "Richiesta di accesso ai calendari…";
 "access_screen_access_granted_click_ok_title" = "Seleziona \"OK\" nel popup di macOS.";
 
-"access_screen_provider_picker_label" = "Select calendars provider";
-"access_screen_provider_macos_title" = "MacOS Calendar app";
-"access_screen_provider_macos_recomended" = "(recomended)";
-"access_screen_provider_macos_data_source" = "Get data from MacOS Calendar app";
-"access_screen_provider_macos_number_of_accounts" = "Any number of any connected accounts";
+"access_screen_provider_picker_label" = "Seleziona calendar provider";
+"access_screen_provider_macos_title" = "Calendario macOS";
+"access_screen_provider_macos_recomended" = "(consigliato)";
+"access_screen_provider_macos_data_source" = "Importa dati dal Calendario macOS";
+"access_screen_provider_macos_number_of_accounts" = "Qualsiasi numero di account connessi";
 
-"access_screen_provider_gcalendar_data_source" = "Get data directly from Google Calendar";
-"access_screen_provider_gcalendar_number_of_accounts" = "Only one Google account";
-"access_screen_provider_gcalendar_sign_in_title" = "Google Sign In";
-"access_screen_provider_gcalendar_sign_in_description" = "Allow MeetingBar access to your calendar in browser window";
-"access_screen_try_again" = "Try again";
+"access_screen_provider_gcalendar_data_source" = "Importa dati direttamente da Google Calendar";
+"access_screen_provider_gcalendar_number_of_accounts" = "Solo un account Google";
+"access_screen_provider_gcalendar_sign_in_title" = "Accesso con Google";
+"access_screen_provider_gcalendar_sign_in_description" = "Consenti l'accesso di MeetingBar al tuo calenario nella finestra del browser";
+"access_screen_try_again" = "Riprova";
 
 // MARK: - Shared
 
@@ -290,15 +290,15 @@
 "general_five_minute_before" = "5 minuti prima";
 "shared_send_notification_no_alert_style_tip" = "⚠️ Le impostazioni per le notifiche di macOS per MeetingBar non sono impostate per l'avviso. Aggiorna le impostazioni se desideri notifiche persistenti.";
 "shared_send_notification_disabled_tip" = "⚠️ LeLe impostazioni per le notifiche di macOS per MeetingBar sono disattivate. Attiva le notifiche nelle impostazioni di sistema di macOS per tenere traccia delle riunioni.";
-"shared_automatic_event_join_toggle" = "Automatic join next event meeting";
-"shared_automatic_event_join_tip" = "This setting will automatically open your next meeting in your configured app or browser";
+"shared_automatic_event_join_toggle" = "Partecipa automaticamente alla prossima riunione";
+"shared_automatic_event_join_tip" = "Quest'impostazione aprirà automaticamente la tua prossima riunione nell'app o nel browser configurati";
 
 // MARK: - Constants
 "constants_create_meeting_service_url" = "URL personale";
 "constants_meeting_service_phone" = "Numero di telefono";
 "constants_meeting_service_zoom_native" = "Zoom nativo";
-"constants_meeting_service_skype4biz" = "Skype per Business";
-"constants_meeting_service_skype4biz_selfhosted" = "Skype per Business (SH)";
+"constants_meeting_service_skype4biz" = "Skype for Business";
+"constants_meeting_service_skype4biz_selfhosted" = "Skype for Business (SH)";
 "constants_meeting_service_other" = "Altro";
 "constants_meeting_service_url" = "URL";
 "constants_browser_brave" = "Brave";
@@ -329,12 +329,12 @@
 // MARK: - Notifications
 
 "notifications_event_start_soon_body" = "La riunione sta per iniziare";
-"notifications_event_start_one_minute_body" = "La riunione inizia in un minuto";
-"notifications_event_start_three_minutes_body" = "La riunione inizia in tre minuti";
-"notifications_event_start_five_minutes_body" = "La riunione inizia in cinque minuti";
-"notifications_snooze_until_start" = "Snooze until start time";
-"notifications_snooze_for" = "Snooze for %@ min";
-"notifications_meetingbar_join_event_action" = "Join";
+"notifications_event_start_one_minute_body" = "La riunione inizia tra un minuto";
+"notifications_event_start_three_minutes_body" = "La riunione inizia tra tre minuti";
+"notifications_event_start_five_minutes_body" = "La riunione inizia tra cinque minuti";
+"notifications_snooze_until_start" = "Posticipa alla data di inizio";
+"notifications_snooze_for" = "Posticipa di %@ min";
+"notifications_meetingbar_join_event_action" = "Partecipa";
 
 // MARK: - Link open
 
