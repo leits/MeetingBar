@@ -33,7 +33,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     var eventFiltersObserver: DefaultsObservation?
     var appearanceSettingsObserver: DefaultsObservation?
 
-
     func applicationDidFinishLaunching(_: Notification) {
         // AppStore sync
         completeStoreTransactions()
