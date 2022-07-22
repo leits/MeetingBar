@@ -12,8 +12,6 @@ import Defaults
 import KeyboardShortcuts
 
 struct GeneralTab: View {
-    @Default(.launchAtLogin) var launchAtLogin
-
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
             Section {
@@ -103,8 +101,6 @@ struct PatronageAppSection: View {
     @State var showingPatronageModal = false
     @State var showingContactModal = false
 
-    @Default(.isInstalledFromAppStore) var isInstalledFromAppStore
-
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
             VStack(alignment: .center) {
@@ -113,9 +109,7 @@ struct PatronageAppSection: View {
                     VStack(alignment: .center) {
                         Image(nsImage: NSImage(named: "appIconForAbout")!).resizable().frame(width: 120.0, height: 120.0)
                         Text("MeetingBar").font(.system(size: 20)).bold()
-                        if Bundle.main.infoDictionary != nil {
-                            Text("Version \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "unknown")").foregroundColor(.gray)
-                        }
+                        Text(Defaults[.appVersion]).foregroundColor(.gray)
                     }.lineLimit(1).minimumScaleFactor(0.5).frame(minWidth: 0, maxWidth: .infinity)
                     VStack {
                         Spacer()
@@ -150,7 +144,7 @@ struct PatronageAppSection: View {
     }
 
     func clickPatronage() {
-        if isInstalledFromAppStore {
+        if Defaults[.isInstalledFromAppStore] {
             showingPatronageModal.toggle()
         } else {
             Links.patreon.openInDefaultBrowser()
