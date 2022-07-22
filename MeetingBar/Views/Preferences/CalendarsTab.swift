@@ -75,7 +75,9 @@ struct CalendarsTab: View {
                     }
                 }.padding(.horizontal, 10)
             }
-        }.onReceive(timer) { _ in loadCalendarList() }.padding()
+        }.onReceive(timer) { _ in loadCalendarList() }
+        .onDisappear { timer.upstream.connect().cancel() }
+        .padding()
     }
 
     func changeEventStoreProvider(_ provider: eventStoreProvider) {
