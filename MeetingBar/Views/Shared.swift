@@ -29,7 +29,7 @@ struct AutomaticEventJoinPicker: View {
         }
 
         if automaticEventJoin {
-            Text("shared_automatic_event_join_tip".loco()).foregroundColor(Color.gray).font(.system(size: 12))
+            Text("shared_automatic_event_join_tip".loco()).foregroundColor(.gray).font(.system(size: 12))
         }
     }
 }

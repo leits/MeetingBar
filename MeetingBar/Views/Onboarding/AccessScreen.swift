@@ -29,7 +29,7 @@ struct AccessScreen: View {
                             ) {
                                 Text("access_screen_provider_macos_data_source".loco())
                                 Text("access_screen_provider_macos_number_of_accounts".loco())
-                                Text("access_screen_provider_macos_recomended".loco()).foregroundColor(Color(NSColor.gray))
+                                Text("access_screen_provider_macos_recomended".loco()).foregroundColor(.gray)
                             }
                         }
                         Spacer()
