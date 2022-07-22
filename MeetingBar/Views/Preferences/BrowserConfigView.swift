@@ -80,9 +80,9 @@ struct BrowserConfigView: View {
 
                 Spacer()
 
-                Button("general_ok".loco()) {
+                Button("general_close".loco()) {
                     presentationMode.wrappedValue.dismiss()
-                }.frame(width: 20, height: 20, alignment: .trailing)
+                }
             }
         }.padding()
             .frame(width: 500,
