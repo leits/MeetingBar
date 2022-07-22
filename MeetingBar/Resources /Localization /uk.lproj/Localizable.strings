@@ -246,11 +246,11 @@
 
 // MARK: - Welcome screen
 
-"welcome_screen_greeting_main_title" = "Привіт! MeetingBar настільки простий додаток, що майже все вже готово.";
-"welcome_screen_greeting_additional_title" = "Зробімо його на 100% Вашим!";
+"welcome_screen_greeting_main_title" = "Привіт! MeetingBar настільки простий, що майже все вже готово.";
+"welcome_screen_greeting_additional_title" = "Зробімо його на 100% вашим!";
 "welcome_screen_login_launch_toggle_title" = "Запускати MeetingBar при логіні";
 "welcome_screen_shortcut_next_meeting_title" = "Приєднуватись до зустрічей з наступної події зі скороченням:";
-"welcome_screen_ad_hoc_meeting_title" = "Створювати зустріч у ";
+"welcome_screen_ad_hoc_meeting_title" = "Створювати зустріч у";
 "welcome_screen_shortcut_ad_hoc_meeting_title" = "зі скороченням:";
 "welcome_screen_setup_calendar_title" = "Налаштувати календарі";
 
