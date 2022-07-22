@@ -129,6 +129,10 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
                 guard let nextEvent = nextEvent else {
                     return .none
                 }
+                if Calendar.current.isDateInTomorrow(nextEvent.startDate) {
+                    return .none
+                }
+
                 guard Defaults[.showEventMaxTimeUntilEventEnabled] else {
                     return .nextEvent(nextEvent)
                 }
