@@ -33,9 +33,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     var eventFiltersObserver: DefaultsObservation?
     var appearanceSettingsObserver: DefaultsObservation?
 
-    var preferencesWindow: NSWindow!
-    var onboardingWindow: NSWindow!
-    var changelogWindow: NSWindow!
 
     func applicationDidFinishLaunching(_: Notification) {
         // AppStore sync
@@ -261,10 +258,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     func openOnboardingWindow() {
         NSLog("Open onboarding window")
         let contentView = OnboardingView()
-        if onboardingWindow != nil {
-            onboardingWindow.close()
-        }
-        onboardingWindow = NSWindow(
+        let onboardingWindow = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 660, height: 450),
             styleMask: [.closable, .titled],
             backing: .buffered,
@@ -285,10 +279,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     func openChangelogWindow(_: NSStatusBarButton?) {
         NSLog("Open changelof window")
         let contentView = ChangelogView()
-        if changelogWindow != nil {
-            changelogWindow.close()
-        }
-        changelogWindow = NSWindow(
+        let changelogWindow = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 600, height: 400),
             styleMask: [.closable, .titled, .resizable],
             backing: .buffered,
@@ -311,10 +302,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     func openPrefecencesWindow(_: NSStatusBarButton?) {
         NSLog("Open preferences window")
         let contentView = PreferencesView()
-        if preferencesWindow != nil {
-            preferencesWindow.close()
-        }
-        preferencesWindow = NSWindow(
+        let preferencesWindow = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 700, height: 610),
             styleMask: [.closable, .titled, .resizable],
             backing: .buffered,

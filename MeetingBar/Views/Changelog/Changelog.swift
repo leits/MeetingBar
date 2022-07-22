@@ -112,8 +112,6 @@ struct ChangelogView: View {
     }
 
     func close() {
-        if let app = NSApplication.shared.delegate as! AppDelegate? {
-            app.changelogWindow.close()
-        }
+        NSApplication.shared.keyWindow?.close()
     }
 }

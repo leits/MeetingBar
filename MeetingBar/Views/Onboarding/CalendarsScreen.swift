@@ -31,8 +31,6 @@ struct CalendarsScreen: View {
     }
 
     func close() {
-        if let app = NSApplication.shared.delegate as! AppDelegate? {
-            app.onboardingWindow.close()
-        }
+        NSApplication.shared.keyWindow?.close()
     }
 }
