@@ -291,13 +291,11 @@
 
 "access_screen_access_denied_title" = "Hoppla! Offenbar hast Du den Zugriff auf Kalender verweigert.";
 "calendars_screen_start_button" = "MeetingBar starten";
-
 "access_screen_provider_picker_label" = "Select calendars provider";
 "access_screen_provider_macos_title" = "MacOS Calendar app";
 "access_screen_provider_macos_recomended" = "(recomended)";
 "access_screen_provider_macos_data_source" = "Get data from MacOS Calendar app";
 "access_screen_provider_macos_number_of_accounts" = "Any number of any connected accounts";
-
 "access_screen_provider_gcalendar_data_source" = "Get data directly from Google Calendar";
 "access_screen_provider_gcalendar_number_of_accounts" = "Only one Google account";
 "access_screen_provider_gcalendar_sign_in_title" = "Google Sign In";
@@ -334,3 +332,4 @@
 "preferences_general_patron_title" = "Schirmherr werden";
 "preferences_advanced_event_regex_title" = "Benutzerdefinierte reguläre Ausdrücke zum Herausfiltern von Besprechungen";
 "status_bar_section_refresh_sources" = "Quellen aktualisieren";
+"notifications_event_started_body" = "Die Veranstaltung hat begonnen";

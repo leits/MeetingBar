@@ -45,7 +45,7 @@
 "preferences_general_shortcut_join_next" = "Entra nella prossima riunione:";
 "preferences_general_shortcut_join_from_clipboard" = "Entra nella riunione da link copiato:";
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "Attiva/disattiva la visibilità del titolo nella barra di stato:";
-"preferences_general_meeting_bar_description" = "MeetingBar è un'app open source creata da Andrii Leitsius 🇺🇦\nPer riunioni online più fluide e semplici";
+"preferences_general_meeting_bar_description" = "MeetingBar è un'app con codice aperto\ncreata da Andrii Leitsius 🇺🇦\nPer riunioni online più fluide e semplici";
 "preferences_general_external_patronage" = "Patronage";
 "preferences_general_external_gitHub" = "GitHub";
 "preferences_general_external_contact" = "Contact";
@@ -268,13 +268,11 @@
 "access_screen_access_denied_relaunch_title" = "Quindi avvia l'app manualmente per continuare la configurazione.";
 "access_screen_access_granted_title" = "Richiesta di accesso ai calendari…";
 "access_screen_access_granted_click_ok_title" = "Seleziona \"OK\" nel popup di macOS.";
-
 "access_screen_provider_picker_label" = "Seleziona calendar provider";
 "access_screen_provider_macos_title" = "Calendario macOS";
 "access_screen_provider_macos_recomended" = "(consigliato)";
 "access_screen_provider_macos_data_source" = "Importa dati dal Calendario macOS";
 "access_screen_provider_macos_number_of_accounts" = "Qualsiasi numero di account connessi";
-
 "access_screen_provider_gcalendar_data_source" = "Importa dati direttamente da Google Calendar";
 "access_screen_provider_gcalendar_number_of_accounts" = "Solo un account Google";
 "access_screen_provider_gcalendar_sign_in_title" = "Accesso con Google";
