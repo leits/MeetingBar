@@ -21,7 +21,7 @@
 "preferences_general_shortcut_join_next" = "הצטרפות לפגישה הבאה:";
 "preferences_general_shortcut_join_from_clipboard" = "הצטרפות לפגישה שבלוח הגזירים:";
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "החלפת מצב הצגת הכותרת בשורת המצב:";
-"preferences_general_meeting_bar_description" = "MeetingBar הוא יישום בקוד פתוח שנוצר על ידי Andrii Leitsius 🇺🇦\nלפגישות מקוונות פשוטות וחלקות יותר";
+"preferences_general_meeting_bar_description" = "MeetingBar הוא יישום בקוד פתוח\nשנוצר על ידי Andrii Leitsius 🇺🇦\nלפגישות מקוונות פשוטות וחלקות יותר";
 "preferences_general_external_patronage" = "Patronage";
 "preferences_general_external_gitHub" = "GitHub";
 "preferences_general_external_contact" = "יצירת קשר";
@@ -112,12 +112,12 @@
 "preferences_bookmarks_new_bookmark_service" = "שירות";
 "preferences_bookmarks_new_bookmark_error_title" = "אי אפשר להוסיף סימניה";
 "preferences_calendars_add_account_description" = "לוחות השנה שדרושים לך לא נמצאים?";
-"preferences_calendars_add_account_button" = "הוספת חשבון";
+"preferences_calendars_add_account_button" = "הוספת חשבון לוח שנה";
 "preferences_advanced_apple_script_checkmark" = "להפעיל AppleScript בעת הצטרפות לפגישה";
 "preferences_advanced_apple_script_placeholder" = "# כאן ניתן לכתוב את הסקריפט שלך\ntell application \"Music\" to pause";
-"preferences_advanced_run_script_on_event_start" = "Run AppleScript automatically";
-"preferences_advanced_test_script_on_next_event" = "Test on next event";
-"preferences_advanced_edit_script" = "Edit script";
+"preferences_advanced_run_script_on_event_start" = "הרצת AppleScript אוטומטית";
+"preferences_advanced_test_script_on_next_event" = "בדיקה באירוע הבא";
+"preferences_advanced_edit_script" = "עריכת סקריפט";
 "preferences_advanced_save_script_button" = "שמירת הסקריפט";
 "preferences_advanced_wrong_location_title" = "מיקום שגוי";
 
@@ -185,18 +185,16 @@
 "access_screen_access_denied_relaunch_title" = "ואז להפעיל את היישום ידנית כדי להמשיך את ההגדרות.";
 "access_screen_access_granted_title" = "מוגשת בקשה לגשת ללוחות השנה שלך…";
 "access_screen_access_granted_click_ok_title" = "יש ללחוץ על „אישור” בחלונית הקופצת ב־macOS שלך.";
-
-"access_screen_provider_picker_label" = "Select calendars provider";
-"access_screen_provider_macos_title" = "MacOS Calendar app";
-"access_screen_provider_macos_recomended" = "(recomended)";
-"access_screen_provider_macos_data_source" = "Get data from MacOS Calendar app";
-"access_screen_provider_macos_number_of_accounts" = "Any number of any connected accounts";
-
-"access_screen_provider_gcalendar_data_source" = "Get data directly from Google Calendar";
-"access_screen_provider_gcalendar_number_of_accounts" = "Only one Google account";
-"access_screen_provider_gcalendar_sign_in_title" = "Google Sign In";
-"access_screen_provider_gcalendar_sign_in_description" = "Allow MeetingBar access to your calendar in browser window";
-"access_screen_try_again" = "Try again";
+"access_screen_provider_picker_label" = "בחירת ספק לוחות שנה";
+"access_screen_provider_macos_title" = "יישום לוח השנה ב־MacOS";
+"access_screen_provider_macos_recomended" = "(מומלץ)";
+"access_screen_provider_macos_data_source" = "משיכת נתונים מיישום לוח השנה של MacOS";
+"access_screen_provider_macos_number_of_accounts" = "כל מספר של כל חשבון שהוא שמחובר";
+"access_screen_provider_gcalendar_data_source" = "משיכת נתונים ישירות מ־Google Calendar";
+"access_screen_provider_gcalendar_number_of_accounts" = "חשבון Google אחד בלבד";
+"access_screen_provider_gcalendar_sign_in_title" = "כניסה ל־Google";
+"access_screen_provider_gcalendar_sign_in_description" = "נא לאפשר ל־MeetingBar לגשת ללוח השנה שלך בחלון דפדפן";
+"access_screen_try_again" = "לנסות שוב";
 
 // MARK: - Shared
 
@@ -209,8 +207,8 @@
 "constants_meeting_service_zoom_native" = "Zoom טבעי";
 "shared_send_notification_no_alert_style_tip" = "⚠️ הגדרות ההתראות ב־macOS שלך עבור MeetingBar לא מוגדרות להוציא התראות. יש לעשות זאת אם מעניין אותך להשתמש בהתראות דביקות.";
 "shared_send_notification_disabled_tip" = "⚠️ הגדרות ההתראות ב־macOS שלך עבור MeetingBar כבויות. יש להפעיל את ההתראות בהגדרות המערכת של macOS כדי לעקוב אחר פגישות.";
-"shared_automatic_event_join_toggle" = "Automatic join next event meeting";
-"shared_automatic_event_join_tip" = "This setting will automatically open your next meeting in your configured app or browser";
+"shared_automatic_event_join_toggle" = "להצטרף אוטומטית בפגישת האירוע הבאה";
+"shared_automatic_event_join_tip" = "הגדרה זאת תפתח את הפגישה הבאה שלך ביישום או בדפדפן שהגדרת";
 "general_cancel" = "ביטול";
 "general_meeting" = "פגישה";
 
@@ -229,8 +227,8 @@
 "link_url_cant_open_title" = "אופס! לא ניתן לפתוח את הקישור עם %@";
 "notifications_event_start_three_minutes_body" = "האירוע מתחיל בעוד שלוש דקות";
 "notifications_event_start_five_minutes_body" = "האירוע מתחיל בעוד חמש דקות";
-"notifications_snooze_until_start" = "Snooze until start time";
-"notifications_snooze_for" = "Snooze for %@ min";
+"notifications_snooze_until_start" = "השהיה עד לזמן ההתחלה";
+"notifications_snooze_for" = "להשהות למשך %@ דק׳";
 "constants_meeting_service_other" = "אחר";
 "constants_meeting_service_url" = "כתובת";
 "constants_browser_brave" = "Brave";
@@ -289,10 +287,10 @@
 
 "preferences_calendars_select_calendars_title" = "נא לבחור לוחות שנה כדי לצפות באירועים בסרגל המצב";
 "preferences_calendars_add_account_modal" = "כדי להוסיף לוחות שנה חיצוניים:\n1. יש לפתוח את יישום לוח השנה כבררת המחדל\n2. ללחוץ על ‚הוספת חשבון’ בתפריט\n3. לבחור ולחבר את החשבון שלך";
-"preferences_calendars_provider_section_title" = "Calendars provider";
-"preferences_calendars_provider_gcalendar_change_account" = "Change Google Account";
-"preferences_calendars_provider_macos_switch" = "Switch to MacOS Calendar";
-"preferences_calendars_provider_gcalendar_switch" = "Switch to Google Calendar API";
+"preferences_calendars_provider_section_title" = "ספקי לוחות שנה";
+"preferences_calendars_provider_gcalendar_change_account" = "החלפת חשבון Google";
+"preferences_calendars_provider_macos_switch" = "מעבר ללוח השנה של MacOS";
+"preferences_calendars_provider_gcalendar_switch" = "מעבר ל־API של Google Calendar";
 "preferences_advanced_wrong_location_message" = "נא לבחור את תיקיית משתמש ← ספרייה ← סקריפטים של יישומים ← leits.MeetingBar";
 "preferences_advanced_regex_delete_button" = "x";
 "status_bar_section_bookmarks_menu" = "תפריט סימניות";
@@ -329,6 +327,7 @@
 // MARK: - Notifications
 
 "notifications_event_start_soon_body" = "האירוע מתחיל בקרוב";
-"notifications_meetingbar_join_event_action" = "Join";
+"notifications_meetingbar_join_event_action" = "הצטרפות";
 "preferences_advanced_event_regex_title" = "ביטויים רגולריים משלך לסינון הודעות";
 "status_bar_section_refresh_sources" = "רענון המקורות";
+"notifications_event_started_body" = "האירוע התחיל";
