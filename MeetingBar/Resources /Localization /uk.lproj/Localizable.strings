@@ -45,7 +45,7 @@
 "preferences_general_shortcut_join_next" = "Долучитись до наступної зустрічі:";
 "preferences_general_shortcut_join_from_clipboard" = "Долучитись до зустрічі з буфера обміну:";
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "Показати/сховати заголовок у смузі меню:";
-"preferences_general_meeting_bar_description" = "MeetingBar - це додаток з відкритим кодом, який створив Андрій Лейцюсь 🇺🇦\nЦей додаток прагне зробити досвід з онлайн-зустрічами приємнішим";
+"preferences_general_meeting_bar_description" = "MeetingBar - це додаток з відкритим кодом,\nстворений Андрієм Лейцюсь 🇺🇦\nДля більш плавної і зручної онлайн-зустрічі";
 "preferences_general_external_patronage" = "Підтримати";
 "preferences_general_external_gitHub" = "GitHub";
 "preferences_general_external_contact" = "Зв'язатись";
@@ -179,7 +179,7 @@
 "preferences_advanced_edit_script" = "Редагувати скрипт";
 "preferences_advanced_save_script_button" = "Зберегти скрипт";
 "preferences_advanced_wrong_location_title" = "Некоректне розташування";
-"preferences_advanced_wrong_location_message" = "Будь ласка, виберіть User > Library > Application Scripts > leits.MeetingBar папку";
+"preferences_advanced_wrong_location_message" = "Будь ласка, виберіть теку User > Library > Application Scripts > leits.MeetingBar";
 "preferences_advanced_wrong_location_button" = "Зрозуміло!";
 "preferences_advanced_regex_title" = "Власні regex для посилань на зустрічі";
 "preferences_advanced_regex_add_button" = "Додати regex";
@@ -250,7 +250,7 @@
 "welcome_screen_greeting_additional_title" = "Зробімо його на 100% вашим!";
 "welcome_screen_login_launch_toggle_title" = "Запускати MeetingBar при логіні";
 "welcome_screen_shortcut_next_meeting_title" = "Приєднуватись до зустрічей з наступної події зі скороченням:";
-"welcome_screen_ad_hoc_meeting_title" = "Створювати зустріч у";
+"welcome_screen_ad_hoc_meeting_title" = "Створювати зустріч у ";
 "welcome_screen_shortcut_ad_hoc_meeting_title" = "зі скороченням:";
 "welcome_screen_setup_calendar_title" = "Налаштувати календарі";
 
@@ -268,13 +268,11 @@
 "access_screen_access_denied_relaunch_title" = "Після цього вам потрібно перезапустити додаток, щоб продовжити налаштування.";
 "access_screen_access_granted_title" = "Запит на доступ до календарів…";
 "access_screen_access_granted_click_ok_title" = "Натисніть \"OK\" у вікні від MacOS.";
-
 "access_screen_provider_picker_label" = "Виберіть провайдера календарів";
 "access_screen_provider_macos_title" = "Системний Календар";
 "access_screen_provider_macos_recomended" = "(рекомендовано)";
 "access_screen_provider_macos_data_source" = "Використовувати дані із системного Календаря";
 "access_screen_provider_macos_number_of_accounts" = "Будь-яка кількість аккаунтів підключених до системного Календаря";
-
 "access_screen_provider_gcalendar_data_source" = "Використовувати дані напряму з Google Calendar";
 "access_screen_provider_gcalendar_number_of_accounts" = "Лише один аккаунт Google";
 "access_screen_provider_gcalendar_sign_in_title" = "Вхід через Google";
@@ -340,3 +338,4 @@
 
 "link_url_cant_open_title" = "Ой леле! Не вдалось відкрити посилання в %@";
 "link_url_cant_open_message" = "Перевірте, чи %@ встановлено, або змініть браузер у налаштуваннях.";
+"status_bar_section_refresh_sources" = "Оновити джерела";
