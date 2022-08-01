@@ -1,7 +1,7 @@
 
 
 "link_url_cant_open_message" = "Sicherstellen, dass %@ installiert ist oder in den Einstellungen festlegen, dass diese Links im Webbrowser geöffnet werden.";
-"preferences_general_meeting_bar_description" = "MeetingBar ist eine quelloffene App, die von Andrii Leitsius 🇺🇦 entwickelt wurde.\nFür reibungslosere und einfachere Online-Meetings";
+"preferences_general_meeting_bar_description" = "MeetingBar ist eine quelloffene App,\ndie von Andrii Leitsius 🇺🇦 für reibungslosere \nund einfachere Online-Meetings entwickelt wurde.";
 
 // MARK: - Notifications
 
@@ -9,9 +9,9 @@
 "notifications_event_start_one_minute_body" = "Das Ereignis beginnt in einer Minute";
 "notifications_event_start_three_minutes_body" = "Das Ereignis beginnt in drei Minuten";
 "notifications_event_start_five_minutes_body" = "Das Ereignis beginnt in fünf Minuten";
-"notifications_snooze_until_start" = "Snooze until start time";
-"notifications_snooze_for" = "Snooze for %@ min";
-"notifications_meetingbar_join_event_action" = "Join";
+"notifications_snooze_until_start" = "Schlummern bis zur Startzeit";
+"notifications_snooze_for" = "Schlummern für %@ Minuten";
+"notifications_meetingbar_join_event_action" = "Beitreten";
 "store_patronage_purchase_cloud_service_network_connection_failed" = "Es konnte keine Verbindung zum Netzwerk hergestellt werden";
 "store_patronage_purchase_cloud_service_permission_denied_message" = "Der Zugriff auf Cloud-Service-Informationen ist nicht erlaubt";
 "store_patronage_purchase_store_product_not_available_message" = "Das Produkt ist im aktuellen Schaufenster nicht verfügbar";
@@ -73,7 +73,7 @@
 "preferences_appearance_events_value_hide" = "ausblenden";
 "preferences_appearance_events_value_show" = "anzeigen";
 "preferences_appearance_events_declined_title" = "Abgelehnte Ereignisse:";
-"preferences_appearance_events_pending_title" = "Anstehende Ereignisse:";
+"preferences_appearance_events_pending_title" = "Anstehende Ereignisse";
 "preferences_appearance_events_past_title" = "Vergangene Ereignisse:";
 "preferences_appearance_events_without_guest_title" = "Ereignisse ohne Gäste:";
 "preferences_appearance_events_all_day_title" = "Ganztägige Ereignisse:";
@@ -190,21 +190,21 @@
 "preferences_advanced_wrong_location_title" = "Falscher Ort";
 "preferences_advanced_save_script_button" = "Skript speichern";
 "preferences_advanced_apple_script_placeholder" = "# Schreibe Dein Skript hier\ntell application \"Music\" to pause";
-"preferences_advanced_run_script_on_event_start" = "Run AppleScript automatically";
-"preferences_advanced_test_script_on_next_event" = "Test on next event";
-"preferences_advanced_edit_script" = "Edit script";
+"preferences_advanced_run_script_on_event_start" = "Starte das AppleScript automatisch";
+"preferences_advanced_test_script_on_next_event" = "Teste beim nächsten Termin";
+"preferences_advanced_edit_script" = "Bearbeite das Script";
 "preferences_advanced_apple_script_checkmark" = "AppleScript beim Betreten eines Meetings ausführen";
 
 // MARK: - Preferences Advanced
 
 "preferences_advanced_setting_warning" = "⚠️ Verwende diese Einstellungen nur, wenn Du verstehst was sie bewirken";
 "preferences_calendars_add_account_modal" = "Externe Kalender hinzuzufügen:\n1. Standard-Kalender-App öffnen\n2. Im Menü „Account hinzufügen“ auswählen\n3. Account auswählen und verbinden";
-"preferences_calendars_add_account_button" = "Account hinzufügen";
+"preferences_calendars_add_account_button" = "Kalender-Account hinzufügen";
 "preferences_calendars_add_account_description" = "Benötigten Kalender nicht gefunden?";
-"preferences_calendars_provider_section_title" = "Calendars provider";
-"preferences_calendars_provider_gcalendar_change_account" = "Change Google Account";
-"preferences_calendars_provider_macos_switch" = "Switch to MacOS Calendar";
-"preferences_calendars_provider_gcalendar_switch" = "Switch to Google Calendar API";
+"preferences_calendars_provider_section_title" = "Kalender Anbieter";
+"preferences_calendars_provider_gcalendar_change_account" = "Ändere den Google Account";
+"preferences_calendars_provider_macos_switch" = "Wechsele zum MacOS Kalender";
+"preferences_calendars_provider_gcalendar_switch" = "Wechsle zur Google Kalender API";
 
 // MARK: - Preferences Calendars
 
@@ -284,23 +284,23 @@
 "access_screen_access_denied_checkbox_title" = "und aktiviere ein Kontrollkästchen bei MeetingBar.";
 "access_screen_access_denied_system_preferences_button" = "Systemeinstellungen";
 "access_screen_access_screen_access_denied_go_to_title" = "Gehe zu";
-"shared_automatic_event_join_toggle" = "Automatic join next event meeting";
-"shared_automatic_event_join_tip" = "This setting will automatically open your next meeting in your configured app or browser";
+"shared_automatic_event_join_toggle" = "Nehmen Sie automatisch am nächsten Event-Meeting teil";
+"shared_automatic_event_join_tip" = "Diese Einstellung wird automatisch das nächste Meeting in ihrer voreingestellten App oder dem Browser öffnen";
 
 // MARK: - Access screen
 
 "access_screen_access_denied_title" = "Hoppla! Offenbar hast Du den Zugriff auf Kalender verweigert.";
 "calendars_screen_start_button" = "MeetingBar starten";
-"access_screen_provider_picker_label" = "Select calendars provider";
-"access_screen_provider_macos_title" = "MacOS Calendar app";
-"access_screen_provider_macos_recomended" = "(recomended)";
-"access_screen_provider_macos_data_source" = "Get data from MacOS Calendar app";
-"access_screen_provider_macos_number_of_accounts" = "Any number of any connected accounts";
-"access_screen_provider_gcalendar_data_source" = "Get data directly from Google Calendar";
-"access_screen_provider_gcalendar_number_of_accounts" = "Only one Google account";
+"access_screen_provider_picker_label" = "Wähle den Kalender Anbieter aus";
+"access_screen_provider_macos_title" = "MacOS Kalender App";
+"access_screen_provider_macos_recomended" = "(empfohlen)";
+"access_screen_provider_macos_data_source" = "Hole Daten von der MacOS Kalender App";
+"access_screen_provider_macos_number_of_accounts" = "Beliebig viele verbundene Konten";
+"access_screen_provider_gcalendar_data_source" = "Hole Daten direkt vom Google Kalender";
+"access_screen_provider_gcalendar_number_of_accounts" = "Nur ein Google Account";
 "access_screen_provider_gcalendar_sign_in_title" = "Google Sign In";
-"access_screen_provider_gcalendar_sign_in_description" = "Allow MeetingBar access to your calendar in browser window";
-"access_screen_try_again" = "Try again";
+"access_screen_provider_gcalendar_sign_in_description" = "Erlaube der App MeetingBar den Zugriff auf den Kalender im Browser-Fenster";
+"access_screen_try_again" = "Neuer Versuch";
 
 // MARK: - Calendars screen
 
