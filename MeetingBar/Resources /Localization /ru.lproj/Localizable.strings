@@ -167,16 +167,16 @@
 "preferences_calendars_provider_section_title" = "Calendars provider";
 "preferences_calendars_provider_gcalendar_change_account" = "Change Google Account";
 "preferences_calendars_provider_macos_switch" = "Switch to MacOS Calendar";
-"preferences_calendars_provider_gcalendar_switch" = "Switch to Google Calendar API";
+"preferences_calendars_provider_gcalendar_switch" = "Переключиться на Google Calendar API";
 
 // MARK: - Preferences Advanced
 
 "preferences_advanced_setting_warning" = "⚠️ Используйте эти настройки, только если понимаете, что они делают";
 "preferences_advanced_apple_script_checkmark" = "Выполнить AppleScript при присоединении к событию";
 "preferences_advanced_apple_script_placeholder" = "# напишите здесь свой скрипт\ntell application \"Music\" to pause";
-"preferences_advanced_run_script_on_event_start" = "Run AppleScript automatically";
+"preferences_advanced_run_script_on_event_start" = "Запускать AppleScript автоматически";
 "preferences_advanced_test_script_on_next_event" = "Test on next event";
-"preferences_advanced_edit_script" = "Edit script";
+"preferences_advanced_edit_script" = "Изменить сценарий";
 "preferences_advanced_save_script_button" = "Сохранить скрипт";
 "preferences_advanced_wrong_location_title" = "Неправильное местоположение";
 "preferences_advanced_wrong_location_message" = "Пожалуйста, выберите User → Library → Application Scripts → leits.MeetingBar folder";
@@ -267,15 +267,13 @@
 "access_screen_access_denied_relaunch_title" = "Затем вам нужно запустить приложение вручную, чтобы продолжить настройку.";
 "access_screen_access_granted_title" = "Запрос доступа к календарям…";
 "access_screen_access_granted_click_ok_title" = "Нажмите \"ОК\" в появившемся системном диалоге.";
-
-"access_screen_provider_picker_label" = "Select calendars provider";
-"access_screen_provider_macos_title" = "MacOS Calendar app";
-"access_screen_provider_macos_recomended" = "(recomended)";
-"access_screen_provider_macos_data_source" = "Get data from MacOS Calendar app";
-"access_screen_provider_macos_number_of_accounts" = "Any number of any connected accounts";
-
-"access_screen_provider_gcalendar_data_source" = "Get data directly from Google Calendar";
-"access_screen_provider_gcalendar_number_of_accounts" = "Only one Google account";
+"access_screen_provider_picker_label" = "Выбрать провайдера календаря";
+"access_screen_provider_macos_title" = "Приложение календаря MacOS";
+"access_screen_provider_macos_recomended" = "(рекомендовано)";
+"access_screen_provider_macos_data_source" = "Получать данные от приложения Календарь MacOS";
+"access_screen_provider_macos_number_of_accounts" = "Любое количество подключенных аккаунтов";
+"access_screen_provider_gcalendar_data_source" = "Получать данные непосредственно из Google Calendar";
+"access_screen_provider_gcalendar_number_of_accounts" = "Только один аккаунт Google";
 "access_screen_provider_gcalendar_sign_in_title" = "Google Sign In";
 "access_screen_provider_gcalendar_sign_in_description" = "Allow MeetingBar access to your calendar in browser window";
 "access_screen_try_again" = "Try again";
