@@ -54,7 +54,7 @@
 "preferences_general_patron_six_months" = "6 Месяцев - 5,99 USD";
 "preferences_general_patron_twelve_months" = "12 Месяцев - 11,99 USD";
 "preferences_general_patron_description" = "Это разовые покупки, они не продлеваются автоматически.";
-"preferences_general_patron_thank_for_purchase" = "Спасибо! Вы помогаете MeetingBar уже %d месяц! 🎉";
+"preferences_general_patron_thank_for_purchase" = "Спасибо! Вы оплатили поддержку MeetingBar за %d месяца(ев)! 🎉";
 "preferences_general_patron_restore_purchases" = "Восстановить покупки";
 "preferences_general_feedback_title" = "Если у вас есть какие-либо вопросы или отзывы,\nсвяжитесь со мной:";
 "preferences_general_feedback_email" = "email";
@@ -164,9 +164,9 @@
 "preferences_calendars_add_account_description" = "Не видите нужный календарь?";
 "preferences_calendars_add_account_button" = "Добавить календарный аккаунт";
 "preferences_calendars_add_account_modal" = "Чтобы добавить внешние календари:\n1. Откройте стандартное приложение Календарь\n2. Нажмите 'Добавить аккаунт' в меню\n3. Выберите и подключите свой аккаунт";
-"preferences_calendars_provider_section_title" = "Calendars provider";
-"preferences_calendars_provider_gcalendar_change_account" = "Change Google Account";
-"preferences_calendars_provider_macos_switch" = "Switch to MacOS Calendar";
+"preferences_calendars_provider_section_title" = "Провайдер календаря";
+"preferences_calendars_provider_gcalendar_change_account" = "Сменить аккаунт Google";
+"preferences_calendars_provider_macos_switch" = "Переключиться на календарь MacOS";
 "preferences_calendars_provider_gcalendar_switch" = "Переключиться на Google Calendar API";
 
 // MARK: - Preferences Advanced
@@ -175,7 +175,7 @@
 "preferences_advanced_apple_script_checkmark" = "Выполнить AppleScript при присоединении к событию";
 "preferences_advanced_apple_script_placeholder" = "# напишите здесь свой скрипт\ntell application \"Music\" to pause";
 "preferences_advanced_run_script_on_event_start" = "Запускать AppleScript автоматически";
-"preferences_advanced_test_script_on_next_event" = "Test on next event";
+"preferences_advanced_test_script_on_next_event" = "Тест на следующем событии";
 "preferences_advanced_edit_script" = "Изменить сценарий";
 "preferences_advanced_save_script_button" = "Сохранить скрипт";
 "preferences_advanced_wrong_location_title" = "Неправильное местоположение";
@@ -281,7 +281,7 @@
 // MARK: - Shared
 
 "shared_send_notification_toggle" = "Уведомление о предстоящем мероприятнии";
-"general_when_event_starts" = "непосредственно";
+"general_when_event_starts" = "при наступлении события";
 "general_one_minute_before" = "за 1 минуту до";
 "general_three_minute_before" = "за 3 минуты до";
 "general_five_minute_before" = "за 5 минут до";
@@ -338,3 +338,4 @@
 "link_url_cant_open_title" = "Ой! Невозможно открыть ссылку в %@";
 "link_url_cant_open_message" = "Убедитесь, что у вас установлен %@, или измените браузер в настройках.";
 "notifications_event_started_body" = "Событие началось";
+"status_bar_section_refresh_sources" = "Обновить исходный текст";
