@@ -162,7 +162,7 @@
 
 "preferences_calendars_select_calendars_title" = "Выберите календари для отображения событий в строке состояния";
 "preferences_calendars_add_account_description" = "Не видите нужный календарь?";
-"preferences_calendars_add_account_button" = "Добавить аккаунт";
+"preferences_calendars_add_account_button" = "Добавить календарный аккаунт";
 "preferences_calendars_add_account_modal" = "Чтобы добавить внешние календари:\n1. Откройте стандартное приложение Календарь\n2. Нажмите 'Добавить аккаунт' в меню\n3. Выберите и подключите свой аккаунт";
 "preferences_calendars_provider_section_title" = "Calendars provider";
 "preferences_calendars_provider_gcalendar_change_account" = "Change Google Account";
@@ -274,9 +274,9 @@
 "access_screen_provider_macos_number_of_accounts" = "Любое количество подключенных аккаунтов";
 "access_screen_provider_gcalendar_data_source" = "Получать данные непосредственно из Google Calendar";
 "access_screen_provider_gcalendar_number_of_accounts" = "Только один аккаунт Google";
-"access_screen_provider_gcalendar_sign_in_title" = "Google Sign In";
-"access_screen_provider_gcalendar_sign_in_description" = "Allow MeetingBar access to your calendar in browser window";
-"access_screen_try_again" = "Try again";
+"access_screen_provider_gcalendar_sign_in_title" = "Войти с помощью Google";
+"access_screen_provider_gcalendar_sign_in_description" = "Разрешить MeetingBar доступ к календарю в окне браузера";
+"access_screen_try_again" = "Попробуйте снова";
 
 // MARK: - Shared
 
@@ -287,8 +287,8 @@
 "general_five_minute_before" = "за 5 минут до";
 "shared_send_notification_no_alert_style_tip" = "⚠️ Системные настройки уведомлений для Meetingbar в не настроены на \"Оповещения (Alert)\". Включите \"Оповещения (Alert)\", если вы хотите получать уведомления.";
 "shared_send_notification_disabled_tip" = "⚠️ Системные настройки уведомлений для Meetingbar выключены. Включите уведомления в системных настройках, чтобы не пропустить события.";
-"shared_automatic_event_join_toggle" = "Automatic join next event meeting";
-"shared_automatic_event_join_tip" = "This setting will automatically open your next meeting in your configured app or browser";
+"shared_automatic_event_join_toggle" = "Автоматически присоединится к следующему событию";
+"shared_automatic_event_join_tip" = "Эта настройка автоматически откроет следующее собрание в настроенном приложении или браузере";
 
 // MARK: - Constants
 "constants_create_meeting_service_url" = "Пользовательский URL";
@@ -329,11 +329,12 @@
 "notifications_event_start_one_minute_body" = "Событие начнется через одну минуту";
 "notifications_event_start_three_minutes_body" = "Событие начнется через три минуты";
 "notifications_event_start_five_minutes_body" = "Событие начнется через пять минут";
-"notifications_snooze_until_start" = "Snooze until start time";
-"notifications_snooze_for" = "Snooze for %@ min";
-"notifications_meetingbar_join_event_action" = "Join";
+"notifications_snooze_until_start" = "Можете вздремнуть до начала";
+"notifications_snooze_for" = "Вздремните на %@ минут.";
+"notifications_meetingbar_join_event_action" = "Присоединится";
 
 // MARK: - Link open
 
 "link_url_cant_open_title" = "Ой! Невозможно открыть ссылку в %@";
 "link_url_cant_open_message" = "Убедитесь, что у вас установлен %@, или измените браузер в настройках.";
+"notifications_event_started_body" = "Событие началось";
