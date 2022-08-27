@@ -45,7 +45,7 @@
 "preferences_general_shortcut_join_next" = "Присоединиться к следующему событию:";
 "preferences_general_shortcut_join_from_clipboard" = "Присоединиться к событию из буфера обмена:";
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "Переключить видимость названия события в статус баре:";
-"preferences_general_meeting_bar_description" = "MeetingBar - это приложение с открытым исходным кодом, созданное Andrii Leitsius 🇺🇦\nПриложение призвано сделать ваши онлайн-встречи более спокойными и легкими.";
+"preferences_general_meeting_bar_description" = "MeetingBar - это приложение с открытым исходным кодом, созданное Andrii Leitsius 🇺🇦\nПриложение создано чтобы сделать ваши онлайн-встречи более спокойными и лёгкими.";
 "preferences_general_external_patronage" = "Спонсоры";
 "preferences_general_external_gitHub" = "GitHub";
 "preferences_general_external_contact" = "Связь";
@@ -187,7 +187,7 @@
 "preferences_advanced_regex_delete_button" = "x";
 "preferences_advanced_regex_new_title" = "Введите regex";
 "preferences_advanced_regex_new_cant_save_title" = "Не удается сохранить regex";
-"preferences_advanced_event_regex_title" = "Custom regexes to filter out meetings";
+"preferences_advanced_event_regex_title" = "Кастомные регексы для фильтрации встреч";
 
 // MARK: - Status bar
 
@@ -330,7 +330,7 @@
 "notifications_event_start_three_minutes_body" = "Событие начнется через три минуты";
 "notifications_event_start_five_minutes_body" = "Событие начнется через пять минут";
 "notifications_snooze_until_start" = "Можете вздремнуть до начала";
-"notifications_snooze_for" = "Вздремните на %@ минут.";
+"notifications_snooze_for" = "Вздремните на %@ минут";
 "notifications_meetingbar_join_event_action" = "Присоединится";
 
 // MARK: - Link open
