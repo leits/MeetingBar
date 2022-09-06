@@ -22,6 +22,7 @@ extension Defaults.Keys {
     static let onboardingCompleted = Key<Bool>("onboardingCompleted", default: false)
 
     static let showEventsForPeriod = Key<ShowEventsForPeriod>("showEventsForPeriod", default: .today)
+    static let includeTomorrowInStatusBar = Key<Bool>("includeTomorrowInStatusBar", default: false)
     static let joinEventNotification = Key<Bool>("joinEventNotification", default: true)
     static let joinEventNotificationTime = Key<JoinEventNotificationTime>("joinEventNotificationTime", default: .atStart)
 

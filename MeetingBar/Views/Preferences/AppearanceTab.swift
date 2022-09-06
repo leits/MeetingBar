@@ -141,6 +141,7 @@ struct EventsSection: View {
     @Default(.nonAllDayEvents) var nonAllDayEvents
     @Default(.showPendingEvents) var showPendingEvents
     @Default(.showEventsForPeriod) var showEventsForPeriod
+    @Default(.includeTomorrowInStatusBar) var includeTomorrowInStatusBar
 
     var body: some View {
         Text("preferences_appearance_events_title".loco()).font(.headline).bold()
@@ -150,6 +151,9 @@ struct EventsSection: View {
                     Text("preferences_appearance_events_show_events_for_today_value".loco()).tag(ShowEventsForPeriod.today)
                     Text("preferences_appearance_events_show_events_for_today_tomorrow_value".loco()).tag(ShowEventsForPeriod.today_n_tomorrow)
                 }.frame(width: 300)
+                if Defaults[.showEventsForPeriod] == .today_n_tomorrow {
+                    Toggle("preferences_appearance_status_bar_tomorrow_title".loco(), isOn: $includeTomorrowInStatusBar)
+                }
             }
 
             HStack {

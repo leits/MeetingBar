@@ -73,6 +73,7 @@
 "preferences_appearance_events_show_events_for_title" = "Show events for";
 "preferences_appearance_events_show_events_for_today_value" = "today";
 "preferences_appearance_events_show_events_for_today_tomorrow_value" = "today and tomorrow";
+"preferences_appearance_status_bar_tomorrow_title" = "Include tomorrow in status bar";
 "preferences_appearance_events_non_all_day_title" = "Other events:";
 "preferences_appearance_events_value_inactive_without_meeting_link" = "show those without meeting links as inactive";
 "preferences_appearance_events_value_hide_without_meeting_link" = "hide all without meeting links";

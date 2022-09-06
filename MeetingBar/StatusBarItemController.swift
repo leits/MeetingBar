@@ -129,7 +129,7 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
                 guard let nextEvent = nextEvent else {
                     return .none
                 }
-                if Calendar.current.isDateInTomorrow(nextEvent.startDate) {
+                if Calendar.current.isDateInTomorrow(nextEvent.startDate) && !Defaults[.includeTomorrowInStatusBar] {
                     return .none
                 }
 
