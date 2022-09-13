@@ -55,13 +55,11 @@
 "welcome_screen_shortcut_ad_hoc_meeting_title" = "med snarveien din:";
 "welcome_screen_shortcut_next_meeting_title" = "Ta del i neste begivenhetsmøte med snarveien din:";
 "welcome_screen_login_launch_toggle_title" = "Kjør MeetingBar ved innlogging";
-
 "access_screen_provider_picker_label" = "Select calendars provider";
 "access_screen_provider_macos_title" = "MacOS Calendar app";
 "access_screen_provider_macos_recomended" = "(recomended)";
 "access_screen_provider_macos_data_source" = "Get data from MacOS Calendar app";
 "access_screen_provider_macos_number_of_accounts" = "Any number of any connected accounts";
-
 "access_screen_provider_gcalendar_data_source" = "Get data directly from Google Calendar";
 "access_screen_provider_gcalendar_number_of_accounts" = "Only one Google account";
 "access_screen_provider_gcalendar_sign_in_title" = "Google Sign In";
@@ -115,7 +113,7 @@
 "preferences_configure_browsers_choose_broser_panel_message" = "Velg en nettleser fra hvilken som helst sti.";
 "preferences_configure_browsers_delete_alert_message" = "Ønsker du å slette %@-nettleseroppsettet?";
 "preferences_services_google_meet_tip" = "Tips: Meet støtter valg av konto via parameter, f.eks. https://meet.google.com/new?authuser=1";
-"preferences_appearance_status_bar_next_event_toggle" = "Vis kun neste begivenhet som starter innen";
+"preferences_appearance_status_bar_next_event_toggle" = "Vis kun begivenheter som starter innen";
 "preferences_appearance_status_bar_next_event_stepper" = "%d minutter";
 "preferences_appearance_status_bar_title_dot_value" = "punkt (•)";
 "preferences_appearance_status_bar_title_event_title_value" = "begivenhetstittel";
@@ -336,3 +334,4 @@
 "general_cancel" = "Avbryt";
 "general_ok" = "OK";
 "status_bar_section_refresh_sources" = "Gjenoppfrisk kilder";
+"notifications_event_started_body" = "Begivenheten har begynt";
