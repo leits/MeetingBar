@@ -60,7 +60,7 @@ enum MeetingServices: String, Codable, CaseIterable {
     case zhumu = "Zhumu"
     case lark = "Lark"
     case feishu = "Feishu"
-    case vimeo_showcases = "Vimeo Showcases"
+    case vimeo = "Vimeo"
     case ovice = "oVice"
     case luma = "Luma"
     case other = "Other"
@@ -275,7 +275,7 @@ struct LinksRegex {
     let zhumu = try! NSRegularExpression(pattern: #"https://welink\.zhumu\.com/j/[0-9]+?pwd=[a-zA-Z0-9]+"#)
     let lark = try! NSRegularExpression(pattern: #" https://vc\.larksuite\.com/j/[0-9]+"#)
     let feishu = try! NSRegularExpression(pattern: #"https://vc\.feishu\.cn/j/[0-9]+"#)
-    let vimeo_showcases = try! NSRegularExpression(pattern: #"https://vimeo\.com/showcase/[0-9]+"#)
+    let vimeo = try! NSRegularExpression(pattern: #"https://vimeo\.com/(showcase|event)/[0-9]+"#)
     let ovice = try! NSRegularExpression(pattern: #"https://([a-z0-9-.]+)?ovice\.in/[^\s]*"#)
     let facetime = try! NSRegularExpression(pattern: #"https://facetime\.apple\.com/join[^\s]*"#)
     let chorus = try! NSRegularExpression(pattern: #"https?://go\.chorus\.ai/.*"#)
@@ -483,7 +483,7 @@ func getIconForMeetingService(_ meetingService: MeetingServices?) -> NSImage {
         image.size = NSSize(width: 16, height: 16)
 
     // tested and verified
-    case .some(.vimeo_showcases):
+    case .some(.vimeo):
         image = NSImage(named: "vimeo_icon")!
         image.size = NSSize(width: 16, height: 16)
 
