@@ -105,7 +105,7 @@ struct ChangelogView: View {
                         Text("• Fixed crash due to null emails for event attendees")
                     }
                 }
-                
+
                 if compareVersions("4.0.7", lastRevisedVersionInChangelog) {
                     Section(header: Text("Version 4.0.7")) {
                         Text("Fix notification warning from overlapping with notification settings")
