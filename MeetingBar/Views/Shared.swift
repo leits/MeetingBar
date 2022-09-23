@@ -42,22 +42,24 @@ struct JoinEventNotificationPicker: View {
 
     var body: some View {
         ZStack {
-            HStack {
-                Toggle("shared_send_notification_toggle".loco(), isOn: $joinEventNotification)
-                Picker("", selection: $joinEventNotificationTime) {
-                    Text("general_when_event_starts".loco()).tag(JoinEventNotificationTime.atStart)
-                    Text("general_one_minute_before".loco()).tag(JoinEventNotificationTime.minuteBefore)
-                    Text("general_three_minute_before".loco()).tag(JoinEventNotificationTime.threeMinuteBefore)
-                    Text("general_five_minute_before".loco()).tag(JoinEventNotificationTime.fiveMinuteBefore)
-                }.frame(width: 220, alignment: .leading).labelsHidden().disabled(!joinEventNotification)
-            }
-
-            if noAlertStyle, !disabled, joinEventNotification {
-                Text("shared_send_notification_no_alert_style_tip".loco()).foregroundColor(.gray).font(.system(size: 12))
-            }
-
-            if disabled, joinEventNotification {
-                Text("shared_send_notification_disabled_tip".loco()).foregroundColor(.gray).font(.system(size: 12))
+            VStack {
+                HStack {
+                    Toggle("shared_send_notification_toggle".loco(), isOn: $joinEventNotification)
+                    Picker("", selection: $joinEventNotificationTime) {
+                        Text("general_when_event_starts".loco()).tag(JoinEventNotificationTime.atStart)
+                        Text("general_one_minute_before".loco()).tag(JoinEventNotificationTime.minuteBefore)
+                        Text("general_three_minute_before".loco()).tag(JoinEventNotificationTime.threeMinuteBefore)
+                        Text("general_five_minute_before".loco()).tag(JoinEventNotificationTime.fiveMinuteBefore)
+                    }.frame(width: 220, alignment: .leading).labelsHidden().disabled(!joinEventNotification)
+                }
+                
+                if noAlertStyle, !disabled, joinEventNotification {
+                    Text("shared_send_notification_no_alert_style_tip".loco()).foregroundColor(.gray).font(.system(size: 12))
+                }
+                
+                if disabled, joinEventNotification {
+                    Text("shared_send_notification_disabled_tip".loco()).foregroundColor(.gray).font(.system(size: 12))
+                }
             }
         }
     }
