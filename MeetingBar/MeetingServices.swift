@@ -63,6 +63,7 @@ enum MeetingServices: String, Codable, CaseIterable {
     case vimeo = "Vimeo"
     case ovice = "oVice"
     case luma = "Luma"
+    case preply = "Preply"
     case other = "Other"
 
     var localizedValue: String {
@@ -283,6 +284,7 @@ struct LinksRegex {
     let gong = try! NSRegularExpression(pattern: #"https?://join\.gong\.io/.*"#)
     let livestorm = try! NSRegularExpression(pattern: #"https?://app\.livestorm\.com/p/.*/live.*"#)
     let luma = try! NSRegularExpression(pattern: #"https://lu\.ma/join/[^\s]*"#)
+    let preply = try! NSRegularExpression(pattern: #"https://preply\.com/[^\s]*"#)
 }
 
 func getRegexForMeetingService(_ service: MeetingServices) -> NSRegularExpression? {
@@ -510,6 +512,10 @@ func getIconForMeetingService(_ meetingService: MeetingServices?) -> NSImage {
 
     case .some(.gong):
         image = NSImage(named: "gong_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    case .some(.preply):
+        image = NSImage(named: "preply_icon")!
         image.size = NSSize(width: 16, height: 16)
 
     // tested and verified
