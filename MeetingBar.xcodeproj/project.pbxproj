@@ -126,7 +126,6 @@
 		14E4110D246F2F9200F73ACF /* Preferences.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
 		14E8DD85262A476600952FC2 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/Localizable.strings; sourceTree = "<group>"; };
 		1BF37A9B2604C8960053D53C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
-		1BF37AA02604C8A50053D53C /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 		1BF37AA42604F7E00053D53C /* I18N.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = I18N.swift; sourceTree = "<group>"; };
 		40DC7040250E5B9C00217DD9 /* AutoLauncher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AutoLauncher.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		40DC7042250E5B9C00217DD9 /* AutoLauncherAppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoLauncherAppDelegate.swift; sourceTree = "<group>"; };
@@ -435,7 +434,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1240;
-				LastUpgradeCheck = 1140;
+				LastUpgradeCheck = 1400;
 				ORGANIZATIONNAME = "Andrii Leitsius";
 				TargetAttributes = {
 					144C01782462D0C3000C9FFC = {
@@ -457,7 +456,6 @@
 			knownRegions = (
 				en,
 				Base,
-				ru,
 				uk,
 				de,
 				fr,
@@ -600,7 +598,6 @@
 			isa = PBXVariantGroup;
 			children = (
 				1BF37A9B2604C8960053D53C /* en */,
-				1BF37AA02604C8A50053D53C /* ru */,
 				14E8DD85262A476600952FC2 /* uk */,
 				14C9A928269A2083005306DA /* de */,
 				14C9A929269A2095005306DA /* fr */,
@@ -655,6 +652,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_ASSET_PATHS = "";
 				EMBED_ASSET_PACKS_IN_PRODUCT_BUNDLE = NO;
@@ -720,6 +718,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "";
 				EMBED_ASSET_PACKS_IN_PRODUCT_BUNDLE = NO;
@@ -752,6 +751,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 141;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -778,6 +778,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 141;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -801,6 +802,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = KGH289N6T8;
 				INFOPLIST_FILE = MeetingBarTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -822,6 +824,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = KGH289N6T8;
 				INFOPLIST_FILE = MeetingBarTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -845,6 +848,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEAD_CODE_STRIPPING = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = AutoLauncher/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -867,6 +871,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEAD_CODE_STRIPPING = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = AutoLauncher/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
