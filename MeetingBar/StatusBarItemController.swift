@@ -385,7 +385,12 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
         var eventEndTime = ""
         if event.isAllDay {
             eventStartTime = "status_bar_event_start_time_all_day".loco()
-            eventEndTime = "\t"
+            switch Defaults[.timeFormat] {
+            case .am_pm:
+                eventEndTime = "\t \t \t"
+            case .military:
+                eventEndTime = "\t"
+            }
         } else {
             eventStartTime = eventTimeFormatter.string(from: event.startDate)
             eventEndTime = eventTimeFormatter.string(from: event.endDate)
