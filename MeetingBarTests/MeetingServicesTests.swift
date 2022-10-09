@@ -25,6 +25,8 @@ let meetings = [
     MeetingLink(service: .chorus, url: URL(string: "https://go.chorus.ai/1234567890")!),
     MeetingLink(service: .livestorm, url: URL(string: "https://app.livestorm.com/p/cc113fd5-5de1-406-ba74-85c4892530/live?s=0231a8fb-fce9-48b0-9263-525f4234234234")!),
     MeetingLink(service: .preply, url: URL(string: "https://preply.com/ua/chat/t-room/3262947?source=email_calendar")!),
+    MeetingLink(service: .meetStream, url: URL(string: "https://stream.meet.google.com/stream/abc12ab1-abc1-1234-123a-a1234a1abc12")!),
+    MeetingLink(service: .userzoom, url: URL(string: "https://go.userzoom.com/participate/12345xxx-1000-1234-1234-1234-12345xxx")!),
 ]
 
 class MeetingServicesTests: XCTestCase {
