@@ -27,6 +27,7 @@ let meetings = [
     MeetingLink(service: .preply, url: URL(string: "https://preply.com/ua/chat/t-room/3262947?source=email_calendar")!),
     MeetingLink(service: .meetStream, url: URL(string: "https://stream.meet.google.com/stream/abc12ab1-abc1-1234-123a-a1234a1abc12")!),
     MeetingLink(service: .userzoom, url: URL(string: "https://go.userzoom.com/participate/12345xxx-1000-1234-1234-1234-12345xxx")!),
+    MeetingLink(service: .venue, url: URL(string: "https://app.venue.live/app/sdoakdsakdas?token=kndsfglksnd21")!),
 ]
 
 class MeetingServicesTests: XCTestCase {

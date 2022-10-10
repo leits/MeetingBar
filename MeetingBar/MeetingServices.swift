@@ -65,6 +65,7 @@ enum MeetingServices: String, Codable, CaseIterable {
     case luma = "Luma"
     case preply = "Preply"
     case userzoom = "UserZoom"
+    case venue = "Venue"
     case other = "Other"
 
     var localizedValue: String {
@@ -287,6 +288,7 @@ struct LinksRegex {
     let luma = try! NSRegularExpression(pattern: #"https://lu\.ma/join/[^\s]*"#)
     let preply = try! NSRegularExpression(pattern: #"https://preply\.com/[^\s]*"#)
     let userzoom = try! NSRegularExpression(pattern: #"https://go\.userzoom\.com/participate/[a-z0-9]+"#)
+    let venue = try! NSRegularExpression(pattern: #"https://app\.venue\.live/app/[^\s]*"#)
 }
 
 func getRegexForMeetingService(_ service: MeetingServices) -> NSRegularExpression? {
@@ -525,6 +527,11 @@ func getIconForMeetingService(_ meetingService: MeetingServices?) -> NSImage {
     case .some(.userzoom):
         image = NSImage(named: "userzoom_icon")!
         image.size = NSSize(width: 16, height: 16)
+
+    // tested and verified
+    case .some(.venue):
+        image = NSImage(named: "venue_icon")!
+        image.size = NSSize(width: 16, height: 4)
 
     // tested and verified
     case .none:
