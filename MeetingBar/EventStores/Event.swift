@@ -97,7 +97,7 @@ class MBEvent {
             location,
             url?.absoluteString,
             notes,
-            notes?.htmlTagsStripped()
+            notes?.htmlTagsStripped(),
         ].compactMap { $0 }
 
         for linkField in linkFields {
