@@ -29,6 +29,7 @@ let meetings = [
     MeetingLink(service: .userzoom, url: URL(string: "https://go.userzoom.com/participate/12345xxx-1000-1234-1234-1234-12345xxx")!),
     MeetingLink(service: .venue, url: URL(string: "https://app.venue.live/app/sdoakdsakdas?token=kndsfglksnd21")!),
     MeetingLink(service: .teemyco, url: URL(string: "https://app.teemyco.com/room/7HAQH0keHU0uppUKmL7Z/goOvj4BlHSH1IkgOtaA0")!),
+    MeetingLink(service: .demodesk, url: URL(string: "https://demodesk.com/NGYLHDWO")!),
 ]
 
 class MeetingServicesTests: XCTestCase {
