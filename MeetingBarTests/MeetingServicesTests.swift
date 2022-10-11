@@ -28,6 +28,7 @@ let meetings = [
     MeetingLink(service: .meetStream, url: URL(string: "https://stream.meet.google.com/stream/abc12ab1-abc1-1234-123a-a1234a1abc12")!),
     MeetingLink(service: .userzoom, url: URL(string: "https://go.userzoom.com/participate/12345xxx-1000-1234-1234-1234-12345xxx")!),
     MeetingLink(service: .venue, url: URL(string: "https://app.venue.live/app/sdoakdsakdas?token=kndsfglksnd21")!),
+    MeetingLink(service: .teemyco, url: URL(string: "https://app.teemyco.com/room/7HAQH0keHU0uppUKmL7Z/goOvj4BlHSH1IkgOtaA0")!),
 ]
 
 class MeetingServicesTests: XCTestCase {
