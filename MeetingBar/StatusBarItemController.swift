@@ -26,6 +26,7 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
     var events: [MBEvent] = []
 
     let isFantasticalInstalled = checkIsFantasticalInstalled()
+    let installationDate = getInstallationDate()
 
     weak var appdelegate: AppDelegate!
 
@@ -756,6 +757,24 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
             changelogItem.image = NSImage(named: NSImage.statusAvailableName)
         }
 
+        if Defaults[.isInstalledFromAppStore] || true {
+            var showRateAppButton = true
+
+            if let installationDate = installationDate {
+                let twoWeeksAfterInstallation = Calendar.current.date(byAdding: .day, value: 14, to: installationDate)!
+                showRateAppButton = Date() > twoWeeksAfterInstallation
+            }
+
+            if showRateAppButton {
+                let rateItem = statusItemMenu.addItem(
+                    withTitle: "status_bar_rate_app".loco(),
+                    action: #selector(rateApp),
+                    keyEquivalent: ""
+                )
+                rateItem.target = self
+            }
+        }
+
         statusItemMenu.addItem(
             withTitle: "status_bar_preferences".loco(),
             action: #selector(AppDelegate.openPrefecencesWindow),
@@ -805,6 +824,11 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
     func refreshSources() {
         appdelegate.eventStore.refreshSources()
         loadCalendars()
+    }
+
+    @objc
+    func rateApp() {
+        Links.rateAppInAppStore.openInDefaultBrowser()
     }
 
     @objc

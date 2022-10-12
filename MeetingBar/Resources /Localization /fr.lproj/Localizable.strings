@@ -119,6 +119,7 @@
 "status_bar_quit" = "Quitter MeetingBar";
 "status_bar_preferences" = "Préférences";
 "status_bar_whats_new" = "Quoi de neuf ?";
+"status_bar_rate_app" = "Rate App";
 "status_bar_hide_meeting_names" = "Masquer le titre de la réunion";
 "status_bar_show_meeting_names" = "Afficher le titre de la réunion";
 "status_bar_quick_actions" = "Actions rapides";

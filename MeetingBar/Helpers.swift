@@ -174,6 +174,11 @@ func createNSViewFromText(text: String) -> NSView {
     return paddingView
 }
 
+func getInstallationDate() -> Date? {
+    let urlToDocumentsFolder: URL? = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last
+    return try? FileManager.default.attributesOfItem(atPath: (urlToDocumentsFolder?.path)!)[.creationDate] as? Date
+}
+
 /*
  * -----------------------
  * MARK: - Fantastical

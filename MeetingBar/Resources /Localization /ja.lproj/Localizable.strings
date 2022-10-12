@@ -237,6 +237,7 @@
 "status_bar_show_meeting_names" = "ミーティング名を表示する";
 "status_bar_hide_meeting_names" = "ミーティング名を隠す";
 "status_bar_whats_new" = "お知らせ";
+"status_bar_rate_app" = "Rate App";
 "status_bar_preferences" = "設定";
 "status_bar_quit" = "MeetingBar を終了";
 "status_bar_no_title" = "タイトルなし";

@@ -27,6 +27,7 @@ enum Links {
     static var twitter = URL(string: "https://twitter.com/leits_dev")!
     static var emailMe = URL(string: "mailto:leits.dev@gmail.com?subject=MeetingBar")!
     static var calendarPreferences = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Calendars")!
+    static var rateAppInAppStore = URL(string: "itms-apps://apps.apple.com/app/id1532419400?action=write-review")!
 }
 
 enum TimeFormat: String, Codable, CaseIterable {

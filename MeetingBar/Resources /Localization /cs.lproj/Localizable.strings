@@ -115,6 +115,7 @@
 "status_bar_quit" = "Ukončit MeetingBar";
 "status_bar_preferences" = "Předvolby";
 "status_bar_whats_new" = "Co je nového?";
+"status_bar_rate_app" = "Rate App";
 "status_bar_hide_meeting_names" = "Skrýt název schůzky";
 "status_bar_show_meeting_names" = "Zobrazit název schůzky";
 "status_bar_quick_actions" = "Rychlé akce";

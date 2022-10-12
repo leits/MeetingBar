@@ -165,6 +165,7 @@
 "status_bar_quick_actions" = "Hızlı İşlemler";
 "status_bar_hide_meeting_names" = "Toplantı başlığını gizle";
 "status_bar_whats_new" = "Neler yeni?";
+"status_bar_rate_app" = "Rate App";
 "status_bar_preferences" = "Tercihler";
 "status_bar_quit" = "MeetingBar'dan çıkış";
 "status_bar_no_title" = "Başlık yok";
