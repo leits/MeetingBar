@@ -66,7 +66,9 @@ class ActionsOnEventStart: NSObject {
 
                 // if a script was executed already for the event, but the start date is different, we will remove the the current event from the scheduled events, so that we can run the script again -> this is an edge case when the event was already notified for, but scheduled for a later time.
                 if matchedEvent == nil || matchedEvent?.lastModifiedDate != nextEvent.lastModifiedDate {
-                    nextEvent.openMeeting()
+                    if nextEvent.meetingLink != nil {
+                        nextEvent.openMeeting()
+                    }
 
                     // update the executed events
                     if matchedEvent != nil {
