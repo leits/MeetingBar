@@ -30,7 +30,7 @@ let meetings = [
     MeetingLink(service: .venue, url: URL(string: "https://app.venue.live/app/sdoakdsakdas?token=kndsfglksnd21")!),
     MeetingLink(service: .teemyco, url: URL(string: "https://app.teemyco.com/room/7HAQH0keHU0uppUKmL7Z/goOvj4BlHSH1IkgOtaA0")!),
     MeetingLink(service: .demodesk, url: URL(string: "https://demodesk.com/NGYLHDWO")!),
-    MeetingLink(service: .demodesk, url: URL(string: "https://demodesk.com/NGYLHDWO")!),
+    MeetingLink(service: .zoho_cliq, url: URL(string: "https://cliq.zoho.eu/meetings/alsfsma213")!),
 ]
 
 class MeetingServicesTests: XCTestCase {
