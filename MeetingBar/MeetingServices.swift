@@ -504,7 +504,7 @@ func getIconForMeetingService(_ meetingService: MeetingServices?) -> NSImage {
         image = NSImage(named: "ovice_icon")!
         image.size = NSSize(width: 16, height: 16)
 
-    case .some(.facetime):
+    case .some(.facetime), .some(.facetimeaudio):
         image = NSImage(named: "facetime_icon")!
         image.size = NSSize(width: 16, height: 16)
 
@@ -566,6 +566,10 @@ func getIconForMeetingService(_ meetingService: MeetingServices?) -> NSImage {
 
     case .some(.url):
         image = NSImage(named: NSImage.touchBarOpenInBrowserTemplateName)!
+        image.size = NSSize(width: 16, height: 16)
+
+    case .some(.phone):
+        image = NSImage(named: NSImage.touchBarCommunicationAudioTemplateName)!
         image.size = NSSize(width: 16, height: 16)
 
     default:
