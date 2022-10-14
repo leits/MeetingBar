@@ -209,13 +209,9 @@ func openInFantastical(startDate: Date, title: String) {
  * ------------------------
  */
 
-func getClipboardContent() -> String {
-    let pasteboard = NSPasteboard.general
-    return pasteboard.string(forType: .string) ?? ""
-}
-
 func openLinkFromClipboard() {
-    let clipboardContent = getClipboardContent()
+    let pasteboard = NSPasteboard.general
+    let clipboardContent = pasteboard.string(forType: .string) ?? ""
 
     if !clipboardContent.isEmpty {
         let meetingLink = detectMeetingLink(clipboardContent)
