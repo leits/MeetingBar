@@ -18,10 +18,6 @@ extension EKParticipant {
 extension EKEventStore: EventStore {
     static let shared = initEKEventStore()
 
-    var isAuthed: Bool {
-        EKEventStore.authorizationStatus(for: .event) == .authorized
-    }
-
     func signIn() -> Promise<Void> {
         Promise { seal in
             EKEventStore.shared.requestAccess(to: .event) { granted, _ in

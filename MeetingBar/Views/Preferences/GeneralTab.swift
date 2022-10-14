@@ -154,7 +154,6 @@ struct PatronageAppSection: View {
 
 struct PatronageModal: View {
     @Environment(\.presentationMode) var presentationMode
-    @State var products: [String] = []
 
     @Default(.patronageDuration) var patronageDuration
 

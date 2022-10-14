@@ -22,8 +22,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     var statusBarItem: StatusBarItemController!
     var eventStore: EventStore!
 
-    var eventStoreProviderObserver: DefaultsObservation?
-
     var launchAtLoginObserver: DefaultsObservation?
     var preferredLanguageObserver: DefaultsObservation?
 

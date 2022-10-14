@@ -16,8 +16,6 @@ enum eventStoreProvider: String, Codable {
 }
 
 protocol EventStore {
-    var isAuthed: Bool { get }
-
     func signIn() -> Promise<Void>
 
     func signOut() -> Promise<Void>

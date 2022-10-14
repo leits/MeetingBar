@@ -29,10 +29,6 @@ class GCEventStore: NSObject, EventStore, OIDExternalUserAgent {
 
     var auth: GTMAppAuthFetcherAuthorization?
 
-    var isAuthed: Bool {
-        auth != nil
-    }
-
     override private init() {
         super.init()
         loadState()

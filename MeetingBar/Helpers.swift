@@ -73,26 +73,8 @@ func cleanUpNotes(_ notes: String) -> String {
     return cleanNotes
 }
 
-func getEmailAccount(_ source: String?) -> String? {
-    // Hacky and likely to break, but should work until Apple changes something
-    if let text = source {
-        return getMatch(text: text, regex: UtilsRegex.emailAddress)
-    }
-    return nil
-}
-
 func compareVersions(_ version_x: String, _ version_y: String) -> Bool {
     version_x.compare(version_y, options: .numeric) == .orderedDescending
-}
-
-func bundleIdentifier(forAppName appName: String) -> String? {
-    let workspace = NSWorkspace.shared
-    let appPath = workspace.fullPath(forApplication: appName)
-    if let appPath = appPath {
-        let appBundle = Bundle(path: appPath)
-        return appBundle?.bundleIdentifier
-    }
-    return nil
 }
 
 func addInstalledBrowser() {
