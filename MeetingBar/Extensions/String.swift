@@ -9,37 +9,6 @@
 import Foundation
 
 extension String {
-    enum TruncationPosition {
-        case head
-        case middle
-        case tail
-    }
-
-    /// Returns a truncated version of the string, limited to the specified length
-    /// in characters, indicating the truncating with an optional truncation mark.
-    /// - Parameters:
-    ///   - limit: Desired maximum length of the string.
-    ///   - position: The position where the truncation should be applied.
-    ///   - truncationMark: A string that will be placed at the truncation position.
-    /// - Returns: The truncated string, if applicable.
-    func truncated(to limit: Int, at position: TruncationPosition = .tail, truncationMark: String = "…") -> String {
-        guard count > limit else {
-            return self
-        }
-
-        switch position {
-        case .head:
-            return truncationMark + suffix(limit)
-
-        case .middle:
-            let headCharactersCount = Int(ceil(Float(limit - truncationMark.count) / 2.0))
-            let tailCharactersCount = Int(floor(Float(limit - truncationMark.count) / 2.0))
-            return "\(prefix(headCharactersCount))\(truncationMark)\(suffix(tailCharactersCount))"
-
-        case .tail:
-            return prefix(limit) + truncationMark
-        }
-    }
 
     /// Returns a version of the first occurence of `target` is replaced by `replacement`.
     /// - Parameters:
@@ -79,14 +48,6 @@ extension String {
         URL(fileURLWithPath: self).deletingPathExtension().lastPathComponent
     }
 
-    func fileExtension() -> String {
-        URL(fileURLWithPath: self).pathExtension
-    }
-
-    func encodeUrl() -> String? {
-        addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlQueryAllowed)
-    }
-
     func decodeUrl() -> String? {
         removingPercentEncoding
     }
@@ -106,9 +67,7 @@ extension String {
     func loco(_ firstArg: CVarArg, _ secondArg: CVarArg, _ thirdArg: CVarArg) -> String {
         I18N.instance.localizedString(for: self, firstArg, secondArg, thirdArg)
     }
-}
 
-extension String {
     func splitWithNewLineString(with attributes: [NSAttributedString.Key: Any], maxWidth: CGFloat) -> String {
         let words = split(separator: " ").map { String($0) }
         var lineWidth: CGFloat = 0.0
