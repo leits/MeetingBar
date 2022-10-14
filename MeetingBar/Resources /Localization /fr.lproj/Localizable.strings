@@ -12,7 +12,7 @@
 "welcome_screen_shortcut_next_meeting_title" = "Rejoignez la prochaine réunion d'évènement avec votre raccourci :";
 "status_bar_error_zoom_native_link_message" = "Assurez-vous d'avoir installé l'application Zoom, ou ouvrez plutôt ces liens dans un navigateur web à partir des préférences.";
 "status_bar_error_zoom_native_link_title" = "Oups ! Impossible d'ouvrir ce lien dans l'application Zoom";
-"link_url_cant_open_message" = "Assurez-vous que %@ est installé, ou ouvrez plutôt ces liens dans un navigateur web à partir des préférences.";
+"link_url_cant_open_message" = "Assurez-vous que %6 est installé, ou ouvrez plutôt ces liens dans un navigateur web à partir des préférences.";
 "status_bar_error_zoom_app_link_message" = "Assurez-vous d'avoir installé l'application Zoom, ou ouvrez plutôt ces liens dans un navigateur web à partir des préférences.";
 "status_bar_error_zoom_app_link_title" = "Oups ! Impossible d'ouvrir le lien dans l'application Zoom";
 "status_bar_error_teams_link_message" = "Assurez-vous que l'application Microsoft Teams est installée, ou ouvrez plutôt ces liens dans un navigateur web à partir des préférences.";
@@ -119,7 +119,7 @@
 "status_bar_quit" = "Quitter MeetingBar";
 "status_bar_preferences" = "Préférences";
 "status_bar_whats_new" = "Quoi de neuf ?";
-"status_bar_rate_app" = "Rate App";
+"status_bar_rate_app" = "Évaluer l'appli";
 "status_bar_hide_meeting_names" = "Masquer le titre de la réunion";
 "status_bar_show_meeting_names" = "Afficher le titre de la réunion";
 "status_bar_quick_actions" = "Actions rapides";
