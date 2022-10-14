@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		01044AE127EA695A0070512E /* ActionsOnEventStart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01044AE027EA695A0070512E /* ActionsOnEventStart.swift */; };
-		01E0EA8027F393B300237F14 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E0EA7F27F393B300237F14 /* Date.swift */; };
 		140D84322493A3FE0055E1CE /* StatusBarItemController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 140D84312493A3FE0055E1CE /* StatusBarItemController.swift */; };
 		140D84342493A4180055E1CE /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 140D84332493A4180055E1CE /* Constants.swift */; };
 		140D843A2493A6240055E1CE /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 140D84392493A6240055E1CE /* Helpers.swift */; };
@@ -83,7 +82,6 @@
 
 /* Begin PBXFileReference section */
 		01044AE027EA695A0070512E /* ActionsOnEventStart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionsOnEventStart.swift; sourceTree = "<group>"; };
-		01E0EA7F27F393B300237F14 /* Date.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
 		140D84312493A3FE0055E1CE /* StatusBarItemController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBarItemController.swift; sourceTree = "<group>"; };
 		140D84332493A4180055E1CE /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		140D84392493A6240055E1CE /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
@@ -297,7 +295,6 @@
 		149AD20F25A8967C004976F1 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				01E0EA7F27F393B300237F14 /* Date.swift */,
 				140D84402493B8030055E1CE /* KeyboardShortcutsNames.swift */,
 				140D843E2493B7CB0055E1CE /* DefaultsKeys.swift */,
 				E249D533259BBC3800429BF1 /* String.swift */,
@@ -525,7 +522,6 @@
 				1435E44C260954D00071B188 /* Changelog.swift in Sources */,
 				1452C9D225AF86E700C46CDF /* AdvancedTab.swift in Sources */,
 				A7B68FA325CDE9E200CA3A68 /* URL.swift in Sources */,
-				01E0EA8027F393B300237F14 /* Date.swift in Sources */,
 				1452C9DC25AF88EF00C46CDF /* AccessScreen.swift in Sources */,
 				14C59B8525CF45340019C9E4 /* AppStore.swift in Sources */,
 				1452C9C625AF85B400C46CDF /* ServicesTab.swift in Sources */,
