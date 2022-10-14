@@ -364,7 +364,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         NSLog("Firing reccuring fetchEvents")
         DispatchQueue.main.async {
             self.statusBarItem.loadCalendars()
-            self.statusBarItem.loadEvents()
         }
     }
 
