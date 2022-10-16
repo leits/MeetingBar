@@ -322,11 +322,13 @@ func detectMeetingLink(_ rawText: String) -> MeetingLink? {
         }
     }
 
-    for service in MeetingServices.allCases {
-        if let regex = getRegexForMeetingService(service) {
-            if let link = getMatch(text: text, regex: regex) {
-                if let url = URL(string: link) {
-                    return MeetingLink(service: service, url: url)
+    if text.contains("http") {
+        for service in MeetingServices.allCases {
+            if let regex = getRegexForMeetingService(service) {
+                if let link = getMatch(text: text, regex: regex) {
+                    if let url = URL(string: link) {
+                        return MeetingLink(service: service, url: url)
+                    }
                 }
             }
         }
