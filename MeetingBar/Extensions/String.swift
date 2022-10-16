@@ -9,7 +9,6 @@
 import Foundation
 
 extension String {
-
     /// Returns a version of the first occurence of `target` is replaced by `replacement`.
     /// - Parameters:
     ///   - target: The string to search for.
