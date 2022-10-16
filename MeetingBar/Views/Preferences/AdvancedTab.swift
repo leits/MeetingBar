@@ -94,7 +94,6 @@ struct EditScriptModal: View {
     @State var editedScript: String = ""
 
     @State private var showingAlert = false
-    @State private var error_msg = ""
 
     var body: some View {
         VStack {

@@ -22,8 +22,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     var statusBarItem: StatusBarItemController!
     var eventStore: EventStore!
 
-    var eventStoreProviderObserver: DefaultsObservation?
-
     var launchAtLoginObserver: DefaultsObservation?
     var preferredLanguageObserver: DefaultsObservation?
 
@@ -364,7 +362,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         NSLog("Firing reccuring fetchEvents")
         DispatchQueue.main.async {
             self.statusBarItem.loadCalendars()
-            self.statusBarItem.loadEvents()
         }
     }
 

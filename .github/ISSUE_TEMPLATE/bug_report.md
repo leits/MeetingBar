@@ -12,6 +12,12 @@ assignees: leits
 **Installation source**
 - AppStore / homebrew / manual
 
+**App Version**
+- x.x.x
+
+**Calendars provider (selected in app)**
+- macOS Calendar / Direct Google Calendar API integration
+
 **Describe the bug**
 A clear and concise description of what the bug is.
 
