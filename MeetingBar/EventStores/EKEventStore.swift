@@ -16,12 +16,16 @@ extension EKParticipant {
 }
 
 extension EKEventStore: EventStore {
-    static let shared = initEKEventStore()
+    static var shared = EKEventStore()
 
     func signIn() -> Promise<Void> {
         Promise { seal in
             EKEventStore.shared.requestAccess(to: .event) { granted, _ in
                 if granted {
+                    var sources = EKEventStore.shared.sources
+                    sources.append(contentsOf: EKEventStore.shared.delegateSources)
+
+                    EKEventStore.shared = EKEventStore(sources: sources)
                     seal.fulfill(())
                 } else {
                     seal.reject(NSError())
@@ -123,15 +127,6 @@ extension EKEventStore: EventStore {
             seal.fulfill(events)
         }
     }
-}
-
-func initEKEventStore() -> EKEventStore {
-    let eventStore = EKEventStore()
-
-    var sources = eventStore.sources
-    sources.append(contentsOf: eventStore.delegateSources)
-
-    return EKEventStore(sources: sources)
 }
 
 func _getGmailAccount(_ text: String) -> String? {
