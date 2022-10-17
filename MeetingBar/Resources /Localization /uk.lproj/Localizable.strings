@@ -239,11 +239,11 @@
 "status_bar_error_link_missed_title" = "Ой леле! Не вдалось долучитись до %@";
 "status_bar_error_link_missed_message" = "Посилання не знайдено, або цей сервіс для зустрічей ще не підтримується";
 "status_bar_error_teams_link_title" = "Ой леле! Не вдалось відкрити посилання на Teams зустріч у застосунку Microsoft Teams";
-"status_bar_error_teams_link_message" = "Перевірте, чи застосунок Microsoft Teams встановлено, або змініть його у налаштуваннях.";
+"status_bar_error_teams_link_message" = "Переконайтеся, що у вас встановлений застосунок Microsoft Teams, або змініть його у налаштуваннях.";
 "status_bar_error_zoom_app_link_title" = "Ой леле! Не вдалось відкрити посилання на Zoom зустріч у застосунку Zoom";
 "status_bar_error_zoom_app_link_message" = "Переконайтеся, що у вас встановлений застосунок Zoom, або змініть браузер у налаштуваннях.";
 "status_bar_error_zoom_native_link_title" = "Ой леле! Не вдалось відкрити посилання на Zoom зустріч у застосунку Zoom";
-"status_bar_error_zoom_native_link_message" = "Перевірте, чи застосунок Zoom встановлено, або змініть його у налаштуваннях.";
+"status_bar_error_zoom_native_link_message" = "Переконайтеся, що у вас встановлений застосунок Zoom, або змініть його у налаштуваннях.";
 
 // MARK: - Welcome screen
 
