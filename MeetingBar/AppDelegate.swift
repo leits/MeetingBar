@@ -350,8 +350,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     func eventStoreChanged(_: NSNotification) {
         NSLog("Store changed. Update status bar menu.")
         DispatchQueue.main.async {
-            self.statusBarItem?.updateTitle()
-            self.statusBarItem?.updateMenu()
+            self.statusBarItem.loadCalendars()
         }
     }
 
