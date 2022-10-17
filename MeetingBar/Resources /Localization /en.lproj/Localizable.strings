@@ -340,4 +340,4 @@
 // MARK: - Link open
 
 "link_url_cant_open_title" = "Oops! Unable to open the link in %@";
-"link_url_cant_open_message" = "Ensure you have %6nstalled, or open such links in a web browser from the preferences instead.";
+"link_url_cant_open_message" = "Ensure you have %@ installed, or open such links in a web browser from the preferences instead.";
