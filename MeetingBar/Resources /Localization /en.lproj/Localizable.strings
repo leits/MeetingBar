@@ -13,12 +13,10 @@
 "general_delete" = "Delete";
 "general_save" = "Save";
 "general_meeting" = "Meeting";
-
 "general_when_event_starts" = "when event starts";
 "general_one_minute_before" = "1 minute before";
 "general_three_minute_before" = "3 minutes before";
 "general_five_minute_before" = "5 minutes before";
-
 "create_meeting_error_title" = "Cannot create new meeting";
 "create_meeting_error_message" = "Custom URL \"%@\" missing or invalid. Add one in the app preferences.";
 "next_meeting_empty_title" = "There are no upcoming meetings today";
@@ -275,13 +273,11 @@
 "access_screen_access_denied_relaunch_title" = "Then launch the app manually to continue the setup.";
 "access_screen_access_granted_title" = "Requesting access to calendars…";
 "access_screen_access_granted_click_ok_title" = "Click \"OK\" in the macOS popup.";
-
 "access_screen_provider_picker_label" = "Select calendars provider";
 "access_screen_provider_macos_title" = "MacOS Calendar app";
 "access_screen_provider_macos_recomended" = "(recomended)";
 "access_screen_provider_macos_data_source" = "Get data from MacOS Calendar app";
 "access_screen_provider_macos_number_of_accounts" = "Any number of any connected accounts";
-
 "access_screen_provider_gcalendar_data_source" = "Get data directly from Google Calendar";
 "access_screen_provider_gcalendar_number_of_accounts" = "Only one Google account";
 "access_screen_provider_gcalendar_sign_in_title" = "Google Sign In";
@@ -298,14 +294,12 @@
 
 // MARK: - Constants
 "constants_create_meeting_service_url" = "Custom URL";
-
 "constants_meeting_service_phone" = "Phone number";
 "constants_meeting_service_zoom_native" = "Zoom native";
 "constants_meeting_service_skype4biz" = "Skype For Business";
 "constants_meeting_service_skype4biz_selfhosted" = "Skype For Business (SH)";
 "constants_meeting_service_other" = "Other";
 "constants_meeting_service_url" = "URL";
-
 "constants_browser_brave" = "Brave";
 "constants_browser_chrome" = "Google Chrome";
 "constants_browser_chromium" = "Chromium";

@@ -45,7 +45,7 @@
 "preferences_general_shortcut_join_next" = "Долучитись до наступної зустрічі:";
 "preferences_general_shortcut_join_from_clipboard" = "Долучитись до зустрічі з буфера обміну:";
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "Показати/сховати заголовок у смузі меню:";
-"preferences_general_meeting_bar_description" = "MeetingBar - це додаток з відкритим кодом,\nстворений Андрієм Лейцюсь 🇺🇦\nДля більш плавної і зручної онлайн-зустрічі";
+"preferences_general_meeting_bar_description" = "MeetingBar - це застосунок з відкритим кодом,\nстворений Андрієм Лейцюсь 🇺🇦\nДля більш плавної і зручної онлайн-зустрічі";
 "preferences_general_external_patronage" = "Підтримати";
 "preferences_general_external_gitHub" = "GitHub";
 "preferences_general_external_contact" = "Зв'язатись";
@@ -83,7 +83,7 @@
 "preferences_appearance_events_value_only_with_link" = "показати лише з посиланнями на зустріч";
 "preferences_appearance_status_bar_title" = "Смуга меню";
 "preferences_appearance_status_bar_icon_title" = "Значок";
-"preferences_appearance_status_bar_icon_app_icon_value" = " Значок додатка";
+"preferences_appearance_status_bar_icon_app_icon_value" = " Значок застосунку";
 "preferences_appearance_status_bar_icon_calendar_icon_value" = " Значок календаря";
 "preferences_appearance_status_bar_icon_specific_icon_value" = " Значок сервісу зустрічі (напр. MS Teams)";
 "preferences_appearance_status_bar_icon_no_icon_value" = " Без значка";
@@ -117,9 +117,9 @@
 "preferences_services_link_team_title" = "Відкривати Teams посилання в";
 "preferences_services_link_jitsi_title" = "Відкривати Jitsi посилання в";
 "preferences_services_link_default_browser_value" = "основному браузері";
-"preferences_services_link_zoom_value" = "додатку Zoom";
-"preferences_services_link_teams_value" = "додатку Teams";
-"preferences_services_link_jitsi_value" = "додатку Jitsi";
+"preferences_services_link_zoom_value" = "застосунку Zoom";
+"preferences_services_link_teams_value" = "застосунку Teams";
+"preferences_services_link_jitsi_value" = "застосунку Jitsi";
 "preferences_services_supported_links_list" = "Розпізнаються посилання для сервісів:\n%@";
 "preferences_services_supported_links_mailback" = "Якщо сервіс, який Ви використовуєте для зустрічей, не підтримується, напишіть мені";
 "preferences_services_create_meeting_title" = "Створювати зустрічі в";
@@ -163,7 +163,7 @@
 "preferences_calendars_select_calendars_title" = "Виберіть календарі, щоб показати події у смузі меню";
 "preferences_calendars_add_account_description" = "Потрібного календаря немає у списку?";
 "preferences_calendars_add_account_button" = "Додати об. запис календаря";
-"preferences_calendars_add_account_modal" = "Щоб додати нові календарі:\n1. Відкрийте додаток Календар (Calendar App)\n2. Натисніть Додати Акаунт (Add Account) у меню\n3. Виберіть сервіс і приєднайте свій акаунт";
+"preferences_calendars_add_account_modal" = "Щоб додати нові календарі:\n1. Відкрийте застосунок Календар (Calendar App)\n2. Натисніть Додати Акаунт (Add Account) у меню\n3. Виберіть сервіс і приєднайте свій акаунт";
 "preferences_calendars_provider_section_title" = "Постачальник календарів";
 "preferences_calendars_provider_gcalendar_change_account" = "Змінити об. запис Google";
 "preferences_calendars_provider_macos_switch" = "Перемкнути на системний Календар";
@@ -223,13 +223,13 @@
 "status_bar_submenu_attendees_status_unknown" = " [?]";
 "status_bar_submenu_copy_meeting_link" = "Скопіювати посилання на зустріч";
 "status_bar_submenu_email_attendees" = "Надіслати учасникам емейл";
-"status_bar_submenu_open_in_calendar" = "Відкрити у додатку \"Календар\"";
-"status_bar_submenu_open_in_fantastical" = "Відкрити у додатку \"Fantastical\"";
+"status_bar_submenu_open_in_calendar" = "Відкрити у застосунку \"Календар\"";
+"status_bar_submenu_open_in_fantastical" = "Відкрити у застосунку \"Fantastical\"";
 "status_bar_quick_actions" = "Швидкі Дії";
 "status_bar_show_meeting_names" = "Показати заголовок зустрічі";
 "status_bar_hide_meeting_names" = "Приховати заголовок зустрічі";
 "status_bar_whats_new" = "Що нового?";
-"status_bar_rate_app" = "Оцінити додаток";
+"status_bar_rate_app" = "Оцінити застосунок";
 "status_bar_preferences" = "Налаштування";
 "status_bar_quit" = "Вийти з MeetingBar";
 "status_bar_no_title" = "Без заголовка";
@@ -238,12 +238,12 @@
 "status_bar_error_apple_script_title" = "AppleScript повернув помилку";
 "status_bar_error_link_missed_title" = "Ой леле! Не вдалось долучитись до %@";
 "status_bar_error_link_missed_message" = "Посилання не знайдено, або цей сервіс для зустрічей ще не підтримується";
-"status_bar_error_teams_link_title" = "Ой леле! Не вдалось відкрити посилання на Teams зустріч у додатку Microsoft Teams";
-"status_bar_error_teams_link_message" = "Перевірте, чи додаток Microsoft Teams встановлено, або змініть додаток у налаштуваннях.";
-"status_bar_error_zoom_app_link_title" = "Ой леле! Не вдалось відкрити посилання на Zoom зустріч у додатку Zoom";
-"status_bar_error_zoom_app_link_message" = "Перевірте, чи додаток Zoom встановлено, або змініть додаток у налаштуваннях.";
-"status_bar_error_zoom_native_link_title" = "Ой леле! Не вдалось відкрити посилання на Zoom зустріч у додатку Zoom";
-"status_bar_error_zoom_native_link_message" = "Перевірте, чи додаток Zoom встановлено, або змініть додаток у налаштуваннях.";
+"status_bar_error_teams_link_title" = "Ой леле! Не вдалось відкрити посилання на Teams зустріч у застосунку Microsoft Teams";
+"status_bar_error_teams_link_message" = "Переконайтеся, що у вас встановлений застосунок Microsoft Teams, або змініть його у налаштуваннях.";
+"status_bar_error_zoom_app_link_title" = "Ой леле! Не вдалось відкрити посилання на Zoom зустріч у застосунку Zoom";
+"status_bar_error_zoom_app_link_message" = "Переконайтеся, що у вас встановлений застосунок Zoom, або змініть його у налаштуваннях.";
+"status_bar_error_zoom_native_link_title" = "Ой леле! Не вдалось відкрити посилання на Zoom зустріч у застосунку Zoom";
+"status_bar_error_zoom_native_link_message" = "Переконайтеся, що у вас встановлений застосунок Zoom, або змініть його у налаштуваннях.";
 
 // MARK: - Welcome screen
 
@@ -266,7 +266,7 @@
 "access_screen_access_screen_access_denied_go_to_title" = "Відкрийте";
 "access_screen_access_denied_system_preferences_button" = "Системні параметри";
 "access_screen_access_denied_checkbox_title" = "і поставте прапорець біля MeetingBar.";
-"access_screen_access_denied_relaunch_title" = "Після цього вам потрібно перезапустити додаток, щоб продовжити налаштування.";
+"access_screen_access_denied_relaunch_title" = "Після цього вам потрібно перезапустити застосунок, щоб продовжити налаштування.";
 "access_screen_access_granted_title" = "Запит на доступ до календарів…";
 "access_screen_access_granted_click_ok_title" = "Натисніть \"OK\" у вікні від MacOS.";
 "access_screen_provider_picker_label" = "Виберіть постачальника календарів";
@@ -290,7 +290,7 @@
 "shared_send_notification_no_alert_style_tip" = "⚠️ У системних параметрах сповіщення від MeetingBar зараз не налаштовані як \"Попередження\". Будь ласка, увімкніть \"Попередження\", щоб сповіщення не зникали автоматично.";
 "shared_send_notification_disabled_tip" = "⚠️ Сповіщення від MeetingBar вимкнені у системних параметрах. Будь ласка, увімкніть їх, щоб не проґавити зустріч.";
 "shared_automatic_event_join_toggle" = "Автоматично долучитись до наступної зустрічі";
-"shared_automatic_event_join_tip" = "Це налаштування автоматично відкриє вашу наступну зустріч у вибраному додатку чи браузері";
+"shared_automatic_event_join_tip" = "Це налаштування автоматично відкриє вашу наступну зустріч у вибраному застосунку чи браузері";
 
 // MARK: - Constants
 "constants_create_meeting_service_url" = "Custom url";
@@ -338,6 +338,6 @@
 // MARK: - Link open
 
 "link_url_cant_open_title" = "Ой леле! Не вдалось відкрити посилання в %@";
-"link_url_cant_open_message" = "Перевірте, чи %@ встановлено, або змініть браузер у налаштуваннях.";
+"link_url_cant_open_message" = "Переконайтеся, що у вас встановлено %@, або змініть його у налаштуваннях.";
 "status_bar_section_refresh_sources" = "Оновити джерела";
 "notifications_event_started_body" = "Подія розпочалась";
