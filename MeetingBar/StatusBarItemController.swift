@@ -16,10 +16,9 @@ import PromiseKit
 /**
  * creates the menu in the system status bar, creates the menu items and controls the whole lifecycle.
  */
-class StatusBarItemController: NSObject, NSMenuDelegate {
+class StatusBarItemController {
     var statusItem: NSStatusItem!
     var statusItemMenu: NSMenu!
-    var menuIsOpen = false
     var currentStatusBarEvent: MBEvent?
 
     var calendars: [MBCalendar] = []
@@ -30,54 +29,35 @@ class StatusBarItemController: NSObject, NSMenuDelegate {
 
     weak var appdelegate: AppDelegate!
 
-    func enableButtonAction() {
-        let button: NSStatusBarButton = statusItem.button!
-        button.target = self
-        button.action = #selector(statusMenuBarAction)
-        button.sendAction(on: [NSEvent.EventTypeMask.rightMouseDown, NSEvent.EventTypeMask.leftMouseUp, NSEvent.EventTypeMask.leftMouseDown])
-        menuIsOpen = false
-    }
-
-    override
     init() {
-        super.init()
-
         statusItem = NSStatusBar.system.statusItem(
             withLength: NSStatusItem.variableLength
         )
 
         statusItemMenu = NSMenu(title: "MeetingBar in Status Bar Menu")
-        statusItemMenu.delegate = self
 
-        enableButtonAction()
-    }
-
-    @objc
-    func menuWillOpen(_: NSMenu) {
-        menuIsOpen = true
-    }
-
-    @objc
-    func menuDidClose(_: NSMenu) {
-        // remove menu when closed so we can override left click behavior
-        statusItem.menu = nil
-        menuIsOpen = false
+        statusItem.button?.target = self
+        statusItem.button?.action = #selector(statusMenuBarAction)
+        statusItem.button?.sendAction(on: [NSEvent.EventTypeMask.rightMouseDown, NSEvent.EventTypeMask.leftMouseUp, NSEvent.EventTypeMask.leftMouseDown])
     }
 
     @objc
     func statusMenuBarAction(sender _: NSStatusItem) {
-        if !menuIsOpen, statusItem.menu == nil {
-            let event = NSApp.currentEvent
+        let event = NSApp.currentEvent
 
+        if event?.type == .rightMouseUp {
             // Right button click
-            if event?.type == NSEvent.EventType.rightMouseUp {
-                joinNextMeeting()
-            } else if event == nil || event?.type == NSEvent.EventType.leftMouseDown || event?.type == NSEvent.EventType.leftMouseUp {
-                // show the menu as normal
-                statusItem.menu = statusItemMenu
-                statusItem.button?.performClick(nil) // ...and click
-            }
+            joinNextMeeting()
+        } else if event == nil || event?.type == .leftMouseDown || event?.type == .leftMouseUp {
+            // show the menu as normal
+            openMenu()
         }
+    }
+
+    func openMenu() {
+        statusItem.menu = statusItemMenu
+        statusItem.button?.performClick(nil) // ...and click
+        statusItem.menu = nil
     }
 
     func setAppDelegate(appdelegate: AppDelegate) {

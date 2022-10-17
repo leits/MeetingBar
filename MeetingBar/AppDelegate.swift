@@ -95,9 +95,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
 
         KeyboardShortcuts.onKeyUp(for: .openMenuShortcut) {
-            // show the menu as normal
-            self.statusBarItem.statusItem.menu = self.statusBarItem.statusItemMenu
-            self.statusBarItem.statusItem.button?.performClick(nil) // ...and click
+            self.statusBarItem.openMenu()
         }
 
         KeyboardShortcuts.onKeyUp(for: .openClipboardShortcut, action: openLinkFromClipboard)
