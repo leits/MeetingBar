@@ -217,45 +217,46 @@ func getNextEvent(events: [MBEvent]) -> MBEvent? {
         nextEvents = nextEvents.filter { $0.attendees.count > 0 }
     }
 
-    // If the current event is still going on,
-    // but the next event is closer than 13 minutes later
-    // then show the next event
     for event in nextEvents {
+        // Skip event if allday
         if event.isAllDay {
             continue
-        } else {
-            if Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.show_inactive_without_meeting_link {
-                if event.meetingLink == nil {
-                    continue
-                }
-            } else if Defaults[.nonAllDayEvents] == NonAlldayEventsAppereance.hide_without_meeting_link {
-                if event.meetingLink?.url == nil {
-                    continue
-                }
-            }
         }
 
-        if event.participationStatus == .declined { // Skip event if declined
+        // Skip event if events without links should be skipped
+        if event.meetingLink == nil, Defaults[.nonAllDayEvents] == .show_inactive_without_meeting_link, Defaults[.nonAllDayEvents] == .hide_without_meeting_link {
             continue
         }
 
-        if event.participationStatus == .pending, Defaults[.showPendingEvents] == PendingEventsAppereance.hide || Defaults[.showPendingEvents] == PendingEventsAppereance.show_inactive {
+        // Skip event if declined
+        if event.participationStatus == .declined {
             continue
         }
 
+        // Skip event if pending events should be skipped
+        if event.participationStatus == .pending, Defaults[.showPendingEvents] == .hide || Defaults[.showPendingEvents] == .show_inactive {
+            continue
+        }
+
+        // Skip event if canceled
         if event.status == .canceled {
             continue
+        }
+
+        // If the current event is still going on,
+        // but the next event is closer than 13 minutes later
+        // then show the next event
+        if nextEvent == nil {
+            // Save our next event candidate and continue to look for the second one
+            nextEvent = event
+            continue
         } else {
-            if nextEvent == nil {
+            // Show our second next event candidate if it closer the 13 min from now
+            let soon = now.addingTimeInterval(780) // 13 min from now
+            if event.startDate < soon {
                 nextEvent = event
-                continue
             } else {
-                let soon = now.addingTimeInterval(780) // 13 min from now
-                if event.startDate < soon {
-                    nextEvent = event
-                } else {
-                    break
-                }
+                break
             }
         }
     }
