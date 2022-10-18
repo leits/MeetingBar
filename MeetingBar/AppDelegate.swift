@@ -196,15 +196,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         switch response.actionIdentifier {
         case "JOIN_ACTION", UNNotificationDefaultActionIdentifier:
             if response.notification.request.content.categoryIdentifier == "EVENT" || response.notification.request.content.categoryIdentifier == "SNOOZE_EVENT" {
-                if let eventID = response.notification.request.content.userInfo["eventID"] {
-                    // TODO: Allow to open event from any notification
-                    // built-in method EKEventStore.event(withIdentifier:) is broken
-                    // temporary allow to open only the last event
-                    if let nextEvent = getNextEvent(events: statusBarItem.events) {
-                        if nextEvent.ID == (eventID as! String) {
-                            NSLog("Join \(nextEvent.title) event from notication")
-                            nextEvent.openMeeting()
-                        }
+                if let eventID = response.notification.request.content.userInfo["eventID"] as? String {
+                    if let event = statusBarItem.events.filter({ $0.ID == eventID }).first {
+                        NSLog("Join \(event.title) event from notication")
+                        event.openMeeting()
                     }
                 }
             }
