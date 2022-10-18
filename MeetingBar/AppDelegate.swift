@@ -222,18 +222,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
     func handleSnoozeEvent(_ response: UNNotificationResponse, _ action: NotificationEventTimeAction) {
         if response.notification.request.content.categoryIdentifier == "EVENT" || response.notification.request.content.categoryIdentifier == "SNOOZE_EVENT" {
-            if let eventID = response.notification.request.content.userInfo["eventID"] {
-                // built-in method EKEventStore.event(withIdentifier:) is broken
-                // temporary allow to open only the last event
-                if let nextEvent = getNextEvent(events: statusBarItem.events) {
-                    if nextEvent.ID == (eventID as! String) {
-                        if action.durationInSeconds == 0 {
-                            NSLog("Snooze event until start")
-                        } else {
-                            NSLog("Snooze event for \(action.durationInMins) mins")
-                        }
-                        snoozeEventNotification(nextEvent, action)
+            if let eventID = response.notification.request.content.userInfo["eventID"] as? String {
+                if let event = statusBarItem.events.filter({ $0.ID == eventID }).first {
+                    if action.durationInSeconds == 0 {
+                        NSLog("Snooze event until start")
+                    } else {
+                        NSLog("Snooze event for \(action.durationInMins) mins")
                     }
+                    snoozeEventNotification(event, action)
                 }
             }
         }
