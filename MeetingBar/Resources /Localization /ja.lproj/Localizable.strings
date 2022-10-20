@@ -346,6 +346,7 @@
 "notifications_event_start_one_minute_body" = "イベント開始1分前";
 "notifications_event_start_three_minutes_body" = "イベント開始3分前";
 "notifications_event_start_five_minutes_body" = "イベント開始5分前";
+"notifications_event_started_body" = "The event has started";
 "notifications_snooze_until_start" = "Snooze until start time";
 "notifications_snooze_for" = "Snooze for %@ min";
 "notifications_meetingbar_join_event_action" = "Join";
@@ -356,3 +357,12 @@
 "link_url_cant_open_title" = "ひえー！ %@ のリンクを開くことが出来ませんでした";
 "link_url_cant_open_message" = "%@ がインストールされていることを確認するか、代わりにウェブブラウザーでリンクを開いてください。";
 "preferences_advanced_event_regex_title" = "ミーティングをフィルターするための正規表現";
+
+"status_bar_menu_dismiss_curent_meeting" = "Dismiss current meeting";
+"status_bar_menu_dismiss_next_meeting" = "Dismiss next meeting";
+"status_bar_menu_remove_all_dismissals" = "Remove all dismissals";
+"status_bar_event_dismissed_mark" = "dismissed";
+"notification_next_meeting_dismissed_title" = "Dismissed %@";
+"notification_next_meeting_dismissed_message" = "You can remove dismissal from Quick Actions";
+"notification_all_dismissals_removed_title" = "Removed all dismissals";
+"notification_all_dismissals_removed_message" = "All dismissed meetings are back in action";

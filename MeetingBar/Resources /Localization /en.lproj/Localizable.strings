@@ -202,6 +202,14 @@
 "status_bar_section_join_current_meeting" = "Join current event meeting";
 "status_bar_section_join_from_clipboard" = "Open meeting from clipboard";
 "status_bar_section_refresh_sources" = "Refresh sources";
+"status_bar_menu_dismiss_curent_meeting" = "Dismiss current meeting";
+"status_bar_menu_dismiss_next_meeting" = "Dismiss next meeting";
+"status_bar_menu_remove_all_dismissals" = "Remove all dismissals";
+"status_bar_event_dismissed_mark" = "dismissed";
+"notification_next_meeting_dismissed_title" = "Dismissed %@";
+"notification_next_meeting_dismissed_message" = "You can remove dismissal from Quick Actions";
+"notification_all_dismissals_removed_title" = "Removed all dismissals";
+"notification_all_dismissals_removed_message" = "All dismissed meetings are back in action";
 "status_bar_section_join_create_meeting" = "Create meeting";
 "status_bar_section_bookmarks_title" = "Bookmarks";
 "status_bar_section_bookmarks_menu" = "Bookmarks menu";

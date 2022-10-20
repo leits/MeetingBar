@@ -340,4 +340,12 @@
 "link_url_cant_open_title" = "Ой леле! Не вдалось відкрити посилання в %@";
 "link_url_cant_open_message" = "Переконайтеся, що у вас встановлено %@, або змініть його у налаштуваннях.";
 "status_bar_section_refresh_sources" = "Оновити джерела";
+"status_bar_menu_dismiss_curent_meeting" = "Пропустити поточну зустріч";
+"status_bar_menu_dismiss_next_meeting" = "Пропустити наступну зустріч";
+"status_bar_menu_remove_all_dismissals" = "Повернути пропущені зустрічі";
+"status_bar_event_dismissed_mark" = "пропущено";
+"notification_next_meeting_dismissed_title" = "Пропущено %@";
+"notification_next_meeting_dismissed_message" = "Ви можете повернути пропущену зустріч зі Швидких Дій";
+"notification_all_dismissals_removed_title" = "Повернено пропущені зустрічі";
+"notification_all_dismissals_removed_message" = "Всі пропущені зустрічі знову у календарі";
 "notifications_event_started_body" = "Подія розпочалась";

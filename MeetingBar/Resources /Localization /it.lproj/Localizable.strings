@@ -198,6 +198,14 @@
 "status_bar_section_join_current_meeting" = "Partecipa alla riunione in corso";
 "status_bar_section_join_from_clipboard" = "Apri riunione dagli appunti";
 "status_bar_section_refresh_sources" = "Aggiorna le fonti";
+"status_bar_menu_dismiss_curent_meeting" = "Dismiss current meeting";
+"status_bar_menu_dismiss_next_meeting" = "Dismiss next meeting";
+"status_bar_menu_remove_all_dismissals" = "Remove all dismissals";
+"status_bar_event_dismissed_mark" = "dismissed";
+"notification_next_meeting_dismissed_title" = "Dismissed %@";
+"notification_next_meeting_dismissed_message" = "You can remove dismissal from Quick Actions";
+"notification_all_dismissals_removed_title" = "Removed all dismissals";
+"notification_all_dismissals_removed_message" = "All dismissed meetings are back in action";
 "status_bar_section_join_create_meeting" = "Crea riunione";
 "status_bar_section_bookmarks_title" = "Segnalibri";
 "status_bar_section_bookmarks_menu" = "Menù segnalibri";
@@ -331,6 +339,7 @@
 "notifications_event_start_one_minute_body" = "La riunione inizia tra un minuto";
 "notifications_event_start_three_minutes_body" = "La riunione inizia tra tre minuti";
 "notifications_event_start_five_minutes_body" = "La riunione inizia tra cinque minuti";
+"notifications_event_started_body" = "The event has started";
 "notifications_snooze_until_start" = "Posticipa alla data di inizio";
 "notifications_snooze_for" = "Posticipa di %@ min";
 "notifications_meetingbar_join_event_action" = "Partecipa";

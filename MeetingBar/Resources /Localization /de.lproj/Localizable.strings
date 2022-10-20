@@ -333,4 +333,12 @@
 "preferences_general_patron_title" = "Schirmherr werden";
 "preferences_advanced_event_regex_title" = "Benutzerdefinierte reguläre Ausdrücke zum Herausfiltern von Besprechungen";
 "status_bar_section_refresh_sources" = "Quellen aktualisieren";
+"status_bar_menu_dismiss_curent_meeting" = "Dismiss current meeting";
+"status_bar_menu_dismiss_next_meeting" = "Dismiss next meeting";
+"status_bar_menu_remove_all_dismissals" = "Remove all dismissals";
+"status_bar_event_dismissed_mark" = "dismissed";
+"notification_next_meeting_dismissed_title" = "Dismissed %@";
+"notification_next_meeting_dismissed_message" = "You can remove dismissal from Quick Actions";
+"notification_all_dismissals_removed_title" = "Removed all dismissals";
+"notification_all_dismissals_removed_message" = "All dismissed meetings are back in action";
 "notifications_event_started_body" = "Die Veranstaltung hat begonnen";

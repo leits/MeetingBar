@@ -210,6 +210,7 @@ func getNextEvent(events: [MBEvent]) -> MBEvent? {
         endPeriod = Calendar.current.date(byAdding: .day, value: 2, to: todayMidnight)!
     }
 
+    // Filter out passed or not started events
     var nextEvents = events.filter { $0.endDate > startPeriod && $0.startDate < endPeriod }
 
     // Filter out personal events, if not marked as 'active'
@@ -218,6 +219,11 @@ func getNextEvent(events: [MBEvent]) -> MBEvent? {
     }
 
     for event in nextEvents {
+        // Skip event if dismissed
+        if Defaults[.dismissedEvents].contains(where: { $0.id == event.ID }) {
+            continue
+        }
+
         // Skip event if allday
         if event.isAllDay {
             continue
