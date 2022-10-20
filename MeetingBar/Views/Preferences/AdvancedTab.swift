@@ -228,7 +228,7 @@ struct FilterEventRegexesSection: View {
                         Text(regex)
                         Spacer()
                         Button("preferences_advanced_regex_edit_button".loco()) { openEditRegexModal(regex) }
-                        Button("preferences_advanced_regex_delete_button".loco()) { removeRegex(regex) }
+                        Button("x") { removeRegex(regex) }
                     }
                 }
             }
@@ -276,7 +276,7 @@ struct MeetingRegexesSection: View {
                         Text(regex)
                         Spacer()
                         Button("preferences_advanced_regex_edit_button".loco()) { openEditRegexModal(regex) }
-                        Button("preferences_advanced_regex_delete_button".loco()) { removeRegex(regex) }
+                        Button("x") { removeRegex(regex) }
                     }
                 }
             }

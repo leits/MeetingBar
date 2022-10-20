@@ -193,7 +193,6 @@
 "preferences_advanced_regex_title" = "ミーティングリンク用のカスタム正規表現";
 "preferences_advanced_regex_add_button" = "正規表現を追加";
 "preferences_advanced_regex_edit_button" = "編集";
-"preferences_advanced_regex_delete_button" = "x";
 "preferences_advanced_regex_new_title" = "正規表現を入力する";
 "preferences_advanced_regex_new_cant_save_title" = "正規表現を保存できませんでした";
 

@@ -182,7 +182,6 @@
 "preferences_advanced_regex_title" = "Własne regexy dla linku spotkania";
 "preferences_advanced_regex_add_button" = "Dodaj regex";
 "preferences_advanced_regex_edit_button" = "edit";
-"preferences_advanced_regex_delete_button" = "x";
 "preferences_advanced_regex_new_title" = "Wprowadź regex";
 "preferences_advanced_regex_new_cant_save_title" = "Nie można zapisać regex";
 "preferences_advanced_event_regex_title" = "Custom regexes to filter out meetings";

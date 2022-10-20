@@ -157,7 +157,6 @@
 "preferences_advanced_regex_new_cant_save_title" = "Regex nelze uložit";
 "preferences_advanced_regex_new_title" = "Zadejte regex";
 "preferences_advanced_regex_edit_button" = "Upravit";
-"preferences_advanced_regex_delete_button" = "Smazat";
 "preferences_advanced_regex_add_button" = "Přidat regex";
 "preferences_advanced_regex_title" = "Vlastní regexy pro odkaz na schůzku";
 "preferences_advanced_wrong_location_button" = "Mám to!";

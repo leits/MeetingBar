@@ -184,7 +184,6 @@
 "preferences_advanced_regex_title" = "Власні regex для посилань на зустрічі";
 "preferences_advanced_regex_add_button" = "Додати regex";
 "preferences_advanced_regex_edit_button" = "редагувати";
-"preferences_advanced_regex_delete_button" = "x";
 "preferences_advanced_regex_new_title" = "Введіть regex";
 "preferences_advanced_regex_new_cant_save_title" = "Ой леле! Не вдалось зберегти regex";
 "preferences_advanced_event_regex_title" = "Власні regex для відсіювання зустрічей";

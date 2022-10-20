@@ -185,7 +185,6 @@
 "preferences_advanced_regex_title" = "Regex personalizzate per link delle riunioni";
 "preferences_advanced_regex_add_button" = "Aggiungi regex";
 "preferences_advanced_regex_edit_button" = "modifica";
-"preferences_advanced_regex_delete_button" = "x";
 "preferences_advanced_regex_new_title" = "Inserisci regex";
 "preferences_advanced_regex_new_cant_save_title" = "Non posso salvare la regex";
 

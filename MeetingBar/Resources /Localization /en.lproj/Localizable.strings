@@ -189,7 +189,6 @@
 "preferences_advanced_regex_title" = "Custom regexes for meeting link";
 "preferences_advanced_regex_add_button" = "Add regex";
 "preferences_advanced_regex_edit_button" = "edit";
-"preferences_advanced_regex_delete_button" = "x";
 "preferences_advanced_regex_new_title" = "Enter regex";
 "preferences_advanced_regex_new_cant_save_title" = "Can't save regex";
 

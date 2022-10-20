@@ -182,7 +182,6 @@
 "status_bar_section_today" = "Heute";
 "preferences_advanced_regex_new_cant_save_title" = "Kann Regex nicht speichern";
 "preferences_advanced_regex_new_title" = "Regex eingeben";
-"preferences_advanced_regex_delete_button" = "x";
 "preferences_advanced_regex_edit_button" = "bearbeiten";
 "preferences_advanced_regex_add_button" = "Regex hinzufügen";
 "preferences_advanced_regex_title" = "Benutzerdefinierte reguläre Ausdrücke für Meeting-Links";

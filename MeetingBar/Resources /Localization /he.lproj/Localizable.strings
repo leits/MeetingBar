@@ -292,7 +292,6 @@
 "preferences_calendars_provider_macos_switch" = "מעבר ללוח השנה של MacOS";
 "preferences_calendars_provider_gcalendar_switch" = "מעבר ל־API של Google Calendar";
 "preferences_advanced_wrong_location_message" = "נא לבחור את תיקיית משתמש ← ספרייה ← סקריפטים של יישומים ← leits.MeetingBar";
-"preferences_advanced_regex_delete_button" = "x";
 "status_bar_section_bookmarks_menu" = "תפריט סימניות";
 "status_bar_section_date_nothing" = "שום דבר עבור %@";
 "status_bar_event_start_time_all_day" = "כל היום";
