@@ -93,7 +93,7 @@ class StatusBarItemController {
             if Defaults[.dismissedEvents].count > 0 {
                 var dismissedEvents: [ProcessedEvent] = []
                 for dismissedEvent in Defaults[.dismissedEvents] {
-                    if let event = self.events.first(where: { $0.ID == dismissedEvent.id }), event.endDate.timeIntervalSinceNow > 0  {
+                    if let event = self.events.first(where: { $0.ID == dismissedEvent.id }), event.endDate.timeIntervalSinceNow > 0 {
                         dismissedEvents.append(ProcessedEvent(id: event.ID, eventEndDate: event.endDate))
                     }
                 }
