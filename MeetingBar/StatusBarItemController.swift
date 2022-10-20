@@ -88,6 +88,18 @@ class StatusBarItemController {
         _ = appdelegate.eventStore.fetchEventsForDateRange(calendars: calendars.filter(\.selected), dateFrom: dateFrom, dateTo: dateTo).done { events in
             let filteredEvents = filterEvents(events)
             self.events = filteredEvents.sorted(by: { $0.startDate.compare($1.startDate) == .orderedAscending })
+
+            // Update dismissed events in case the event end date has changed.
+            if Defaults[.dismissedEvents].count > 0 {
+                var dismissedEvents: [ProcessedEvent] = []
+                for dismissedEvent in Defaults[.dismissedEvents] {
+                    if let event = self.events.first(where: { $0.ID == dismissedEvent.id }), event.endDate.timeIntervalSinceNow > 0 {
+                        dismissedEvents.append(ProcessedEvent(id: event.ID, eventEndDate: event.endDate))
+                    }
+                }
+                Defaults[.dismissedEvents] = dismissedEvents
+            }
+
             self.updateTitle()
             self.updateMenu()
         }
@@ -244,9 +256,9 @@ class StatusBarItemController {
 
     func updateMenu() {
         // Don't update the menu while it's open to avoid flickering
-        if statusItem.button?.state == .on {
-            return
-        }
+//        if statusItem.menu != nil {
+//            return
+//        }
 
         statusItemMenu.autoenablesItems = false
         statusItemMenu.removeAllItems()
@@ -343,13 +355,15 @@ class StatusBarItemController {
             return
         }
 
-        let eventTitle: String
+        var eventTitle = event.title
 
         if Defaults[.shortenEventTitle] {
             eventTitle = shortenTitle(title: event.title, offset: Defaults[.menuEventTitleLength])
+        }
 
-        } else {
-            eventTitle = String(event.title)
+        if Defaults[.dismissedEvents].contains(where: { $0.id == event.ID }) {
+            let dismissedMark = "status_bar_event_dismissed_mark".loco()
+            eventTitle = "[\(dismissedMark)] \(eventTitle)"
         }
 
         let eventTimeFormatter = DateFormatter()
@@ -617,26 +631,31 @@ class StatusBarItemController {
      */
 
     func createJoinSection() {
+        // MENU ITEM: Join the meeting
+        var nextEvent: MBEvent?
         if !calendars.filter(\.selected).isEmpty {
-            if let nextEvent = getNextEvent(events: events) {
-                let now = Date()
-                var itemTitle: String
-                if nextEvent.startDate < now {
-                    itemTitle = "status_bar_section_join_current_meeting".loco()
-                } else {
-                    itemTitle = "status_bar_section_join_next_meeting".loco()
-                }
-
-                let joinItem = statusItemMenu.addItem(
-                    withTitle: itemTitle,
-                    action: #selector(joinNextMeeting),
-                    keyEquivalent: ""
-                )
-                joinItem.target = self
-                joinItem.setShortcut(for: .joinEventShortcut)
-            }
+            nextEvent = getNextEvent(events: events)
         }
 
+        let now = Date()
+
+        if let nextEvent = nextEvent {
+            var itemTitle: String
+            if nextEvent.startDate < now {
+                itemTitle = "status_bar_section_join_current_meeting".loco()
+            } else {
+                itemTitle = "status_bar_section_join_next_meeting".loco()
+            }
+
+            let joinItem = statusItemMenu.addItem(
+                withTitle: itemTitle,
+                action: #selector(joinNextMeeting),
+                keyEquivalent: ""
+            )
+            joinItem.target = self
+        }
+
+        // MENU ITEM: Create meeting
         let createEventItem = NSMenuItem()
         createEventItem.title = "status_bar_section_join_create_meeting".loco()
         createEventItem.action = #selector(createMeetingAction)
@@ -646,6 +665,7 @@ class StatusBarItemController {
 
         statusItemMenu.addItem(createEventItem)
 
+        // MENU ITEM: Quick actions menu
         let quickActionsItem = statusItemMenu.addItem(
             withTitle: "status_bar_quick_actions".loco(),
             action: nil,
@@ -655,6 +675,32 @@ class StatusBarItemController {
 
         quickActionsItem.submenu = NSMenu(title: "status_bar_quick_actions".loco())
 
+        // MENU ITEM: QUICK ACTIONS: Dismiss meeting
+        if let nextEvent = nextEvent {
+            let itemTitle: String
+            if nextEvent.startDate < now {
+                itemTitle = "status_bar_menu_dismiss_curent_meeting".loco()
+            } else {
+                itemTitle = "status_bar_menu_dismiss_next_meeting".loco()
+            }
+            let dismissMeetingItem = quickActionsItem.submenu!.addItem(
+                withTitle: itemTitle,
+                action: #selector(dismissNextMeetingAction),
+                keyEquivalent: ""
+            )
+            dismissMeetingItem.target = self
+        }
+
+        if !Defaults[.dismissedEvents].isEmpty {
+            let undiDismissMeetingsItem = quickActionsItem.submenu!.addItem(
+                withTitle: "status_bar_menu_remove_all_dismissals".loco(),
+                action: #selector(undismissMeetingsActions),
+                keyEquivalent: ""
+            )
+            undiDismissMeetingsItem.target = self
+        }
+
+        // MENU ITEM: QUICK ACTIONS: Open link from clipboard
         let openLinkFromClipboardItem = NSMenuItem()
         openLinkFromClipboardItem.title = "status_bar_section_join_from_clipboard".loco()
         openLinkFromClipboardItem.action = #selector(openLinkFromClipboardAction)
@@ -663,6 +709,7 @@ class StatusBarItemController {
         openLinkFromClipboardItem.setShortcut(for: .openClipboardShortcut)
         quickActionsItem.submenu!.addItem(openLinkFromClipboardItem)
 
+        // MENU ITEM: QUICK ACTIONS: Toggle meeting name visibility
         if Defaults[.eventTitleFormat] == .show {
             let toggleMeetingTitleVisibilityItem = NSMenuItem()
             if Defaults[.hideMeetingTitle] {
@@ -676,6 +723,7 @@ class StatusBarItemController {
             quickActionsItem.submenu!.addItem(toggleMeetingTitleVisibilityItem)
         }
 
+        // MENU ITEM: QUICK ACTIONS: Refresh soruces
         let refreshSourcesItem = NSMenuItem()
         refreshSourcesItem.title = "status_bar_section_refresh_sources".loco()
         refreshSourcesItem.action = #selector(refreshSources)
@@ -788,6 +836,27 @@ class StatusBarItemController {
             NSLog("No next event")
             sendNotification("next_meeting_empty_title".loco(), "next_meeting_empty_message".loco())
         }
+    }
+
+    @objc
+    func dismissNextMeetingAction() {
+        if let nextEvent = getNextEvent(events: events) {
+            let dismissedEvent = ProcessedEvent(id: nextEvent.ID, lastModifiedDate: nextEvent.lastModifiedDate, eventEndDate: nextEvent.endDate)
+            Defaults[.dismissedEvents].append(dismissedEvent)
+            sendNotification("notification_next_meeting_dismissed_title".loco(nextEvent.title), "notification_next_meeting_dismissed_message".loco())
+
+            updateTitle()
+            updateMenu()
+        }
+    }
+
+    @objc
+    func undismissMeetingsActions() {
+        Defaults[.dismissedEvents] = []
+        sendNotification("notification_all_dismissals_removed_title", "notification_all_dismissals_removed_message".loco())
+
+        updateTitle()
+        updateMenu()
     }
 
     @objc

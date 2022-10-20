@@ -137,7 +137,6 @@
 "preferences_advanced_event_regex_title" = "Toplantıları filtrelemek için özel regex betikleri";
 "preferences_advanced_regex_add_button" = "Regex ekle";
 "preferences_advanced_regex_edit_button" = "düzenle";
-"preferences_advanced_regex_delete_button" = "x";
 "preferences_advanced_regex_new_title" = "Regex gir";
 "preferences_advanced_regex_new_cant_save_title" = "Regex kaydedilemedi";
 "status_bar_empty_calendar_message" = "Toplantılarınızı görebilmek için tercihlerden\ntakvim seçin";
@@ -338,7 +337,16 @@
 "store_patronage_restore_nothing_message" = "Geri yüklenecek bir şey yok";
 "store_patronage_purchase_client_invalid_message" = "Ödemeye izin verilmedi";
 "notifications_event_start_one_minute_body" = "Toplantı bir dakika içinde başlıyor";
+"notifications_event_started_body" = "The event has started";
 "link_url_cant_open_message" = "%@ yüklü olduğundan emin olun veya bu bağlantıyı bir tarayıcıda açın.";
 "preferences_general_feedback_title" = "Eğer soru veya geribildiriminiz varsa,\nlütfen iletişim kurmaktan çekinmeyin:";
 "status_bar_section_refresh_sources" = "Kaynakları yenile";
+"status_bar_menu_dismiss_curent_meeting" = "Dismiss current meeting";
+"status_bar_menu_dismiss_next_meeting" = "Dismiss next meeting";
+"status_bar_menu_remove_all_dismissals" = "Remove all dismissals";
+"status_bar_event_dismissed_mark" = "dismissed";
+"notification_next_meeting_dismissed_title" = "Dismissed %@";
+"notification_next_meeting_dismissed_message" = "You can remove dismissal from Quick Actions";
+"notification_all_dismissals_removed_title" = "Removed all dismissals";
+"notification_all_dismissals_removed_message" = "All dismissed meetings are back in action";
 "notifications_meetingbar_join_event_action" = "Join";

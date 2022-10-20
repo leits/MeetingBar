@@ -182,7 +182,6 @@
 "preferences_advanced_regex_title" = "Własne regexy dla linku spotkania";
 "preferences_advanced_regex_add_button" = "Dodaj regex";
 "preferences_advanced_regex_edit_button" = "edit";
-"preferences_advanced_regex_delete_button" = "x";
 "preferences_advanced_regex_new_title" = "Wprowadź regex";
 "preferences_advanced_regex_new_cant_save_title" = "Nie można zapisać regex";
 "preferences_advanced_event_regex_title" = "Custom regexes to filter out meetings";
@@ -326,6 +325,7 @@
 "notifications_event_start_one_minute_body" = "Wydarzenie rozpoczyna się za minutę";
 "notifications_event_start_three_minutes_body" = "Wydarzenie rozpoczyna się za trzy minuty";
 "notifications_event_start_five_minutes_body" = "Wydarzenie rozpoczyna się za pięć minut";
+"notifications_event_started_body" = "The event has started";
 "notifications_snooze_until_start" = "Snooze until start time";
 "notifications_snooze_for" = "Snooze for %@ min";
 "notifications_meetingbar_join_event_action" = "Join";
@@ -340,3 +340,12 @@
 "status_bar_preferences" = "Preferencje";
 "preferences_services_link_jitsi_value" = "Jitsi Meet app";
 "status_bar_submenu_status_tentative" = " ☝️ Wstępnia akceptacja";
+
+"status_bar_menu_dismiss_curent_meeting" = "Dismiss current meeting";
+"status_bar_menu_dismiss_next_meeting" = "Dismiss next meeting";
+"status_bar_menu_remove_all_dismissals" = "Remove all dismissals";
+"status_bar_event_dismissed_mark" = "dismissed";
+"notification_next_meeting_dismissed_title" = "Dismissed %@";
+"notification_next_meeting_dismissed_message" = "You can remove dismissal from Quick Actions";
+"notification_all_dismissals_removed_title" = "Removed all dismissals";
+"notification_all_dismissals_removed_message" = "All dismissed meetings are back in action";

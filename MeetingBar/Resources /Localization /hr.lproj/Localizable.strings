@@ -184,7 +184,6 @@
 "preferences_advanced_regex_title" = "Prilagođen regularni izrazi za poveznicu sastanka";
 "preferences_advanced_regex_add_button" = "Dodaj regularni izraz";
 "preferences_advanced_regex_edit_button" = "uredi";
-"preferences_advanced_regex_delete_button" = "x";
 "preferences_advanced_regex_new_title" = "Upiši regularni izraz";
 "preferences_advanced_regex_new_cant_save_title" = "Nije moguće spremiti regularni izraz";
 
@@ -339,4 +338,12 @@
 "link_url_cant_open_message" = "%@ mora biti instaliran ili otvori takve poveznice u jednom od web-preglednika koji su određeni u postavkama.";
 "preferences_advanced_event_regex_title" = "Prilagođeni regularni izrazi za filtriranje sastanaka";
 "status_bar_section_refresh_sources" = "Aktualiziraj izvore";
+"status_bar_menu_dismiss_curent_meeting" = "Dismiss current meeting";
+"status_bar_menu_dismiss_next_meeting" = "Dismiss next meeting";
+"status_bar_menu_remove_all_dismissals" = "Remove all dismissals";
+"status_bar_event_dismissed_mark" = "dismissed";
+"notification_next_meeting_dismissed_title" = "Dismissed %@";
+"notification_next_meeting_dismissed_message" = "You can remove dismissal from Quick Actions";
+"notification_all_dismissals_removed_title" = "Removed all dismissals";
+"notification_all_dismissals_removed_message" = "All dismissed meetings are back in action";
 "notifications_event_started_body" = "Događaj je započeo";

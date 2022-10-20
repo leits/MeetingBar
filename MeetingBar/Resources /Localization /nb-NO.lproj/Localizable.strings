@@ -197,7 +197,6 @@
 "status_bar_section_today" = "I dag";
 "preferences_advanced_regex_new_cant_save_title" = "Kan ikke lagre regulært uttrykk";
 "preferences_advanced_regex_new_title" = "Skriv inn regulært uttrykk";
-"preferences_advanced_regex_delete_button" = "x";
 "preferences_advanced_regex_edit_button" = "rediger";
 "preferences_advanced_regex_add_button" = "Legg til regulært uttrykk";
 "preferences_advanced_wrong_location_button" = "Skjønner.";
@@ -335,4 +334,12 @@
 "general_cancel" = "Avbryt";
 "general_ok" = "OK";
 "status_bar_section_refresh_sources" = "Gjenoppfrisk kilder";
+"status_bar_menu_dismiss_curent_meeting" = "Dismiss current meeting";
+"status_bar_menu_dismiss_next_meeting" = "Dismiss next meeting";
+"status_bar_menu_remove_all_dismissals" = "Remove all dismissals";
+"status_bar_event_dismissed_mark" = "dismissed";
+"notification_next_meeting_dismissed_title" = "Dismissed %@";
+"notification_next_meeting_dismissed_message" = "You can remove dismissal from Quick Actions";
+"notification_all_dismissals_removed_title" = "Removed all dismissals";
+"notification_all_dismissals_removed_message" = "All dismissed meetings are back in action";
 "notifications_event_started_body" = "Begivenheten har begynt";
