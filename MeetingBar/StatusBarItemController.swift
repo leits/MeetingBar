@@ -256,9 +256,9 @@ class StatusBarItemController {
 
     func updateMenu() {
         // Don't update the menu while it's open to avoid flickering
-        if statusItem.button?.state == .on {
-            return
-        }
+//        if statusItem.menu != nil {
+//            return
+//        }
 
         statusItemMenu.autoenablesItems = false
         statusItemMenu.removeAllItems()
