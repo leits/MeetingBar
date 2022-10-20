@@ -853,7 +853,7 @@ class StatusBarItemController {
     @objc
     func undismissMeetingsActions() {
         Defaults[.dismissedEvents] = []
-        sendNotification("notification_all_dismissals_removed_title", "notification_all_dismissals_removed_message".loco())
+        sendNotification("notification_all_dismissals_removed_title".loco(), "notification_all_dismissals_removed_message".loco())
 
         updateTitle()
         updateMenu()
