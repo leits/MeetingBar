@@ -106,12 +106,6 @@ class StatusBarItemController {
     }
 
     func updateTitle() {
-        enum NextEventState {
-            case none
-            case afterThreshold(MBEvent)
-            case nextEvent(MBEvent)
-        }
-
         var title = "MeetingBar"
         var time = ""
         var nextEvent: MBEvent!
@@ -991,4 +985,10 @@ func createEventStatusString(title: String, startDate: Date, endDate: Date) -> (
         eventTime = "status_bar_event_status_in".loco(formattedTimeLeft)
     }
     return (eventTitle, eventTime)
+}
+
+enum NextEventState {
+    case none
+    case afterThreshold(MBEvent)
+    case nextEvent(MBEvent)
 }

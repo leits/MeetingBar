@@ -51,7 +51,7 @@ extension EKEventStore: EventStore {
                     title: calendar.title,
                     ID: calendar.calendarIdentifier,
                     source: calendar.source.title,
-                    email: _getGmailAccount(calendar.source.description),
+                    email: getGmailAccount(calendar.source.description),
                     color: calendar.color
                 )
                 allCalendars.append(calendar)
@@ -144,7 +144,7 @@ extension EKEventStore: EventStore {
     }
 }
 
-func _getGmailAccount(_ text: String) -> String? {
+func getGmailAccount(_ text: String) -> String? {
     // Hacky and likely to break, but should work until Apple changes something
     let regex = try! NSRegularExpression(pattern: #""mailto:(.+@.+)""#)
     let resultsIterator = regex.matches(in: text, range: NSRange(text.startIndex..., in: text))
