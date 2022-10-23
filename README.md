@@ -1,4 +1,3 @@
-
 [![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner-direct-single.svg)](https://stand-with-ukraine.pp.ua)
 
 [![GitHub license](https://img.shields.io/github/license/leits/MeetingBar.svg)](https://github.com/leits/MeetingBar/blob/master/LICENSE)
@@ -17,40 +16,40 @@ Integrated with 20+ meeting services so you can quickly join meetings from event
 
 ## Features
 
-* Show the next meeting in the system statusbar
-  * Show upcoming meeting with name or hidden
-  * Shorten title to save space in the statusbar
-  * Choose icon to show for the upcoming meeting, e.g. the app icon or the meeting type icon
-  * Show only meetings within a certain timeframe (e.g. show only meetings in the next 30 minutes)
-* Show all upcoming events from today and tomorrow (optional) in the expanded system menubar
-  * show or hide all day events or only all day events with a meeting link
-  * show or hide events without guests
-  * show or hide declined events
-  * show or hide meeting type icons
-  * show or hide pending events
-* Show events from all your macos calendars incl. notes, location and attendees
-* Open the event in macos calendar or Fantastical 3 (if the app is installed)
-* Join the next onlinemeeting with a single shortcut
-* Select for specific services like zoom or ms teams to start the meeting in the installed app or browser
-* Attend an online meeting using one click
-* Create a new meeting in your favorite app by using a shortcut
-* Configure your favorite browser to use for joining meetings and new meetings
-* Sends macos notifications for upcoming events
-* Bookmark your favorite meeting, show it in the statusmenu and make it accessible with a shortcut
-* Automatic launch the app when your system starts
-* Execute your custom apple script, e.g. to pause music when joining a new online event
+*   Show the next meeting in the system statusbar
+    *   Show upcoming meeting with name or hidden
+    *   Shorten title to save space in the statusbar
+    *   Choose icon to show for the upcoming meeting, e.g. the app icon or the meeting type icon
+    *   Show only meetings within a certain timeframe (e.g. show only meetings in the next 30 minutes)
+*   Show all upcoming events from today and tomorrow (optional) in the expanded system menubar
+    *   show or hide all day events or only all day events with a meeting link
+    *   show or hide events without guests
+    *   show or hide declined events
+    *   show or hide meeting type icons
+    *   show or hide pending events
+*   Show events from all your macos calendars incl. notes, location and attendees
+*   Open the event in macos calendar or Fantastical 3 (if the app is installed)
+*   Join the next onlinemeeting with a single shortcut
+*   Select for specific services like zoom or ms teams to start the meeting in the installed app or browser
+*   Attend an online meeting using one click
+*   Create a new meeting in your favorite app by using a shortcut
+*   Configure your favorite browser to use for joining meetings and new meetings
+*   Sends macos notifications for upcoming events
+*   Bookmark your favorite meeting, show it in the statusmenu and make it accessible with a shortcut
+*   Automatic launch the app when your system starts
+*   Execute your custom apple script, e.g. to pause music when joining a new online event
 
 ## Setup
 
-1. Install:
+1.  Install:
 
-* From the [App Store](https://apps.apple.com/us/app/id1532419400)
-* From homebrew `brew install meetingbar`
-* Manual download the [latest version](https://github.com/leits/MeetingBar/releases/latest/download/MeetingBar.dmg)
+*   From the [App Store](https://apps.apple.com/us/app/id1532419400)
+*   From homebrew `brew install meetingbar`
+*   Manual download the [latest version](https://github.com/leits/MeetingBar/releases/latest/download/MeetingBar.dmg)
 
-2. Make sure your calendar is synchronized to macOS calendar or [add a calendar account](https://support.apple.com/guide/calendar/add-or-delete-calendar-accounts-icl4308d6701/mac).
-3. Open the app and go through the onboarding.
-4. Never miss your next meeting again :tada:
+2.  Make sure your calendar is synchronized to macOS calendar or [add a calendar account](https://support.apple.com/guide/calendar/add-or-delete-calendar-accounts-icl4308d6701/mac).
+3.  Open the app and go through the onboarding.
+4.  Never miss your next meeting again :tada:
 
 If you have some installation problems or some other questions please check the [FAQ](../../wiki/FAQ) or [add an issue](https://github.com/leits/MeetingBar/issues/new).
 
@@ -60,12 +59,12 @@ Check the full list [here](https://github.com/leits/MeetingBar/discussions/108).
 
 ## Third-Party Integrations
 
-* [Raycast commands](https://github.com/raycast/script-commands/tree/master/commands#meetingbar)
+*   [Raycast commands](https://github.com/raycast/script-commands/tree/master/commands#meetingbar)
 
 ## Other similar apps
 
-* NextMeeting - free, more simple
-* Meeter - commercial solution, provides similar features and more regarding contacts
+*   NextMeeting - free, more simple
+*   Meeter - commercial solution, provides similar features and more regarding contacts
 
 ## Contribute
 
@@ -83,9 +82,9 @@ MeetingBar is **stable** and in **active development** by [leits](https://github
 
 MeetingBar also uses these resources:
 
-* [KeyboardShortcuts](https://github.com/sindresorhus/KeyboardShortcuts) for managing global keyboard shortcuts
-* [Defaults](https://github.com/sindresorhus/Defaults) for managing user settings
-* [SwiftyStoreKit](https://github.com/bizz84/SwiftyStoreKit) for patronage via in-app purchases
+*   [KeyboardShortcuts](https://github.com/sindresorhus/KeyboardShortcuts) for managing global keyboard shortcuts
+*   [Defaults](https://github.com/sindresorhus/Defaults) for managing user settings
+*   [SwiftyStoreKit](https://github.com/bizz84/SwiftyStoreKit) for patronage via in-app purchases
 
 App logo made by [Miroslav Rajkovic](https://www.rajkovic.co/).
 
@@ -94,8 +93,11 @@ App logo made by [Miroslav Rajkovic](https://www.rajkovic.co/).
 Thanks goes to these wonderful people:
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+
 <!-- prettier-ignore-start -->
+
 <!-- markdownlint-disable -->
+
 <table>
   <tr>
     <td align="center"><a href="https://github.com/leits"><img src="https://avatars.githubusercontent.com/u/12017826?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Andrii Leitsius</b></sub></a><br /><a href="https://github.com/leits/MeetingBar/commits?author=leits" title="Code">💻</a> <a href="#maintenance-leits" title="Maintenance">🚧</a></td>
@@ -105,6 +107,7 @@ Thanks goes to these wonderful people:
 </table>
 
 <!-- markdownlint-restore -->
+
 <!-- prettier-ignore-end -->
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
