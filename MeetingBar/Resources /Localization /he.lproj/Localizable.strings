@@ -334,8 +334,8 @@
 "status_bar_menu_dismiss_next_meeting" = "התעלמות מהפגישה הבאה";
 "status_bar_menu_remove_all_dismissals" = "הסרת כל ההתעלמויות";
 "status_bar_event_dismissed_mark" = "נתעלם";
-"notification_next_meeting_dismissed_title" = "Dismissed %@";
-"notification_next_meeting_dismissed_message" = "You can remove dismissal from Quick Actions";
-"notification_all_dismissals_removed_title" = "Removed all dismissals";
-"notification_all_dismissals_removed_message" = "All dismissed meetings are back in action";
+"notification_next_meeting_dismissed_title" = "נתעלמו %@";
+"notification_next_meeting_dismissed_message" = "אפשר להסיר התעלמות מהפעולות המהירות";
+"notification_all_dismissals_removed_title" = "כל ההתעלמויות הוסרו";
+"notification_all_dismissals_removed_message" = "כל הפגישות שזכו להתעלמות חזרו להיות תקפות";
 "notifications_event_started_body" = "האירוע התחיל";
