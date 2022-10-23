@@ -40,16 +40,6 @@ class HelpersTests: XCTestCase {
         XCTAssertNil(result)
     }
 
-    func test_getEmailAccount_withMatch_returnMatch() throws {
-        let result = getEmailAccount("Sent from hello@meeting.bar")
-        XCTAssertEqual(result, "hello@meeting.bar")
-    }
-
-    func test_getEmailAccount_withoutMatch_returnNil() throws {
-        let result = getEmailAccount("Sent from hello.meeting.bar")
-        XCTAssertNil(result)
-    }
-
     func test_cleanUpNotes_inputHTML_returnClean() throws {
         let rawNotes = "<p>description</p>"
 
