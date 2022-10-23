@@ -15,7 +15,7 @@ struct CalendarsTab: View {
     @State var calendarsBySource: [String: [MBCalendar]] = [:]
     @State var showingAddAcountModal = false
 
-    let appDelegate = NSApplication.shared.delegate as! AppDelegate?
+    weak var appDelegate = NSApplication.shared.delegate as! AppDelegate?
 
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 

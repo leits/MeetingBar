@@ -41,7 +41,7 @@ class MBEventAttendee {
     let name: String
     let email: String?
     let status: MBEventAttendeeStatus
-    var optional: Bool = false
+    var optional = false
     let isCurrentUser: Bool
 
     init(email: String?, name: String? = nil, status: MBEventAttendeeStatus, optional: Bool = false, isCurrentUser: Bool = false) {
@@ -97,15 +97,14 @@ class MBEvent {
             location,
             url?.absoluteString,
             notes,
-            notes?.htmlTagsStripped(),
+            notes?.htmlTagsStripped()
         ].compactMap { $0 }
 
         for linkField in linkFields {
             if var detectedLink = detectMeetingLink(linkField) {
                 if detectedLink.service == .meet,
                    let account = calendar.email,
-                   let urlEncodedAccount = account.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
-                {
+                   let urlEncodedAccount = account.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
                     detectedLink.url = URL(string: (detectedLink.url.absoluteString) + "?authuser=\(urlEncodedAccount)")!
                 }
                 meetingLink = detectedLink

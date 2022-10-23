@@ -118,7 +118,6 @@ struct ChangelogView: View {
                         }
                     }
                 }
-
             }.listStyle(SidebarListStyle())
             Button("general_close".loco(), action: close)
         }.padding()

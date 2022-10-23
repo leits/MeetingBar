@@ -38,7 +38,6 @@ class GCEventStore: NSObject, EventStore, OIDExternalUserAgent {
 
     func fetchAllCalendars() -> Promise<[MBCalendar]> {
         Promise { seal in
-
             loadState()
 
             guard let auth = self.auth else {
@@ -328,8 +327,7 @@ class GCEventStore: NSObject, EventStore, OIDExternalUserAgent {
 
     func present(_ request: OIDExternalUserAgentRequest, session _: OIDExternalUserAgentSession) -> Bool {
         if let url = request.externalUserAgentRequestURL(),
-           NSWorkspace.shared.open(url)
-        {
+           NSWorkspace.shared.open(url) {
             return true
         }
 
