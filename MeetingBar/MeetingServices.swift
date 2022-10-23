@@ -301,10 +301,8 @@ func getRegexForMeetingService(_ service: MeetingServices) -> NSRegularExpressio
     let regexes = LinksRegex()
     let mirror = Mirror(reflecting: regexes)
 
-    for child in mirror.children {
-        if child.label == String(describing: service) {
-            return child.value as? NSRegularExpression
-        }
+    if let linkRegex = mirror.children.first(where: { $0.label == String(describing: service) }) {
+        return linkRegex.value as? NSRegularExpression
     }
     return nil
 }

@@ -105,7 +105,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
 
         // Settings change observers
-        appearanceSettingsObserver = Defaults.observe(keys: .statusbarEventTitleLength, .eventTimeFormat, .eventTitleIconFormat, .showEventMaxTimeUntilEventThreshold, .showEventMaxTimeUntilEventEnabled, .showEventDetails, .shortenEventTitle, .menuEventTitleLength, .showEventEndTime, .showMeetingServiceIcon, .timeFormat, .bookmarks, .eventTitleFormat, options: []) {
+        appearanceSettingsObserver = Defaults.observe(
+            keys: .statusbarEventTitleLength, .eventTimeFormat,
+            .eventTitleIconFormat, .showEventMaxTimeUntilEventThreshold,
+            .showEventMaxTimeUntilEventEnabled, .showEventDetails,
+            .shortenEventTitle, .menuEventTitleLength,
+            .showEventEndTime, .showMeetingServiceIcon,
+            .timeFormat, .bookmarks, .eventTitleFormat,
+            options: []
+        ) {
             self.statusBarItem.updateTitle()
             self.statusBarItem.updateMenu()
         }
@@ -127,7 +135,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                 SMLoginItemSetEnabled(AutoLauncher.bundleIdentifier as CFString, change.newValue)
             }
         }
-        eventFiltersObserver = Defaults.observe(keys: .selectedCalendarIDs, .showEventsForPeriod, .disablePastEvents, .pastEventsAppereance, .declinedEventsAppereance, .showPendingEvents, .allDayEvents, .nonAllDayEvents, .personalEventsAppereance, .showEventsForPeriod, options: []) {
+        eventFiltersObserver = Defaults.observe(
+            keys: .selectedCalendarIDs, .showEventsForPeriod,
+            .disablePastEvents, .pastEventsAppereance,
+            .declinedEventsAppereance, .showPendingEvents,
+            .allDayEvents, .nonAllDayEvents,
+            .personalEventsAppereance, .showEventsForPeriod,
+            options: []
+        ) {
             self.statusBarItem.loadCalendars()
         }
         preferredLanguageObserver = Defaults.observe(.preferredLanguage) { change in
@@ -161,7 +176,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             eventStore = GCEventStore.shared
 
             NotificationCenter.default.removeObserver(self, name: .EKEventStoreChanged, object: EKEventStore.shared)
-            NSAppleEventManager.shared().setEventHandler(self, andSelector: #selector(handleURLEvent(getURLEvent:replyEvent:)), forEventClass: AEEventClass(kInternetEventClass), andEventID: AEEventID(kAEGetURL))
+            NSAppleEventManager.shared().setEventHandler(self,
+                                                         andSelector: #selector(handleURLEvent(getURLEvent:replyEvent:)),
+                                                         forEventClass: AEEventClass(kInternetEventClass),
+                                                         andEventID: AEEventID(kAEGetURL))
         }
     }
 
@@ -197,7 +215,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         case "JOIN_ACTION", UNNotificationDefaultActionIdentifier:
             if response.notification.request.content.categoryIdentifier == "EVENT" || response.notification.request.content.categoryIdentifier == "SNOOZE_EVENT" {
                 if let eventID = response.notification.request.content.userInfo["eventID"] as? String {
-                    if let event = statusBarItem.events.filter({ $0.ID == eventID }).first {
+                    if let event = statusBarItem.events.first(where: { $0.ID == eventID }) {
                         NSLog("Join \(event.title) event from notication")
                         event.openMeeting()
                     }
@@ -223,7 +241,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     func handleSnoozeEvent(_ response: UNNotificationResponse, _ action: NotificationEventTimeAction) {
         if response.notification.request.content.categoryIdentifier == "EVENT" || response.notification.request.content.categoryIdentifier == "SNOOZE_EVENT" {
             if let eventID = response.notification.request.content.userInfo["eventID"] as? String {
-                if let event = statusBarItem.events.filter({ $0.ID == eventID }).first {
+                if let event = statusBarItem.events.first(where: { $0.ID == eventID }) {
                     if action.durationInSeconds == 0 {
                         NSLog("Snooze event until start")
                     } else {

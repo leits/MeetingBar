@@ -89,17 +89,19 @@ struct AccessScreen: View {
         Defaults[.eventStoreProvider] = provider
         if let app = NSApplication.shared.delegate as! AppDelegate? {
             app.setEventStoreProvider(provider: provider)
-            _ = app.eventStore.signIn().done {
-                DispatchQueue.main.async {
-                    Defaults[.onboardingCompleted] = true
-                    app.setup()
-                    app.statusBarItem.loadCalendars()
+            _ = app.eventStore.signIn()
+                .done {
+                    DispatchQueue.main.async {
+                        Defaults[.onboardingCompleted] = true
+                        app.setup()
+                        app.statusBarItem.loadCalendars()
 
-                    self.viewRouter.currentScreen = .calendars
+                        self.viewRouter.currentScreen = .calendars
+                    }
                 }
-            }.catch { _ in
-                requestFailed = true
-            }
+                .catch { _ in
+                    requestFailed = true
+                }
         }
     }
 }

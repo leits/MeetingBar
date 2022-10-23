@@ -112,7 +112,8 @@ struct EditScriptModal: View {
                 }.disabled(self.editedScript == self.script)
             }
             Spacer()
-        }.padding().frame(width: 500, height: 500)
+        }.padding()
+            .frame(width: 500, height: 500)
             .onAppear { self.editedScript = self.script }
             .alert(isPresented: $showingAlert) {
                 Alert(title: Text("preferences_advanced_wrong_location_title".loco()),

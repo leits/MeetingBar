@@ -71,7 +71,20 @@ class MBEvent {
     let recurrent: Bool
     var attendees: [MBEventAttendee] = []
 
-    init(ID: String, lastModifiedDate: Date?, title: String?, status: MBEventStatus, notes: String?, location: String?, url: URL?, organizer: MBEventOrganizer?, attendees: [MBEventAttendee] = [], startDate: Date, endDate: Date, isAllDay: Bool, recurrent: Bool, calendar: MBCalendar) {
+    init(ID: String,
+         lastModifiedDate: Date?,
+         title: String?,
+         status: MBEventStatus,
+         notes: String?,
+         location: String?,
+         url: URL?,
+         organizer: MBEventOrganizer?,
+         attendees: [MBEventAttendee] = [],
+         startDate: Date,
+         endDate: Date,
+         isAllDay: Bool,
+         recurrent: Bool,
+         calendar: MBCalendar) {
         self.calendar = calendar
         self.ID = ID
         self.lastModifiedDate = lastModifiedDate
@@ -214,7 +227,7 @@ func getNextEvent(events: [MBEvent]) -> MBEvent? {
 
     // Filter out personal events, if not marked as 'active'
     if Defaults[.personalEventsAppereance] != .show_active {
-        nextEvents = nextEvents.filter { $0.attendees.count > 0 }
+        nextEvents = nextEvents.filter { !$0.attendees.isEmpty }
     }
 
     for event in nextEvents {

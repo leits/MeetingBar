@@ -87,10 +87,10 @@ class StatusBarItemController {
 
         _ = appdelegate.eventStore.fetchEventsForDateRange(calendars: calendars.filter(\.selected), dateFrom: dateFrom, dateTo: dateTo).done { events in
             let filteredEvents = filterEvents(events)
-            self.events = filteredEvents.sorted(by: { $0.startDate.compare($1.startDate) == .orderedAscending })
+            self.events = filteredEvents.sorted { $0.startDate.compare($1.startDate) == .orderedAscending }
 
             // Update dismissed events in case the event end date has changed.
-            if Defaults[.dismissedEvents].count > 0 {
+            if !Defaults[.dismissedEvents].isEmpty {
                 var dismissedEvents: [ProcessedEvent] = []
                 for dismissedEvent in Defaults[.dismissedEvents] {
                     if let event = self.events.first(where: { $0.ID == dismissedEvent.id }), event.endDate.timeIntervalSinceNow > 0 {
@@ -116,7 +116,7 @@ class StatusBarItemController {
         var time = ""
         var nextEvent: MBEvent!
         let nextEventState: NextEventState
-        if !calendars.filter(\.selected).isEmpty {
+        if calendars.contains(where: { $0.selected }) {
             nextEvent = getNextEvent(events: events)
             nextEventState = {
                 guard let nextEvent = nextEvent else {
@@ -235,7 +235,11 @@ class StatusBarItemController {
 
                     menuTitle.append(NSAttributedString(string: title, attributes: styles))
 
-                    menuTitle.append(NSAttributedString(string: "\n" + time, attributes: [NSAttributedString.Key.font: NSFont.systemFont(ofSize: 9), NSAttributedString.Key.foregroundColor: NSColor.lightGray]))
+                    let timeAttributes = [
+                        NSAttributedString.Key.font: NSFont.systemFont(ofSize: 9),
+                        NSAttributedString.Key.foregroundColor: NSColor.lightGray
+                    ]
+                    menuTitle.append(NSAttributedString(string: "\n" + time, attributes: timeAttributes))
 
                     menuTitle.addAttributes([NSAttributedString.Key.paragraphStyle: paragraphStyle], range: NSRange(location: 0, length: menuTitle.length))
                 }
@@ -263,7 +267,7 @@ class StatusBarItemController {
         statusItemMenu.autoenablesItems = false
         statusItemMenu.removeAllItems()
 
-        if !calendars.filter(\.selected).isEmpty {
+        if calendars.contains(where: { $0.selected }) {
             let today = Date()
             switch Defaults[.showEventsForPeriod] {
             case .today:
@@ -351,7 +355,7 @@ class StatusBarItemController {
             return
         }
 
-        if event.attendees.count == 0, Defaults[.personalEventsAppereance] == .hide {
+        if event.attendees.isEmpty, Defaults[.personalEventsAppereance] == .hide {
             return
         }
 
@@ -437,7 +441,7 @@ class StatusBarItemController {
             }
         }
 
-        if event.attendees.count == 0, Defaults[.personalEventsAppereance] == .show_inactive {
+        if event.attendees.isEmpty, Defaults[.personalEventsAppereance] == .show_inactive {
             styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
             shouldShowAsActive = false
         }
@@ -633,7 +637,7 @@ class StatusBarItemController {
     func createJoinSection() {
         // MENU ITEM: Join the meeting
         var nextEvent: MBEvent?
-        if !calendars.filter(\.selected).isEmpty {
+        if calendars.contains(where: { $0.selected }) {
             nextEvent = getNextEvent(events: events)
         }
 

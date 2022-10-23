@@ -78,7 +78,7 @@ struct StatusBarSection: View {
             HStack {
                 Picker("preferences_appearance_status_bar_time_title".loco(), selection: $eventTimeFormat) {
                     Text("preferences_appearance_status_bar_time_show_value".loco()).tag(EventTimeFormat.show)
-                    if #available(OSX 11.0, *) {} else {
+                    if #unavailable(OSX 11.0) {
                         Text("preferences_appearance_status_bar_time_show_under_title_value".loco()).tag(EventTimeFormat.show_under_title)
                     }
                     Text("preferences_appearance_status_bar_time_hide_value".loco()).tag(EventTimeFormat.hide)

@@ -47,7 +47,13 @@ extension EKEventStore: EventStore {
             var allCalendars: [MBCalendar] = []
 
             for calendar in EKEventStore.shared.calendars(for: .event) {
-                let calendar = MBCalendar(title: calendar.title, ID: calendar.calendarIdentifier, source: calendar.source.title, email: _getGmailAccount(calendar.source.description), color: calendar.color)
+                let calendar = MBCalendar(
+                    title: calendar.title,
+                    ID: calendar.calendarIdentifier,
+                    source: calendar.source.title,
+                    email: _getGmailAccount(calendar.source.description),
+                    color: calendar.color
+                )
                 allCalendars.append(calendar)
             }
             return seal.fulfill(allCalendars)
@@ -66,7 +72,7 @@ extension EKEventStore: EventStore {
 
             var events: [MBEvent] = []
             for rawEvent in EKEventStore.shared.events(matching: predicate) {
-                let calendar = calendars.first(where: { $0.ID == rawEvent.calendar.calendarIdentifier })!
+                let calendar = calendars.first { $0.ID == rawEvent.calendar.calendarIdentifier }!
 
                 var status: MBEventStatus
                 switch rawEvent.status {
@@ -116,11 +122,20 @@ extension EKEventStore: EventStore {
                 }
 
                 let event = MBEvent(
-                    ID: rawEvent.calendarItemIdentifier, lastModifiedDate: rawEvent.lastModifiedDate,
-                    title: rawEvent.title, status: status, notes: rawEvent.notes, location: rawEvent.location,
-                    url: rawEvent.url, organizer: organizer, attendees: attendees,
-                    startDate: rawEvent.startDate, endDate: rawEvent.endDate,
-                    isAllDay: rawEvent.isAllDay, recurrent: rawEvent.hasRecurrenceRules, calendar: calendar
+                    ID: rawEvent.calendarItemIdentifier,
+                    lastModifiedDate: rawEvent.lastModifiedDate,
+                    title: rawEvent.title,
+                    status: status,
+                    notes: rawEvent.notes,
+                    location: rawEvent.location,
+                    url: rawEvent.url,
+                    organizer: organizer,
+                    attendees: attendees,
+                    startDate: rawEvent.startDate,
+                    endDate: rawEvent.endDate,
+                    isAllDay: rawEvent.isAllDay,
+                    recurrent: rawEvent.hasRecurrenceRules,
+                    calendar: calendar
                 )
                 events.append(event)
             }

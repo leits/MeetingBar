@@ -1,148 +1,20 @@
-
-whitelist_rules:
-  - anyobject_protocol
-  - array_init
-  - attributes
-  - block_based_kvo
-  - class_delegate_protocol
-  - closing_brace
-  - closure_end_indentation
-  - closure_parameter_position
-  - closure_spacing
-  - collection_alignment
-  - colon
-  - comma
-  - compiler_protocol_init
-  - conditional_returns_on_newline
-  - contains_over_filter_count
-  - contains_over_filter_is_empty
-  - contains_over_first_not_nil
-  - contains_over_range_nil_comparison
-  - control_statement
-  - custom_rules
-  - deployment_target
-  - discarded_notification_center_observer
-  - discouraged_direct_init
-  - discouraged_object_literal
-  - discouraged_optional_collection
-  - duplicate_enum_cases
-  - duplicate_imports
-  - dynamic_inline
-  - empty_collection_literal
-  - empty_count
-  - empty_enum_arguments
-  - empty_parameters
-  - empty_parentheses_with_trailing_closure
-  - empty_string
-  - empty_xctest_method
-  - enum_case_associated_value_count
-  - explicit_init
-  - fallthrough
-  - fatal_error_message
-  - first_where
-  - flatmap_over_map_reduce
-  - for_where
-  - generic_type_name
-  - identical_operands
-  - identifier_name
-  - implicit_getter
-  - implicit_return
-  - inert_defer
-  - is_disjoint
-  - joined_default_parameter
-  - last_where
-  - leading_whitespace
-  - legacy_cggeometry_functions
-  - legacy_constant
-  - legacy_constructor
-  - legacy_hashing
-  - legacy_multiple
-  - legacy_nsgeometry_functions
-  - legacy_random
-  - literal_expression_end_indentation
-  - lower_acl_than_parent
-  - mark
-  - modifier_order
-  - multiline_arguments
-  - multiline_function_chains
-  - multiline_literal_brackets
-  - multiline_parameters
-  - multiline_parameters_brackets
-  - nimble_operator
-  - no_extension_access_modifier
-  - no_fallthrough_only
-  - no_space_in_method_call
-  - notification_center_detachment
-  - nsobject_prefer_isequal
+disabled_rules:
+  - force_try
+  - multiple_closures_with_trailing_closure
+  - force_cast
+  - cyclomatic_complexity
+  - type_name
+  - file_length
+  - function_body_length
+  - type_body_length
+opt_in_rules:
   - number_separator
-  - opening_brace
-  - operator_usage_whitespace
-  - operator_whitespace
-  - orphaned_doc_comment
-  - overridden_super_call
-  - prefer_self_type_over_type_of_self
-  - private_action
-  - private_outlet
-  - private_unit_test
-  - prohibited_nan_comparison
-  - prohibited_super_call
-  - protocol_property_accessors_order
-  - reduce_boolean
-  - reduce_into
-  - redundant_discardable_let
-  - redundant_nil_coalescing
-  - redundant_objc_attribute
-  - redundant_optional_initialization
-  - redundant_set_access_control
-  - redundant_string_enum_value
-  - redundant_type_annotation
-  - redundant_void_return
-  - required_enum_case
-  - return_value_from_void_function
-  - return_arrow_whitespace
-  - shorthand_operator
-  - sorted_first_last
-  - statement_position
-  - static_operator
-  - strong_iboutlet
-  - superfluous_disable_command
-  - switch_case_alignment
-  - switch_case_on_newline
-  - syntactic_sugar
-  - todo
-  - toggle_bool
-  - trailing_closure
-  - trailing_comma
-  - trailing_newline
-  - trailing_semicolon
-  - trailing_whitespace
-  - tuple_pattern
-  - unavailable_function
-  - unneeded_break_in_switch
-  - unneeded_parentheses_in_closure_argument
-  - unowned_variable_capture
-  - untyped_error_in_catch
-  - unused_capture_list
-  - unused_closure_parameter
-  - unused_control_flow_label
-  - unused_enumerated
-  - unused_optional_binding
-  - unused_setter_value
-  - valid_ibinspectable
-  - vertical_parameter_alignment
-  - vertical_parameter_alignment_on_call
-  - vertical_whitespace_closing_braces
-  - vertical_whitespace_opening_braces
-  - void_return
-  - weak_delegate
-  - xct_specific_matcher
-  - xctfail_message
-  - yoda_condition
 analyzer_rules:
   - unused_declaration
   - unused_import
 number_separator:
   minimum_length: 5
+line_length: 200
 identifier_name:
   max_length:
     warning: 100
@@ -162,16 +34,3 @@ identifier_name:
     - 'x2'
     - 'y1'
     - 'y2'
-custom_rules:
-  no_nsrect:
-    regex: '\bNSRect\b'
-    match_kinds: typeidentifier
-    message: 'Use CGRect instead of NSRect'
-  no_nssize:
-    regex: '\bNSSize\b'
-    match_kinds: typeidentifier
-    message: 'Use CGSize instead of NSSize'
-  no_nspoint:
-    regex: '\bNSPoint\b'
-    match_kinds: typeidentifier
-    message: 'Use CGPoint instead of NSPoint'

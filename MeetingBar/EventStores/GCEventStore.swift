@@ -203,12 +203,19 @@ class GCEventStore: NSObject, EventStore, OIDExternalUserAgent {
                                     let recurrent = (item["recurringEventId"] != nil) ? true : false
 
                                     let event = MBEvent(
-                                        ID: eventID, lastModifiedDate: lastModifiedDate,
-                                        title: title, status: status,
-                                        notes: notes, location: location, url: url,
-                                        organizer: organizer, attendees: attendees,
-                                        startDate: startDate, endDate: endDate,
-                                        isAllDay: isAllDay, recurrent: recurrent,
+                                        ID: eventID,
+                                        lastModifiedDate: lastModifiedDate,
+                                        title: title,
+                                        status: status,
+                                        notes: notes,
+                                        location: location,
+                                        url: url,
+                                        organizer: organizer,
+                                        attendees: attendees,
+                                        startDate: startDate,
+                                        endDate: endDate,
+                                        isAllDay: isAllDay,
+                                        recurrent: recurrent,
                                         calendar: calendar
                                     )
                                     events.append(event)
@@ -240,8 +247,8 @@ class GCEventStore: NSObject, EventStore, OIDExternalUserAgent {
                 var events: [MBEvent] = []
                 for result in results {
                     switch result {
-                    case let .fulfilled(t):
-                        events.append(contentsOf: t)
+                    case let .fulfilled(event):
+                        events.append(contentsOf: event)
                     case .rejected:
                         continue
                     }
@@ -267,15 +274,21 @@ class GCEventStore: NSObject, EventStore, OIDExternalUserAgent {
                         return
                     }
 
+                    let scopes = [
+                        "email",
+                        "https://www.googleapis.com/auth/calendar.calendarlist.readonly",
+                        "https://www.googleapis.com/auth/calendar.events.readonly"
+                    ]
+
                     let request = OIDAuthorizationRequest(configuration: config,
                                                           clientId: Self.kClientID,
                                                           clientSecret: Self.kClientSecret,
-                                                          scopes: ["email", "https://www.googleapis.com/auth/calendar.calendarlist.readonly", "https://www.googleapis.com/auth/calendar.events.readonly"],
+                                                          scopes: scopes,
                                                           redirectURL: URL(string: Self.kRedirectURI)!,
                                                           responseType: OIDResponseTypeCode,
                                                           additionalParameters: nil)
 
-                    self.currentAuthorizationFlow = OIDAuthState.authState(byPresenting: request, externalUserAgent: self, callback: { state, error in
+                    self.currentAuthorizationFlow = OIDAuthState.authState(byPresenting: request, externalUserAgent: self) { state, error in
                         guard error == nil else {
                             seal.reject(error!)
                             return
@@ -288,7 +301,7 @@ class GCEventStore: NSObject, EventStore, OIDExternalUserAgent {
                         } else {
                             seal.reject(NSError(domain: "GoogleSignIn", code: 0, userInfo: nil))
                         }
-                    })
+                    }
                 }
             }
         }

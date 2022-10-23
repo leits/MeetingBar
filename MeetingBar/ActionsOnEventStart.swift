@@ -62,9 +62,11 @@ class ActionsOnEventStart: NSObject {
             if autoJoinActionActive && (nonAlldayCandidateForAutoJoin || allDayCandidate) {
                 var events = Defaults[.processedEventsForAutoJoin]
 
-                let matchedEvent = events.filter { $0.id == nextEvent.ID }.first
+                let matchedEvent = events.first { $0.id == nextEvent.ID }
 
-                // if a script was executed already for the event, but the start date is different, we will remove the the current event from the scheduled events, so that we can run the script again -> this is an edge case when the event was already notified for, but scheduled for a later time.
+                // if a script was executed already for the event, but the start date is different,
+                // we will remove the the current event from the scheduled events, so that we can run the script again ->
+                // this is an edge case when the event was already notified for, but scheduled for a later time.
                 if matchedEvent == nil || matchedEvent?.lastModifiedDate != nextEvent.lastModifiedDate {
                     if nextEvent.meetingLink != nil {
                         nextEvent.openMeeting()
@@ -90,9 +92,12 @@ class ActionsOnEventStart: NSObject {
             if runEventStartScriptActionActive, nonAlldayCandidateForRunStartEventScript || allDayCandidate {
                 var events = Defaults[.processedEventsForRunScriptOnEventStart]
 
-                let matchedEvent = events.filter { $0.id == nextEvent.ID }.first
+                let matchedEvent = events.first { $0.id == nextEvent.ID }
 
-                // if a script was executed already for the event, but the start date is different, we will remove the the current event from the scheduled events, so that we can run the script again -> this is an edge case when the event was already notified for, but scheduled for a later time.
+                // if a script was executed already for the event, but the start date is different,
+                // we will remove the the current event from the scheduled events,
+                // so that we can run the script again ->
+                // this is an edge case when the event was already notified for, but scheduled for a later time.
                 if matchedEvent == nil || matchedEvent?.lastModifiedDate != nextEvent.lastModifiedDate {
                     runMeetingStartsScript(event: nextEvent, type: ScriptType.meetingStart)
 
