@@ -1,6 +1,6 @@
 # Changelog for Meetingbar
 
-For next releases info look here: https://github.com/leits/MeetingBar/releases
+For next releases info look here: <https://github.com/leits/MeetingBar/releases>
 
 ## Version 4.0.0
 
