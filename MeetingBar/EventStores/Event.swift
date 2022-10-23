@@ -158,6 +158,7 @@ class MBEvent {
             sendNotification("status_bar_error_link_missed_title".loco(title), "status_bar_error_link_missed_message".loco())
         }
     }
+
 }
 
 func filterEvents(_ events: [MBEvent]) -> [MBEvent] {
@@ -180,7 +181,9 @@ func filterEvents(_ events: [MBEvent]) -> [MBEvent] {
             case .show:
                 break
             case .show_with_meeting_link_only:
-                if calendarEvent.meetingLink?.url == nil { continue } // Skip this event
+                if calendarEvent.meetingLink?.url == nil {
+                    continue // Skip this event
+                }
             case .hide:
                 continue // Skip this event
             }
@@ -190,7 +193,9 @@ func filterEvents(_ events: [MBEvent]) -> [MBEvent] {
             case .show, .show_inactive_without_meeting_link:
                 break
             case .hide_without_meeting_link:
-                if calendarEvent.meetingLink?.url == nil { continue } // Skip this event
+                if calendarEvent.meetingLink?.url == nil {
+                    continue // Skip this event
+                }
             }
         }
 
@@ -199,7 +204,9 @@ func filterEvents(_ events: [MBEvent]) -> [MBEvent] {
         case .show, .show_inactive, .show_underlined:
             break
         case .hide:
-            if calendarEvent.participationStatus == .pending { continue } // Skip this event
+            if calendarEvent.participationStatus == .pending {
+                continue  // Skip this event
+            }
         }
 
         filteredCalendarEvents.append(calendarEvent)

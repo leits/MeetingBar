@@ -34,7 +34,7 @@ struct AccessScreen: View {
                         }
                         Spacer()
                         VStack {
-                            Button(action: { requestAccess(provider: .MacOSEventKit) }) {
+                            Button(action: { requestAccess(provider: .macOSEventKit) }) {
                                 Text("Use macOS Calendar").font(.headline)
                             }
                         }.frame(width: 200, height: 50)
@@ -48,7 +48,7 @@ struct AccessScreen: View {
                         }
                         Spacer()
                         VStack {
-                            Button(action: { requestAccess(provider: .GoogleCalendar) }, label: {
+                            Button(action: { requestAccess(provider: .googleCalendar) }, label: {
                                 Image("googleSignInButton").resizable().aspectRatio(contentMode: .fit).frame(width: 150)
                             }).buttonStyle(PlainButtonStyle())
                         }.frame(width: 200, height: 50)
@@ -56,11 +56,11 @@ struct AccessScreen: View {
                 }
             } else {
                 Spacer()
-                if eventStoreProvider == .GoogleCalendar {
+                if eventStoreProvider == .googleCalendar {
                     VStack(spacing: 20) {
                         Text("access_screen_provider_gcalendar_sign_in_title".loco()).bold()
                         Text("access_screen_provider_gcalendar_sign_in_description".loco())
-                        Button("access_screen_try_again".loco()) { requestAccess(provider: .GoogleCalendar) }
+                        Button("access_screen_try_again".loco()) { requestAccess(provider: .googleCalendar) }
                     }
                 } else {
                     if !requestFailed {
@@ -83,7 +83,7 @@ struct AccessScreen: View {
         }.padding()
     }
 
-    func requestAccess(provider: eventStoreProvider) {
+    func requestAccess(provider: EventStoreProvider) {
         providerSelected = true
 
         Defaults[.eventStoreProvider] = provider

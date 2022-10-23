@@ -54,24 +54,24 @@ struct CalendarsTab: View {
                     Text("preferences_calendars_provider_section_title".loco()).font(.headline).bold()
                 }
                 HStack {
-                    if eventStoreProvider == .GoogleCalendar {
+                    if eventStoreProvider == .googleCalendar {
                         Text("Google Calendar API")
                         Button("preferences_calendars_provider_gcalendar_change_account".loco()) {
                             _ = appDelegate!.eventStore.signOut().done {
-                                changeEventStoreProvider(.GoogleCalendar)
+                                changeEventStoreProvider(.googleCalendar)
                             }
                         }
                         Spacer()
 
-                        Button("preferences_calendars_provider_macos_switch".loco()) { changeEventStoreProvider(.MacOSEventKit) }
-                    } else if eventStoreProvider == .MacOSEventKit {
+                        Button("preferences_calendars_provider_macos_switch".loco()) { changeEventStoreProvider(.macOSEventKit) }
+                    } else if eventStoreProvider == .macOSEventKit {
                         Text("access_screen_provider_macos_title".loco())
                         Button("preferences_calendars_add_account_button".loco()) { self.showingAddAcountModal.toggle() }
                             .sheet(isPresented: $showingAddAcountModal) {
                                 AddAccountModal()
                             }
                         Spacer()
-                        Button("preferences_calendars_provider_gcalendar_switch".loco()) { changeEventStoreProvider(.GoogleCalendar) }
+                        Button("preferences_calendars_provider_gcalendar_switch".loco()) { changeEventStoreProvider(.googleCalendar) }
                     }
                 }.padding(.horizontal, 10)
             }
@@ -80,7 +80,7 @@ struct CalendarsTab: View {
             .padding()
     }
 
-    func changeEventStoreProvider(_ provider: eventStoreProvider) {
+    func changeEventStoreProvider(_ provider: EventStoreProvider) {
         selectedCalendarIDs = []
         appDelegate!.statusBarItem.calendars = []
         appDelegate!.statusBarItem.events = []

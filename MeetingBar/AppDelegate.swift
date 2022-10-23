@@ -164,15 +164,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
     }
 
-    func setEventStoreProvider(provider: eventStoreProvider) {
+    func setEventStoreProvider(provider: EventStoreProvider) {
         Defaults[.eventStoreProvider] = provider
         switch provider {
-        case .MacOSEventKit:
+        case .macOSEventKit:
             eventStore = EKEventStore.shared
 
             NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.eventStoreChanged), name: .EKEventStoreChanged, object: EKEventStore.shared)
             NSAppleEventManager.shared().removeEventHandler(forEventClass: AEEventClass(kInternetEventClass), andEventID: AEEventID(kAEGetURL))
-        case .GoogleCalendar:
+        case .googleCalendar:
             eventStore = GCEventStore.shared
 
             NotificationCenter.default.removeObserver(self, name: .EKEventStoreChanged, object: EKEventStore.shared)

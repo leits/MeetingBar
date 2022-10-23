@@ -31,4 +31,5 @@ class MBCalendar: Hashable {
     static func == (lhs: MBCalendar, rhs: MBCalendar) -> Bool {
         lhs.ID == rhs.ID
     }
+
 }

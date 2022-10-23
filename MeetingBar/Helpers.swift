@@ -73,8 +73,8 @@ func cleanUpNotes(_ notes: String) -> String {
     return cleanNotes
 }
 
-func compareVersions(_ version_x: String, _ version_y: String) -> Bool {
-    version_x.compare(version_y, options: .numeric) == .orderedDescending
+func compareVersions(_ versionX: String, _ versionY: String) -> Bool {
+    versionX.compare(versionY, options: .numeric) == .orderedDescending
 }
 
 func addInstalledBrowser() {

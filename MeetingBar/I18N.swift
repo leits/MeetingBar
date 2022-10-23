@@ -64,4 +64,5 @@ final class I18N {
         let format = localizedString(for: key)
         return String.localizedStringWithFormat(format, firstArg, secondArg, thirdArg)
     }
+
 }

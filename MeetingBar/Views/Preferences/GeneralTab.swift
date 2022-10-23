@@ -168,13 +168,13 @@ struct PatronageModal: View {
                 }.frame(width: 120)
                 Spacer()
                 VStack(alignment: .leading) {
-                    Button(action: { purchasePatronage(patronageProducts.threeMonth) }) {
+                    Button(action: { purchasePatronage(PatronageProducts.threeMonth) }) {
                         Text("preferences_general_patron_three_months".loco()).frame(width: 150)
                     }
-                    Button(action: { purchasePatronage(patronageProducts.sixMonth) }) {
+                    Button(action: { purchasePatronage(PatronageProducts.sixMonth) }) {
                         Text("preferences_general_patron_six_months".loco()).frame(width: 150)
                     }
-                    Button(action: { purchasePatronage(patronageProducts.twelveMonth) }) {
+                    Button(action: { purchasePatronage(PatronageProducts.twelveMonth) }) {
                         Text("preferences_general_patron_twelve_months".loco()).frame(width: 150)
                     }
                     Text("preferences_general_patron_description".loco()).font(.system(size: 10))

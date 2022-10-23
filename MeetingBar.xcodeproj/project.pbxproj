@@ -47,6 +47,7 @@
 		40DC7054250E5E1000217DD9 /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC7053250E5E1000217DD9 /* ServiceManagement.framework */; };
 		40E60313250E81EA005986C7 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40E60312250E81EA005986C7 /* main.swift */; };
 		4654E66227F24A3F001848AB /* Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4654E66127F24A3F001848AB /* Protocol.swift */; };
+		467351B729057BC900EE3987 /* StringExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 467351B629057BC900EE3987 /* StringExtensionsTests.swift */; };
 		46E4794C2801D53B00B48059 /* MeetingServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E4794B2801D53B00B48059 /* MeetingServices.swift */; };
 		46E4794E2802141800B48059 /* Calendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E4794D2802141800B48059 /* Calendar.swift */; };
 		46E479502802155700B48059 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E4794F2802155700B48059 /* Event.swift */; };
@@ -132,6 +133,7 @@
 		40DC7053250E5E1000217DD9 /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = System/Library/Frameworks/ServiceManagement.framework; sourceTree = SDKROOT; };
 		40E60312250E81EA005986C7 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		4654E66127F24A3F001848AB /* Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocol.swift; sourceTree = "<group>"; };
+		467351B629057BC900EE3987 /* StringExtensionsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringExtensionsTests.swift; sourceTree = "<group>"; };
 		46E4794B2801D53B00B48059 /* MeetingServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingServices.swift; sourceTree = "<group>"; };
 		46E4794D2802141800B48059 /* Calendar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Calendar.swift; sourceTree = "<group>"; };
 		46E4794F2802155700B48059 /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
@@ -286,6 +288,7 @@
 			isa = PBXGroup;
 			children = (
 				14619A1D25EC26DF00F3098F /* MeetingServicesTests.swift */,
+				467351B629057BC900EE3987 /* StringExtensionsTests.swift */,
 				46E4795128023A0C00B48059 /* HelpersTests.swift */,
 				14619A1F25EC26DF00F3098F /* Info.plist */,
 			);
@@ -580,6 +583,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				467351B729057BC900EE3987 /* StringExtensionsTests.swift in Sources */,
 				14619A1E25EC26DF00F3098F /* MeetingServicesTests.swift in Sources */,
 				46E4795228023A0C00B48059 /* HelpersTests.swift in Sources */,
 			);

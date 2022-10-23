@@ -54,4 +54,5 @@ class AutoLauncherAppDelegate: NSObject, NSApplicationDelegate {
     private func terminateApp() {
         NSApp.terminate(nil)
     }
+
 }

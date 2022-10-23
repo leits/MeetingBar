@@ -34,11 +34,13 @@ let meetings = [
 ]
 
 class MeetingServicesTests: XCTestCase {
-    func test_detectMeetingLink() throws {
+
+    func testDetectMeetingLink() throws {
         for meeting in meetings {
             let result = detectMeetingLink(meeting.url.absoluteString)
             XCTAssertNotNil(result)
             XCTAssertEqual(result, meeting)
         }
     }
+
 }

@@ -17,7 +17,7 @@ extension Defaults.Keys {
     static let patronageDuration = Key<Int>("patronageDuration", default: 0)
 
     static let selectedCalendarIDs = Key<[String]>("selectedCalendarIDs", default: [])
-    static let eventStoreProvider = Key<eventStoreProvider>("eventStoreProvider", default: .MacOSEventKit)
+    static let eventStoreProvider = Key<EventStoreProvider>("eventStoreProvider", default: .macOSEventKit)
 
     static let onboardingCompleted = Key<Bool>("onboardingCompleted", default: false)
 

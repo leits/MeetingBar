@@ -11,7 +11,7 @@ import Foundation
 import Defaults
 import SwiftyStoreKit
 
-struct patronageProducts {
+struct PatronageProducts {
     static let threeMonth = "leits.MeetingBar.patronage.3Month"
     static let sixMonth = "leits.MeetingBar.patronage.6Month"
     static let twelveMonth = "leits.MeetingBar.patronage.12Month"
@@ -40,13 +40,13 @@ func checkAppSource() {
     }
 }
 
-func getPatronageDurationFromProductID(_ ProductID: String) -> Int {
+func getPatronageDurationFromProductID(_ productID: String) -> Int {
     var patronageDuration = 0
-    if ProductID == patronageProducts.threeMonth {
+    if productID == PatronageProducts.threeMonth {
         patronageDuration = 3
-    } else if ProductID == patronageProducts.sixMonth {
+    } else if productID == PatronageProducts.sixMonth {
         patronageDuration = 6
-    } else if ProductID == patronageProducts.twelveMonth {
+    } else if productID == PatronageProducts.twelveMonth {
         patronageDuration = 12
     }
     return patronageDuration
