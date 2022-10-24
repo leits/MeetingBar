@@ -9,6 +9,7 @@ import AppKit
 import Cocoa
 import Defaults
 import EventKit
+import Foundation
 
 struct Bookmark: Encodable, Decodable, Hashable {
     var name: String
@@ -159,6 +160,30 @@ func createNSViewFromText(text: String) -> NSView {
 func getInstallationDate() -> Date? {
     let urlToDocumentsFolder: URL? = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last
     return try? FileManager.default.attributesOfItem(atPath: (urlToDocumentsFolder?.path)!)[.creationDate] as? Date
+}
+
+func maintainDefaultsBackwardCompatibility() {
+    if UserDefaults.standard.object(forKey: "useAppForZoomLinks") != nil {
+        if UserDefaults.standard.bool(forKey: "useAppForZoomLinks") {
+            Defaults[.zoomBrowser] = ZoomAppBrowser
+        }
+        UserDefaults.standard.removeObject(forKey: "useAppForZoomLinks")
+
+    }
+
+    if UserDefaults.standard.object(forKey: "useAppForTeamsLinks") != nil {
+        if UserDefaults.standard.bool(forKey: "useAppForTeamsLinks") {
+            Defaults[.teamsBrowser] = TeamsAppBrowser
+        }
+        UserDefaults.standard.removeObject(forKey: "useAppForTeamsLinks")
+    }
+
+    if UserDefaults.standard.object(forKey: "useAppForJitsiLinks") != nil {
+        if UserDefaults.standard.bool(forKey: "useAppForJitsiLinks") {
+            Defaults[.jitsiBrowser] = JitsiAppBrowser
+        }
+        UserDefaults.standard.removeObject(forKey: "useAppForJitsiLinks")
+    }
 }
 
 /*

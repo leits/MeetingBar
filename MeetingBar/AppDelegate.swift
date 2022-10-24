@@ -87,6 +87,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             addInstalledBrowser()
         }
 
+        // Backward compatibility for user defaults changes
+        maintainDefaultsBackwardCompatibility()
+        //
+
         // Shortcuts
         KeyboardShortcuts.onKeyUp(for: .createMeetingShortcut, action: createMeeting)
 

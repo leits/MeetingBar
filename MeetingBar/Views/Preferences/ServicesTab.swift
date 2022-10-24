@@ -14,9 +14,9 @@ struct ServicesTab: View {
     @Default(.meetBrowser) var meetBrowser
     @Default(.browserForCreateMeeting) var browserForCreateMeeting
     @Default(.defaultBrowser) var defaultBrowser
-    @Default(.useAppForZoomLinks) var useAppForZoomLinks
-    @Default(.useAppForTeamsLinks) var useAppForTeamsLinks
-    @Default(.useAppForJitsiLinks) var useAppForJitsiLinks
+    @Default(.zoomBrowser) var zoomBrowser
+    @Default(.teamsBrowser) var teamsBrowser
+    @Default(.jitsiBrowser) var jitsiBrowser
     @Default(.createMeetingServiceUrl) var createMeetingServiceUrl
     @Default(.createMeetingService) var createMeetingService
     @Default(.browsers) var allBrowser
@@ -41,17 +41,26 @@ struct ServicesTab: View {
                     }
                 }
 
-                Picker(selection: $useAppForZoomLinks, label: Text("preferences_services_link_zoom_title".loco()).frame(width: 200, alignment: .leading)) {
-                    Text("preferences_services_link_default_browser_value".loco()).tag(false)
-                    Text("preferences_services_link_zoom_value".loco()).tag(true)
+                Picker(selection: $zoomBrowser, label: Text("preferences_services_link_zoom_title".loco()).frame(width: 200, alignment: .leading)) {
+                    Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
+                    Text(ZoomAppBrowser.name).tag(ZoomAppBrowser)
+                    ForEach(allBrowser, id: \.self) { (browser: Browser) in
+                        Text(browser.name).tag(browser)
+                    }
                 }
-                Picker(selection: $useAppForTeamsLinks, label: Text("preferences_services_link_team_title".loco()).frame(width: 200, alignment: .leading)) {
-                    Text("preferences_services_link_default_browser_value".loco()).tag(false)
-                    Text("preferences_services_link_teams_value".loco()).tag(true)
+                Picker(selection: $teamsBrowser, label: Text("preferences_services_link_team_title".loco()).frame(width: 200, alignment: .leading)) {
+                    Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
+                    Text(TeamsAppBrowser.name).tag(TeamsAppBrowser)
+                    ForEach(allBrowser, id: \.self) { (browser: Browser) in
+                        Text(browser.name).tag(browser)
+                    }
                 }
-                Picker(selection: $useAppForJitsiLinks, label: Text("preferences_services_link_jitsi_title".loco()).frame(width: 200, alignment: .leading)) {
-                    Text("preferences_services_link_default_browser_value".loco()).tag(false)
-                    Text("preferences_services_link_jitsi_value".loco()).tag(true)
+                Picker(selection: $jitsiBrowser, label: Text("preferences_services_link_jitsi_title".loco()).frame(width: 200, alignment: .leading)) {
+                    Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
+                    Text(JitsiAppBrowser.name).tag(JitsiAppBrowser)
+                    ForEach(allBrowser, id: \.self) { (browser: Browser) in
+                        Text(browser.name).tag(browser)
+                    }
                 }
             }.padding(.horizontal, 10)
 

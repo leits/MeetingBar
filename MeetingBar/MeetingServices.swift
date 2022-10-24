@@ -168,7 +168,8 @@ func createMeeting() {
 func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?) {
     switch service {
     case .jitsi:
-        if Defaults[.useAppForJitsiLinks] {
+        let browser = browser ?? Defaults[.jitsiBrowser]
+        if browser == JitsiAppBrowser {
             var jitsiAppUrl = URLComponents(url: url, resolvingAgainstBaseURL: false)!
             jitsiAppUrl.scheme = "jitsi-meet"
             let result = jitsiAppUrl.url!.openInDefaultBrowser()
@@ -177,7 +178,7 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?
                 url.openInDefaultBrowser()
             }
         } else {
-            url.openIn(browser: browser ?? systemDefaultBrowser)
+            url.openIn(browser: browser)
         }
     case .meet:
         let browser = browser ?? Defaults[.meetBrowser]
@@ -189,7 +190,8 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?
         }
 
     case .teams:
-        if Defaults[.useAppForTeamsLinks] {
+        let browser = browser ?? Defaults[.teamsBrowser]
+        if browser == TeamsAppBrowser {
             var teamsAppURL = URLComponents(url: url, resolvingAgainstBaseURL: false)!
             teamsAppURL.scheme = "msteams"
             let result = teamsAppURL.url!.openInDefaultBrowser()
@@ -198,13 +200,13 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?
                 url.openInDefaultBrowser()
             }
         } else {
-            url.openIn(browser: browser ?? systemDefaultBrowser)
+            url.openIn(browser: browser)
         }
-
     case .zoom, .zoomgov:
-        if Defaults[.useAppForZoomLinks] {
+        let browser = browser ?? Defaults[.zoomBrowser]
+        if browser == ZoomAppBrowser {
             if url.absoluteString.contains("/my/") {
-                url.openIn(browser: browser ?? systemDefaultBrowser)
+                url.openIn(browser: systemDefaultBrowser)
             }
             let urlString = url.absoluteString.replacingOccurrences(of: "?", with: "&").replacingOccurrences(of: "/j/", with: "/join?confno=")
             var zoomAppUrl = URLComponents(url: URL(string: urlString)!, resolvingAgainstBaseURL: false)!
@@ -215,7 +217,7 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?
                 url.openInDefaultBrowser()
             }
         } else {
-            url.openIn(browser: browser ?? systemDefaultBrowser)
+            url.openIn(browser: browser)
         }
     case .zoom_native:
         let result = url.openInDefaultBrowser()

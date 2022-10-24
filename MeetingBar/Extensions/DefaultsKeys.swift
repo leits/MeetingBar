@@ -88,15 +88,14 @@ extension Defaults.Keys {
     static let createMeetingServiceUrl = Key<String>("createMeetingServiceUrl", default: "")
 
     static let meetBrowser = Key<Browser>("meetBrowser", default: systemDefaultBrowser)
+    static let zoomBrowser = Key<Browser>("zoomBrowser", default: systemDefaultBrowser)
+    static let teamsBrowser = Key<Browser>("teamsBrowser", default: systemDefaultBrowser)
+    static let jitsiBrowser = Key<Browser>("jitsiBrowser", default: systemDefaultBrowser)
 
     /**
      * browser used for creating a new meeting
      */
     static let browserForCreateMeeting = Key<Browser>("browserForCreateMeeting", default: systemDefaultBrowser)
-
-    static let useAppForZoomLinks = Key<Bool>("useAppForZoomLinks", default: false)
-    static let useAppForTeamsLinks = Key<Bool>("useAppForTeamsLinks", default: false)
-    static let useAppForJitsiLinks = Key<Bool>("useAppForJitsiLinks", default: false)
 
     // Advanced
     static let joinEventScriptLocation = Key<URL?>("joinEventScriptLocation", default: nil)
