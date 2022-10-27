@@ -984,7 +984,7 @@
 			repositoryURL = "https://github.com/google/GTMAppAuth";
 			requirement = {
 				kind = upToNextMinorVersion;
-				minimumVersion = 1.2.2;
+				minimumVersion = 1.3.1;
 			};
 		};
 		14B08AD22749AEF3002E3892 /* XCRemoteSwiftPackageReference "PromiseKit" */ = {
