@@ -117,6 +117,16 @@ struct ChangelogView: View {
                             Text("• Fixed padding for all-day meetings in the menu with am/pm end time enabled.")
                         }
                     }
+                    if compareVersions("4.2.0", lastRevisedVersionInChangelog) {
+                        Section(header: Text("Version 4.2")) {
+                            Text("⚡ Quick Action for dismissing current/next event ⚡ ")
+                            Text("• Added option to use any browser for Zoom, Teams, and Jitsi meetings")
+                            Text("• Improved Zoom & UserZoom links recognition")
+                            Text("• Performance optimisations")
+                            Text("• Fixed Google re-login on every app restart for Google Calendar API data source")
+                            Text("• Fixed delegated calendar for macOS Calendar data source")
+                        }
+                    }
                 }
             }.listStyle(SidebarListStyle())
             Button("general_close".loco(), action: close)

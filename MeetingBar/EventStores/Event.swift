@@ -205,7 +205,7 @@ func filterEvents(_ events: [MBEvent]) -> [MBEvent] {
             break
         case .hide:
             if calendarEvent.participationStatus == .pending {
-                continue  // Skip this event
+                continue // Skip this event
             }
         }
 
