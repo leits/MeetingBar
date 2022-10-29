@@ -11,7 +11,7 @@ import Foundation
 extension Defaults.Keys {
     // General
     static let appVersion = Key<String>("appVersion", default: "2.0.5")
-    static let lastRevisedVersionInChangelog = Key<String>("lastRevisedVersionInChangelog", default: "3.1.2")
+    static let lastRevisedVersionInChangelog = Key<String>("lastRevisedVersionInChangelog", default: "4.2.0")
 
     static let isInstalledFromAppStore = Key<Bool>("isInstalledFromAppStore", default: false)
     static let patronageDuration = Key<Int>("patronageDuration", default: 0)
