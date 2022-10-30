@@ -337,7 +337,7 @@
 "status_bar_menu_remove_all_dismissals" = "Remove all dismissals";
 "status_bar_event_dismissed_mark" = "dismissed";
 "notification_next_meeting_dismissed_title" = "Dismissed %@";
-"notification_next_meeting_dismissed_message" = "You can remove dismissal from Quick Actions";
-"notification_all_dismissals_removed_title" = "Removed all dismissals";
-"notification_all_dismissals_removed_message" = "All dismissed meetings are back in action";
+"notification_next_meeting_dismissed_message" = "Sie können die Verwerfung aus den Schnellaktionen entfernen";
+"notification_all_dismissals_removed_title" = "Alle verworfenen entfernt";
+"notification_all_dismissals_removed_message" = "Alle verworfenen Meetings sind wieder in Aktion";
 "notifications_event_started_body" = "Die Veranstaltung hat begonnen";
