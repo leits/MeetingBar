@@ -140,7 +140,7 @@
 "status_bar_quit" = "MeetingBar beenden";
 "status_bar_preferences" = "Einstellungen";
 "status_bar_whats_new" = "Was ist neu?";
-"status_bar_rate_app" = "Rate App";
+"status_bar_rate_app" = "App bewerten";
 "status_bar_hide_meeting_names" = "Meeting-Titel ausblenden";
 "status_bar_show_meeting_names" = "Meeting-Titel anzeigen";
 "status_bar_quick_actions" = "Schnellaktionen";
@@ -252,7 +252,7 @@
 "preferences_general_shortcut_join_from_clipboard" = "An Meeting in Zwischenablage teilnehmen:";
 "preferences_general_shortcut_join_next" = "Am nächsten Meeting teilnehmen:";
 "welcome_screen_shortcut_ad_hoc_meeting_title" = "mit eigenem Tastenkürzel:";
-"status_bar_event_status_now" = "jetzt (%@ übrig)";
+"status_bar_event_status_now" = "jetzt noch (%@ übrig)";
 
 // MARK: - Store
 
