@@ -45,14 +45,20 @@ extension EKEventStore: EventStore {
     func fetchAllCalendars() -> Promise<[MBCalendar]> {
         Promise { seal in
             var allCalendars: [MBCalendar] = []
-
-            for calendar in EKEventStore.shared.calendars(for: .event) {
+            
+            for ekcalendar in EKEventStore.shared.calendars(for: .event) {
+                let dateFrom = Calendar.current.startOfDay(for: Date())
+                let dateTo = Calendar.current.date(byAdding: .day, value: 1, to: dateFrom)!
+                
+                let predicate = predicateForEvents(withStart: dateFrom, end: dateTo, calendars: [ekcalendar])
+                let email = EKEventStore.shared.events(matching: predicate).first?.attendees?.first { $0.isCurrentUser }?.safeNSURL?.resourceSpecifier
+                
                 let calendar = MBCalendar(
-                    title: calendar.title,
-                    ID: calendar.calendarIdentifier,
-                    source: calendar.source.title,
-                    email: getGmailAccount(calendar.source.description),
-                    color: calendar.color
+                    title: ekcalendar.title,
+                    ID: ekcalendar.calendarIdentifier,
+                    source: ekcalendar.source.title,
+                    email: getGmailAccount(ekcalendar.source.description) ?? email,
+                    color: ekcalendar.color
                 )
                 allCalendars.append(calendar)
             }
