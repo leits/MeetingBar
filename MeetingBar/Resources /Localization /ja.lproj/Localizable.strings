@@ -172,10 +172,10 @@
 "preferences_calendars_add_account_description" = "ご希望のカレンダーが見つかりませんか？";
 "preferences_calendars_add_account_button" = "アカウントを追加";
 "preferences_calendars_add_account_modal" = "外部カレンダーの追加手順:\n1. デフォルトのカレンダーアプリを開きます\n2. メニューの「アカウントを追加」をクリックします\n3. アカウントを選択して接続します";
-"preferences_calendars_provider_section_title" = "Calendars provider";
-"preferences_calendars_provider_gcalendar_change_account" = "Change Google Account";
-"preferences_calendars_provider_macos_switch" = "Switch to MacOS Calendar";
-"preferences_calendars_provider_gcalendar_switch" = "Switch to Google Calendar API";
+"preferences_calendars_provider_section_title" = "カレンダープロバイダ";
+"preferences_calendars_provider_gcalendar_change_account" = "Googleアカウントの変更";
+"preferences_calendars_provider_macos_switch" = "macOSのカレンダーに切り替え";
+"preferences_calendars_provider_gcalendar_switch" = "GoogleカレンダーAPIに切り替え";
 
 // MARK: - Preferences Advanced
 
@@ -183,9 +183,9 @@
 "preferences_advanced_setting_warning" = "⚠️ これらの設定は、内容をご理解の上でご利用ください";
 "preferences_advanced_apple_script_checkmark" = "ミーティング参加時に AppleScript を実行する";
 "preferences_advanced_apple_script_placeholder" = "# ここにスクリプトを書いてください\ntell application \"Music\" to pause";
-"preferences_advanced_run_script_on_event_start" = "Run AppleScript automatically";
-"preferences_advanced_test_script_on_next_event" = "Test on next event";
-"preferences_advanced_edit_script" = "Edit script";
+"preferences_advanced_run_script_on_event_start" = "AppleScript自動で実行する";
+"preferences_advanced_test_script_on_next_event" = "次のイベントをテストする";
+"preferences_advanced_edit_script" = "スクリプトを編集";
 "preferences_advanced_save_script_button" = "保存";
 "preferences_advanced_wrong_location_title" = "場所が誤っています";
 "preferences_advanced_wrong_location_message" = "User > Library → Application Scripts → leits.MeetingBar フォルダを選択してください";
@@ -279,13 +279,11 @@
 "access_screen_access_denied_relaunch_title" = "手動でアプリを起動して設定を続ける必要があります。";
 "access_screen_access_granted_title" = "カレンダーへのアクセス許可を求めています。";
 "access_screen_access_granted_click_ok_title" = "macOS のポップアップウィンドウで \"OK\" をクリックしてください。";
-
 "access_screen_provider_picker_label" = "Select calendars provider";
 "access_screen_provider_macos_title" = "MacOS Calendar app";
 "access_screen_provider_macos_recomended" = "(recomended)";
 "access_screen_provider_macos_data_source" = "Get data from MacOS Calendar app";
 "access_screen_provider_macos_number_of_accounts" = "Any number of any connected accounts";
-
 "access_screen_provider_gcalendar_data_source" = "Get data directly from Google Calendar";
 "access_screen_provider_gcalendar_number_of_accounts" = "Only one Google account";
 "access_screen_provider_gcalendar_sign_in_title" = "Google Sign In";
@@ -356,12 +354,12 @@
 "link_url_cant_open_title" = "ひえー！ %@ のリンクを開くことが出来ませんでした";
 "link_url_cant_open_message" = "%@ がインストールされていることを確認するか、代わりにウェブブラウザーでリンクを開いてください。";
 "preferences_advanced_event_regex_title" = "ミーティングをフィルターするための正規表現";
-
-"status_bar_menu_dismiss_curent_meeting" = "Dismiss current meeting";
-"status_bar_menu_dismiss_next_meeting" = "Dismiss next meeting";
+"status_bar_menu_dismiss_curent_meeting" = "現在のミーティングを閉じる";
+"status_bar_menu_dismiss_next_meeting" = "次のミーティングを閉じる";
 "status_bar_menu_remove_all_dismissals" = "Remove all dismissals";
 "status_bar_event_dismissed_mark" = "dismissed";
 "notification_next_meeting_dismissed_title" = "Dismissed %@";
 "notification_next_meeting_dismissed_message" = "You can remove dismissal from Quick Actions";
 "notification_all_dismissals_removed_title" = "Removed all dismissals";
 "notification_all_dismissals_removed_message" = "All dismissed meetings are back in action";
+"status_bar_section_refresh_sources" = "ソースを更新";
