@@ -8,7 +8,8 @@ body:
   id: version
   attributes:
     label: macOS version
-    placeholder: "e.g., 10.15.4"
+    description: Hint: Choose "About this Mac" from the Apple menu.
+    placeholder: "e.g., 12.6.1 (21G217)."
   validations:
     required: true
 - type: input
