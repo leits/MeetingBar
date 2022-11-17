@@ -31,6 +31,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     var eventFiltersObserver: DefaultsObservation?
     var appearanceSettingsObserver: DefaultsObservation?
 
+    weak var preferencesWindow: NSWindow!
+
     func applicationDidFinishLaunching(_: Notification) {
         // AppStore sync
         completeStoreTransactions()
@@ -310,24 +312,34 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     func openPrefecencesWindow(_: NSStatusBarButton?) {
         NSLog("Open preferences window")
         let contentView = PreferencesView()
-        let preferencesWindow = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 700, height: 610),
-            styleMask: [.closable, .titled, .resizable],
-            backing: .buffered,
-            defer: false
-        )
 
-        preferencesWindow.title = WindowTitles.preferences
-        preferencesWindow.contentView = NSHostingView(rootView: contentView)
-        preferencesWindow.makeKeyAndOrderFront(nil)
-        // allow the preference window can be focused automatically when opened
-        NSApplication.shared.activate(ignoringOtherApps: true)
+        if let preferencesWindow {
+            // if a window is already open, focus on it instead of opening another one.
+            NSApplication.shared.activate(ignoringOtherApps: true)
+            preferencesWindow.makeKeyAndOrderFront(nil)
+            return
+        } else {
+            let window = NSWindow(
+                contentRect: NSRect(x: 0, y: 0, width: 700, height: 610),
+                styleMask: [.closable, .titled, .resizable],
+                backing: .buffered,
+                defer: false
+            )
 
-        let controller = NSWindowController(window: preferencesWindow)
-        controller.showWindow(self)
+            window.title = WindowTitles.preferences
+            window.contentView = NSHostingView(rootView: contentView)
+            window.makeKeyAndOrderFront(nil)
+            // allow the preference window can be focused automatically when opened
+            NSApplication.shared.activate(ignoringOtherApps: true)
 
-        preferencesWindow.center()
-        preferencesWindow.orderFrontRegardless()
+            let controller = NSWindowController(window: window)
+            controller.showWindow(self)
+
+            window.center()
+            window.orderFrontRegardless()
+
+            preferencesWindow = window
+        }
     }
 
     @objc
