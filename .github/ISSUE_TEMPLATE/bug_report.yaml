@@ -1,0 +1,71 @@
+name: Bug report
+description: Create a report to help us improve
+title: 'Bug: '
+labels: 'bug'
+assignees: leits
+body:
+- type: input
+  id: version
+  attributes:
+    label: macOS version
+    description: Hint: Choose "About this Mac" from the Apple menu.
+    placeholder: "e.g., 12.6.1 (21G217)."
+  validations:
+    required: true
+- type: input
+  id: version
+  attributes:
+    label: MeetingBar version
+    placeholder: "e.g., 4.2.1"
+  validations:
+    required: true
+- type: dropdown
+  attributes:
+    label: Installation source
+    description: How did you install MeetingBar?
+    options:
+    - AppStore
+    - Homebrew
+    - manually
+  validations:
+    required: true
+- type: dropdown
+  attributes:
+    label: Calendars provider
+    description: Selected in "Calendars" pane of the MeetingBar Preferences window
+    options:
+    - macOS Calendar app
+    - Google Calendar
+  validations:
+    required: true
+- type: textarea
+  attributes:
+    label: Bug description
+    description: A clear and concise description of what you're experiencing.
+  validations:
+    required: true
+- type: textarea
+  attributes:
+    label: Reproduction steps
+    description: Steps that, when followed, ought to reproduce the behavior.
+    placeholder: |
+      1. Go to '...'
+      2. Click on '....'
+      3. Scroll down to '....'
+      4. See error
+- type: textarea
+  attributes:
+    label: Expected behavior
+    description: A clear and concise description of what you expected to happen.
+- type: textarea
+  attributes:
+    label: Screenshots
+    description: |
+      If applicable, add screenshots to help explain your problem.
+
+      Tip: You can attach screenshots by selecting this area and dragging-and-dropping them onto it.
+- type: textarea
+  attributes:
+    label: Additional context
+    description: |
+      Add any other context about the problem here.
