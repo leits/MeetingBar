@@ -2,7 +2,8 @@ name: Bug report
 description: Create a report to help us improve
 title: 'Bug: '
 labels: 'bug'
-assignees: leits
+assignees:
+  - leits
 body:
 - type: input
   id: version
