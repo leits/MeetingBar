@@ -300,7 +300,7 @@
 "general_five_minute_before" = "5分前";
 "shared_send_notification_no_alert_style_tip" = "⚠️ MeetingBar の macOS の通知設定は、通知パネルに設定されていません。持続的な通知を利用する場合は、通知パネルに設定してください。";
 "shared_send_notification_disabled_tip" = "⚠️ MeetingBar の macOS の通知設定が現在オフになっています。ミーティングを見逃さないために、 macOS のシステム設定で通知を有効にしてください。";
-"shared_automatic_event_join_toggle" = "Automatic join next event meeting";
+"shared_automatic_event_join_toggle" = "Automatically join next event meeting";
 "shared_automatic_event_join_tip" = "This setting will automatically open your next meeting in your configured app or browser";
 
 // MARK: - Constants
