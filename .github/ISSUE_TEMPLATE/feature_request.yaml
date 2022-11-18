@@ -2,7 +2,6 @@ name: Feature request
 description: Suggest an idea for the app
 title: 'Feature: '
 labels: 'feature'
-assignees: ''
 body:
 - type: textarea
   attributes:
