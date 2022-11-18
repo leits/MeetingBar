@@ -2,7 +2,8 @@ name: Bug report
 description: Create a report to help us improve
 title: 'Bug: '
 labels: 'bug'
-assignees: leits
+assignees:
+  - leits
 body:
 - type: input
   id: version
@@ -59,11 +60,11 @@ body:
     description: A clear and concise description of what you expected to happen.
 - type: textarea
   attributes:
-    label: Screenshots
+    label: Screenshots/screen recordings
     description: |
-      If applicable, add screenshots to help explain your problem.
+      If applicable, add screenshots and/or screen recordings to help explain your problem.
 
-      Tip: You can attach screenshots by selecting this area and dragging-and-dropping them onto it.
+      Tip: You can attach files by clicking into this area and dragging-and-dropping them onto it.
 - type: textarea
   attributes:
     label: Additional context
