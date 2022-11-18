@@ -772,7 +772,9 @@ class StatusBarItemController {
      */
 
     func createPreferencesSection() {
-        let showChangelogItem = compareVersions(Defaults[.appVersion], Defaults[.lastRevisedVersionInChangelog])
+        let appMajorVersion = String(Defaults[.appVersion].dropLast(2))
+        let lastRevisedMajorVersionInChangelog = String(Defaults[.lastRevisedVersionInChangelog].dropLast(2))
+        let showChangelogItem = compareVersions(appMajorVersion, lastRevisedMajorVersionInChangelog)
 
         if showChangelogItem {
             let changelogItem = statusItemMenu.addItem(
