@@ -6,7 +6,6 @@ assignees:
   - leits
 body:
 - type: input
-  id: version
   attributes:
     label: macOS version
     description: "Hint: Choose \"About this Mac\" from the Apple menu."
@@ -14,7 +13,6 @@ body:
   validations:
     required: true
 - type: input
-  id: version
   attributes:
     label: MeetingBar version
     placeholder: "e.g., 4.2.1"
