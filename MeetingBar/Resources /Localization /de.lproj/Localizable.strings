@@ -284,7 +284,7 @@
 "access_screen_access_denied_checkbox_title" = "und aktiviere ein Kontrollkästchen bei MeetingBar.";
 "access_screen_access_denied_system_preferences_button" = "Systemeinstellungen";
 "access_screen_access_screen_access_denied_go_to_title" = "Gehe zu";
-"shared_automatic_event_join_toggle" = "Nehmen Sie automatisch am nächsten Event-Meeting teil";
+"shared_automatic_event_join_toggle" = "Automatisch zum nächsten Meeting beitretten";
 "shared_automatic_event_join_tip" = "Diese Einstellung wird automatisch das nächste Meeting in ihrer voreingestellten App oder dem Browser öffnen";
 
 // MARK: - Access screen
@@ -332,11 +332,11 @@
 "preferences_general_patron_title" = "Schirmherr werden";
 "preferences_advanced_event_regex_title" = "Benutzerdefinierte reguläre Ausdrücke zum Herausfiltern von Besprechungen";
 "status_bar_section_refresh_sources" = "Quellen aktualisieren";
-"status_bar_menu_dismiss_curent_meeting" = "Dismiss current meeting";
-"status_bar_menu_dismiss_next_meeting" = "Dismiss next meeting";
-"status_bar_menu_remove_all_dismissals" = "Remove all dismissals";
-"status_bar_event_dismissed_mark" = "dismissed";
-"notification_next_meeting_dismissed_title" = "Dismissed %@";
+"status_bar_menu_dismiss_curent_meeting" = "Aktuelles Meeting verwerfen";
+"status_bar_menu_dismiss_next_meeting" = "Nächstes Meeting verwerfen";
+"status_bar_menu_remove_all_dismissals" = "Alle verworfenen entfernen";
+"status_bar_event_dismissed_mark" = "verworfen";
+"notification_next_meeting_dismissed_title" = "%@ verworfen";
 "notification_next_meeting_dismissed_message" = "Sie können die Verwerfung aus den Schnellaktionen entfernen";
 "notification_all_dismissals_removed_title" = "Alle verworfenen entfernt";
 "notification_all_dismissals_removed_message" = "Alle verworfenen Meetings sind wieder in Aktion";
