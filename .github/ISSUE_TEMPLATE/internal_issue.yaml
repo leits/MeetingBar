@@ -1,11 +1,10 @@
 name: Internal technical issue
 description: Change the code base without affecting users
-title: ''
+title: 'Internal: '
 labels: 'internal'
 body:
 - type: input
   id: reference
   attributes:
     label: Reference
-    description: 
-    placeholder: ""
+    description:
