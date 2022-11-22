@@ -160,21 +160,21 @@
 
 "preferences_calendars_select_calendars_title" = "Wybierz kalendarze, aby pokazać wydarzenia w pasku stanu";
 "preferences_calendars_add_account_description" = "Nie możesz znaleźć kalendarza, którego potrzebujesz?";
-"preferences_calendars_add_account_button" = "Dodaj konto";
+"preferences_calendars_add_account_button" = "Dodaj konto kalendarza";
 "preferences_calendars_add_account_modal" = "Aby dodać zewnętrzne kalendarze:\n1. Otwórz domyślną aplikację kalendarza:\n2. Kliknij 'Dodaj konto' w menu:\n3. Wybierz i podłącz swoje konto";
-"preferences_calendars_provider_section_title" = "Calendars provider";
-"preferences_calendars_provider_gcalendar_change_account" = "Change Google Account";
-"preferences_calendars_provider_macos_switch" = "Switch to MacOS Calendar";
-"preferences_calendars_provider_gcalendar_switch" = "Switch to Google Calendar API";
+"preferences_calendars_provider_section_title" = "Dostawca kalendarza";
+"preferences_calendars_provider_gcalendar_change_account" = "Zmień Konto Google";
+"preferences_calendars_provider_macos_switch" = "Zmień na kalendarz MacOS";
+"preferences_calendars_provider_gcalendar_switch" = "Zmień na Google Calendar API";
 
 // MARK: - Preferences Advanced
 
 "preferences_advanced_setting_warning" = "⚠️ Używaj tych ustawień tylko wtedy, gdy rozumiesz, co one robią";
 "preferences_advanced_apple_script_checkmark" = "Uruchamiaj AppleScript podczas dołączania do spotkania";
 "preferences_advanced_apple_script_placeholder" = "# wpisz tutaj swój skrypt \ntell application \"Music\" to pause";
-"preferences_advanced_run_script_on_event_start" = "Run AppleScript automatically";
-"preferences_advanced_test_script_on_next_event" = "Test on next event";
-"preferences_advanced_edit_script" = "Edit script";
+"preferences_advanced_run_script_on_event_start" = "Uruchom AppleScript automatycznie";
+"preferences_advanced_test_script_on_next_event" = "Przetestuj na następnym zdarzeniu";
+"preferences_advanced_edit_script" = "Edytuj skrypt";
 "preferences_advanced_save_script_button" = "Zapisz skrypt";
 "preferences_advanced_wrong_location_title" = "Nieprawidłowa lokalizacja";
 "preferences_advanced_wrong_location_message" = "Proszę wybrać folder User → Library → Application Scripts → leits.MeetingBar";
@@ -223,7 +223,7 @@
 "status_bar_show_meeting_names" = "Pokaż tytuł spotkania";
 "status_bar_hide_meeting_names" = "Ukryj tytuł spotkania";
 "status_bar_whats_new" = "Co nowego?";
-"status_bar_rate_app" = "Rate App";
+"status_bar_rate_app" = "Oceń Aplikację";
 "status_bar_quit" = "Wyjdź z MeetingBar";
 "status_bar_no_title" = "Brak tytułu";
 "status_bar_event_status_now" = "teraz (pozostało %@)";
@@ -261,18 +261,16 @@
 "access_screen_access_denied_relaunch_title" = "Następnie uruchom aplikację ręcznie, aby kontynuować konfigurację.";
 "access_screen_access_granted_title" = "Żądanie dostępu do kalendarzy…";
 "access_screen_access_granted_click_ok_title" = "Kliknij \"OK\" w popupie macOS.";
-
-"access_screen_provider_picker_label" = "Select calendars provider";
-"access_screen_provider_macos_title" = "MacOS Calendar app";
-"access_screen_provider_macos_recomended" = "(recomended)";
-"access_screen_provider_macos_data_source" = "Get data from MacOS Calendar app";
-"access_screen_provider_macos_number_of_accounts" = "Any number of any connected accounts";
-
-"access_screen_provider_gcalendar_data_source" = "Get data directly from Google Calendar";
-"access_screen_provider_gcalendar_number_of_accounts" = "Only one Google account";
-"access_screen_provider_gcalendar_sign_in_title" = "Google Sign In";
-"access_screen_provider_gcalendar_sign_in_description" = "Allow MeetingBar access to your calendar in browser window";
-"access_screen_try_again" = "Try again";
+"access_screen_provider_picker_label" = "Wybierz dostawcę kalendarza";
+"access_screen_provider_macos_title" = "Kalendarz MacOS";
+"access_screen_provider_macos_recomended" = "(zalecane)";
+"access_screen_provider_macos_data_source" = "Pobierz dane z Kalendarza MacOS";
+"access_screen_provider_macos_number_of_accounts" = "Dowolna liczba dowolnych połączonych kont";
+"access_screen_provider_gcalendar_data_source" = "Pobierz dane bezpośrednio z Kalendarza Google";
+"access_screen_provider_gcalendar_number_of_accounts" = "Tylko jedno konto Google";
+"access_screen_provider_gcalendar_sign_in_title" = "Zaloguj przy użyciu Google";
+"access_screen_provider_gcalendar_sign_in_description" = "Zezwól MeetingBar na dostęp do Twojego kalendarza w oknie przeglądarki.";
+"access_screen_try_again" = "Spróbuj ponownie";
 
 // MARK: - Shared
 
@@ -284,7 +282,7 @@
 "shared_send_notification_no_alert_style_tip" = "⚠️ Twoje ustawienia powiadomień macOS dla MeetingBar nie są ustawione na alert. Zrób to, jeśli chcesz mieć trwałe powiadomienia.";
 "shared_send_notification_disabled_tip" = "⚠️ Twoje ustawienia powiadomień macOS dla MeetingBar są wyłączone. Włącz powiadomienia w ustawieniach systemowych macOS, aby śledzić spotkania.";
 "shared_automatic_event_join_toggle" = "Automatically join next event meeting";
-"shared_automatic_event_join_tip" = "This setting will automatically open your next meeting in your configured app or browser";
+"shared_automatic_event_join_tip" = "To ustawienie automatycznie otworzy następne spotkanie w skonfigurowanej aplikacji lub przeglądarce";
 
 // MARK: - Constants
 "constants_create_meeting_service_url" = "Własny URL";
@@ -326,9 +324,9 @@
 "notifications_event_start_three_minutes_body" = "Wydarzenie rozpoczyna się za trzy minuty";
 "notifications_event_start_five_minutes_body" = "Wydarzenie rozpoczyna się za pięć minut";
 "notifications_event_started_body" = "The event has started";
-"notifications_snooze_until_start" = "Snooze until start time";
-"notifications_snooze_for" = "Snooze for %@ min";
-"notifications_meetingbar_join_event_action" = "Join";
+"notifications_snooze_until_start" = "Uśpij przed startem";
+"notifications_snooze_for" = "Uśpij na %@ min";
+"notifications_meetingbar_join_event_action" = "Dołącz";
 
 // MARK: - Link open
 
@@ -340,12 +338,12 @@
 "status_bar_preferences" = "Preferencje";
 "preferences_services_link_jitsi_value" = "Jitsi Meet app";
 "status_bar_submenu_status_tentative" = " ☝️ Wstępnia akceptacja";
-
-"status_bar_menu_dismiss_curent_meeting" = "Dismiss current meeting";
-"status_bar_menu_dismiss_next_meeting" = "Dismiss next meeting";
-"status_bar_menu_remove_all_dismissals" = "Remove all dismissals";
-"status_bar_event_dismissed_mark" = "dismissed";
-"notification_next_meeting_dismissed_title" = "Dismissed %@";
-"notification_next_meeting_dismissed_message" = "You can remove dismissal from Quick Actions";
-"notification_all_dismissals_removed_title" = "Removed all dismissals";
-"notification_all_dismissals_removed_message" = "All dismissed meetings are back in action";
+"status_bar_menu_dismiss_curent_meeting" = "Odrzuć bieżące spotkanie";
+"status_bar_menu_dismiss_next_meeting" = "Odrzuć następne spotkanie";
+"status_bar_menu_remove_all_dismissals" = "Usuń wszystkie odwołania";
+"status_bar_event_dismissed_mark" = "Odwołany";
+"notification_next_meeting_dismissed_title" = "Odwołany %@";
+"notification_next_meeting_dismissed_message" = "Możesz usunąć odwołania w Szybkich Akcjach";
+"notification_all_dismissals_removed_title" = "Usuń wszystkie odwołania";
+"notification_all_dismissals_removed_message" = "Wszystkie odwołania spotkania wracają do akcji";
+"status_bar_section_refresh_sources" = "Odśwież źródła";
