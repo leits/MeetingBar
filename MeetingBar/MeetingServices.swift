@@ -69,6 +69,7 @@ enum MeetingServices: String, Codable, CaseIterable {
     case teemyco = "Teemyco"
     case demodesk = "Demodesk"
     case zoho_cliq = "Zoho Cliq"
+    case slack = "Slack"
     case other = "Other"
 
     var localizedValue: String {
@@ -297,6 +298,7 @@ struct LinksRegex {
     let skype4biz = try! NSRegularExpression(pattern: #"https?://meet\.lync\.com/[^\s]*"#)
     let skype4biz_selfhosted = try! NSRegularExpression(pattern: #"https?:\/\/(meet|join)\.[^\s]*\/[a-z0-9.]+/meet\/[A-Za-z0-9./]+"#)
     let hangouts = try! NSRegularExpression(pattern: #"https?://hangouts.google.com/[^\s]*"#)
+    let slack = try! NSRegularExpression(pattern: #"https?://app.slack.com/huddle/[A-Za-z0-9./]+"#)
 }
 
 func getRegexForMeetingService(_ service: MeetingServices) -> NSRegularExpression? {
@@ -554,6 +556,11 @@ func getIconForMeetingService(_ meetingService: MeetingServices?) -> NSImage {
     // tested and verified
     case .some(.zoho_cliq):
         image = NSImage(named: "zoho_cliq_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    // tested and verified
+    case .some(.slack):
+        image = NSImage(named: "slack_icon")!
         image.size = NSSize(width: 16, height: 16)
 
     // tested and verified
