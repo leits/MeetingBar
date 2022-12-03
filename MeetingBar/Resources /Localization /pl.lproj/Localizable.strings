@@ -85,7 +85,7 @@
 "preferences_appearance_status_bar_icon_title" = "Ikona";
 "preferences_appearance_status_bar_icon_app_icon_value" = " MeetingBar";
 "preferences_appearance_status_bar_icon_calendar_icon_value" = " Kalendarz";
-"preferences_appearance_status_bar_icon_specific_icon_value" = " Ikona zdarzenia (e.g. MS Teams)";
+"preferences_appearance_status_bar_icon_specific_icon_value" = " •Ikona zdarzenia (e.g. MS Teams)";
 "preferences_appearance_status_bar_icon_no_icon_value" = " Brak ikony";
 "preferences_appearance_status_bar_title_title" = "Tytuł";
 "preferences_appearance_status_bar_title_event_title_value" = "tytuł wydarzenia";
@@ -114,7 +114,7 @@
 "preferences_services_link_meeting_title" = "Otwórz wszystkie linki spotkań w";
 "preferences_services_link_meet_title" = "Otwórz linki Google Meet w";
 "preferences_services_link_zoom_title" = "Otwórz linki Zoom w";
-"preferences_services_link_team_title" = "Open Teams links in";
+"preferences_services_link_team_title" = "Otwórz linki grupowe w";
 "preferences_services_link_default_browser_value" = "Domyślna przeglądarka internetowa";
 "preferences_services_link_zoom_value" = "Aplikacja Zoom";
 "preferences_services_link_teams_value" = "Aplikacja Teams";
@@ -151,7 +151,7 @@
 "preferences_bookmarks_add_bookmark_button" = "Dodaj zakładkę";
 "preferences_bookmarks_new_bookmark_title" = "Nowa zakładka";
 "preferences_bookmarks_new_bookmark_name" = "Nazwa";
-"preferences_bookmarks_new_bookmark_link_phone" = "Numer łącza/telefonu";
+"preferences_bookmarks_new_bookmark_link_phone" = "Link/numer telefonu";
 "preferences_bookmarks_new_bookmark_service" = "Usługa";
 "preferences_bookmarks_new_bookmark_already_exist" = "%@ posiada już ten link/numer telefonu:\n%@";
 "preferences_bookmarks_new_bookmark_error_title" = "Nie można dodać zakładki";
@@ -181,21 +181,21 @@
 "preferences_advanced_wrong_location_button" = "Mam to!";
 "preferences_advanced_regex_title" = "Własne regexy dla linku spotkania";
 "preferences_advanced_regex_add_button" = "Dodaj regex";
-"preferences_advanced_regex_edit_button" = "edit";
+"preferences_advanced_regex_edit_button" = "edytuj";
 "preferences_advanced_regex_new_title" = "Wprowadź regex";
 "preferences_advanced_regex_new_cant_save_title" = "Nie można zapisać regex";
-"preferences_advanced_event_regex_title" = "Custom regexes to filter out meetings";
+"preferences_advanced_event_regex_title" = "Niestandardowe wyrażenia do filtrowania spotkań";
 
 // MARK: - Status bar
 
 "status_bar_section_today" = "Dzisiaj";
 "status_bar_section_tomorrow" = "Jutro";
 "status_bar_empty_calendar_message" = "Wybierz swoje kalendarze w preferencjach,\n aby zobaczyć swoje spotkania";
-"status_bar_section_join_next_meeting" = "Dołącz do następnego spotkania w ramach wydarzenia";
+"status_bar_section_join_next_meeting" = "Dołącz do następnego spotkania";
 "status_bar_section_join_current_meeting" = "Dołącz do bieżącego spotkania";
 "status_bar_section_join_from_clipboard" = "Otwórz spotkanie ze schowka";
 "status_bar_section_join_create_meeting" = "Utwórz spotkanie";
-"status_bar_section_bookmarks_title" = "Zakładki do książek";
+"status_bar_section_bookmarks_title" = "Zakładki";
 "status_bar_section_bookmarks_menu" = "Menu zakładek";
 "status_bar_section_date_nothing" = "Nic dla %@";
 "status_bar_event_start_time_all_day" = "Cały dzień";
@@ -210,12 +210,12 @@
 "status_bar_submenu_status_default_simple" = " ❔ (Nieznany)";
 "status_bar_submenu_location_title" = "Lokalizacja:";
 "status_bar_submenu_organizer_title" = "Organizator: %@";
-"status_bar_submenu_notes_title" = "Notes:";
+"status_bar_submenu_notes_title" = "Notatki:";
 "status_bar_submenu_attendees_title" = "Uczestnicy (%d)";
 "status_bar_submenu_attendees_no_name" = "Anonimowy uczestnik";
 "status_bar_submenu_attendees_you" = "%@ (ty)";
 "status_bar_submenu_attendees_status_tentative" = " [oczekujący]";
-"status_bar_submenu_copy_meeting_link" = "Kopuj link do spotkania";
+"status_bar_submenu_copy_meeting_link" = "Skopiuj link spotkania";
 "status_bar_submenu_email_attendees" = "Adresy email uczestników";
 "status_bar_submenu_open_in_calendar" = "Otwórz w aplikacji Kalendarz";
 "status_bar_submenu_open_in_fantastical" = "Otwórz w Fantastical";
@@ -269,7 +269,7 @@
 "access_screen_provider_gcalendar_data_source" = "Pobierz dane bezpośrednio z Kalendarza Google";
 "access_screen_provider_gcalendar_number_of_accounts" = "Tylko jedno konto Google";
 "access_screen_provider_gcalendar_sign_in_title" = "Zaloguj przy użyciu Google";
-"access_screen_provider_gcalendar_sign_in_description" = "Zezwól MeetingBar na dostęp do Twojego kalendarza w oknie przeglądarki.";
+"access_screen_provider_gcalendar_sign_in_description" = "Zezwól MeetingBar na dostęp do Twojego kalendarza w oknie przeglądarki";
 "access_screen_try_again" = "Spróbuj ponownie";
 
 // MARK: - Shared
@@ -281,7 +281,7 @@
 "general_five_minute_before" = "5 minut przed";
 "shared_send_notification_no_alert_style_tip" = "⚠️ Twoje ustawienia powiadomień macOS dla MeetingBar nie są ustawione na alert. Zrób to, jeśli chcesz mieć trwałe powiadomienia.";
 "shared_send_notification_disabled_tip" = "⚠️ Twoje ustawienia powiadomień macOS dla MeetingBar są wyłączone. Włącz powiadomienia w ustawieniach systemowych macOS, aby śledzić spotkania.";
-"shared_automatic_event_join_toggle" = "Automatically join next event meeting";
+"shared_automatic_event_join_toggle" = "Automatycznie dołącz do następnego spotkania";
 "shared_automatic_event_join_tip" = "To ustawienie automatycznie otworzy następne spotkanie w skonfigurowanej aplikacji lub przeglądarce";
 
 // MARK: - Constants
@@ -323,7 +323,7 @@
 "notifications_event_start_one_minute_body" = "Wydarzenie rozpoczyna się za minutę";
 "notifications_event_start_three_minutes_body" = "Wydarzenie rozpoczyna się za trzy minuty";
 "notifications_event_start_five_minutes_body" = "Wydarzenie rozpoczyna się za pięć minut";
-"notifications_event_started_body" = "The event has started";
+"notifications_event_started_body" = "Spotkanie się rozpoczeło";
 "notifications_snooze_until_start" = "Uśpij przed startem";
 "notifications_snooze_for" = "Uśpij na %@ min";
 "notifications_meetingbar_join_event_action" = "Dołącz";
@@ -336,7 +336,7 @@
 "access_screen_access_screen_access_denied_go_to_title" = "Go to";
 "preferences_services_link_jitsi_title" = "Otwórz linki Jitsi w";
 "status_bar_preferences" = "Preferencje";
-"preferences_services_link_jitsi_value" = "Jitsi Meet app";
+"preferences_services_link_jitsi_value" = "aplikacja Jitsi Meet";
 "status_bar_submenu_status_tentative" = " ☝️ Wstępnia akceptacja";
 "status_bar_menu_dismiss_curent_meeting" = "Odrzuć bieżące spotkanie";
 "status_bar_menu_dismiss_next_meeting" = "Odrzuć następne spotkanie";
