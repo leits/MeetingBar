@@ -73,6 +73,9 @@ func sendUserNotification(_ title: String, _ text: String, _ categoryIdentier: S
     let content = UNMutableNotificationContent()
     content.title = title
     content.body = text
+    if #available(macOS 12.0, *) {
+        content.interruptionLevel = .timeSensitive
+    }
 
     let identifier: String
     if let categoryIdentier = categoryIdentier {
@@ -166,6 +169,9 @@ func scheduleEventNotification(_ event: MBEvent) {
     } else {
         content.title = event.title
     }
+    if #available(macOS 12.0, *) {
+        content.interruptionLevel = .timeSensitive
+    }
 
     switch Defaults[.joinEventNotificationTime] {
     case .atStart:
@@ -215,6 +221,9 @@ func snoozeEventNotification(_ event: MBEvent, _ interval: NotificationEventTime
     content.userInfo = ["eventID": event.ID]
     content.threadIdentifier = "meetingbar"
     content.body = "notifications_event_started_body".loco()
+    if #available(macOS 12.0, *) {
+        content.interruptionLevel = .timeSensitive
+    }
 
     let trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeInterval, repeats: false)
     let request = UNNotificationRequest(identifier: "NEXT_EVENT", content: content, trigger: trigger)
