@@ -99,7 +99,7 @@ struct LaunchAtLoginANDPreferredLanguagePicker: View {
                         Text("Norks").tag(AppLanguage.norwegian)
                         Text("Čeština").tag(AppLanguage.czech)
                         Text("日本語").tag(AppLanguage.japanese)
-                        Text("Polskie").tag(AppLanguage.polish)
+                        Text("Polski").tag(AppLanguage.polish)
                         Text("עברית‎").tag(AppLanguage.hebrew)
                     }
                     Group {
