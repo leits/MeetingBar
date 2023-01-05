@@ -96,7 +96,7 @@
 "preferences_appearance_status_bar_time_show_value" = "pokaż";
 "preferences_appearance_status_bar_time_show_under_title_value" = "pokaż pod tytułem";
 "preferences_appearance_status_bar_time_hide_value" = "ukryj";
-"preferences_appearance_status_bar_next_event_toggle" = "Pokaż tylko wydarzenie rozpoczynające się w ciągu";
+"preferences_appearance_status_bar_next_event_toggle" = "Pokaż tylko wydarzenia rozpoczynające się w ciągu";
 "preferences_appearance_status_bar_next_event_stepper" = "%d minut";
 "preferences_appearance_menu_title" = "Menu";
 "preferences_appearance_menu_shorten_event_title_toggle" = "Skróć tytuł wydarzenia do";
@@ -194,6 +194,7 @@
 "status_bar_section_join_next_meeting" = "Dołącz do następnego spotkania";
 "status_bar_section_join_current_meeting" = "Dołącz do bieżącego spotkania";
 "status_bar_section_join_from_clipboard" = "Otwórz spotkanie ze schowka";
+"status_bar_section_refresh_sources" = "Odśwież źródła";
 "status_bar_section_join_create_meeting" = "Utwórz spotkanie";
 "status_bar_section_bookmarks_title" = "Zakładki";
 "status_bar_section_bookmarks_menu" = "Menu zakładek";
