@@ -14,4 +14,5 @@ extension KeyboardShortcuts.Name {
     static let joinEventShortcut = Self("joinEventShortcut")
     static let openClipboardShortcut = Self("openClipboardShortcut")
     static let toggleMeetingTitleVisibilityShortcut = Self("toggleMeetingTitleVisibilityShortcut")
+    static let runAppleScriptShortcut = Self("runAppleScriptShortcut")
 }

@@ -110,6 +110,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             Defaults[.hideMeetingTitle].toggle()
         }
 
+        KeyboardShortcuts.onKeyUp(for: .runAppleScriptShortcut) {
+            runAppleScriptForKeyboardShortcut(events: self.statusBarItem.events)
+        }
+
         // Settings change observers
         appearanceSettingsObserver = Defaults.observe(
             keys: .statusbarEventTitleLength, .eventTimeFormat,

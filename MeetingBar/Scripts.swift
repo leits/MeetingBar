@@ -13,6 +13,17 @@ enum ScriptType: String, Codable, CaseIterable {
     case meetingStart
     /// not supported yet to execute apple scripts for meeting end
     case meetingEnd
+    case joinEventScript
+    case keyboardShortcut
+
+    var filename: String {
+        switch self {
+        case .meetingStart: return "eventStartScript.scpt"
+        case .meetingEnd: return "eventEndScript.scpt"
+        case .joinEventScript: return "joinEventScript.scpt"
+        case .keyboardShortcut: return "keyboardShortcutScript.scpt"
+        }
+    }
 }
 
 /**
@@ -55,7 +66,7 @@ func createAppleScriptParametersForEvent(event: MBEvent) -> NSAppleEventDescript
 }
 
 // runs the predefined script with parameters.
-func runMeetingStartsScript(event: MBEvent, type: ScriptType) {
+func runAppleScript(event: MBEvent, type: ScriptType) {
     NSLog("Run apple script for event \(String(describing: event.ID))")
 
     let parameters = createAppleScriptParametersForEvent(event: event)
@@ -73,7 +84,8 @@ func runMeetingStartsScript(event: MBEvent, type: ScriptType) {
 
     let scriptPath = try! FileManager.default.url(for: .applicationScriptsDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
 
-    let url = scriptPath.appendingPathComponent("eventStartScript.scpt")
+
+    let url = scriptPath.appendingPathComponent(type.filename)
 
     if FileManager.default.fileExists(atPath: url.path) {
         let appleScript = try! NSUserAppleScriptTask(url: url)
@@ -95,7 +107,15 @@ func runMeetingStartsScript(event: MBEvent, type: ScriptType) {
  */
 func runAppleScriptForNextEvent(events: [MBEvent]) {
     if let nextEvent = getNextEvent(events: events) {
-        runMeetingStartsScript(event: nextEvent, type: .meetingStart)
+        runAppleScript(event: nextEvent, type: .meetingStart)
+    } else {
+        sendNotification("next_meeting_empty_title".loco(), "next_meeting_empty_message".loco())
+    }
+}
+
+func runAppleScriptForKeyboardShortcut(events: [MBEvent]) {
+    if let nextEvent = getNextEvent(events: events) {
+        runAppleScript(event: nextEvent, type: .keyboardShortcut)
     } else {
         sendNotification("next_meeting_empty_title".loco(), "next_meeting_empty_message".loco())
     }

@@ -9,6 +9,7 @@
 import SwiftUI
 
 import Defaults
+import KeyboardShortcuts
 
 struct AdvancedTab: View {
     var body: some View {
@@ -44,6 +45,12 @@ struct ScriptSection: View {
 
     @State private var showingJoinEventScriptModal = false
 
+    @Default(.runKeyboardShortcutScript) var runKeyboardShortcutScript
+    @Default(.keyboardShortcutScriptLocation) var keyboardShortcutScriptLocation
+    @Default(.keyboardShortcutScriptContent) var keyboardShortcutScriptContent
+
+    @State private var showingKeyboardScriptModal = false
+
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
@@ -62,7 +69,7 @@ struct ScriptSection: View {
                     Button("preferences_advanced_edit_script".loco()) { showingRunEventStartScriptModal = true }
                 }
             }.sheet(isPresented: $showingRunEventStartScriptModal) {
-                EditScriptModal(script: $eventStartScript, scriptLocation: $eventStartScriptLocation, scriptName: "eventStartScript.scpt")
+                EditScriptModal(script: $eventStartScript, scriptLocation: $eventStartScriptLocation, scriptName: ScriptType.meetingStart.filename)
             }
 
             HStack {
@@ -72,7 +79,18 @@ struct ScriptSection: View {
                     Button("preferences_advanced_edit_script".loco()) { showingJoinEventScriptModal = true }
                 }
             }.sheet(isPresented: $showingJoinEventScriptModal) {
-                EditScriptModal(script: $joinEventScript, scriptLocation: $joinEventScriptLocation, scriptName: "joinEventScript.scpt")
+                EditScriptModal(script: $joinEventScript, scriptLocation: $joinEventScriptLocation, scriptName: ScriptType.joinEventScript.filename)
+            }
+            
+            HStack {
+                Toggle("preferences_advanced_run_script_on_keyboard_shortcut".loco(), isOn: $runKeyboardShortcutScript)
+                Spacer()
+                if runKeyboardShortcutScript {
+                    KeyboardShortcuts.Recorder(for: .runAppleScriptShortcut)
+                    Button("preferences_advanced_edit_script".loco()) { showingKeyboardScriptModal = true }
+                }
+            }.sheet(isPresented: $showingKeyboardScriptModal) {
+                EditScriptModal(script: $keyboardShortcutScriptContent, scriptLocation: $keyboardShortcutScriptLocation, scriptName: ScriptType.keyboardShortcut.filename)
             }
         }
     }

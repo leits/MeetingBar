@@ -142,7 +142,7 @@ class MBEvent {
     func openMeeting() {
         if let meetingLink = meetingLink {
             if Defaults[.runJoinEventScript], Defaults[.joinEventScriptLocation] != nil {
-                if let url = Defaults[.joinEventScriptLocation]?.appendingPathComponent("joinEventScript.scpt") {
+                if let url = Defaults[.joinEventScriptLocation]?.appendingPathComponent(ScriptType.joinEventScript.filename) {
                     let task = try! NSUserAppleScriptTask(url: url)
                     task.execute { error in
                         if let error = error {

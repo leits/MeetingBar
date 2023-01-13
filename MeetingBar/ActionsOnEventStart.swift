@@ -99,7 +99,7 @@ class ActionsOnEventStart: NSObject {
                 // so that we can run the script again ->
                 // this is an edge case when the event was already notified for, but scheduled for a later time.
                 if matchedEvent == nil || matchedEvent?.lastModifiedDate != nextEvent.lastModifiedDate {
-                    runMeetingStartsScript(event: nextEvent, type: ScriptType.meetingStart)
+                    runAppleScript(event: nextEvent, type: ScriptType.meetingStart)
 
                     // update the executed events
                     if matchedEvent != nil {
