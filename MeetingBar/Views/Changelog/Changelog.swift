@@ -127,6 +127,11 @@ struct ChangelogView: View {
                             Text("• Fixed delegated calendar for macOS Calendar data source")
                         }
                     }
+                    if compareVersions("4.3.0", lastRevisedVersionInChangelog) {
+                        Section(header: Text("Version 4.3")) {
+                            Text("• Advanced feature to run AppleScript on keyboard shortcut")
+                        }
+                    }
                 }
             }.listStyle(SidebarListStyle())
             Button("general_close".loco(), action: close)
