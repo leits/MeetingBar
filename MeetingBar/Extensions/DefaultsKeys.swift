@@ -110,7 +110,7 @@ extension Defaults.Keys {
 
     static let keyboardShortcutScriptLocation = Key<URL?>("keyboardShortcutScriptLocation", default: nil)
     static let runKeyboardShortcutScript = Key<Bool>("runKeyboardShortcutScript", default: false)
-    static let keyboardShortcutScriptContent = Key<String>("keyboardShortcutScriptContent", default: "preferences_advanced_apple_script_placeholder".loco())
+    static let keyboardShortcutScriptContent = Key<String>("keyboardShortcutScriptContent", default: keyboardShortcutScriptPlaceholder)
 
 
     static let customRegexes = Key<[String]>("customRegexes", default: [])
