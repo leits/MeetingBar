@@ -3,7 +3,7 @@
 For next releases info look here: <https://github.com/leits/MeetingBar/releases>
 
 ## Version 4.3.0
-* Added Advanced feature to run AppleScript on keyboard shortcut
+*   Added Advanced feature to run AppleScript on keyboard shortcut
 
 ## Version 4.0.0
 

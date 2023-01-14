@@ -112,7 +112,6 @@ extension Defaults.Keys {
     static let runKeyboardShortcutScript = Key<Bool>("runKeyboardShortcutScript", default: false)
     static let keyboardShortcutScriptContent = Key<String>("keyboardShortcutScriptContent", default: keyboardShortcutScriptPlaceholder)
 
-
     static let customRegexes = Key<[String]>("customRegexes", default: [])
     static let filterEventRegexes = Key<[String]>("filterEventRegexes", default: [])
 }

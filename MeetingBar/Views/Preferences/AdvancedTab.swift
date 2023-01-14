@@ -81,7 +81,7 @@ struct ScriptSection: View {
             }.sheet(isPresented: $showingJoinEventScriptModal) {
                 EditScriptModal(script: $joinEventScript, scriptLocation: $joinEventScriptLocation, scriptName: ScriptType.joinEventScript.filename)
             }
-            
+
             HStack {
                 Toggle("preferences_advanced_run_script_on_keyboard_shortcut".loco(), isOn: $runKeyboardShortcutScript)
                 Spacer()

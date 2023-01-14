@@ -84,7 +84,6 @@ func runAppleScript(event: MBEvent, type: ScriptType) {
 
     let scriptPath = try! FileManager.default.url(for: .applicationScriptsDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
 
-
     let url = scriptPath.appendingPathComponent(type.filename)
 
     if FileManager.default.fileExists(atPath: url.path) {
