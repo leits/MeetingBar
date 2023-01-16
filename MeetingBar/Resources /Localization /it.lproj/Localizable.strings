@@ -13,8 +13,8 @@
 "general_delete" = "Elimina";
 "general_save" = "Salva";
 "general_meeting" = "Riunione";
-"create_meeting_error_title" = "Non posso creare una nuova riunione";
-"create_meeting_error_message" = "URL personalizzato \"%@\" mancante o invalido. Aggiungine uno nelle preferenze dell'app.";
+"create_meeting_error_title" = "Impossibile creare una nuova riunione";
+"create_meeting_error_message" = "URL personalizzato \"%@\" mancante o non valido. Aggiungine uno nelle preferenze dell'app.";
 "next_meeting_empty_title" = "Non ci sono riunioni oggi";
 "next_meeting_empty_message" = "Woohoo! È ora di fare la cioccolata calda";
 
@@ -35,28 +35,28 @@
 
 // MARK: - Preferences General
 
-"preferences_general_option_login_launch" = "Lancia al login";
+"preferences_general_option_login_launch" = "Esegui all'avvio";
 "preferences_general_option_preferred_language_title" = "Lingua:";
 "preferences_general_option_preferred_language_system_value" = "Sistema";
 "preferences_general_option_shortcuts" = "Scorciatoie da tastiera";
 "preferences_general_all_shortcut" = "Tutte le scorciatoie";
 "preferences_general_shortcut_open_menu" = "Apri menu:";
 "preferences_general_shortcut_create_meeting" = "Crea riunione:";
-"preferences_general_shortcut_join_next" = "Entra nella prossima riunione:";
-"preferences_general_shortcut_join_from_clipboard" = "Entra nella riunione da link copiato:";
-"preferences_general_shortcut_toggle_meeting_name_visibility" = "Attiva/disattiva la visibilità del titolo nella barra di stato:";
+"preferences_general_shortcut_join_next" = "Partecipa alla prossima riunione:";
+"preferences_general_shortcut_join_from_clipboard" = "Partecipa alla riunione da link negli appunti:";
+"preferences_general_shortcut_toggle_meeting_name_visibility" = "Mostra/nascondi il titolo nella barra di stato:";
 "preferences_general_meeting_bar_description" = "MeetingBar è un'app con codice aperto\ncreata da Andrii Leitsius 🇺🇦\nPer riunioni online più fluide e semplici";
 "preferences_general_external_patronage" = "Patronage";
 "preferences_general_external_gitHub" = "GitHub";
-"preferences_general_external_contact" = "Contact";
+"preferences_general_external_contact" = "Contatti";
 "preferences_general_patron_title" = "Diventa un Patron";
 "preferences_general_patron_three_months" = "3 mesi – 2.99 USD";
 "preferences_general_patron_six_months" = "6 mesi – 5.99 USD";
 "preferences_general_patron_twelve_months" = "12 mesi – 11.99 USD";
 "preferences_general_patron_description" = "Si tratta di acquisti una tantum e non si rinnoveranno automaticamente.";
 "preferences_general_patron_thank_for_purchase" = "Grazie! Hai pagato per supportare MeetingBar per %d mesi. 🎉";
-"preferences_general_patron_restore_purchases" = "Ripristinare gli acquisti";
-"preferences_general_feedback_title" = "Se hai domande o feedback,\nnon esitare a metterti in contatto:";
+"preferences_general_patron_restore_purchases" = "Ripristina gli acquisti";
+"preferences_general_feedback_title" = "Se hai domande o suggerimenti,\nnon esitare a metterti in contatto:";
 "preferences_general_feedback_email" = "E-mail";
 "preferences_general_feedback_twitter" = "Twitter";
 "preferences_general_feedback_telegram" = "Telegram";
@@ -290,7 +290,7 @@
 // MARK: - Shared
 
 "shared_send_notification_toggle" = "Invia una notifica per partecipare alla prossima riunione";
-"general_when_event_starts" = "quando inizia";
+"general_when_event_starts" = "quando inizia l'evento";
 "general_one_minute_before" = "1 minuto prima";
 "general_three_minute_before" = "3 minuti prima";
 "general_five_minute_before" = "5 minuti prima";
