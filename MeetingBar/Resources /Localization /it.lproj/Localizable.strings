@@ -197,11 +197,11 @@
 "status_bar_section_join_current_meeting" = "Partecipa alla riunione in corso";
 "status_bar_section_join_from_clipboard" = "Apri riunione dagli appunti";
 "status_bar_section_refresh_sources" = "Aggiorna le fonti";
-"status_bar_menu_dismiss_curent_meeting" = "Dismiss current meeting";
-"status_bar_menu_dismiss_next_meeting" = "Dismiss next meeting";
-"status_bar_menu_remove_all_dismissals" = "Remove all dismissals";
-"status_bar_event_dismissed_mark" = "dismissed";
-"notification_next_meeting_dismissed_title" = "Dismissed %@";
+"status_bar_menu_dismiss_curent_meeting" = "Ignora la riunione in corso";
+"status_bar_menu_dismiss_next_meeting" = "Ignora la prossima riunione";
+"status_bar_menu_remove_all_dismissals" = "Rimuovi tutti i respinti";
+"status_bar_event_dismissed_mark" = "respinto";
+"notification_next_meeting_dismissed_title" = "Respinto %@";
 "notification_next_meeting_dismissed_message" = "You can remove dismissal from Quick Actions";
 "notification_all_dismissals_removed_title" = "Removed all dismissals";
 "notification_all_dismissals_removed_message" = "All dismissed meetings are back in action";
