@@ -46,7 +46,7 @@
 "preferences_general_shortcut_join_from_clipboard" = "Partecipa alla riunione da link negli appunti:";
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "Mostra/nascondi il titolo nella barra di stato:";
 "preferences_general_meeting_bar_description" = "MeetingBar è un'app con codice aperto\ncreata da Andrii Leitsius 🇺🇦\nPer riunioni online più fluide e semplici";
-"preferences_general_external_patronage" = "Patronage";
+"preferences_general_external_patronage" = "Supporta";
 "preferences_general_external_gitHub" = "GitHub";
 "preferences_general_external_contact" = "Contatti";
 "preferences_general_patron_title" = "Diventa un Patron";
@@ -202,9 +202,9 @@
 "status_bar_menu_remove_all_dismissals" = "Rimuovi tutti i respinti";
 "status_bar_event_dismissed_mark" = "respinto";
 "notification_next_meeting_dismissed_title" = "Respinto %@";
-"notification_next_meeting_dismissed_message" = "You can remove dismissal from Quick Actions";
-"notification_all_dismissals_removed_title" = "Removed all dismissals";
-"notification_all_dismissals_removed_message" = "All dismissed meetings are back in action";
+"notification_next_meeting_dismissed_message" = "Puoi rimuovere il respingimento da Azioni Rapide";
+"notification_all_dismissals_removed_title" = "Rimuovi tutti i respinti";
+"notification_all_dismissals_removed_message" = "Tutte le riunioni respinte sono tornate in azione";
 "status_bar_section_join_create_meeting" = "Crea riunione";
 "status_bar_section_bookmarks_title" = "Segnalibri";
 "status_bar_section_bookmarks_menu" = "Menù segnalibri";
@@ -226,25 +226,25 @@
 "status_bar_submenu_attendees_title" = "Partecipanti (%d)";
 "status_bar_submenu_attendees_no_name" = "Partecipante anonimo";
 "status_bar_submenu_attendees_you" = "%@ (tu)";
-"status_bar_submenu_attendees_status_tentative" = " [provvisorio]";
+"status_bar_submenu_attendees_status_tentative" = " [tentativo]";
 "status_bar_submenu_attendees_status_unknown" = " [?]";
 "status_bar_submenu_copy_meeting_link" = "Copia il link della riunione";
 "status_bar_submenu_email_attendees" = "Invia una mail ai partecipanti";
 "status_bar_submenu_open_in_calendar" = "Apri nell'app Calendario";
 "status_bar_submenu_open_in_fantastical" = "Apri in Fantastical";
-"status_bar_quick_actions" = "Azioni rapide";
+"status_bar_quick_actions" = "Azioni Rapide";
 "status_bar_show_meeting_names" = "Mostra il titolo della riunione";
 "status_bar_hide_meeting_names" = "Nascondi il titolo della riunione";
 "status_bar_whats_new" = "Cosa c'è di nuovo?";
-"status_bar_rate_app" = "Rate App";
+"status_bar_rate_app" = "Valuta l'app";
 "status_bar_preferences" = "Preferenze";
 "status_bar_quit" = "Chiudi MeetingBar";
 "status_bar_no_title" = "Nessun titolo";
 "status_bar_event_status_now" = "ora (%@ rimanenti)";
 "status_bar_event_status_in" = "in %@";
-"status_bar_error_apple_script_title" = "errore AppleScript";
+"status_bar_error_apple_script_title" = "Errore di AppleScript";
 "status_bar_error_link_missed_title" = "Ouch! Non puoi entrare in %@";
-"status_bar_error_link_missed_message" = "Link non trovato o il servizio non è ancora supportato";
+"status_bar_error_link_missed_message" = "Link non trovato, o servizio non ancora supportato";
 "status_bar_error_teams_link_title" = "Oops! Impossibile aprire il link nell'app Microsoft Teams";
 "status_bar_error_teams_link_message" = "Assicurati di aver installato l'app Microsoft Teams o apri il link in un browser dalle preferenze.";
 "status_bar_error_zoom_app_link_title" = "Oops! Impossibile aprire il link nell'app Zoom";
@@ -294,20 +294,20 @@
 "general_one_minute_before" = "1 minuto prima";
 "general_three_minute_before" = "3 minuti prima";
 "general_five_minute_before" = "5 minuti prima";
-"shared_send_notification_no_alert_style_tip" = "⚠️ Le impostazioni per le notifiche di macOS per MeetingBar non sono impostate per l'avviso. Aggiorna le impostazioni se desideri notifiche persistenti.";
-"shared_send_notification_disabled_tip" = "⚠️ LeLe impostazioni per le notifiche di macOS per MeetingBar sono disattivate. Attiva le notifiche nelle impostazioni di sistema di macOS per tenere traccia delle riunioni.";
+"shared_send_notification_no_alert_style_tip" = "⚠️ Le impostazioni per le notifiche di macOS per MeetingBar non sono impostate per gli avvisi. Aggiorna le impostazioni se desideri notifiche persistenti.";
+"shared_send_notification_disabled_tip" = "⚠️ Le impostazioni per le notifiche di macOS per MeetingBar sono disattivate. Attiva le notifiche nelle impostazioni di sistema di macOS per tenere traccia delle riunioni.";
 "shared_automatic_event_join_toggle" = "Partecipa automaticamente alla prossima riunione";
 "shared_automatic_event_join_tip" = "Quest'impostazione aprirà automaticamente la tua prossima riunione nell'app o nel browser configurati";
 
 // MARK: - Constants
-"constants_create_meeting_service_url" = "URL personale";
+"constants_create_meeting_service_url" = "URL personalizzato";
 "constants_meeting_service_phone" = "Numero di telefono";
 "constants_meeting_service_zoom_native" = "Zoom nativo";
 "constants_meeting_service_skype4biz" = "Skype for Business";
 "constants_meeting_service_skype4biz_selfhosted" = "Skype for Business (SH)";
 "constants_meeting_service_other" = "Altro";
 "constants_meeting_service_url" = "URL";
-"constants_browser_brave" = "Brave";
+"constants_browser_brave" = "Brave Browser";
 "constants_browser_chrome" = "Google Chrome";
 "constants_browser_chromium" = "Chromium";
 "constants_browser_edge" = "Microsoft Edge";
@@ -320,13 +320,13 @@
 // MARK: - Store
 
 "store_patronage_title" = "Supporta MeetingBar";
-"store_patronage_restore_success_message" = "Ripristina";
+"store_patronage_restore_success_message" = "Ripristinato";
 "store_patronage_restore_nothing_message" = "Nulla da ripristinare";
 "store_patronage_purchase_success_message" = "Acquisto effettuato. Grazie per il supporto!";
-"store_patronage_purchase_unknown_message" = "Errore sconosciuto. Per cortesia contatta il supporto.";
+"store_patronage_purchase_unknown_message" = "Errore sconosciuto. Per cortesia, contatta il supporto.";
 "store_patronage_purchase_client_invalid_message" = "Non sei abilitato per effettuare pagamenti";
 "store_patronage_purchase_payment_invalid_message" = "ID acquisto invalido";
-"store_patronage_purchase_payment_not_allowed_message" = "Il dispositivo non è autorizzato ad effettuare il pagamento";
+"store_patronage_purchase_payment_not_allowed_message" = "Il dispositivo non è autorizzato a effettuare il pagamento";
 "store_patronage_purchase_store_product_not_available_message" = "Il prodotto non è disponibile nel negozio corrente";
 "store_patronage_purchase_cloud_service_permission_denied_message" = "L'accesso alle informazioni sul servizio cloud non è consentito";
 "store_patronage_purchase_cloud_service_network_connection_failed" = "Impossibile connettersi alla rete";
@@ -338,7 +338,7 @@
 "notifications_event_start_one_minute_body" = "La riunione inizia tra un minuto";
 "notifications_event_start_three_minutes_body" = "La riunione inizia tra tre minuti";
 "notifications_event_start_five_minutes_body" = "La riunione inizia tra cinque minuti";
-"notifications_event_started_body" = "The event has started";
+"notifications_event_started_body" = "L'evento è iniziato";
 "notifications_snooze_until_start" = "Posticipa alla data di inizio";
 "notifications_snooze_for" = "Posticipa di %@ min";
 "notifications_meetingbar_join_event_action" = "Partecipa";
