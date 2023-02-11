@@ -804,7 +804,7 @@ class StatusBarItemController {
         }
 
         statusItemMenu.addItem(
-            withTitle: "status_bar_preferences".loco(),
+            withTitle: "\("status_bar_preferences".loco())…",
             action: #selector(AppDelegate.openPrefecencesWindow),
             keyEquivalent: ","
         )
