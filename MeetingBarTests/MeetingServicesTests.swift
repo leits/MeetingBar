@@ -32,6 +32,7 @@ let meetings = [
     MeetingLink(service: .demodesk, url: URL(string: "https://demodesk.com/NGYLHDWO")!),
     MeetingLink(service: .zoho_cliq, url: URL(string: "https://cliq.zoho.eu/meetings/alsfsma213")!),
     MeetingLink(service: .slack, url: URL(string: "https://app.slack.com/huddle/T01ABCDEFGH/C02ABCDEFGH")!)
+    MeetingLink(service: .reclaim, url: URL(string: "https://reclaim.ai/z/T01ABCDEFGH/C02ABCDEFGH")!)
 ]
 
 class MeetingServicesTests: XCTestCase {
