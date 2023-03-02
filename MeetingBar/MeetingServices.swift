@@ -365,7 +365,6 @@ func getIconForMeetingService(_ meetingService: MeetingServices?) -> NSImage {
         image = NSImage(named: "zoom_icon")!
         image.size = NSSize(width: 16, height: 16)
 
-
     case .some(.reclaim):
         // reclaim only uses its own links when zoom is involved, so they are always zoom links
         // see https://devforum.zoom.us/t/major-zoom-gcal-sync-problems-recent-behavior-change/80912
