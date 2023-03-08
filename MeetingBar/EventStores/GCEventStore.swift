@@ -328,15 +328,17 @@ class GCEventStore: NSObject, EventStore, OIDExternalUserAgent {
     }
 
     private func saveState() {
-        guard let auth = auth else {
-            GTMAppAuthFetcherAuthorization.removeFromKeychain(forName: Self.AuthKeychainName)
-            return
-        }
+        DispatchQueue.global(qos: .default).async {
+            guard let auth = self.auth else {
+                GTMAppAuthFetcherAuthorization.removeFromKeychain(forName: Self.AuthKeychainName)
+                return
+            }
 
-        if auth.canAuthorize() {
-            GTMAppAuthFetcherAuthorization.save(auth, toKeychainForName: Self.AuthKeychainName)
-        } else {
-            GTMAppAuthFetcherAuthorization.removeFromKeychain(forName: Self.AuthKeychainName)
+            if auth.canAuthorize() {
+                GTMAppAuthFetcherAuthorization.save(auth, toKeychainForName: Self.AuthKeychainName)
+            } else {
+                GTMAppAuthFetcherAuthorization.removeFromKeychain(forName: Self.AuthKeychainName)
+            }
         }
     }
 
