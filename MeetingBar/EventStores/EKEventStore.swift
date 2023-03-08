@@ -28,7 +28,7 @@ extension EKEventStore: EventStore {
                     EKEventStore.shared = EKEventStore(sources: sources)
                     seal.fulfill(())
                 } else {
-                    seal.reject(NSError())
+                    seal.reject(NSError(domain: "EKEventStore", code: 0))
                 }
             }
         }
