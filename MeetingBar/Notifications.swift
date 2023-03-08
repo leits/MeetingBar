@@ -73,9 +73,6 @@ func sendUserNotification(_ title: String, _ text: String, _ categoryIdentier: S
     let content = UNMutableNotificationContent()
     content.title = title
     content.body = text
-    if #available(macOS 12.0, *) {
-        content.interruptionLevel = .timeSensitive
-    }
 
     let identifier: String
     if let categoryIdentier = categoryIdentier {
