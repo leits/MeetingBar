@@ -70,6 +70,7 @@ enum MeetingServices: String, Codable, CaseIterable {
     case demodesk = "Demodesk"
     case zoho_cliq = "Zoho Cliq"
     case slack = "Slack"
+    case reclaim = "Reclaim.ai"
     case other = "Other"
 
     var localizedValue: String {
@@ -299,6 +300,7 @@ struct LinksRegex {
     let skype4biz_selfhosted = try! NSRegularExpression(pattern: #"https?:\/\/(meet|join)\.[^\s]*\/[a-z0-9.]+/meet\/[A-Za-z0-9./]+"#)
     let hangouts = try! NSRegularExpression(pattern: #"https?://hangouts.google.com/[^\s]*"#)
     let slack = try! NSRegularExpression(pattern: #"https?://app.slack.com/huddle/[A-Za-z0-9./]+"#)
+    let reclaim = try! NSRegularExpression(pattern: #"https?://reclaim.ai/z/[A-Za-z0-9./]+"#)
 }
 
 func getRegexForMeetingService(_ service: MeetingServices) -> NSRegularExpression? {
@@ -360,6 +362,12 @@ func getIconForMeetingService(_ meetingService: MeetingServices?) -> NSImage {
 
     // tested and verified
     case .some(.zoom), .some(.zoomgov), .some(.zoom_native):
+        image = NSImage(named: "zoom_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    case .some(.reclaim):
+        // reclaim only uses its own links when zoom is involved, so they are always zoom links
+        // see https://devforum.zoom.us/t/major-zoom-gcal-sync-problems-recent-behavior-change/80912
         image = NSImage(named: "zoom_icon")!
         image.size = NSSize(width: 16, height: 16)
 
