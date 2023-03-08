@@ -22,7 +22,7 @@ func registerNotificationCategories() {
                                             options: .foreground)
 
     let snoozeUntilStartTime = UNNotificationAction(identifier: NotificationEventTimeAction.untilStart.rawValue,
-                                                    title: "Snooze until start time",
+                                                    title: "notifications_snooze_until_start".loco(),
                                                     options: .foreground)
 
     let snooze5Min = UNNotificationAction(identifier: NotificationEventTimeAction.fiveMinuteLater.rawValue,
