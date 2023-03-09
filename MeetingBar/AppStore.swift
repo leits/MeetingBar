@@ -99,7 +99,7 @@ func purchasePatronage(_ productID: String) {
             default:
                 sendNotification("store_patronage_title".loco(), (error as NSError).localizedDescription)
             }
-        case .deferred(purchase: _):
+        case .deferred:
             break
         }
     }
