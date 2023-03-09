@@ -71,6 +71,7 @@ enum MeetingServices: String, Codable, CaseIterable {
     case zoho_cliq = "Zoho Cliq"
     case slack = "Slack"
     case reclaim = "Reclaim.ai"
+    case tuple = "Tuple"
     case other = "Other"
 
     var localizedValue: String {
@@ -298,9 +299,10 @@ struct LinksRegex {
     let zoomgov = try! NSRegularExpression(pattern: #"https?://([a-z0-9.]+)?zoomgov\.com/j/[a-zA-Z0-9?&=]+"#)
     let skype4biz = try! NSRegularExpression(pattern: #"https?://meet\.lync\.com/[^\s]*"#)
     let skype4biz_selfhosted = try! NSRegularExpression(pattern: #"https?:\/\/(meet|join)\.[^\s]*\/[a-z0-9.]+/meet\/[A-Za-z0-9./]+"#)
-    let hangouts = try! NSRegularExpression(pattern: #"https?://hangouts.google.com/[^\s]*"#)
-    let slack = try! NSRegularExpression(pattern: #"https?://app.slack.com/huddle/[A-Za-z0-9./]+"#)
-    let reclaim = try! NSRegularExpression(pattern: #"https?://reclaim.ai/z/[A-Za-z0-9./]+"#)
+    let hangouts = try! NSRegularExpression(pattern: #"https?://hangouts\.google\.com/[^\s]*"#)
+    let slack = try! NSRegularExpression(pattern: #"https?://app\.slack\.com/huddle/[A-Za-z0-9./]+"#)
+    let reclaim = try! NSRegularExpression(pattern: #"https?://reclaim\.ai/z/[A-Za-z0-9./]+"#)
+    let tuple = try! NSRegularExpression(pattern: #"https://tuple\.app/c/[^\s]*"#)
 }
 
 func getRegexForMeetingService(_ service: MeetingServices) -> NSRegularExpression? {
@@ -569,6 +571,10 @@ func getIconForMeetingService(_ meetingService: MeetingServices?) -> NSImage {
     // tested and verified
     case .some(.slack):
         image = NSImage(named: "slack_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    case .some(.tuple):
+        image = NSImage(named: "tuple_icon")!
         image.size = NSSize(width: 16, height: 16)
 
     // tested and verified
