@@ -148,10 +148,6 @@ enum UtilsRegex {
     static let linkDetection = try! NSRegularExpression(pattern: #"(http|ftp|https)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?"#, options: .caseInsensitive)
 }
 
-public enum AutoLauncher {
-    static let bundleIdentifier: String = "leits.MeetingBar.AutoLauncher"
-}
-
 enum AppLanguage: String, Codable {
     case system = ""
     case english = "en"

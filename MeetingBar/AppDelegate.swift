@@ -22,7 +22,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     var statusBarItem: StatusBarItemController!
     var eventStore: EventStore!
 
-    var launchAtLoginObserver: DefaultsObservation?
     var preferredLanguageObserver: DefaultsObservation?
 
     var meetingTitleVisibilityObserver: DefaultsObservation?
@@ -51,21 +50,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             setup()
         } else {
             openOnboardingWindow()
-        }
-
-        // When our main application starts, we have to kill
-        // the auto launcher application if it's still running.
-        postNotificationForAutoLauncher()
-    }
-
-    /// Sending a notification to AutoLauncher app about main application running status
-    private func postNotificationForAutoLauncher() {
-        let runningApps = NSWorkspace.shared.runningApplications
-        let isRunning = runningApps.contains { $0.bundleIdentifier == AutoLauncher.bundleIdentifier }
-        if isRunning {
-            let killAutoLauncherNotificationName = Notification.Name(rawValue: "killAutoLauncher")
-            DistributedNotificationCenter.default().post(name: killAutoLauncherNotificationName,
-                                                         object: Bundle.main.bundleIdentifier)
         }
     }
 
@@ -134,11 +118,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                 if let nextEvent = getNextEvent(events: self.statusBarItem.events) {
                     scheduleEventNotification(nextEvent)
                 }
-            }
-        }
-        launchAtLoginObserver = Defaults.observe(.launchAtLogin, options: []) { change in
-            if change.oldValue != change.newValue {
-                SMLoginItemSetEnabled(AutoLauncher.bundleIdentifier as CFString, change.newValue)
             }
         }
         eventFiltersObserver = Defaults.observe(

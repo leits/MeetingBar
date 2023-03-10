@@ -9,6 +9,7 @@
 import Defaults
 import SwiftUI
 import UserNotifications
+import LaunchAtLogin
 
 /**
  * users can decide to automatically open events in the configured application
@@ -80,12 +81,13 @@ func checkNotificationSettings() -> (Bool, Bool) {
 }
 
 struct LaunchAtLoginANDPreferredLanguagePicker: View {
-    @Default(.launchAtLogin) var launchAtLogin
     @Default(.preferredLanguage) var preferredLanguage
 
     var body: some View {
         HStack {
-            Toggle("preferences_general_option_login_launch".loco(), isOn: $launchAtLogin)
+            LaunchAtLogin.Toggle {
+                Text("preferences_general_option_login_launch".loco())
+            }
             Spacer()
             Picker("preferences_general_option_preferred_language_title".loco(), selection: $preferredLanguage) {
                 Text("preferences_general_option_preferred_language_system_value".loco()).tag(AppLanguage.system)
