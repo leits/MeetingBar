@@ -152,7 +152,6 @@ enum AppLanguage: String, Codable {
     case system = ""
     case english = "en"
     case ukrainian = "ua"
-    case russian = "ru"
     case croatian = "hr"
     case german = "de"
     case french = "fr"
