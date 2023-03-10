@@ -158,7 +158,6 @@ class MBEvent {
             sendNotification("status_bar_error_link_missed_title".loco(title), "status_bar_error_link_missed_message".loco())
         }
     }
-
 }
 
 func filterEvents(_ events: [MBEvent]) -> [MBEvent] {

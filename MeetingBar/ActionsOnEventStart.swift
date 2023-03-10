@@ -111,5 +111,4 @@ class ActionsOnEventStart: NSObject {
             }
         }
     }
-
 }

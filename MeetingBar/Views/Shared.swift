@@ -7,9 +7,9 @@
 //
 
 import Defaults
+import LaunchAtLogin
 import SwiftUI
 import UserNotifications
-import LaunchAtLogin
 
 /**
  * users can decide to automatically open events in the configured application

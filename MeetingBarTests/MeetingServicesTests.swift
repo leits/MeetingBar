@@ -38,7 +38,6 @@ let meetings = [
 ]
 
 class MeetingServicesTests: XCTestCase {
-
     func testDetectMeetingLink() throws {
         for meeting in meetings {
             let result = detectMeetingLink(meeting.url.absoluteString)
@@ -46,5 +45,4 @@ class MeetingServicesTests: XCTestCase {
             XCTAssertEqual(result, meeting)
         }
     }
-
 }
