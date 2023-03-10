@@ -12,7 +12,7 @@ class MBCalendar: Hashable {
     let title: String
     let ID: String
     let source: String
-    let email: String?
+    var email: String?
     var selected = false
     let color: NSColor
 
