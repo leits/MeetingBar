@@ -240,7 +240,7 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?
         NSWorkspace.shared.open(URL(string: "tel://" + url.absoluteString)!)
 
     default:
-        url.openIn(browser: browser ?? systemDefaultBrowser)
+        url.openIn(browser: browser ?? Defaults[.defaultBrowser])
     }
 }
 
