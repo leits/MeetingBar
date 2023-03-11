@@ -8,4 +8,6 @@ XCConfig/DevTeamOverride.xcconfig
 # XCode generated files
 MeetingBar.xcodeproj/project.xcworkspace/xcuserdata/*
 MeetingBar.xcodeproj/xcuserdata/*
+MeetingBar.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/*
 
+Archive/*
