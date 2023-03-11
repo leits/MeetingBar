@@ -28,7 +28,7 @@ extension EKEventStore: EventStore {
                     EKEventStore.shared = EKEventStore(sources: sources)
                     seal.fulfill(())
                 } else {
-                    seal.reject(NSError())
+                    seal.reject(NSError(domain: "EKEventStore", code: 0))
                 }
             }
         }
@@ -73,6 +73,10 @@ extension EKEventStore: EventStore {
             var events: [MBEvent] = []
             for rawEvent in EKEventStore.shared.events(matching: predicate) {
                 let calendar = calendars.first { $0.ID == rawEvent.calendar.calendarIdentifier }!
+
+                if calendar.email == nil, let email = rawEvent.attendees?.first(where: { $0.isCurrentUser })?.safeNSURL?.resourceSpecifier {
+                    calendar.email = email
+                }
 
                 var status: MBEventStatus
                 switch rawEvent.status {

@@ -12,7 +12,7 @@ class MBCalendar: Hashable {
     let title: String
     let ID: String
     let source: String
-    let email: String?
+    var email: String?
     var selected = false
     let color: NSColor
 
@@ -31,5 +31,4 @@ class MBCalendar: Hashable {
     static func == (lhs: MBCalendar, rhs: MBCalendar) -> Bool {
         lhs.ID == rhs.ID
     }
-
 }

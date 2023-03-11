@@ -168,7 +168,6 @@ func maintainDefaultsBackwardCompatibility() {
             Defaults[.zoomBrowser] = ZoomAppBrowser
         }
         UserDefaults.standard.removeObject(forKey: "useAppForZoomLinks")
-
     }
 
     if UserDefaults.standard.object(forKey: "useAppForTeamsLinks") != nil {

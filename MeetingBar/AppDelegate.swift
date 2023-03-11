@@ -22,7 +22,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     var statusBarItem: StatusBarItemController!
     var eventStore: EventStore!
 
-    var launchAtLoginObserver: DefaultsObservation?
     var preferredLanguageObserver: DefaultsObservation?
 
     var meetingTitleVisibilityObserver: DefaultsObservation?
@@ -51,21 +50,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             setup()
         } else {
             openOnboardingWindow()
-        }
-
-        // When our main application starts, we have to kill
-        // the auto launcher application if it's still running.
-        postNotificationForAutoLauncher()
-    }
-
-    /// Sending a notification to AutoLauncher app about main application running status
-    private func postNotificationForAutoLauncher() {
-        let runningApps = NSWorkspace.shared.runningApplications
-        let isRunning = runningApps.contains { $0.bundleIdentifier == AutoLauncher.bundleIdentifier }
-        if isRunning {
-            let killAutoLauncherNotificationName = Notification.Name(rawValue: "killAutoLauncher")
-            DistributedNotificationCenter.default().post(name: killAutoLauncherNotificationName,
-                                                         object: Bundle.main.bundleIdentifier)
         }
     }
 
@@ -136,16 +120,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                 }
             }
         }
-        launchAtLoginObserver = Defaults.observe(.launchAtLogin, options: []) { change in
-            if change.oldValue != change.newValue {
-                SMLoginItemSetEnabled(AutoLauncher.bundleIdentifier as CFString, change.newValue)
-            }
-        }
         eventFiltersObserver = Defaults.observe(
             keys: .selectedCalendarIDs, .showEventsForPeriod,
             .disablePastEvents, .pastEventsAppereance,
             .declinedEventsAppereance, .showPendingEvents,
-            .allDayEvents, .nonAllDayEvents,
+            .allDayEvents, .nonAllDayEvents, .customRegexes,
             .personalEventsAppereance, .showEventsForPeriod,
             options: []
         ) {
@@ -320,7 +299,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             return
         } else {
             let window = NSWindow(
-                contentRect: NSRect(x: 0, y: 0, width: 700, height: 610),
+                contentRect: NSRect(x: 0, y: 0, width: 700, height: 620),
                 styleMask: [.closable, .titled, .resizable],
                 backing: .buffered,
                 defer: false
@@ -373,7 +352,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     @objc
     func eventStoreChanged(_: NSNotification) {
         NSLog("Store changed. Update status bar menu.")
-        if self.statusBarItem == nil {
+        if statusBarItem == nil {
             return
         }
         DispatchQueue.main.async {

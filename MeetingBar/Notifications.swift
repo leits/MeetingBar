@@ -22,7 +22,7 @@ func registerNotificationCategories() {
                                             options: .foreground)
 
     let snoozeUntilStartTime = UNNotificationAction(identifier: NotificationEventTimeAction.untilStart.rawValue,
-                                                    title: "Snooze until start time",
+                                                    title: "notifications_snooze_until_start".loco(),
                                                     options: .foreground)
 
     let snooze5Min = UNNotificationAction(identifier: NotificationEventTimeAction.fiveMinuteLater.rawValue,
@@ -166,6 +166,9 @@ func scheduleEventNotification(_ event: MBEvent) {
     } else {
         content.title = event.title
     }
+    if #available(macOS 12.0, *) {
+        content.interruptionLevel = .timeSensitive
+    }
 
     switch Defaults[.joinEventNotificationTime] {
     case .atStart:
@@ -215,6 +218,9 @@ func snoozeEventNotification(_ event: MBEvent, _ interval: NotificationEventTime
     content.userInfo = ["eventID": event.ID]
     content.threadIdentifier = "meetingbar"
     content.body = "notifications_event_started_body".loco()
+    if #available(macOS 12.0, *) {
+        content.interruptionLevel = .timeSensitive
+    }
 
     let trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeInterval, repeats: false)
     let request = UNNotificationRequest(identifier: "NEXT_EVENT", content: content, trigger: trigger)

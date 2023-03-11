@@ -159,5 +159,4 @@ class StringExtensionsTests: XCTestCase {
             }
         }
     }
-
 }

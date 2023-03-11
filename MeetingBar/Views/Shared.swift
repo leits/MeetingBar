@@ -7,6 +7,7 @@
 //
 
 import Defaults
+import LaunchAtLogin
 import SwiftUI
 import UserNotifications
 
@@ -80,12 +81,13 @@ func checkNotificationSettings() -> (Bool, Bool) {
 }
 
 struct LaunchAtLoginANDPreferredLanguagePicker: View {
-    @Default(.launchAtLogin) var launchAtLogin
     @Default(.preferredLanguage) var preferredLanguage
 
     var body: some View {
         HStack {
-            Toggle("preferences_general_option_login_launch".loco(), isOn: $launchAtLogin)
+            LaunchAtLogin.Toggle {
+                Text("preferences_general_option_login_launch".loco())
+            }
             Spacer()
             Picker("preferences_general_option_preferred_language_title".loco(), selection: $preferredLanguage) {
                 Text("preferences_general_option_preferred_language_system_value".loco()).tag(AppLanguage.system)
@@ -103,7 +105,6 @@ struct LaunchAtLoginANDPreferredLanguagePicker: View {
                         Text("עברית‎").tag(AppLanguage.hebrew)
                     }
                     Group {
-                        Text("Русский").tag(AppLanguage.russian)
                         Text("Türkçe").tag(AppLanguage.turkish)
                         Text("Italiano").tag(AppLanguage.italian)
                     }

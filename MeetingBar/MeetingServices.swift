@@ -71,6 +71,8 @@ enum MeetingServices: String, Codable, CaseIterable {
     case zoho_cliq = "Zoho Cliq"
     case slack = "Slack"
     case gather = "Gather"
+    case reclaim = "Reclaim.ai"
+    case tuple = "Tuple"
     case other = "Other"
 
     var localizedValue: String {
@@ -239,7 +241,7 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?
         NSWorkspace.shared.open(URL(string: "tel://" + url.absoluteString)!)
 
     default:
-        url.openIn(browser: browser ?? systemDefaultBrowser)
+        url.openIn(browser: browser ?? Defaults[.defaultBrowser])
     }
 }
 
@@ -281,7 +283,7 @@ struct LinksRegex {
     let zhumu = try! NSRegularExpression(pattern: #"https://welink\.zhumu\.com/j/[0-9]+?pwd=[a-zA-Z0-9]+"#)
     let lark = try! NSRegularExpression(pattern: #" https://vc\.larksuite\.com/j/[0-9]+"#)
     let feishu = try! NSRegularExpression(pattern: #"https://vc\.feishu\.cn/j/[0-9]+"#)
-    let vimeo = try! NSRegularExpression(pattern: #"https://vimeo\.com/(showcase|event)/[0-9]+"#)
+    let vimeo = try! NSRegularExpression(pattern: #"https://vimeo\.com/(showcase|event)/[0-9]+|https://venues\.vimeo\.com/[^\s]+"#)
     let ovice = try! NSRegularExpression(pattern: #"https://([a-z0-9-.]+)?ovice\.in/[^\s]*"#)
     let facetime = try! NSRegularExpression(pattern: #"https://facetime\.apple\.com/join[^\s]*"#)
     let chorus = try! NSRegularExpression(pattern: #"https?://go\.chorus\.ai/[^\s]+"#)
@@ -298,8 +300,10 @@ struct LinksRegex {
     let zoomgov = try! NSRegularExpression(pattern: #"https?://([a-z0-9.]+)?zoomgov\.com/j/[a-zA-Z0-9?&=]+"#)
     let skype4biz = try! NSRegularExpression(pattern: #"https?://meet\.lync\.com/[^\s]*"#)
     let skype4biz_selfhosted = try! NSRegularExpression(pattern: #"https?:\/\/(meet|join)\.[^\s]*\/[a-z0-9.]+/meet\/[A-Za-z0-9./]+"#)
-    let hangouts = try! NSRegularExpression(pattern: #"https?://hangouts.google.com/[^\s]*"#)
-    let slack = try! NSRegularExpression(pattern: #"https?://app.slack.com/huddle/[A-Za-z0-9./]+"#)
+    let hangouts = try! NSRegularExpression(pattern: #"https?://hangouts\.google\.com/[^\s]*"#)
+    let slack = try! NSRegularExpression(pattern: #"https?://app\.slack\.com/huddle/[A-Za-z0-9./]+"#)
+    let reclaim = try! NSRegularExpression(pattern: #"https?://reclaim\.ai/z/[A-Za-z0-9./]+"#)
+    let tuple = try! NSRegularExpression(pattern: #"https://tuple\.app/c/[^\s]*"#)
     let gather = try! NSRegularExpression(pattern: #"https?://app.gather.town/app/[A-Za-z0-9]+/[A-Za-z0-9_-]+\?(spawnToken|meeting)=[^\s]*"#)
 }
 
@@ -362,6 +366,12 @@ func getIconForMeetingService(_ meetingService: MeetingServices?) -> NSImage {
 
     // tested and verified
     case .some(.zoom), .some(.zoomgov), .some(.zoom_native):
+        image = NSImage(named: "zoom_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    case .some(.reclaim):
+        // reclaim only uses its own links when zoom is involved, so they are always zoom links
+        // see https://devforum.zoom.us/t/major-zoom-gcal-sync-problems-recent-behavior-change/80912
         image = NSImage(named: "zoom_icon")!
         image.size = NSSize(width: 16, height: 16)
 
@@ -563,6 +573,10 @@ func getIconForMeetingService(_ meetingService: MeetingServices?) -> NSImage {
     // tested and verified
     case .some(.slack):
         image = NSImage(named: "slack_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    case .some(.tuple):
+        image = NSImage(named: "tuple_icon")!
         image.size = NSSize(width: 16, height: 16)
 
     // tested and verified

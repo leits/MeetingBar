@@ -13,7 +13,6 @@ import KeyboardShortcuts
 
 struct WelcomeScreen: View {
     @ObservedObject var viewRouter: ViewRouter
-    @Default(.launchAtLogin) var launchAtLogin
 
     var body: some View {
         VStack {

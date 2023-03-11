@@ -143,8 +143,8 @@ class MBEvent {
         if let meetingLink = meetingLink {
             if Defaults[.runJoinEventScript], Defaults[.joinEventScriptLocation] != nil {
                 if let url = Defaults[.joinEventScriptLocation]?.appendingPathComponent("joinEventScript.scpt") {
-                    let task = try! NSUserAppleScriptTask(url: url)
-                    task.execute { error in
+                    let task = try? NSUserAppleScriptTask(url: url)
+                    task?.execute { error in
                         if let error = error {
                             sendNotification("status_bar_error_apple_script_title".loco(), error.localizedDescription)
                         }
@@ -158,7 +158,6 @@ class MBEvent {
             sendNotification("status_bar_error_link_missed_title".loco(title), "status_bar_error_link_missed_message".loco())
         }
     }
-
 }
 
 func filterEvents(_ events: [MBEvent]) -> [MBEvent] {

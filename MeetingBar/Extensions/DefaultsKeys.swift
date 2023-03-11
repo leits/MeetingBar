@@ -29,7 +29,6 @@ extension Defaults.Keys {
     static let automaticEventJoinTime = Key<AutomaticEventJoinTime>("automaticEventJoinTime", default: .atStart)
     static let processedEventsForAutoJoin = Key<[ProcessedEvent]>("processedEventsForAutoJoin", default: [])
 
-    static let launchAtLogin = Key<Bool>("launchAtLogin", default: false)
     static let preferredLanguage = Key<AppLanguage>("preferredLanguage", default: .system)
 
     // Status Bar Appearance

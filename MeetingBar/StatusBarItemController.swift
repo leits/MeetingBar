@@ -254,9 +254,9 @@ class StatusBarItemController {
 
     func updateMenu() {
         // Don't update the menu while it's open to avoid flickering
-//        if statusItem.menu != nil {
-//            return
-//        }
+        if statusItem.menu != nil {
+            return
+        }
 
         statusItemMenu.autoenablesItems = false
         statusItemMenu.removeAllItems()
@@ -603,18 +603,18 @@ class StatusBarItemController {
 
             // Send email
             let emailItem = eventMenu.addItem(withTitle: "status_bar_submenu_email_attendees".loco(), action: #selector(emailAttendees), keyEquivalent: "")
-            copyLinkItem.target = self
+            emailItem.target = self
             emailItem.representedObject = event
 
             // Open in App
             let openItem = eventMenu.addItem(withTitle: "status_bar_submenu_open_in_calendar".loco(), action: #selector(openEventInCalendar), keyEquivalent: "")
-            copyLinkItem.target = self
+            openItem.target = self
             openItem.representedObject = event.ID
 
             // Open in fanctastical if fantastical is installed
             if isFantasticalInstalled {
                 let fantasticalItem = eventMenu.addItem(withTitle: "status_bar_submenu_open_in_fantastical".loco(), action: #selector(openEventInFantastical), keyEquivalent: "")
-                copyLinkItem.target = self
+                fantasticalItem.target = self
                 fantasticalItem.representedObject = event
             }
         } else {
@@ -804,7 +804,7 @@ class StatusBarItemController {
         }
 
         statusItemMenu.addItem(
-            withTitle: "status_bar_preferences".loco(),
+            withTitle: "\("status_bar_preferences".loco())…",
             action: #selector(AppDelegate.openPrefecencesWindow),
             keyEquivalent: ","
         )
