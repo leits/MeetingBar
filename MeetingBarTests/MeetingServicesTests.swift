@@ -31,7 +31,9 @@ let meetings = [
     MeetingLink(service: .teemyco, url: URL(string: "https://app.teemyco.com/room/7HAQH0keHU0uppUKmL7Z/goOvj4BlHSH1IkgOtaA0")!),
     MeetingLink(service: .demodesk, url: URL(string: "https://demodesk.com/NGYLHDWO")!),
     MeetingLink(service: .zoho_cliq, url: URL(string: "https://cliq.zoho.eu/meetings/alsfsma213")!),
-    MeetingLink(service: .slack, url: URL(string: "https://app.slack.com/huddle/T01ABCDEFGH/C02ABCDEFGH")!)
+    MeetingLink(service: .slack, url: URL(string: "https://app.slack.com/huddle/T01ABCDEFGH/C02ABCDEFGH")!),
+    MeetingLink(service: .gather, url: URL(string: "https://app.gather.town/app/1a2S3d4F5G/1a2S-3d4F_5G6h?spawnToken=1a2S3d4F5G")!),
+    MeetingLink(service: .gather, url: URL(string: "https://app.gather.town/app/1a2S3d4F5G/1a2S-3d4F_5G6h?meeting=1a2S3d4F5G")!)
 ]
 
 class MeetingServicesTests: XCTestCase {
