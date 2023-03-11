@@ -127,6 +127,13 @@ struct ChangelogView: View {
                             Text("• Fixed delegated calendar for macOS Calendar data source")
                         }
                     }
+                    if compareVersions("4.3.0", lastRevisedVersionInChangelog) {
+                        Section(header: Text("Version 4.3")) {
+                            Text("• Event notifications are now Time-Sensitive and can break through Focus mode so you don't miss your meetings (can be changed in notification settings)")
+                            Text("• Added link recognition for Slack Huddle, Reclaim.ai, Vimeo Venues, Gather")
+                            Text("• Fixed Launch at login and many other small bugs")
+                        }
+                    }
                 }
             }.listStyle(SidebarListStyle())
             Button("general_close".loco(), action: close)
