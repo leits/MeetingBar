@@ -70,6 +70,7 @@ enum MeetingServices: String, Codable, CaseIterable {
     case demodesk = "Demodesk"
     case zoho_cliq = "Zoho Cliq"
     case slack = "Slack"
+    case gather = "Gather"
     case reclaim = "Reclaim.ai"
     case tuple = "Tuple"
     case other = "Other"
@@ -303,6 +304,7 @@ struct LinksRegex {
     let slack = try! NSRegularExpression(pattern: #"https?://app\.slack\.com/huddle/[A-Za-z0-9./]+"#)
     let reclaim = try! NSRegularExpression(pattern: #"https?://reclaim\.ai/z/[A-Za-z0-9./]+"#)
     let tuple = try! NSRegularExpression(pattern: #"https://tuple\.app/c/[^\s]*"#)
+    let gather = try! NSRegularExpression(pattern: #"https?://app.gather.town/app/[A-Za-z0-9]+/[A-Za-z0-9_-]+\?(spawnToken|meeting)=[^\s]*"#)
 }
 
 func getRegexForMeetingService(_ service: MeetingServices) -> NSRegularExpression? {

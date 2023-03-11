@@ -32,6 +32,8 @@ let meetings = [
     MeetingLink(service: .demodesk, url: URL(string: "https://demodesk.com/NGYLHDWO")!),
     MeetingLink(service: .zoho_cliq, url: URL(string: "https://cliq.zoho.eu/meetings/alsfsma213")!),
     MeetingLink(service: .slack, url: URL(string: "https://app.slack.com/huddle/T01ABCDEFGH/C02ABCDEFGH")!),
+    MeetingLink(service: .gather, url: URL(string: "https://app.gather.town/app/1a2S3d4F5G/1a2S-3d4F_5G6h?spawnToken=1a2S3d4F5G")!),
+    MeetingLink(service: .gather, url: URL(string: "https://app.gather.town/app/1a2S3d4F5G/1a2S-3d4F_5G6h?meeting=1a2S3d4F5G")!),
     MeetingLink(service: .vimeo, url: URL(string: "https://venues.vimeo.com/12345678/abcdef123")!),
     MeetingLink(service: .reclaim, url: URL(string: "https://reclaim.ai/z/T01ABCDEFGH/C02ABCDEFGH")!),
     MeetingLink(service: .tuple, url: URL(string: "https://tuple.app/c/V1StGXR8_Z5jdHi6B")!)
