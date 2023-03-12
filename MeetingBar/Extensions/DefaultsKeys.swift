@@ -60,6 +60,10 @@ extension Defaults.Keys {
     // appearance of pending events should be shown in the statusbar and menu
     static let showPendingEvents = Key<PendingEventsAppereance>("showPendingEvents", default: PendingEventsAppereance.show)
 
+    // appearance of tentative events
+    static let showTentativeEvents = Key<TentativeEventsAppereance>("showTentativeEvents", default: TentativeEventsAppereance.show)
+
+    
     static let timeFormat = Key<TimeFormat>("timeFormat", default: .military)
 
     // Bookmarks

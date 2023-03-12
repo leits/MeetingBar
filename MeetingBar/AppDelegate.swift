@@ -124,6 +124,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             keys: .selectedCalendarIDs, .showEventsForPeriod,
             .disablePastEvents, .pastEventsAppereance,
             .declinedEventsAppereance, .showPendingEvents,
+            .showTentativeEvents,
             .allDayEvents, .nonAllDayEvents, .customRegexes,
             .personalEventsAppereance, .showEventsForPeriod,
             options: []
