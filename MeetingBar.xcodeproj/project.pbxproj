@@ -45,6 +45,7 @@
 		40DC7054250E5E1000217DD9 /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC7053250E5E1000217DD9 /* ServiceManagement.framework */; };
 		4616E3A729BB62D100665FE0 /* LaunchAtLogin in Frameworks */ = {isa = PBXBuildFile; productRef = 4616E3A629BB62D100665FE0 /* LaunchAtLogin */; };
 		4654E66227F24A3F001848AB /* Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4654E66127F24A3F001848AB /* Protocol.swift */; };
+		4672B58229C130160055E7D7 /* AppIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4672B58129C130160055E7D7 /* AppIntent.swift */; };
 		467351B729057BC900EE3987 /* StringExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 467351B629057BC900EE3987 /* StringExtensionsTests.swift */; };
 		46E4794C2801D53B00B48059 /* MeetingServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E4794B2801D53B00B48059 /* MeetingServices.swift */; };
 		46E4794E2802141800B48059 /* Calendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E4794D2802141800B48059 /* Calendar.swift */; };
@@ -113,6 +114,7 @@
 		1BF37AA42604F7E00053D53C /* I18N.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = I18N.swift; sourceTree = "<group>"; };
 		40DC7053250E5E1000217DD9 /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = System/Library/Frameworks/ServiceManagement.framework; sourceTree = SDKROOT; };
 		4654E66127F24A3F001848AB /* Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocol.swift; sourceTree = "<group>"; };
+		4672B58129C130160055E7D7 /* AppIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIntent.swift; sourceTree = "<group>"; };
 		467351B629057BC900EE3987 /* StringExtensionsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringExtensionsTests.swift; sourceTree = "<group>"; };
 		46E4794B2801D53B00B48059 /* MeetingServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingServices.swift; sourceTree = "<group>"; };
 		46E4794D2802141800B48059 /* Calendar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Calendar.swift; sourceTree = "<group>"; };
@@ -189,6 +191,7 @@
 			isa = PBXGroup;
 			children = (
 				E26A0BFB263449E300F117A9 /* Scripts.swift */,
+				4672B58129C130160055E7D7 /* AppIntent.swift */,
 				1BF37A902604C8050053D53C /* Resources  */,
 				144C017C2462D0C3000C9FFC /* AppDelegate.swift */,
 				1452C9AD25AF5B1000C46CDF /* Views */,
@@ -379,7 +382,7 @@
 		144C01712462D0C3000C9FFC /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1240;
+				LastSwiftUpdateCheck = 1420;
 				LastUpgradeCheck = 1400;
 				ORGANIZATIONNAME = "Andrii Leitsius";
 				TargetAttributes = {
@@ -514,6 +517,7 @@
 				E26A0BFC263449E300F117A9 /* Scripts.swift in Sources */,
 				144C017D2462D0C3000C9FFC /* AppDelegate.swift in Sources */,
 				1452C9C225AF854000C46CDF /* AppearanceTab.swift in Sources */,
+				4672B58229C130160055E7D7 /* AppIntent.swift in Sources */,
 				1452C9B525AF5CE700C46CDF /* GeneralTab.swift in Sources */,
 				148E47E824F400C400399929 /* Onboarding.swift in Sources */,
 				14879B2B24E6889C00DB0A7E /* Notifications.swift in Sources */,
@@ -713,6 +717,7 @@
 		144C018D2462D0C5000C9FFC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = MeetingBar/MeetingBar.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
@@ -742,6 +747,7 @@
 		144C018E2462D0C5000C9FFC /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = MeetingBar/MeetingBar.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
