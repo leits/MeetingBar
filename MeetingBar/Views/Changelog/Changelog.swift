@@ -129,7 +129,7 @@ struct ChangelogView: View {
                     }
                     if compareVersions("4.3.0", lastRevisedVersionInChangelog) {
                         Section(header: Text("Version 4.3")) {
-                            Text("• Event notifications are now Time-Sensitive and can break through Focus mode so you don't miss your meetings (can be changed in notification settings)")
+                            Text("• Event notifications are now Time-Sensitive and can break through Focus mode so you don't miss your meetings (can be changed in notification settings)").lineLimit(nil)
                             Text("• Added link recognition for Slack Huddle, Reclaim.ai, Vimeo Venues, Gather")
                             Text("• Fixed Launch at login and many other small bugs")
                         }
