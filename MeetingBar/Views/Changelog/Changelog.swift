@@ -134,6 +134,11 @@ struct ChangelogView: View {
                             Text("• Fixed Launch at login and many other small bugs")
                         }
                     }
+                    if compareVersions("4.4.0", lastRevisedVersionInChangelog) {
+                        Section(header: Text("Version 4.4")) {
+                            Text("⚙️ Integration with the Shortcuts app!\n\nYou can automate your flows with \"Join Nearest Meeting\" and \"Get Nearest Event Details\" actions.").lineLimit(nil)
+                        }
+                    }
                 }
             }.listStyle(SidebarListStyle())
             Button("general_close".loco(), action: close)
