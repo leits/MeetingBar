@@ -279,7 +279,7 @@ class GCEventStore: NSObject, EventStore, OIDExternalUserAgent {
                     let scopes = [
                         "email",
                         "https://www.googleapis.com/auth/calendar.calendarlist.readonly",
-                        "https://www.googleapis.com/auth/calendar.events.readonly"
+                        "https://www.googleapis.com/auth/calendar.events.readonly",
                     ]
 
                     let request = OIDAuthorizationRequest(configuration: config,
@@ -344,7 +344,8 @@ class GCEventStore: NSObject, EventStore, OIDExternalUserAgent {
 
     func present(_ request: OIDExternalUserAgentRequest, session _: OIDExternalUserAgentSession) -> Bool {
         if let url = request.externalUserAgentRequestURL(),
-           NSWorkspace.shared.open(url) {
+           NSWorkspace.shared.open(url)
+        {
             return true
         }
 

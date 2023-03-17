@@ -32,7 +32,7 @@ enum EventDetailsTypeAppEnum: String, AppEnum {
         .calendarTitle: "Title of the event calendar",
         .url: "Content of URL filed",
         .notes: "Content of notes field",
-        .location: "Content of location filed"
+        .location: "Content of location filed",
     ]
 }
 

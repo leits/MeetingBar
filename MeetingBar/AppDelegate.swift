@@ -343,7 +343,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     @objc
     func handleURLEvent(getURLEvent event: NSAppleEventDescriptor, replyEvent _: NSAppleEventDescriptor) {
         if let string = event.paramDescriptor(forKeyword: keyDirectObject)?.stringValue,
-           let url = URL(string: string) {
+           let url = URL(string: string)
+        {
             GCEventStore.shared
                 .currentAuthorizationFlow?.resumeExternalUserAgentFlow(with: url)
         }
