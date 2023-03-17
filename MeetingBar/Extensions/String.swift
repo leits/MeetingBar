@@ -36,8 +36,7 @@ extension String {
                html: data,
                options: [.documentType: NSAttributedString.DocumentType.html],
                documentAttributes: nil
-           )
-        {
+           ) {
             return attributedSelf.string
         }
         return self
