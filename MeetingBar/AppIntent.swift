@@ -25,36 +25,32 @@ enum EventDetailsTypeAppEnum: String, AppEnum {
 
     static let caseDisplayRepresentations: [Self: DisplayRepresentation] = [
         .title: "Title",
-        .startDate: "Start date",
-        .endDate: "End date",
-        .meetingLink: "Meeting link",
-        .meetingService: "Meeting service",
-        .calendarTitle: "Title of the event calendar",
-        .url: "Content of URL filed",
-        .notes: "Content of notes field",
-        .location: "Content of location filed",
+        .startDate: "Start Date",
+        .endDate: "End Date",
+        .meetingLink: "Meeting Link",
+        .meetingService: "Meeting Service",
+        .calendarTitle: "Calendar",
+        .url: "URL",
+        .notes: "Notes",
+        .location: "Location",
     ]
 }
 
 @available(macOS 13.0, *)
-struct GetNextEventDetails: AppIntent, CustomIntentMigratedAppIntent {
-    static let intentClassName = "GetNextEventDetailsIntent"
-
-    static let title: LocalizedStringResource = "Get Next Event Details"
-
+struct GetNearestEventDetails: AppIntent {
+    static let title: LocalizedStringResource = "Get Nearest Event Details"
     static let description = IntentDescription(
         """
-        Returns details about the next or current event.
-        For example, title, meeting link, start date, end date, location, etc.
-        """,
-        categoryName: "Next event"
+        Returns details about the nearest (curent or next) event.
+        For example, title, meeting link, start date, end date, calendar, etc.
+        """
     )
 
     @Parameter(title: "Type", default: .title)
     var type: EventDetailsTypeAppEnum
 
     static var parameterSummary: some ParameterSummary {
-        Summary("Get the next event's \(\.$type)")
+        Summary("Get the nearest event's \(\.$type)")
     }
 
     func perform() async throws -> some IntentResult & ReturnsValue<String?> {
@@ -93,19 +89,9 @@ struct GetNextEventDetails: AppIntent, CustomIntentMigratedAppIntent {
 }
 
 @available(macOS 13.0, *)
-struct JoinNextMeetingIntent: AppIntent {
-    static let title: LocalizedStringResource = "Join next meeting"
-
-    static let description = IntentDescription(
-        """
-        Join next event meeting.
-        """,
-        categoryName: "Next event"
-    )
-
-    static var parameterSummary: some ParameterSummary {
-        Summary("Open link to the next or current event.")
-    }
+struct JoinNearestMeetingIntent: AppIntent {
+    static let title: LocalizedStringResource = "Join Nearest Meeting"
+    static let description = IntentDescription("Join the nearest (current or next) event meeting.")
 
     func perform() async throws -> some IntentResult {
         if let app = await NSApplication.shared.delegate as! AppDelegate? {
