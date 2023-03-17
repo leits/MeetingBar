@@ -67,7 +67,7 @@ class MBEvent {
     let location: String?
     let startDate: Date
     let endDate: Date
-    let isAllDay: Bool
+    var isAllDay: Bool
     let recurrent: Bool
     var attendees: [MBEventAttendee] = []
 
@@ -84,12 +84,23 @@ class MBEvent {
          endDate: Date,
          isAllDay: Bool,
          recurrent: Bool,
-         calendar: MBCalendar) {
+         calendar: MBCalendar)
+    {
         self.calendar = calendar
         self.ID = ID
         self.lastModifiedDate = lastModifiedDate
         self.title = title ?? "status_bar_no_title".loco()
         self.status = status
+
+        self.isAllDay = isAllDay
+        if !isAllDay, startDate != endDate {
+            // Treat events from midnight to midnight as an all-day event
+            let startDateIsMidnight = Calendar.current.startOfDay(for: startDate) == startDate
+            let endDateIsMidnight = Calendar.current.startOfDay(for: endDate) == endDate
+            if startDateIsMidnight, endDateIsMidnight {
+                self.isAllDay = true
+            }
+        }
 
         self.notes = notes
         self.location = location
@@ -99,7 +110,6 @@ class MBEvent {
         self.attendees = attendees
         self.startDate = startDate
         self.endDate = endDate
-        self.isAllDay = isAllDay
         self.recurrent = recurrent
 
         if let currentUser = attendees.first(where: { $0.isCurrentUser }) {
