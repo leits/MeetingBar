@@ -252,7 +252,7 @@
 "preferences_general_shortcut_join_from_clipboard" = "An Meeting in Zwischenablage teilnehmen:";
 "preferences_general_shortcut_join_next" = "Am nächsten Meeting teilnehmen:";
 "welcome_screen_shortcut_ad_hoc_meeting_title" = "mit eigenem Tastenkürzel:";
-"status_bar_event_status_now" = "jetzt noch (%@ übrig)";
+"status_bar_event_status_now" = "jetzt (noch %@)";
 
 // MARK: - Store
 
