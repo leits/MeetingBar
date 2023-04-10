@@ -126,10 +126,10 @@
 "preferences_bookmarks_new_bookmark_already_exist" = "%@ zaten bu linkte/telefon numarası:\n%@";
 "preferences_bookmarks_new_bookmark_error_title" = "Yer imi eklenemedi";
 "preferences_calendars_add_account_modal" = "Harici takvim eklemek için:\n1. Varsayılan takvim uygulamanızı açın\n2. Açılan menüde 'Hesap Ekle' butonuna tıklayın\n3. Hesabınızı seçin ve bağlanın";
-"preferences_calendars_provider_section_title" = "Calendars provider";
-"preferences_calendars_provider_gcalendar_change_account" = "Change Google Account";
-"preferences_calendars_provider_macos_switch" = "Switch to MacOS Calendar";
-"preferences_calendars_provider_gcalendar_switch" = "Switch to Google Calendar API";
+"preferences_calendars_provider_section_title" = "Takvim sağlayıcısı";
+"preferences_calendars_provider_gcalendar_change_account" = "Google Hesabını Değiştir";
+"preferences_calendars_provider_macos_switch" = "MacOS Takvimine Geç";
+"preferences_calendars_provider_gcalendar_switch" = "Google Calendar API'ye geçin";
 "preferences_advanced_apple_script_checkmark" = "Toplantıya katıldığında AppleScript çalıştır";
 "preferences_advanced_save_script_button" = "Scripti kaydet";
 "preferences_advanced_wrong_location_message" = "Lütfen User → Library → Application Scripts → leits.MeetingBar klasörünü seçin";
@@ -189,19 +189,16 @@
 "access_screen_access_denied_relaunch_title" = "Sonra uygulamayı manuel olarak açın ve kuruluma devam edin.";
 "access_screen_access_granted_title" = "Takvimlere erişim isteği…";
 "access_screen_access_granted_click_ok_title" = "Karşınıza çıkan macOS ekranında \\OK\\ butonuna tıklayın.";
-
-"access_screen_provider_picker_label" = "Select calendars provider";
-"access_screen_provider_macos_title" = "MacOS Calendar app";
-"access_screen_provider_macos_recomended" = "(recomended)";
-"access_screen_provider_macos_data_source" = "Get data from MacOS Calendar app";
+"access_screen_provider_picker_label" = "Takvim sağlayıcısı seçin";
+"access_screen_provider_macos_title" = "MacOS Takvim uygulaması";
+"access_screen_provider_macos_recomended" = "(önerilen)";
+"access_screen_provider_macos_data_source" = "MacOS Takvim uygulamasından veri alın";
 "access_screen_provider_macos_number_of_accounts" = "Any number of any connected accounts";
-
 "access_screen_provider_gcalendar_data_source" = "Get data directly from Google Calendar";
 "access_screen_provider_gcalendar_number_of_accounts" = "Only one Google account";
 "access_screen_provider_gcalendar_sign_in_title" = "Google Sign In";
 "access_screen_provider_gcalendar_sign_in_description" = "Allow MeetingBar access to your calendar in browser window";
 "access_screen_try_again" = "Try again";
-
 "shared_send_notification_no_alert_style_tip" = "⚠️ macOS bildirim ayarlarınız MeetingBar için yapılandırılmamış. Bildirim istiyorsanız bunu açmanız gerekir.";
 
 // MARK: - Constants
@@ -275,15 +272,15 @@
 "preferences_configure_browsers_modal_add_browser_path" = "Dosya yolu";
 "preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "Tarayıcı seç";
 "preferences_bookmarks_new_bookmark_title" = "Yeni yer imi";
-"preferences_calendars_add_account_button" = "Hesap ekle";
+"preferences_calendars_add_account_button" = "Takvim hesabı ekle";
 
 // MARK: - Preferences Advanced
 
 "preferences_advanced_setting_warning" = "⚠️ Sadece ne yaptğınızı biliyorsanız, bu ayarları kullanın";
 "preferences_advanced_apple_script_placeholder" = "# scriptinizi buraya yazın\ntell application \"Music\" to pause";
-"preferences_advanced_run_script_on_event_start" = "Run AppleScript automatically";
-"preferences_advanced_test_script_on_next_event" = "Test on next event";
-"preferences_advanced_edit_script" = "Edit script";
+"preferences_advanced_run_script_on_event_start" = "AppleScript'i otomatik olarak çalıştır";
+"preferences_advanced_test_script_on_next_event" = "Bir sonraki etkinlikte test edin";
+"preferences_advanced_edit_script" = "Komut dosyasını düzenle";
 "preferences_advanced_regex_title" = "Toplantı bağlantıları için özel regex betikleri";
 
 // MARK: - Status bar
@@ -314,7 +311,7 @@
 // MARK: - Shared
 
 "shared_send_notification_toggle" = "Sonraki toplantıya katılmak için bildirim gönder";
-"general_when_event_starts" = "toplantı başladığında";
+"general_when_event_starts" = "etkinlik başladığında";
 "calendars_screen_start_button" = "Uygulamayı kullanmaya başla";
 "access_screen_access_denied_system_preferences_button" = "Sistem Tercihleri";
 "general_one_minute_before" = "1 dakika önce";
@@ -341,8 +338,8 @@
 "link_url_cant_open_message" = "%@ yüklü olduğundan emin olun veya bu bağlantıyı bir tarayıcıda açın.";
 "preferences_general_feedback_title" = "Eğer soru veya geribildiriminiz varsa,\nlütfen iletişim kurmaktan çekinmeyin:";
 "status_bar_section_refresh_sources" = "Kaynakları yenile";
-"status_bar_menu_dismiss_curent_meeting" = "Dismiss current meeting";
-"status_bar_menu_dismiss_next_meeting" = "Dismiss next meeting";
+"status_bar_menu_dismiss_curent_meeting" = "Geçerli toplantıyı kapat";
+"status_bar_menu_dismiss_next_meeting" = "Sonraki toplantıyı kapat";
 "status_bar_menu_remove_all_dismissals" = "Remove all dismissals";
 "status_bar_event_dismissed_mark" = "dismissed";
 "notification_next_meeting_dismissed_title" = "Dismissed %@";
