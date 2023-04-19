@@ -73,6 +73,7 @@ enum MeetingServices: String, Codable, CaseIterable {
     case gather = "Gather"
     case reclaim = "Reclaim.ai"
     case tuple = "Tuple"
+    case relayedAI = "Relayed.ai"
     case other = "Other"
 
     var localizedValue: String {
@@ -305,6 +306,7 @@ struct LinksRegex {
     let reclaim = try! NSRegularExpression(pattern: #"https?://reclaim\.ai/z/[A-Za-z0-9./]+"#)
     let tuple = try! NSRegularExpression(pattern: #"https://tuple\.app/c/[^\s]*"#)
     let gather = try! NSRegularExpression(pattern: #"https?://app.gather.town/app/[A-Za-z0-9]+/[A-Za-z0-9_-]+\?(spawnToken|meeting)=[^\s]*"#)
+    let relayedAI = try! NSRegularExpression(pattern: #"https?://relayed\.ai/[^\s]*"#)
 }
 
 func getRegexForMeetingService(_ service: MeetingServices) -> NSRegularExpression? {
@@ -587,6 +589,10 @@ func getIconForMeetingService(_ meetingService: MeetingServices?) -> NSImage {
     // tested and verified
     case .some(.vonageMeetings):
         image = NSImage(named: "vonage_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    case .some(.relayedAI):
+        image = NSImage(named: "relayedai_icon")!
         image.size = NSSize(width: 16, height: 16)
 
     case .some(.url):
