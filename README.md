@@ -13,6 +13,7 @@ Integrated with 50+ meeting services so you can quickly join meetings from an ev
 
 <a href="https://www.producthunt.com/posts/meetingbar?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-meetingbar" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=203807&theme=light" alt="MeetingBar - Join your next meeting from your menu bar | Product Hunt Embed" style="width: 250px; height: 54px;" width="250px" height="54px" /></a>
 [![Download on the Mac App Store](mas_badge.png)](https://apps.apple.com/us/app/id1532419400)
+<a href="https://www.buymeacoffee.com/meetingbar" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
 ## Features
 
