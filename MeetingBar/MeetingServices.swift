@@ -362,7 +362,7 @@ func getIconForMeetingService(_ meetingService: MeetingServices?) -> NSImage {
     // tested and verified -> deprecated, can be removed because hangouts was replaced by google meet
     case .some(.hangouts):
         image = NSImage(named: "google_hangouts_icon")!
-        image.size = NSSize(width: 16, height: 17.8)
+        image.size = NSSize(width: 16, height: 16)
 
     // tested and verified
     case .some(.zoom), .some(.zoomgov), .some(.zoom_native):
