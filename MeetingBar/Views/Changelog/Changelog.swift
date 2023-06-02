@@ -139,6 +139,11 @@ struct ChangelogView: View {
                             Text("⚙️ Integration with the Shortcuts app!\n\nYou can automate your flows with \"Join Nearest Meeting\" and \"Get Nearest Event Details\" actions.").lineLimit(nil)
                         }
                     }
+                    if compareVersions("4.5.0", lastRevisedVersionInChangelog) {
+                        Section(header: Text("Version 4.5")) {
+                            Text("• Updates the Slack huddle icon to properly scale within menu").lineLimit(nil)
+                        }
+                    }
                 }
             }.listStyle(SidebarListStyle())
             Button("general_close".loco(), action: close)
