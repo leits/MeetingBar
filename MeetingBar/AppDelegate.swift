@@ -206,15 +206,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                     }
                 }
             }
-        case NotificationEventTimeAction.untilStart.rawValue, UNNotificationDefaultActionIdentifier:
+        case NotificationEventTimeAction.untilStart.rawValue:
             handleSnoozeEvent(response, NotificationEventTimeAction.untilStart)
-        case NotificationEventTimeAction.fiveMinuteLater.rawValue, UNNotificationDefaultActionIdentifier:
+        case NotificationEventTimeAction.fiveMinuteLater.rawValue:
             handleSnoozeEvent(response, NotificationEventTimeAction.fiveMinuteLater)
-        case NotificationEventTimeAction.tenMinuteLater.rawValue, UNNotificationDefaultActionIdentifier:
+        case NotificationEventTimeAction.tenMinuteLater.rawValue:
             handleSnoozeEvent(response, NotificationEventTimeAction.tenMinuteLater)
-        case NotificationEventTimeAction.fifteenMinuteLater.rawValue, UNNotificationDefaultActionIdentifier:
+        case NotificationEventTimeAction.fifteenMinuteLater.rawValue:
             handleSnoozeEvent(response, NotificationEventTimeAction.fifteenMinuteLater)
-        case NotificationEventTimeAction.thirtyMinuteLater.rawValue, UNNotificationDefaultActionIdentifier:
+        case NotificationEventTimeAction.thirtyMinuteLater.rawValue:
             handleSnoozeEvent(response, NotificationEventTimeAction.thirtyMinuteLater)
         default:
             break
