@@ -35,7 +35,7 @@ class ActionsOnEventStart: NSObject {
 
         // Only run if the user has activated it.
         let autoJoinActionActive = Defaults[.automaticEventJoin]
-        let runEventStartScriptActionActive = Defaults[.runEventStartScript] && (Defaults[.joinEventScriptLocation] != nil)
+        let runEventStartScriptActionActive = Defaults[.runEventStartScript] && (Defaults[.eventStartScriptLocation] != nil)
 
         if !autoJoinActionActive, !runEventStartScriptActionActive {
             return
