@@ -29,24 +29,16 @@ struct CalendarsTab: View {
                 Spacer()
             }
             VStack(spacing: 15) {
-                Form {
-                    List {
-                        ForEach(Array(self.calendarsBySource.keys), id: \.self) { source in
-                            Section(header: Text(source)) {
-                                ForEach(self.calendarsBySource[source]!, id: \.ID) { calendar in
-                                    CalendarRow(title: calendar.title, isSelected: self.selectedCalendarIDs.contains(calendar.ID), color: Color(calendar.color)) {
-                                        if self.selectedCalendarIDs.contains(calendar.ID) {
-                                            self.selectedCalendarIDs.removeAll { $0 == calendar.ID }
-                                        } else {
-                                            self.selectedCalendarIDs.append(calendar.ID)
-                                        }
-                                    }
-                                }
+                List {
+                    ForEach(Array(self.calendarsBySource.keys), id: \.self) { source in
+                        Section(header: Text(source)) {
+                            ForEach(self.calendarsBySource[source]!, id: \.ID) { calendar in
+                                CalendarRow(calendar: calendar)
                             }
                         }
-                    }.listStyle(SidebarListStyle())
-                }
-            }.border(Color.gray)
+                    }
+                }.listStyle(SidebarListStyle())
+            }
             Divider()
 
             VStack(alignment: .leading) {
@@ -75,9 +67,9 @@ struct CalendarsTab: View {
                     }
                 }.padding(.horizontal, 10)
             }
-        }.onReceive(timer) { _ in loadCalendarList() }
+        }.padding()
+            .onReceive(timer) { _ in loadCalendarList() }
             .onDisappear { timer.upstream.connect().cancel() }
-            .padding()
     }
 
     func changeEventStoreProvider(_ provider: EventStoreProvider) {
@@ -121,24 +113,31 @@ struct AddAccountModal: View {
 }
 
 struct CalendarRow: View {
-    var title: String
-    var isSelected: Bool
-    var color: Color
-    var action: () -> Void
+    var calendar: MBCalendar
+    @State var isSelected: Bool
+
+    init(calendar: MBCalendar) {
+        self.calendar = calendar
+        isSelected = Defaults[.selectedCalendarIDs].contains(calendar.ID)
+    }
 
     var body: some View {
-        HStack {
-            Button(action: self.action) {
-                Section {
-                    if self.isSelected {
-                        Image(nsImage: NSImage(named: NSImage.menuOnStateTemplateName)!)
-                    } else {
-                        Image(nsImage: NSImage(named: NSImage.addTemplateName)!)
-                    }
-                }.frame(width: 20, height: 17)
+        Toggle(isOn: $isSelected) {
+            HStack {
+                Text("")
+                Circle().fill(Color(calendar.color)).frame(width: 10, height: 10)
+                Text(calendar.title)
             }
-            Circle().fill(self.color).frame(width: 8, height: 8)
-            Text(self.title)
-        }.frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity, alignment: .topLeading)
+        }
+        .onAppear {
+            isSelected = Defaults[.selectedCalendarIDs].contains(calendar.ID)
+        }
+        .onReceive([self.isSelected].publisher.first()) { newValue in
+            if newValue {
+                Defaults[.selectedCalendarIDs].append(calendar.ID)
+            } else {
+                Defaults[.selectedCalendarIDs].removeAll { $0 == calendar.ID }
+            }
+        }
     }
 }
