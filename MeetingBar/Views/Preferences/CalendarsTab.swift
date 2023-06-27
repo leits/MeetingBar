@@ -68,6 +68,11 @@ struct CalendarsTab: View {
                 }.padding(.horizontal, 10)
             }
         }.padding()
+            .onAppear {
+                DispatchQueue.main.async {
+                    appDelegate!.statusBarItem.loadCalendars()
+                }
+            }
             .onReceive(timer) { _ in loadCalendarList() }
             .onDisappear { timer.upstream.connect().cancel() }
     }

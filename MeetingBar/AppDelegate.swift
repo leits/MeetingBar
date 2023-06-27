@@ -28,6 +28,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     var joinEventNotificationObserver: DefaultsObservation?
 
     var eventFiltersObserver: DefaultsObservation?
+    var calendarsObserver: DefaultsObservation?
     var appearanceSettingsObserver: DefaultsObservation?
 
     weak var preferencesWindow: NSWindow!
@@ -121,15 +122,19 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             }
         }
         eventFiltersObserver = Defaults.observe(
-            keys: .selectedCalendarIDs, .showEventsForPeriod,
+            keys: .showEventsForPeriod, .personalEventsAppereance,
             .disablePastEvents, .pastEventsAppereance,
             .declinedEventsAppereance, .showPendingEvents,
             .allDayEvents, .nonAllDayEvents, .customRegexes,
-            .personalEventsAppereance, .showEventsForPeriod,
             options: []
         ) {
+            self.statusBarItem.loadEvents()
+        }
+
+        calendarsObserver = Defaults.observe(keys: .selectedCalendarIDs, options: []) {
             self.statusBarItem.loadCalendars()
         }
+
         preferredLanguageObserver = Defaults.observe(.preferredLanguage) { change in
             if I18N.instance.changeLanguage(to: change.newValue) {
                 self.statusBarItem.updateTitle()
@@ -356,7 +361,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             return
         }
         DispatchQueue.main.async {
-            self.statusBarItem.loadCalendars()
+            self.statusBarItem.loadEvents()
         }
     }
 
@@ -364,7 +369,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     private func fetchEvents() {
         NSLog("Firing reccuring fetchEvents")
         DispatchQueue.main.async {
-            self.statusBarItem.loadCalendars()
+            self.statusBarItem.loadEvents()
         }
     }
 

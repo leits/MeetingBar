@@ -34,9 +34,7 @@ class GCEventStore: NSObject, EventStore, OIDExternalUserAgent {
         loadState()
     }
 
-    func refreshSources() {
-        _ = fetchAllCalendars()
-    }
+    func refreshSources() {}
 
     func fetchAllCalendars() -> Promise<[MBCalendar]> {
         Promise { seal in
