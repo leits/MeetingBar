@@ -57,17 +57,12 @@ func registerNotificationCategories() {
 
     notificationCenter.setNotificationCategories([eventCategory, snoozeEventCategory])
 
-    notificationCenter.getNotificationCategories { categories in
-        for category in categories {
-            NSLog("Category \(category.identifier) was registered")
-        }
-    }
+    notificationCenter.getNotificationCategories { _ in }
 }
 
 func sendUserNotification(_ title: String, _ text: String, _ categoryIdentier: String? = nil) {
     requestNotificationAuthorization() // By the apple best practices
 
-    NSLog("Send notification: \(title) - \(text)")
     let center = UNUserNotificationCenter.current()
 
     let content = UNMutableNotificationContent()
@@ -134,8 +129,6 @@ func sendNotification(_ title: String, _ text: String) {
  * adds an alert for the user- we will only use NSAlert if the user has switched off notifications
  */
 func displayAlert(title: String, text: String) {
-    NSLog("Display alert: \(title) - \(text)")
-
     let userAlert = NSAlert()
     userAlert.messageText = title
     userAlert.informativeText = text

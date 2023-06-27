@@ -830,10 +830,8 @@ class StatusBarItemController {
     @objc
     func joinNextMeeting() {
         if let nextEvent = getNextEvent(events: events) {
-            NSLog("Join next event")
             nextEvent.openMeeting()
         } else {
-            NSLog("No next event")
             sendNotification("next_meeting_empty_title".loco(), "next_meeting_empty_message".loco())
         }
     }
@@ -882,7 +880,6 @@ class StatusBarItemController {
 
     @objc
     func joinBookmark(sender: NSMenuItem) {
-        NSLog("Called to join bookmark")
         if let bookmark: Bookmark = sender.representedObject as? Bookmark {
             openMeetingURL(bookmark.service, bookmark.url, nil)
         }
@@ -890,7 +887,6 @@ class StatusBarItemController {
 
     @objc
     func clickOnEvent(sender: NSMenuItem) {
-        NSLog("Click on event (\(sender.title))!")
         if let event: MBEvent = sender.representedObject as? MBEvent {
             event.openMeeting()
         }

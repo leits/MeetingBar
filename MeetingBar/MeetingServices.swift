@@ -133,7 +133,6 @@ enum CreateMeetingServices: String, Codable, CaseIterable {
 }
 
 func createMeeting() {
-    NSLog("Create meeting in \(Defaults[.createMeetingService].rawValue)")
     let browser: Browser = Defaults[.browserForCreateMeeting]
 
     switch Defaults[.createMeetingService] {

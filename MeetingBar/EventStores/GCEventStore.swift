@@ -104,7 +104,6 @@ class GCEventStore: NSObject, EventStore, OIDExternalUserAgent {
             if let url = URL(string: "https://www.googleapis.com/calendar/v3/calendars/\(calendar.ID)/events?singleEvents=true&orderBy=startTime&timeMax=\(timeMax)&timeMin=\(timeMin)") {
                 let service = GTMSessionFetcherService()
                 service.authorizer = auth
-                NSLog("Request GoogleAPI")
                 service.fetcher(with: url).beginFetch { data, error in
                     if error != nil {
                         if [OIDOAuthTokenErrorDomain, OIDHTTPErrorDomain].contains((error as NSError?)?.domain) {

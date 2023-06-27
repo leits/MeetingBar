@@ -56,8 +56,6 @@ func createAppleScriptParametersForEvent(event: MBEvent) -> NSAppleEventDescript
 
 // runs the predefined script with parameters.
 func runMeetingStartsScript(event: MBEvent, type: ScriptType) {
-    NSLog("Run apple script for event \(String(describing: event.ID))")
-
     let parameters = createAppleScriptParametersForEvent(event: event)
 
     let appleEvent = NSAppleEventDescriptor(

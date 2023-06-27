@@ -206,7 +206,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             if response.notification.request.content.categoryIdentifier == "EVENT" || response.notification.request.content.categoryIdentifier == "SNOOZE_EVENT" {
                 if let eventID = response.notification.request.content.userInfo["eventID"] as? String {
                     if let event = statusBarItem.events.first(where: { $0.ID == eventID }) {
-                        NSLog("Join \(event.title) event from notication")
                         event.openMeeting()
                     }
                 }
@@ -232,11 +231,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         if response.notification.request.content.categoryIdentifier == "EVENT" || response.notification.request.content.categoryIdentifier == "SNOOZE_EVENT" {
             if let eventID = response.notification.request.content.userInfo["eventID"] as? String {
                 if let event = statusBarItem.events.first(where: { $0.ID == eventID }) {
-                    if action.durationInSeconds == 0 {
-                        NSLog("Snooze event until start")
-                    } else {
-                        NSLog("Snooze event for \(action.durationInMins) mins")
-                    }
                     snoozeEventNotification(event, action)
                 }
             }
@@ -250,7 +244,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
      */
 
     func openOnboardingWindow() {
-        NSLog("Open onboarding window")
         let contentView = OnboardingView()
         let onboardingWindow = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 660, height: 450),
@@ -271,7 +264,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
     @objc
     func openChangelogWindow(_: NSStatusBarButton?) {
-        NSLog("Open changelof window")
         let contentView = ChangelogView()
         let changelogWindow = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 600, height: 400),
@@ -294,7 +286,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
     @objc
     func openPrefecencesWindow(_: NSStatusBarButton?) {
-        NSLog("Open preferences window")
         let contentView = PreferencesView()
 
         if let preferencesWindow {
@@ -356,7 +347,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
     @objc
     func eventStoreChanged(_: NSNotification) {
-        NSLog("Store changed. Update status bar menu.")
         if statusBarItem == nil {
             return
         }
@@ -367,7 +357,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
     @objc
     private func fetchEvents() {
-        NSLog("Firing reccuring fetchEvents")
         DispatchQueue.main.async {
             self.statusBarItem.loadEvents()
         }
@@ -375,7 +364,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
     @objc
     private func updateStatusBarItem() {
-        NSLog("Firing reccuring updateStatusBarItem")
         DispatchQueue.main.async {
             self.statusBarItem.updateTitle()
             self.statusBarItem.updateMenu()
@@ -384,7 +372,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
     @objc
     func quit(_: NSStatusBarButton) {
-        NSLog("User click Quit")
         NSApplication.shared.terminate(self)
     }
 }
