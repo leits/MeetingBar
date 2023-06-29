@@ -257,7 +257,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         let controller = NSWindowController(window: onboardingWindow)
         controller.showWindow(self)
 
-        onboardingWindow.level = NSWindow.Level.floating
+        onboardingWindow.level = .floating
         onboardingWindow.center()
         onboardingWindow.orderFrontRegardless()
     }
@@ -272,6 +272,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             defer: false
         )
         changelogWindow.title = WindowTitles.changelog
+        changelogWindow.level = .floating
         changelogWindow.contentView = NSHostingView(rootView: contentView)
         changelogWindow.makeKeyAndOrderFront(nil)
         // allow the changelof window can be focused automatically when opened
@@ -304,6 +305,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             window.title = WindowTitles.preferences
             window.contentView = NSHostingView(rootView: contentView)
             window.makeKeyAndOrderFront(nil)
+            window.level = .floating
             // allow the preference window can be focused automatically when opened
             NSApplication.shared.activate(ignoringOtherApps: true)
 
