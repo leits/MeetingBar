@@ -23,7 +23,7 @@ extension URL {
             configuration.activates = true
             configuration.addsToRecentItems = true
 
-            NSWorkspace.shared.open([self], withApplicationAt: URL(fileURLWithPath: browserPath), configuration: configuration) { app, error in
+            NSWorkspace.shared.open([self], withApplicationAt: URL(fileURLWithPath: browserPath), configuration: configuration) { app, _ in
                 guard app != nil else {
                     sendNotification("link_url_cant_open_title".loco(browserName), "link_url_cant_open_message".loco(browserName))
                     self.openInDefaultBrowser()

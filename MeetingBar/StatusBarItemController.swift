@@ -19,12 +19,11 @@ import PromiseKit
 class StatusBarItemController {
     var statusItem: NSStatusItem!
     var statusItemMenu: NSMenu!
-    var currentStatusBarEvent: MBEvent?
 
     var calendars: [MBCalendar] = []
     var events: [MBEvent] = []
 
-    let isFantasticalInstalled = checkIsFantasticalInstalled()
+    lazy var isFantasticalInstalled = checkIsFantasticalInstalled()
     let installationDate = getInstallationDate()
 
     weak var appdelegate: AppDelegate!
@@ -168,12 +167,6 @@ class StatusBarItemController {
                     button.image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
                 default:
                     button.image = NSImage(named: "iconCalendar")
-                }
-            }
-
-            if currentStatusBarEvent?.ID != nextEvent?.ID {
-                if nextEvent == nil || (nextEvent!).startDate.timeIntervalSinceNow <= 0 {
-                    currentStatusBarEvent = nextEvent
                 }
             }
 
