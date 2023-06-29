@@ -142,7 +142,10 @@ struct ChangelogView: View {
                     }
                     if compareVersions("4.5.0", lastRevisedVersionInChangelog) {
                         Section(header: Text("Version 4.5")) {
-                            Text("• Updates the Slack huddle icon to properly scale within menu").lineLimit(nil)
+                            Text("• Improved links recognition for Microsoft Teams and Zoom Webinar")
+                            Text("• Improved performance on actions")
+                            Text("• Optimized direct Google Calendar integration")
+                            Text("• Updated Slack huddle icon to properly scale within a menu")
                         }
                     }
                 }
