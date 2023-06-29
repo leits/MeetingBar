@@ -287,7 +287,7 @@ struct LinksRegex {
     let facetime = try! NSRegularExpression(pattern: #"https://facetime\.apple\.com/join[^\s]*"#)
     let chorus = try! NSRegularExpression(pattern: #"https?://go\.chorus\.ai/[^\s]+"#)
     let pop = try! NSRegularExpression(pattern: #"https?://pop\.com/j/[0-9-]+"#)
-    let gong = try! NSRegularExpression(pattern: #"https?://join\.gong\.io/[^\s]+"#)
+    let gong = try! NSRegularExpression(pattern: #"https?://([a-z0-9-.]+)?join\.gong\.io/[^\s]+"#)
     let livestorm = try! NSRegularExpression(pattern: #"https?://app\.livestorm\.com/p/[^\s]+"#)
     let luma = try! NSRegularExpression(pattern: #"https://lu\.ma/join/[^\s]*"#)
     let preply = try! NSRegularExpression(pattern: #"https://preply\.com/[^\s]*"#)
