@@ -181,11 +181,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
     private func scheduleFetchEvents() {
         let timer = Timer(timeInterval: 60, target: self, selector: #selector(fetchEvents), userInfo: nil, repeats: true)
+        timer.tolerance = 3
         RunLoop.current.add(timer, forMode: .common)
     }
 
     private func scheduleUpdateStatusBarItem() {
         let timer = Timer(timeInterval: 5, target: self, selector: #selector(updateStatusBarItem), userInfo: nil, repeats: true)
+        timer.tolerance = 0.5
         RunLoop.current.add(timer, forMode: .common)
     }
 
