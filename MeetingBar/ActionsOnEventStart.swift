@@ -48,7 +48,8 @@ class ActionsOnEventStart: NSObject {
 
             let startEndRange = nextEvent.startDate ... nextEvent.endDate
 
-            let timeInterval = nextEvent.startDate.timeIntervalSince(now)
+            // time until the start of the event with a delay of 10 seconds
+            let timeInterval = nextEvent.startDate.timeIntervalSince(now) + 10
 
             let allDayCandidate = nextEvent.isAllDay && startEndRange.contains(now)
 
@@ -58,7 +59,7 @@ class ActionsOnEventStart: NSObject {
              * ------------------------
              */
             let actionTimeForEventAutoJoin = Double(Defaults[.automaticEventJoinTime].rawValue)
-            let nonAlldayCandidateForAutoJoin = (timeInterval > 0 && timeInterval < actionTimeForEventAutoJoin) || startEndRange.contains(now)
+            let nonAlldayCandidateForAutoJoin = (timeInterval > 0 && timeInterval < actionTimeForEventAutoJoin)
 
             if autoJoinActionActive && (nonAlldayCandidateForAutoJoin || allDayCandidate) {
                 var events = Defaults[.processedEventsForAutoJoin]
@@ -88,7 +89,7 @@ class ActionsOnEventStart: NSObject {
              * ------------------------
              */
             let actionTimeForScriptOnEventStart = Double(Defaults[.eventStartScriptTime].rawValue)
-            let nonAlldayCandidateForRunStartEventScript = (timeInterval > 0 && timeInterval < actionTimeForScriptOnEventStart) || startEndRange.contains(now)
+            let nonAlldayCandidateForRunStartEventScript = (timeInterval > 0 && timeInterval < actionTimeForScriptOnEventStart)
 
             if runEventStartScriptActionActive, nonAlldayCandidateForRunStartEventScript || allDayCandidate {
                 var events = Defaults[.processedEventsForRunScriptOnEventStart]
