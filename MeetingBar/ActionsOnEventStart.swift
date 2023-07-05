@@ -19,6 +19,7 @@ class ActionsOnEventStart: NSObject {
 
     func startWatching() {
         timer = Timer(timeInterval: 10, target: self, selector: #selector(checkNextEvent), userInfo: nil, repeats: true)
+        timer?.tolerance = 0.5
         RunLoop.current.add(timer!, forMode: .common)
     }
 
