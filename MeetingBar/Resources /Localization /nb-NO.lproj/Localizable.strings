@@ -175,6 +175,8 @@
 "status_bar_show_meeting_names" = "Vis møtetittel";
 "status_bar_quick_actions" = "Hurtighandlinger";
 "status_bar_submenu_copy_meeting_link" = "Copy meeting link";
+"status_bar_submenu_dismiss_meeting" = "Dismiss meeting";
+"status_bar_submenu_undismiss_meeting" = "Remove dismissal";
 "status_bar_submenu_email_attendees" = "Email attendees";
 "status_bar_submenu_open_in_fantastical" = "Åpne i Fantastical";
 "status_bar_submenu_open_in_calendar" = "Åpne i kalenderprogram";

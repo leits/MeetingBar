@@ -594,6 +594,17 @@ class StatusBarItemController {
             copyLinkItem.target = self
             copyLinkItem.representedObject = event
 
+            // Dismiss/undismiss meeting
+            if Defaults[.dismissedEvents].contains(where: { $0.id == event.ID }) {
+                let undismissItem = eventMenu.addItem(withTitle: "status_bar_submenu_undismiss_meeting".loco(), action: #selector(undismissEvent), keyEquivalent: "")
+                undismissItem.target = self
+                undismissItem.representedObject = event
+            } else {
+                let dismissItem = eventMenu.addItem(withTitle: "status_bar_submenu_dismiss_meeting".loco(), action: #selector(dismissEvent), keyEquivalent: "")
+                dismissItem.target = self
+                dismissItem.representedObject = event
+            }
+
             // Send email
             let emailItem = eventMenu.addItem(withTitle: "status_bar_submenu_email_attendees".loco(), action: #selector(emailAttendees), keyEquivalent: "")
             emailItem.target = self
@@ -890,6 +901,27 @@ class StatusBarItemController {
         if let identifier = sender.representedObject as? String {
             let url = URL(string: "ical://ekevent/\(identifier)")!
             url.openInDefaultBrowser()
+        }
+    }
+
+    @objc
+    func dismissEvent(sender: NSMenuItem) {
+        if let event: MBEvent = sender.representedObject as? MBEvent {
+            let dismissedEvent = ProcessedEvent(id: event.ID, lastModifiedDate: event.lastModifiedDate, eventEndDate: event.endDate)
+            Defaults[.dismissedEvents].append(dismissedEvent)
+
+            updateTitle()
+            updateMenu()
+        }
+    }
+
+    @objc
+    func undismissEvent(sender: NSMenuItem) {
+        if let event: MBEvent = sender.representedObject as? MBEvent {
+            Defaults[.dismissedEvents] = Defaults[.dismissedEvents].filter { $0.id != event.ID }
+
+            updateTitle()
+            updateMenu()
         }
     }
 

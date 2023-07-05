@@ -229,6 +229,8 @@
 "status_bar_submenu_attendees_status_tentative" = " [名無しさん]";
 "status_bar_submenu_attendees_status_unknown" = " [?]";
 "status_bar_submenu_copy_meeting_link" = "ミーティングリンクをコピー";
+"status_bar_submenu_dismiss_meeting" = "Dismiss meeting";
+"status_bar_submenu_undismiss_meeting" = "Remove dismissal";
 "status_bar_submenu_email_attendees" = "参加者にメールを送信";
 "status_bar_submenu_open_in_calendar" = "カレンダーアプリで開く";
 "status_bar_submenu_open_in_fantastical" = "Fantastical で開く";

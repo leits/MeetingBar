@@ -217,6 +217,8 @@
 "status_bar_submenu_attendees_you" = "%@ (ty)";
 "status_bar_submenu_attendees_status_tentative" = " [oczekujący]";
 "status_bar_submenu_copy_meeting_link" = "Skopiuj link spotkania";
+"status_bar_submenu_dismiss_meeting" = "Dismiss meeting";
+"status_bar_submenu_undismiss_meeting" = "Remove dismissal";
 "status_bar_submenu_email_attendees" = "Adresy email uczestników";
 "status_bar_submenu_open_in_calendar" = "Otwórz w aplikacji Kalendarz";
 "status_bar_submenu_open_in_fantastical" = "Otwórz w Fantastical";

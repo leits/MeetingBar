@@ -229,6 +229,8 @@
 "status_bar_submenu_attendees_status_tentative" = " [tentativo]";
 "status_bar_submenu_attendees_status_unknown" = " [?]";
 "status_bar_submenu_copy_meeting_link" = "Copia il link della riunione";
+"status_bar_submenu_dismiss_meeting" = "Dismiss meeting";
+"status_bar_submenu_undismiss_meeting" = "Remove dismissal";
 "status_bar_submenu_email_attendees" = "Invia una mail ai partecipanti";
 "status_bar_submenu_open_in_calendar" = "Apri nell'app Calendario";
 "status_bar_submenu_open_in_fantastical" = "Apri in Fantastical";
