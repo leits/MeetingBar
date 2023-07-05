@@ -258,7 +258,7 @@ func getNextEvent(events: [MBEvent], linkRequired: Bool = false) -> MBEvent? {
 
         // Skip event if events without links should be skipped
         let nonAllDaysEventOnlyWithLink = (Defaults[.nonAllDayEvents] == .show_inactive_without_meeting_link || Defaults[.nonAllDayEvents] == .hide_without_meeting_link)
-        if event.meetingLink == nil, (linkRequired || nonAllDaysEventOnlyWithLink) {
+        if event.meetingLink == nil, linkRequired || nonAllDaysEventOnlyWithLink {
             continue
         }
 
