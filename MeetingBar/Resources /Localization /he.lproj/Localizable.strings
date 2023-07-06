@@ -304,8 +304,8 @@
 "status_bar_section_join_current_meeting" = "הצטרפות לפגישת האירוע הנוכחית";
 "status_bar_submenu_attendees_status_tentative" = " [טנטטיבי]";
 "status_bar_submenu_copy_meeting_link" = "העתקת קישור פגישה";
-"status_bar_submenu_dismiss_meeting" = "Dismiss meeting";
-"status_bar_submenu_undismiss_meeting" = "Remove dismissal";
+"status_bar_submenu_dismiss_meeting" = "התעלמות מפגישה";
+"status_bar_submenu_undismiss_meeting" = "הסרת התעלמות";
 "status_bar_submenu_open_in_fantastical" = "פתיחה ב־Fantastical";
 "status_bar_show_meeting_names" = "הצגת כותרת הפגישה";
 "status_bar_hide_meeting_names" = "הסתרת כותרת הפגישה";
