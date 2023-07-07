@@ -243,7 +243,7 @@
 "status_bar_quit" = "MeetingBar を終了";
 "status_bar_no_title" = "タイトルなし";
 "status_bar_event_status_now" = "現在 (残り %@)";
-"status_bar_event_status_in" = "あと%@";
+"status_bar_event_status_in" = "まで%@";
 "status_bar_error_apple_script_title" = "AppleScriptエラー";
 "status_bar_error_link_missed_title" = "ギャー！%@ に参加できませんでした";
 "status_bar_error_link_missed_message" = "ミーティングリンクが登録されていないか、サポートされていないサービスです";
