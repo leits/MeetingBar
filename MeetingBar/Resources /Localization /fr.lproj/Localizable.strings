@@ -124,8 +124,8 @@
 "status_bar_show_meeting_names" = "Afficher le titre de la réunion";
 "status_bar_quick_actions" = "Actions rapides";
 "status_bar_submenu_copy_meeting_link" = "Copier le lien de la réunion";
-"status_bar_submenu_dismiss_meeting" = "Dismiss meeting";
-"status_bar_submenu_undismiss_meeting" = "Remove dismissal";
+"status_bar_submenu_dismiss_meeting" = "Annuler la réunion";
+"status_bar_submenu_undismiss_meeting" = "Supprimer l'annulation";
 "status_bar_submenu_email_attendees" = "Envoyer un courriel aux participants";
 "status_bar_submenu_open_in_fantastical" = "Ouvrir dans Fantastical";
 "status_bar_submenu_open_in_calendar" = "Ouvrir dans l'application Calendrier";

@@ -164,14 +164,14 @@
 "status_bar_quick_actions" = "Hızlı İşlemler";
 "status_bar_hide_meeting_names" = "Toplantı başlığını gizle";
 "status_bar_whats_new" = "Neler yeni?";
-"status_bar_rate_app" = "Rate App";
+"status_bar_rate_app" = "Uygulamayı Değerlendir";
 "status_bar_preferences" = "Tercihler";
 "status_bar_quit" = "MeetingBar'dan çıkış";
 "status_bar_no_title" = "Başlık yok";
 "status_bar_error_link_missed_title" = "Amanın! %@ 'e katılınamadı";
 "status_bar_error_link_missed_message" = "Link bulunamadı ya da toplantı servisiniz henüz desteklenmiyor";
 "status_bar_error_teams_link_title" = "Amanın! Microsoft Teams uygulamasındaki bağlantı açılamıyor";
-"status_bar_error_zoom_native_link_title" = "Amanın! Zoom bağlantısı açılamıyor";
+"status_bar_error_zoom_native_link_title" = "Hata! Bu bağlantı Zoom uygulamasında açılamıyor";
 
 // MARK: - Welcome screen
 
@@ -193,12 +193,12 @@
 "access_screen_provider_macos_title" = "MacOS Takvim uygulaması";
 "access_screen_provider_macos_recomended" = "(önerilen)";
 "access_screen_provider_macos_data_source" = "MacOS Takvim uygulamasından veri alın";
-"access_screen_provider_macos_number_of_accounts" = "Any number of any connected accounts";
-"access_screen_provider_gcalendar_data_source" = "Get data directly from Google Calendar";
-"access_screen_provider_gcalendar_number_of_accounts" = "Only one Google account";
-"access_screen_provider_gcalendar_sign_in_title" = "Google Sign In";
-"access_screen_provider_gcalendar_sign_in_description" = "Allow MeetingBar access to your calendar in browser window";
-"access_screen_try_again" = "Try again";
+"access_screen_provider_macos_number_of_accounts" = "Bağlı hesap sayısı";
+"access_screen_provider_gcalendar_data_source" = "Verileri doğrudan Google Takvim'den alın";
+"access_screen_provider_gcalendar_number_of_accounts" = "Yalnızca bir Google hesabı";
+"access_screen_provider_gcalendar_sign_in_title" = "Google'da Oturum Açın";
+"access_screen_provider_gcalendar_sign_in_description" = "Tarayıcı penceresinde MeetingBar'ın takviminize erişmesine izin verin";
+"access_screen_try_again" = "Tekrar deneyin";
 "shared_send_notification_no_alert_style_tip" = "⚠️ macOS bildirim ayarlarınız MeetingBar için yapılandırılmamış. Bildirim istiyorsanız bunu açmanız gerekir.";
 
 // MARK: - Constants
@@ -236,7 +236,7 @@
 
 "window_title_preferences" = "MeetingBar Tercihler";
 "preferences_general_shortcut_join_next" = "Sonraki toplantıya katıl:";
-"preferences_general_meeting_bar_description" = "MeetingBar, sorunsuz ve kolay çevrimiçi toplantılar için,\nAndrii Leitsius 🇺🇦 tarafından geliştirilmiş bir açık kaynak projesidir.";
+"preferences_general_meeting_bar_description" = "MeetingBar, açık kaynaklı bir uygulamadır \nDaha sorunsuz ve daha kolay çevrimiçi toplantılar için \nAndrii Leitsius tarafından yaratılmıştır 🇺🇦";
 "preferences_general_patron_three_months" = "3 aylık – 2.99 USD";
 "preferences_general_patron_six_months" = "6 aylık – 5.99 USD";
 "preferences_appearance_events_without_guest_title" = "Misafirsiz etkinlikler:";
@@ -256,8 +256,8 @@
 "preferences_appearance_status_bar_next_event_toggle" = "Sadece şu kadar zaman içinde başlayacak etkinlikleri göster";
 "preferences_appearance_menu_show_event_end_time_value" = "bitiş zamanı";
 "notifications_event_start_five_minutes_body" = "Toplantı beş dakika içinde başlıyor";
-"notifications_snooze_until_start" = "Snooze until start time";
-"notifications_snooze_for" = "Snooze for %@ min";
+"notifications_snooze_until_start" = "Başlangıç saatine kadar ertele";
+"notifications_snooze_for" = "%@ dakika ertele";
 
 // MARK: - Preferences Services Browsers Configuration
 
@@ -297,13 +297,13 @@
 "store_patronage_purchase_store_product_not_available_message" = "Ürün mevcut mağazada bulunmamaktadır";
 "status_bar_submenu_location_title" = "Konum:";
 "status_bar_submenu_copy_meeting_link" = "Bağlantı linkini kopyala";
-"status_bar_submenu_dismiss_meeting" = "Dismiss meeting";
-"status_bar_submenu_undismiss_meeting" = "Remove dismissal";
+"status_bar_submenu_dismiss_meeting" = "Toplantıyı kapat";
+"status_bar_submenu_undismiss_meeting" = "İşten çıkarmayı kaldır";
 "status_bar_submenu_open_in_fantastical" = "Fantastical'da aç";
 "status_bar_show_meeting_names" = "Toplantı başlığını göster";
 "status_bar_event_status_in" = "%@";
 "status_bar_submenu_open_in_calendar" = "Takvim uygulamasında aç";
-"status_bar_error_zoom_app_link_title" = "Amanın! Zoom bağlantısı açılamıyor";
+"status_bar_error_zoom_app_link_title" = "Hata! Bağlantı Zoom uygulamasında açılamıyor";
 "welcome_screen_ad_hoc_meeting_title" = "Şurada geçici toplantılar oluşturun ";
 "access_screen_access_screen_access_denied_go_to_title" = "Git";
 "status_bar_event_status_now" = "şu an (%@ kaldı)";
@@ -327,8 +327,8 @@
 "constants_meeting_service_skype4biz_selfhosted" = "Skype For Business (SH)";
 "store_patronage_purchase_cloud_service_permission_denied_message" = "Bulut servis bilgilerine erişim izni verilmedi";
 "notifications_event_start_three_minutes_body" = "Toplantı üç dakika içinde başlıyor";
-"shared_automatic_event_join_toggle" = "Automatically join next event meeting";
-"shared_automatic_event_join_tip" = "This setting will automatically open your next meeting in your configured app or browser";
+"shared_automatic_event_join_toggle" = "Bir sonraki etkinlik toplantısına otomatik olarak katıl";
+"shared_automatic_event_join_tip" = "Bu ayar, yapılandırılmış uygulamanızda veya tarayıcınızda bir sonraki toplantınızı otomatik olarak açacaktır.";
 
 // MARK: - Link open
 
@@ -336,16 +336,16 @@
 "store_patronage_restore_nothing_message" = "Geri yüklenecek bir şey yok";
 "store_patronage_purchase_client_invalid_message" = "Ödemeye izin verilmedi";
 "notifications_event_start_one_minute_body" = "Toplantı bir dakika içinde başlıyor";
-"notifications_event_started_body" = "The event has started";
+"notifications_event_started_body" = "etkinlik başladı";
 "link_url_cant_open_message" = "%@ yüklü olduğundan emin olun veya bu bağlantıyı bir tarayıcıda açın.";
 "preferences_general_feedback_title" = "Eğer soru veya geribildiriminiz varsa,\nlütfen iletişim kurmaktan çekinmeyin:";
 "status_bar_section_refresh_sources" = "Kaynakları yenile";
 "status_bar_menu_dismiss_curent_meeting" = "Geçerli toplantıyı kapat";
 "status_bar_menu_dismiss_next_meeting" = "Sonraki toplantıyı kapat";
-"status_bar_menu_remove_all_dismissals" = "Remove all dismissals";
-"status_bar_event_dismissed_mark" = "dismissed";
-"notification_next_meeting_dismissed_title" = "Dismissed %@";
-"notification_next_meeting_dismissed_message" = "You can remove dismissal from Quick Actions";
-"notification_all_dismissals_removed_title" = "Removed all dismissals";
-"notification_all_dismissals_removed_message" = "All dismissed meetings are back in action";
-"notifications_meetingbar_join_event_action" = "Join";
+"status_bar_menu_remove_all_dismissals" = "Tüm işten çıkarmaları kaldır";
+"status_bar_event_dismissed_mark" = "reddedildi";
+"notification_next_meeting_dismissed_title" = "Reddedildi %@";
+"notification_next_meeting_dismissed_message" = "İşten çıkarılmayı Hızlı İşlemler'den kaldırabilirsiniz";
+"notification_all_dismissals_removed_title" = "Tüm işten çıkarmalar kaldırıldı";
+"notification_all_dismissals_removed_message" = "Kapatılan tüm toplantılar tekrar aktif";
+"notifications_meetingbar_join_event_action" = "Katıl";
