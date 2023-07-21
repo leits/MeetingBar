@@ -344,8 +344,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     func handleURLEvent(getURLEvent event: NSAppleEventDescriptor, replyEvent _: NSAppleEventDescriptor) {
         if let string = event.paramDescriptor(forKeyword: keyDirectObject)?.stringValue,
            let url = URL(string: string) {
-            GCEventStore.shared
-                .currentAuthorizationFlow?.resumeExternalUserAgentFlow(with: url)
+            if url == URL(string: "meetingbar://preferences") {
+                openPrefecencesWindow(nil)
+            } else {
+                GCEventStore.shared
+                    .currentAuthorizationFlow?.resumeExternalUserAgentFlow(with: url)
+            }
         }
     }
 
