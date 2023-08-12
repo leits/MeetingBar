@@ -31,6 +31,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     var calendarsObserver: DefaultsObservation?
     var appearanceSettingsObserver: DefaultsObservation?
 
+    var screenIsLocked: Bool = false
+
     weak var preferencesWindow: NSWindow!
 
     func applicationDidFinishLaunching(_: Notification) {
@@ -77,6 +79,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         // Backward compatibility for user defaults changes
         maintainDefaultsBackwardCompatibility()
         //
+
+        // Handle sleep and wake up events
+        let dnc = DistributedNotificationCenter.default()
+        dnc.addObserver(self, selector: #selector(AppDelegate.lockListener), name: .init("com.apple.screenIsLocked"), object: nil)
+        dnc.addObserver(self, selector: #selector(AppDelegate.unlockListener), name: .init("com.apple.screenIsUnlocked"), object: nil)
 
         // Shortcuts
         KeyboardShortcuts.onKeyUp(for: .createMeetingShortcut, action: createMeeting)
@@ -332,6 +339,16 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                 statusBarItem.updateMenu()
             }
         }
+    }
+
+    @objc
+    func lockListener(notification _: NSNotification) {
+        screenIsLocked = true
+    }
+
+    @objc
+    func unlockListener(notification _: NSNotification) {
+        screenIsLocked = false
     }
 
     /*

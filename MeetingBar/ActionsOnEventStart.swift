@@ -30,6 +30,11 @@ class ActionsOnEventStart: NSObject {
      */
     @objc
     private func checkNextEvent() {
+        // Only run if screen is not locked
+        if app.screenIsLocked {
+            return
+        }
+
         // Cleanup Passed Events
         Defaults[.processedEventsForAutoJoin] = Defaults[.processedEventsForAutoJoin].filter { $0.eventEndDate.timeIntervalSinceNow > 0 }
         Defaults[.processedEventsForRunScriptOnEventStart] = Defaults[.processedEventsForRunScriptOnEventStart].filter { $0.eventEndDate.timeIntervalSinceNow > 0 }
