@@ -15,7 +15,6 @@ struct GeneralTab: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
             Section {
-                Spacer()
                 LaunchAtLoginANDPreferredLanguagePicker()
                 Divider()
                 JoinEventNotificationPicker()
@@ -98,107 +97,73 @@ struct ShortcutsModal: View {
 }
 
 struct PatronageAppSection: View {
-    @State var showingPatronageModal = false
     @State var showingContactModal = false
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 15) {
-            VStack(alignment: .center) {
-                Spacer()
-                HStack {
-                    VStack(alignment: .center) {
-                        Image("appIconForAbout").resizable().frame(width: 120.0, height: 120.0)
-                        Text("MeetingBar").font(.system(size: 20)).bold()
-                        Text(Defaults[.appVersion]).foregroundColor(.gray)
-                    }.lineLimit(1).minimumScaleFactor(0.5).frame(minWidth: 0, maxWidth: .infinity)
-                    VStack {
-                        Spacer()
-                        Text("preferences_general_meeting_bar_description".loco()).multilineTextAlignment(.center)
-                        Spacer()
-
-                        HStack {
-                            Spacer()
-                            Button(action: clickPatronage) {
-                                Text("preferences_general_external_patronage".loco())
-                            }.sheet(isPresented: $showingPatronageModal) {
-                                PatronageModal()
-                            }
-                            Spacer()
-                            Button(action: { Links.github.openInDefaultBrowser() }) {
-                                Text("preferences_general_external_gitHub".loco())
-                            }
-                            Spacer()
-                            Button(action: { self.showingContactModal.toggle() }) {
-                                Text("preferences_general_external_contact".loco())
-                            }.sheet(isPresented: $showingContactModal) {
-                                ContactModal()
-                            }
-                            Spacer()
-                        }
-                        Spacer()
-                    }.frame(minWidth: 360, maxWidth: .infinity)
-                }
-                Spacer()
-            }
-        }
-    }
-
-    func clickPatronage() {
-        if Defaults[.isInstalledFromAppStore] {
-            showingPatronageModal.toggle()
-        } else {
-            Links.patreon.openInDefaultBrowser()
-        }
-    }
-}
-
-struct PatronageModal: View {
-    @Environment(\.presentationMode) var presentationMode
-
     @Default(.patronageDuration) var patronageDuration
+    @Default(.isInstalledFromAppStore) var isInstalledFromAppStore
 
     var body: some View {
-        VStack {
-            Spacer()
-            HStack {
-                VStack(alignment: .leading) {
-                    HStack {
-                        Text("preferences_general_patron_title".loco()).bold()
-                    }
-                }.frame(width: 120)
-                Spacer()
-                VStack(alignment: .leading) {
+        VStack(alignment: .center, spacing: 15) {
+            if isInstalledFromAppStore {
+                HStack {
+                    Text("preferences_general_patron_title".loco()).bold()
+                    Spacer()
+                    Text("preferences_general_patron_description".loco()).font(.system(size: 10))
+                }
+                HStack {
                     Button(action: { purchasePatronage(PatronageProducts.threeMonth) }) {
-                        Text("preferences_general_patron_three_months".loco()).frame(width: 150)
+                        Text("preferences_general_patron_three_months".loco())
                     }
                     Button(action: { purchasePatronage(PatronageProducts.sixMonth) }) {
-                        Text("preferences_general_patron_six_months".loco()).frame(width: 150)
+                        Text("preferences_general_patron_six_months".loco())
                     }
                     Button(action: { purchasePatronage(PatronageProducts.twelveMonth) }) {
-                        Text("preferences_general_patron_twelve_months".loco()).frame(width: 150)
+                        Text("preferences_general_patron_twelve_months".loco())
                     }
-                    Text("preferences_general_patron_description".loco()).font(.system(size: 10))
-                }.frame(maxWidth: .infinity)
-            }
-            if patronageDuration > 0 {
+//                    Button(action: restorePatronagePurchases) {
+//                        Text("preferences_general_patron_restore_purchases".loco())
+//                    }
+                }
+                if patronageDuration > 0 {
+                    Text("preferences_general_patron_thank_for_purchase".loco(patronageDuration))
+                }
                 Divider()
-                Spacer()
-                Text("preferences_general_patron_thank_for_purchase".loco(patronageDuration))
             }
-            Spacer()
-            Divider()
+
             HStack {
-                Button(action: restorePatronagePurchases) {
-                    Text("preferences_general_patron_restore_purchases".loco())
-                }
-                Spacer()
-                Button(action: {
-                    self.presentationMode.wrappedValue.dismiss()
-                }) {
-                    Text("general_close".loco())
-                }
+                VStack(alignment: .center) {
+                    Image("appIconForAbout").resizable().frame(width: 120.0, height: 120.0)
+                    Text("MeetingBar").font(.system(size: 20)).bold()
+                    Text(Defaults[.appVersion]).foregroundColor(.gray)
+                }.lineLimit(1).minimumScaleFactor(0.5).frame(minWidth: 0, maxWidth: .infinity)
+                VStack {
+                    Spacer()
+                    Text("preferences_general_meeting_bar_description".loco()).multilineTextAlignment(.center)
+                    Text("")
+                    HStack {
+                        Spacer()
+                        Button(action: { Links.patreon.openInDefaultBrowser() }) {
+                            Text("Patreon")
+                        }
+                        Spacer()
+                        Button(action: { Links.buymeacoffee.openInDefaultBrowser() }) {
+                            Text("Buy Me A Coffee")
+                        }
+                        Spacer()
+                        Button(action: { Links.github.openInDefaultBrowser() }) {
+                            Text("preferences_general_external_gitHub".loco())
+                        }
+                        Spacer()
+                        Button(action: { self.showingContactModal.toggle() }) {
+                            Text("preferences_general_external_contact".loco())
+                        }.sheet(isPresented: $showingContactModal) {
+                            ContactModal()
+                        }
+                        Spacer()
+                    }
+                    Spacer()
+                }.frame(minWidth: 360, maxWidth: .infinity)
             }
-        }.padding().frame(width: 400, height: 300)
+        }
     }
 }
 

@@ -58,7 +58,7 @@
 "preferences_general_patron_six_months" = "6 months – 5.99 USD";
 "preferences_general_patron_twelve_months" = "12 months – 11.99 USD";
 "preferences_general_patron_description" = "These are one-off purchases, and will not auto-renew.";
-"preferences_general_patron_thank_for_purchase" = "Thanks! You have paid to support MeetingBar for %d months. 🎉";
+"preferences_general_patron_thank_for_purchase" = "Thanks! You have supported MeetingBar for %d months 🎉";
 "preferences_general_patron_restore_purchases" = "Restore Purchases";
 "preferences_general_feedback_title" = "If you have any questions or feedback,\nfeel free to get in contact:";
 "preferences_general_feedback_email" = "E-mail";

@@ -26,6 +26,7 @@ enum TitleTruncationRules {
 
 enum Links {
     static var patreon = URL(string: "https://www.patreon.com/meetingbar")!
+    static var buymeacoffee = URL(string: "https://www.buymeacoffee.com/meetingbar")!
     static var github = URL(string: "https://github.com/leits/MeetingBar")!
     static var telegram = URL(string: "https://t.me/leits")!
     static var twitter = URL(string: "https://twitter.com/leits_dev")!
