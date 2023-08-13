@@ -51,7 +51,7 @@
 "preferences_appearance_events_past_title" = "אירועי עבר:";
 "preferences_appearance_events_pending_title" = "אירועים ממתינים";
 "preferences_appearance_events_declined_title" = "אירועים שנדחו:";
-"preferences_appearance_events_tentative_title" = "Tentative events:";
+"preferences_appearance_events_tentative_title" = "אירועים טנטטיביים:";
 "preferences_appearance_events_value_show" = "הצגה";
 "preferences_appearance_events_value_hide" = "הסתרה";
 "preferences_appearance_events_value_as_inactive" = "הצגה כבלתי פעיל";
