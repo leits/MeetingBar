@@ -150,10 +150,11 @@ struct ChangelogView: View {
                     }
                     if compareVersions("4.6.0", lastRevisedVersionInChangelog) {
                         Section(header: Text("Version 4.6")) {
-                            Text("• Improved links recognition for Microsoft Teams and Zoom Webinar")
-                            Text("• Improved performance on actions")
-                            Text("• Optimized direct Google Calendar integration")
-                            Text("• Updated Slack huddle icon to properly scale within a menu")
+                            Text("• Configure appearance for tentative events")
+                            Text("• Open Slack huddle links directly in Slack app")
+                            Text("• Open preferences with `meetingbar://preferences` link")
+                            Text("• Dismiss event action for Shortcuts")
+                            Text("• Fixed a bug with autojoin when the screen is locked")
                         }
                     }
                 }
