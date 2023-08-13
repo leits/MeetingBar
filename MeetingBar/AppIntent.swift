@@ -32,7 +32,7 @@ enum EventDetailsTypeAppEnum: String, AppEnum {
         .calendarTitle: "Calendar",
         .url: "URL",
         .notes: "Notes",
-        .location: "Location"
+        .location: "Location",
     ]
 }
 

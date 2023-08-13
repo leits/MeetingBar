@@ -360,7 +360,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     @objc
     func handleURLEvent(getURLEvent event: NSAppleEventDescriptor, replyEvent _: NSAppleEventDescriptor) {
         if let string = event.paramDescriptor(forKeyword: keyDirectObject)?.stringValue,
-           let url = URL(string: string) {
+           let url = URL(string: string)
+        {
             if url == URL(string: "meetingbar://preferences") {
                 openPrefecencesWindow(nil)
             } else {
