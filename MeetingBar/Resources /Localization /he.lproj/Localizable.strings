@@ -38,8 +38,6 @@
 "preferences_general_patron_restore_purchases" = "שחזור רכישות";
 "preferences_general_feedback_title" = "אם יש לך שאלות או משוב,\nניתן ליצור קשר מפה:";
 "preferences_general_feedback_email" = "דוא״ל";
-"preferences_general_feedback_twitter" = "טוויטר";
-"preferences_general_feedback_telegram" = "טלגרם";
 "preferences_appearance_events_show_events_for_today_value" = "היום";
 "preferences_appearance_events_show_events_for_title" = "הצגת אירועים על פני";
 "preferences_appearance_events_show_events_for_today_tomorrow_value" = "היום ומחר";
