@@ -19,6 +19,7 @@ class ActionsOnEventStart: NSObject {
 
     func startWatching() {
         timer = Timer(timeInterval: 10, target: self, selector: #selector(checkNextEvent), userInfo: nil, repeats: true)
+        timer?.tolerance = 0.5
         RunLoop.current.add(timer!, forMode: .common)
     }
 
@@ -29,6 +30,11 @@ class ActionsOnEventStart: NSObject {
      */
     @objc
     private func checkNextEvent() {
+        // Only run if screen is not locked
+        if app.screenIsLocked {
+            return
+        }
+
         // Cleanup Passed Events
         Defaults[.processedEventsForAutoJoin] = Defaults[.processedEventsForAutoJoin].filter { $0.eventEndDate.timeIntervalSinceNow > 0 }
         Defaults[.processedEventsForRunScriptOnEventStart] = Defaults[.processedEventsForRunScriptOnEventStart].filter { $0.eventEndDate.timeIntervalSinceNow > 0 }
@@ -42,12 +48,13 @@ class ActionsOnEventStart: NSObject {
         }
         //
 
-        if let nextEvent = getNextEvent(events: app.statusBarItem.events) {
+        if let nextEvent = getNextEvent(events: app.statusBarItem.events, linkRequired: true) {
             let now = Date()
 
             let startEndRange = nextEvent.startDate ... nextEvent.endDate
 
-            let timeInterval = nextEvent.startDate.timeIntervalSince(now)
+            // time until the start of the event with a delay of 10 seconds
+            let timeInterval = nextEvent.startDate.timeIntervalSince(now) + 10
 
             let allDayCandidate = nextEvent.isAllDay && startEndRange.contains(now)
 
@@ -57,7 +64,7 @@ class ActionsOnEventStart: NSObject {
              * ------------------------
              */
             let actionTimeForEventAutoJoin = Double(Defaults[.automaticEventJoinTime].rawValue)
-            let nonAlldayCandidateForAutoJoin = (timeInterval > 0 && timeInterval < actionTimeForEventAutoJoin) || startEndRange.contains(now)
+            let nonAlldayCandidateForAutoJoin = (timeInterval > 0 && timeInterval < actionTimeForEventAutoJoin)
 
             if autoJoinActionActive && (nonAlldayCandidateForAutoJoin || allDayCandidate) {
                 var events = Defaults[.processedEventsForAutoJoin]
@@ -87,7 +94,7 @@ class ActionsOnEventStart: NSObject {
              * ------------------------
              */
             let actionTimeForScriptOnEventStart = Double(Defaults[.eventStartScriptTime].rawValue)
-            let nonAlldayCandidateForRunStartEventScript = (timeInterval > 0 && timeInterval < actionTimeForScriptOnEventStart) || startEndRange.contains(now)
+            let nonAlldayCandidateForRunStartEventScript = (timeInterval > 0 && timeInterval < actionTimeForScriptOnEventStart)
 
             if runEventStartScriptActionActive, nonAlldayCandidateForRunStartEventScript || allDayCandidate {
                 var events = Defaults[.processedEventsForRunScriptOnEventStart]

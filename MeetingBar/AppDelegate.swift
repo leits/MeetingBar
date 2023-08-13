@@ -28,7 +28,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     var joinEventNotificationObserver: DefaultsObservation?
 
     var eventFiltersObserver: DefaultsObservation?
+    var calendarsObserver: DefaultsObservation?
     var appearanceSettingsObserver: DefaultsObservation?
+
+    var screenIsLocked: Bool = false
 
     weak var preferencesWindow: NSWindow!
 
@@ -77,6 +80,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         maintainDefaultsBackwardCompatibility()
         //
 
+        // Handle sleep and wake up events
+        let dnc = DistributedNotificationCenter.default()
+        dnc.addObserver(self, selector: #selector(AppDelegate.lockListener), name: .init("com.apple.screenIsLocked"), object: nil)
+        dnc.addObserver(self, selector: #selector(AppDelegate.unlockListener), name: .init("com.apple.screenIsUnlocked"), object: nil)
+
         // Shortcuts
         KeyboardShortcuts.onKeyUp(for: .createMeetingShortcut, action: createMeeting)
 
@@ -121,16 +129,20 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             }
         }
         eventFiltersObserver = Defaults.observe(
-            keys: .selectedCalendarIDs, .showEventsForPeriod,
+            keys: .showEventsForPeriod, .personalEventsAppereance,
             .disablePastEvents, .pastEventsAppereance,
             .declinedEventsAppereance, .showPendingEvents,
             .showTentativeEvents,
             .allDayEvents, .nonAllDayEvents, .customRegexes,
-            .personalEventsAppereance, .showEventsForPeriod,
             options: []
         ) {
+            self.statusBarItem.loadEvents()
+        }
+
+        calendarsObserver = Defaults.observe(keys: .selectedCalendarIDs, options: []) {
             self.statusBarItem.loadCalendars()
         }
+
         preferredLanguageObserver = Defaults.observe(.preferredLanguage) { change in
             if I18N.instance.changeLanguage(to: change.newValue) {
                 self.statusBarItem.updateTitle()
@@ -177,11 +189,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
     private func scheduleFetchEvents() {
         let timer = Timer(timeInterval: 60, target: self, selector: #selector(fetchEvents), userInfo: nil, repeats: true)
+        timer.tolerance = 3
         RunLoop.current.add(timer, forMode: .common)
     }
 
     private func scheduleUpdateStatusBarItem() {
         let timer = Timer(timeInterval: 5, target: self, selector: #selector(updateStatusBarItem), userInfo: nil, repeats: true)
+        timer.tolerance = 0.5
         RunLoop.current.add(timer, forMode: .common)
     }
 
@@ -202,20 +216,19 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             if response.notification.request.content.categoryIdentifier == "EVENT" || response.notification.request.content.categoryIdentifier == "SNOOZE_EVENT" {
                 if let eventID = response.notification.request.content.userInfo["eventID"] as? String {
                     if let event = statusBarItem.events.first(where: { $0.ID == eventID }) {
-                        NSLog("Join \(event.title) event from notication")
                         event.openMeeting()
                     }
                 }
             }
-        case NotificationEventTimeAction.untilStart.rawValue, UNNotificationDefaultActionIdentifier:
+        case NotificationEventTimeAction.untilStart.rawValue:
             handleSnoozeEvent(response, NotificationEventTimeAction.untilStart)
-        case NotificationEventTimeAction.fiveMinuteLater.rawValue, UNNotificationDefaultActionIdentifier:
+        case NotificationEventTimeAction.fiveMinuteLater.rawValue:
             handleSnoozeEvent(response, NotificationEventTimeAction.fiveMinuteLater)
-        case NotificationEventTimeAction.tenMinuteLater.rawValue, UNNotificationDefaultActionIdentifier:
+        case NotificationEventTimeAction.tenMinuteLater.rawValue:
             handleSnoozeEvent(response, NotificationEventTimeAction.tenMinuteLater)
-        case NotificationEventTimeAction.fifteenMinuteLater.rawValue, UNNotificationDefaultActionIdentifier:
+        case NotificationEventTimeAction.fifteenMinuteLater.rawValue:
             handleSnoozeEvent(response, NotificationEventTimeAction.fifteenMinuteLater)
-        case NotificationEventTimeAction.thirtyMinuteLater.rawValue, UNNotificationDefaultActionIdentifier:
+        case NotificationEventTimeAction.thirtyMinuteLater.rawValue:
             handleSnoozeEvent(response, NotificationEventTimeAction.thirtyMinuteLater)
         default:
             break
@@ -228,11 +241,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         if response.notification.request.content.categoryIdentifier == "EVENT" || response.notification.request.content.categoryIdentifier == "SNOOZE_EVENT" {
             if let eventID = response.notification.request.content.userInfo["eventID"] as? String {
                 if let event = statusBarItem.events.first(where: { $0.ID == eventID }) {
-                    if action.durationInSeconds == 0 {
-                        NSLog("Snooze event until start")
-                    } else {
-                        NSLog("Snooze event for \(action.durationInMins) mins")
-                    }
                     snoozeEventNotification(event, action)
                 }
             }
@@ -246,7 +254,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
      */
 
     func openOnboardingWindow() {
-        NSLog("Open onboarding window")
         let contentView = OnboardingView()
         let onboardingWindow = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 660, height: 450),
@@ -260,14 +267,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         let controller = NSWindowController(window: onboardingWindow)
         controller.showWindow(self)
 
-        onboardingWindow.level = NSWindow.Level.floating
+        onboardingWindow.level = .floating
         onboardingWindow.center()
         onboardingWindow.orderFrontRegardless()
     }
 
     @objc
     func openChangelogWindow(_: NSStatusBarButton?) {
-        NSLog("Open changelof window")
         let contentView = ChangelogView()
         let changelogWindow = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 600, height: 400),
@@ -276,6 +282,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             defer: false
         )
         changelogWindow.title = WindowTitles.changelog
+        changelogWindow.level = .floating
         changelogWindow.contentView = NSHostingView(rootView: contentView)
         changelogWindow.makeKeyAndOrderFront(nil)
         // allow the changelof window can be focused automatically when opened
@@ -290,7 +297,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
     @objc
     func openPrefecencesWindow(_: NSStatusBarButton?) {
-        NSLog("Open preferences window")
         let contentView = PreferencesView()
 
         if let preferencesWindow {
@@ -309,6 +315,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             window.title = WindowTitles.preferences
             window.contentView = NSHostingView(rootView: contentView)
             window.makeKeyAndOrderFront(nil)
+            window.level = .floating
             // allow the preference window can be focused automatically when opened
             NSApplication.shared.activate(ignoringOtherApps: true)
 
@@ -335,6 +342,16 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
     }
 
+    @objc
+    func lockListener(notification _: NSNotification) {
+        screenIsLocked = true
+    }
+
+    @objc
+    func unlockListener(notification _: NSNotification) {
+        screenIsLocked = false
+    }
+
     /*
      * -----------------------
      * MARK: - Actions
@@ -345,33 +362,34 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     func handleURLEvent(getURLEvent event: NSAppleEventDescriptor, replyEvent _: NSAppleEventDescriptor) {
         if let string = event.paramDescriptor(forKeyword: keyDirectObject)?.stringValue,
            let url = URL(string: string) {
-            GCEventStore.shared
-                .currentAuthorizationFlow?.resumeExternalUserAgentFlow(with: url)
+            if url == URL(string: "meetingbar://preferences") {
+                openPrefecencesWindow(nil)
+            } else {
+                GCEventStore.shared
+                    .currentAuthorizationFlow?.resumeExternalUserAgentFlow(with: url)
+            }
         }
     }
 
     @objc
     func eventStoreChanged(_: NSNotification) {
-        NSLog("Store changed. Update status bar menu.")
         if statusBarItem == nil {
             return
         }
         DispatchQueue.main.async {
-            self.statusBarItem.loadCalendars()
+            self.statusBarItem.loadEvents()
         }
     }
 
     @objc
     private func fetchEvents() {
-        NSLog("Firing reccuring fetchEvents")
         DispatchQueue.main.async {
-            self.statusBarItem.loadCalendars()
+            self.statusBarItem.loadEvents()
         }
     }
 
     @objc
     private func updateStatusBarItem() {
-        NSLog("Firing reccuring updateStatusBarItem")
         DispatchQueue.main.async {
             self.statusBarItem.updateTitle()
             self.statusBarItem.updateMenu()
@@ -380,7 +398,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
     @objc
     func quit(_: NSStatusBarButton) {
-        NSLog("User click Quit")
         NSApplication.shared.terminate(self)
     }
 }

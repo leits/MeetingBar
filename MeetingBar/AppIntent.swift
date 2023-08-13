@@ -100,3 +100,16 @@ struct JoinNearestMeetingIntent: AppIntent {
         return .result()
     }
 }
+
+@available(macOS 13.0, *)
+struct DismissNearestMeetingIntent: AppIntent {
+    static let title: LocalizedStringResource = "Dismiss Nearest Meeting"
+    static let description = IntentDescription("Dismiss the nearest (current or next) event meeting.")
+
+    func perform() async throws -> some IntentResult {
+        if let app = await NSApplication.shared.delegate as! AppDelegate? {
+            app.statusBarItem.dismissNextMeetingAction()
+        }
+        return .result()
+    }
+}

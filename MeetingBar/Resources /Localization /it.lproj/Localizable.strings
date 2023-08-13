@@ -203,7 +203,7 @@
 "status_bar_event_dismissed_mark" = "respinto";
 "notification_next_meeting_dismissed_title" = "Respinto %@";
 "notification_next_meeting_dismissed_message" = "Puoi rimuovere il respingimento da Azioni Rapide";
-"notification_all_dismissals_removed_title" = "Rimuovi tutti i respinti";
+"notification_all_dismissals_removed_title" = "Rimossi tutti i respinti";
 "notification_all_dismissals_removed_message" = "Tutte le riunioni respinte sono tornate in azione";
 "status_bar_section_join_create_meeting" = "Crea riunione";
 "status_bar_section_bookmarks_title" = "Segnalibri";
@@ -229,6 +229,8 @@
 "status_bar_submenu_attendees_status_tentative" = " [tentativo]";
 "status_bar_submenu_attendees_status_unknown" = " [?]";
 "status_bar_submenu_copy_meeting_link" = "Copia il link della riunione";
+"status_bar_submenu_dismiss_meeting" = "Sciogli riunione";
+"status_bar_submenu_undismiss_meeting" = "Rimuovi scioglimento";
 "status_bar_submenu_email_attendees" = "Invia una mail ai partecipanti";
 "status_bar_submenu_open_in_calendar" = "Apri nell'app Calendario";
 "status_bar_submenu_open_in_fantastical" = "Apri in Fantastical";

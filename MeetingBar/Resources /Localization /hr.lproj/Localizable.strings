@@ -141,7 +141,7 @@
 "preferences_configure_browsers_modal_add_browser_path" = "Staza";
 "preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "Odaberi web-preglednik";
 "preferences_configure_browsers_modal_alert_title" = "Nije moguće dodati konfiguraciju preglednika";
-"preferences_configure_browsers_choose_broser_panel_title" = "Odaberi web-preglednik";
+"preferences_configure_browsers_choose_broser_panel_title" = "Odaberi program web-preglednika";
 "preferences_configure_browsers_choose_broser_panel_prompt" = "Odaberi web-preglednik";
 "preferences_configure_browsers_choose_broser_panel_message" = "Odaberi otkuda pokrenuti web-preglednik.";
 
@@ -219,6 +219,8 @@
 "status_bar_submenu_attendees_status_tentative" = " [provizorno]";
 "status_bar_submenu_attendees_status_unknown" = " [?]";
 "status_bar_submenu_copy_meeting_link" = "Kopiraj poveznicu na sastanak";
+"status_bar_submenu_dismiss_meeting" = "Raspusti sastanak";
+"status_bar_submenu_undismiss_meeting" = "Ukloni raspuštanje";
 "status_bar_submenu_email_attendees" = "Pošalji e -mail sudionicima";
 "status_bar_submenu_open_in_calendar" = "Otvori u programu Kalendar";
 "status_bar_submenu_open_in_fantastical" = "Otvori u Fantastical";

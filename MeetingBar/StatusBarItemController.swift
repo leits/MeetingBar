@@ -19,12 +19,11 @@ import PromiseKit
 class StatusBarItemController {
     var statusItem: NSStatusItem!
     var statusItemMenu: NSMenu!
-    var currentStatusBarEvent: MBEvent?
 
     var calendars: [MBCalendar] = []
     var events: [MBEvent] = []
 
-    let isFantasticalInstalled = checkIsFantasticalInstalled()
+    lazy var isFantasticalInstalled = checkIsFantasticalInstalled()
     let installationDate = getInstallationDate()
 
     weak var appdelegate: AppDelegate!
@@ -168,12 +167,6 @@ class StatusBarItemController {
                     button.image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
                 default:
                     button.image = NSImage(named: "iconCalendar")
-                }
-            }
-
-            if currentStatusBarEvent?.ID != nextEvent?.ID {
-                if nextEvent == nil || (nextEvent!).startDate.timeIntervalSinceNow <= 0 {
-                    currentStatusBarEvent = nextEvent
                 }
             }
 
@@ -626,6 +619,17 @@ class StatusBarItemController {
             copyLinkItem.target = self
             copyLinkItem.representedObject = event
 
+            // Dismiss/undismiss meeting
+            if Defaults[.dismissedEvents].contains(where: { $0.id == event.ID }) {
+                let undismissItem = eventMenu.addItem(withTitle: "status_bar_submenu_undismiss_meeting".loco(), action: #selector(undismissEvent), keyEquivalent: "")
+                undismissItem.target = self
+                undismissItem.representedObject = event
+            } else {
+                let dismissItem = eventMenu.addItem(withTitle: "status_bar_submenu_dismiss_meeting".loco(), action: #selector(dismissEvent), keyEquivalent: "")
+                dismissItem.target = self
+                dismissItem.representedObject = event
+            }
+
             // Send email
             let emailItem = eventMenu.addItem(withTitle: "status_bar_submenu_email_attendees".loco(), action: #selector(emailAttendees), keyEquivalent: "")
             emailItem.target = self
@@ -855,10 +859,8 @@ class StatusBarItemController {
     @objc
     func joinNextMeeting() {
         if let nextEvent = getNextEvent(events: events) {
-            NSLog("Join next event")
             nextEvent.openMeeting()
         } else {
-            NSLog("No next event")
             sendNotification("next_meeting_empty_title".loco(), "next_meeting_empty_message".loco())
         }
     }
@@ -907,7 +909,6 @@ class StatusBarItemController {
 
     @objc
     func joinBookmark(sender: NSMenuItem) {
-        NSLog("Called to join bookmark")
         if let bookmark: Bookmark = sender.representedObject as? Bookmark {
             openMeetingURL(bookmark.service, bookmark.url, nil)
         }
@@ -915,7 +916,6 @@ class StatusBarItemController {
 
     @objc
     func clickOnEvent(sender: NSMenuItem) {
-        NSLog("Click on event (\(sender.title))!")
         if let event: MBEvent = sender.representedObject as? MBEvent {
             event.openMeeting()
         }
@@ -926,6 +926,27 @@ class StatusBarItemController {
         if let identifier = sender.representedObject as? String {
             let url = URL(string: "ical://ekevent/\(identifier)")!
             url.openInDefaultBrowser()
+        }
+    }
+
+    @objc
+    func dismissEvent(sender: NSMenuItem) {
+        if let event: MBEvent = sender.representedObject as? MBEvent {
+            let dismissedEvent = ProcessedEvent(id: event.ID, lastModifiedDate: event.lastModifiedDate, eventEndDate: event.endDate)
+            Defaults[.dismissedEvents].append(dismissedEvent)
+
+            updateTitle()
+            updateMenu()
+        }
+    }
+
+    @objc
+    func undismissEvent(sender: NSMenuItem) {
+        if let event: MBEvent = sender.representedObject as? MBEvent {
+            Defaults[.dismissedEvents] = Defaults[.dismissedEvents].filter { $0.id != event.ID }
+
+            updateTitle()
+            updateMenu()
         }
     }
 

@@ -129,7 +129,8 @@ struct ChangelogView: View {
                     }
                     if compareVersions("4.3.0", lastRevisedVersionInChangelog) {
                         Section(header: Text("Version 4.3")) {
-                            Text("• Event notifications are now Time-Sensitive and can break through Focus mode so you don't miss your meetings (can be changed in notification settings)").lineLimit(nil)
+                            Text("• Event notifications are now Time-Sensitive and can break through Focus mode so you don't miss your meetings (can be changed in notification settings)")
+                                .lineLimit(nil)
                             Text("• Added link recognition for Slack Huddle, Reclaim.ai, Vimeo Venues, Gather")
                             Text("• Fixed Launch at login and many other small bugs")
                         }
@@ -141,7 +142,10 @@ struct ChangelogView: View {
                     }
                     if compareVersions("4.5.0", lastRevisedVersionInChangelog) {
                         Section(header: Text("Version 4.5")) {
-                            Text("• Updates the Slack huddle icon to properly scale within menu").lineLimit(nil)
+                            Text("• Improved links recognition for Microsoft Teams and Zoom Webinar")
+                            Text("• Improved performance on actions")
+                            Text("• Optimized direct Google Calendar integration")
+                            Text("• Updated Slack huddle icon to properly scale within a menu")
                         }
                     }
                 }

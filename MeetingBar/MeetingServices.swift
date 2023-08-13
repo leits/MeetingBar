@@ -133,7 +133,6 @@ enum CreateMeetingServices: String, Codable, CaseIterable {
 }
 
 func createMeeting() {
-    NSLog("Create meeting in \(Defaults[.createMeetingService].rawValue)")
     let browser: Browser = Defaults[.browserForCreateMeeting]
 
     switch Defaults[.createMeetingService] {
@@ -249,7 +248,7 @@ struct LinksRegex {
     let meet = try! NSRegularExpression(pattern: #"https?://meet.google.com/(_meet/)?[a-z-]+"#)
     let zoom = try! NSRegularExpression(pattern: #"https?:\/\/(?:[a-zA-Z0-9-.]+)?zoom.(?:us|com.cn)\/(?:my|[a-z]|webinar)\/[-a-zA-Z0-9()@:%_\+.~#?&=\/]*"#)
     let zoom_native = try! NSRegularExpression(pattern: #"zoommtg://([a-z0-9-.]+)?zoom\.(us|com\.cn)/join[-a-zA-Z0-9()@:%_\+.~#?&=\/]*"#)
-    let teams = try! NSRegularExpression(pattern: #"https?://teams\.microsoft\.com/l/meetup-join/[a-zA-Z0-9_%\/=\-\+\.?]+"#)
+    let teams = try! NSRegularExpression(pattern: #"https?://(gov.)?teams\.microsoft\.(com|us)/l/meetup-join/[a-zA-Z0-9_%\/=\-\+\.?]+"#)
     let webex = try! NSRegularExpression(pattern: #"https?://([a-z0-9-.]+)?webex\.com/[^\s]*"#)
     let chime = try! NSRegularExpression(pattern: #"https?://([a-z0-9-.]+)?chime\.aws/[0-9]*"#)
     let jitsi = try! NSRegularExpression(pattern: #"https?://meet\.jit\.si/[^\s]*"#)
@@ -288,7 +287,7 @@ struct LinksRegex {
     let facetime = try! NSRegularExpression(pattern: #"https://facetime\.apple\.com/join[^\s]*"#)
     let chorus = try! NSRegularExpression(pattern: #"https?://go\.chorus\.ai/[^\s]+"#)
     let pop = try! NSRegularExpression(pattern: #"https?://pop\.com/j/[0-9-]+"#)
-    let gong = try! NSRegularExpression(pattern: #"https?://join\.gong\.io/[^\s]+"#)
+    let gong = try! NSRegularExpression(pattern: #"https?://([a-z0-9-.]+)?join\.gong\.io/[^\s]+"#)
     let livestorm = try! NSRegularExpression(pattern: #"https?://app\.livestorm\.com/p/[^\s]+"#)
     let luma = try! NSRegularExpression(pattern: #"https://lu\.ma/join/[^\s]*"#)
     let preply = try! NSRegularExpression(pattern: #"https://preply\.com/[^\s]*"#)

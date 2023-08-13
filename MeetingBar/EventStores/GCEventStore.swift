@@ -28,15 +28,14 @@ class GCEventStore: NSObject, EventStore, OIDExternalUserAgent {
     static let shared = GCEventStore()
 
     var auth: GTMAppAuthFetcherAuthorization?
+    lazy var fetcherService = GTMSessionFetcherService()
 
     override private init() {
         super.init()
         loadState()
     }
 
-    func refreshSources() {
-        _ = fetchAllCalendars()
-    }
+    func refreshSources() {}
 
     func fetchAllCalendars() -> Promise<[MBCalendar]> {
         Promise { seal in
@@ -47,10 +46,8 @@ class GCEventStore: NSObject, EventStore, OIDExternalUserAgent {
             }
 
             if let url = URL(string: "https://www.googleapis.com/calendar/v3/users/me/calendarList") {
-                let service = GTMSessionFetcherService()
-
-                service.authorizer = auth
-                service.fetcher(with: url).beginFetch { data, error in
+                fetcherService.authorizer = auth
+                fetcherService.fetcher(with: url).beginFetch { data, error in
                     if error != nil {
                         if [OIDOAuthTokenErrorDomain, OIDHTTPErrorDomain].contains((error as NSError?)?.domain) {
                             self.setAuthorization(auth: nil)
@@ -104,10 +101,8 @@ class GCEventStore: NSObject, EventStore, OIDExternalUserAgent {
             let timeMax = formatter.string(from: dateTo)
 
             if let url = URL(string: "https://www.googleapis.com/calendar/v3/calendars/\(calendar.ID)/events?singleEvents=true&orderBy=startTime&timeMax=\(timeMax)&timeMin=\(timeMin)") {
-                let service = GTMSessionFetcherService()
-                service.authorizer = auth
-                NSLog("Request GoogleAPI")
-                service.fetcher(with: url).beginFetch { data, error in
+                fetcherService.authorizer = auth
+                fetcherService.fetcher(with: url).beginFetch { data, error in
                     if error != nil {
                         if [OIDOAuthTokenErrorDomain, OIDHTTPErrorDomain].contains((error as NSError?)?.domain) {
                             self.setAuthorization(auth: nil)
@@ -312,6 +307,7 @@ class GCEventStore: NSObject, EventStore, OIDExternalUserAgent {
     func signOut() -> Promise<Void> {
         Promise { seal in
             self.setAuthorization(auth: nil)
+            self.fetcherService.stopAllFetchers()
             seal.fulfill(())
         }
     }
