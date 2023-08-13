@@ -16,6 +16,7 @@ struct ServicesTab: View {
     @Default(.defaultBrowser) var defaultBrowser
     @Default(.zoomBrowser) var zoomBrowser
     @Default(.teamsBrowser) var teamsBrowser
+    @Default(.slackBrowser) var slackBrowser
     @Default(.jitsiBrowser) var jitsiBrowser
     @Default(.createMeetingServiceUrl) var createMeetingServiceUrl
     @Default(.createMeetingService) var createMeetingService
@@ -33,7 +34,7 @@ struct ServicesTab: View {
                     }
                 }
 
-                Picker(selection: $meetBrowser, label: Text("preferences_services_link_meet_title".loco()).frame(width: 200, alignment: .leading)) {
+                Picker(selection: $meetBrowser, label: Text("preferences_services_link_service_title".loco("Google Meet")).frame(width: 200, alignment: .leading)) {
                     Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
                     Text(MeetInOneBrowser.name).tag(MeetInOneBrowser)
                     ForEach(allBrowser, id: \.self) { (browser: Browser) in
@@ -41,21 +42,28 @@ struct ServicesTab: View {
                     }
                 }
 
-                Picker(selection: $zoomBrowser, label: Text("preferences_services_link_zoom_title".loco()).frame(width: 200, alignment: .leading)) {
+                Picker(selection: $zoomBrowser, label: Text("preferences_services_link_service_title".loco("Zoom")).frame(width: 200, alignment: .leading)) {
                     Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
                     Text(ZoomAppBrowser.name).tag(ZoomAppBrowser)
                     ForEach(allBrowser, id: \.self) { (browser: Browser) in
                         Text(browser.name).tag(browser)
                     }
                 }
-                Picker(selection: $teamsBrowser, label: Text("preferences_services_link_team_title".loco()).frame(width: 200, alignment: .leading)) {
+                Picker(selection: $teamsBrowser, label: Text("preferences_services_link_service_title".loco("Teams")).frame(width: 200, alignment: .leading)) {
                     Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
                     Text(TeamsAppBrowser.name).tag(TeamsAppBrowser)
                     ForEach(allBrowser, id: \.self) { (browser: Browser) in
                         Text(browser.name).tag(browser)
                     }
                 }
-                Picker(selection: $jitsiBrowser, label: Text("preferences_services_link_jitsi_title".loco()).frame(width: 200, alignment: .leading)) {
+                Picker(selection: $slackBrowser, label: Text("preferences_services_link_service_title".loco("Slack")).frame(width: 200, alignment: .leading)) {
+                    Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
+                    Text(SlackAppBrowser.name).tag(SlackAppBrowser)
+                    ForEach(allBrowser, id: \.self) { (browser: Browser) in
+                        Text(browser.name).tag(browser)
+                    }
+                }
+                Picker(selection: $jitsiBrowser, label: Text("preferences_services_link_service_title".loco("Jitsi")).frame(width: 200, alignment: .leading)) {
                     Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
                     Text(JitsiAppBrowser.name).tag(JitsiAppBrowser)
                     ForEach(allBrowser, id: \.self) { (browser: Browser) in

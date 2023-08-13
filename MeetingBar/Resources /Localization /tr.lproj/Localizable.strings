@@ -11,9 +11,7 @@
 "status_bar_submenu_status_title" = "Durum: %@";
 "status_bar_submenu_status_accepted" = " 👍 Kabul edildi";
 "status_bar_submenu_notes_title" = "Notlar:";
-"status_bar_error_zoom_native_link_message" = "Zoom uygulamasının yüklü olduğundan emin olun veya bu bağlantıyı bir tarayıcıda açın.";
 "constants_browser_chrome" = "Google Chrome";
-"status_bar_error_zoom_app_link_message" = "Zoom uygulamasının yüklü olduğundan emin olun veya bu bağlantıyı bir tarayıcıda açın.";
 
 // MARK: - Access screen
 
@@ -98,11 +96,7 @@
 // MARK: - Preferences Services
 
 "preferences_services_link_meeting_title" = "Tüm toplantıları şununla aç";
-"preferences_services_link_meet_title" = "Google Meet'i şununla aç";
-"preferences_services_link_zoom_title" = "Zoom'u şununla aç";
-"preferences_services_link_team_title" = "Teams'i şununla aç";
-"preferences_services_link_zoom_value" = "Zoom uygulaması";
-"preferences_services_link_teams_value" = "Teams uygulaması";
+"preferences_services_link_service_title" = "%@ uygulaması";
 "preferences_services_supported_links_list" = "Servisler için desteklenen bağlantı:\n%@";
 "preferences_services_supported_links_mailback" = "Kullandığınız hizmet desteklenmiyorsa, geliştiricilere bir e-posta gönderebilirsiniz";
 "preferences_services_create_meeting_title" = "Toplantıları şununla oluştur";
@@ -170,8 +164,8 @@
 "status_bar_no_title" = "Başlık yok";
 "status_bar_error_link_missed_title" = "Amanın! %@ 'e katılınamadı";
 "status_bar_error_link_missed_message" = "Link bulunamadı ya da toplantı servisiniz henüz desteklenmiyor";
-"status_bar_error_teams_link_title" = "Amanın! Microsoft Teams uygulamasındaki bağlantı açılamıyor";
-"status_bar_error_zoom_native_link_title" = "Hata! Bu bağlantı Zoom uygulamasında açılamıyor";
+"status_bar_error_app_link_title" = "Hata! Bu bağlantı %@ uygulamasında açılamıyor";
+"status_bar_error_app_link_message" = "%@ uygulamasının yüklü olduğundan emin olun veya bu bağlantıyı bir tarayıcıda açın.";
 
 // MARK: - Welcome screen
 
@@ -240,7 +234,6 @@
 "preferences_general_patron_three_months" = "3 aylık – 2.99 USD";
 "preferences_general_patron_six_months" = "6 aylık – 5.99 USD";
 "preferences_appearance_events_without_guest_title" = "Misafirsiz etkinlikler:";
-"preferences_services_link_jitsi_value" = "Jitsi Meet uygulaması";
 "preferences_appearance_status_bar_icon_title" = "Simge";
 
 // MARK: - Preferences Appearance
@@ -251,7 +244,6 @@
 "preferences_appearance_events_value_only_with_link" = "yalnızca toplantı bağlantılarına sahip olanları göster";
 "preferences_appearance_status_bar_title_event_title_value" = "Etkinlik başlığı";
 "preferences_appearance_status_bar_time_show_under_title_value" = "başlığın altında göster";
-"preferences_services_link_jitsi_title" = "Jitsi'yi şununla aç";
 "preferences_appearance_status_bar_time_hide_value" = "gizle";
 "preferences_appearance_status_bar_next_event_toggle" = "Sadece şu kadar zaman içinde başlayacak etkinlikleri göster";
 "preferences_appearance_menu_show_event_end_time_value" = "bitiş zamanı";
@@ -303,12 +295,10 @@
 "status_bar_show_meeting_names" = "Toplantı başlığını göster";
 "status_bar_event_status_in" = "%@";
 "status_bar_submenu_open_in_calendar" = "Takvim uygulamasında aç";
-"status_bar_error_zoom_app_link_title" = "Hata! Bağlantı Zoom uygulamasında açılamıyor";
 "welcome_screen_ad_hoc_meeting_title" = "Şurada geçici toplantılar oluşturun ";
 "access_screen_access_screen_access_denied_go_to_title" = "Git";
 "status_bar_event_status_now" = "şu an (%@ kaldı)";
 "status_bar_error_apple_script_title" = "AppleScript hatası";
-"status_bar_error_teams_link_message" = "Microsoft Teams uygulamasının yüklü olduğundan emin olun veya bu bağlantıyı bir tarayıcıda açın.";
 
 // MARK: - Shared
 

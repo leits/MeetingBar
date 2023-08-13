@@ -112,14 +112,8 @@
 // MARK: - Preferences Services
 
 "preferences_services_link_meeting_title" = "Apri tutti i link delle riunioni in";
-"preferences_services_link_meet_title" = "Apri i link di Google Meet in";
-"preferences_services_link_zoom_title" = "Apri i link di Zoom in";
-"preferences_services_link_team_title" = "Apri i link di Teams in";
-"preferences_services_link_jitsi_title" = "Apri i link di Jitsi in";
+"preferences_services_link_service_title" = "Apri i link di %@ in";
 "preferences_services_link_default_browser_value" = "Browser di default";
-"preferences_services_link_zoom_value" = "App di Zoom";
-"preferences_services_link_teams_value" = "App di Teams";
-"preferences_services_link_jitsi_value" = "App di Jitsi Meet";
 "preferences_services_supported_links_list" = "Link supportati per i servizi:\n%@";
 "preferences_services_supported_links_mailback" = "Se il servizio che utilizzi non è supportato, puoi inviare un'e-mail agli sviluppatori";
 "preferences_services_create_meeting_title" = "Crea riunioni tramite";
@@ -247,12 +241,8 @@
 "status_bar_error_apple_script_title" = "Errore di AppleScript";
 "status_bar_error_link_missed_title" = "Ouch! Non puoi entrare in %@";
 "status_bar_error_link_missed_message" = "Link non trovato, o servizio non ancora supportato";
-"status_bar_error_teams_link_title" = "Oops! Impossibile aprire il link nell'app Microsoft Teams";
-"status_bar_error_teams_link_message" = "Assicurati di aver installato l'app Microsoft Teams o apri il link in un browser dalle preferenze.";
-"status_bar_error_zoom_app_link_title" = "Oops! Impossibile aprire il link nell'app Zoom";
-"status_bar_error_zoom_app_link_message" = "Assicurati di aver installato l'app Zoom o apri il link in un browser dalle preferenze.";
-"status_bar_error_zoom_native_link_title" = "Oops! Impossibile aprire questo link nell'app Zoom";
-"status_bar_error_zoom_native_link_message" = "Assicurati di aver installato l'app Zoom o apri il link in un browser dalle preferenze.";
+"status_bar_error_app_link_title" = "Oops! Impossibile aprire questo link nell'app %@";
+"status_bar_error_app_link_message" = "Assicurati di aver installato l'app %@ o apri il link in un browser dalle preferenze.";
 
 // MARK: - Welcome screen
 

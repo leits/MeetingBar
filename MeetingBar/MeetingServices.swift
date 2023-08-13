@@ -170,19 +170,6 @@ func createMeeting() {
 
 func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?) {
     switch service {
-    case .jitsi:
-        let browser = browser ?? Defaults[.jitsiBrowser]
-        if browser == JitsiAppBrowser {
-            var jitsiAppUrl = URLComponents(url: url, resolvingAgainstBaseURL: false)!
-            jitsiAppUrl.scheme = "jitsi-meet"
-            let result = jitsiAppUrl.url!.openInDefaultBrowser()
-            if !result {
-                sendNotification("status_bar_error_jitsi_link_title".loco(), "status_bar_error_jitsi_link_message".loco())
-                url.openInDefaultBrowser()
-            }
-        } else {
-            url.openIn(browser: browser)
-        }
     case .meet:
         let browser = browser ?? Defaults[.meetBrowser]
         if browser == MeetInOneBrowser {
@@ -199,7 +186,7 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?
             teamsAppURL.scheme = "msteams"
             let result = teamsAppURL.url!.openInDefaultBrowser()
             if !result {
-                sendNotification("status_bar_error_teams_link_title".loco(), "status_bar_error_teams_link_message".loco())
+                sendNotification("status_bar_error_app_link_title".loco("Microsoft Teams"), "status_bar_error_app_link_message".loco("Microsoft Teams"))
                 url.openInDefaultBrowser()
             }
         } else {
@@ -216,7 +203,7 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?
             zoomAppUrl.scheme = "zoommtg"
             let result = zoomAppUrl.url!.openInDefaultBrowser()
             if !result {
-                sendNotification("status_bar_error_zoom_app_link_title".loco(), "status_bar_error_zoom_app_link_message".loco())
+                sendNotification("status_bar_error_app_link_title".loco("Zoom"), "status_bar_error_app_link_message".loco("Zoom"))
                 url.openInDefaultBrowser()
             }
         } else {
@@ -225,12 +212,40 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?
     case .zoom_native:
         let result = url.openInDefaultBrowser()
         if !result {
-            sendNotification("status_bar_error_zoom_native_link_title".loco(), "status_bar_error_zoom_native_link_message".loco())
+            sendNotification("status_bar_error_app_link_title".loco("Zoom"), "status_bar_error_app_link_message".loco("Zoom"))
 
             let urlString = url.absoluteString.replacingFirstOccurrence(of: "&", with: "?").replacingOccurrences(of: "/join?confno=", with: "/j/")
             var zoomBrowserUrl = URLComponents(url: URL(string: urlString)!, resolvingAgainstBaseURL: false)!
             zoomBrowserUrl.scheme = "https"
             zoomBrowserUrl.url!.openInDefaultBrowser()
+        }
+    case .jitsi:
+        let browser = browser ?? Defaults[.jitsiBrowser]
+        if browser == JitsiAppBrowser {
+            var jitsiAppUrl = URLComponents(url: url, resolvingAgainstBaseURL: false)!
+            jitsiAppUrl.scheme = "jitsi-meet"
+            let result = jitsiAppUrl.url!.openInDefaultBrowser()
+            if !result {
+                sendNotification("status_bar_error_app_link_title".loco("Jitsi"), "status_bar_error_app_link_message".loco("Jitis"))
+                url.openInDefaultBrowser()
+            }
+        } else {
+            url.openIn(browser: browser)
+        }
+    case .slack:
+        let browser = browser ?? Defaults[.slackBrowser]
+        if browser == SlackAppBrowser {
+            let teamID = url.pathComponents[2]
+            let huddleID = url.pathComponents[3]
+
+            let slackUrl = URL(string: "slack://join-huddle?team=\(teamID)&id=\(huddleID)")!
+            let result = slackUrl.openInDefaultBrowser()
+            if !result {
+                sendNotification("status_bar_error_app_link_title".loco("Slack"), "status_bar_error_app_link_message".loco("Slack"))
+                url.openInDefaultBrowser()
+            }
+        } else {
+            url.openIn(browser: browser)
         }
     case .facetime:
         NSWorkspace.shared.open(URL(string: "facetime://" + url.absoluteString)!)

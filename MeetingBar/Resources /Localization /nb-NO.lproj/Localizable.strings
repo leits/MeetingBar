@@ -70,12 +70,8 @@
 
 "welcome_screen_greeting_main_title" = "Hei. MeetingBar er et så enkelt program at nesten alt er klart.";
 "welcome_screen_greeting_additional_title" = "La oss gjøre det 100% ditt.";
-"status_bar_error_zoom_native_link_message" = "Forsikre deg om at du har Zoom-programmet installert, eller endre programmet i innstillingene.";
-"status_bar_error_zoom_native_link_title" = "Oida. Kunne ikke åpne innebygd lenke i Zoom-programmet";
-"status_bar_error_zoom_app_link_message" = "Forsikre deg om at du har Zoom-programmet installert, eller endre programmet i innstillingene.";
-"status_bar_error_zoom_app_link_title" = "Oida. Kunne ikke åpne lenken i Zoom-programmet";
-"status_bar_error_teams_link_message" = "Forsikre deg om at du har Microsoft Teams-programmet installert, eller endre programmet i innstillingene.";
-"status_bar_error_teams_link_title" = "Oida. Kunne ikke åpne lenken i Microsoft Teams-programmet";
+"status_bar_error_app_link_title" = "Oida. Kunne ikke åpne lenken i  %@-programmet";
+"status_bar_error_app_link_message" = "Forsikre deg om at du har %@-programmet installert, eller endre programmet i innstillingene.";
 "status_bar_error_link_missed_message" = "Fant ikke lenken, eller så støttes ikke møtetjenesten enda";
 "status_bar_error_link_missed_title" = "Oida. Kan ikke ta del i %@";
 "status_bar_error_apple_script_title" = "Feil fra AppleScript";
@@ -243,14 +239,8 @@
 "preferences_services_create_meeting_title" = "Opprett møter via";
 "preferences_services_supported_links_mailback" = "Hvis tjenesten du bruker ikke er støttet kan du sende meg en e-post";
 "preferences_services_supported_links_list" = "Støttede lenker for tjenester:\n%@";
-"preferences_services_link_teams_value" = "Teams-programmet";
-"preferences_services_link_zoom_value" = "Zoom-programmet";
-"preferences_services_link_jitsi_value" = "Jitsi Meet-programmet";
 "preferences_services_link_default_browser_value" = "Forvalgt nettleser";
-"preferences_services_link_team_title" = "Åpne Teams-lenker i";
-"preferences_services_link_jitsi_title" = "Åpne Jitsi-lenker i";
-"preferences_services_link_zoom_title" = "Åpne Zoom-lenker i";
-"preferences_services_link_meet_title" = "Åpne Google Meet-lenker i";
+"preferences_services_link_service_title" = "Åpne %@-lenker i";
 
 // MARK: - Preferences Services
 

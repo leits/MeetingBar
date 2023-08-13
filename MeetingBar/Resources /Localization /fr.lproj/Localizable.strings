@@ -10,12 +10,9 @@
 "welcome_screen_shortcut_ad_hoc_meeting_title" = "avec votre raccourci :";
 "welcome_screen_ad_hoc_meeting_title" = "Créer des réunions ad hoc dans ";
 "welcome_screen_shortcut_next_meeting_title" = "Rejoignez la prochaine réunion d'évènement avec votre raccourci :";
-"status_bar_error_zoom_native_link_message" = "Assurez-vous d'avoir installé l'application Zoom, ou ouvrez plutôt ces liens dans un navigateur web à partir des préférences.";
-"status_bar_error_zoom_native_link_title" = "Oups ! Impossible d'ouvrir ce lien dans l'application Zoom";
 "link_url_cant_open_message" = "Assurez-vous que %@ est installé, ou ouvrez plutôt ces liens dans un navigateur web à partir des préférences.";
-"status_bar_error_zoom_app_link_message" = "Assurez-vous d'avoir installé l'application Zoom, ou ouvrez plutôt ces liens dans un navigateur web à partir des préférences.";
-"status_bar_error_zoom_app_link_title" = "Oups ! Impossible d'ouvrir le lien dans l'application Zoom";
-"status_bar_error_teams_link_message" = "Assurez-vous que l'application Microsoft Teams est installée, ou ouvrez plutôt ces liens dans un navigateur web à partir des préférences.";
+"status_bar_error_app_link_title" = "Oups ! Impossible d'ouvrir le lien dans l'application %@";
+"status_bar_error_app_link_message" = "Assurez-vous que l'application %@ est installée, ou ouvrez plutôt ces liens dans un navigateur web à partir des préférences.";
 "status_bar_error_apple_script_title" = "Erreur AppleScript";
 "status_bar_section_join_from_clipboard" = "Ouvrir la réunion à partir du presse-papier";
 "preferences_advanced_regex_new_cant_save_title" = "Impossible d'enregistrer un regex";
@@ -110,7 +107,6 @@
 // MARK: - Welcome screen
 
 "welcome_screen_greeting_main_title" = "Salut ! MeetingBar est une application tellement simple que tout est presque prêt.";
-"status_bar_error_teams_link_title" = "Oups ! Impossible d'ouvrir le lien dans l'application Microsoft Teams";
 "status_bar_error_link_missed_message" = "Lien introuvable, ou votre service de réunion n'est pas encore pris en charge";
 "status_bar_error_link_missed_title" = "Oh la la ! Impossible de rejoindre la %@";
 "status_bar_event_status_in" = "dans %@";
@@ -217,14 +213,8 @@
 "preferences_services_create_meeting_title" = "Créer des réunions via";
 "preferences_services_supported_links_mailback" = "Si le service que vous utilisez n'est pas pris en charge, vous pouvez envoyer un courriel aux développeurs";
 "preferences_services_supported_links_list" = "Liens pris en charge pour les services :\n%@";
-"preferences_services_link_teams_value" = "Appli Teams";
-"preferences_services_link_zoom_value" = "Appli Zoom";
-"preferences_services_link_jitsi_value" = "Appli Jitsi Meet";
 "preferences_services_link_default_browser_value" = "Navigateur par défaut";
-"preferences_services_link_team_title" = "Ouvrir les liens Team dans";
-"preferences_services_link_jitsi_title" = "Ouvrir les liens Jitsi dans";
-"preferences_services_link_zoom_title" = "Ouvrir les liens Zoom dans";
-"preferences_services_link_meet_title" = "Ouvrir les liens Meet dans";
+"preferences_services_link_service_title" = "Ouvrir les liens %@ dans";
 
 // MARK: - Preferences Services
 

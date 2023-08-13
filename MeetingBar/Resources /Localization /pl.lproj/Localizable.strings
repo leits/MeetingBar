@@ -112,12 +112,7 @@
 // MARK: - Preferences Services
 
 "preferences_services_link_meeting_title" = "Otwórz wszystkie linki spotkań w";
-"preferences_services_link_meet_title" = "Otwórz linki Google Meet w";
-"preferences_services_link_zoom_title" = "Otwórz linki Zoom w";
-"preferences_services_link_team_title" = "Otwórz linki Teams w";
 "preferences_services_link_default_browser_value" = "Domyślna przeglądarka internetowa";
-"preferences_services_link_zoom_value" = "Aplikacja Zoom";
-"preferences_services_link_teams_value" = "Aplikacja Teams";
 "preferences_services_supported_links_list" = "Obsługiwane łącza dla usług:\n%@";
 "preferences_services_supported_links_mailback" = "Jeśli usługa, z której korzystasz, nie jest obsługiwana, możesz wysłać wiadomość e-mail do jej twórców";
 "preferences_services_create_meeting_title" = "Utwórz spotkania za pomocą";
@@ -234,12 +229,8 @@
 "status_bar_error_apple_script_title" = "błąd AppleScript";
 "status_bar_error_link_missed_title" = "Auć! Nie można dołączyć do %@";
 "status_bar_error_link_missed_message" = "Link nie został znaleziony lub Twoja usługa spotkań nie jest jeszcze obsługiwana";
-"status_bar_error_teams_link_title" = "Ups! Nie można otworzyć łącza w aplikacji Microsoft Teams";
-"status_bar_error_teams_link_message" = "Upewnij się, że masz zainstalowaną aplikację Microsoft Teams, lub zamiast tego otwieraj takie łącza w przeglądarce internetowej z poziomu preferencji.";
-"status_bar_error_zoom_app_link_title" = "Ups! Nie można otworzyć łącza w aplikacji Zoom";
-"status_bar_error_zoom_app_link_message" = "Upewnij się, że masz zainstalowaną aplikację Zoom, lub zamiast tego otwórz takie linki w przeglądarce internetowej z poziomu preferencji.";
-"status_bar_error_zoom_native_link_title" = "Oops! Nie można otworzyć tego łącza w aplikacji Zoom";
-"status_bar_error_zoom_native_link_message" = "Upewnij się, że masz zainstalowaną aplikację Zoom lub otwórz takie linki w przeglądarce internetowej z poziomu preferencji.";
+"status_bar_error_app_link_title" = "Oops! Nie można otworzyć tego łącza w aplikacji %@";
+"status_bar_error_app_link_message" = "Upewnij się, że masz zainstalowaną aplikację %@, lub zamiast tego otwórz takie linki w przeglądarce internetowej z poziomu preferencji.";
 
 // MARK: - Welcome screen
 
@@ -337,9 +328,9 @@
 "link_url_cant_open_message" = "Upewnij się, że masz zainstalowany %@, lub zamiast tego otwieraj takie linki w przeglądarce internetowej z poziomu preferencji.";
 "status_bar_submenu_attendees_status_unknown" = " [?]";
 "access_screen_access_screen_access_denied_go_to_title" = "Go to";
-"preferences_services_link_jitsi_title" = "Otwórz linki Jitsi w";
+"preferences_services_link_service_title" = "%@ を開くアプリ";
+"preferences_services_link_service_title" = "Otwórz linki %@ w";
 "status_bar_preferences" = "Preferencje";
-"preferences_services_link_jitsi_value" = "Aplikacja Jitsi Meet";
 "status_bar_submenu_status_tentative" = " ☝️ Wstępnia akceptacja";
 "status_bar_menu_dismiss_curent_meeting" = "Odwołaj bieżące spotkanie";
 "status_bar_menu_dismiss_next_meeting" = "Odwołaj następne spotkanie";

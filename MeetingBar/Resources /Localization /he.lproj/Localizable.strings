@@ -73,14 +73,8 @@
 "preferences_appearance_menu_show_event_end_time_value" = "זמן הסיום";
 "preferences_appearance_menu_show_event_icon_value" = "סמל";
 "preferences_appearance_menu_show_event_details_value" = "פרטים כתת־תפריט";
-"preferences_services_link_meet_title" = "לפתוח קישורי Google Meet עם";
-"preferences_services_link_zoom_title" = "לפתוח קישורי Zoom עם";
-"preferences_services_link_team_title" = "לפתוח קישורי Teams עם";
-"preferences_services_link_jitsi_title" = "לפתוח קישורי Jitsi עם";
+"preferences_services_link_service_title" = "לפתוח קישורי %@ עם";
 "preferences_services_link_default_browser_value" = "דפדפן בררת המחדל";
-"preferences_services_link_zoom_value" = "היישום Zoom";
-"preferences_services_link_teams_value" = "היישום Teams";
-"preferences_services_link_jitsi_value" = "היישום Jitsi Meet";
 "preferences_services_supported_links_mailback" = "אם השירות שמשמש אותך עדיין אינו נתמך, אפשר לשלוח הודעת דוא״ל למתכנתים";
 "preferences_services_create_meeting_title" = "יצירת פגישות דרך";
 "preferences_services_create_meeting_custom_url_value" = "כתובת משלך";
@@ -160,12 +154,8 @@
 "status_bar_quick_actions" = "פעולות זריזות";
 "status_bar_error_link_missed_title" = "אוף! אי אפשר להצטרף אל %@";
 "status_bar_error_link_missed_message" = "הקישור לא נמצא או ששירות הפגישות שלך לא נתמך עדיין";
-"status_bar_error_teams_link_title" = "אופס! לא ניתן לפתוח את הקישור ביישום Microsoft Teams";
-"status_bar_error_teams_link_message" = "נא לוודא שהיישום Microsoft Teams מותקן אצלך או שאפשר לפתוח קישורים כאלו בדפדפן שלך דרך ההעדפות במקום.";
-"status_bar_error_zoom_app_link_title" = "אופס! לא ניתן לפתוח את הקישור ביישום Zoom";
-"status_bar_error_zoom_app_link_message" = "נא לוודא שהיישום Zoom מותקן אצלך או שאפשר לפתוח קישורים כאלו בדפדפן שלך דרך ההעדפות במקום.";
-"status_bar_error_zoom_native_link_title" = "אופס! לא ניתן לפתוח את הקישור הזה ביישום Zoom";
-"status_bar_error_zoom_native_link_message" = "נא לוודא שהיישום Zoom מותקן אצלך או שאפשר לפתוח קישורים כאלו בדפדפן שלך דרך ההעדפות במקום.";
+"status_bar_error_app_link_title" = "אופס! לא ניתן לפתוח את הקישור ביישום %@";
+"status_bar_error_app_link_message" = "נא לוודא שהיישום %@ מותקן אצלך או שאפשר לפתוח קישורים כאלו בדפדפן שלך דרך ההעדפות במקום.";
 
 // MARK: - Welcome screen
 

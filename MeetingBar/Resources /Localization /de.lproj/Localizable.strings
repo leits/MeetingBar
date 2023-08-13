@@ -229,13 +229,7 @@
 "preferences_services_create_meeting_custom_url_value" = "Benutzerdefinierte URL";
 "preferences_services_create_meeting_title" = "Meetings erstellen mit";
 "preferences_services_supported_links_list" = "Unterstützte Links für Services:\n%@";
-"preferences_services_link_teams_value" = "Teams App";
-"preferences_services_link_zoom_value" = "Zoom App";
-"preferences_services_link_jitsi_value" = "Jitsi-Meet App";
-"preferences_services_link_team_title" = "Teams-Links öffnen in";
-"preferences_services_link_jitsi_title" = "Jitsi-Links öffnen in";
-"preferences_services_link_zoom_title" = "Zoom-Links öffnen in";
-"preferences_services_link_meet_title" = "Google Meet-Links öffnen mit";
+"preferences_services_link_service_title" = "%@-Links öffnen in";
 
 // MARK: - Preferences Services
 
@@ -314,12 +308,8 @@
 // MARK: - Welcome screen
 
 "welcome_screen_greeting_main_title" = "Hi! MeetingBar ist so eine simple App, dass schon fast alles vorbereitet ist.";
-"status_bar_error_zoom_native_link_message" = "Sicherstellen, dass die Zoom-App installiert ist oder in den Einstellungen festlegen, dass diese Links im Webbrowser geöffnet werden.";
-"status_bar_error_zoom_app_link_message" = "Sicherstellen, dass die Zoom-App installiert ist oder in den Einstellungen festlegen, dass diese Links im Webbrowser geöffnet werden.";
-"status_bar_error_teams_link_message" = "Sicherstellen, dass die Microsoft Teams-Anwendung installiert ist oder in den Einstellungen festlegen, dass diese Links im Webbrowser geöffnet werden.";
-"status_bar_error_zoom_native_link_title" = "Hoppla! Der Link kann nicht in der Zoom-App geöffnet werden";
-"status_bar_error_zoom_app_link_title" = "Hoppla! Der Link kann in der Zoom-Anwendung nicht geöffnet werden";
-"status_bar_error_teams_link_title" = "Hoppla! Der Link kann in der Microsoft Teams-App nicht geöffnet werden";
+"status_bar_error_app_link_title" = "Hoppla! Der Link kann nicht in der %@-App geöffnet werden";
+"status_bar_error_app_link_message" = "Sicherstellen, dass die %@-App installiert ist oder in den Einstellungen festlegen, dass diese Links im Webbrowser geöffnet werden.";
 "status_bar_error_apple_script_title" = "AppleScript-Fehler";
 "status_bar_event_status_in" = "in %@";
 "preferences_general_external_patronage" = "Schirmherrschaft";
