@@ -101,12 +101,8 @@
 "welcome_screen_shortcut_ad_hoc_meeting_title" = "pomocí zkratky:";
 "welcome_screen_ad_hoc_meeting_title" = "Vytvářet ad hoc schůzky v ";
 "welcome_screen_login_launch_toggle_title" = "Spouštět aplikaci MeetingBar po přihlášení";
-"status_bar_error_zoom_native_link_message" = "Ujistěte se, že máte nainstalovanou aplikaci Zoom, nebo v předvolbách nastavte, aby se její odkazy otevíraly ve webovém prohlížeči.";
-"status_bar_error_zoom_native_link_title" = "Odkaz nelze otevřít v aplikaci Zoom";
-"status_bar_error_zoom_app_link_message" = "Ujistěte se, že máte nainstalovanou aplikaci Zoom, nebo v předvolbách nastavte, aby se její odkazy otevíraly ve webovém prohlížeči.";
-"status_bar_error_zoom_app_link_title" = "Nelze otevřít odkaz v aplikaci Zoom";
-"status_bar_error_teams_link_message" = "Ujistěte se, že máte nainstalovanou aplikaci Microsoft Teams, nebo v předvolbách nastavte, aby se její odkazy otevíraly ve webovém prohlížeči.";
-"status_bar_error_teams_link_title" = "Nelze otevřít odkaz v aplikaci Microsoft Teams";
+"status_bar_error_app_link_title" = "Nelze otevřít odkaz v aplikaci %@";
+"status_bar_error_app_link_message" = "Ujistěte se, že máte nainstalovanou aplikaci %@, nebo v předvolbách nastavte, aby se její odkazy otevíraly ve webovém prohlížeči.";
 "status_bar_error_link_missed_message" = "Odkaz nebyl nalezen, nebo služba schůzky zatím není podporována";
 "status_bar_error_link_missed_title" = "Nelze se připojit k %@";
 "status_bar_error_apple_script_title" = "Chyba AppleScriptu";
@@ -223,14 +219,8 @@
 "preferences_services_create_meeting_title" = "Vytvářet schůzky přes";
 "preferences_services_supported_links_mailback" = "Pokud služba, kterou používáte, není podporována, napište e-mail vývojářům";
 "preferences_services_supported_links_list" = "Podporované odkazy na služby:\n%@";
-"preferences_services_link_teams_value" = "Aplikace Teams";
-"preferences_services_link_zoom_value" = "Aplikace Zoom";
-"preferences_services_link_jitsi_value" = "Aplikace Jitsi Meet";
 "preferences_services_link_default_browser_value" = "Výchozí webový prohlížeč";
-"preferences_services_link_team_title" = "Otvírat odkazy služby Teams v";
-"preferences_services_link_jitsi_title" = "Otvírat odkazy služby Jitsi v";
-"preferences_services_link_zoom_title" = "Otvírat odkazy služby Zoom v";
-"preferences_services_link_meet_title" = "Otvírat odkazy služby Google Meet v";
+"preferences_services_link_service_title" = "Otvírat odkazy služby %@ v";
 
 // MARK: - Preferences Services
 

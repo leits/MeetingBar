@@ -112,14 +112,8 @@
 // MARK: - Preferences Services
 
 "preferences_services_link_meeting_title" = "Відкривати усі посилання в";
-"preferences_services_link_meet_title" = "Відкривати Meet посилання в";
-"preferences_services_link_zoom_title" = "Відкривати Zoom посилання в";
-"preferences_services_link_team_title" = "Відкривати Teams посилання в";
-"preferences_services_link_jitsi_title" = "Відкривати Jitsi посилання в";
+"preferences_services_link_service_title" = "Відкривати посилання %@ у";
 "preferences_services_link_default_browser_value" = "основному браузері";
-"preferences_services_link_zoom_value" = "застосунку Zoom";
-"preferences_services_link_teams_value" = "застосунку Teams";
-"preferences_services_link_jitsi_value" = "застосунку Jitsi";
 "preferences_services_supported_links_list" = "Розпізнаються посилання для сервісів:\n%@";
 "preferences_services_supported_links_mailback" = "Якщо сервіс, який Ви використовуєте для зустрічей, не підтримується, напишіть мені";
 "preferences_services_create_meeting_title" = "Створювати зустрічі в";
@@ -239,12 +233,8 @@
 "status_bar_error_apple_script_title" = "AppleScript повернув помилку";
 "status_bar_error_link_missed_title" = "Ой леле! Не вдалось долучитись до %@";
 "status_bar_error_link_missed_message" = "Посилання не знайдено, або цей сервіс для зустрічей ще не підтримується";
-"status_bar_error_teams_link_title" = "Ой леле! Не вдалось відкрити посилання на Teams зустріч у застосунку Microsoft Teams";
-"status_bar_error_teams_link_message" = "Переконайтеся, що у вас встановлений застосунок Microsoft Teams, або змініть його у налаштуваннях.";
-"status_bar_error_zoom_app_link_title" = "Ой леле! Не вдалось відкрити посилання на Zoom зустріч у застосунку Zoom";
-"status_bar_error_zoom_app_link_message" = "Переконайтеся, що у вас встановлений застосунок Zoom, або змініть його у налаштуваннях.";
-"status_bar_error_zoom_native_link_title" = "Ой леле! Не вдалось відкрити посилання на Zoom зустріч у застосунку Zoom";
-"status_bar_error_zoom_native_link_message" = "Переконайтеся, що у вас встановлений застосунок Zoom, або змініть його у налаштуваннях.";
+"status_bar_error_app_link_title" = "Ой леле! Не вдалось відкрити посилання на зустріч у застосунку %@";
+"status_bar_error_app_link_message" = "Переконайтеся, що у вас встановлений застосунок %@, або змініть його у налаштуваннях.";
 
 // MARK: - Welcome screen
 

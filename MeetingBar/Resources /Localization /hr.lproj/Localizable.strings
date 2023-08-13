@@ -112,14 +112,8 @@
 // MARK: - Preferences Services
 
 "preferences_services_link_meeting_title" = "Otvori sve poveznice sastanaka u";
-"preferences_services_link_meet_title" = "Otvori Google Meet poveznice u";
-"preferences_services_link_zoom_title" = "Otvori Zoom poveznice u";
-"preferences_services_link_team_title" = "Otvori Teams poveznice u";
-"preferences_services_link_jitsi_title" = "Otvori Jitsi poveznice u";
+"preferences_services_link_service_title" = "Otvori  %@ poveznice u";
 "preferences_services_link_default_browser_value" = "Standardni web-preglednik";
-"preferences_services_link_zoom_value" = "Program Zoom";
-"preferences_services_link_teams_value" = "Program Teams";
-"preferences_services_link_jitsi_value" = "Program Jitsi Meet";
 "preferences_services_supported_links_list" = "Podržane poveznice za usluge:\n%@";
 "preferences_services_supported_links_mailback" = "Ako usluga koju koristiš nije podržana, javi programerima putem e-maila";
 "preferences_services_create_meeting_title" = "Stvori sastanke putem";
@@ -237,13 +231,8 @@
 "status_bar_error_apple_script_title" = "AppleScript greška";
 "status_bar_error_link_missed_title" = "Joj! Nije moguće pridružiti se sastanku %@";
 "status_bar_error_link_missed_message" = "Poveznica nije pronađena ili usluga za sastanke još nije podržana";
-"status_bar_error_teams_link_title" = "Ups! Nije moguće otvoriti poveznicu u programu Microsoft Teams";
-"status_bar_error_teams_link_message" = "Program Microsoft Teams mora biti instaliran ili otvori takve poveznice u jednom od web-preglednika koji su određeni u postavkama.";
-"status_bar_error_zoom_app_link_title" = "Ups! Nije moguće otvoriti poveznicu u programu Zoom";
-"status_bar_error_zoom_app_link_message" = "Program Zoom mora biti instaliran ili otvori takve poveznice u jednom od web-preglednika koji su određeni u postavkama.";
-"status_bar_error_zoom_native_link_title" = "Ups! Nije moguće otvoriti poveznicu u programu Zoom";
-"status_bar_error_zoom_native_link_message" = "Program Zoom mora biti instaliran ili otvori takve poveznice u jednom od web-preglednika koji su određeni u postavkama.";
-
+"status_bar_error_app_link_title" = "Ups! Nije moguće otvoriti poveznicu u programu %@";
+"status_bar_error_app_link_message" = "Program %@ mora biti instaliran ili otvori takve poveznice u jednom od web-preglednika koji su određeni u postavkama.";
 // MARK: - Welcome screen
 
 "welcome_screen_greeting_main_title" = "Bok! MeetingBar je toliko jednostavan program, da je skoro sve spremno.";

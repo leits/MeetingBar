@@ -117,14 +117,8 @@
 
 
 "preferences_services_link_meeting_title" = "すべてのミーティングリンクを開くアプリ";
-"preferences_services_link_meet_title" = "Goole Meet を開くアプリ";
-"preferences_services_link_zoom_title" = "Zoom を開くアプリ";
-"preferences_services_link_team_title" = "Teams を開くアプリ";
-"preferences_services_link_jitsi_title" = "Jitsi リンクを開くアプリ";
+"preferences_services_link_service_title" = "%@ を開くアプリ";
 "preferences_services_link_default_browser_value" = "標準のウェブブラウザー";
-"preferences_services_link_zoom_value" = "Zoom アプリ";
-"preferences_services_link_teams_value" = "Teams アプリ";
-"preferences_services_link_jitsi_value" = "Jitsi Meet アプリ";
 "preferences_services_supported_links_list" = "サポートしているサービス一覧:\n%@";
 "preferences_services_supported_links_mailback" = "もしあなたが使っているサービスが無ければ開発チームにご連絡ください";
 "preferences_services_create_meeting_title" = "ミーティングを作成するサービス";
@@ -247,12 +241,8 @@
 "status_bar_error_apple_script_title" = "AppleScriptエラー";
 "status_bar_error_link_missed_title" = "ギャー！%@ に参加できませんでした";
 "status_bar_error_link_missed_message" = "ミーティングリンクが登録されていないか、サポートされていないサービスです";
-"status_bar_error_teams_link_title" = "おっと！Microsoft Team アプリでリンクを開けませんでした";
-"status_bar_error_teams_link_message" = "Microsoft Team アプリがインストールされていることを確認するか、代わりにウェブブラウザーでリンクを開いてください。";
-"status_bar_error_zoom_app_link_title" = "おーっと！ Zoom アプリでリンクを開けません";
-"status_bar_error_zoom_app_link_message" = "Zoom アプリがインストールされていることを確認するか、代わりにウェブブラウザーでリンクを開いてください。";
-"status_bar_error_zoom_native_link_title" = "グオー！ Zoom アプリでリンクを開けません";
-"status_bar_error_zoom_native_link_message" = "Zoom アプリがインストールされていることを確認するか、代わりにウェブブラウザーでリンクを開いてください。";
+"status_bar_error_app_link_title" = "グオー！ %@ アプリでリンクを開けません";
+"status_bar_error_app_link_message" = "%@ アプリがインストールされていることを確認するか、代わりにウェブブラウザーでリンクを開いてください。";
 
 // MARK: - Welcome screen
 
