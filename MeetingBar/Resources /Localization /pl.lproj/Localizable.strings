@@ -230,8 +230,8 @@
 "status_bar_error_apple_script_title" = "błąd AppleScript";
 "status_bar_error_link_missed_title" = "Auć! Nie można dołączyć do %@";
 "status_bar_error_link_missed_message" = "Link nie został znaleziony lub Twoja usługa spotkań nie jest jeszcze obsługiwana";
-"status_bar_error_app_link_title" = "Oops! Nie można otworzyć tego łącza w aplikacji %@";
-"status_bar_error_app_link_message" = "Upewnij się, że masz zainstalowaną aplikację %@, lub zamiast tego otwórz takie linki w przeglądarce internetowej z poziomu preferencji.";
+"status_bar_error_app_link_title" = "Ups! Nie można otworzyć tego linku w aplikacji %@";
+"status_bar_error_app_link_message" = "Upewnij się, że masz zainstalowaną aplikację %@, lub ustaw w preferencjach otwieranie wszystkich linków w przeglądarce internetowej.";
 
 // MARK: - Welcome screen
 
@@ -330,7 +330,7 @@
 "status_bar_submenu_attendees_status_unknown" = " [?]";
 "access_screen_access_screen_access_denied_go_to_title" = "Go to";
 "preferences_services_link_service_title" = "%@ を開くアプリ";
-"preferences_services_link_service_title" = "Otwórz linki %@ w";
+"preferences_services_link_service_title" = "Otwórz linki do %@ w";
 "status_bar_preferences" = "Preferencje";
 "status_bar_submenu_status_tentative" = " ☝️ Wstępnia akceptacja";
 "status_bar_menu_dismiss_curent_meeting" = "Odwołaj bieżące spotkanie";
