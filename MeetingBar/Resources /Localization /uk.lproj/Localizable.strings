@@ -54,7 +54,7 @@
 "preferences_general_patron_six_months" = "6 місяців - 5,99 USD";
 "preferences_general_patron_twelve_months" = "12 місяців - 11,99 USD";
 "preferences_general_patron_description" = "Це одноразові платежі, які не будуть повторюватись автоматично.";
-"preferences_general_patron_thank_for_purchase" = "Дякую! Ви підтримали MeetingBar на %d місяців! 🎉";
+"preferences_general_patron_thank_for_purchase" = "Дякую! Ви підтримали MeetingBar на %d місяців 🎉";
 "preferences_general_patron_restore_purchases" = "Відновити платежі";
 "preferences_general_feedback_title" = "Якщо у Вас є запитання або ідеї,\nпросто напишіть мені:";
 "preferences_general_feedback_email" = "email";
