@@ -10,9 +10,9 @@ import Cocoa
 
 var systemDefaultBrowser = Browser(name: "preferences_services_link_default_browser_value".loco(), path: "")
 var MeetInOneBrowser = Browser(name: "MeetInOne", path: "")
-var ZoomAppBrowser = Browser(name: "Zoom".loco(), path: "")
-var TeamsAppBrowser = Browser(name: "Teams".loco(), path: "")
-var JitsiAppBrowser = Browser(name: "Jitsi".loco(), path: "")
+var ZoomAppBrowser = Browser(name: "Zoom", path: "")
+var TeamsAppBrowser = Browser(name: "Teams", path: "")
+var JitsiAppBrowser = Browser(name: "Jitsi", path: "")
 var SlackAppBrowser = Browser(name: "Slack", path: "")
 
 enum statusbarEventTitleLengthLimits {
