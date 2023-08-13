@@ -140,6 +140,7 @@ struct EventsSection: View {
     @Default(.allDayEvents) var allDayEvents
     @Default(.nonAllDayEvents) var nonAllDayEvents
     @Default(.showPendingEvents) var showPendingEvents
+    @Default(.showTentativeEvents) var showTentativeEvents
     @Default(.showEventsForPeriod) var showEventsForPeriod
 
     var body: some View {
@@ -149,7 +150,13 @@ struct EventsSection: View {
                 Picker("preferences_appearance_events_show_events_for_title".loco(), selection: $showEventsForPeriod) {
                     Text("preferences_appearance_events_show_events_for_today_value".loco()).tag(ShowEventsForPeriod.today)
                     Text("preferences_appearance_events_show_events_for_today_tomorrow_value".loco()).tag(ShowEventsForPeriod.today_n_tomorrow)
-                }.frame(width: 300)
+                }
+                
+                Picker("preferences_appearance_events_past_title".loco(), selection: $pastEventsAppereance) {
+                    Text("preferences_appearance_events_value_show".loco()).tag(PastEventsAppereance.show_active)
+                    Text("preferences_appearance_events_value_as_inactive".loco()).tag(PastEventsAppereance.show_inactive)
+                    Text("preferences_appearance_events_value_hide".loco()).tag(PastEventsAppereance.hide)
+                }
             }
 
             HStack {
@@ -172,11 +179,14 @@ struct EventsSection: View {
                     Text("preferences_appearance_events_value_as_inactive".loco()).tag(PastEventsAppereance.show_inactive)
                     Text("preferences_appearance_events_value_hide".loco()).tag(PastEventsAppereance.hide)
                 }
-                Picker("preferences_appearance_events_past_title".loco(), selection: $pastEventsAppereance) {
-                    Text("preferences_appearance_events_value_show".loco()).tag(PastEventsAppereance.show_active)
-                    Text("preferences_appearance_events_value_as_inactive".loco()).tag(PastEventsAppereance.show_inactive)
-                    Text("preferences_appearance_events_value_hide".loco()).tag(PastEventsAppereance.hide)
+                
+                Picker("preferences_appearance_events_tentative_title".loco(), selection: $showTentativeEvents) {
+                    Text("preferences_appearance_events_value_show".loco()).tag(TentativeEventsAppereance.show)
+                    Text("preferences_appearance_events_value_as_underlined".loco()).tag(TentativeEventsAppereance.show_underlined)
+                    Text("preferences_appearance_events_value_as_inactive".loco()).tag(TentativeEventsAppereance.show_inactive)
+                    Text("preferences_appearance_events_value_hide".loco()).tag(TentativeEventsAppereance.hide)
                 }
+                
             }
             HStack {
                 Picker("preferences_appearance_events_pending_title".loco(), selection: $showPendingEvents) {

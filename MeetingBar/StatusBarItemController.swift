@@ -203,6 +203,10 @@ class StatusBarItemController {
                     if nextEvent.participationStatus == .pending, Defaults[.showPendingEvents] == PendingEventsAppereance.show_underlined {
                         styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
                     }
+                    
+                    if nextEvent.participationStatus == .tentative, Defaults[.showTentativeEvents] == TentativeEventsAppereance.show_underlined {
+                        styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
+                    }
 
                     menuTitle.append(NSAttributedString(string: eventTitle, attributes: styles))
                 } else {
@@ -217,6 +221,12 @@ class StatusBarItemController {
                     if nextEvent.participationStatus == .pending, Defaults[.showPendingEvents] == PendingEventsAppereance.show_inactive {
                         styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
                     } else if nextEvent.participationStatus == .pending, Defaults[.showPendingEvents] == PendingEventsAppereance.show_underlined {
+                        styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
+                    }
+                    
+                    if nextEvent.participationStatus == .tentative, Defaults[.showTentativeEvents] == TentativeEventsAppereance.show_inactive {
+                        styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
+                    } else if nextEvent.participationStatus == .tentative, Defaults[.showTentativeEvents] == TentativeEventsAppereance.show_underlined {
                         styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
                     }
 
@@ -427,6 +437,14 @@ class StatusBarItemController {
                 styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
             }
         }
+        
+        if event.participationStatus == .tentative {
+            if Defaults[.showTentativeEvents] == TentativeEventsAppereance.show_inactive {
+                styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
+            } else if Defaults[.showTentativeEvents] == TentativeEventsAppereance.show_underlined {
+                styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
+            }
+        }
 
         if event.attendees.isEmpty, Defaults[.personalEventsAppereance] == .show_inactive {
             styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
@@ -455,6 +473,13 @@ class StatusBarItemController {
             let eventTitle = NSMutableAttributedString()
 
             if shouldShowAsActive, Defaults[.showPendingEvents] != PendingEventsAppereance.show_underlined {
+                // add the NSTextAttachment wrapper to our full string, then add some more text.
+                styles[NSAttributedString.Key.font] = NSFont.boldSystemFont(ofSize: 14)
+            } else {
+                styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: 14)
+            }
+            
+            if shouldShowAsActive, Defaults[.showTentativeEvents] != TentativeEventsAppereance.show_underlined {
                 // add the NSTextAttachment wrapper to our full string, then add some more text.
                 styles[NSAttributedString.Key.font] = NSFont.boldSystemFont(ofSize: 14)
             } else {

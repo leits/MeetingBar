@@ -79,6 +79,7 @@
 "preferences_appearance_events_past_title" = "Past events:";
 "preferences_appearance_events_pending_title" = "Pending events";
 "preferences_appearance_events_declined_title" = "Declined events:";
+"preferences_appearance_events_tentative_title" = "Tentative events:";
 "preferences_appearance_events_value_show" = "show";
 "preferences_appearance_events_value_hide" = "hide";
 "preferences_appearance_events_value_as_inactive" = "show as inactive";
