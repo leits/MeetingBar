@@ -63,7 +63,6 @@ extension Defaults.Keys {
     // appearance of tentative events
     static let showTentativeEvents = Key<TentativeEventsAppereance>("showTentativeEvents", default: TentativeEventsAppereance.show)
 
-    
     static let timeFormat = Key<TimeFormat>("timeFormat", default: .military)
 
     // Bookmarks

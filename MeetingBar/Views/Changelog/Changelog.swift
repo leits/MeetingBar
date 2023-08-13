@@ -148,6 +148,14 @@ struct ChangelogView: View {
                             Text("• Updated Slack huddle icon to properly scale within a menu")
                         }
                     }
+                    if compareVersions("4.6.0", lastRevisedVersionInChangelog) {
+                        Section(header: Text("Version 4.6")) {
+                            Text("• Improved links recognition for Microsoft Teams and Zoom Webinar")
+                            Text("• Improved performance on actions")
+                            Text("• Optimized direct Google Calendar integration")
+                            Text("• Updated Slack huddle icon to properly scale within a menu")
+                        }
+                    }
                 }
             }.listStyle(SidebarListStyle())
             Button("general_close".loco(), action: close)

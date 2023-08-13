@@ -218,7 +218,7 @@ func filterEvents(_ events: [MBEvent]) -> [MBEvent] {
                 continue // Skip this event
             }
         }
-        
+
         // Filter tentative events
         switch Defaults[.showTentativeEvents] {
         case .show, .show_inactive, .show_underlined:
@@ -283,7 +283,7 @@ func getNextEvent(events: [MBEvent], linkRequired: Bool = false) -> MBEvent? {
         if event.participationStatus == .pending, Defaults[.showPendingEvents] == .hide || Defaults[.showPendingEvents] == .show_inactive {
             continue
         }
-        
+
         // Skip event if pending events should be skipped
         if event.participationStatus == .tentative, Defaults[.showTentativeEvents] == .hide || Defaults[.showTentativeEvents] == .show_inactive {
             continue
