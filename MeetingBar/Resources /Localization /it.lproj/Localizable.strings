@@ -47,7 +47,6 @@
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "Mostra/nascondi il titolo nella barra di stato:";
 "preferences_general_meeting_bar_description" = "MeetingBar è un'app con codice aperto\ncreata da Andrii Leitsius 🇺🇦\nPer riunioni online più fluide e semplici";
 "preferences_general_external_patronage" = "Supporta";
-"preferences_general_external_gitHub" = "GitHub";
 "preferences_general_external_contact" = "Contatti";
 "preferences_general_patron_title" = "Diventa un Patron";
 "preferences_general_patron_three_months" = "3 mesi – 2.99 USD";
@@ -58,8 +57,6 @@
 "preferences_general_patron_restore_purchases" = "Ripristina gli acquisti";
 "preferences_general_feedback_title" = "Se hai domande o suggerimenti,\nnon esitare a metterti in contatto:";
 "preferences_general_feedback_email" = "E-mail";
-"preferences_general_feedback_twitter" = "Twitter";
-"preferences_general_feedback_telegram" = "Telegram";
 
 // MARK: - Preferences Appearance
 
@@ -296,18 +293,8 @@
 "constants_create_meeting_service_url" = "URL personalizzato";
 "constants_meeting_service_phone" = "Numero di telefono";
 "constants_meeting_service_zoom_native" = "Zoom nativo";
-"constants_meeting_service_skype4biz" = "Skype for Business";
-"constants_meeting_service_skype4biz_selfhosted" = "Skype for Business (SH)";
 "constants_meeting_service_other" = "Altro";
 "constants_meeting_service_url" = "URL";
-"constants_browser_brave" = "Brave Browser";
-"constants_browser_chrome" = "Google Chrome";
-"constants_browser_chromium" = "Chromium";
-"constants_browser_edge" = "Microsoft Edge";
-"constants_browser_firefox" = "Firefox";
-"constants_browser_opera" = "Opera";
-"constants_browser_vivaldi" = "Vivaldi";
-"constants_browser_safari" = "Safari";
 "constants_browser_defaultBrowser" = "Browser di default";
 
 // MARK: - Store

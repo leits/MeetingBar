@@ -81,10 +81,6 @@ enum MeetingServices: String, Codable, CaseIterable {
             return "constants_meeting_service_phone".loco()
         case .zoom_native:
             return "constants_meeting_service_zoom_native".loco()
-        case .skype4biz:
-            return "constants_meeting_service_skype4biz".loco()
-        case .skype4biz_selfhosted:
-            return "constants_meeting_service_skype4biz_selfhosted".loco()
         case .other:
             return "constants_meeting_service_other".loco()
         case .url:

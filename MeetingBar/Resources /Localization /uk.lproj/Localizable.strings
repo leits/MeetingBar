@@ -47,7 +47,6 @@
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "Показати/сховати заголовок у смузі меню:";
 "preferences_general_meeting_bar_description" = "MeetingBar - це застосунок з відкритим кодом,\nстворений Андрієм Лейцюсь 🇺🇦\nДля більш плавної і зручної онлайн-зустрічі";
 "preferences_general_external_patronage" = "Підтримати";
-"preferences_general_external_gitHub" = "GitHub";
 "preferences_general_external_contact" = "Зв'язатись";
 "preferences_general_patron_title" = "Стати патроном";
 "preferences_general_patron_three_months" = "3 місяці - 2,99 USD";
@@ -58,8 +57,6 @@
 "preferences_general_patron_restore_purchases" = "Відновити платежі";
 "preferences_general_feedback_title" = "Якщо у Вас є запитання або ідеї,\nпросто напишіть мені:";
 "preferences_general_feedback_email" = "email";
-"preferences_general_feedback_twitter" = "twitter";
-"preferences_general_feedback_telegram" = "telegram";
 
 // MARK: - Preferences Appearance
 
@@ -288,18 +285,8 @@
 "constants_create_meeting_service_url" = "Custom url";
 "constants_meeting_service_phone" = "Телефон";
 "constants_meeting_service_zoom_native" = "Zoom native";
-"constants_meeting_service_skype4biz" = "Skype For Business";
-"constants_meeting_service_skype4biz_selfhosted" = "Skype For Business (SH)";
 "constants_meeting_service_other" = "інше";
 "constants_meeting_service_url" = "URL";
-"constants_browser_brave" = "Brave";
-"constants_browser_chrome" = "Google Chrome";
-"constants_browser_chromium" = "Chromium";
-"constants_browser_edge" = "Microsoft Edge";
-"constants_browser_firefox" = "Firefox";
-"constants_browser_opera" = "Opera";
-"constants_browser_vivaldi" = "Vivaldi";
-"constants_browser_safari" = "Safari";
 "constants_browser_defaultBrowser" = "основному браузері";
 
 // MARK: - Store

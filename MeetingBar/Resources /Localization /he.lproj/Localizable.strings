@@ -23,7 +23,6 @@
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "החלפת מצב הצגת הכותרת בשורת המצב:";
 "preferences_general_meeting_bar_description" = "MeetingBar הוא יישום בקוד פתוח\nשנוצר על ידי Andrii Leitsius 🇺🇦\nלפגישות מקוונות פשוטות וחלקות יותר";
 "preferences_general_external_patronage" = "Patronage";
-"preferences_general_external_gitHub" = "GitHub";
 "preferences_general_external_contact" = "יצירת קשר";
 "preferences_general_patron_title" = "להפוך ל־Patron (מימון חודשי)";
 "preferences_general_patron_three_months" = "3 חודשים – 2.99 דולר";
@@ -194,7 +193,6 @@
 "general_one_minute_before" = "דקה לפני";
 "general_three_minute_before" = "3 דקות לפני";
 "constants_create_meeting_service_url" = "כתובת משלך";
-"constants_meeting_service_skype4biz_selfhosted" = "Skype לעסקים (אירוח עצמי)";
 "constants_meeting_service_zoom_native" = "Zoom טבעי";
 "shared_send_notification_no_alert_style_tip" = "⚠️ הגדרות ההתראות ב־macOS שלך עבור MeetingBar לא מוגדרות להוציא התראות. יש לעשות זאת אם מעניין אותך להשתמש בהתראות דביקות.";
 "shared_send_notification_disabled_tip" = "⚠️ הגדרות ההתראות ב־macOS שלך עבור MeetingBar כבויות. יש להפעיל את ההתראות בהגדרות המערכת של macOS כדי לעקוב אחר פגישות.";
@@ -222,12 +220,6 @@
 "notifications_snooze_for" = "להשהות למשך %@ דק׳";
 "constants_meeting_service_other" = "אחר";
 "constants_meeting_service_url" = "כתובת";
-"constants_browser_brave" = "Brave";
-"constants_browser_chrome" = "Google Chrome";
-"constants_browser_chromium" = "Chromium";
-"constants_browser_edge" = "Microsoft Edge";
-"constants_browser_firefox" = "Firefox";
-"constants_browser_opera" = "Opera";
 
 // MARK: - Store
 
@@ -311,9 +303,6 @@
 "access_screen_access_denied_checkbox_title" = "ולבחור את תיבת הסימון שליד MeetingBar.";
 "general_five_minute_before" = "5 דקות לפני";
 "constants_meeting_service_phone" = "מספר טלפון";
-"constants_meeting_service_skype4biz" = "Skype לעסקים";
-"constants_browser_vivaldi" = "Vivaldi";
-"constants_browser_safari" = "Safari";
 "store_patronage_purchase_cloud_service_permission_denied_message" = "הגישה לפרטי שירות הענן אסורה";
 "store_patronage_purchase_cloud_service_revoked_message" = "המשתמש דחה את ההרשאה להשתמש בשירות הענן הזה";
 

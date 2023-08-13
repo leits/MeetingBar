@@ -47,7 +47,6 @@
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "Uključi/isključi prikaz naslova u traci stanja:";
 "preferences_general_meeting_bar_description" = "MeetingBar je program otvorenog koda\na autor programa je Andrii Leitsius 🇺🇦\nZa jednostavnije održavanje sastanaka online";
 "preferences_general_external_patronage" = "Pokroviteljstvo";
-"preferences_general_external_gitHub" = "GitHub";
 "preferences_general_external_contact" = "Kontakt";
 "preferences_general_patron_title" = "Postani pokrovitelj";
 "preferences_general_patron_three_months" = "3 mjeseca – 2,99 USD";
@@ -58,8 +57,6 @@
 "preferences_general_patron_restore_purchases" = "Obnovi kupnje";
 "preferences_general_feedback_title" = "Kanali za slanje pitanja i\npovratnih informacija:";
 "preferences_general_feedback_email" = "E-pošta";
-"preferences_general_feedback_twitter" = "Twitter";
-"preferences_general_feedback_telegram" = "Telegram";
 
 // MARK: - Preferences Appearance
 
@@ -285,18 +282,8 @@
 "constants_create_meeting_service_url" = "Prilagođeni URL";
 "constants_meeting_service_phone" = "Broj telefona";
 "constants_meeting_service_zoom_native" = "Zoom native";
-"constants_meeting_service_skype4biz" = "Skype For Business";
-"constants_meeting_service_skype4biz_selfhosted" = "Skype For Business (SH)";
 "constants_meeting_service_other" = "Druge";
 "constants_meeting_service_url" = "URL";
-"constants_browser_brave" = "Brave";
-"constants_browser_chrome" = "Google Chrome";
-"constants_browser_chromium" = "Chromium";
-"constants_browser_edge" = "Microsoft Edge";
-"constants_browser_firefox" = "Firefox";
-"constants_browser_opera" = "Opera";
-"constants_browser_vivaldi" = "Vivaldi";
-"constants_browser_safari" = "Safari";
 "constants_browser_defaultBrowser" = "Standardni web-preglednik";
 
 // MARK: - Store

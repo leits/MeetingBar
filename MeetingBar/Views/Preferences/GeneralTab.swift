@@ -150,7 +150,7 @@ struct PatronageAppSection: View {
                         }
                         Spacer()
                         Button(action: { Links.github.openInDefaultBrowser() }) {
-                            Text("preferences_general_external_gitHub".loco())
+                            Text("GitHub")
                         }
                         Spacer()
                         Button(action: { self.showingContactModal.toggle() }) {
@@ -180,10 +180,10 @@ struct ContactModal: View {
                 Text("preferences_general_feedback_email".loco()).frame(width: 80)
             }
             Button(action: { Links.twitter.openInDefaultBrowser() }) {
-                Text("preferences_general_feedback_twitter".loco()).frame(width: 80)
+                Text("Twitter").frame(width: 80)
             }
             Button(action: { Links.telegram.openInDefaultBrowser() }) {
-                Text("preferences_general_feedback_telegram".loco()).frame(width: 80)
+                Text("Telegram").frame(width: 80)
             }
             Spacer()
             Divider()

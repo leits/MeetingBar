@@ -11,7 +11,6 @@
 "status_bar_submenu_status_title" = "Durum: %@";
 "status_bar_submenu_status_accepted" = " 👍 Kabul edildi";
 "status_bar_submenu_notes_title" = "Notlar:";
-"constants_browser_chrome" = "Google Chrome";
 
 // MARK: - Access screen
 
@@ -50,14 +49,11 @@
 "preferences_general_shortcut_join_from_clipboard" = "Kopyalanmış toplantı bağlantısına katıl:";
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "Durum çubuğunda başlık görünürlüğünü aç/kapat:";
 "preferences_general_external_patronage" = "Destek";
-"preferences_general_external_gitHub" = "GitHub";
 "preferences_general_external_contact" = "İletişim";
 "preferences_general_patron_description" = "Bunlar tek seferlik satın almalardır ve otomatik olarak yenilenmez.";
 "preferences_general_patron_thank_for_purchase" = "Teşekkürler! Bizi %d ay desteklemek için ödeme yaptınız. 🎉";
 "preferences_general_patron_restore_purchases" = "Satın alımları geri yükle";
 "preferences_general_feedback_email" = "E-posta";
-"preferences_general_feedback_twitter" = "Twitter";
-"preferences_general_feedback_telegram" = "Telegram";
 "preferences_appearance_events_show_events_for_today_value" = "bugün";
 "preferences_appearance_events_show_events_for_today_tomorrow_value" = "bugün ve yarın";
 "preferences_appearance_events_non_all_day_title" = "Diğer etkinlikler:";
@@ -199,15 +195,8 @@
 // MARK: - Constants
 "constants_create_meeting_service_url" = "Özel bağlantı";
 "constants_meeting_service_zoom_native" = "Zoom";
-"constants_meeting_service_skype4biz" = "Skype For Business";
 "constants_meeting_service_other" = "Diğer";
 "constants_meeting_service_url" = "URL";
-"constants_browser_chromium" = "Chromium";
-"constants_browser_edge" = "Microsoft Edge";
-"constants_browser_firefox" = "Firefox";
-"constants_browser_opera" = "Opera";
-"constants_browser_vivaldi" = "Vivaldi";
-"constants_browser_safari" = "Safari";
 "constants_browser_defaultBrowser" = "Varsayılan tarayıcı";
 
 // MARK: - Store
@@ -312,10 +301,8 @@
 "general_five_minute_before" = "5 dakika önce";
 "shared_send_notification_disabled_tip" = "⚠️ macOS bildirim ayarlarınız MeetingBar için kapalı durumda. Toplantıları takip etmek için macOS sistem tercihlerinden bildirimleri açın.";
 "constants_meeting_service_phone" = "Telefon numarası";
-"constants_browser_brave" = "Brave";
 "store_patronage_purchase_unknown_message" = "Bilinmeyen hata. Lütfen desteğe başvurun.";
 "store_patronage_purchase_cloud_service_revoked_message" = "Kullanıcı bu bulut hizmetini kullanma iznini iptal etti";
-"constants_meeting_service_skype4biz_selfhosted" = "Skype For Business (SH)";
 "store_patronage_purchase_cloud_service_permission_denied_message" = "Bulut servis bilgilerine erişim izni verilmedi";
 "notifications_event_start_three_minutes_body" = "Toplantı üç dakika içinde başlıyor";
 "shared_automatic_event_join_toggle" = "Bir sonraki etkinlik toplantısına otomatik olarak katıl";

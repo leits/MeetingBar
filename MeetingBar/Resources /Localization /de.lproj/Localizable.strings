@@ -24,7 +24,6 @@
 "store_patronage_restore_success_message" = "Wiederhergestellt";
 "constants_meeting_service_url" = "URL";
 "constants_meeting_service_other" = "Andere";
-"constants_browser_brave" = "Brave";
 "preferences_configure_browsers_choose_broser_panel_message" = "Festlegen von wo der Webbrowser starten soll.";
 "preferences_configure_browsers_choose_broser_panel_prompt" = "Webbrowser auswählen";
 "preferences_configure_browsers_choose_broser_panel_title" = "Webbrowser-App auswählen";
@@ -88,8 +87,6 @@
 // MARK: - Preferences Appearance
 
 "preferences_appearance_events_title" = "Ereignisse";
-"preferences_general_feedback_telegram" = "Telegram";
-"preferences_general_feedback_twitter" = "Twitter";
 "preferences_general_feedback_title" = "Bei Fragen oder Feedback\nkannst Du mich gerne kontaktieren:";
 "preferences_general_patron_restore_purchases" = "Käufe wiederherstellen";
 "preferences_general_patron_thank_for_purchase" = "Danke! Du hast eine Unterstützung von MeetingBar für %d Monate bezahlt. 🎉";
@@ -100,7 +97,6 @@
 "preferences_general_patron_six_months" = "6 Monate – 5,99 USD";
 "preferences_general_patron_three_months" = "3 Monate – 2,99 USD";
 "preferences_general_external_contact" = "Kontakt";
-"preferences_general_external_gitHub" = "GitHub";
 "preferences_general_shortcut_create_meeting" = "Meeting erstellen:";
 "preferences_general_shortcut_open_menu" = "Menü öffnen:";
 "preferences_general_all_shortcut" = "Alle Tastaturkürzel";
@@ -254,15 +250,6 @@
 // MARK: - Store
 
 "store_patronage_title" = "MeetingBar Schirmherrschaft";
-"constants_browser_safari" = "Safari";
-"constants_browser_vivaldi" = "Vivaldi";
-"constants_browser_opera" = "Opera";
-"constants_browser_firefox" = "Firefox";
-"constants_browser_edge" = "Microsoft Edge";
-"constants_browser_chromium" = "Chromium";
-"constants_browser_chrome" = "Google Chrome";
-"constants_meeting_service_skype4biz_selfhosted" = "Skype For Business (SH)";
-"constants_meeting_service_skype4biz" = "Skype For Business";
 "constants_meeting_service_phone" = "Telefonnummer";
 "constants_create_meeting_service_url" = "Benutzerdefinierte URL";
 

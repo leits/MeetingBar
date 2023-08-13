@@ -50,7 +50,6 @@
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "ステータスバーのタイトル表示をトグルする:";
 "preferences_general_meeting_bar_description" = "MeetingBar は Andrii Leitsius 🇺🇦 によって開発されたオープンソースアプリケーションです。\nオンラインミーティングをスムーズで簡単にします。";
 "preferences_general_external_patronage" = "パトロンになる";
-"preferences_general_external_gitHub" = "GitHub";
 "preferences_general_external_contact" = "お問い合わせ";
 "preferences_general_patron_title" = "パトロンになる";
 "preferences_general_patron_three_months" = "3ヶ月 - 2.99 USD";
@@ -61,8 +60,6 @@
 "preferences_general_patron_restore_purchases" = "購入の復元";
 "preferences_general_feedback_title" = "質問やフィードバックがあれば、\nお気軽にお問い合わせください:";
 "preferences_general_feedback_email" = "メール";
-"preferences_general_feedback_twitter" = "Twitter";
-"preferences_general_feedback_telegram" = "Telegram";
 
 // MARK: - Preferences Appearance
 
@@ -300,18 +297,8 @@
 "constants_create_meeting_service_url" = "カスタム URL";
 "constants_meeting_service_phone" = "電話番号";
 "constants_meeting_service_zoom_native" = "Zoomネイティブ";
-"constants_meeting_service_skype4biz" = "Skype For Business";
-"constants_meeting_service_skype4biz_selfhosted" = "Skype For Business (SH)";
 "constants_meeting_service_other" = "その他";
 "constants_meeting_service_url" = "URL";
-"constants_browser_brave" = "Brave";
-"constants_browser_chrome" = "Google Chrome";
-"constants_browser_chromium" = "Chromium";
-"constants_browser_edge" = "Microsoft Edge";
-"constants_browser_firefox" = "Firefox";
-"constants_browser_opera" = "Opera";
-"constants_browser_vivaldi" = "Vivaldi";
-"constants_browser_safari" = "Safari";
 "constants_browser_defaultBrowser" = "標準のウェブブラウザー";
 
 // MARK: - Store
