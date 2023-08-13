@@ -79,6 +79,7 @@
 "preferences_appearance_events_past_title" = "過去のイベント:";
 "preferences_appearance_events_pending_title" = "保留中のイベント";
 "preferences_appearance_events_declined_title" = "不参加にしたイベント:";
+"preferences_appearance_events_tentative_title" = "Tentative events:";
 "preferences_appearance_events_value_show" = "表示";
 "preferences_appearance_events_value_hide" = "非表示";
 "preferences_appearance_events_value_as_inactive" = "非アクティブとして表示";

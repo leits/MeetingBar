@@ -71,6 +71,7 @@
 "preferences_appearance_events_value_as_underlined" = "unterstrichen anzeigen";
 "preferences_appearance_events_value_as_inactive" = "abdunkeln";
 "preferences_appearance_events_value_hide" = "ausblenden";
+"preferences_appearance_events_tentative_title" = "Tentative events:";
 "preferences_appearance_events_value_show" = "anzeigen";
 "preferences_appearance_events_declined_title" = "Abgelehnte Ereignisse:";
 "preferences_appearance_events_pending_title" = "Anstehende Ereignisse";

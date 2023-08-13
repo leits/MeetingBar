@@ -75,6 +75,7 @@
 "preferences_appearance_events_past_title" = "Prošli događaji:";
 "preferences_appearance_events_pending_title" = "Nezavršeni događaji";
 "preferences_appearance_events_declined_title" = "Odbačeni događaji:";
+"preferences_appearance_events_tentative_title" = "Tentative events:";
 "preferences_appearance_events_value_show" = "prikaži";
 "preferences_appearance_events_value_hide" = "sakrij";
 "preferences_appearance_events_value_as_inactive" = "prikaži kao neaktivne";

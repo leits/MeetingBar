@@ -67,6 +67,7 @@
 "preferences_appearance_events_past_title" = "Önceki etkinlikler:";
 "preferences_appearance_events_pending_title" = "Bekleyen etkinlikler";
 "preferences_appearance_events_declined_title" = "Reddedilen etkinlikler:";
+"preferences_appearance_events_tentative_title" = "Tentative events:";
 "preferences_appearance_events_value_show" = "göster";
 "preferences_appearance_events_value_hide" = "gizle";
 "preferences_appearance_events_value_as_underlined" = "altı çizgili göster";

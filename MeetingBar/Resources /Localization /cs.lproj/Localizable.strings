@@ -261,6 +261,7 @@
 "preferences_appearance_events_value_as_underlined" = "zobrazit jako podtržené";
 "preferences_appearance_events_value_as_inactive" = "zobrazit jako neaktivní";
 "preferences_appearance_events_value_hide" = "skrýt";
+"preferences_appearance_events_tentative_title" = "Tentative events:";
 "preferences_appearance_events_value_show" = "zobrazit";
 "preferences_appearance_events_without_guest_title" = "Události bez hostů:";
 "preferences_appearance_events_all_day_title" = "Celodenní události:";

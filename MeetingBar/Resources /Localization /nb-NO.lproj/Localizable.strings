@@ -270,6 +270,7 @@
 "preferences_appearance_events_value_as_underlined" = "vis som understreket";
 "preferences_appearance_events_value_as_inactive" = "vis som inaktiv";
 "preferences_appearance_events_value_hide" = "skjul";
+"preferences_appearance_events_tentative_title" = "Tentative events:";
 "preferences_appearance_events_value_show" = "vis";
 "preferences_appearance_events_declined_title" = "Avslåtte begivenheter:";
 "preferences_appearance_events_past_title" = "Tidligere begivenheter:";

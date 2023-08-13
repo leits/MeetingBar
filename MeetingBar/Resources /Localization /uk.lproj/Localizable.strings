@@ -75,6 +75,7 @@
 "preferences_appearance_events_past_title" = "Минулі події:";
 "preferences_appearance_events_pending_title" = "Події без відповіді";
 "preferences_appearance_events_declined_title" = "Відхилені події:";
+"preferences_appearance_events_tentative_title" = "Tentative events:";
 "preferences_appearance_events_value_show" = "показати";
 "preferences_appearance_events_value_hide" = "приховати";
 "preferences_appearance_events_value_as_inactive" = "показати як неактивні";
