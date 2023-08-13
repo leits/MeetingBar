@@ -221,8 +221,8 @@
 "status_bar_submenu_attendees_status_tentative" = " [мабуть]";
 "status_bar_submenu_attendees_status_unknown" = " [?]";
 "status_bar_submenu_copy_meeting_link" = "Скопіювати посилання на зустріч";
-"status_bar_submenu_dismiss_meeting" = "Закрити зустріч";
-"status_bar_submenu_undismiss_meeting" = "Скасувати закриття";
+"status_bar_submenu_dismiss_meeting" = "Пропустити зустріч";
+"status_bar_submenu_undismiss_meeting" = "Повернути зустріч";
 "status_bar_submenu_email_attendees" = "Надіслати учасникам емейл";
 "status_bar_submenu_open_in_calendar" = "Відкрити у застосунку \"Календар\"";
 "status_bar_submenu_open_in_fantastical" = "Відкрити у застосунку \"Fantastical\"";
