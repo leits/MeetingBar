@@ -32,7 +32,7 @@
 "general_ok" = "אישור";
 "preferences_tab_services" = "שירותים";
 "preferences_tab_appearance" = "מראה";
-"preferences_general_patron_thank_for_purchase" = "תודה רבה! שילמת כדי לתמוך ב־MeetingBar למשך %d חודשים. 🎉";
+"preferences_general_patron_thank_for_purchase" = "תודה רבה! תמכת ב־MeetingBar למשך %d חודשים 🎉";
 "status_bar_submenu_attendees_status_unknown" = " [?]";
 "status_bar_error_apple_script_title" = "שגיאת AppleScript";
 "preferences_general_patron_restore_purchases" = "שחזור רכישות";
