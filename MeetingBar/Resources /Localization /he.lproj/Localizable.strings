@@ -206,7 +206,7 @@
 "preferences_tab_bookmarks" = "סימניות";
 "preferences_tab_calendars" = "לוחות שנה";
 "preferences_appearance_status_bar_title_dot_value" = "נקודה (•)";
-"create_meeting_error_message" = "הכתובת שבחרת „%@” חסרה או שגויה. נא להוסיף אחת בהעדפות היישום.";
+"create_meeting_error_message" = "הכתובת שבחרת „%@” חסרה או שגויה. ";
 "preferences_bookmarks_add_bookmark_button" = "הוספת סימניה";
 
 // MARK: - Link open
