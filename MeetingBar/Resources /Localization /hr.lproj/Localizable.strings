@@ -14,7 +14,7 @@
 "general_save" = "Spremi";
 "general_meeting" = "Sastanak";
 "create_meeting_error_title" = "Nije moguće stvoriti novi sastanak";
-"create_meeting_error_message" = "Prilagođeni URL „%@“ nedostaje ili ne valja. Dodaj ga u postavkama programa.";
+"create_meeting_error_message" = "Prilagođeni URL „%@“ nedostaje ili ne valja. ";
 "next_meeting_empty_title" = "Danas više nema sastanaka";
 "next_meeting_empty_message" = "Opa! Vrijeme je za cocoa";
 
@@ -53,7 +53,7 @@
 "preferences_general_patron_six_months" = "6 mjeseci – 5,99 USD";
 "preferences_general_patron_twelve_months" = "12 mjeseci – 11,99 USD";
 "preferences_general_patron_description" = "Ovo su jednokratne kupnje i neće se automatski obnavljati.";
-"preferences_general_patron_thank_for_purchase" = "Hvala! S tvojim plaćanjem podržavaš MeetingBar %d mjeseci. 🎉";
+"preferences_general_patron_thank_for_purchase" = "Hvala! Podržavaš MeetingBar %d mjeseca/i. 🎉";
 "preferences_general_patron_restore_purchases" = "Obnovi kupnje";
 "preferences_general_feedback_title" = "Kanali za slanje pitanja i\npovratnih informacija:";
 "preferences_general_feedback_email" = "E-pošta";
@@ -72,7 +72,7 @@
 "preferences_appearance_events_past_title" = "Prošli događaji:";
 "preferences_appearance_events_pending_title" = "Nezavršeni događaji";
 "preferences_appearance_events_declined_title" = "Odbačeni događaji:";
-"preferences_appearance_events_tentative_title" = "Tentative events:";
+"preferences_appearance_events_tentative_title" = "Nepotpuni događaji:";
 "preferences_appearance_events_value_show" = "prikaži";
 "preferences_appearance_events_value_hide" = "sakrij";
 "preferences_appearance_events_value_as_inactive" = "prikaži kao neaktivne";
@@ -110,7 +110,7 @@
 // MARK: - Preferences Services
 
 "preferences_services_link_meeting_title" = "Otvori sve poveznice sastanaka u";
-"preferences_services_link_service_title" = "Otvori  %@ poveznice u";
+"preferences_services_link_service_title" = "Otvori %@ poveznice u";
 "preferences_services_link_default_browser_value" = "Standardni web-preglednik";
 "preferences_services_supported_links_list" = "Podržane poveznice za usluge:\n%@";
 "preferences_services_supported_links_mailback" = "Ako usluga koju koristiš nije podržana, javi programerima putem e-maila";
@@ -230,7 +230,7 @@
 "status_bar_error_link_missed_title" = "Joj! Nije moguće pridružiti se sastanku %@";
 "status_bar_error_link_missed_message" = "Poveznica nije pronađena ili usluga za sastanke još nije podržana";
 "status_bar_error_app_link_title" = "Ups! Nije moguće otvoriti poveznicu u programu %@";
-"status_bar_error_app_link_message" = "Program %@ mora biti instaliran ili otvori takve poveznice u jednom od web-preglednika koji su određeni u postavkama.";
+"status_bar_error_app_link_message" = "Program %@ mora biti instaliran ili umjesto toga otvori poveznice u jednom od u postavkama određenom web-pregledniku.";
 // MARK: - Welcome screen
 
 "welcome_screen_greeting_main_title" = "Bok! MeetingBar je toliko jednostavan program, da je skoro sve spremno.";

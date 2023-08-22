@@ -18,7 +18,7 @@
 "general_three_minute_before" = "3 minutes before";
 "general_five_minute_before" = "5 minutes before";
 "create_meeting_error_title" = "Cannot create new meeting";
-"create_meeting_error_message" = "Custom URL \"%@\" missing or invalid. Add one in the app preferences.";
+"create_meeting_error_message" = "Custom URL \"%@\" missing or invalid. ";
 "next_meeting_empty_title" = "There are no upcoming meetings today";
 "next_meeting_empty_message" = "Woohoo! It's time to make cocoa";
 
