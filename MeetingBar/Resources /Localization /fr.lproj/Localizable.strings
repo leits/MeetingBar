@@ -261,7 +261,7 @@
 "preferences_general_feedback_email" = "Courriel";
 "preferences_general_feedback_title" = "Si vous avez des questions ou des remarques,\nn'hésitez pas à nous contacter :";
 "preferences_general_patron_restore_purchases" = "Restaurer les achats";
-"preferences_general_patron_thank_for_purchase" = "Merci ! Vous avez payé pour soutenir MeetingBar pendant %d mois. 🎉";
+"preferences_general_patron_thank_for_purchase" = "Merci ! Vous soutenez MeetingBar depuis %d mois. 🎉";
 "preferences_general_patron_description" = "Il s'agit d'achats uniques, qui ne seront pas renouvelés automatiquement.";
 "preferences_general_patron_twelve_months" = "12 mois – 11,99 USD";
 "preferences_general_patron_six_months" = "6 mois – 5,99 USD";
@@ -299,7 +299,7 @@
 "window_title_preferences" = "Préférences MeetingBar";
 "next_meeting_empty_message" = "Youhou ! C'est le moment de faire du cacao";
 "next_meeting_empty_title" = "Il n'y a pas de réunions aujourd'hui";
-"create_meeting_error_message" = "L'URL personnalisée « %@ » est manquante ou invalide. Ajoutez-en une dans les préférences de l'application.";
+"create_meeting_error_message" = "L'URL personnalisée « %@ » est manquante ou invalide. ";
 "create_meeting_error_title" = "Impossible de créer une nouvelle réunion";
 "general_meeting" = "Réunion";
 "general_save" = "Enregistrer";
