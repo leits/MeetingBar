@@ -157,6 +157,11 @@ struct ChangelogView: View {
                             Text("• Fixed a bug with autojoin when the screen is locked")
                         }
                     }
+                    if compareVersions("4.7.0", lastRevisedVersionInChangelog) {
+                        Section(header: Text("Version 4.7")) {
+                            Text("• Integrations with Pumble")
+                        }
+                    }
                 }
             }.listStyle(SidebarListStyle())
             Button("general_close".loco(), action: close)
