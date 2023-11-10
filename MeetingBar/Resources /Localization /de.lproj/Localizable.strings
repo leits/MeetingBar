@@ -89,7 +89,7 @@
 "preferences_appearance_events_title" = "Ereignisse";
 "preferences_general_feedback_title" = "Bei Fragen oder Feedback\nkannst Du mich gerne kontaktieren:";
 "preferences_general_patron_restore_purchases" = "Käufe wiederherstellen";
-"preferences_general_patron_thank_for_purchase" = "Danke! Du hast eine Unterstützung von MeetingBar für %d Monate bezahlt. 🎉";
+"preferences_general_patron_thank_for_purchase" = "Danke! Du hast MeetingBar für %d Monate unterstützt. 🎉";
 "preferences_general_patron_description" = "Es handelt sich um einmalige Käufe, die sich nicht automatisch verlängern.";
 "preferences_services_supported_links_mailback" = "Falls der benötigte Service fehlt, bitte eine E-Mail an die Entwickler senden";
 "preferences_general_feedback_email" = "E-Mail";
@@ -124,7 +124,7 @@
 "window_title_preferences" = "MeetingBar-Einstellungen";
 "next_meeting_empty_message" = "Juhu! Es ist Zeit, Kakao zu machen";
 "next_meeting_empty_title" = "Heute finden keine weiteren Meetings statt";
-"create_meeting_error_message" = "Benutzerdefinierte URL „%@“ fehlt oder ist ungültig. Bitte in den Einstellungen hinzufügen.";
+"create_meeting_error_message" = "Benutzerdefinierte URL „%@“ fehlt oder ist ungültig. ";
 "create_meeting_error_title" = "Kann kein neues Meeting erstellen";
 "general_meeting" = "Meeting";
 "general_save" = "Speichern";
@@ -142,8 +142,8 @@
 "status_bar_show_meeting_names" = "Meeting-Titel anzeigen";
 "status_bar_quick_actions" = "Schnellaktionen";
 "status_bar_submenu_copy_meeting_link" = "Meeting-Link kopieren";
-"status_bar_submenu_dismiss_meeting" = "Dismiss meeting";
-"status_bar_submenu_undismiss_meeting" = "Remove dismissal";
+"status_bar_submenu_dismiss_meeting" = "Meeting verwerfen";
+"status_bar_submenu_undismiss_meeting" = "Dismissal entfernen";
 "status_bar_submenu_email_attendees" = "E-Mail an Teilnehmer";
 "status_bar_submenu_open_in_fantastical" = "Fantastical öffnen";
 "status_bar_submenu_open_in_calendar" = "In Kalender-App öffnen";
