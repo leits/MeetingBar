@@ -605,6 +605,10 @@ func getIconForMeetingService(_ meetingService: MeetingServices?) -> NSImage {
         image = NSImage(named: "vonage_icon")!
         image.size = NSSize(width: 16, height: 16)
 
+    case .some(.gather):
+        image = NSImage(named: "gather_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
     case .some(.url):
         image = NSImage(named: NSImage.touchBarOpenInBrowserTemplateName)!
         image.size = NSSize(width: 16, height: 16)
