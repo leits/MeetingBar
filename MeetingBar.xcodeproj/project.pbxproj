@@ -47,6 +47,7 @@
 		4654E66227F24A3F001848AB /* Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4654E66127F24A3F001848AB /* Protocol.swift */; };
 		4672B58229C130160055E7D7 /* AppIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4672B58129C130160055E7D7 /* AppIntent.swift */; };
 		467351B729057BC900EE3987 /* StringExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 467351B629057BC900EE3987 /* StringExtensionsTests.swift */; };
+		46B0E9692A78340B00C936DB /* AutoJoinScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46B0E9682A78340B00C936DB /* AutoJoinScreen.swift */; };
 		46E4794C2801D53B00B48059 /* MeetingServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E4794B2801D53B00B48059 /* MeetingServices.swift */; };
 		46E4794E2802141800B48059 /* Calendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E4794D2802141800B48059 /* Calendar.swift */; };
 		46E479502802155700B48059 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E4794F2802155700B48059 /* Event.swift */; };
@@ -116,6 +117,7 @@
 		4654E66127F24A3F001848AB /* Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocol.swift; sourceTree = "<group>"; };
 		4672B58129C130160055E7D7 /* AppIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIntent.swift; sourceTree = "<group>"; };
 		467351B629057BC900EE3987 /* StringExtensionsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringExtensionsTests.swift; sourceTree = "<group>"; };
+		46B0E9682A78340B00C936DB /* AutoJoinScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoJoinScreen.swift; sourceTree = "<group>"; };
 		46E4794B2801D53B00B48059 /* MeetingServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingServices.swift; sourceTree = "<group>"; };
 		46E4794D2802141800B48059 /* Calendar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Calendar.swift; sourceTree = "<group>"; };
 		46E4794F2802155700B48059 /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
@@ -229,6 +231,7 @@
 				1452C9B225AF5C6F00C46CDF /* Preferences */,
 				1452C9B325AF5C7D00C46CDF /* Onboarding */,
 				1452C9BB25AF5D8700C46CDF /* Shared.swift */,
+				46B0E9682A78340B00C936DB /* AutoJoinScreen.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -501,6 +504,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1452C9D825AF889A00C46CDF /* WelcomeScreen.swift in Sources */,
+				46B0E9692A78340B00C936DB /* AutoJoinScreen.swift in Sources */,
 				1452C9BC25AF5D8700C46CDF /* Shared.swift in Sources */,
 				1435E44C260954D00071B188 /* Changelog.swift in Sources */,
 				1452C9D225AF86E700C46CDF /* AdvancedTab.swift in Sources */,

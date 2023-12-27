@@ -53,8 +53,7 @@ class ActionsOnEventStart: NSObject {
 
             let startEndRange = nextEvent.startDate ... nextEvent.endDate
 
-            // time until the start of the event with a delay of 10 seconds
-            let timeInterval = nextEvent.startDate.timeIntervalSince(now) + 10
+            let timeInterval = nextEvent.startDate.timeIntervalSince(now)
 
             let allDayCandidate = nextEvent.isAllDay && startEndRange.contains(now)
 
@@ -64,7 +63,7 @@ class ActionsOnEventStart: NSObject {
              * ------------------------
              */
             let actionTimeForEventAutoJoin = Double(Defaults[.automaticEventJoinTime].rawValue)
-            let nonAlldayCandidateForAutoJoin = (timeInterval > 0 && timeInterval < actionTimeForEventAutoJoin)
+            let nonAlldayCandidateForAutoJoin = (timeInterval > -15 && timeInterval < actionTimeForEventAutoJoin)
 
             if autoJoinActionActive && (nonAlldayCandidateForAutoJoin || allDayCandidate) {
                 var events = Defaults[.processedEventsForAutoJoin]
@@ -76,7 +75,8 @@ class ActionsOnEventStart: NSObject {
                 // this is an edge case when the event was already notified for, but scheduled for a later time.
                 if matchedEvent == nil || matchedEvent?.lastModifiedDate != nextEvent.lastModifiedDate {
                     if nextEvent.meetingLink != nil {
-                        nextEvent.openMeeting()
+//                        nextEvent.openMeeting()
+                        app.openAutJoinWindow(event: nextEvent)
                     }
 
                     // update the executed events
