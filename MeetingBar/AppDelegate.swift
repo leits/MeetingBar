@@ -110,6 +110,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             .shortenEventTitle, .menuEventTitleLength,
             .showEventEndTime, .showMeetingServiceIcon,
             .timeFormat, .bookmarks, .eventTitleFormat,
+            .personalEventsAppereance, .pastEventsAppereance,
+            .declinedEventsAppereance,
             options: []
         ) {
             self.statusBarItem.updateTitle()
@@ -129,11 +131,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             }
         }
         eventFiltersObserver = Defaults.observe(
-            keys: .showEventsForPeriod, .personalEventsAppereance,
-            .pastEventsAppereance,
+            keys: .showEventsForPeriod, .customRegexes,
             .declinedEventsAppereance, .showPendingEvents,
             .showTentativeEvents,
-            .allDayEvents, .nonAllDayEvents, .customRegexes,
+            .allDayEvents, .nonAllDayEvents,
             options: []
         ) {
             self.statusBarItem.loadEvents()
