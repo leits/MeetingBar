@@ -130,7 +130,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
         eventFiltersObserver = Defaults.observe(
             keys: .showEventsForPeriod, .personalEventsAppereance,
-            .disablePastEvents, .pastEventsAppereance,
+            .pastEventsAppereance,
             .declinedEventsAppereance, .showPendingEvents,
             .showTentativeEvents,
             .allDayEvents, .nonAllDayEvents, .customRegexes,
