@@ -6,8 +6,8 @@
 //  Copyright © 2023 Andrii Leitsius. All rights reserved.
 //
 
-import SwiftUI
 import Defaults
+import SwiftUI
 
 struct AutoJoinScreen: View {
     var event: MBEvent
@@ -34,7 +34,6 @@ struct AutoJoinScreen: View {
                         self.window?.close()
                     }.background(Color.accentColor.opacity(1))
                 }
-
             }
         }
         .colorScheme(.dark)
@@ -42,26 +41,26 @@ struct AutoJoinScreen: View {
     }
 }
 
-extension View {
-    public static func semiOpaqueWindow() -> some View {
+public extension View {
+    static func semiOpaqueWindow() -> some View {
         if #available(macOS 11.0, *) {
             return VisualEffect().ignoresSafeArea()
         } else {
             return VisualEffect()
         }
     }
-
 }
 
 struct VisualEffect: NSViewRepresentable {
-    func makeNSView(context: Context) -> NSView {
+    func makeNSView(context _: Context) -> NSView {
         let view = NSVisualEffectView()
         view.material = .underWindowBackground
         view.blendingMode = .behindWindow
         view.state = .active
         return view
     }
-    func updateNSView(_ view: NSView, context: Context) { }
+
+    func updateNSView(_: NSView, context _: Context) {}
 }
 
 func getEventDateString(_ event: MBEvent) -> String {

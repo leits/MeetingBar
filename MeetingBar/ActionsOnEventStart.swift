@@ -1,5 +1,5 @@
 //
-//  AutomaticJoinEvent.swift
+//  ActionsOnEventStart.swift
 //  MeetingBar
 //
 //  Created by Jens Goldhammer  on 22.03.22.
