@@ -31,9 +31,9 @@ extension String {
     /// - Returns: The string without HTML tags.
     func htmlTagsStripped() -> String {
         if containsHTML,
-           let data = data(using: .utf16),
+           let dataUTF16 = data(using: .utf16),
            let attributedSelf = NSAttributedString(
-               html: data,
+               html: dataUTF16,
                options: [.documentType: NSAttributedString.DocumentType.html],
                documentAttributes: nil
            ) {

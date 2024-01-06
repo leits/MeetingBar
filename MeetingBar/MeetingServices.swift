@@ -1,5 +1,5 @@
 //
-//  Meeting.swift
+//  MeetingServices.swift
 //  MeetingBar
 //
 //  Created by Andrii Leitsius on 09.04.2022.
@@ -73,6 +73,7 @@ enum MeetingServices: String, Codable, CaseIterable {
     case gather = "Gather"
     case reclaim = "Reclaim.ai"
     case tuple = "Tuple"
+    case pumble = "Pumble"
     case other = "Other"
 
     var localizedValue: String {
@@ -278,7 +279,7 @@ struct LinksRegex {
     let starleaf = try! NSRegularExpression(pattern: #"https?://meet\.starleaf\.com/[^\s]*"#)
     let duo = try! NSRegularExpression(pattern: #"https?://duo\.app\.goo\.gl/[^\s]*"#)
     let voov = try! NSRegularExpression(pattern: #"https?://voovmeeting\.com/[^\s]*"#)
-    let facebook_workspace = try! NSRegularExpression(pattern: #"https?://([a-z0-9-.]+)?workplace\.com/[^\s]+"#)
+    let facebook_workspace = try! NSRegularExpression(pattern: #"https?://([a-z0-9-.]+)?workplace\.com/groupcall/[^\s]+"#)
     let skype = try! NSRegularExpression(pattern: #"https?://join\.skype\.com/[^\s]*"#)
     let lifesize = try! NSRegularExpression(pattern: #"https?://call\.lifesizecloud\.com/[^\s]*"#)
     let youtube = try! NSRegularExpression(pattern: #"https?://((www|m)\.)?(youtube\.com|youtu\.be)/[^\s]*"#)
@@ -315,6 +316,7 @@ struct LinksRegex {
     let reclaim = try! NSRegularExpression(pattern: #"https?://reclaim\.ai/z/[A-Za-z0-9./]+"#)
     let tuple = try! NSRegularExpression(pattern: #"https://tuple\.app/c/[^\s]*"#)
     let gather = try! NSRegularExpression(pattern: #"https?://app.gather.town/app/[A-Za-z0-9]+/[A-Za-z0-9_-]+\?(spawnToken|meeting)=[^\s]*"#)
+    let pumble = try! NSRegularExpression(pattern: #"https?://meet\.pumble\.com/[a-z-]+"#)
 }
 
 func getRegexForMeetingService(_ service: MeetingServices) -> NSRegularExpression? {
@@ -589,6 +591,10 @@ func getIconForMeetingService(_ meetingService: MeetingServices?) -> NSImage {
         image = NSImage(named: "tuple_icon")!
         image.size = NSSize(width: 16, height: 16)
 
+    case .some(.pumble):
+        image = NSImage(named: "pumble_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
     // tested and verified
     case .none:
         image = NSImage(named: "no_online_session")!
@@ -597,6 +603,10 @@ func getIconForMeetingService(_ meetingService: MeetingServices?) -> NSImage {
     // tested and verified
     case .some(.vonageMeetings):
         image = NSImage(named: "vonage_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    case .some(.gather):
+        image = NSImage(named: "gather_icon")!
         image.size = NSSize(width: 16, height: 16)
 
     case .some(.url):

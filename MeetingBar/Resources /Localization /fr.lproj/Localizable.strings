@@ -241,7 +241,7 @@
 "preferences_appearance_events_value_as_underlined" = "afficher souligné";
 "preferences_appearance_events_value_as_inactive" = "afficher comme inactif";
 "preferences_appearance_events_value_hide" = "masquer";
-"preferences_appearance_events_tentative_title" = "Tentative events:";
+"preferences_appearance_events_tentative_title" = "Évènements tentés :";
 "preferences_appearance_events_value_show" = "afficher";
 "preferences_appearance_events_declined_title" = "Évènements refusés :";
 "preferences_appearance_events_pending_title" = "Évènements en attente";

@@ -52,7 +52,6 @@ extension Defaults.Keys {
     static let declinedEventsAppereance = Key<DeclinedEventsAppereance>("declinedEventsAppereance", default: .strikethrough)
     static let pastEventsAppereance = Key<PastEventsAppereance>("pastEventsAppereance", default: .show_inactive)
     static let personalEventsAppereance = Key<PastEventsAppereance>("personalEventsAppereance", default: .show_active)
-    static let disablePastEvents = Key<Bool?>("disablePastEvents")
 
     static let showEventMaxTimeUntilEventThreshold = Key<Int>("showEventMaxTimeUntilEventThreshold", default: 60)
     static let showEventMaxTimeUntilEventEnabled = Key<Bool>("showEventMaxTimeUntilEventEnabled", default: false)

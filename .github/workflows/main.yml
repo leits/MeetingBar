@@ -9,12 +9,15 @@ jobs:
   Tests:
     runs-on: macOS-latest
     steps:
-      - name: "Select Xcode 13.0.0"
-        uses: devbotsxyz/xcode-select@v1
+      - uses: actions/checkout@v3
+
+      - name: Xcode Select Version
+        uses: mobiledevops/xcode-select-version-action@v1
         with:
-          version: "13"
-      - uses: actions/checkout@v1
+          xcode-select-version: 14.2
+  
       - name: Install xcbeautify
         run: brew install xcbeautify
+
       - name: Run unit tests
         run: xcodebuild -scheme MeetingBar test CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO | xcbeautify

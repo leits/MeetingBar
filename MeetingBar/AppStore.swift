@@ -1,5 +1,5 @@
 //
-//  Store.swift
+//  AppStore.swift
 //  MeetingBar
 //
 //  Created by Andrii Leitsius on 06.02.2021.
