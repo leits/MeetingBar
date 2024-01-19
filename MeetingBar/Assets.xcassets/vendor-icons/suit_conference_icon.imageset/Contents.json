@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "suit_conference_icon.png",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

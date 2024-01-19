@@ -162,6 +162,11 @@ struct ChangelogView: View {
                             Text("• Integrations with Pumble")
                         }
                     }
+                    if compareVersions("4.8.0", lastRevisedVersionInChangelog) {
+                        Section(header: Text("Version 4.7")) {
+                            Text("• Integrations with Suit Conference")
+                        }
+                    }
                 }
             }.listStyle(SidebarListStyle())
             Button("general_close".loco(), action: close)
