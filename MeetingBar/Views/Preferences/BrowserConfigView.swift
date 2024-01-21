@@ -1,5 +1,5 @@
 //
-//  BookmarksTab.swift
+//  BrowserConfigView.swift
 //  MeetingBar
 //
 //  Created by Andrii Leitsius on 13.01.2021.

@@ -14,7 +14,7 @@
 "general_save" = "Salva";
 "general_meeting" = "Riunione";
 "create_meeting_error_title" = "Impossibile creare una nuova riunione";
-"create_meeting_error_message" = "URL personalizzato \"%@\" mancante o non valido. Aggiungine uno nelle preferenze dell'app.";
+"create_meeting_error_message" = "URL personalizzato \"%@\" mancante o non valido. ";
 "next_meeting_empty_title" = "Non ci sono riunioni oggi";
 "next_meeting_empty_message" = "Woohoo! È ora di fare la cioccolata calda";
 
@@ -53,7 +53,7 @@
 "preferences_general_patron_six_months" = "6 mesi – 5.99 USD";
 "preferences_general_patron_twelve_months" = "12 mesi – 11.99 USD";
 "preferences_general_patron_description" = "Si tratta di acquisti una tantum e non si rinnoveranno automaticamente.";
-"preferences_general_patron_thank_for_purchase" = "Grazie! Hai pagato per supportare MeetingBar per %d mesi. 🎉";
+"preferences_general_patron_thank_for_purchase" = "Grazie! Hai supportato MeetingBar per %d mesi 🎉";
 "preferences_general_patron_restore_purchases" = "Ripristina gli acquisti";
 "preferences_general_feedback_title" = "Se hai domande o suggerimenti,\nnon esitare a metterti in contatto:";
 "preferences_general_feedback_email" = "E-mail";
@@ -110,7 +110,7 @@
 // MARK: - Preferences Services
 
 "preferences_services_link_meeting_title" = "Apri tutti i link delle riunioni in";
-"preferences_services_link_service_title" = "Apri i link di %@ in";
+"preferences_services_link_service_title" = "Apri i link %@ in";
 "preferences_services_link_default_browser_value" = "Browser di default";
 "preferences_services_supported_links_list" = "Link supportati per i servizi:\n%@";
 "preferences_services_supported_links_mailback" = "Se il servizio che utilizzi non è supportato, puoi inviare un'e-mail agli sviluppatori";
@@ -239,8 +239,8 @@
 "status_bar_error_apple_script_title" = "Errore di AppleScript";
 "status_bar_error_link_missed_title" = "Ouch! Non puoi entrare in %@";
 "status_bar_error_link_missed_message" = "Link non trovato, o servizio non ancora supportato";
-"status_bar_error_app_link_title" = "Oops! Impossibile aprire questo link nell'app %@";
-"status_bar_error_app_link_message" = "Assicurati di aver installato l'app %@ o apri il link in un browser dalle preferenze.";
+"status_bar_error_app_link_title" = "Ops! Impossibile aprire il link in %@";
+"status_bar_error_app_link_message" = "Assicurati di avere installato %@ oppure apri i link in un browser Web dalle preferenze.";
 
 // MARK: - Welcome screen
 

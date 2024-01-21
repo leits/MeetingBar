@@ -47,6 +47,7 @@
 		4654E66227F24A3F001848AB /* Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4654E66127F24A3F001848AB /* Protocol.swift */; };
 		4672B58229C130160055E7D7 /* AppIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4672B58129C130160055E7D7 /* AppIntent.swift */; };
 		467351B729057BC900EE3987 /* StringExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 467351B629057BC900EE3987 /* StringExtensionsTests.swift */; };
+		46B0E9692A78340B00C936DB /* AutoJoinScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46B0E9682A78340B00C936DB /* AutoJoinScreen.swift */; };
 		46E4794C2801D53B00B48059 /* MeetingServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E4794B2801D53B00B48059 /* MeetingServices.swift */; };
 		46E4794E2802141800B48059 /* Calendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E4794D2802141800B48059 /* Calendar.swift */; };
 		46E479502802155700B48059 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E4794F2802155700B48059 /* Event.swift */; };
@@ -116,6 +117,7 @@
 		4654E66127F24A3F001848AB /* Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocol.swift; sourceTree = "<group>"; };
 		4672B58129C130160055E7D7 /* AppIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIntent.swift; sourceTree = "<group>"; };
 		467351B629057BC900EE3987 /* StringExtensionsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringExtensionsTests.swift; sourceTree = "<group>"; };
+		46B0E9682A78340B00C936DB /* AutoJoinScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoJoinScreen.swift; sourceTree = "<group>"; };
 		46E4794B2801D53B00B48059 /* MeetingServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingServices.swift; sourceTree = "<group>"; };
 		46E4794D2802141800B48059 /* Calendar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Calendar.swift; sourceTree = "<group>"; };
 		46E4794F2802155700B48059 /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
@@ -190,26 +192,26 @@
 		144C017B2462D0C3000C9FFC /* MeetingBar */ = {
 			isa = PBXGroup;
 			children = (
-				E26A0BFB263449E300F117A9 /* Scripts.swift */,
-				4672B58129C130160055E7D7 /* AppIntent.swift */,
 				1BF37A902604C8050053D53C /* Resources  */,
-				144C017C2462D0C3000C9FFC /* AppDelegate.swift */,
 				1452C9AD25AF5B1000C46CDF /* Views */,
-				140D84312493A3FE0055E1CE /* StatusBarItemController.swift */,
-				140D84332493A4180055E1CE /* Constants.swift */,
-				14C59B8425CF45340019C9E4 /* AppStore.swift */,
-				140D84392493A6240055E1CE /* Helpers.swift */,
-				14879B2A24E6889C00DB0A7E /* Notifications.swift */,
-				46E4794B2801D53B00B48059 /* MeetingServices.swift */,
 				46E4794A2801D4BD00B48059 /* EventStores */,
 				149AD20F25A8967C004976F1 /* Extensions */,
+				144C017C2462D0C3000C9FFC /* AppDelegate.swift */,
+				140D84312493A3FE0055E1CE /* StatusBarItemController.swift */,
+				140D84332493A4180055E1CE /* Constants.swift */,
+				01044AE027EA695A0070512E /* ActionsOnEventStart.swift */,
+				4672B58129C130160055E7D7 /* AppIntent.swift */,
+				E26A0BFB263449E300F117A9 /* Scripts.swift */,
+				14C59B8425CF45340019C9E4 /* AppStore.swift */,
+				140D84392493A6240055E1CE /* Helpers.swift */,
+				1BF37AA42604F7E00053D53C /* I18N.swift */,
+				14879B2A24E6889C00DB0A7E /* Notifications.swift */,
+				46E4794B2801D53B00B48059 /* MeetingServices.swift */,
 				144C01822462D0C5000C9FFC /* Preview Content */,
 				144C01852462D0C5000C9FFC /* Main.storyboard */,
 				144C01882462D0C5000C9FFC /* Info.plist */,
 				144C01802462D0C5000C9FFC /* Assets.xcassets */,
 				144C01892462D0C5000C9FFC /* MeetingBar.entitlements */,
-				1BF37AA42604F7E00053D53C /* I18N.swift */,
-				01044AE027EA695A0070512E /* ActionsOnEventStart.swift */,
 			);
 			path = MeetingBar;
 			sourceTree = "<group>";
@@ -229,6 +231,7 @@
 				1452C9B225AF5C6F00C46CDF /* Preferences */,
 				1452C9B325AF5C7D00C46CDF /* Onboarding */,
 				1452C9BB25AF5D8700C46CDF /* Shared.swift */,
+				46B0E9682A78340B00C936DB /* AutoJoinScreen.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -501,6 +504,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1452C9D825AF889A00C46CDF /* WelcomeScreen.swift in Sources */,
+				46B0E9692A78340B00C936DB /* AutoJoinScreen.swift in Sources */,
 				1452C9BC25AF5D8700C46CDF /* Shared.swift in Sources */,
 				1435E44C260954D00071B188 /* Changelog.swift in Sources */,
 				1452C9D225AF86E700C46CDF /* AdvancedTab.swift in Sources */,

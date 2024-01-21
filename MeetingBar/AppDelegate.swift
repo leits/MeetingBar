@@ -110,6 +110,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             .shortenEventTitle, .menuEventTitleLength,
             .showEventEndTime, .showMeetingServiceIcon,
             .timeFormat, .bookmarks, .eventTitleFormat,
+            .personalEventsAppereance, .pastEventsAppereance,
+            .declinedEventsAppereance,
             options: []
         ) {
             self.statusBarItem.updateTitle()
@@ -129,11 +131,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             }
         }
         eventFiltersObserver = Defaults.observe(
-            keys: .showEventsForPeriod, .personalEventsAppereance,
-            .disablePastEvents, .pastEventsAppereance,
+            keys: .showEventsForPeriod, .customRegexes,
             .declinedEventsAppereance, .showPendingEvents,
             .showTentativeEvents,
-            .allDayEvents, .nonAllDayEvents, .customRegexes,
+            .allDayEvents, .nonAllDayEvents,
             options: []
         ) {
             self.statusBarItem.loadEvents()
@@ -293,6 +294,33 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
         changelogWindow.center()
         changelogWindow.orderFrontRegardless()
+    }
+
+    func openAutJoinWindow(event: MBEvent) {
+        let screenFrame = NSScreen.main?.frame ?? NSRect(x: 0, y: 0, width: 800, height: 600)
+
+        let window = NSWindow(
+            contentRect: screenFrame,
+            styleMask: [.borderless],
+            backing: .buffered,
+            defer: false
+        )
+
+        window.contentView = NSHostingView(rootView: AutoJoinScreen(event: event, window: window))
+        window.appearance = NSAppearance(named: .darkAqua)
+        window.collectionBehavior = .canJoinAllSpaces
+        window.collectionBehavior = .moveToActiveSpace
+
+        window.titlebarAppearsTransparent = true
+        window.styleMask.insert(.fullSizeContentView)
+        window.title = "Meetingbar Autojoin"
+        window.level = .screenSaver
+
+        let controller = NSWindowController(window: window)
+        controller.showWindow(self)
+
+        window.center()
+        window.orderFrontRegardless()
     }
 
     @objc
