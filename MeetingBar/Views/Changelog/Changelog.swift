@@ -164,7 +164,7 @@ struct ChangelogView: View {
                     }
                     if compareVersions("4.8.0", lastRevisedVersionInChangelog) {
                         Section(header: Text("Version 4.7")) {
-                            Text("• Integrations with Suit Conference")
+                            Text("• Integrations with Suit Conference, Doxy.me")
                         }
                     }
                 }

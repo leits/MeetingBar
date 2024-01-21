@@ -40,7 +40,8 @@ let meetings = [
     MeetingLink(service: .reclaim, url: URL(string: "https://reclaim.ai/z/T01ABCDEFGH/C02ABCDEFGH")!),
     MeetingLink(service: .tuple, url: URL(string: "https://tuple.app/c/V1StGXR8_Z5jdHi6B")!),
     MeetingLink(service: .pumble, url: URL(string: "https://meet.pumble.com/vly-hggs-xsn")!),
-    MeetingLink(service: .suitConference, url: URL(string: "https://turkcell.conference.istesuit.com/username")!)
+    MeetingLink(service: .suitConference, url: URL(string: "https://turkcell.conference.istesuit.com/username")!),
+    MeetingLink(service: .doxyMe, url: URL(string: "https://bbc.doxy.me/dr.who")!)
 ]
 
 class MeetingServicesTests: XCTestCase {

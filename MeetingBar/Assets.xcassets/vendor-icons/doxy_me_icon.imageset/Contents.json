@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "doxy_me_iconpng.png",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

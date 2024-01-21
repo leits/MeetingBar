@@ -75,6 +75,7 @@ enum MeetingServices: String, Codable, CaseIterable {
     case tuple = "Tuple"
     case pumble = "Pumble"
     case suitConference = "Suit Conference"
+    case doxyMe = "Doxy.me"
     case other = "Other"
 
     var localizedValue: String {
@@ -320,6 +321,7 @@ struct LinksRegex {
     let gather = try! NSRegularExpression(pattern: #"https?://app.gather.town/app/[A-Za-z0-9]+/[A-Za-z0-9_-]+\?(spawnToken|meeting)=[^\s]*"#)
     let pumble = try! NSRegularExpression(pattern: #"https?://meet\.pumble\.com/[a-z-]+"#)
     let suitConference = try! NSRegularExpression(pattern: #"https?://([a-z0-9.]+)?conference\.istesuit\.com/[^\s]*+"#)
+    let doxyMe = try! NSRegularExpression(pattern: #"https://([a-z0-9.]+)?doxy\.me/[^\s]*"#)
 }
 
 func getRegexForMeetingService(_ service: MeetingServices) -> NSRegularExpression? {
@@ -600,6 +602,10 @@ func getIconForMeetingService(_ meetingService: MeetingServices?) -> NSImage {
 
     case .some(.suitConference):
         image = NSImage(named: "suit_conference_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    case .some(.doxyMe):
+        image = NSImage(named: "doxy_me_icon")!
         image.size = NSSize(width: 16, height: 16)
 
     // tested and verified
