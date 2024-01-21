@@ -14,7 +14,7 @@
 "general_save" = "Зберегти";
 "general_meeting" = "Зустріч";
 "create_meeting_error_title" = "Ой леле! Не вдалось створити зустріч";
-"create_meeting_error_message" = "Власне посилання \"%@\" некоректне. Будь ласка, оновіть його у налаштуваннях.";
+"create_meeting_error_message" = "Власне посилання \"%@\" відсутнє або невірне. ";
 "next_meeting_empty_title" = "Сьогодні більше немає зустрічей";
 "next_meeting_empty_message" = "Овва! Час для какао";
 
@@ -72,7 +72,7 @@
 "preferences_appearance_events_past_title" = "Минулі події:";
 "preferences_appearance_events_pending_title" = "Події без відповіді";
 "preferences_appearance_events_declined_title" = "Відхилені події:";
-"preferences_appearance_events_tentative_title" = "Tentative events:";
+"preferences_appearance_events_tentative_title" = "Заплановані події:";
 "preferences_appearance_events_value_show" = "показати";
 "preferences_appearance_events_value_hide" = "приховати";
 "preferences_appearance_events_value_as_inactive" = "показати як неактивні";
@@ -232,7 +232,7 @@
 "status_bar_error_link_missed_title" = "Ой леле! Не вдалось долучитись до %@";
 "status_bar_error_link_missed_message" = "Посилання не знайдено, або цей сервіс для зустрічей ще не підтримується";
 "status_bar_error_app_link_title" = "Ой леле! Не вдалось відкрити посилання на зустріч у застосунку %@";
-"status_bar_error_app_link_message" = "Переконайтеся, що у вас встановлений застосунок %@, або змініть його у налаштуваннях.";
+"status_bar_error_app_link_message" = "Переконайтеся, що у вас встановлений застосунок %@, або відкривайте такі посилання у веб-браузері з налаштувань.";
 
 // MARK: - Welcome screen
 
@@ -282,7 +282,7 @@
 "shared_automatic_event_join_tip" = "Це налаштування автоматично відкриє вашу наступну зустріч у вибраному застосунку чи браузері";
 
 // MARK: - Constants
-"constants_create_meeting_service_url" = "Custom url";
+"constants_create_meeting_service_url" = "Власне посилання";
 "constants_meeting_service_phone" = "Телефон";
 "constants_meeting_service_zoom_native" = "Zoom native";
 "constants_meeting_service_other" = "інше";
