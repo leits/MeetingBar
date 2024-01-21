@@ -260,7 +260,6 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?
 
 struct LinksRegex {
     let meet = try! NSRegularExpression(pattern: #"https?://meet.google.com/(_meet/)?[a-z-]+"#)
-  https:\/\/(?:[a-zA-Z0-9-.]+)?zoom(-x)?\.(?:us|com\.cn|de)\/
     let zoom = try! NSRegularExpression(pattern: #"https:\/\/(?:[a-zA-Z0-9-.]+)?zoom(-x)?\.(?:us|com|com\.cn|de)\/(?:my|[a-z]|webinar)\/[-a-zA-Z0-9()@:%_\+.~#?&=\/]*"#)
     let zoom_native = try! NSRegularExpression(pattern: #"zoommtg://([a-z0-9-.]+)?zoom(-x)?\.(?:us|com|com\.cn|de)/join[-a-zA-Z0-9()@:%_\+.~#?&=\/]*"#)
     let teams = try! NSRegularExpression(pattern: #"https?://(gov.)?teams\.microsoft\.(com|us)/l/meetup-join/[a-zA-Z0-9_%\/=\-\+\.?]+"#)
