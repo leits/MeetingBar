@@ -159,12 +159,10 @@ struct ChangelogView: View {
                     }
                     if compareVersions("4.7.0", lastRevisedVersionInChangelog) {
                         Section(header: Text("Version 4.7")) {
-                            Text("• Integrations with Pumble")
-                        }
-                    }
-                    if compareVersions("4.8.0", lastRevisedVersionInChangelog) {
-                        Section(header: Text("Version 4.7")) {
-                            Text("• Integrations with Suit Conference, Doxy.me")
+                            Text("• Autojoin is now semi-automatic with a full-screen notification")
+                            Text("• Integrations with Pumble, Suit Conference, Doxy.me")
+                            Text("• Improved Zoom link recognition")
+                            Text("• Fixed high CPU usage when meeting details are displayed in the submenu")
                         }
                     }
                 }
