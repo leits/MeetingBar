@@ -137,7 +137,7 @@ struct CalendarRow: View {
         .onAppear {
             isSelected = Defaults[.selectedCalendarIDs].contains(calendar.ID)
         }
-        .onReceive([self.isSelected].publisher.first()) { newValue in
+        .onReceive([isSelected].publisher.first()) { newValue in
             if newValue {
                 Defaults[.selectedCalendarIDs].append(calendar.ID)
             } else {

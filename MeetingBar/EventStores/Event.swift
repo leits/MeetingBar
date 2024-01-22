@@ -311,3 +311,20 @@ func getNextEvent(events: [MBEvent], linkRequired: Bool = false) -> MBEvent? {
     }
     return nextEvent
 }
+
+func getEventDateString(_ event: MBEvent) -> String {
+    let eventTimeFormatter = DateFormatter()
+    eventTimeFormatter.locale = I18N.instance.locale
+
+    switch Defaults[.timeFormat] {
+    case .am_pm:
+        eventTimeFormatter.dateFormat = "h:mm a  "
+    case .military:
+        eventTimeFormatter.dateFormat = "HH:mm"
+    }
+    let eventStartTime = eventTimeFormatter.string(from: event.startDate)
+    let eventEndTime = eventTimeFormatter.string(from: event.endDate)
+    let eventDurationMinutes = String(Int(event.endDate.timeIntervalSince(event.startDate) / 60))
+    let durationTitle = "status_bar_submenu_duration_all_day".loco(eventStartTime, eventEndTime, eventDurationMinutes)
+    return durationTitle
+}

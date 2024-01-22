@@ -17,27 +17,35 @@ struct AutoJoinScreen: View {
         ZStack {
             Rectangle.semiOpaqueWindow()
             VStack {
-                Text(event.title).font(.system(size: 40)).padding(.bottom, 2)
-                Text(event.meetingLink?.service?.rawValue ?? "").font(.system(size: 16))
-                VStack {
-                    Text(getEventDateString(event)).padding(.bottom, 2)
-                    if #available(macOS 11.0, *) {
-                        Text(event.startDate, style: .relative).font(.system(size: 16))
-                    }
+                HStack {
+                    Image(nsImage: getIconForMeetingService(event.meetingLink?.service))
+                        .resizable().frame(width: 25, height: 25)
+                    Text(event.title).font(.title)
+                }
+                VStack(spacing: 10) {
+                    Text(getEventDateString(event))
                 }.padding(15)
-                HStack(spacing: 40) {
-                    Button("Dismiss") {
-                        self.window?.close()
+                HStack(spacing: 30) {
+                    Button(action: dismiss) {
+                        Text("general_close".loco()).padding(.vertical, 5).padding(.horizontal, 20)
                     }
-                    Button("Join event") {
-                        self.event.openMeeting()
-                        self.window?.close()
-                    }.background(Color.accentColor.opacity(1))
+                    Button(action: joinEvent) {
+                        Text("notifications_meetingbar_join_event_action".loco()).padding(.vertical, 5).padding(.horizontal, 25)
+                    }.background(Color.accentColor).cornerRadius(5)
                 }
             }
         }
         .colorScheme(.dark)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    func dismiss() {
+        window?.close()
+    }
+
+    func joinEvent() {
+        event.openMeeting()
+        window?.close()
     }
 }
 
@@ -63,34 +71,6 @@ struct VisualEffect: NSViewRepresentable {
     func updateNSView(_: NSView, context _: Context) {}
 }
 
-func getEventDateString(_ event: MBEvent) -> String {
-    let formatter = DateIntervalFormatter()
-    formatter.dateStyle = .none
-    formatter.timeStyle = .short
-    return formatter.string(from: event.startDate, to: event.endDate)
-}
-
-func generateEvent() -> MBEvent {
-    let calendar = MBCalendar(title: "Fake calendar", ID: "fake_cal", source: nil, email: nil, color: .black)
-
-    let event = MBEvent(
-        ID: "test_event",
-        lastModifiedDate: nil,
-        title: "Test event",
-        status: .confirmed,
-        notes: nil,
-        location: nil,
-        url: URL(string: "https://zoom.us/j/5551112222")!,
-        organizer: nil,
-        startDate: Calendar.current.date(byAdding: .minute, value: 3, to: Date())!,
-        endDate: Calendar.current.date(byAdding: .minute, value: 33, to: Date())!,
-        isAllDay: false,
-        recurrent: false,
-        calendar: calendar
-    )
-    return event
-}
-
 #Preview {
-    AutoJoinScreen(event: generateEvent(), window: nil)
+    AutoJoinScreen(event: generateFakeEvent(), window: nil)
 }

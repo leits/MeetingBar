@@ -75,7 +75,6 @@ class ActionsOnEventStart: NSObject {
                 // this is an edge case when the event was already notified for, but scheduled for a later time.
                 if matchedEvent == nil || matchedEvent?.lastModifiedDate != nextEvent.lastModifiedDate {
                     if nextEvent.meetingLink != nil {
-//                        nextEvent.openMeeting()
                         app.openAutJoinWindow(event: nextEvent)
                     }
 
