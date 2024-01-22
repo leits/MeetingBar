@@ -238,3 +238,24 @@ func openLinkFromClipboard() {
                          "Clipboard has no content, so the meeting cannot be started...")
     }
 }
+
+func generateFakeEvent() -> MBEvent {
+    let calendar = MBCalendar(title: "Fake calendar", ID: "fake_cal", source: nil, email: nil, color: .black)
+
+    let event = MBEvent(
+        ID: "test_event",
+        lastModifiedDate: nil,
+        title: "Test event",
+        status: .confirmed,
+        notes: nil,
+        location: nil,
+        url: URL(string: "https://zoom.us/j/5551112222")!,
+        organizer: nil,
+        startDate: Calendar.current.date(byAdding: .minute, value: 3, to: Date())!,
+        endDate: Calendar.current.date(byAdding: .minute, value: 33, to: Date())!,
+        isAllDay: false,
+        recurrent: false,
+        calendar: calendar
+    )
+    return event
+}
