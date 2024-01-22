@@ -11,7 +11,7 @@ import Foundation
 import Defaults
 import SwiftyStoreKit
 
-struct PatronageProducts {
+enum PatronageProducts {
     static let threeMonth = "leits.MeetingBar.patronage.3Month"
     static let sixMonth = "leits.MeetingBar.patronage.6Month"
     static let twelveMonth = "leits.MeetingBar.patronage.12Month"
