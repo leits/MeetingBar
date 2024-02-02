@@ -14,3 +14,9 @@
 "general_meeting" = "Reunión";
 "create_meeting_error_message" = "URL personalizada \"%@\" no disponible o inválida. ";
 "next_meeting_empty_title" = "No hay más reuniones pendientes hoy";
+"next_meeting_empty_message" = "Woohoo! Hora de preparar un chocolate";
+
+// MARK: - Window titles
+
+"window_title_preferences" = "Preferencias de MeetingBar";
+"window_title_onboarding" = "Bienvenido a MeetingBar";
