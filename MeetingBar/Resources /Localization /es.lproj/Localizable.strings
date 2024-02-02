@@ -1,1 +1,16 @@
 
+
+"general_ok" = "Aceptar";
+"general_cancel" = "Cancelar";
+"general_close" = "Cerrar";
+"general_add" = "Añadir";
+"general_delete" = "Borrar";
+"general_save" = "Guardar";
+"general_when_event_starts" = "cuando empiece el evento";
+"general_three_minute_before" = "3 minutos antes";
+"general_one_minute_before" = "1 minuto antes";
+"general_five_minute_before" = "5 minutos antes";
+"create_meeting_error_title" = "No se puede crear una nueva reunión";
+"general_meeting" = "Reunión";
+"create_meeting_error_message" = "URL personalizada \"%@\" no disponible o inválida. ";
+"next_meeting_empty_title" = "No hay más reuniones pendientes hoy";
