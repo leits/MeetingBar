@@ -168,3 +168,4 @@
 "preferences_advanced_test_script_on_next_event" = "Probar en el próximo evento";
 "preferences_advanced_edit_script" = "Editar script";
 "preferences_advanced_save_script_button" = "Guardar script";
+"preferences_advanced_wrong_location_title" = "Ubicación incorrecta";
