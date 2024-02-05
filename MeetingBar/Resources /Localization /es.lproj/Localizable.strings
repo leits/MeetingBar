@@ -169,3 +169,115 @@
 "preferences_advanced_edit_script" = "Editar script";
 "preferences_advanced_save_script_button" = "Guardar script";
 "preferences_advanced_wrong_location_title" = "Ubicación incorrecta";
+
+// MARK: - Notifications
+
+"notifications_event_start_soon_body" = "El evento empieza pronto";
+"notifications_event_started_body" = "El evento ha empezado";
+"notifications_event_start_one_minute_body" = "El evento empieza en un minuto";
+"notifications_event_start_three_minutes_body" = "El evento empieza en tres minutos";
+"notifications_event_start_five_minutes_body" = "El evento empieza en cinco minutos";
+"notifications_snooze_until_start" = "Posponer hasta la hora de inicio";
+"notifications_snooze_for" = "Posponer por %@ min";
+
+
+// MARK: - Link open
+
+"link_url_cant_open_title" = "Oops! No se puede abrir el enlace en %@";
+"link_url_cant_open_message" = "Asegúrate de tener %@ instalado, o abre esos enlaces en un navegador web desde preferencias en su lugar.";
+"notifications_meetingbar_join_event_action" = "Unirse";
+"preferences_advanced_wrong_location_message" = "Por favor, selecciona la carpeta Usuario -> Library -> Application Scripts -> leits.MeetingBar";
+"preferences_advanced_wrong_location_button" = "¡Conseguido!";
+"preferences_advanced_event_regex_title" = "Expresiones regulares personalizadas para filtrar reuniones";
+"preferences_advanced_regex_title" = "Expresiones regulares personalizadas para enlaces de reunión";
+"preferences_advanced_regex_add_button" = "Añadir expresión regular";
+"preferences_advanced_regex_edit_button" = "editar";
+"preferences_advanced_regex_new_title" = "Introducir expresión regular";
+"preferences_advanced_regex_new_cant_save_title" = "No se puede guardar la expresión regular";
+
+// MARK: - Status bar
+
+"status_bar_section_today" = "Hoy";
+"status_bar_section_tomorrow" = "Mañana";
+"status_bar_empty_calendar_message" = "Selecciona los calendarios en preferencias\npara ver tus reuniones";
+"status_bar_section_join_next_meeting" = "Unirse a la siguiente reunión";
+"status_bar_section_join_current_meeting" = "Unirse a la reunión actual";
+"status_bar_section_join_from_clipboard" = "Abrir reunión desde portapapeles";
+"status_bar_section_refresh_sources" = "Actualizar fuentes";
+"status_bar_menu_dismiss_curent_meeting" = "Descartar la reunión actual";
+"status_bar_menu_dismiss_next_meeting" = "Descartar la próxima reunión";
+"status_bar_menu_remove_all_dismissals" = "Borrar todos los descartados";
+"status_bar_event_dismissed_mark" = "descartado";
+"notification_next_meeting_dismissed_title" = "%@ descartado";
+"notification_all_dismissals_removed_title" = "Eliminar todos las descartadas";
+"notification_next_meeting_dismissed_message" = "Puedes borrar reuniones descartadas desde Acciones Rápidas";
+"notification_all_dismissals_removed_message" = "Todas las reuniones descartadas vuelven a estar activas";
+"status_bar_section_join_create_meeting" = "Crear reunión";
+"status_bar_section_bookmarks_title" = "Marcadores";
+"status_bar_section_bookmarks_menu" = "Menú marcadores";
+"status_bar_section_date_nothing" = "Nada para %@";
+"status_bar_event_start_time_all_day" = "Todo el día";
+"status_bar_submenu_calendar_title" = "Calendario: %@";
+"status_bar_submenu_duration_all_day" = "%@-%@ (%@ minutos)";
+"status_bar_submenu_status_title" = "Estado: %@";
+"status_bar_submenu_status_accepted" = " 👍 Aceptado";
+"status_bar_submenu_status_declined" = " 👎 Declinado";
+"status_bar_submenu_status_tentative" = " ☝️Quizás";
+"status_bar_submenu_status_pending" = " ⏳ Pendiente";
+"status_bar_submenu_status_unknown" = " ❔ Desconocido";
+"status_bar_submenu_status_default_extended" = " ❔ (%@)";
+"status_bar_submenu_status_default_simple" = " ❔ (Desconocido)";
+"status_bar_submenu_location_title" = "Ubicación:";
+"status_bar_submenu_organizer_title" = "Organizador: %@";
+"status_bar_submenu_notes_title" = "Notas:";
+"status_bar_submenu_attendees_title" = "Asistentes (%d)";
+"status_bar_submenu_attendees_no_name" = "Asistente anónimo";
+"status_bar_submenu_attendees_you" = "%@ (tú)";
+"status_bar_submenu_attendees_status_tentative" = " [quizás]";
+"status_bar_submenu_attendees_status_unknown" = " [?]";
+"status_bar_submenu_copy_meeting_link" = "Copiar enlace de reunión";
+"status_bar_submenu_dismiss_meeting" = "Descartar reunión";
+"status_bar_submenu_undismiss_meeting" = "Eliminar descartado";
+"status_bar_submenu_email_attendees" = "Enviar correo electrónico a los asistentes";
+"status_bar_submenu_open_in_calendar" = "Abrir en aplicación Calendario";
+"status_bar_submenu_open_in_fantastical" = "Abrir en Fantastical";
+"status_bar_quick_actions" = "Acciones rápidas";
+"status_bar_show_meeting_names" = "Mostrar título de reunión";
+"status_bar_hide_meeting_names" = "Ocultar título de reunión";
+"status_bar_whats_new" = "Novedades";
+"status_bar_rate_app" = "Calificar aplicación";
+"status_bar_preferences" = "Preferencias";
+"status_bar_quit" = "Quitar MeetingBar";
+"status_bar_no_title" = "Sin título";
+"status_bar_event_status_now" = "ahora (%@ restante/s)";
+"status_bar_event_status_in" = "en %@";
+"status_bar_error_apple_script_title" = "Error AppleScript";
+"status_bar_error_link_missed_title" = "Ouch! No se puede unir a %@";
+"status_bar_error_link_missed_message" = "Enlace no encontrado, o tu servicio de reuniones no está soportado todavía";
+"status_bar_error_app_link_title" = "¡Ups! No se puede abrir el enlace en %@";
+"status_bar_error_app_link_message" = "Asegúrate de que tengas instalado %@, o abre esos enlaces en un navegador web desde preferencias en su lugar.";
+// MARK: - Welcome screen
+
+"welcome_screen_greeting_main_title" = "¡Hola! MeetingBar es una aplicación tan sencilla que casi todo está listo.";
+"welcome_screen_greeting_additional_title" = "¡Hagámosla 100% tuya!";
+"welcome_screen_login_launch_toggle_title" = "Iniciar MeetingBar al inicio de sesión";
+"welcome_screen_shortcut_next_meeting_title" = "Únete a la siguiente reunión del evento con su propio atajo:";
+"welcome_screen_ad_hoc_meeting_title" = "Crea reuniones ad hoc en ";
+"welcome_screen_shortcut_ad_hoc_meeting_title" = "con tu propio atajo:";
+"constants_meeting_service_url" = "URL";
+"constants_browser_defaultBrowser" = "Navegador web por defecto";
+
+// MARK: - Store
+
+"store_patronage_title" = "Patrocinio MeetingBar";
+"store_patronage_restore_success_message" = "Restaurado";
+"store_patronage_restore_nothing_message" = "Nada para restaurar";
+"store_patronage_purchase_success_message" = "Compra realizada. ¡Gracias por tu apoyo!";
+"store_patronage_purchase_unknown_message" = "Error desconocido. Por favor, contacta con soporte.";
+"store_patronage_purchase_client_invalid_message" = "No está permitido hacer el pago";
+"store_patronage_purchase_payment_invalid_message" = "Identificador de compra inválido";
+"store_patronage_purchase_payment_not_allowed_message" = "El dispositivo no está permitido para efectuar el pago";
+"store_patronage_purchase_store_product_not_available_message" = "El producto no está disponible en la tienda actual";
+"store_patronage_purchase_cloud_service_permission_denied_message" = "Acceso al servicio de información en la nube no permitido";
+"store_patronage_purchase_cloud_service_network_connection_failed" = "No se pudo conectar a la red";
+"store_patronage_purchase_cloud_service_revoked_message" = "El usuario ha revocado el permiso para utilizar este servicio en la nube";
