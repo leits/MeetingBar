@@ -20,3 +20,151 @@
 
 "window_title_preferences" = "Preferencias de MeetingBar";
 "window_title_onboarding" = "Bienvenido a MeetingBar";
+"preferences_services_supported_links_mailback" = "Si el servicio que utilizas no es compatible, puedes enviar un correo electrónico a los desarrolladores";
+"preferences_services_create_meeting_custom_url_value" = "URL personalizada";
+"preferences_services_create_meeting_custom_url_placeholder" = "Por favor, proporciona una URL válida (con http:// o https://)";
+"preferences_configure_browsers_delete_alert_message" = "¿Eliminar la configuración del navegador %@?";
+"preferences_configure_browsers_add_button_browser_title" = "Navegador web";
+"preferences_configure_browsers_add_button_all_system_title" = "Todos los navegadores web del sistema";
+"preferences_configure_browsers_modal_edit_browser_title" = "Editar navegador web";
+"preferences_configure_browsers_choose_broser_panel_message" = "Seleccionar desde dónde ejecutar el navegador web.";
+
+// MARK: - Preferences Bookmarks
+
+"preferences_bookmarks_no_bookmarks_placeholder" = "No hay marcadores todavía";
+"preferences_tab_services" = "Servicios";
+"preferences_general_patron_three_months" = "3 meses - 2.99 USD";
+"preferences_general_patron_description" = "Son compras únicas y no se renovarán automáticamente.";
+"preferences_appearance_events_show_events_for_today_tomorrow_value" = "hoy y mañana";
+"preferences_appearance_events_non_all_day_title" = "Otros eventos:";
+"preferences_appearance_events_past_title" = "Eventos pasados:";
+"preferences_appearance_events_value_show" = "mostrar";
+"preferences_appearance_status_bar_title_title" = "Título";
+"preferences_appearance_status_bar_title_event_title_value" = "título del evento";
+"preferences_appearance_status_bar_title_shorten_stepper" = "acortar a %d caracteres";
+"preferences_appearance_menu_shorten_event_title_stepper" = "%d caracteres";
+"preferences_appearance_menu_time_format_12_hour_value" = "12-horas (AM/PM)";
+"preferences_appearance_menu_show_event_title" = "Mostrar evento:";
+"windows_title_changelog" = "MeetingBar - Novedades";
+
+// MARK: - Preferences tabs
+
+"preferences_tab_general" = "General";
+"preferences_tab_appearance" = "Apariencia";
+"preferences_tab_bookmarks" = "Marcadores";
+"preferences_tab_calendars" = "Calendarios";
+"preferences_tab_advanced" = "Avanzado";
+
+// MARK: - Preferences General
+
+"preferences_general_option_login_launch" = "Abrir al iniciar sesión";
+"preferences_general_option_preferred_language_title" = "Idioma:";
+"preferences_general_option_preferred_language_system_value" = "Sistema";
+"preferences_general_option_shortcuts" = "Atajos";
+"preferences_general_all_shortcut" = "Todos los atajos";
+"preferences_general_shortcut_open_menu" = "Abrir menú:";
+"preferences_general_shortcut_create_meeting" = "Nueva reunión:";
+"preferences_general_shortcut_join_next" = "Unirse a la próxima reunión:";
+"preferences_general_shortcut_join_from_clipboard" = "Unirse a la reunión desde el portapapeles:";
+"preferences_general_shortcut_toggle_meeting_name_visibility" = "Alternar la visibilidad del título en la barra de estado:";
+"preferences_general_meeting_bar_description" = "Meeting Bar es una app de código abierto\ncreada por Andrii Leitsius 🇺🇦\nPara reuniones en línea fluidas y sencillas";
+"preferences_general_external_patronage" = "Patrocinio";
+"preferences_general_external_contact" = "Contacto";
+"preferences_general_patron_title" = "Conviértete en Patron";
+"preferences_general_patron_six_months" = "6 meses - 5.99 USD";
+"preferences_general_patron_twelve_months" = "12 meses - 11.99 USD";
+"preferences_general_patron_thank_for_purchase" = "¡Gracias! Has dado soporte a MeetingBar para %d meses 🎉";
+"preferences_general_patron_restore_purchases" = "Restaurar compras";
+"preferences_general_feedback_title" = "Si tienes alguna pregunta o comentario,\nno dudes en ponerte en contacto:";
+"preferences_general_feedback_email" = "Correo electrónico";
+
+// MARK: - Preferences Appearance
+
+"preferences_appearance_events_title" = "Eventos";
+"preferences_appearance_events_show_events_for_title" = "Mostrar eventos de";
+"preferences_appearance_events_show_events_for_today_value" = "hoy";
+"preferences_appearance_events_value_inactive_without_meeting_link" = "mostrar como inactivos si no tienen enlace de reunión";
+"preferences_appearance_events_value_hide_without_meeting_link" = "ocultar todos los que no tengan enlace de reunión";
+"preferences_appearance_events_all_day_title" = "Eventos de todo el día:";
+"preferences_appearance_events_without_guest_title" = "Eventos sin invitados:";
+"preferences_appearance_events_pending_title" = "Eventos pendientes";
+"preferences_appearance_events_declined_title" = "Eventos rechazados:";
+"preferences_appearance_events_tentative_title" = "Eventos sin confirmar:";
+"preferences_appearance_events_value_hide" = "ocultar";
+"preferences_appearance_events_value_as_inactive" = "mostrar como inactivo";
+"preferences_appearance_events_value_as_underlined" = "mostrar como subrayado";
+"preferences_appearance_events_value_with_strikethrough" = "mostrar como tachado";
+"preferences_appearance_events_value_only_with_link" = "mostrar solo con enlaces de reunión";
+"preferences_appearance_status_bar_title" = "Barra de estado";
+"preferences_appearance_status_bar_icon_title" = "Icono";
+"preferences_appearance_status_bar_icon_app_icon_value" = " MeetingBar";
+"preferences_appearance_status_bar_icon_calendar_icon_value" = " Calendario";
+"preferences_appearance_status_bar_icon_specific_icon_value" = " Icono específico de evento (p. ej. MS Teams)";
+"preferences_appearance_status_bar_icon_no_icon_value" = " Sin icono";
+"preferences_appearance_status_bar_title_dot_value" = "punto (•)";
+"preferences_appearance_status_bar_title_hide_value" = "ocultar";
+"preferences_appearance_status_bar_time_title" = "Hora";
+"preferences_appearance_status_bar_time_show_value" = "mostrar";
+"preferences_appearance_status_bar_time_show_under_title_value" = "mostrar bajo título";
+"preferences_appearance_status_bar_time_hide_value" = "ocultar";
+"preferences_appearance_status_bar_next_event_toggle" = "Mostrar solo eventos que comiencen dentro de";
+"preferences_appearance_status_bar_next_event_stepper" = "%d minutos";
+"preferences_appearance_menu_title" = "Menú";
+"preferences_appearance_menu_shorten_event_title_toggle" = "Acortar título de evento a";
+"preferences_appearance_menu_time_format_title" = "Formato de hora:";
+"preferences_appearance_menu_time_format_24_hour_value" = "24-horas";
+"preferences_appearance_menu_show_event_end_time_value" = "hora finalización";
+"preferences_appearance_menu_show_event_icon_value" = "icono";
+"preferences_appearance_menu_show_event_details_value" = "detalles como submenú";
+
+// MARK: - Preferences Services
+
+"preferences_services_link_meeting_title" = "Abrir todos los enlaces de reunión en";
+"preferences_services_link_service_title" = "Abrir enlaces %@ en";
+"preferences_services_link_default_browser_value" = "Navegador web por defecto";
+"preferences_services_supported_links_list" = "Enlaces admitidos para servicios:\n%@";
+"preferences_services_create_meeting_title" = "Crear reuniones vía";
+"preferences_services_google_meet_tip" = "Consejo: Google Meet admite seleccionar cuenta en la URL, p. ej. https://meet.google.com/new?authuser=1";
+"preferences_services_create_meeting_browser_title" = "Usar navegador web";
+
+// MARK: - Preferences Services Browsers Configuration
+
+"preferences_configure_browsers_button" = "Configurar navegadores web";
+"preferences_configure_browsers_delete_alert_title" = "¿Eliminar la configuración del navegador web?";
+"preferences_configure_browsers_modal_add_browser_title" = "Añadir navegador web";
+"preferences_configure_browsers_modal_add_browser_name" = "Nombre";
+"preferences_configure_browsers_modal_add_browser_path" = "Ruta";
+"preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "Seleccionar navegador web";
+"preferences_configure_browsers_modal_alert_title" = "No se puede añadir la configuración del navegador";
+"preferences_configure_browsers_choose_broser_panel_title" = "Seleccionar aplicación de navegador web";
+"preferences_configure_browsers_choose_broser_panel_prompt" = "Seleccionar navegador web";
+"preferences_bookmarks_delete_bookmark_title" = "¿Borrar marcador?";
+"preferences_bookmarks_delete_bookmark_message" = "¿Borrar marcador %@?";
+"preferences_bookmarks_add_bookmark_button" = "Añadir marcador";
+"preferences_bookmarks_new_bookmark_title" = "Nuevo marcador";
+"preferences_bookmarks_new_bookmark_name" = "Nombre";
+"preferences_bookmarks_new_bookmark_link_phone" = "Enlace/número de teléfono";
+"preferences_bookmarks_new_bookmark_service" = "Servicio";
+"preferences_bookmarks_new_bookmark_already_exist" = "%@ ya tiene este enlace/número de teléfono:\n%@";
+"preferences_bookmarks_new_bookmark_error_title" = "No se puede añadir el marcador";
+
+// MARK: - Preferences Calendars
+
+"preferences_calendars_select_calendars_title" = "Seleccionar calendarios para mostrar los eventos en la barra de estado";
+"preferences_calendars_add_account_description" = "¿No encuentras el calendario que necesitas?";
+"preferences_calendars_add_account_button" = "Añadir cuenta de calendario";
+"preferences_calendars_add_account_modal" = "Para añadir calendarios externos:\n1. Abre la aplicación de calendario por defecto\n2. Haz click en \"Añadir cuenta\" en el menú\n3. Escoge y conecta tu cuenta";
+"preferences_calendars_provider_section_title" = "Proveedor de calendarios";
+"preferences_calendars_provider_macos_switch" = "Cambiar a Calendario de MacOS";
+"preferences_calendars_provider_gcalendar_change_account" = "Cambiar cuenta de Google";
+"preferences_calendars_provider_gcalendar_switch" = "Cambiar a Google Calendar API";
+
+// MARK: - Preferences Advanced
+
+"preferences_advanced_setting_warning" = "⚠️ Solo utiliza estos ajustes si comprendes su funcionamiento";
+"preferences_advanced_apple_script_checkmark" = "Ejecutar AppleScript al iniciar una reunión";
+"preferences_advanced_apple_script_placeholder" = "# escribe tu script aquí\nindicar a la aplicación \"Música\" que se pause";
+"preferences_advanced_run_script_on_event_start" = "Ejecutar AppleScript automáticamente";
+"preferences_advanced_test_script_on_next_event" = "Probar en el próximo evento";
+"preferences_advanced_edit_script" = "Editar script";
+"preferences_advanced_save_script_button" = "Guardar script";
