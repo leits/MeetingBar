@@ -183,10 +183,10 @@
 
 // MARK: - Link open
 
-"link_url_cant_open_title" = "Oops! No se puede abrir el enlace en %@";
+"link_url_cant_open_title" = "¡Oops! No se puede abrir el enlace en %@";
 "link_url_cant_open_message" = "Asegúrate de tener %@ instalado, o abre esos enlaces en un navegador web desde preferencias en su lugar.";
 "notifications_meetingbar_join_event_action" = "Unirse";
-"preferences_advanced_wrong_location_message" = "Por favor, selecciona la carpeta Usuario -> Library -> Application Scripts -> leits.MeetingBar";
+"preferences_advanced_wrong_location_message" = "Por favor, selecciona la carpeta Usuario → Library → Application Scripts → leits.MeetingBar";
 "preferences_advanced_wrong_location_button" = "¡Conseguido!";
 "preferences_advanced_event_regex_title" = "Expresiones regulares personalizadas para filtrar reuniones";
 "preferences_advanced_regex_title" = "Expresiones regulares personalizadas para enlaces de reunión";
@@ -209,7 +209,7 @@
 "status_bar_menu_remove_all_dismissals" = "Borrar todos los descartados";
 "status_bar_event_dismissed_mark" = "descartado";
 "notification_next_meeting_dismissed_title" = "%@ descartado";
-"notification_all_dismissals_removed_title" = "Eliminar todos las descartadas";
+"notification_all_dismissals_removed_title" = "Eliminar todos los descartados";
 "notification_next_meeting_dismissed_message" = "Puedes borrar reuniones descartadas desde Acciones Rápidas";
 "notification_all_dismissals_removed_message" = "Todas las reuniones descartadas vuelven a estar activas";
 "status_bar_section_join_create_meeting" = "Crear reunión";
@@ -244,7 +244,7 @@
 "status_bar_quick_actions" = "Acciones rápidas";
 "status_bar_show_meeting_names" = "Mostrar título de reunión";
 "status_bar_hide_meeting_names" = "Ocultar título de reunión";
-"status_bar_whats_new" = "Novedades";
+"status_bar_whats_new" = "¿Qué hay nuevo?";
 "status_bar_rate_app" = "Calificar aplicación";
 "status_bar_preferences" = "Preferencias";
 "status_bar_quit" = "Quitar MeetingBar";
@@ -252,7 +252,7 @@
 "status_bar_event_status_now" = "ahora (%@ restante/s)";
 "status_bar_event_status_in" = "en %@";
 "status_bar_error_apple_script_title" = "Error AppleScript";
-"status_bar_error_link_missed_title" = "Ouch! No se puede unir a %@";
+"status_bar_error_link_missed_title" = "¡Ouch! No se puede unir a %@";
 "status_bar_error_link_missed_message" = "Enlace no encontrado, o tu servicio de reuniones no está soportado todavía";
 "status_bar_error_app_link_title" = "¡Ups! No se puede abrir el enlace en %@";
 "status_bar_error_app_link_message" = "Asegúrate de que tengas instalado %@, o abre esos enlaces en un navegador web desde preferencias en su lugar.";
@@ -281,3 +281,43 @@
 "store_patronage_purchase_cloud_service_permission_denied_message" = "Acceso al servicio de información en la nube no permitido";
 "store_patronage_purchase_cloud_service_network_connection_failed" = "No se pudo conectar a la red";
 "store_patronage_purchase_cloud_service_revoked_message" = "El usuario ha revocado el permiso para utilizar este servicio en la nube";
+"welcome_screen_setup_calendar_title" = "Configura calendarios";
+
+// MARK: - Calendars screen
+
+"calendars_screen_select_calendar_title" = "Selecciona al menos un calendario";
+"calendars_screen_start_button" = "Empieza a usar la aplicación";
+
+// MARK: - Access screen
+
+"access_screen_access_denied_title" = "¡Ups! Parece que has denegado el acceso a los calendarios.";
+"access_screen_access_screen_access_denied_go_to_title" = "Ir a";
+"access_screen_access_denied_system_preferences_button" = "Preferencias de sistema";
+"access_screen_access_denied_checkbox_title" = "y selecciona una casilla cerca de MeetingBar.";
+"access_screen_access_denied_relaunch_title" = "Entonces lanza la aplicación manualmente para continuar con la configuración.";
+"access_screen_access_granted_title" = "Solicitando acceso a los calendarios…";
+"access_screen_access_granted_click_ok_title" = "Haz clic en \"Aceptar\" en la ventana emergente de macOS.";
+"access_screen_provider_picker_label" = "Selecciona proveedor de calendarios";
+"access_screen_provider_macos_title" = "Aplicación Calendario MacOS";
+"access_screen_provider_macos_recomended" = "(recomendado)";
+"access_screen_provider_macos_data_source" = "Obtener datos desde la aplicación Calendario de MacOS";
+"access_screen_provider_macos_number_of_accounts" = "Cualquier número de cuentas conectadas";
+"access_screen_provider_gcalendar_data_source" = "Obtener datos directamente desde Google Calendar";
+"access_screen_provider_gcalendar_number_of_accounts" = "Solo una cuenta de Google";
+"access_screen_provider_gcalendar_sign_in_title" = "Google Sign In";
+"access_screen_provider_gcalendar_sign_in_description" = "Permitir a MeetingBar acceder a tu calendario en la ventana del navegador";
+"access_screen_try_again" = "Intentar de nuevo";
+
+// MARK: - Shared
+
+"shared_send_notification_toggle" = "Enviar notificación para unirte a la próxima reunión del evento";
+"shared_send_notification_no_alert_style_tip" = "⚠️ Tus configuraciones de notificación de macOS para MeetingBar no están establecidas como alertas. Cámbialo si deseas notificaciones persistentes.";
+"shared_send_notification_disabled_tip" = "⚠️ Tus configuraciones de notificación de macOS para MeetingBar están desactivadas. Activa las notificaciones en la configuración del sistema de macOS para llevar un seguimiento de las reuniones.";
+"shared_automatic_event_join_toggle" = "Auto-unirse a la próxima reunión de evento";
+"shared_automatic_event_join_tip" = "Este ajuste automáticamente abrirá tu próxima reunión en la aplicación o navegador configurado";
+
+// MARK: - Constants
+"constants_create_meeting_service_url" = "URL personalizada";
+"constants_meeting_service_phone" = "Número de teléfono";
+"constants_meeting_service_zoom_native" = "Zoom nativo";
+"constants_meeting_service_other" = "Otro";
