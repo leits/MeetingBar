@@ -8,11 +8,11 @@ We love your input! We want to make contributing to this project as easy and tra
 *   Proposing new features
 *   Becoming a maintainer
 
-## We Develop with Github
+## We Develop with GitHub
 
-We use github to host code, to track issues and feature requests, as well as accept pull requests.
+We use GitHub to host code, to track issues and feature requests, as well as accept pull requests.
 
-## Report bugs using Github's [issues](hhttps://github.com/leits/MeetingBar/issues)
+## Report bugs using GitHub's [issues](https://github.com/leits/MeetingBar/issues)
 
 We use GitHub issues to track public bugs. Report a bug by [opening a new issue](https://github.com/leits/MeetingBar/issues/new); it's that easy!
 
