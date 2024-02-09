@@ -14,7 +14,7 @@
 "general_meeting" = "Reunión";
 "create_meeting_error_message" = "URL personalizada \"%@\" no disponible o inválida. ";
 "next_meeting_empty_title" = "No hay más reuniones pendientes hoy";
-"next_meeting_empty_message" = "Woohoo! Hora de preparar un chocolate";
+"next_meeting_empty_message" = "¡Woohoo! Hora de preparar un chocolate";
 
 // MARK: - Window titles
 
@@ -183,7 +183,7 @@
 
 // MARK: - Link open
 
-"link_url_cant_open_title" = "¡Oops! No se puede abrir el enlace en %@";
+"link_url_cant_open_title" = "¡Ups! No se puede abrir el enlace en %@";
 "link_url_cant_open_message" = "Asegúrate de tener %@ instalado, o abre esos enlaces en un navegador web desde preferencias en su lugar.";
 "notifications_meetingbar_join_event_action" = "Unirse";
 "preferences_advanced_wrong_location_message" = "Por favor, selecciona la carpeta Usuario → Library → Application Scripts → leits.MeetingBar";
@@ -222,7 +222,7 @@
 "status_bar_submenu_status_title" = "Estado: %@";
 "status_bar_submenu_status_accepted" = " 👍 Aceptado";
 "status_bar_submenu_status_declined" = " 👎 Declinado";
-"status_bar_submenu_status_tentative" = " ☝️Quizás";
+"status_bar_submenu_status_tentative" = " ☝️ Quizás";
 "status_bar_submenu_status_pending" = " ⏳ Pendiente";
 "status_bar_submenu_status_unknown" = " ❔ Desconocido";
 "status_bar_submenu_status_default_extended" = " ❔ (%@)";
