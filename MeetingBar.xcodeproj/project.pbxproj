@@ -122,6 +122,7 @@
 		46E4794D2802141800B48059 /* Calendar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Calendar.swift; sourceTree = "<group>"; };
 		46E4794F2802155700B48059 /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
 		46E4795128023A0C00B48059 /* HelpersTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpersTests.swift; sourceTree = "<group>"; };
+		783C50AD2B760A3100DF0C9A /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
 		A7B68FA225CDE9E200CA3A68 /* URL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URL.swift; sourceTree = "<group>"; };
 		D6D68C5327BCF93D009E8469 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Localizable.strings; sourceTree = "<group>"; };
 		E23954672628BF89003ECCB3 /* BrowserConfigView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrowserConfigView.swift; sourceTree = "<group>"; };
@@ -416,6 +417,7 @@
 				he,
 				tr,
 				it,
+				es,
 			);
 			mainGroup = 144C01702462D0C3000C9FFC;
 			packageReferences = (
@@ -585,6 +587,7 @@
 				14B08ACB27498308002E3892 /* he */,
 				E48FB770279B3A820071CC5A /* tr */,
 				D6D68C5327BCF93D009E8469 /* it */,
+				783C50AD2B760A3100DF0C9A /* es */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
