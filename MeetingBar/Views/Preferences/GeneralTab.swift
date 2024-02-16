@@ -141,14 +141,16 @@ struct PatronageAppSection: View {
                     Text("")
                     HStack {
                         Spacer()
-                        Button(action: { Links.patreon.openInDefaultBrowser() }) {
-                            Text("Patreon")
+                        if !isInstalledFromAppStore {
+                            Button(action: { Links.patreon.openInDefaultBrowser() }) {
+                                Text("Patreon")
+                            }
+                            Spacer()
+                            Button(action: { Links.buymeacoffee.openInDefaultBrowser() }) {
+                                Text("Buy Me A Coffee")
+                            }
+                            Spacer()
                         }
-                        Spacer()
-                        Button(action: { Links.buymeacoffee.openInDefaultBrowser() }) {
-                            Text("Buy Me A Coffee")
-                        }
-                        Spacer()
                         Button(action: { Links.github.openInDefaultBrowser() }) {
                             Text("GitHub")
                         }
