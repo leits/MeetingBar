@@ -108,6 +108,7 @@ struct LaunchAtLoginANDPreferredLanguagePicker: View {
                         Text("Türkçe").tag(AppLanguage.turkish)
                         Text("Italiano").tag(AppLanguage.italian)
                         Text("Português").tag(AppLanguage.portuguese)
+                        Text("Español").tag(AppLanguage.spanish)
                     }
                 }
             }.frame(width: 250)
