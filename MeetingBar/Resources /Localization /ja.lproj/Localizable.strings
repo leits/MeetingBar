@@ -65,7 +65,7 @@
 
 
 "preferences_appearance_events_title" = "イベント";
-"preferences_appearance_events_show_events_for_title" = "表示するイベント";
+"preferences_appearance_events_show_events_for_title" = "表示するイベント:";
 "preferences_appearance_events_show_events_for_today_value" = "今日";
 "preferences_appearance_events_show_events_for_today_tomorrow_value" = "今日と明日";
 "preferences_appearance_events_non_all_day_title" = "その他のイベント:";
@@ -74,9 +74,9 @@
 "preferences_appearance_events_all_day_title" = "終日のイベント:";
 "preferences_appearance_events_without_guest_title" = "ゲストのないイベント:";
 "preferences_appearance_events_past_title" = "過去のイベント:";
-"preferences_appearance_events_pending_title" = "保留中のイベント";
+"preferences_appearance_events_pending_title" = "保留中のイベント:";
 "preferences_appearance_events_declined_title" = "不参加にしたイベント:";
-"preferences_appearance_events_tentative_title" = "Tentative events:";
+"preferences_appearance_events_tentative_title" = "仮承諾中のイベント:";
 "preferences_appearance_events_value_show" = "表示";
 "preferences_appearance_events_value_hide" = "非表示";
 "preferences_appearance_events_value_as_inactive" = "非アクティブとして表示";
