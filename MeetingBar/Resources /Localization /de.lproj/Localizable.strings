@@ -64,13 +64,13 @@
 "preferences_appearance_status_bar_icon_specific_icon_value" = " Meeting-Symbol (z.B. MS Teams)";
 "preferences_appearance_status_bar_icon_calendar_icon_value" = " Kalender";
 "preferences_appearance_status_bar_icon_app_icon_value" = " MeetingBar";
-"preferences_appearance_status_bar_icon_title" = "Symbol";
+"preferences_appearance_status_bar_icon_title" = "Icon";
 "preferences_appearance_status_bar_title" = "Menüleiste";
 "preferences_appearance_events_value_with_strikethrough" = "durchgestrichen anzeigen";
 "preferences_appearance_events_value_as_underlined" = "unterstrichen anzeigen";
 "preferences_appearance_events_value_as_inactive" = "abdunkeln";
 "preferences_appearance_events_value_hide" = "ausblenden";
-"preferences_appearance_events_tentative_title" = "Tentative events:";
+"preferences_appearance_events_tentative_title" = "Vorläufige Veranstaltungen:";
 "preferences_appearance_events_value_show" = "anzeigen";
 "preferences_appearance_events_declined_title" = "Abgelehnte Ereignisse:";
 "preferences_appearance_events_pending_title" = "Anstehende Ereignisse";
@@ -232,7 +232,7 @@
 
 "preferences_services_link_meeting_title" = "Meeting-Links öffnen mit";
 "preferences_appearance_menu_show_event_details_value" = "Details als Untermenü";
-"preferences_appearance_menu_show_event_icon_value" = "Symbol";
+"preferences_appearance_menu_show_event_icon_value" = "symbol";
 "preferences_appearance_menu_show_event_end_time_value" = "Endzeit";
 "preferences_appearance_menu_show_event_title" = "Ereignis anzeigen:";
 "preferences_appearance_menu_time_format_24_hour_value" = "24-Stunden";
