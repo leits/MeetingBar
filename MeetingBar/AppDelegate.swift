@@ -103,8 +103,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                  .showEventEndTime, .showMeetingServiceIcon,
                  .timeFormat, .bookmarks, .eventTitleFormat,
                  .personalEventsAppereance, .pastEventsAppereance,
-                 .declinedEventsAppereance ], initial: false) {
-
+                 .declinedEventsAppereance], initial: false
+            ) {
                 DispatchQueue.main.async {
                     self.statusBarItem.updateTitle()
                     self.statusBarItem.updateMenu()
@@ -132,8 +132,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                 [.showEventsForPeriod, .customRegexes,
                  .declinedEventsAppereance, .showPendingEvents,
                  .showTentativeEvents,
-                 .allDayEvents, .nonAllDayEvents], initial: false) {
-
+                 .allDayEvents, .nonAllDayEvents], initial: false
+            ) {
                 DispatchQueue.main.async {
                     self.statusBarItem.loadEvents()
                 }
