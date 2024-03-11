@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import Defaults
 
 var systemDefaultBrowser = Browser(name: "preferences_services_link_default_browser_value".loco(), path: "")
 var MeetInOneBrowser = Browser(name: "MeetInOne", path: "")
@@ -35,76 +36,76 @@ enum Links {
     static var rateAppInAppStore = URL(string: "itms-apps://apps.apple.com/app/id1532419400?action=write-review")!
 }
 
-enum TimeFormat: String, Codable, CaseIterable {
+enum TimeFormat: String, Defaults.Serializable, Codable, CaseIterable {
     case am_pm = "12-hour"
     case military = "24-hour"
 }
 
 /// the icon to display in the status bar
-enum EventTitleIconFormat: String, Codable, CaseIterable {
+enum EventTitleIconFormat: String, Defaults.Serializable, Codable, CaseIterable {
     case calendar = "iconCalendar"
     case appicon = "AppIcon"
     case eventtype = "ms_teams_icon"
     case none = "no_online_session"
 }
 
-enum EventTitleFormat: String, Codable, CaseIterable {
+enum EventTitleFormat: String, Defaults.Serializable, Codable, CaseIterable {
     case show
     case dot
     case none
 }
 
 /// format for time in statusbar - can be shown, be under title or be hidden
-enum EventTimeFormat: String, Codable, CaseIterable {
+enum EventTimeFormat: String, Defaults.Serializable, Codable, CaseIterable {
     case show
     case show_under_title
     case hide
 }
 
-enum DeclinedEventsAppereance: String, Codable, CaseIterable {
+enum DeclinedEventsAppereance: String, Defaults.Serializable, Codable, CaseIterable {
     case strikethrough
     case show_inactive
     case hide
 }
 
-enum AlldayEventsAppereance: String, Codable, CaseIterable {
+enum AlldayEventsAppereance: String, Defaults.Serializable, Codable, CaseIterable {
     case show
     case show_with_meeting_link_only
     case hide
 }
 
-enum NonAlldayEventsAppereance: String, Codable, CaseIterable {
+enum NonAlldayEventsAppereance: String, Defaults.Serializable, Codable, CaseIterable {
     case show
     case show_inactive_without_meeting_link
     case hide_without_meeting_link
 }
 
-enum PendingEventsAppereance: String, Codable, CaseIterable {
+enum PendingEventsAppereance: String, Defaults.Serializable, Codable, CaseIterable {
     case show
     case show_inactive
     case show_underlined
     case hide
 }
 
-enum TentativeEventsAppereance: String, Codable, CaseIterable {
+enum TentativeEventsAppereance: String, Defaults.Serializable, Codable, CaseIterable {
     case show
     case show_inactive
     case show_underlined
     case hide
 }
 
-enum PastEventsAppereance: String, Codable, CaseIterable {
+enum PastEventsAppereance: String, Defaults.Serializable, Codable, CaseIterable {
     case show_active
     case show_inactive
     case hide
 }
 
-enum ShowEventsForPeriod: String, Codable, CaseIterable {
+enum ShowEventsForPeriod: String, Defaults.Serializable, Codable, CaseIterable {
     case today
     case today_n_tomorrow
 }
 
-enum JoinEventNotificationTime: Int, Codable {
+enum JoinEventNotificationTime: Int, Defaults.Serializable, Codable {
     case atStart = 5
     case minuteBefore = 60
     case threeMinuteBefore = 180
@@ -138,14 +139,14 @@ enum NotificationEventTimeAction: String, Codable {
     }
 }
 
-enum AutomaticEventJoinTime: Int, Codable {
+enum AutomaticEventJoinTime: Int, Defaults.Serializable, Codable {
     case atStart = 5
     case minuteBefore = 60
     case threeMinuteBefore = 180
     case fiveMinuteBefore = 300
 }
 
-enum EventScriptExecutionTime: Int, Codable {
+enum EventScriptExecutionTime: Int, Defaults.Serializable, Codable {
     case atStart = 5
     case minuteBefore = 60
     case threeMinuteBefore = 180
@@ -157,7 +158,7 @@ enum UtilsRegex {
     static let linkDetection = try! NSRegularExpression(pattern: #"(http|ftp|https)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?"#, options: .caseInsensitive)
 }
 
-enum AppLanguage: String, Codable {
+enum AppLanguage: String, Defaults.Serializable, Codable {
     case system = ""
     case english = "en"
     case ukrainian = "ua"
@@ -175,7 +176,7 @@ enum AppLanguage: String, Codable {
     case spanish = "es"
 }
 
-struct Browser: Encodable, Decodable, Hashable {
+struct Browser: Defaults.Serializable, Codable, Hashable {
     var name: String
     var path: String
     var arguments: String = ""

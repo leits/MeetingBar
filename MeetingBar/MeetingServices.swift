@@ -110,7 +110,7 @@ enum CreateMeetingLinks {
     static var outlook_office365 = URL(string: "https://outlook.office365.com/calendar/0/action/compose")!
 }
 
-enum CreateMeetingServices: String, Codable, CaseIterable {
+enum CreateMeetingServices: String, Defaults.Serializable, Codable, CaseIterable {
     case meet = "Google Meet"
     case zoom = "Zoom"
     case teams = "Microsoft Teams"

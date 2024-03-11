@@ -22,15 +22,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     var statusBarItem: StatusBarItemController!
     var eventStore: EventStore!
 
-    var preferredLanguageObserver: DefaultsObservation?
-
-    var meetingTitleVisibilityObserver: DefaultsObservation?
-    var joinEventNotificationObserver: DefaultsObservation?
-
-    var eventFiltersObserver: DefaultsObservation?
-    var calendarsObserver: DefaultsObservation?
-    var appearanceSettingsObserver: DefaultsObservation?
-
     var screenIsLocked: Bool = false
 
     weak var preferencesWindow: NSWindow!
@@ -103,25 +94,30 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
 
         // Settings change observers
-        appearanceSettingsObserver = Defaults.observe(
-            keys: .statusbarEventTitleLength, .eventTimeFormat,
-            .eventTitleIconFormat, .showEventMaxTimeUntilEventThreshold,
-            .showEventMaxTimeUntilEventEnabled, .showEventDetails,
-            .shortenEventTitle, .menuEventTitleLength,
-            .showEventEndTime, .showMeetingServiceIcon,
-            .timeFormat, .bookmarks, .eventTitleFormat,
-            .personalEventsAppereance, .pastEventsAppereance,
-            .declinedEventsAppereance,
-            options: []
-        ) {
-            self.statusBarItem.updateTitle()
-            self.statusBarItem.updateMenu()
+        Task {
+            for await _ in Defaults.updates(
+                [.statusbarEventTitleLength, .eventTimeFormat,
+                 .eventTitleIconFormat, .showEventMaxTimeUntilEventThreshold,
+                 .showEventMaxTimeUntilEventEnabled, .showEventDetails,
+                 .shortenEventTitle, .menuEventTitleLength,
+                 .showEventEndTime, .showMeetingServiceIcon,
+                 .timeFormat, .bookmarks, .eventTitleFormat,
+                 .personalEventsAppereance, .pastEventsAppereance,
+                 .declinedEventsAppereance ], initial: false) {
+
+                DispatchQueue.main.async {
+                    self.statusBarItem.updateTitle()
+                    self.statusBarItem.updateMenu()
+                }
+            }
         }
 
-        meetingTitleVisibilityObserver = Defaults.observe(.hideMeetingTitle, options: []) { change in
-            if change.oldValue != change.newValue {
-                self.statusBarItem.updateMenu()
-                self.statusBarItem.updateTitle()
+        Task {
+            for await _ in Defaults.updates(.hideMeetingTitle, initial: false) {
+                DispatchQueue.main.async {
+                    self.statusBarItem.updateMenu()
+                    self.statusBarItem.updateTitle()
+                }
 
                 // Reschedule next notification with updated event name visibility
                 removePendingNotificationRequests()
@@ -130,29 +126,42 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                 }
             }
         }
-        eventFiltersObserver = Defaults.observe(
-            keys: .showEventsForPeriod, .customRegexes,
-            .declinedEventsAppereance, .showPendingEvents,
-            .showTentativeEvents,
-            .allDayEvents, .nonAllDayEvents,
-            options: []
-        ) {
-            self.statusBarItem.loadEvents()
-        }
 
-        calendarsObserver = Defaults.observe(keys: .selectedCalendarIDs, options: []) {
-            self.statusBarItem.loadCalendars()
-        }
+        Task {
+            for await _ in Defaults.updates(
+                [.showEventsForPeriod, .customRegexes,
+                 .declinedEventsAppereance, .showPendingEvents,
+                 .showTentativeEvents,
+                 .allDayEvents, .nonAllDayEvents], initial: false) {
 
-        preferredLanguageObserver = Defaults.observe(.preferredLanguage) { change in
-            if I18N.instance.changeLanguage(to: change.newValue) {
-                self.statusBarItem.updateTitle()
-                self.statusBarItem.updateMenu()
+                DispatchQueue.main.async {
+                    self.statusBarItem.loadEvents()
+                }
             }
         }
-        joinEventNotificationObserver = Defaults.observe(.joinEventNotification, options: []) { change in
-            if change.oldValue != change.newValue {
-                if change.newValue == true {
+
+        Task {
+            for await _ in Defaults.updates(.selectedCalendarIDs, initial: false) {
+                DispatchQueue.main.async {
+                    self.statusBarItem.loadCalendars()
+                }
+            }
+        }
+
+        Task {
+            for await value in Defaults.updates(.preferredLanguage) {
+                if I18N.instance.changeLanguage(to: value) {
+                    DispatchQueue.main.async {
+                        self.statusBarItem.updateTitle()
+                        self.statusBarItem.updateMenu()
+                    }
+                }
+            }
+        }
+
+        Task {
+            for await value in Defaults.updates(.joinEventNotification, initial: false) {
+                if value == true {
                     if let nextEvent = getNextEvent(events: self.statusBarItem.events) {
                         scheduleEventNotification(nextEvent)
                     }

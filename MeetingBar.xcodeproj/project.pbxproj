@@ -871,7 +871,7 @@
 			repositoryURL = "https://github.com/sindresorhus/Defaults";
 			requirement = {
 				kind = upToNextMinorVersion;
-				minimumVersion = 4.2.2;
+				minimumVersion = 7.3.1;
 			};
 		};
 		1432D98A25C4B94900FD121D /* XCRemoteSwiftPackageReference "SwiftyStoreKit" */ = {

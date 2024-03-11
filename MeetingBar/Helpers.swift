@@ -11,13 +11,13 @@ import Defaults
 import EventKit
 import Foundation
 
-struct Bookmark: Encodable, Decodable, Hashable {
+struct Bookmark: Codable, Defaults.Serializable, Hashable {
     var name: String
     var service: MeetingServices
     var url: URL
 }
 
-struct ProcessedEvent: Encodable, Decodable, Hashable {
+struct ProcessedEvent: Codable, Defaults.Serializable, Hashable {
     var id: String
     var lastModifiedDate: Date?
     var eventEndDate: Date
@@ -183,6 +183,15 @@ func maintainDefaultsBackwardCompatibility() {
         }
         UserDefaults.standard.removeObject(forKey: "useAppForJitsiLinks")
     }
+
+    Defaults.migrate(.selectedCalendarIDs, to: .v5)
+    Defaults.migrate(.processedEventsForAutoJoin, to: .v5)
+    Defaults.migrate(.dismissedEvents, to: .v5)
+    Defaults.migrate(.bookmarks, to: .v5)
+    Defaults.migrate(.browsers, to: .v5)
+    Defaults.migrate(.processedEventsForRunScriptOnEventStart, to: .v5)
+    Defaults.migrate(.customRegexes, to: .v5)
+    Defaults.migrate(.filterEventRegexes, to: .v5)
 }
 
 /*
