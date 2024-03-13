@@ -23,7 +23,7 @@
 "general_delete" = "Sil";
 "general_save" = "Kaydet";
 "create_meeting_error_title" = "Yeni toplantı oluşturulamıyor";
-"create_meeting_error_message" = "Özel bağlantı \\%@\\ eksik veya geçersiz. Uygulama tercihlerinden yeni bir tane ekleyin.";
+"create_meeting_error_message" = "Özel bağlantı \\%@\\ eksik veya geçersiz. ";
 "next_meeting_empty_title" = "Bugün yaklaşmakta olan toplantı yok";
 "next_meeting_empty_message" = "Yaşasın! Kakao içme zamanı";
 "windows_title_changelog" = "MeetingBar – Neler Yeni";
@@ -51,7 +51,7 @@
 "preferences_general_external_patronage" = "Destek";
 "preferences_general_external_contact" = "İletişim";
 "preferences_general_patron_description" = "Bunlar tek seferlik satın almalardır ve otomatik olarak yenilenmez.";
-"preferences_general_patron_thank_for_purchase" = "Teşekkürler! Bizi %d ay desteklemek için ödeme yaptınız. 🎉";
+"preferences_general_patron_thank_for_purchase" = "Teşekkürler! MeetingBar'ı %d aydır destekliyorsunuz 🎉";
 "preferences_general_patron_restore_purchases" = "Satın alımları geri yükle";
 "preferences_general_feedback_email" = "E-posta";
 "preferences_appearance_events_show_events_for_today_value" = "bugün";
@@ -93,7 +93,7 @@
 // MARK: - Preferences Services
 
 "preferences_services_link_meeting_title" = "Tüm toplantıları şununla aç";
-"preferences_services_link_service_title" = "%@ uygulaması";
+"preferences_services_link_service_title" = "%@ bağlantıyı şurada aç";
 "preferences_services_supported_links_list" = "Servisler için desteklenen bağlantı:\n%@";
 "preferences_services_supported_links_mailback" = "Kullandığınız hizmet desteklenmiyorsa, geliştiricilere bir e-posta gönderebilirsiniz";
 "preferences_services_create_meeting_title" = "Toplantıları şununla oluştur";
@@ -161,8 +161,8 @@
 "status_bar_no_title" = "Başlık yok";
 "status_bar_error_link_missed_title" = "Amanın! %@ 'e katılınamadı";
 "status_bar_error_link_missed_message" = "Link bulunamadı ya da toplantı servisiniz henüz desteklenmiyor";
-"status_bar_error_app_link_title" = "Hata! Bu bağlantı %@ uygulamasında açılamıyor";
-"status_bar_error_app_link_message" = "%@ uygulamasının yüklü olduğundan emin olun veya bu bağlantıyı bir tarayıcıda açın.";
+"status_bar_error_app_link_title" = "Hata! %@ içindeki bağlantı açılamıyor";
+"status_bar_error_app_link_message" = "%@ uygulamasının yüklü olduğundan emin olun veya bunun yerine bu tür bağlantıları bir web tarayıcısında tercihlerden açın.";
 
 // MARK: - Welcome screen
 
