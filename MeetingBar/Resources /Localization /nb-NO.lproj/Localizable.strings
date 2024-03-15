@@ -150,7 +150,7 @@
 
 "calendars_screen_select_calendar_title" = "Velg minst én kalender";
 "welcome_screen_setup_calendar_title" = "Sett opp kalendere";
-"status_bar_event_status_in" = "i %@";
+"status_bar_event_status_in" = "om %@";
 "status_bar_event_status_now" = "nå (%@ gjenstår)";
 "status_bar_no_title" = "Uten tittel";
 "status_bar_quit" = "Avslutt MeetingBar";
