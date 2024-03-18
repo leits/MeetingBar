@@ -1,5 +1,21 @@
 
 
-"general_close" = "Bezárás";
+"general_close" = "Bezár";
 "general_ok" = "OK";
 "general_cancel" = "Mégse";
+"general_delete" = "Töröl";
+"general_add" = "Hozzáad";
+"general_save" = "Ment";
+"general_when_event_starts" = "esemény kezdetekor";
+"general_one_minute_before" = "1 perccel előtte";
+"general_three_minute_before" = "3 perccel előtte";
+"general_five_minute_before" = "5 perccel előtte";
+"create_meeting_error_title" = "Nem lehet új megbeszélést létrehozni!";
+"next_meeting_empty_title" = "Nincs jövőbeli megbeszélés a mai napra!";
+"window_title_onboarding" = "Üdvözli a MeetingBar";
+
+// MARK: - Preferences tabs
+
+"preferences_tab_general" = "Általános";
+"preferences_tab_appearance" = "Megjelenés";
+"preferences_tab_bookmarks" = "Könyvjelzők";
