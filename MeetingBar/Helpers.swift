@@ -36,32 +36,38 @@ struct ProcessedEvent: Codable, Defaults.Serializable, Hashable {
  */
 func cleanupOutlookSafeLinks(rawText: String) -> String {
     var text = rawText
-    var links = UtilsRegex.outlookSafeLinkRegex.matches(in: text, range: NSRange(text.startIndex..., in: text))
-    if !links.isEmpty {
-        repeat {
-            let urlRange = links[0].range(at: 1)
-            let safeLinks = links.map { String(text[Range($0.range, in: text)!]) }
-            if !safeLinks.isEmpty {
-                let serviceUrl = (text as NSString).substring(with: urlRange)
-                if let decodedServiceURL = serviceUrl.decodeUrl() {
-                    text = text.replacingOccurrences(of: safeLinks[0], with: decodedServiceURL)
+    autoreleasepool {
+        var links = UtilsRegex.outlookSafeLinkRegex.matches(in: text, range: NSRange(text.startIndex..., in: text))
+        if !links.isEmpty {
+            repeat {
+                let urlRange = links[0].range(at: 1)
+                let safeLinks = links.map { String(text[Range($0.range, in: text)!]) }
+                if !safeLinks.isEmpty {
+                    let serviceUrl = (text as NSString).substring(with: urlRange)
+                    if let decodedServiceURL = serviceUrl.decodeUrl() {
+                        text = text.replacingOccurrences(of: safeLinks[0], with: decodedServiceURL)
+                    }
                 }
-            }
-            links = UtilsRegex.outlookSafeLinkRegex.matches(in: text, range: NSRange(text.startIndex..., in: text))
-        } while !links.isEmpty
+                links = UtilsRegex.outlookSafeLinkRegex.matches(in: text, range: NSRange(text.startIndex..., in: text))
+            } while !links.isEmpty
+        }
     }
     return text
 }
 
 func getMatch(text: String, regex: NSRegularExpression) -> String? {
-    let resultsIterator = regex.matches(in: text, range: NSRange(text.startIndex..., in: text))
-    let resultsMap = resultsIterator.map { String(text[Range($0.range, in: text)!]) }
+    var  match: String?
 
-    if !resultsMap.isEmpty {
-        let match = resultsMap[0]
-        return match
+    autoreleasepool {
+        let resultsIterator = regex.matches(in: text, range: NSRange(text.startIndex..., in: text))
+        let resultsMap = resultsIterator.map { String(text[Range($0.range, in: text)!]) }
+
+        if !resultsMap.isEmpty {
+            match = resultsMap[0]
+        }
     }
-    return nil
+
+    return match
 }
 
 func cleanUpNotes(_ notes: String) -> String {

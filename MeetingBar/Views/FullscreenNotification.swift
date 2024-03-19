@@ -9,7 +9,7 @@
 import Defaults
 import SwiftUI
 
-struct AutoJoinScreen: View {
+struct FullscreenNotification: View {
     var event: MBEvent
     var window: NSWindow?
 
@@ -72,5 +72,5 @@ struct VisualEffect: NSViewRepresentable {
 }
 
 #Preview {
-    AutoJoinScreen(event: generateFakeEvent(), window: nil)
+    FullscreenNotification(event: generateFakeEvent(), window: nil)
 }
