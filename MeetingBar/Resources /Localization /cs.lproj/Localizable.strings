@@ -66,13 +66,11 @@
 
 "access_screen_access_denied_title" = "Vypadá to, že jste zakázali přístup ke kalendářům.";
 "calendars_screen_start_button" = "Začít používat aplikaci";
-
 "access_screen_provider_picker_label" = "Select calendars provider";
 "access_screen_provider_macos_title" = "MacOS Calendar app";
 "access_screen_provider_macos_recomended" = "(recomended)";
 "access_screen_provider_macos_data_source" = "Get data from MacOS Calendar app";
 "access_screen_provider_macos_number_of_accounts" = "Any number of any connected accounts";
-
 "access_screen_provider_gcalendar_data_source" = "Get data directly from Google Calendar";
 "access_screen_provider_gcalendar_number_of_accounts" = "Only one Google account";
 "access_screen_provider_gcalendar_sign_in_title" = "Google Sign In";
@@ -316,7 +314,6 @@
 "general_close" = "Zavřít";
 "general_cancel" = "Zrušit";
 "general_ok" = "OK";
-
 "status_bar_menu_dismiss_curent_meeting" = "Dismiss current meeting";
 "status_bar_menu_dismiss_next_meeting" = "Dismiss next meeting";
 "status_bar_menu_remove_all_dismissals" = "Remove all dismissals";
