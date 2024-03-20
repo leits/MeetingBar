@@ -165,6 +165,14 @@ struct ChangelogView: View {
                             Text("• Fixed high CPU usage when meeting details are displayed in the submenu")
                         }
                     }
+                    if compareVersions("4.8.0", lastRevisedVersionInChangelog) {
+                        Section(header: Text("Version 4.8")) {
+                            Text("🖥️ Full-screen notifications")
+                            Text("🌍 Translation into Spanish and Portuguese")
+                            Text("• Autojoin is back and separate from full-screen notification")
+                            Text("• Imporved Zoom link recongition")
+                        }
+                    }
                 }
             }.listStyle(SidebarListStyle())
             Button("general_close".loco(), action: close)
