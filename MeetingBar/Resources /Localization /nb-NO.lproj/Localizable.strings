@@ -39,6 +39,7 @@
 // MARK: - Shared
 
 "shared_send_notification_toggle" = "Send merknad om å ta del i neste begivenhetsmøte";
+"shared_fullscreen_notification_toggle" = "Show a fullscreen notification";
 "access_screen_access_granted_click_ok_title" = "Klikk «OK» i oppsprettsvinduet fra macOS.";
 "access_screen_access_granted_title" = "Forespør tilgang til kalendere.";
 "access_screen_access_denied_relaunch_title" = "Så må du kjøre programmet manuelt for å fortsette oppsettet.";

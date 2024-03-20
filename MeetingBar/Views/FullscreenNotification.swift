@@ -1,5 +1,5 @@
 //
-//  AutoJoinScreen.swift
+//  FullscreenNotification.swift
 //  MeetingBar
 //
 //  Created by Andrii Leitsius on 31.07.2023.

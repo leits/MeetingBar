@@ -262,6 +262,7 @@
 // MARK: - Shared
 
 "shared_send_notification_toggle" = "Benachrichtigung senden, um dem nächsten Ereigniss beizutreten";
+"shared_fullscreen_notification_toggle" = "Show a fullscreen notification";
 "access_screen_access_granted_click_ok_title" = "Im macOS-Popup auf „OK“ klicken.";
 "access_screen_access_granted_title" = "Zugriff auf Kalender anfordern…";
 "access_screen_access_denied_relaunch_title" = "Anschließend die App manuell starten, um die Einrichtung fortzusetzen.";

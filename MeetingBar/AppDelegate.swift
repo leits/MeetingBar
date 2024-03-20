@@ -305,7 +305,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         changelogWindow.orderFrontRegardless()
     }
 
-    func openAutJoinWindow(event: MBEvent) {
+    func openFullscreenNotificationWindow(event: MBEvent) {
         let screenFrame = NSScreen.main?.frame ?? NSRect(x: 0, y: 0, width: 800, height: 600)
 
         let window = NSWindow(
@@ -315,14 +315,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             defer: false
         )
 
-        window.contentView = NSHostingView(rootView: AutoJoinScreen(event: event, window: window))
+        window.contentView = NSHostingView(rootView: FullscreenNotification(event: event, window: window))
         window.appearance = NSAppearance(named: .darkAqua)
         window.collectionBehavior = .canJoinAllSpaces
         window.collectionBehavior = .moveToActiveSpace
 
         window.titlebarAppearsTransparent = true
         window.styleMask.insert(.fullSizeContentView)
-        window.title = "Meetingbar Autojoin"
+        window.title = "Meetingbar Fullscreen Notification"
         window.level = .screenSaver
 
         let controller = NSWindowController(window: window)

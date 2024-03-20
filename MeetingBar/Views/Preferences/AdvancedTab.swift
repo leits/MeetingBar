@@ -49,10 +49,10 @@ struct ScriptSection: View {
             HStack {
                 Toggle("preferences_advanced_run_script_on_event_start".loco(), isOn: $runEventStartScript)
                 Picker("", selection: $eventStartScriptTime) {
-                    Text("general_when_event_starts".loco()).tag(EventScriptExecutionTime.atStart)
-                    Text("general_one_minute_before".loco()).tag(EventScriptExecutionTime.minuteBefore)
-                    Text("general_three_minute_before".loco()).tag(EventScriptExecutionTime.threeMinuteBefore)
-                    Text("general_five_minute_before".loco()).tag(EventScriptExecutionTime.fiveMinuteBefore)
+                    Text("general_when_event_starts".loco()).tag(TimeBeforeEvent.atStart)
+                    Text("general_one_minute_before".loco()).tag(TimeBeforeEvent.minuteBefore)
+                    Text("general_three_minute_before".loco()).tag(TimeBeforeEvent.threeMinuteBefore)
+                    Text("general_five_minute_before".loco()).tag(TimeBeforeEvent.fiveMinuteBefore)
                 }.frame(width: 150, alignment: .leading).labelsHidden().disabled(!runEventStartScript)
                 Spacer()
                 if runEventStartScript {

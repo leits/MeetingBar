@@ -105,13 +105,6 @@ enum ShowEventsForPeriod: String, Defaults.Serializable, Codable, CaseIterable {
     case today_n_tomorrow
 }
 
-enum JoinEventNotificationTime: Int, Defaults.Serializable, Codable {
-    case atStart = 5
-    case minuteBefore = 60
-    case threeMinuteBefore = 180
-    case fiveMinuteBefore = 300
-}
-
 enum NotificationEventTimeAction: String, Codable {
     case untilStart = "SNOOZE_UNTIL_START_TIME"
     case fiveMinuteLater = "SNOOZE_FOR_5_MIN"
@@ -139,14 +132,7 @@ enum NotificationEventTimeAction: String, Codable {
     }
 }
 
-enum AutomaticEventJoinTime: Int, Defaults.Serializable, Codable {
-    case atStart = 5
-    case minuteBefore = 60
-    case threeMinuteBefore = 180
-    case fiveMinuteBefore = 300
-}
-
-enum EventScriptExecutionTime: Int, Defaults.Serializable, Codable {
+enum TimeBeforeEvent: Int, Defaults.Serializable, Codable {
     case atStart = 5
     case minuteBefore = 60
     case threeMinuteBefore = 180

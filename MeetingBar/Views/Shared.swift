@@ -22,15 +22,32 @@ struct AutomaticEventJoinPicker: View {
         HStack {
             Toggle("shared_automatic_event_join_toggle".loco(), isOn: $automaticEventJoin)
             Picker("", selection: $automaticEventJoinTime) {
-                Text("general_when_event_starts".loco()).tag(AutomaticEventJoinTime.atStart)
-                Text("general_one_minute_before".loco()).tag(AutomaticEventJoinTime.minuteBefore)
-                Text("general_three_minute_before".loco()).tag(AutomaticEventJoinTime.threeMinuteBefore)
-                Text("general_five_minute_before".loco()).tag(AutomaticEventJoinTime.fiveMinuteBefore)
+                Text("general_when_event_starts".loco()).tag(TimeBeforeEvent.atStart)
+                Text("general_one_minute_before".loco()).tag(TimeBeforeEvent.minuteBefore)
+                Text("general_three_minute_before".loco()).tag(TimeBeforeEvent.threeMinuteBefore)
+                Text("general_five_minute_before".loco()).tag(TimeBeforeEvent.fiveMinuteBefore)
             }.frame(width: 220, alignment: .leading).labelsHidden().disabled(!automaticEventJoin)
         }
 
         if automaticEventJoin {
             Text("shared_automatic_event_join_tip".loco()).foregroundColor(.gray).font(.system(size: 12))
+        }
+    }
+}
+
+struct FullscreenNotificationPicker: View {
+    @Default(.fullscreenNotification) var fullscreenNotification
+    @Default(.fullscreenNotificationTime) var fullscreenNotificationTime
+
+    var body: some View {
+        HStack {
+            Toggle("shared_fullscreen_notification_toggle".loco(), isOn: $fullscreenNotification)
+            Picker("", selection: $fullscreenNotificationTime) {
+                Text("general_when_event_starts".loco()).tag(TimeBeforeEvent.atStart)
+                Text("general_one_minute_before".loco()).tag(TimeBeforeEvent.minuteBefore)
+                Text("general_three_minute_before".loco()).tag(TimeBeforeEvent.threeMinuteBefore)
+                Text("general_five_minute_before".loco()).tag(TimeBeforeEvent.fiveMinuteBefore)
+            }.frame(width: 220, alignment: .leading).labelsHidden().disabled(!fullscreenNotification)
         }
     }
 }
@@ -45,10 +62,10 @@ struct JoinEventNotificationPicker: View {
         HStack {
             Toggle("shared_send_notification_toggle".loco(), isOn: $joinEventNotification)
             Picker("", selection: $joinEventNotificationTime) {
-                Text("general_when_event_starts".loco()).tag(JoinEventNotificationTime.atStart)
-                Text("general_one_minute_before".loco()).tag(JoinEventNotificationTime.minuteBefore)
-                Text("general_three_minute_before".loco()).tag(JoinEventNotificationTime.threeMinuteBefore)
-                Text("general_five_minute_before".loco()).tag(JoinEventNotificationTime.fiveMinuteBefore)
+                Text("general_when_event_starts".loco()).tag(TimeBeforeEvent.atStart)
+                Text("general_one_minute_before".loco()).tag(TimeBeforeEvent.minuteBefore)
+                Text("general_three_minute_before".loco()).tag(TimeBeforeEvent.threeMinuteBefore)
+                Text("general_five_minute_before".loco()).tag(TimeBeforeEvent.fiveMinuteBefore)
             }.frame(width: 220, alignment: .leading).labelsHidden().disabled(!joinEventNotification)
         }
 

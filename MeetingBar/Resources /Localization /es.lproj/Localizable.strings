@@ -284,6 +284,7 @@
 // MARK: - Shared
 
 "shared_send_notification_toggle" = "Enviar notificación para unirte a la próxima reunión del evento";
+"shared_fullscreen_notification_toggle" = "Show a fullscreen notification";
 "shared_send_notification_no_alert_style_tip" = "⚠️ Tus configuraciones de notificación de macOS para MeetingBar no están establecidas como alertas. Cámbialo si deseas notificaciones persistentes.";
 "shared_send_notification_disabled_tip" = "⚠️ Tus configuraciones de notificación de macOS para MeetingBar están desactivadas. Activa las notificaciones en la configuración del sistema de macOS para llevar un seguimiento de las reuniones.";
 "shared_automatic_event_join_toggle" = "Auto-unirse a la próxima reunión de evento";

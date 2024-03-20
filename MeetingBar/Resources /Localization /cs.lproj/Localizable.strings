@@ -52,6 +52,7 @@
 // MARK: - Shared
 
 "shared_send_notification_toggle" = "Odeslat oznámení pro připojení k nadcházející schůzce";
+"shared_fullscreen_notification_toggle" = "Show a fullscreen notification";
 "access_screen_access_granted_click_ok_title" = "Ve vyskakovacím okně systému macOS klikněte na tlačítko \"OK\".";
 "access_screen_access_granted_title" = "Žádost o přístup ke kalendářům…";
 "access_screen_access_denied_relaunch_title" = "Pak spusťte aplikaci ručně a pokračujte v nastavení.";

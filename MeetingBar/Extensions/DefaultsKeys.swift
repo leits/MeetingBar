@@ -23,11 +23,11 @@ extension Defaults.Keys {
 
     static let showEventsForPeriod = Key<ShowEventsForPeriod>("showEventsForPeriod", default: .today)
     static let joinEventNotification = Key<Bool>("joinEventNotification", default: true)
-    static let joinEventNotificationTime = Key<JoinEventNotificationTime>("joinEventNotificationTime", default: .atStart)
+    static let joinEventNotificationTime = Key<TimeBeforeEvent>("joinEventNotificationTime", default: .atStart)
 
-    static let automaticEventJoin = Key<Bool>("automaticEventJoin", default: false)
-    static let automaticEventJoinTime = Key<AutomaticEventJoinTime>("automaticEventJoinTime", default: .atStart)
-    static let processedEventsForAutoJoin = Key<[ProcessedEvent]>("processedEventsForAutoJoin", default: [])
+    static let fullscreenNotification = Key<Bool>("fullscreenNotification", default: false)
+    static let fullscreenNotificationTime = Key<TimeBeforeEvent>("fullscreenNotificationTime", default: .atStart)
+    static let processedEventsForFullscreenNotification = Key<[ProcessedEvent]>("processedEventsForFullscreenNotification", default: [])
 
     static let preferredLanguage = Key<AppLanguage>("preferredLanguage", default: .system)
 
@@ -100,13 +100,17 @@ extension Defaults.Keys {
     static let browserForCreateMeeting = Key<Browser>("browserForCreateMeeting", default: systemDefaultBrowser)
 
     // Advanced
+    static let automaticEventJoin = Key<Bool>("automaticEventJoin", default: false)
+    static let automaticEventJoinTime = Key<TimeBeforeEvent>("automaticEventJoinTime", default: .atStart)
+    static let processedEventsForAutoJoin = Key<[ProcessedEvent]>("processedEventsForAutoJoin", default: [])
+
     static let joinEventScriptLocation = Key<URL?>("joinEventScriptLocation", default: nil)
     static let runJoinEventScript = Key<Bool>("runAppleScriptWhenJoiningEvent", default: false)
     static let joinEventScript = Key<String>("joinEventScript", default: "preferences_advanced_apple_script_placeholder".loco())
 
     static let eventStartScriptLocation = Key<URL?>("eventStartScriptLocation", default: nil)
     static let runEventStartScript = Key<Bool>("runEventStartScript", default: false)
-    static let eventStartScriptTime = Key<EventScriptExecutionTime>("eventStartScriptTime", default: .atStart)
+    static let eventStartScriptTime = Key<TimeBeforeEvent>("eventStartScriptTime", default: .atStart)
     static let eventStartScript = Key<String>("eventStartScript", default: eventStartScriptPlaceholder)
     static let processedEventsForRunScriptOnEventStart = Key<[ProcessedEvent]>("processedEventsForRunScriptOnEventStart", default: [])
 

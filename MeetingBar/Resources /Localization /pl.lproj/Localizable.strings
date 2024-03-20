@@ -267,6 +267,7 @@
 // MARK: - Shared
 
 "shared_send_notification_toggle" = "Wyślij powiadomienie aby dołączyć do następnego spotkania";
+"shared_fullscreen_notification_toggle" = "Show a fullscreen notification";
 "general_when_event_starts" = "gdy wydarzenie się rozpocznie";
 "general_one_minute_before" = "1 minutę przed";
 "general_three_minute_before" = "3 minuty przed";

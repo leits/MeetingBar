@@ -284,6 +284,7 @@
 
 
 "shared_send_notification_toggle" = "イベント開始前に通知する";
+"shared_fullscreen_notification_toggle" = "Show a fullscreen notification";
 "general_when_event_starts" = "イベントが始まったとき";
 "general_one_minute_before" = "1分前";
 "general_three_minute_before" = "3分前";

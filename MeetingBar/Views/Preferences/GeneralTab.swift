@@ -18,6 +18,7 @@ struct GeneralTab: View {
                 LaunchAtLoginANDPreferredLanguagePicker()
                 Divider()
                 JoinEventNotificationPicker()
+                FullscreenNotificationPicker()
                 Divider()
             }
             Section {

@@ -271,7 +271,8 @@
 
 // MARK: - Shared
 
-"shared_send_notification_toggle" = "Надсилати сповіщення для долучення до зустрічі";
+"shared_send_notification_toggle" = "Надсилати системне сповіщення";
+"shared_fullscreen_notification_toggle" = "Показувати повноекранне сповіщення";
 "general_when_event_starts" = "коли зустріч розпочинається";
 "general_one_minute_before" = "за 1 хвилину до початку";
 "general_three_minute_before" = "за 3 хвилини до початку";

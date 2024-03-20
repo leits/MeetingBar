@@ -36,14 +36,16 @@ class ActionsOnEventStart: NSObject {
         }
 
         // Cleanup Passed Events
+        Defaults[.processedEventsForFullscreenNotification] = Defaults[.processedEventsForFullscreenNotification].filter { $0.eventEndDate.timeIntervalSinceNow > 0 }
         Defaults[.processedEventsForAutoJoin] = Defaults[.processedEventsForAutoJoin].filter { $0.eventEndDate.timeIntervalSinceNow > 0 }
         Defaults[.processedEventsForRunScriptOnEventStart] = Defaults[.processedEventsForRunScriptOnEventStart].filter { $0.eventEndDate.timeIntervalSinceNow > 0 }
 
         // Only run if the user has activated it.
+        let fullscreenNotificationActive = Defaults[.fullscreenNotification]
         let autoJoinActionActive = Defaults[.automaticEventJoin]
         let runEventStartScriptActionActive = Defaults[.runEventStartScript] && (Defaults[.eventStartScriptLocation] != nil)
 
-        if !autoJoinActionActive, !runEventStartScriptActionActive {
+        if !fullscreenNotificationActive, !autoJoinActionActive, !runEventStartScriptActionActive {
             return
         }
         //
@@ -56,6 +58,36 @@ class ActionsOnEventStart: NSObject {
             let timeInterval = nextEvent.startDate.timeIntervalSince(now)
 
             let allDayCandidate = nextEvent.isAllDay && startEndRange.contains(now)
+
+            /*
+             * -----------------------
+             * MARK: Action: fullscreen notification
+             * ------------------------
+             */
+            let actionTimeForFullscreenNotification = Double(Defaults[.fullscreenNotificationTime].rawValue)
+            let nonAlldayCandidateForFullscreenNotification = (timeInterval > -15 && timeInterval < actionTimeForFullscreenNotification)
+
+            if fullscreenNotificationActive && (nonAlldayCandidateForFullscreenNotification || allDayCandidate) {
+                var events = Defaults[.processedEventsForFullscreenNotification]
+
+                let matchedEvent = events.first { $0.id == nextEvent.ID }
+
+                // if a script was executed already for the event, but the start date is different,
+                // we will remove the the current event from the scheduled events, so that we can run the script again ->
+                // this is an edge case when the event was already notified for, but scheduled for a later time.
+                if matchedEvent == nil || matchedEvent?.lastModifiedDate != nextEvent.lastModifiedDate {
+                    if nextEvent.meetingLink != nil {
+                        app.openFullscreenNotificationWindow(event: nextEvent)
+                    }
+
+                    // update the executed events
+                    if matchedEvent != nil {
+                        events = events.filter { $0.id != nextEvent.ID }
+                    }
+                    events.append(ProcessedEvent(id: nextEvent.ID, lastModifiedDate: nextEvent.lastModifiedDate, eventEndDate: nextEvent.endDate))
+                    Defaults[.processedEventsForFullscreenNotification] = events
+                }
+            }
 
             /*
              * -----------------------
@@ -75,7 +107,7 @@ class ActionsOnEventStart: NSObject {
                 // this is an edge case when the event was already notified for, but scheduled for a later time.
                 if matchedEvent == nil || matchedEvent?.lastModifiedDate != nextEvent.lastModifiedDate {
                     if nextEvent.meetingLink != nil {
-                        app.openAutJoinWindow(event: nextEvent)
+                        nextEvent.openMeeting()
                     }
 
                     // update the executed events

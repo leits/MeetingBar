@@ -282,7 +282,8 @@
 
 // MARK: - Shared
 
-"shared_send_notification_toggle" = "Send notification to join next event meeting";
+"shared_send_notification_toggle" = "Send a system notification";
+"shared_fullscreen_notification_toggle" = "Show a fullscreen notification";
 "shared_send_notification_no_alert_style_tip" = "⚠️ Your macOS notification settings for MeetingBar are not set to alert. Do so if you want persistent notifications.";
 "shared_send_notification_disabled_tip" = "⚠️ Your macOS notification settings for MeetingBar are off. Turn on notifications in the macOS system settings to keep track of meetings.";
 "shared_automatic_event_join_toggle" = "Automatically join next event meeting";
