@@ -279,8 +279,8 @@
 
 // MARK: - Shared
 
-"shared_send_notification_toggle" = "Invia una notifica per partecipare alla prossima riunione";
-"shared_fullscreen_notification_toggle" = "Show a fullscreen notification";
+"shared_send_notification_toggle" = "Invia una notifica di sistema";
+"shared_fullscreen_notification_toggle" = "Mostra una notifica a schermo intero";
 "general_when_event_starts" = "quando inizia l'evento";
 "general_one_minute_before" = "1 minuto prima";
 "general_three_minute_before" = "3 minuti prima";
