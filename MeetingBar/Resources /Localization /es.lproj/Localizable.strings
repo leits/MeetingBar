@@ -243,7 +243,7 @@
 "status_bar_error_apple_script_title" = "Error AppleScript";
 "status_bar_error_link_missed_title" = "¡Ouch! No se puede unir a %@";
 "status_bar_error_link_missed_message" = "Enlace no encontrado, o tu servicio de reuniones no está soportado todavía";
-"status_bar_error_app_link_title" = "¡Ups! No se puede abrir el enlace en %@";
+"status_bar_error_app_link_title" = "¡Vaya! No se puede abrir el enlace en %@";
 "status_bar_error_app_link_message" = "Asegúrate de que tengas instalado %@, o abre esos enlaces en un navegador web desde preferencias en su lugar.";
 
 // MARK: - Welcome screen
@@ -283,8 +283,8 @@
 
 // MARK: - Shared
 
-"shared_send_notification_toggle" = "Enviar notificación para unirte a la próxima reunión del evento";
-"shared_fullscreen_notification_toggle" = "Show a fullscreen notification";
+"shared_send_notification_toggle" = "Enviar una notificación del sistema";
+"shared_fullscreen_notification_toggle" = "Mostrar una notificación a pantalla completa";
 "shared_send_notification_no_alert_style_tip" = "⚠️ Tus configuraciones de notificación de macOS para MeetingBar no están establecidas como alertas. Cámbialo si deseas notificaciones persistentes.";
 "shared_send_notification_disabled_tip" = "⚠️ Tus configuraciones de notificación de macOS para MeetingBar están desactivadas. Activa las notificaciones en la configuración del sistema de macOS para llevar un seguimiento de las reuniones.";
 "shared_automatic_event_join_toggle" = "Auto-unirse a la próxima reunión de evento";
