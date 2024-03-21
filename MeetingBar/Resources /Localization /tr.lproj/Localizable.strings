@@ -292,8 +292,8 @@
 
 // MARK: - Shared
 
-"shared_send_notification_toggle" = "Sonraki toplantıya katılmak için bildirim gönder";
-"shared_fullscreen_notification_toggle" = "Show a fullscreen notification";
+"shared_send_notification_toggle" = "Bir sonraki etkinlik toplantısına katılmak için sistem bildirimi gönderin";
+"shared_fullscreen_notification_toggle" = "Tam ekran bildirimi göster";
 "general_when_event_starts" = "etkinlik başladığında";
 "calendars_screen_start_button" = "Uygulamayı kullanmaya başla";
 "access_screen_access_denied_system_preferences_button" = "Sistem Tercihleri";
