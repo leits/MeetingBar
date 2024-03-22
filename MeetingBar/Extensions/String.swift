@@ -30,16 +30,18 @@ extension String {
     /// Returns a version of the string with all HTML tags removed, if any.
     /// - Returns: The string without HTML tags.
     func htmlTagsStripped() -> String {
-        if containsHTML,
-           let dataUTF16 = data(using: .utf16),
-           let attributedSelf = NSAttributedString(
-               html: dataUTF16,
-               options: [.documentType: NSAttributedString.DocumentType.html],
-               documentAttributes: nil
-           ) {
-            return attributedSelf.string
+        if !containsHTML {
+            return self
         }
-        return self
+        return autoreleasepool {
+            guard let dataUTF16 = self.data(using: .utf16) else {
+                return self
+            }
+
+            let attributedString = NSAttributedString(html: dataUTF16, options: [.documentType: NSAttributedString.DocumentType.html], documentAttributes: nil)
+
+            return attributedString?.string ?? self
+        }
     }
 
     func fileName() -> String {
