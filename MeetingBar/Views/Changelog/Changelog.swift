@@ -170,7 +170,7 @@ struct ChangelogView: View {
                             Text("🖥️ Full-screen notifications")
                             Text("🌍 Translation into Spanish and Portuguese")
                             Text("• Autojoin is back and separate from full-screen notification")
-                            Text("• Imporved Zoom link recongition")
+                            Text("• Improved Zoom link recognition")
                         }
                     }
                 }
