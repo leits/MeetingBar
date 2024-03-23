@@ -186,8 +186,8 @@
 
 // MARK: - Shared
 
-"shared_send_notification_toggle" = "לשלוח התראה להצטרף לפגישת האירוע הבאה שלך";
-"shared_fullscreen_notification_toggle" = "Show a fullscreen notification";
+"shared_send_notification_toggle" = "לשלוח התראת מערכת";
+"shared_fullscreen_notification_toggle" = "הצגת התראה על כל המסך";
 "general_when_event_starts" = "כאשר אירוע מתחיל";
 "general_one_minute_before" = "דקה לפני";
 "general_three_minute_before" = "3 דקות לפני";
