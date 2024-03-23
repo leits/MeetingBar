@@ -65,8 +65,8 @@
 
 // MARK: - Shared
 
-"shared_send_notification_toggle" = "Envoyer une notification pour rejoindre la prochaine réunion de l'évènement";
-"shared_fullscreen_notification_toggle" = "Show a fullscreen notification";
+"shared_send_notification_toggle" = "Envoyer une notification système";
+"shared_fullscreen_notification_toggle" = "Affiche une notification plein écran";
 "access_screen_access_granted_click_ok_title" = "Cliquez sur « OK » dans la fenêtre popup de macOS.";
 "access_screen_access_screen_access_denied_go_to_title" = "Allez dans les";
 "access_screen_access_denied_checkbox_title" = "et sélectionnez une case à cocher près de MeetingBar.";
