@@ -268,8 +268,8 @@
 
 // MARK: - Shared
 
-"shared_send_notification_toggle" = "Pošalji obavijest za pridruživanje sljedećem sastanku";
-"shared_fullscreen_notification_toggle" = "Show a fullscreen notification";
+"shared_send_notification_toggle" = "Pošalji obavijest sustava";
+"shared_fullscreen_notification_toggle" = "Prikaži obavijest na cijelom ekranu";
 "general_when_event_starts" = "kad događaj počne";
 "general_one_minute_before" = "1 minutu prije";
 "general_three_minute_before" = "3 minute prije";
