@@ -38,6 +38,13 @@ class StatusBarItemController {
         statusItem.button?.target = self
         statusItem.button?.action = #selector(statusMenuBarAction)
         statusItem.button?.sendAction(on: [NSEvent.EventTypeMask.rightMouseDown, NSEvent.EventTypeMask.leftMouseUp, NSEvent.EventTypeMask.leftMouseDown])
+
+        // Temporary icon and menu before app delegate setup
+        statusItem.button?.image = NSImage(named: "AppIcon")!
+        statusItem.button?.image?.size = NSSize(width: 16, height: 16)
+        statusItem.button?.imagePosition = .imageLeft
+        let menuItem = statusItemMenu.addItem(withTitle: "window_title_onboarding".loco(), action: nil, keyEquivalent: "")
+        menuItem.isEnabled = false
     }
 
     @objc
@@ -181,11 +188,12 @@ class StatusBarItemController {
 
                     button.image = image
                     button.image?.size = NSSize(width: 16, height: 16)
-                    if image.name() == "no_online_session" {
-                        button.imagePosition = .noImage
-                    } else {
-                        button.imagePosition = .imageLeft
-                    }
+                }
+
+                if button.image?.name() == "no_online_session" {
+                    button.imagePosition = .noImage
+                } else {
+                    button.imagePosition = .imageLeft
                 }
 
                 // create an NSMutableAttributedString that we'll append everything to

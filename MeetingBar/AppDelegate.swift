@@ -39,6 +39,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             Defaults[.appVersion] = appVersion
         }
 
+        statusBarItem = StatusBarItemController()
+
         if Defaults[.onboardingCompleted] {
             setEventStoreProvider(provider: Defaults[.eventStoreProvider])
             setup()
@@ -48,7 +50,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     }
 
     func setup() {
-        statusBarItem = StatusBarItemController()
         statusBarItem.setAppDelegate(appdelegate: self)
 
         registerNotificationCategories()
