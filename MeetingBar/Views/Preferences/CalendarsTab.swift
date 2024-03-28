@@ -37,6 +37,15 @@ struct CalendarsTab: View {
                             }
                         }
                     }
+
+                    if eventStoreProvider == .macOSEventKit, calendarsBySource.isEmpty {
+                        HStack {
+                            Text("access_screen_access_screen_access_denied_go_to_title".loco())
+                            Button("access_screen_access_denied_system_preferences_button".loco()) { NSWorkspace.shared.open(Links.calendarPreferences) }
+                            Text("access_screen_access_denied_checkbox_title".loco())
+                        }
+                        Text("access_screen_access_denied_relaunch_title".loco())
+                    }
                 }.listStyle(SidebarListStyle())
             }
             Divider()
