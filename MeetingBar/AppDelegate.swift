@@ -199,7 +199,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
      */
 
     private func scheduleFetchEvents() {
-        let timer = Timer(timeInterval: 60, target: self, selector: #selector(fetchEvents), userInfo: nil, repeats: true)
+        let timer = Timer(timeInterval: 180, target: self, selector: #selector(fetchEvents), userInfo: nil, repeats: true)
         timer.tolerance = 10
         RunLoop.current.add(timer, forMode: .common)
     }
