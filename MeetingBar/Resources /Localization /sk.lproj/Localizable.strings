@@ -256,7 +256,7 @@
 "status_bar_submenu_status_declined" = " 👎 Odmietnuté";
 "status_bar_submenu_status_tentative" = " ☝️ Predbežné";
 "status_bar_submenu_status_default_extended" = " ❔ (%@)";
-"status_bar_submenu_location_title" = "Umiestnenie:";
+"status_bar_submenu_location_title" = "Miesto:";
 "status_bar_submenu_attendees_title" = "Účastníci (%d)";
 "status_bar_submenu_attendees_no_name" = "Anonymný účastník";
 "status_bar_submenu_attendees_you" = "%@ (Ty)";
@@ -320,3 +320,5 @@
 "notifications_event_start_three_minutes_body" = "Udalosť sa začína o tri minúty";
 "notifications_event_start_five_minutes_body" = "Udalosť sa začína o päť minút";
 "notification_all_dismissals_removed_title" = "Odstránené všetky zrušené";
+"status_bar_section_date_nothing" = "Nič pre %@";
+"status_bar_submenu_undismiss_meeting" = "Odstrániť zrušenie";
