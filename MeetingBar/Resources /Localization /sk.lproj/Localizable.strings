@@ -7,3 +7,32 @@
 "general_delete" = "Odstrániť";
 "general_save" = "Uložiť";
 "general_meeting" = "Stretnutie";
+"general_when_event_starts" = "pri začatí udalosti";
+"general_one_minute_before" = "1 minútu predtým";
+"general_three_minute_before" = "3 minúty predtým";
+"general_five_minute_before" = "5 minút predtým";
+"window_title_onboarding" = "Víta Ťa MeetingBar";
+
+// MARK: - Preferences General
+
+"preferences_general_option_login_launch" = "Spustiť po štarte";
+"preferences_general_option_preferred_language_title" = "Jazyk:";
+"preferences_general_option_preferred_language_system_value" = "Podľa systému";
+"status_bar_section_join_next_meeting" = "Pripojiť sa k ďalšiemu stretnutiu";
+// MARK: - Welcome screen
+
+"welcome_screen_greeting_main_title" = "Ahoj! MeetingBar je taká jednoduchá aplikácia, že je všetko takmer pripravené.";
+"welcome_screen_login_launch_toggle_title" = "Spustiť MeetingBar pri štarte";
+"welcome_screen_greeting_additional_title" = "Prispôsob si apku úplne svojim potrebám!";
+"welcome_screen_shortcut_next_meeting_title" = "Pripojiť sa k ďalšiemu stretnutiu pomocou skratky:";
+"welcome_screen_ad_hoc_meeting_title" = "Vytvoriť k tomu stretnutie v ";
+"welcome_screen_shortcut_ad_hoc_meeting_title" = "pomocou skratky:";
+"welcome_screen_setup_calendar_title" = "Nastaviť kalendáre";
+"access_screen_access_granted_title" = "Žiada sa prístup ku kalendárom…";
+
+// MARK: - Shared
+
+"shared_send_notification_toggle" = "Upozorniť systémovým hlásením";
+"shared_send_notification_disabled_tip" = "⚠️ Tvoje macOS nastavenia hlásení pre MeetingBar sú vypnuté. Zapni upozornenia v Systémových nastaveniach macOS pre prehľad o stretnutiach.";
+"shared_automatic_event_join_toggle" = "Automaticky sa pripojiť k ďalšiemu stretnutiu";
+"shared_send_notification_no_alert_style_tip" = "⚠️ Tvoje macOS nastavenia hlásení pre MeetingBar nie sú nastavené na upozorňovať. Urob tak pre neustále upozornenia.";
