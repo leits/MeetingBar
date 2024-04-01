@@ -42,9 +42,9 @@
 "preferences_appearance_events_show_events_for_today_value" = "dnes";
 "preferences_appearance_events_show_events_for_today_tomorrow_value" = "dnes a zajtra";
 "preferences_appearance_events_all_day_title" = "Celodenné udalosti:";
-"preferences_appearance_events_value_hide_without_meeting_link" = "skryť všetko bez odkazov na stretnutia";
-"preferences_appearance_events_value_inactive_without_meeting_link" = "zobraziť tých bez odkazov na schôdzu, ako neaktívnych";
-"preferences_appearance_events_value_only_with_link" = "zobraziť iba tie s odkazmi na stretnutie";
+"preferences_appearance_events_value_hide_without_meeting_link" = "skryť všetkých bez odkazov na stretnutie";
+"preferences_appearance_events_value_inactive_without_meeting_link" = "zobraziť tých bez odkazov na stretnutie, ako neaktívnych";
+"preferences_appearance_events_value_only_with_link" = "zobraziť iba tých s odkazmi na stretnutie";
 "preferences_services_supported_links_list" = "Podporované odkazy na služby:\n%@";
 "preferences_services_link_default_browser_value" = "Predvolený webový prehliadač";
 "preferences_services_link_service_title" = "Otvoriť %@ odkazy v";
@@ -98,3 +98,130 @@
 "link_url_cant_open_title" = "Ups! Nedá sa otvoriť odkaz v %@";
 "link_url_cant_open_message" = "Uisti sa, že máš nainštalovaný %@, alebo namiesto toho otvor takéto odkazy z predvolieb vo webovom prehliadači.";
 "preferences_services_supported_links_mailback" = "Ak služba, ktorú používaš, nie je podporovaná, môžeš poslať email vývojárom";
+"preferences_general_patron_twelve_months" = "12 mesiacov - 11,99 USD";
+"preferences_appearance_events_past_title" = "Uplynulé udalosti:";
+"preferences_appearance_menu_show_event_title" = "Zobraziť udalosť:";
+"create_meeting_error_message" = "Vlastná URL adresa \"%@\" chýba alebo neplatná. ";
+
+// MARK: - Window titles
+
+"window_title_preferences" = "MeetingBar Predvoľby";
+"windows_title_changelog" = "MeetingBar - Čo je nové";
+
+// MARK: - Preferences tabs
+
+"preferences_tab_general" = "Všeobecné";
+"preferences_tab_appearance" = "Vzhľad";
+"preferences_tab_services" = "Služby";
+"preferences_tab_bookmarks" = "Záložky";
+"preferences_tab_calendars" = "Kalendáre";
+"preferences_tab_advanced" = "Pokročilé";
+"preferences_general_option_shortcuts" = "Skratky";
+"preferences_general_all_shortcut" = "Všetky skratky";
+"preferences_general_shortcut_open_menu" = "Otvoriť menu:";
+"preferences_general_shortcut_join_next" = "Pripojiť sa k nasledujúcemu stretnutiu:";
+"preferences_general_shortcut_join_from_clipboard" = "Pripojiť sa k stretnutiu zo schránky:";
+"preferences_general_shortcut_toggle_meeting_name_visibility" = "Zobraziť/Skryť názov v lište:";
+"preferences_general_external_contact" = "Kontakt";
+"preferences_general_external_patronage" = "Podpora";
+"preferences_general_patron_title" = "Staň sa podporovateľom";
+"preferences_general_patron_three_months" = "3 mesiace - 2,99 USD";
+"preferences_general_patron_six_months" = "6 mesiacov - 5,99 USD";
+"preferences_general_patron_description" = "Ide o jednorazové nákupy a nebudú sa automaticky obnovovať.";
+"preferences_general_patron_thank_for_purchase" = "Vďaka! Podporil/a si MeetingBar na %d mesiace(ov) 🎉";
+"preferences_general_patron_restore_purchases" = "Obnovenie nákupov";
+"preferences_general_feedback_title" = "Ak máš akékoľvek otázky alebo pripomienky,\nNeváhaj ma kontaktovať:";
+"preferences_general_feedback_email" = "Email";
+
+// MARK: - Preferences Appearance
+
+"preferences_appearance_events_title" = "Udalosti";
+"preferences_appearance_events_show_events_for_title" = "Zobraziť udalosti pre";
+"preferences_appearance_events_non_all_day_title" = "Ďalšie udalosti:";
+"preferences_appearance_events_without_guest_title" = "Udalosti bez hostí:";
+"preferences_appearance_events_pending_title" = "Čakajúce udalosti";
+"preferences_appearance_events_declined_title" = "Odmietnuté udalosti:";
+"preferences_appearance_events_tentative_title" = "Predbežné udalosti:";
+"preferences_appearance_events_value_show" = "zobraziť";
+"preferences_appearance_events_value_hide" = "skryť";
+"preferences_appearance_events_value_as_inactive" = "zobraziť ako neaktívne";
+"preferences_appearance_events_value_as_underlined" = "zobraziť ako podčiarknuté";
+"preferences_appearance_events_value_with_strikethrough" = "zobraziť s preškrtnutím";
+"preferences_appearance_status_bar_title" = "Lišta";
+"preferences_appearance_status_bar_icon_title" = "Ikona";
+"preferences_appearance_status_bar_icon_app_icon_value" = " MeetingBar";
+"preferences_appearance_status_bar_icon_calendar_icon_value" = " Kalendár";
+"preferences_appearance_status_bar_icon_specific_icon_value" = " Ikona konkrétnej udalosti (napr. MS Teams)";
+"preferences_appearance_status_bar_icon_no_icon_value" = " Žiadna ikona";
+"preferences_appearance_status_bar_title_title" = "Názov";
+"preferences_appearance_status_bar_title_event_title_value" = "názov udalosti";
+"preferences_appearance_status_bar_title_dot_value" = "bodka (•)";
+"preferences_appearance_status_bar_title_hide_value" = "skryť";
+"preferences_appearance_status_bar_title_shorten_stepper" = "skrátiť na %d znakov";
+"preferences_appearance_status_bar_time_title" = "Čas";
+"preferences_appearance_status_bar_time_show_value" = "zobraziť";
+"preferences_appearance_status_bar_time_show_under_title_value" = "zobraziť pod názvom";
+"preferences_appearance_status_bar_time_hide_value" = "skryť";
+"preferences_appearance_status_bar_next_event_toggle" = "Zobraziť iba udalosti začínajúce počas";
+"preferences_appearance_menu_title" = "Menu";
+"preferences_appearance_status_bar_next_event_stepper" = "%d minút";
+"preferences_appearance_menu_shorten_event_title_toggle" = "Skrátiť názov udalosti na";
+"preferences_appearance_menu_shorten_event_title_stepper" = "%d znakov";
+"preferences_appearance_menu_time_format_title" = "Formát času:";
+"preferences_appearance_menu_time_format_12_hour_value" = "12-hodinový (AM/PM)";
+"preferences_appearance_menu_time_format_24_hour_value" = "24-hodinový";
+"preferences_appearance_menu_show_event_end_time_value" = "čas ukončenia";
+"preferences_appearance_menu_show_event_icon_value" = "ikona";
+"preferences_appearance_menu_show_event_details_value" = "podrobnosti ako podmenu";
+"preferences_services_create_meeting_title" = "Vytvárať stretnutia cez";
+"preferences_services_google_meet_tip" = "Tip: Google Meet podporuje výber účtu v URL adrese, napr. https://meet.google.com/new?authuser=1";
+"preferences_services_create_meeting_browser_title" = "Použiť webový prehliadač";
+
+// MARK: - Preferences Services Browsers Configuration
+
+"preferences_configure_browsers_button" = "Konfigurovať webové prehliadače";
+"preferences_configure_browsers_delete_alert_title" = "Odstrániť konfiguráciu webového prehliadača?";
+"preferences_configure_browsers_delete_alert_message" = "Odstrániť konfiguráciu prehliadača %@?";
+"preferences_configure_browsers_add_button_browser_title" = "Webový prehliadač";
+"preferences_configure_browsers_add_button_all_system_title" = "Všetky systémové webové prehliadače";
+"preferences_configure_browsers_modal_add_browser_title" = "Pridať webový prehliadač";
+"preferences_configure_browsers_modal_edit_browser_title" = "Upraviť webový prehliadač";
+"preferences_configure_browsers_modal_add_browser_name" = "Názov";
+"preferences_configure_browsers_modal_add_browser_path" = "Cesta";
+"preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "Vybrať webový prehliadač";
+"preferences_configure_browsers_modal_alert_title" = "Nie je možné pridať konfiguráciu prehliadača";
+"preferences_configure_browsers_choose_broser_panel_title" = "Vyber webový prehliadač";
+"preferences_configure_browsers_choose_broser_panel_prompt" = "Vyber webový prehliadač";
+"preferences_configure_browsers_choose_broser_panel_message" = "Vyberte, odkiaľ chceš spustiť webový prehliadač.";
+
+// MARK: - Preferences Bookmarks
+
+"preferences_bookmarks_no_bookmarks_placeholder" = "Zatiaľ nemáš žiadne záložky";
+"preferences_bookmarks_delete_bookmark_title" = "Odstrániť záložku?";
+"preferences_bookmarks_delete_bookmark_message" = "Odstrániť záložku %@?";
+"preferences_bookmarks_add_bookmark_button" = "Pridať záložku";
+"preferences_bookmarks_new_bookmark_title" = "Nová záložka";
+"preferences_bookmarks_new_bookmark_name" = "Názov";
+"preferences_bookmarks_new_bookmark_service" = "Služba";
+"preferences_bookmarks_new_bookmark_error_title" = "Nie je možné pridať záložku";
+"preferences_calendars_add_account_description" = "Nemôžeš nájsť kalendár, ktorý potrebuješ?";
+
+// MARK: - Preferences Advanced
+
+"preferences_advanced_setting_warning" = "⚠️ Tieto nastavenia používaj, iba ak rozumieš tomu, čo robia";
+"status_bar_section_join_from_clipboard" = "Otvoriť stretnutie zo schránky";
+"status_bar_section_refresh_sources" = "Aktualizovať zdroje";
+"notification_next_meeting_dismissed_message" = "Z Rýchlych akcií môžeš odstrániť \"Zrušiť\"";
+"status_bar_section_join_create_meeting" = "Vytvoriť stretnutie";
+"status_bar_quick_actions" = "Rýchle akcie";
+"status_bar_hide_meeting_names" = "Skryť názov stretnutia";
+"status_bar_whats_new" = "Čo je nové?";
+"status_bar_rate_app" = "Ohodnoť aplikáciu";
+"status_bar_quit" = "Ukončiť MeetingBar";
+"shared_automatic_event_join_tip" = "Toto nastavenie automaticky otvorí nasledujúce stretnutie v nastavenej aplikácii alebo prehliadači";
+"preferences_general_meeting_bar_description" = "MeetingBar je open-source aplikácia\nvytvoril ju Andrii Leitsius 🇺🇦\nPre plynulejšie a jednoduchšie online stretnutia";
+"preferences_services_create_meeting_custom_url_placeholder" = "Zadaj platnú URL adresu (s http:// alebo https://)";
+"preferences_services_create_meeting_custom_url_value" = "Vlastná URL adresa";
+
+// MARK: - Constants
+"constants_create_meeting_service_url" = "Vlastná URL adresa";
