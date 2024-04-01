@@ -33,6 +33,68 @@
 // MARK: - Shared
 
 "shared_send_notification_toggle" = "Upozorniť systémovým hlásením";
-"shared_send_notification_disabled_tip" = "⚠️ Tvoje macOS nastavenia hlásení pre MeetingBar sú vypnuté. Zapni upozornenia v Systémových nastaveniach macOS pre prehľad o stretnutiach.";
+"shared_send_notification_disabled_tip" = "⚠️ Tvoje MacOS nastavenia hlásení pre MeetingBar sú vypnuté. Zapni upozornenia v Systémových nastaveniach macOS pre prehľad o stretnutiach.";
 "shared_automatic_event_join_toggle" = "Automaticky sa pripojiť k ďalšiemu stretnutiu";
-"shared_send_notification_no_alert_style_tip" = "⚠️ Tvoje macOS nastavenia hlásení pre MeetingBar nie sú nastavené na upozorňovať. Urob tak pre neustále upozornenia.";
+"shared_send_notification_no_alert_style_tip" = "⚠️ Tvoje MacOS nastavenia hlásení pre MeetingBar nie sú nastavené na upozorňovať. Urob tak pre neustále upozornenia.";
+"next_meeting_empty_title" = "Dnes nie sú žiadne naplánované stretnutia";
+"create_meeting_error_title" = "Nie je možné vytvoriť nové stretnutie";
+"preferences_general_shortcut_create_meeting" = "Vytvoriť stretnutie:";
+"preferences_appearance_events_show_events_for_today_value" = "dnes";
+"preferences_appearance_events_show_events_for_today_tomorrow_value" = "dnes a zajtra";
+"preferences_appearance_events_all_day_title" = "Celodenné udalosti:";
+"preferences_appearance_events_value_hide_without_meeting_link" = "skryť všetko bez odkazov na stretnutia";
+"preferences_appearance_events_value_inactive_without_meeting_link" = "zobraziť tých bez odkazov na schôdzu, ako neaktívnych";
+"preferences_appearance_events_value_only_with_link" = "zobraziť iba tie s odkazmi na stretnutie";
+"preferences_services_supported_links_list" = "Podporované odkazy na služby:\n%@";
+"preferences_services_link_default_browser_value" = "Predvolený webový prehliadač";
+"preferences_services_link_service_title" = "Otvoriť %@ odkazy v";
+
+// MARK: - Preferences Services
+
+"preferences_services_link_meeting_title" = "Otvoriť všetky odkazy na stretnutia v";
+"preferences_bookmarks_new_bookmark_link_phone" = "Odkaz/telefónne číslo";
+
+// MARK: - Preferences Calendars
+
+"preferences_calendars_select_calendars_title" = "Vyber kalendáre na zobrazenie udalostí v lište";
+"preferences_calendars_add_account_button" = "Pridať účet kalendára";
+"preferences_bookmarks_new_bookmark_already_exist" = "%@ už má tento odkaz/telefónne číslo:\n%@";
+"preferences_calendars_provider_section_title" = "Poskytovateľ kalendára";
+"preferences_calendars_provider_gcalendar_change_account" = "Zmeniť Google účet";
+"preferences_calendars_provider_gcalendar_switch" = "Prepnúť na Google Kalendár API";
+"preferences_calendars_provider_macos_switch" = "Prepnúť na MacOS Kalendár";
+"preferences_advanced_regex_title" = "Vlastné regexy pre odkaz na stretnutie";
+
+// MARK: - Status bar
+
+"status_bar_section_today" = "Dnes";
+"status_bar_event_start_time_all_day" = "Celý deň";
+"status_bar_submenu_copy_meeting_link" = "Skopírovať odkaz na stretnutie";
+"status_bar_error_link_missed_title" = "Ups! Nemôžem sa pripojiť k %@";
+"status_bar_error_app_link_title" = "Ups! Nedá sa otvoriť odkaz v %@";
+"status_bar_error_app_link_message" = "Uisti sa, že máš nainštalovaný %@ alebo namiesto toho otvor takéto odkazy z predvolieb vo webovom prehliadači.";
+"access_screen_access_screen_access_denied_go_to_title" = "Prejdi do";
+"access_screen_access_denied_system_preferences_button" = "Systémových nastavení";
+
+// MARK: - Calendars screen
+
+"calendars_screen_select_calendar_title" = "Vyber aspoň jeden kalendár";
+"calendars_screen_start_button" = "Začať používať apku";
+"access_screen_access_granted_click_ok_title" = "Klikni na \"OK\" v kontextovom okne.";
+"access_screen_access_denied_checkbox_title" = "A zaškrtni políčko pre MeetingBar.";
+"access_screen_access_denied_relaunch_title" = "Potom spusti aplikáciu manuálne a pokračuj v nastavovaní.";
+"access_screen_provider_picker_label" = "Vyber poskytovateľa kalendára";
+"access_screen_provider_macos_title" = "MacOS Kalendár aplikácia";
+"access_screen_provider_macos_recomended" = "(odporúčané)";
+"access_screen_provider_macos_data_source" = "Získať údaje z MacOS Kalendár aplikácie";
+"access_screen_provider_macos_number_of_accounts" = "Ľubovoľný počet akýchkoľvek prepojených účtov";
+"access_screen_provider_gcalendar_number_of_accounts" = "Iba jeden Google účet";
+"access_screen_provider_gcalendar_sign_in_title" = "Prihlásenie cez Google";
+"constants_meeting_service_other" = "Iné";
+
+
+// MARK: - Link open
+
+"link_url_cant_open_title" = "Ups! Nedá sa otvoriť odkaz v %@";
+"link_url_cant_open_message" = "Uisti sa, že máš nainštalovaný %@, alebo namiesto toho otvor takéto odkazy z predvolieb vo webovom prehliadači.";
+"preferences_services_supported_links_mailback" = "Ak služba, ktorú používaš, nie je podporovaná, môžeš poslať email vývojárom";
