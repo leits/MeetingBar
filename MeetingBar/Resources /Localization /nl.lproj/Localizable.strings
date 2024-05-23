@@ -1,1 +1,110 @@
 
+
+"general_one_minute_before" = "1 minuut ervoor";
+"general_three_minute_before" = "3 minuten ervoor";
+"general_five_minute_before" = "5 minuten ervoor";
+"create_meeting_error_message" = "Aangepaste URL '%@' ontbreekt of is ongeldig. ";
+"next_meeting_empty_message" = "Woehoe! Het is tijd om chocolademelk te maken";
+
+// MARK: - Window titles
+
+"window_title_preferences" = "MeetingBar instellingen";
+"window_title_onboarding" = "Welkom bij MeetingBar";
+"windows_title_changelog" = "MeetingBar – Wat is er nieuw";
+"preferences_tab_appearance" = "Verschijning";
+"preferences_tab_services" = "Diensten";
+"preferences_tab_bookmarks" = "Bladwijzers";
+"preferences_tab_calendars" = "Kalenders";
+"preferences_tab_advanced" = "Geavanceerd";
+
+// MARK: - Preferences General
+
+"preferences_general_option_login_launch" = "Openen na inloggen";
+"preferences_general_option_preferred_language_title" = "Taal:";
+"preferences_general_option_preferred_language_system_value" = "Systeem";
+"preferences_general_option_shortcuts" = "Sneltoetsen";
+"general_meeting" = "Vergadering";
+"general_when_event_starts" = "wanneer vergadering start";
+"preferences_general_all_shortcut" = "Alle sneltoetsen";
+"preferences_general_shortcut_open_menu" = "Menu openen:";
+"preferences_general_patron_three_months" = "3 maanden – 2.99 USD";
+"preferences_general_patron_six_months" = "6 maanden – 5.99 USD";
+"preferences_general_patron_twelve_months" = "12 maanden – 11.99 USD";
+"preferences_general_patron_description" = "Dit is een eenmalige aankoop en wordt niet automatisch vernieuwd.";
+"preferences_general_shortcut_create_meeting" = "Vergadering maken:";
+"preferences_general_shortcut_join_next" = "Deelnemen aan volgende vergadering:";
+"preferences_general_shortcut_join_from_clipboard" = "Deelnemen aan vergadering vanaf het klembord:";
+
+// MARK: - Preferences Appearance
+
+"preferences_appearance_events_title" = "Vergaderingen";
+"preferences_appearance_events_show_events_for_title" = "Toon vergaderingen voor";
+"preferences_appearance_events_non_all_day_title" = "Andere vergaderingen:";
+"preferences_appearance_events_all_day_title" = "Dag vergaderingen:";
+"preferences_appearance_events_past_title" = "Verlopen vergaderingen:";
+"preferences_appearance_events_pending_title" = "Vergaderingen in afwachting";
+"preferences_appearance_status_bar_title" = "Statusbalk";
+"preferences_appearance_status_bar_icon_title" = "Icoon";
+"preferences_appearance_events_value_only_with_link" = "toon alleen vergadering met links";
+"preferences_appearance_status_bar_icon_specific_icon_value" = " Evenementspecifiek icoon (bijv. MS Teams)";
+"preferences_appearance_status_bar_title_title" = "Titel";
+"preferences_appearance_status_bar_title_dot_value" = "stip (•)";
+"preferences_appearance_status_bar_title_event_title_value" = "vergadering titel";
+"preferences_appearance_status_bar_next_event_stepper" = "%d minuten";
+"preferences_appearance_menu_shorten_event_title_stepper" = "%d tekens";
+"preferences_appearance_menu_time_format_title" = "Tijdformaat:";
+"preferences_appearance_menu_time_format_12_hour_value" = "12 uur (AM/PM)";
+"preferences_appearance_menu_time_format_24_hour_value" = "24 uur";
+"preferences_appearance_menu_show_event_end_time_value" = "eindtijd";
+"preferences_appearance_menu_show_event_icon_value" = "icoon";
+"preferences_appearance_menu_shorten_event_title_toggle" = "Verkort de titel van de vergadering tot";
+"preferences_appearance_menu_show_event_title" = "Toon vergadering:";
+"preferences_appearance_menu_show_event_details_value" = "details als submenu";
+"preferences_services_link_default_browser_value" = "Standaard webbrowser";
+"preferences_services_supported_links_list" = "Ondersteunde links voor diensten:\n%@";
+"general_ok" = "OK";
+"general_cancel" = "Annuleren";
+"general_close" = "Sluiten";
+"general_add" = "Toevoegen";
+"general_delete" = "Verwijderen";
+"general_save" = "Opslaan";
+
+// MARK: - Preferences tabs
+
+"preferences_tab_general" = "Algemeen";
+"preferences_general_shortcut_toggle_meeting_name_visibility" = "Schakel de zichtbaarheid van titels in de statusbalk:";
+"preferences_general_meeting_bar_description" = "MeetingBar is een open-source app\nGemaakt door Andrii Leitsius 🇺🇦\nVoor sneller en makkelijker online vergaderingen";
+"preferences_general_external_patronage" = "";
+"preferences_general_patron_title" = "Word een Patron";
+"preferences_general_patron_thank_for_purchase" = "Bedankt! Je hebt MeetingBar gesteund voor % van de maanden";
+"preferences_general_patron_restore_purchases" = "Aankopen herstellen";
+"preferences_general_feedback_title" = "Als je vragen of feedback hebt,\nVoel je vrij om in contact te komen:";
+"preferences_general_feedback_email" = "E-mailadres";
+"preferences_appearance_events_show_events_for_today_tomorrow_value" = "vandaag en morgen";
+"preferences_appearance_events_show_events_for_today_value" = "vandaag";
+"preferences_appearance_events_value_hide_without_meeting_link" = "verberg alle vergaderingen zonder links";
+"preferences_appearance_events_value_inactive_without_meeting_link" = "toon vergaderingen zonder links als inactief";
+"preferences_appearance_events_without_guest_title" = "Vergaderingen zonder deelnemers:";
+"preferences_appearance_events_tentative_title" = "Voorlopige vergaderingen:";
+"preferences_appearance_events_value_show" = "toon";
+"preferences_appearance_events_value_hide" = "verberg";
+"preferences_appearance_events_value_as_inactive" = "toon als inactief";
+"preferences_appearance_events_value_as_underlined" = "toon onderstreept";
+"preferences_appearance_events_value_with_strikethrough" = "toon doorgestreept";
+"preferences_appearance_status_bar_icon_calendar_icon_value" = " Agenda";
+"preferences_appearance_status_bar_icon_no_icon_value" = " Geen icoon";
+"preferences_appearance_status_bar_title_hide_value" = "verberg";
+"preferences_appearance_status_bar_title_shorten_stepper" = "verkorten tot %d tekens";
+"preferences_appearance_status_bar_time_title" = "Tijd";
+"preferences_appearance_status_bar_time_show_value" = "toon";
+"preferences_appearance_status_bar_time_show_under_title_value" = "toon oder titel";
+"preferences_appearance_status_bar_time_hide_value" = "verberg";
+
+// MARK: - Preferences Services
+
+"preferences_services_link_meeting_title" = "Open alle vergadering links in";
+"preferences_services_supported_links_mailback" = "Als de dienst die u gebruikt niet wordt ondersteund, kunt u een e-mail sturen naar de ontwikkelaars";
+"create_meeting_error_title" = "Kan geen nieuwe vergadering maken";
+"next_meeting_empty_title" = "Er zijn vandaag geen geplande vergaderingen";
+"preferences_appearance_events_declined_title" = "Afgewezen vergaderingen:";
+"preferences_appearance_status_bar_next_event_toggle" = "Toon alleen vergaderingen die beginnen binnen";
