@@ -131,3 +131,85 @@
 "preferences_configure_browsers_modal_add_browser_name" = "Naam";
 "preferences_configure_browsers_modal_add_browser_path" = "Locatie";
 "preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "Kies webbrowser";
+"preferences_configure_browsers_choose_broser_panel_title" = "Kies een webbrowser app";
+"preferences_configure_browsers_choose_broser_panel_prompt" = "Kies een webbrowser";
+"preferences_configure_browsers_choose_broser_panel_message" = "Selecteer waar de webbrowser start.";
+
+// MARK: - Preferences Bookmarks
+
+"preferences_bookmarks_no_bookmarks_placeholder" = "Je hebt nog geen bladwijzers";
+"preferences_bookmarks_delete_bookmark_title" = "Bladwijzer verwijderen?";
+"preferences_bookmarks_delete_bookmark_message" = "Bladwijzer %@ verwijderen?";
+"preferences_bookmarks_add_bookmark_button" = "Bladwijzer toevoegen";
+"preferences_bookmarks_new_bookmark_link_phone" = "Link/telefoonnummer";
+"preferences_bookmarks_new_bookmark_error_title" = "Kan bladwijzer niet toevoegen";
+"preferences_calendars_add_account_description" = "Kan je de kalender niet vinden die je nodig hebt?";
+"preferences_calendars_provider_section_title" = "Kalender provider";
+"preferences_calendars_provider_gcalendar_change_account" = "Verander Google Account";
+"preferences_calendars_provider_macos_switch" = "Schakel over naar macOS Agenda";
+"preferences_calendars_provider_gcalendar_switch" = "Schakel over naar de Google Calendar-API";
+
+// MARK: - Preferences Advanced
+
+"preferences_advanced_setting_warning" = "⚠️ Gebruik alleen deze instellingen als je begrijpt wat ze doen";
+"preferences_advanced_apple_script_checkmark" = "Activeer AppleScript wanneer een vergadering start";
+"preferences_advanced_apple_script_placeholder" = "# schrijf hier je script\nvertel de applicatie \"Muziek\" om te pauzeren";
+"preferences_advanced_test_script_on_next_event" = "Test bij de volgende vergadering";
+"preferences_advanced_edit_script" = "Script bewerken";
+"preferences_advanced_save_script_button" = "Bewaar script";
+"preferences_advanced_wrong_location_title" = "Verkeerde locatie";
+"preferences_advanced_wrong_location_message" = "Kies alsjeblieft de Gebruiker → Bibliotheek → Application Scripts → leits.MeetingBar map";
+"preferences_advanced_event_regex_title" = "Aangepaste regexes om vergaderingen uit te filteren";
+"preferences_advanced_regex_title" = "Aangepaste regexes voor vergaderingslink";
+"preferences_advanced_regex_add_button" = "Regex toevoegen";
+"preferences_advanced_regex_new_title" = "Voer regex in";
+"preferences_advanced_regex_new_cant_save_title" = "Kan regex niet opslaan";
+
+// MARK: - Status bar
+
+"status_bar_section_today" = "Vandaag";
+"status_bar_section_tomorrow" = "Morgen";
+"status_bar_empty_calendar_message" = "Selecteer uw agenda's in de instellingen\nom je vergaderingen te zien";
+"status_bar_section_join_next_meeting" = "Neem deel aan volgende vergadering";
+"status_bar_section_join_from_clipboard" = "Vergadering openen vanaf klembord";
+"status_bar_menu_dismiss_next_meeting" = "Volgende vergadering afwijzen";
+"status_bar_menu_dismiss_curent_meeting" = "Huidige vergadering afwijzen";
+"status_bar_menu_remove_all_dismissals" = "Verwijder alle afwijzingen";
+"status_bar_event_dismissed_mark" = "afgewezen";
+"notification_next_meeting_dismissed_title" = "Afgewezen %@";
+"notification_all_dismissals_removed_title" = "Verwijder all afwijzingen";
+"notification_all_dismissals_removed_message" = "Alle afgewezen vergaderingen zijn weer actief";
+"status_bar_section_join_create_meeting" = "Vergadering maken";
+"status_bar_section_bookmarks_title" = "Bladwijzers";
+"status_bar_section_bookmarks_menu" = "Bladwijzers menu";
+"status_bar_section_date_nothing" = "Niets voor %@";
+"status_bar_event_start_time_all_day" = "Hele dag";
+"status_bar_submenu_calendar_title" = "Kalender: %@";
+"status_bar_submenu_duration_all_day" = "%@ - %@ (%@ minuten)";
+"status_bar_submenu_status_title" = "Status: %@";
+"status_bar_submenu_status_declined" = " 👎 Afgewezen";
+"access_screen_try_again" = "Opnieuw proberen";
+"shared_fullscreen_notification_toggle" = "Toon een melding op volledig scherm";
+"preferences_bookmarks_new_bookmark_title" = "Nieuwe bladwijzer";
+"preferences_bookmarks_new_bookmark_name" = "Naam";
+"preferences_bookmarks_new_bookmark_service" = "Dienst";
+"preferences_bookmarks_new_bookmark_already_exist" = "%@ heeft deze link/telefoonnummer al:\n%@";
+
+// MARK: - Preferences Calendars
+
+"preferences_calendars_select_calendars_title" = "Kies kalenders die vergaderingen laten zien in de statusbalk";
+"preferences_calendars_add_account_button" = "Voeg kalender account toe";
+"preferences_calendars_add_account_modal" = "Om externe kalenders toe te voegen:\n1. Open de standaard kalender app\n2. Klik 'Account toevoegen' in het menu\n3. Kies en verbind je account";
+"preferences_advanced_run_script_on_event_start" = "Voer AppleScript automatisch uit";
+"preferences_advanced_wrong_location_button" = "Begrepen!";
+"preferences_advanced_regex_edit_button" = "bewerken";
+"status_bar_section_join_current_meeting" = "Neem deel aan huidige vergadering";
+"status_bar_section_refresh_sources" = "Ververs bronnen";
+"notification_next_meeting_dismissed_message" = "Je kan afgewezen niet verwijderen uit Quick Actions";
+"status_bar_submenu_status_accepted" = " 👍 Geaccepteerd";
+"access_screen_provider_gcalendar_sign_in_title" = "Google Sign In";
+"access_screen_provider_gcalendar_sign_in_description" = "Geef MeetingBar toegang tot uw agenda in het browservenster";
+
+// MARK: - Shared
+
+"shared_send_notification_toggle" = "Stuur een systeemmelding";
