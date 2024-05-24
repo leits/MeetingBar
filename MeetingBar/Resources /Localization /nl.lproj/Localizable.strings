@@ -74,7 +74,7 @@
 "preferences_tab_general" = "Algemeen";
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "Schakel de zichtbaarheid van titels in de statusbalk:";
 "preferences_general_meeting_bar_description" = "MeetingBar is een open-source app\nGemaakt door Andrii Leitsius 🇺🇦\nVoor sneller en makkelijker online vergaderingen";
-"preferences_general_external_patronage" = "";
+"preferences_general_external_patronage" = "Patronage";
 "preferences_general_patron_title" = "Word een Patron";
 "preferences_general_patron_thank_for_purchase" = "Bedankt! Je hebt MeetingBar gesteund voor % van de maanden";
 "preferences_general_patron_restore_purchases" = "Aankopen herstellen";
@@ -108,3 +108,26 @@
 "next_meeting_empty_title" = "Er zijn vandaag geen geplande vergaderingen";
 "preferences_appearance_events_declined_title" = "Afgewezen vergaderingen:";
 "preferences_appearance_status_bar_next_event_toggle" = "Toon alleen vergaderingen die beginnen binnen";
+"preferences_general_external_contact" = "Contact";
+"preferences_appearance_status_bar_icon_app_icon_value" = " MeetingBar";
+"preferences_appearance_menu_title" = "Menu";
+"preferences_services_link_service_title" = "Open %@ links in";
+"preferences_services_create_meeting_title" = "Maak vergaderingen met";
+"preferences_services_create_meeting_custom_url_value" = "Aangepaste URL";
+"preferences_services_create_meeting_custom_url_placeholder" = "Voer een geldige URL in (met http:// of https://)";
+"preferences_services_google_meet_tip" = "Tip: Google Meet ondersteunt het kiezen van een account in de URL, bijvoorbeeld https://meet.google.com/new?authuser=1";
+"preferences_services_create_meeting_browser_title" = "Gebruik webbrowser";
+
+// MARK: - Preferences Services Browsers Configuration
+
+"preferences_configure_browsers_button" = "Configureer webbrowsers";
+"preferences_configure_browsers_delete_alert_message" = "De %@ browser configuratie verwijderen?";
+"preferences_configure_browsers_add_button_browser_title" = "Webbrowser";
+"preferences_configure_browsers_add_button_all_system_title" = "Alle systeem webbrowsers";
+"preferences_configure_browsers_modal_edit_browser_title" = "Webbrowser bewerken";
+"preferences_configure_browsers_modal_alert_title" = "Kan browser configuratie niet toevoegen";
+"preferences_configure_browsers_delete_alert_title" = "Webbrowser configuratie verwijderen?";
+"preferences_configure_browsers_modal_add_browser_title" = "Webbrowser toevoegen";
+"preferences_configure_browsers_modal_add_browser_name" = "Naam";
+"preferences_configure_browsers_modal_add_browser_path" = "Locatie";
+"preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "Kies webbrowser";
