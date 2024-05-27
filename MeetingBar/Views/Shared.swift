@@ -127,6 +127,7 @@ struct LaunchAtLoginANDPreferredLanguagePicker: View {
                         Text("Español").tag(AppLanguage.spanish)
                         Text("Português").tag(AppLanguage.portuguese)
                         Text("Slovenčina").tag(AppLanguage.slovak)
+                        Text("Nederland").tag(AppLanguage.dutch)
                     }
                 }
             }.frame(width: 250)

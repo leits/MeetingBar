@@ -120,6 +120,7 @@
 		467351B629057BC900EE3987 /* StringExtensionsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringExtensionsTests.swift; sourceTree = "<group>"; };
 		46B0E9682A78340B00C936DB /* FullscreenNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullscreenNotification.swift; sourceTree = "<group>"; };
 		46B7C51E2C04DF0D009E3B9B /* sk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sk; path = sk.lproj/Localizable.strings; sourceTree = "<group>"; };
+		46B7C51F2C04DFB8009E3B9B /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		46E4794B2801D53B00B48059 /* MeetingServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingServices.swift; sourceTree = "<group>"; };
 		46E4794D2802141800B48059 /* Calendar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Calendar.swift; sourceTree = "<group>"; };
 		46E4794F2802155700B48059 /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
@@ -423,6 +424,7 @@
 				es,
 				"pt-BR",
 				sk,
+				nl,
 			);
 			mainGroup = 144C01702462D0C3000C9FFC;
 			packageReferences = (
@@ -595,6 +597,7 @@
 				783C50AD2B760A3100DF0C9A /* es */,
 				4642D3DA2BAB7733002A6729 /* pt-BR */,
 				46B7C51E2C04DF0D009E3B9B /* sk */,
+				46B7C51F2C04DFB8009E3B9B /* nl */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
