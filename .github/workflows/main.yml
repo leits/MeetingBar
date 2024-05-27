@@ -9,11 +9,17 @@ jobs:
   Tests:
     runs-on: macOS-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+      
+      - name: List available Xcode versions
+        run: ls /Applications | grep Xcode
+        
+      - name: Set up Xcode version
+        run: sudo xcode-select -s /Applications/Xcode_15.2.app/Contents/Developer
+        
+      - name: Show current version of Xcode
+        run: xcodebuild -version
 
-      - name: Xcode Select Version
-        uses: mobiledevops/xcode-select-version-action@v1
-  
       - name: Install xcbeautify
         run: brew install xcbeautify
 
