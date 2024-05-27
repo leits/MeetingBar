@@ -13,8 +13,6 @@ jobs:
 
       - name: Xcode Select Version
         uses: mobiledevops/xcode-select-version-action@v1
-        with:
-          xcode-select-version: 14.2
   
       - name: Install xcbeautify
         run: brew install xcbeautify
