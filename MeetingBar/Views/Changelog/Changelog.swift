@@ -173,6 +173,11 @@ struct ChangelogView: View {
                             Text("• Improved Zoom link recognition")
                         }
                     }
+                    if compareVersions("4.9.0", lastRevisedVersionInChangelog) {
+                        Section(header: Text("Version 4.9")) {
+                            Text("🌍 Translation into Slovak and Dutch")
+                        }
+                    }
                 }
             }.listStyle(SidebarListStyle())
             Button("general_close".loco(), action: close)
