@@ -160,6 +160,7 @@ enum AppLanguage: String, Defaults.Serializable, Codable {
     case italian = "it"
     case portuguese = "pt-BR"
     case spanish = "es"
+    case slovak = "sk"
 }
 
 struct Browser: Defaults.Serializable, Codable, Hashable {

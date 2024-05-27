@@ -112,9 +112,9 @@ struct LaunchAtLoginANDPreferredLanguagePicker: View {
                     Group {
                         Text("English").tag(AppLanguage.english)
                         Text("Українська").tag(AppLanguage.ukrainian)
-                        Text("Hrvatski").tag(AppLanguage.croatian)
-                        Text("Français").tag(AppLanguage.french)
                         Text("Deutsche").tag(AppLanguage.german)
+                        Text("Français").tag(AppLanguage.french)
+                        Text("Hrvatski").tag(AppLanguage.croatian)
                         Text("Norks").tag(AppLanguage.norwegian)
                         Text("Čeština").tag(AppLanguage.czech)
                         Text("日本語").tag(AppLanguage.japanese)
@@ -124,8 +124,9 @@ struct LaunchAtLoginANDPreferredLanguagePicker: View {
                     Group {
                         Text("Türkçe").tag(AppLanguage.turkish)
                         Text("Italiano").tag(AppLanguage.italian)
-                        Text("Português").tag(AppLanguage.portuguese)
                         Text("Español").tag(AppLanguage.spanish)
+                        Text("Português").tag(AppLanguage.portuguese)
+                        Text("Slovenčina").tag(AppLanguage.slovak)
                     }
                 }
             }.frame(width: 250)
