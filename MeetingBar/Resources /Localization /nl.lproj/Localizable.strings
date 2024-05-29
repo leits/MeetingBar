@@ -151,7 +151,7 @@
 
 // MARK: - Preferences Advanced
 
-"preferences_advanced_setting_warning" = "⚠️ Gebruik alleen deze instellingen als je begrijpt wat ze doen";
+"preferences_advanced_setting_warning" = "⚠️ Gebruik deze instellingen alleen als je begrijpt wat ze doen";
 "preferences_advanced_apple_script_checkmark" = "Activeer AppleScript wanneer een meeting start";
 "preferences_advanced_apple_script_placeholder" = "# schrijf hier je script\nvertel de applicatie \"Muziek\" om te pauzeren";
 "preferences_advanced_test_script_on_next_event" = "Test bij de volgende meeting";
@@ -179,7 +179,7 @@
 "notification_next_meeting_dismissed_title" = "Afgewezen %@";
 "notification_all_dismissals_removed_title" = "Verwijder all afwijzingen";
 "notification_all_dismissals_removed_message" = "Alle afgewezen meetings zijn weer actief";
-"status_bar_section_join_create_meeting" = "Meeting maken";
+"status_bar_section_join_create_meeting" = "Meteen een meeting starten";
 "status_bar_section_bookmarks_title" = "Bladwijzers";
 "status_bar_section_bookmarks_menu" = "Bladwijzers menu";
 "status_bar_section_date_nothing" = "Niets voor %@";
