@@ -320,5 +320,5 @@
 "notifications_event_start_three_minutes_body" = "Udalosť sa začína o tri minúty";
 "notifications_event_start_five_minutes_body" = "Udalosť sa začína o päť minút";
 "notification_all_dismissals_removed_title" = "Odstránené všetky zrušené";
-"status_bar_section_date_nothing" = "Nič pre %@";
+"status_bar_section_date_nothing" = "Na %@ nič";
 "status_bar_submenu_undismiss_meeting" = "Odstrániť zrušenie";
