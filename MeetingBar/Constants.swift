@@ -139,6 +139,13 @@ enum TimeBeforeEvent: Int, Defaults.Serializable, Codable {
     case fiveMinuteBefore = 300
 }
 
+enum TimeBeforeEventEnd: Int, Defaults.Serializable, Codable {
+    case atEnd = 5
+    case minuteBefore = 60
+    case threeMinuteBefore = 180
+    case fiveMinuteBefore = 300
+}
+
 enum UtilsRegex {
     static let outlookSafeLinkRegex = try! NSRegularExpression(pattern: #"https://[\S]+\.safelinks\.protection\.outlook\.com/[\S]+url=([\S]*)"#)
     static let linkDetection = try! NSRegularExpression(pattern: #"(http|ftp|https)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?"#, options: .caseInsensitive)
