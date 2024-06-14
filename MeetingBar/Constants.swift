@@ -177,6 +177,11 @@ enum WindowTitles {
     static let changelog = "windows_title_changelog".loco()
 }
 
+enum notificationIDs {
+    static let event_starts = "NEXT_EVENT"
+    static let event_ends = "EVENT_ENDS"
+}
+
 let eventStartScriptPlaceholder = """
 # the method to be called with the following parameters for the next meeting.
 #

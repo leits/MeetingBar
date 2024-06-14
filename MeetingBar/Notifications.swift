@@ -60,7 +60,7 @@ func registerNotificationCategories() {
     notificationCenter.getNotificationCategories { _ in }
 }
 
-func sendUserNotification(_ title: String, _ text: String, _ categoryIdentier: String? = nil) {
+func sendUserNotification(_ title: String, _ text: String) {
     requestNotificationAuthorization() // By the apple best practices
 
     let center = UNUserNotificationCenter.current()
@@ -69,13 +69,7 @@ func sendUserNotification(_ title: String, _ text: String, _ categoryIdentier: S
     content.title = title
     content.body = text
 
-    let identifier: String
-    if let categoryIdentier = categoryIdentier {
-        content.categoryIdentifier = categoryIdentier
-        identifier = categoryIdentier
-    } else {
-        identifier = UUID().uuidString
-    }
+    let identifier = UUID().uuidString
 
     let request = UNNotificationRequest(identifier: identifier, content: content, trigger: nil)
     UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: [identifier])
@@ -149,7 +143,7 @@ func scheduleEventNotification(_ event: MBEvent) {
         return
     }
 
-    removePendingNotificationRequests()
+    removePendingNotificationRequests(withID: notificationIDs.event_starts)
 
     let center = UNUserNotificationCenter.current()
 
@@ -179,7 +173,7 @@ func scheduleEventNotification(_ event: MBEvent) {
     content.threadIdentifier = "meetingbar"
 
     let trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeInterval, repeats: false)
-    let request = UNNotificationRequest(identifier: "NEXT_EVENT", content: content, trigger: trigger)
+    let request = UNNotificationRequest(identifier: notificationIDs.event_starts, content: content, trigger: trigger)
     center.add(request) { error in
         if let error = error {
             NSLog("%@", "request \(request.identifier) could not be added because of error \(error)")
@@ -189,7 +183,7 @@ func scheduleEventNotification(_ event: MBEvent) {
 
 func snoozeEventNotification(_ event: MBEvent, _ interval: NotificationEventTimeAction) {
     requestNotificationAuthorization() // By the apple best practices
-    removePendingNotificationRequests()
+    removePendingNotificationRequests(withID: notificationIDs.event_starts)
 
     let now = Date()
     let center = UNUserNotificationCenter.current()
@@ -216,7 +210,7 @@ func snoozeEventNotification(_ event: MBEvent, _ interval: NotificationEventTime
     }
 
     let trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeInterval, repeats: false)
-    let request = UNNotificationRequest(identifier: "NEXT_EVENT", content: content, trigger: trigger)
+    let request = UNNotificationRequest(identifier: notificationIDs.event_starts, content: content, trigger: trigger)
     center.add(request) { error in
         if let error = error {
             NSLog("%@", "request \(request) could not be added because of error \(error)")
@@ -226,9 +220,10 @@ func snoozeEventNotification(_ event: MBEvent, _ interval: NotificationEventTime
     }
 }
 
-func removePendingNotificationRequests() {
+func removePendingNotificationRequests(withID: String) {
     let center = UNUserNotificationCenter.current()
-    center.removeAllPendingNotificationRequests()
+    center.removePendingNotificationRequests(withIdentifiers: [withID])
+//    center.removeAllPendingNotificationRequests()
 }
 
 func removeDeliveredNotifications() {

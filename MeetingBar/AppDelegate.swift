@@ -121,7 +121,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                 }
 
                 // Reschedule next notification with updated event name visibility
-                removePendingNotificationRequests()
+                removePendingNotificationRequests(withID: notificationIDs.event_starts)
+                removePendingNotificationRequests(withID: notificationIDs.event_ends)
                 if let nextEvent = getNextEvent(events: self.statusBarItem.events) {
                     scheduleEventNotification(nextEvent)
                 }
@@ -167,7 +168,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                         scheduleEventNotification(nextEvent)
                     }
                 } else {
-                    removePendingNotificationRequests()
+                    removePendingNotificationRequests(withID: notificationIDs.event_starts)
                 }
             }
         }
