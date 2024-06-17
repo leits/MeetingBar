@@ -78,6 +78,24 @@ struct JoinEventNotificationPicker: View {
         }
     }
 }
+struct endEventNotificationPicker: View {
+    @Default(.endOfEventNotification) var endOfEventNotification
+    @Default(.endOfEventNotificationTime) var endOfEventNotificationTime
+
+    var body: some View {
+        HStack {
+            Toggle("Sent a notification when event ends", isOn: $endOfEventNotification)
+            Picker("", selection: $endOfEventNotificationTime) {
+                Text("when event ends").tag(TimeBeforeEventEnd.atEnd)
+                Text("1 minute before").tag(TimeBeforeEventEnd.minuteBefore)
+                Text("3 minute before").tag(TimeBeforeEventEnd.threeMinuteBefore)
+                Text("5 minute before").tag(TimeBeforeEventEnd.fiveMinuteBefore)
+            }.frame(width: 220, alignment: .leading).labelsHidden().disabled(!endOfEventNotification)
+            Text("βeta").font(.caption).foregroundColor(.orange)
+        }
+
+    }
+}
 
 func checkNotificationSettings() -> (Bool, Bool) {
     var noAlertStyle = false

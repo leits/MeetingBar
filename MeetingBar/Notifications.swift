@@ -60,7 +60,7 @@ func registerNotificationCategories() {
     notificationCenter.getNotificationCategories { _ in }
 }
 
-func sendUserNotification(_ title: String, _ text: String, _ categoryIdentier: String? = nil) {
+func sendUserNotification(_ title: String, _ text: String) {
     requestNotificationAuthorization() // By the apple best practices
 
     let center = UNUserNotificationCenter.current()
@@ -69,13 +69,7 @@ func sendUserNotification(_ title: String, _ text: String, _ categoryIdentier: S
     content.title = title
     content.body = text
 
-    let identifier: String
-    if let categoryIdentier = categoryIdentier {
-        content.categoryIdentifier = categoryIdentier
-        identifier = categoryIdentier
-    } else {
-        identifier = UUID().uuidString
-    }
+    let identifier = UUID().uuidString
 
     let request = UNNotificationRequest(identifier: identifier, content: content, trigger: nil)
     UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: [identifier])
@@ -139,57 +133,111 @@ func displayAlert(title: String, text: String) {
 }
 
 func scheduleEventNotification(_ event: MBEvent) {
-    requestNotificationAuthorization() // By the apple best practices
-
-    let now = Date()
-    let notificationTime = Double(Defaults[.joinEventNotificationTime].rawValue)
-    let timeInterval = event.startDate.timeIntervalSince(now) - notificationTime
-
-    if timeInterval < 0.5 {
+    if !Defaults[.joinEventNotification] && !Defaults[.endOfEventNotification] {
         return
     }
 
-    removePendingNotificationRequests()
+    requestNotificationAuthorization() // By the apple best practices
 
-    let center = UNUserNotificationCenter.current()
+    let now = Date()
 
-    let content = UNMutableNotificationContent()
-    if Defaults[.hideMeetingTitle] {
-        content.title = "general_meeting".loco()
-    } else {
-        content.title = event.title
+    // Event start notification
+    if Defaults[.joinEventNotification] {
+        let notificationTime = Double(Defaults[.joinEventNotificationTime].rawValue)
+        let timeInterval = event.startDate.timeIntervalSince(now) - notificationTime
+
+        if timeInterval < 0.5 {
+            return
+        }
+
+        removePendingNotificationRequests(withID: notificationIDs.event_starts)
+
+        let center = UNUserNotificationCenter.current()
+
+        let content = UNMutableNotificationContent()
+        if Defaults[.hideMeetingTitle] {
+            content.title = "general_meeting".loco()
+        } else {
+            content.title = event.title
+        }
+        if #available(macOS 12.0, *) {
+            content.interruptionLevel = .timeSensitive
+        }
+
+        switch Defaults[.joinEventNotificationTime] {
+        case .atStart:
+            content.body = "notifications_event_start_soon_body".loco()
+        case .minuteBefore:
+            content.body = "notifications_event_start_one_minute_body".loco()
+        case .threeMinuteBefore:
+            content.body = "notifications_event_start_three_minutes_body".loco()
+        case .fiveMinuteBefore:
+            content.body = "notifications_event_start_five_minutes_body".loco()
+        }
+        content.categoryIdentifier = "EVENT"
+        content.sound = UNNotificationSound.default
+        content.userInfo = ["eventID": event.ID]
+        content.threadIdentifier = "meetingbar"
+
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeInterval, repeats: false)
+        let request = UNNotificationRequest(identifier: notificationIDs.event_starts, content: content, trigger: trigger)
+        center.add(request) { error in
+            if let error = error {
+                NSLog("%@", "request \(request.identifier) could not be added because of error \(error)")
+            }
+        }
     }
-    if #available(macOS 12.0, *) {
-        content.interruptionLevel = .timeSensitive
-    }
 
-    switch Defaults[.joinEventNotificationTime] {
-    case .atStart:
-        content.body = "notifications_event_start_soon_body".loco()
-    case .minuteBefore:
-        content.body = "notifications_event_start_one_minute_body".loco()
-    case .threeMinuteBefore:
-        content.body = "notifications_event_start_three_minutes_body".loco()
-    case .fiveMinuteBefore:
-        content.body = "notifications_event_start_five_minutes_body".loco()
-    }
-    content.categoryIdentifier = "EVENT"
-    content.sound = UNNotificationSound.default
-    content.userInfo = ["eventID": event.ID]
-    content.threadIdentifier = "meetingbar"
+    // Event end notification
+    if Defaults[.endOfEventNotification] {
+        let notificationTime = Double(Defaults[.endOfEventNotificationTime].rawValue)
+        let timeInterval = event.endDate.timeIntervalSince(now) - notificationTime
 
-    let trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeInterval, repeats: false)
-    let request = UNNotificationRequest(identifier: "NEXT_EVENT", content: content, trigger: trigger)
-    center.add(request) { error in
-        if let error = error {
-            NSLog("%@", "request \(request.identifier) could not be added because of error \(error)")
+        if timeInterval < 0.5 {
+            return
+        }
+
+        let center = UNUserNotificationCenter.current()
+
+        let content = UNMutableNotificationContent()
+        if Defaults[.hideMeetingTitle] {
+            content.title = "general_meeting".loco()
+        } else {
+            content.title = event.title
+        }
+        if #available(macOS 12.0, *) {
+            content.interruptionLevel = .timeSensitive
+        }
+
+        switch Defaults[.endOfEventNotificationTime] {
+        // TODO: notification localization
+        case .atEnd:
+            content.body = "Event ends soon"
+        case .minuteBefore:
+            content.body = "Event ends in one minute"
+        case .threeMinuteBefore:
+            content.body = "Event ends in three minutes"
+        case .fiveMinuteBefore:
+            content.body = "Event ends in five minutes"
+        }
+//        content.categoryIdentifier = "EVENT"
+        content.sound = UNNotificationSound.default
+        content.userInfo = ["eventID": event.ID]
+        content.threadIdentifier = "meetingbar"
+
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeInterval, repeats: false)
+        let request = UNNotificationRequest(identifier: notificationIDs.event_starts, content: content, trigger: trigger)
+        center.add(request) { error in
+            if let error = error {
+                NSLog("%@", "request \(request.identifier) could not be added because of error \(error)")
+            }
         }
     }
 }
 
 func snoozeEventNotification(_ event: MBEvent, _ interval: NotificationEventTimeAction) {
     requestNotificationAuthorization() // By the apple best practices
-    removePendingNotificationRequests()
+    removePendingNotificationRequests(withID: notificationIDs.event_starts)
 
     let now = Date()
     let center = UNUserNotificationCenter.current()
@@ -216,7 +264,7 @@ func snoozeEventNotification(_ event: MBEvent, _ interval: NotificationEventTime
     }
 
     let trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeInterval, repeats: false)
-    let request = UNNotificationRequest(identifier: "NEXT_EVENT", content: content, trigger: trigger)
+    let request = UNNotificationRequest(identifier: notificationIDs.event_starts, content: content, trigger: trigger)
     center.add(request) { error in
         if let error = error {
             NSLog("%@", "request \(request) could not be added because of error \(error)")
@@ -226,9 +274,10 @@ func snoozeEventNotification(_ event: MBEvent, _ interval: NotificationEventTime
     }
 }
 
-func removePendingNotificationRequests() {
+func removePendingNotificationRequests(withID: String) {
     let center = UNUserNotificationCenter.current()
-    center.removeAllPendingNotificationRequests()
+    center.removePendingNotificationRequests(withIdentifiers: [withID])
+//    center.removeAllPendingNotificationRequests()
 }
 
 func removeDeliveredNotifications() {

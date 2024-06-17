@@ -13,6 +13,7 @@ import Defaults
 struct AdvancedTab: View {
     var body: some View {
         VStack(alignment: .leading) {
+            endEventNotificationPicker()
             AutomaticEventJoinPicker()
             Divider()
             ScriptSection()
