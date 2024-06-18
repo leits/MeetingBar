@@ -758,7 +758,7 @@ class StatusBarItemController {
             quickActionsItem.submenu!.addItem(toggleMeetingTitleVisibilityItem)
         }
 
-        // MENU ITEM: QUICK ACTIONS: Refresh soruces
+        // MENU ITEM: QUICK ACTIONS: Refresh sources
         let refreshSourcesItem = NSMenuItem()
         refreshSourcesItem.title = "status_bar_section_refresh_sources".loco()
         refreshSourcesItem.action = #selector(refreshSources)
