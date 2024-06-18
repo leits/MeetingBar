@@ -940,12 +940,16 @@ class StatusBarItemController {
     @objc
     func dismissEvent(sender: NSMenuItem) {
         if let event: MBEvent = sender.representedObject as? MBEvent {
-            let dismissedEvent = ProcessedEvent(id: event.ID, lastModifiedDate: event.lastModifiedDate, eventEndDate: event.endDate)
-            Defaults[.dismissedEvents].append(dismissedEvent)
-
-            updateTitle()
-            updateMenu()
+            dismiss(event: event)
         }
+    }
+    
+    func dismiss(event: MBEvent) {
+        let dismissedEvent = ProcessedEvent(id: event.ID, lastModifiedDate: event.lastModifiedDate, eventEndDate: event.endDate)
+        Defaults[.dismissedEvents].append(dismissedEvent)
+        
+        updateTitle()
+        updateMenu()
     }
 
     @objc
