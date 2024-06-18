@@ -224,12 +224,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
     func userNotificationCenter(_: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         switch response.actionIdentifier {
-        case "JOIN_ACTION", UNNotificationDefaultActionIdentifier:
-            if response.notification.request.content.categoryIdentifier == "EVENT" || response.notification.request.content.categoryIdentifier == "SNOOZE_EVENT" {
-                if let eventID = response.notification.request.content.userInfo["eventID"] as? String {
-                    if let event = statusBarItem.events.first(where: { $0.ID == eventID }) {
-                        event.openMeeting()
-                    }
+        case "JOIN_ACTION", "DISMISS_ACTION", UNNotificationDefaultActionIdentifier:
+            if ["EVENT", "SNOOZE_EVENT"].contains(response.notification.request.content.categoryIdentifier),
+               let eventID = response.notification.request.content.userInfo["eventID"] as? String,
+               let event = statusBarItem.events.first(where: { $0.ID == eventID }) {
+                if response.actionIdentifier == "JOIN_ACTION" {
+                    event.openMeeting()
+                } else {
+                    statusBarItem.dismiss(event: event)
                 }
             }
         case NotificationEventTimeAction.untilStart.rawValue:

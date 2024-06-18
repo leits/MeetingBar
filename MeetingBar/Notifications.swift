@@ -20,6 +20,10 @@ func registerNotificationCategories() {
     let acceptAction = UNNotificationAction(identifier: "JOIN_ACTION",
                                             title: "notifications_meetingbar_join_event_action".loco(),
                                             options: .foreground)
+    
+    let dismissAction = UNNotificationAction(identifier: "DISMISS_ACTION",
+                                            title: "notifications_meetingbar_dismiss_event_action".loco(),
+                                            options: .foreground)
 
     let snoozeUntilStartTime = UNNotificationAction(identifier: NotificationEventTimeAction.untilStart.rawValue,
                                                     title: "notifications_snooze_until_start".loco(),
@@ -42,13 +46,13 @@ func registerNotificationCategories() {
                                            options: .foreground)
 
     let eventCategory = UNNotificationCategory(identifier: "EVENT",
-                                               actions: [acceptAction, snoozeUntilStartTime, snooze5Min, snooze10Min, snooze15Min, snooze30Min],
+                                               actions: [acceptAction, dismissAction, snoozeUntilStartTime, snooze5Min, snooze10Min, snooze15Min, snooze30Min],
                                                intentIdentifiers: [],
                                                hiddenPreviewsBodyPlaceholder: "",
                                                options: [.customDismissAction, .hiddenPreviewsShowTitle])
 
     let snoozeEventCategory = UNNotificationCategory(identifier: "SNOOZE_EVENT",
-                                                     actions: [acceptAction, snooze5Min, snooze10Min, snooze15Min, snooze30Min],
+                                                     actions: [acceptAction, dismissAction, snooze5Min, snooze10Min, snooze15Min, snooze30Min],
                                                      intentIdentifiers: [],
                                                      hiddenPreviewsBodyPlaceholder: "",
                                                      options: [.customDismissAction, .hiddenPreviewsShowTitle])
