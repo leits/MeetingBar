@@ -25,6 +25,9 @@ extension Defaults.Keys {
     static let joinEventNotification = Key<Bool>("joinEventNotification", default: true)
     static let joinEventNotificationTime = Key<TimeBeforeEvent>("joinEventNotificationTime", default: .atStart)
 
+    static let endOfEventNotification = Key<Bool>("endOfEventNotification", default: true)
+    static let endOfEventNotificationTime = Key<TimeBeforeEventEnd>("endOfEventNotificationTime", default: .atEnd)
+
     static let fullscreenNotification = Key<Bool>("fullscreenNotification", default: false)
     static let fullscreenNotificationTime = Key<TimeBeforeEvent>("fullscreenNotificationTime", default: .atStart)
     static let processedEventsForFullscreenNotification = Key<[ProcessedEvent]>("processedEventsForFullscreenNotification", default: [])

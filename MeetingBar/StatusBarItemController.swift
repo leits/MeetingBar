@@ -134,7 +134,7 @@ class StatusBarItemController {
             switch nextEventState {
             case .none:
                 if Defaults[.joinEventNotification] {
-                    removePendingNotificationRequests()
+                    removePendingNotificationRequests(withID: notificationIDs.event_starts)
                     removeDeliveredNotifications()
                 }
                 title = "🏁"
