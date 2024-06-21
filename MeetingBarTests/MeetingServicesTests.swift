@@ -42,6 +42,7 @@ let meetings = [
     MeetingLink(service: .pumble, url: URL(string: "https://meet.pumble.com/vly-hggs-xsn")!),
     MeetingLink(service: .suitConference, url: URL(string: "https://turkcell.conference.istesuit.com/username")!),
     MeetingLink(service: .doxyMe, url: URL(string: "https://bbc.doxy.me/dr.who")!),
+    MeetingLink(service: .calcom, url: URL(string: "https://app.cal.com/video/1de4BmdXEb983kIUHomUnA")!),
     MeetingLink(service: .zmPage, url: URL(string: "https://meetingbar.zm.page")!)
 ]
 

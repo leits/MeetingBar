@@ -76,6 +76,7 @@ enum MeetingServices: String, Codable, CaseIterable {
     case pumble = "Pumble"
     case suitConference = "Suit Conference"
     case doxyMe = "Doxy.me"
+    case calcom = "Cal Video"
     case zmPage = "zm.page"
     case other = "Other"
 
@@ -322,6 +323,7 @@ struct LinksRegex {
     let pumble = try! NSRegularExpression(pattern: #"https?://meet\.pumble\.com/[a-z-]+"#)
     let suitConference = try! NSRegularExpression(pattern: #"https?://([a-z0-9.]+)?conference\.istesuit\.com/[^\s]*+"#)
     let doxyMe = try! NSRegularExpression(pattern: #"https://([a-z0-9.]+)?doxy\.me/[^\s]*"#)
+    let calcom =  try! NSRegularExpression(pattern: #"https?://app.cal\.com/video/[A-Za-z0-9./]+"#)
     let zmPage = try! NSRegularExpression(pattern: #"https?://([a-zA-Z0-9.]+)\.zm\.page"#)
 }
 
@@ -625,6 +627,10 @@ func getIconForMeetingService(_ meetingService: MeetingServices?) -> NSImage {
 
     case .some(.gather):
         image = NSImage(named: "gather_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    case .some(.calcom):
+        image = NSImage(named: "calcom_icon")!
         image.size = NSSize(width: 16, height: 16)
 
     case .some(.url):
