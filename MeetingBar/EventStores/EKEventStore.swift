@@ -20,7 +20,7 @@ extension EKEventStore: EventStore {
 
     func signIn() -> Promise<Void> {
         Promise { seal in
-            EKEventStore.shared.requestAccess(to: .event) { granted, _ in
+            let completionHandler: EKEventStoreRequestAccessCompletionHandler = { granted, error in
                 if granted {
                     var sources = EKEventStore.shared.sources
                     sources.append(contentsOf: EKEventStore.shared.delegateSources)
@@ -28,9 +28,16 @@ extension EKEventStore: EventStore {
                     EKEventStore.shared = EKEventStore(sources: sources)
                     seal.fulfill(())
                 } else {
-                    seal.reject(NSError(domain: "EKEventStore", code: 0))
+                    seal.reject(error ?? NSError(domain: "EKEventStore", code: 0))
                 }
             }
+
+            if #available(macOS 14.0, *) {
+                EKEventStore.shared.requestFullAccessToEvents(completion: completionHandler)
+            } else {
+                EKEventStore.shared.requestAccess(to: .event, completion: completionHandler)
+            }
+
         }
     }
 
