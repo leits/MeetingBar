@@ -423,7 +423,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     @objc
     private func fetchEvents() {
         DispatchQueue.main.async {
-            self.statusBarItem.loadEvents()
+            if self.statusBarItem.calendars.isEmpty, !Defaults[.selectedCalendarIDs].isEmpty {
+                self.statusBarItem.loadCalendars()
+            } else {
+                self.statusBarItem.loadEvents()
+            }
         }
     }
 
