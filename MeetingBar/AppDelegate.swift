@@ -223,40 +223,35 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     }
 
     func userNotificationCenter(_: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        
+        defer {
+            completionHandler()
+        }
+        
+        guard ["EVENT", "SNOOZE_EVENT"].contains(response.notification.request.content.categoryIdentifier),
+              let eventID = response.notification.request.content.userInfo["eventID"] as? String,
+              let event = statusBarItem.events.first(where: { $0.ID == eventID }) else {
+            return
+        }
         switch response.actionIdentifier {
-        case "JOIN_ACTION", "DISMISS_ACTION", UNNotificationDefaultActionIdentifier:
-            if ["EVENT", "SNOOZE_EVENT"].contains(response.notification.request.content.categoryIdentifier),
-               let eventID = response.notification.request.content.userInfo["eventID"] as? String,
-               let event = statusBarItem.events.first(where: { $0.ID == eventID }) {
-                if response.actionIdentifier == "JOIN_ACTION" {
-                    event.openMeeting()
-                } else {
-                    statusBarItem.dismiss(event: event)
-                }
-            }
+        case "JOIN_ACTION", UNNotificationDefaultActionIdentifier:
+            event.openMeeting()
+        case "DISMISS_ACTION":
+            statusBarItem.dismiss(event: event)
         case NotificationEventTimeAction.untilStart.rawValue:
-            handleSnoozeEvent(response, NotificationEventTimeAction.untilStart)
+            snoozeEventNotification(event, NotificationEventTimeAction.untilStart)
         case NotificationEventTimeAction.fiveMinuteLater.rawValue:
-            handleSnoozeEvent(response, NotificationEventTimeAction.fiveMinuteLater)
+            snoozeEventNotification(event, NotificationEventTimeAction.fiveMinuteLater)
         case NotificationEventTimeAction.tenMinuteLater.rawValue:
-            handleSnoozeEvent(response, NotificationEventTimeAction.tenMinuteLater)
+            snoozeEventNotification(event, NotificationEventTimeAction.tenMinuteLater)
         case NotificationEventTimeAction.fifteenMinuteLater.rawValue:
-            handleSnoozeEvent(response, NotificationEventTimeAction.fifteenMinuteLater)
+            snoozeEventNotification(event, NotificationEventTimeAction.fifteenMinuteLater)
         case NotificationEventTimeAction.thirtyMinuteLater.rawValue:
-            handleSnoozeEvent(response, NotificationEventTimeAction.thirtyMinuteLater)
+            snoozeEventNotification(event, NotificationEventTimeAction.thirtyMinuteLater)
         default:
             break
         }
 
-        completionHandler()
-    }
-
-    func handleSnoozeEvent(_ response: UNNotificationResponse, _ action: NotificationEventTimeAction) {
-        if ["EVENT", "SNOOZE_EVENT"].contains(response.notification.request.content.categoryIdentifier),
-           let eventID = response.notification.request.content.userInfo["eventID"] as? String,
-           let event = statusBarItem.events.first(where: { $0.ID == eventID }) {
-            snoozeEventNotification(event, action)
-        }
     }
 
     /*
