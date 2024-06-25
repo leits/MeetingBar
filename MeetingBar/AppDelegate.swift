@@ -337,7 +337,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     }
 
     @objc
-    func openPrefecencesWindow(_: NSStatusBarButton?) {
+    func openPreferencesWindow(_: NSStatusBarButton?) {
         let contentView = PreferencesView()
 
         if let preferencesWindow {
@@ -404,7 +404,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         if let string = event.paramDescriptor(forKeyword: keyDirectObject)?.stringValue,
            let url = URL(string: string) {
             if url == URL(string: "meetingbar://preferences") {
-                openPrefecencesWindow(nil)
+                openPreferencesWindow(nil)
             } else {
                 GCEventStore.shared
                     .currentAuthorizationFlow?.resumeExternalUserAgentFlow(with: url)
