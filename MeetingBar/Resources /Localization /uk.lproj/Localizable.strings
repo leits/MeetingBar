@@ -315,6 +315,11 @@
 "notifications_snooze_for" = "Сповістити через %@ хвилин";
 "notifications_meetingbar_join_event_action" = "Долучитись";
 
+"notifications_event_ends_soon_body" = "Подія невдовзі завершиться";
+"notifications_event_ends_one_minute_body" = "Подія завершується за одну хвилину";
+"notifications_event_ends_three_minutes_body" = "Подія завершується за три хвилини";
+"notifications_event_ends_five_minutes_body" = "Подія завершується за п'ять хвилин";
+
 // MARK: - Link open
 
 "link_url_cant_open_title" = "Ой леле! Не вдалось відкрити посилання в %@";
