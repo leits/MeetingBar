@@ -252,12 +252,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     }
 
     func handleSnoozeEvent(_ response: UNNotificationResponse, _ action: NotificationEventTimeAction) {
-        if response.notification.request.content.categoryIdentifier == "EVENT" || response.notification.request.content.categoryIdentifier == "SNOOZE_EVENT" {
-            if let eventID = response.notification.request.content.userInfo["eventID"] as? String {
-                if let event = statusBarItem.events.first(where: { $0.ID == eventID }) {
-                    snoozeEventNotification(event, action)
-                }
-            }
+        if ["EVENT", "SNOOZE_EVENT"].contains(response.notification.request.content.categoryIdentifier),
+           let eventID = response.notification.request.content.userInfo["eventID"] as? String,
+           let event = statusBarItem.events.first(where: { $0.ID == eventID }) {
+            snoozeEventNotification(event, action)
         }
     }
 
