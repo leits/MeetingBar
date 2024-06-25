@@ -22,8 +22,8 @@ func registerNotificationCategories() {
                                             options: .foreground)
     
     let dismissAction = UNNotificationAction(identifier: "DISMISS_ACTION",
-                                            title: "notifications_meetingbar_dismiss_event_action".loco(),
-                                            options: .foreground)
+                                             title: "notifications_meetingbar_dismiss_event_action".loco(),
+                                             options: .foreground)
 
     let snoozeUntilStartTime = UNNotificationAction(identifier: NotificationEventTimeAction.untilStart.rawValue,
                                                     title: "notifications_snooze_until_start".loco(),
