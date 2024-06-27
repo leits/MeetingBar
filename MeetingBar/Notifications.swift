@@ -210,15 +210,14 @@ func scheduleEventNotification(_ event: MBEvent) {
         }
 
         switch Defaults[.endOfEventNotificationTime] {
-        // TODO: notification localization
         case .atEnd:
-            content.body = "Event ends soon"
+            content.body = "notifications_event_ends_soon_body".loco()
         case .minuteBefore:
-            content.body = "Event ends in one minute"
+            content.body = "notifications_event_ends_one_minute_body".loco()
         case .threeMinuteBefore:
-            content.body = "Event ends in three minutes"
+            content.body = "notifications_event_ends_three_minutes_body".loco()
         case .fiveMinuteBefore:
-            content.body = "Event ends in five minutes"
+            content.body = "notifications_event_ends_five_minutes_body".loco()
         }
 //        content.categoryIdentifier = "EVENT"
         content.sound = UNNotificationSound.default
@@ -226,7 +225,7 @@ func scheduleEventNotification(_ event: MBEvent) {
         content.threadIdentifier = "meetingbar"
 
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeInterval, repeats: false)
-        let request = UNNotificationRequest(identifier: notificationIDs.event_starts, content: content, trigger: trigger)
+        let request = UNNotificationRequest(identifier: notificationIDs.event_ends, content: content, trigger: trigger)
         center.add(request) { error in
             if let error = error {
                 NSLog("%@", "request \(request.identifier) could not be added because of error \(error)")

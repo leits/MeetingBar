@@ -275,6 +275,10 @@
 // MARK: - Notifications
 
 "notifications_event_start_soon_body" = "De meeting begint binnenkort";
+"notifications_event_ends_soon_body" = "The event ends soon";
+"notifications_event_ends_one_minute_body" = "The event ends in one minute";
+"notifications_event_ends_three_minutes_body" = "The event ends in three minutes";
+"notifications_event_ends_five_minutes_body" = "The event ends in five minutes";
 "notifications_event_started_body" = "De meeting is begonnen";
 "notifications_event_start_one_minute_body" = "De meeting begint over een minuut";
 "notifications_event_start_three_minutes_body" = "De meeting begint over drie minuten";

@@ -318,6 +318,10 @@
 "notifications_event_start_one_minute_body" = "O evento começará em um minuto";
 "notifications_event_start_three_minutes_body" = "O evento começará em três minutos";
 "notifications_event_start_five_minutes_body" = "O evento começará em cinco minutos";
+"notifications_event_ends_soon_body" = "The event ends soon";
+"notifications_event_ends_one_minute_body" = "The event ends in one minute";
+"notifications_event_ends_three_minutes_body" = "The event ends in three minutes";
+"notifications_event_ends_five_minutes_body" = "The event ends in five minutes";
 "notifications_snooze_until_start" = "Adiar até o horário de início";
 "notifications_snooze_for" = "Adiar por %@ min";
 "notifications_meetingbar_join_event_action" = "Entrar";

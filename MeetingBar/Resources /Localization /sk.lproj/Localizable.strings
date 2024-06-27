@@ -285,6 +285,10 @@
 // MARK: - Notifications
 
 "notifications_event_start_soon_body" = "Udalosť už čoskoro začne";
+"notifications_event_ends_soon_body" = "The event ends soon";
+"notifications_event_ends_one_minute_body" = "The event ends in one minute";
+"notifications_event_ends_three_minutes_body" = "The event ends in three minutes";
+"notifications_event_ends_five_minutes_body" = "The event ends in five minutes";
 "shared_fullscreen_notification_toggle" = "Zobraziť upozornenie na celú obrazovku";
 "constants_meeting_service_zoom_native" = "Zoom natívne";
 

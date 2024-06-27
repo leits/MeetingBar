@@ -322,6 +322,10 @@
 "notifications_snooze_for" = "Snooze for %@ min";
 "notifications_meetingbar_join_event_action" = "Join";
 
+"notifications_event_ends_soon_body" = "The event ends soon";
+"notifications_event_ends_one_minute_body" = "The event ends in one minute";
+"notifications_event_ends_three_minutes_body" = "The event ends in three minutes";
+"notifications_event_ends_five_minutes_body" = "The event ends in five minutes";
 
 // MARK: - Link open
 
