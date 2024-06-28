@@ -9,10 +9,10 @@
 "notifications_event_start_one_minute_body" = "Das Ereignis beginnt in einer Minute";
 "notifications_event_start_three_minutes_body" = "Das Ereignis beginnt in drei Minuten";
 "notifications_event_start_five_minutes_body" = "Das Ereignis beginnt in fünf Minuten";
-"notifications_event_ends_soon_body" = "The event ends soon";
-"notifications_event_ends_one_minute_body" = "The event ends in one minute";
-"notifications_event_ends_three_minutes_body" = "The event ends in three minutes";
-"notifications_event_ends_five_minutes_body" = "The event ends in five minutes";
+"notifications_event_ends_soon_body" = "Das Ereignis endet bald";
+"notifications_event_ends_one_minute_body" = "Das Ereignis endet in einer Minute";
+"notifications_event_ends_three_minutes_body" = "Das Ereignis endet in drei Minuten";
+"notifications_event_ends_five_minutes_body" = "Das Ereignis endet in fünf Minuten";
 "notifications_snooze_until_start" = "Schlummern bis zur Startzeit";
 "notifications_snooze_for" = "Schlummern für %@ Minuten";
 "notifications_meetingbar_join_event_action" = "Beitreten";
@@ -265,8 +265,8 @@
 
 // MARK: - Shared
 
-"shared_send_notification_toggle" = "Benachrichtigung senden, um dem nächsten Ereigniss beizutreten";
-"shared_fullscreen_notification_toggle" = "Show a fullscreen notification";
+"shared_send_notification_toggle" = "System-Benachrichtigung senden";
+"shared_fullscreen_notification_toggle" = "Benachrichtigung im Vollbildmodus anzeigen";
 "access_screen_access_granted_click_ok_title" = "Im macOS-Popup auf „OK“ klicken.";
 "access_screen_access_granted_title" = "Zugriff auf Kalender anfordern…";
 "access_screen_access_denied_relaunch_title" = "Anschließend die App manuell starten, um die Einrichtung fortzusetzen.";
