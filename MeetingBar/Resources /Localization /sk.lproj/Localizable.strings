@@ -15,7 +15,7 @@
 
 // MARK: - Preferences General
 
-"preferences_general_option_login_launch" = "Spustiť po štarte";
+"preferences_general_option_login_launch" = "Spustiť po prihlásení";
 "preferences_general_option_preferred_language_title" = "Jazyk:";
 "preferences_general_option_preferred_language_system_value" = "Podľa systému";
 "status_bar_section_join_next_meeting" = "Pripojiť sa k ďalšiemu stretnutiu";
@@ -216,7 +216,7 @@
 "status_bar_quick_actions" = "Rýchle akcie";
 "status_bar_hide_meeting_names" = "Skryť názov stretnutia";
 "status_bar_whats_new" = "Čo je nové?";
-"status_bar_rate_app" = "Ohodnoť aplikáciu";
+"status_bar_rate_app" = "Ohodnotiť aplikáciu";
 "status_bar_quit" = "Ukončiť MeetingBar";
 "shared_automatic_event_join_tip" = "Toto nastavenie automaticky otvorí nasledujúce stretnutie v nastavenej aplikácii alebo prehliadači";
 "preferences_general_meeting_bar_description" = "MeetingBar je open-source aplikácia\nvytvoril ju Andrii Leitsius 🇺🇦\nPre plynulejšie a jednoduchšie online stretnutia";
@@ -285,10 +285,10 @@
 // MARK: - Notifications
 
 "notifications_event_start_soon_body" = "Udalosť už čoskoro začne";
-"notifications_event_ends_soon_body" = "The event ends soon";
-"notifications_event_ends_one_minute_body" = "The event ends in one minute";
-"notifications_event_ends_three_minutes_body" = "The event ends in three minutes";
-"notifications_event_ends_five_minutes_body" = "The event ends in five minutes";
+"notifications_event_ends_soon_body" = "Udalosť sa čoskoro končí";
+"notifications_event_ends_one_minute_body" = "Udalosť sa končí o minútu";
+"notifications_event_ends_three_minutes_body" = "Udalosť sa končí o tri minúty";
+"notifications_event_ends_five_minutes_body" = "Udalosť sa končí o päť minút";
 "shared_fullscreen_notification_toggle" = "Zobraziť upozornenie na celú obrazovku";
 "constants_meeting_service_zoom_native" = "Zoom natívne";
 
