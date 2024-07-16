@@ -6,7 +6,7 @@
   Copyright © 2021 Andrii Leitsius. All rights reserved.
 */
 
-"general_ok" = "OK";
+"general_ok" = "Добре";
 "general_cancel" = "Скасувати";
 "general_close" = "Закрити";
 "general_add" = "Додати";
@@ -14,7 +14,7 @@
 "general_save" = "Зберегти";
 "general_meeting" = "Зустріч";
 "create_meeting_error_title" = "Ой леле! Не вдалось створити зустріч";
-"create_meeting_error_message" = "Власне посилання \"%@\" відсутнє або невірне. ";
+"create_meeting_error_message" = "Власне посилання \"%@\" відсутнє або неправильне. ";
 "next_meeting_empty_title" = "Сьогодні більше немає зустрічей";
 "next_meeting_empty_message" = "Овва! Час для какао";
 
@@ -26,7 +26,7 @@
 
 // MARK: - Preferences tabs
 
-"preferences_tab_general" = "Основні";
+"preferences_tab_general" = "Загальні";
 "preferences_tab_appearance" = "Вигляд";
 "preferences_tab_services" = "Сервіси";
 "preferences_tab_bookmarks" = "Закладки";
@@ -35,7 +35,7 @@
 
 // MARK: - Preferences General
 
-"preferences_general_option_login_launch" = "Запускати при логіні";
+"preferences_general_option_login_launch" = "Запускати після входу";
 "preferences_general_option_preferred_language_title" = "Мова:";
 "preferences_general_option_preferred_language_system_value" = "Системна";
 "preferences_general_option_shortcuts" = "Скорочення";
@@ -45,18 +45,18 @@
 "preferences_general_shortcut_join_next" = "Долучитись до наступної зустрічі:";
 "preferences_general_shortcut_join_from_clipboard" = "Долучитись до зустрічі з буфера обміну:";
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "Показати/сховати заголовок у смузі меню:";
-"preferences_general_meeting_bar_description" = "MeetingBar - це застосунок з відкритим кодом,\nстворений Андрієм Лейцюсь 🇺🇦\nДля більш плавної і зручної онлайн-зустрічі";
+"preferences_general_meeting_bar_description" = "MeetingBar – це застосунок з відкритим кодом,\nстворений Андрієм Лейцюсь 🇺🇦\nДля більш плавних та зручних онлайн-зустрічей";
 "preferences_general_external_patronage" = "Підтримати";
 "preferences_general_external_contact" = "Зв'язатись";
 "preferences_general_patron_title" = "Стати патроном";
-"preferences_general_patron_three_months" = "3 місяці - 2,99 USD";
-"preferences_general_patron_six_months" = "6 місяців - 5,99 USD";
-"preferences_general_patron_twelve_months" = "12 місяців - 11,99 USD";
+"preferences_general_patron_three_months" = "3 місяці – 2,99 USD";
+"preferences_general_patron_six_months" = "6 місяців – 5,99 USD";
+"preferences_general_patron_twelve_months" = "12 місяців – 11,99 USD";
 "preferences_general_patron_description" = "Це одноразові платежі, які не будуть повторюватись автоматично.";
 "preferences_general_patron_thank_for_purchase" = "Дякую! Ви підтримали MeetingBar на %d місяців 🎉";
 "preferences_general_patron_restore_purchases" = "Відновити платежі";
 "preferences_general_feedback_title" = "Якщо у Вас є запитання або ідеї,\nпросто напишіть мені:";
-"preferences_general_feedback_email" = "email";
+"preferences_general_feedback_email" = "Ел. пошта";
 
 // MARK: - Preferences Appearance
 
@@ -314,7 +314,6 @@
 "notifications_snooze_until_start" = "Сповістити, коли розпочнеться";
 "notifications_snooze_for" = "Сповістити через %@ хвилин";
 "notifications_meetingbar_join_event_action" = "Долучитись";
-
 "notifications_event_ends_soon_body" = "Подія невдовзі завершиться";
 "notifications_event_ends_one_minute_body" = "Подія завершується за одну хвилину";
 "notifications_event_ends_three_minutes_body" = "Подія завершується за три хвилини";
