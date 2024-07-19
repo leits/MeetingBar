@@ -43,7 +43,9 @@ let meetings = [
     MeetingLink(service: .suitConference, url: URL(string: "https://turkcell.conference.istesuit.com/username")!),
     MeetingLink(service: .doxyMe, url: URL(string: "https://bbc.doxy.me/dr.who")!),
     MeetingLink(service: .calcom, url: URL(string: "https://app.cal.com/video/1de4BmdXEb983kIUHomUnA")!),
-    MeetingLink(service: .zmPage, url: URL(string: "https://meetingbar.zm.page")!)
+    MeetingLink(service: .zmPage, url: URL(string: "https://meetingbar.zm.page")!),
+    MeetingLink(service: .livekit, url: URL(string: "https://meet.livekit.io/rooms/et5r-y80t#r56ryirofs8jjfi3rnxu8ab3qhjsRn6die6mvjhwux82opmkao8bfjb9wggnr2L6")!),
+    MeetingLink(service: .livekit, url: URL(string: "https://meet.staging.livekit.io/rooms/of4q-y10s")!)
 ]
 
 class MeetingServicesTests: XCTestCase {

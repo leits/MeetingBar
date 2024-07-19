@@ -78,6 +78,7 @@ enum MeetingServices: String, Codable, CaseIterable {
     case doxyMe = "Doxy.me"
     case calcom = "Cal Video"
     case zmPage = "zm.page"
+    case livekit = "LiveKit Meet"
     case other = "Other"
 
     var localizedValue: String {
@@ -325,6 +326,7 @@ struct LinksRegex {
     let doxyMe = try! NSRegularExpression(pattern: #"https://([a-z0-9.]+)?doxy\.me/[^\s]*"#)
     let calcom =  try! NSRegularExpression(pattern: #"https?://app.cal\.com/video/[A-Za-z0-9./]+"#)
     let zmPage = try! NSRegularExpression(pattern: #"https?://([a-zA-Z0-9.]+)\.zm\.page"#)
+    let livekit = try! NSRegularExpression(pattern: #"https?://meet[a-zA-Z0-9.]*\.livekit\.io/rooms/[a-zA-Z0-9-#]+"#)
 }
 
 func getRegexForMeetingService(_ service: MeetingServices) -> NSRegularExpression? {
@@ -613,6 +615,10 @@ func getIconForMeetingService(_ meetingService: MeetingServices?) -> NSImage {
 
     case .some(.zmPage):
         image = NSImage(named: "zm_page_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    case .some(.livekit):
+        image = NSImage(named: "livekit_icon")!
         image.size = NSSize(width: 16, height: 16)
 
     // tested and verified
