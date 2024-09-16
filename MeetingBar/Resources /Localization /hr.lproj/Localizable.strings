@@ -157,7 +157,7 @@
 "preferences_calendars_add_account_modal" = "Za dodavanje vanjskih kalendara:\n1. Otvori standardni program za kalendare\n2. Pritisni „Dodaj račun” u izborniku\n3. Odaberi i poveži tvoj račun";
 "preferences_calendars_provider_section_title" = "Pružatelj kalendara";
 "preferences_calendars_provider_gcalendar_change_account" = "Promijeni Google račun";
-"preferences_calendars_provider_macos_switch" = "Prebaci na MacOS Kalendar";
+"preferences_calendars_provider_macos_switch" = "Prebaci na macOS Kalendar";
 "preferences_calendars_provider_gcalendar_switch" = "Prebaci na Google Kalendar API";
 
 // MARK: - Preferences Advanced
