@@ -18,7 +18,7 @@
 "preferences_services_create_meeting_custom_url_placeholder" = "Veuillez entrer une URL valide (avec http:// ou https://)";
 "preferences_calendars_provider_section_title" = "Fournisseur de calendriers";
 "preferences_calendars_provider_gcalendar_change_account" = "Changer de compte Google";
-"preferences_calendars_provider_macos_switch" = "Passer à MacOS Calendar";
+"preferences_calendars_provider_macos_switch" = "Passer à macOS Calendar";
 "preferences_calendars_provider_gcalendar_switch" = "Passer à l'API Google Calendar";
 
 // MARK: - Link open
