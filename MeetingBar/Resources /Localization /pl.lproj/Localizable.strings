@@ -157,7 +157,7 @@
 "preferences_calendars_add_account_modal" = "Aby dodać zewnętrzne kalendarze:\n1. Otwórz domyślną aplikację kalendarza:\n2. Kliknij 'Dodaj konto' w menu:\n3. Wybierz i podłącz swoje konto";
 "preferences_calendars_provider_section_title" = "Dostawca kalendarza";
 "preferences_calendars_provider_gcalendar_change_account" = "Zmień Konto Google";
-"preferences_calendars_provider_macos_switch" = "Zmień na kalendarz MacOS";
+"preferences_calendars_provider_macos_switch" = "Zmień na kalendarz macOS";
 "preferences_calendars_provider_gcalendar_switch" = "Zmień na Google Calendar API";
 
 // MARK: - Preferences Advanced
