@@ -271,7 +271,7 @@
 "preferences_calendars_add_account_modal" = "כדי להוסיף לוחות שנה חיצוניים:\n1. יש לפתוח את יישום לוח השנה כבררת המחדל\n2. ללחוץ על ‚הוספת חשבון’ בתפריט\n3. לבחור ולחבר את החשבון שלך";
 "preferences_calendars_provider_section_title" = "ספקי לוחות שנה";
 "preferences_calendars_provider_gcalendar_change_account" = "החלפת חשבון Google";
-"preferences_calendars_provider_macos_switch" = "מעבר ללוח השנה של MacOS";
+"preferences_calendars_provider_macos_switch" = "מעבר ללוח השנה של macOS";
 "preferences_calendars_provider_gcalendar_switch" = "מעבר ל־API של Google Calendar";
 "preferences_advanced_wrong_location_message" = "נא לבחור את תיקיית משתמש ← ספרייה ← סקריפטים של יישומים ← leits.MeetingBar";
 "status_bar_section_bookmarks_menu" = "תפריט סימניות";
