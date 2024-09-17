@@ -232,7 +232,7 @@
 "status_bar_rate_app" = "Beoordeel app";
 "status_bar_preferences" = "Instellingen";
 "status_bar_submenu_dismiss_meeting" = "Meeting afwijzen";
-"status_bar_event_status_now" = "nu (%@ over)";
+"status_bar_event_status_now" = "nu (nog %@)";
 "status_bar_error_app_link_title" = "Oeps! Kan de link in de %@ niet openen";
 "status_bar_error_app_link_message" = "Zorg ervoor dat u de %@ hebt geïnstalleerd, of open dergelijke links in een webbrowser vanuit de voorkeuren.";
 "calendars_screen_start_button" = "Begin met het gebruiken van de app";
