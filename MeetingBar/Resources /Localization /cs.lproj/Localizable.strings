@@ -168,7 +168,7 @@
 "preferences_calendars_add_account_modal" = "Pro přidání externích kalendářů:\n1. Otevřete výchozí aplikaci Kalendář\n2. V nabídce klikněte na položku \"Přidat účet\"\n3. Vyberte a připojte svůj účet";
 "preferences_calendars_provider_section_title" = "Calendars provider";
 "preferences_calendars_provider_gcalendar_change_account" = "Change Google Account";
-"preferences_calendars_provider_macos_switch" = "Switch to MacOS Calendar";
+"preferences_calendars_provider_macos_switch" = "Switch to macOS Calendar";
 "preferences_calendars_provider_gcalendar_switch" = "Switch to Google Calendar API";
 "preferences_calendars_add_account_button" = "Přidat účet";
 "preferences_calendars_add_account_description" = "Nemůžete najít požadovaný kalendář?";

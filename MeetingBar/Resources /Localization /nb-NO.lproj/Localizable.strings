@@ -106,7 +106,7 @@
 "preferences_calendars_add_account_modal" = "Legg til eksterne kalendere slik:\n1. Åpne forvalgt kalenderprogram\n2. Klikk på «Legg til konto» i menyen\n3. Velg og koble til kontoen din";
 "preferences_calendars_provider_section_title" = "Calendars provider";
 "preferences_calendars_provider_gcalendar_change_account" = "Change Google Account";
-"preferences_calendars_provider_macos_switch" = "Switch to MacOS Calendar";
+"preferences_calendars_provider_macos_switch" = "Bytt til macOS-kalender";
 "preferences_calendars_provider_gcalendar_switch" = "Switch to Google Calendar API";
 "preferences_bookmarks_new_bookmark_already_exist" = "Et bokmerke med denne lenken/telefonen finnes allerede med navnet %@:\n%@";
 "preferences_configure_browsers_choose_broser_panel_message" = "Velg en nettleser fra hvilken som helst sti.";
@@ -195,7 +195,7 @@
 "preferences_advanced_wrong_location_button" = "Skjønner.";
 "preferences_advanced_wrong_location_title" = "Feil plassering";
 "preferences_advanced_save_script_button" = "Lagre skript";
-"preferences_calendars_add_account_button" = "Legg til konto";
+"preferences_calendars_add_account_button" = "Legg til kalenderkonto";
 "preferences_calendars_add_account_description" = "Finner du ikke kalenderen du trenger?";
 
 // MARK: - Preferences Calendars
@@ -203,7 +203,7 @@
 "preferences_calendars_select_calendars_title" = "Velg kalendere for visning av begivenheter i statusfelt";
 "preferences_bookmarks_new_bookmark_error_title" = "Kan ikke legge til bokmerke";
 "preferences_bookmarks_new_bookmark_service" = "Tjeneste";
-"preferences_bookmarks_new_bookmark_link_phone" = "Lenke/telefon";
+"preferences_bookmarks_new_bookmark_link_phone" = "Lenke/telefonnummer";
 "preferences_bookmarks_new_bookmark_name" = "Navn";
 "preferences_bookmarks_new_bookmark_title" = "Nytt bokmerke";
 "preferences_bookmarks_add_bookmark_button" = "Legg til bokmerke";
@@ -256,8 +256,8 @@
 "preferences_appearance_status_bar_time_title" = "Tid";
 "preferences_appearance_status_bar_title_shorten_stepper" = "forkort til %d tegn";
 "preferences_appearance_status_bar_title_hide_value" = "skjul";
-"preferences_appearance_status_bar_icon_calendar_icon_value" = " Kalenderikon";
-"preferences_appearance_status_bar_icon_app_icon_value" = " Programikon";
+"preferences_appearance_status_bar_icon_calendar_icon_value" = " Kalender";
+"preferences_appearance_status_bar_icon_app_icon_value" = " MeetingBar";
 "preferences_appearance_status_bar_icon_title" = "Ikon";
 "preferences_appearance_status_bar_title" = "Statusfelt";
 "preferences_appearance_events_value_only_with_link" = "vis kun dem med møtelenker";
@@ -280,7 +280,7 @@
 
 "preferences_appearance_events_title" = "Begivenheter";
 "preferences_general_feedback_email" = "E-post";
-"preferences_general_feedback_title" = "Hvis du har spørsmål eller tilbakemeldinger,\nkan du kontakte meg:";
+"preferences_general_feedback_title" = "Hvis du har spørsmål eller tilbakemeldinger,\nkan du ta kontakt:";
 "preferences_general_patron_restore_purchases" = "Gjenopprett kjøp";
 "preferences_general_patron_thank_for_purchase" = "Takk. Du støtter MeetingBar i %d måneder! 🎉";
 "preferences_general_patron_description" = "Disse engangskjøpene fornyer seg ikke.";
@@ -299,7 +299,7 @@
 
 // MARK: - Preferences General
 
-"preferences_general_option_login_launch" = "Start ved innlogging";
+"preferences_general_option_login_launch" = "Start etter innlogging";
 "preferences_tab_advanced" = "Avansert";
 "preferences_tab_calendars" = "Kalendere";
 "preferences_tab_bookmarks" = "Bokmerker";

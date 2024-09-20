@@ -119,7 +119,7 @@
 "preferences_calendars_add_account_modal" = "Harici takvim eklemek için:\n1. Varsayılan takvim uygulamanızı açın\n2. Açılan menüde 'Hesap Ekle' butonuna tıklayın\n3. Hesabınızı seçin ve bağlanın";
 "preferences_calendars_provider_section_title" = "Takvim sağlayıcısı";
 "preferences_calendars_provider_gcalendar_change_account" = "Google Hesabını Değiştir";
-"preferences_calendars_provider_macos_switch" = "MacOS Takvimine Geç";
+"preferences_calendars_provider_macos_switch" = "macOS Takvimine Geç";
 "preferences_calendars_provider_gcalendar_switch" = "Google Calendar API'ye geçin";
 "preferences_advanced_apple_script_checkmark" = "Toplantıya katıldığında AppleScript çalıştır";
 "preferences_advanced_save_script_button" = "Scripti kaydet";

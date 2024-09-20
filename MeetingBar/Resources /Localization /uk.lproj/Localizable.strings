@@ -158,7 +158,7 @@
 "preferences_calendars_add_account_modal" = "Щоб додати нові календарі:\n1. Відкрийте застосунок Календар (Calendar App)\n2. Натисніть Додати Акаунт (Add Account) у меню\n3. Виберіть сервіс і приєднайте свій акаунт";
 "preferences_calendars_provider_section_title" = "Постачальник календарів";
 "preferences_calendars_provider_gcalendar_change_account" = "Змінити об. запис Google";
-"preferences_calendars_provider_macos_switch" = "Перемкнути на системний Календар";
+"preferences_calendars_provider_macos_switch" = "Перемкнути на macOS Календар";
 "preferences_calendars_provider_gcalendar_switch" = "Перемкнути на Google Calendar API";
 
 // MARK: - Preferences Advanced

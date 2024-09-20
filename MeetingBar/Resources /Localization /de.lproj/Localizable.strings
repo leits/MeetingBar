@@ -206,7 +206,7 @@
 "preferences_calendars_add_account_description" = "Benötigten Kalender nicht gefunden?";
 "preferences_calendars_provider_section_title" = "Kalender Anbieter";
 "preferences_calendars_provider_gcalendar_change_account" = "Ändere den Google Account";
-"preferences_calendars_provider_macos_switch" = "Wechsele zum MacOS Kalender";
+"preferences_calendars_provider_macos_switch" = "Wechsele zum macOS Kalender";
 "preferences_calendars_provider_gcalendar_switch" = "Wechsle zur Google Kalender API";
 
 // MARK: - Preferences Calendars

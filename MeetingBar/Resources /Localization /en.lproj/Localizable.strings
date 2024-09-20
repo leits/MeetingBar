@@ -161,7 +161,7 @@
 "preferences_calendars_add_account_modal" = "To add external calendars:\n1. Open the default calendar app\n2. Click 'Add Account' in the menu\n3. Choose and connect your account";
 "preferences_calendars_provider_section_title" = "Calendars provider";
 "preferences_calendars_provider_gcalendar_change_account" = "Change Google Account";
-"preferences_calendars_provider_macos_switch" = "Switch to MacOS Calendar";
+"preferences_calendars_provider_macos_switch" = "Switch to macOS Calendar";
 "preferences_calendars_provider_gcalendar_switch" = "Switch to Google Calendar API";
 
 // MARK: - Preferences Advanced
@@ -321,7 +321,6 @@
 "notifications_snooze_until_start" = "Snooze until start time";
 "notifications_snooze_for" = "Snooze for %@ min";
 "notifications_meetingbar_join_event_action" = "Join";
-
 "notifications_event_ends_soon_body" = "The event ends soon";
 "notifications_event_ends_one_minute_body" = "The event ends in one minute";
 "notifications_event_ends_three_minutes_body" = "The event ends in three minutes";

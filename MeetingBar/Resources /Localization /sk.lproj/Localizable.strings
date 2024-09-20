@@ -62,7 +62,7 @@
 "preferences_calendars_provider_section_title" = "Poskytovateľ kalendára";
 "preferences_calendars_provider_gcalendar_change_account" = "Zmeniť Google účet";
 "preferences_calendars_provider_gcalendar_switch" = "Prepnúť na Google Kalendár API";
-"preferences_calendars_provider_macos_switch" = "Prepnúť na MacOS Kalendár";
+"preferences_calendars_provider_macos_switch" = "Prepnúť na macOS Kalendár";
 "preferences_advanced_regex_title" = "Vlastné regexy pre odkaz na stretnutie";
 
 // MARK: - Status bar

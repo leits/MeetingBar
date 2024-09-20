@@ -160,7 +160,7 @@
 "preferences_calendars_add_account_button" = "Añadir cuenta de calendario";
 "preferences_calendars_add_account_modal" = "Para añadir calendarios externos:\n1. Abre la aplicación de calendario por defecto\n2. Haz click en \"Añadir cuenta\" en el menú\n3. Escoge y conecta tu cuenta";
 "preferences_calendars_provider_section_title" = "Proveedor de calendarios";
-"preferences_calendars_provider_macos_switch" = "Cambiar a Calendario de MacOS";
+"preferences_calendars_provider_macos_switch" = "Cambiar a Calendario de macOS";
 "preferences_calendars_provider_gcalendar_change_account" = "Cambiar cuenta de Google";
 "preferences_calendars_provider_gcalendar_switch" = "Cambiar a Google Calendar API";
 
