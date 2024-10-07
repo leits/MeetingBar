@@ -84,7 +84,7 @@ struct endEventNotificationPicker: View {
 
     var body: some View {
         HStack {
-            Toggle("Sent a notification when event ends", isOn: $endOfEventNotification)
+            Toggle("Send a notification when event ends", isOn: $endOfEventNotification)
             Picker("", selection: $endOfEventNotificationTime) {
                 Text("when event ends").tag(TimeBeforeEventEnd.atEnd)
                 Text("1 minute before").tag(TimeBeforeEventEnd.minuteBefore)
@@ -130,7 +130,7 @@ struct LaunchAtLoginANDPreferredLanguagePicker: View {
                     Group {
                         Text("English").tag(AppLanguage.english)
                         Text("Українська").tag(AppLanguage.ukrainian)
-                        Text("Deutsche").tag(AppLanguage.german)
+                        Text("Deutsch").tag(AppLanguage.german)
                         Text("Français").tag(AppLanguage.french)
                         Text("Hrvatski").tag(AppLanguage.croatian)
                         Text("Norks").tag(AppLanguage.norwegian)
@@ -145,7 +145,7 @@ struct LaunchAtLoginANDPreferredLanguagePicker: View {
                         Text("Español").tag(AppLanguage.spanish)
                         Text("Português").tag(AppLanguage.portuguese)
                         Text("Slovenčina").tag(AppLanguage.slovak)
-                        Text("Nederland").tag(AppLanguage.dutch)
+                        Text("Nederlands").tag(AppLanguage.dutch)
                     }
                 }
             }.frame(width: 250)
