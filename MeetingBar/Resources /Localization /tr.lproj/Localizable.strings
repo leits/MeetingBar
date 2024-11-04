@@ -182,7 +182,7 @@
 "access_screen_access_granted_click_ok_title" = "Karşınıza çıkan macOS ekranında \\OK\\ butonuna tıklayın.";
 "access_screen_provider_picker_label" = "Takvim sağlayıcısı seçin";
 "access_screen_provider_macos_title" = "MacOS Takvim uygulaması";
-"access_screen_provider_macos_recomended" = "(önerilen)";
+"access_screen_provider_macos_recommended" = "(önerilen)";
 "access_screen_provider_macos_data_source" = "MacOS Takvim uygulamasından veri alın";
 "access_screen_provider_macos_number_of_accounts" = "Bağlı hesap sayısı";
 "access_screen_provider_gcalendar_data_source" = "Verileri doğrudan Google Takvim'den alın";
