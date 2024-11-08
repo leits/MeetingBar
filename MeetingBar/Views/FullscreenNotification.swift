@@ -25,6 +25,15 @@ struct FullscreenNotification: View {
                 VStack(spacing: 10) {
                     Text(getEventDateString(event))
                 }.padding(15)
+                
+                // display location of the event, very useful if you
+                // have a lot of meetings in a building with a lot of meeting rooms
+                if let location = event.location {
+                    VStack(spacing: 10) {
+                        Text(location)
+                    }.padding(15)
+                }
+             
                 HStack(spacing: 30) {
                     Button(action: dismiss) {
                         Text("general_close".loco()).padding(.vertical, 5).padding(.horizontal, 20)
