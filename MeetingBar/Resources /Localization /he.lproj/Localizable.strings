@@ -308,10 +308,10 @@
 // MARK: - Notifications
 
 "notifications_event_start_soon_body" = "האירוע מתחיל בקרוב";
-"notifications_event_ends_soon_body" = "The event ends soon";
-"notifications_event_ends_one_minute_body" = "The event ends in one minute";
-"notifications_event_ends_three_minutes_body" = "The event ends in three minutes";
-"notifications_event_ends_five_minutes_body" = "The event ends in five minutes";
+"notifications_event_ends_soon_body" = "האירוע מסתיים בקרוב";
+"notifications_event_ends_one_minute_body" = "האירוע מסתיים בעוד דקה";
+"notifications_event_ends_three_minutes_body" = "האירוע מסתיים בעוד שלוש דקות";
+"notifications_event_ends_five_minutes_body" = "האירוע מסתיים בעוד חמש דקות";
 "notifications_meetingbar_join_event_action" = "הצטרפות";
 "preferences_advanced_event_regex_title" = "ביטויים רגולריים משלך לסינון הודעות";
 "status_bar_section_refresh_sources" = "רענון המקורות";
