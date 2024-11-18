@@ -60,7 +60,7 @@
 "welcome_screen_login_launch_toggle_title" = "Kjør MeetingBar ved innlogging";
 "access_screen_provider_picker_label" = "Select calendars provider";
 "access_screen_provider_macos_title" = "MacOS Calendar app";
-"access_screen_provider_macos_recomended" = "(recomended)";
+"access_screen_provider_macos_recommended" = "(recommended)";
 "access_screen_provider_macos_data_source" = "Get data from MacOS Calendar app";
 "access_screen_provider_macos_number_of_accounts" = "Any number of any connected accounts";
 "access_screen_provider_gcalendar_data_source" = "Get data directly from Google Calendar";

@@ -85,7 +85,7 @@
 "access_screen_access_denied_relaunch_title" = "Potom spusti aplikáciu manuálne a pokračuj v nastavovaní.";
 "access_screen_provider_picker_label" = "Vyber poskytovateľa kalendára";
 "access_screen_provider_macos_title" = "MacOS Kalendár aplikácia";
-"access_screen_provider_macos_recomended" = "(odporúčané)";
+"access_screen_provider_macos_recommended" = "(odporúčané)";
 "access_screen_provider_macos_data_source" = "Získať údaje z MacOS Kalendár aplikácie";
 "access_screen_provider_macos_number_of_accounts" = "Ľubovoľný počet akýchkoľvek prepojených účtov";
 "access_screen_provider_gcalendar_number_of_accounts" = "Iba jeden Google účet";
