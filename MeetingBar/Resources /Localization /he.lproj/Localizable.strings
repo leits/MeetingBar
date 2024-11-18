@@ -175,7 +175,7 @@
 "access_screen_access_granted_click_ok_title" = "יש ללחוץ על „אישור” בחלונית הקופצת ב־macOS שלך.";
 "access_screen_provider_picker_label" = "בחירת ספק לוחות שנה";
 "access_screen_provider_macos_title" = "יישום לוח השנה ב־MacOS";
-"access_screen_provider_macos_recomended" = "(מומלץ)";
+"access_screen_provider_macos_recommended" = "(מומלץ)";
 "access_screen_provider_macos_data_source" = "משיכת נתונים מיישום לוח השנה של MacOS";
 "access_screen_provider_macos_number_of_accounts" = "כל מספר של כל חשבון שהוא שמחובר";
 "access_screen_provider_gcalendar_data_source" = "משיכת נתונים ישירות מ־Google Calendar";

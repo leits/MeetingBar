@@ -271,7 +271,7 @@
 "access_screen_access_granted_click_ok_title" = "Haz clic en \"Aceptar\" en la ventana emergente de macOS.";
 "access_screen_provider_picker_label" = "Selecciona proveedor de calendarios";
 "access_screen_provider_macos_title" = "Aplicación Calendario MacOS";
-"access_screen_provider_macos_recomended" = "(recomendado)";
+"access_screen_provider_macos_recommended" = "(recomendado)";
 "access_screen_provider_macos_data_source" = "Obtener datos desde la aplicación Calendario de MacOS";
 "access_screen_provider_macos_number_of_accounts" = "Cualquier número de cuentas conectadas";
 "access_screen_provider_gcalendar_data_source" = "Obtener datos directamente desde Google Calendar";

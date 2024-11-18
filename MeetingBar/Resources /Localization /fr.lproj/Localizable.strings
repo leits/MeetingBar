@@ -84,7 +84,7 @@
 "calendars_screen_start_button" = "Démarrer l'appli";
 "access_screen_provider_picker_label" = "Sélectionnez le fournisseur de calendriers";
 "access_screen_provider_macos_title" = "Application Calendrier de MacOS";
-"access_screen_provider_macos_recomended" = "(recommandé)";
+"access_screen_provider_macos_recommended" = "(recommandé)";
 "access_screen_provider_macos_data_source" = "Récupérer les données de l'application Calendrier de MacOS";
 "access_screen_provider_macos_number_of_accounts" = "N'importe quel nombre de comptes connectés";
 "access_screen_provider_gcalendar_data_source" = "Obtenez des données directement à partir de Google Agenda";
