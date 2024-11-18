@@ -250,7 +250,7 @@
 "access_screen_access_denied_relaunch_title" = "Start vervolgens de app handmatig om door te gaan met de installatie.";
 "access_screen_access_granted_title" = "Toegang tot agenda's aanvragen…";
 "access_screen_provider_picker_label" = "Selecteer agendaprovider";
-"access_screen_provider_macos_recomended" = "(aanbevolen)";
+"access_screen_provider_macos_recommended" = "(aanbevolen)";
 "access_screen_provider_macos_data_source" = "Gegevens ophalen uit de macOS Agenda-app";
 "access_screen_provider_macos_number_of_accounts" = "Een willekeurig aantal verbonden accounts";
 "access_screen_provider_gcalendar_number_of_accounts" = "Slechts één Google-account";

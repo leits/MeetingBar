@@ -256,7 +256,7 @@
 "access_screen_access_granted_click_ok_title" = "Pritisni „U redu” u skočnom prozoru MacOS-a.";
 "access_screen_provider_picker_label" = "Odaberi pružatelja kalendara";
 "access_screen_provider_macos_title" = "MacOS program Kalendar";
-"access_screen_provider_macos_recomended" = "(preporučeno)";
+"access_screen_provider_macos_recommended" = "(preporučeno)";
 "access_screen_provider_macos_data_source" = "Preuzmi podatke iz MacOS programa Kalendar";
 "access_screen_provider_macos_number_of_accounts" = "Bilo koji broj bilo kojih povezanih računa";
 "access_screen_provider_gcalendar_data_source" = "Preuzmi podatke izravno iz Google Kalendar";

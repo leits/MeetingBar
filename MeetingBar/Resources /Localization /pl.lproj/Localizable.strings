@@ -255,7 +255,7 @@
 "access_screen_access_granted_click_ok_title" = "Kliknij \"OK\" w popupie macOS.";
 "access_screen_provider_picker_label" = "Wybierz dostawcę kalendarza";
 "access_screen_provider_macos_title" = "Kalendarz MacOS";
-"access_screen_provider_macos_recomended" = "(zalecane)";
+"access_screen_provider_macos_recommended" = "(zalecane)";
 "access_screen_provider_macos_data_source" = "Pobierz dane z Kalendarza MacOS";
 "access_screen_provider_macos_number_of_accounts" = "Dowolna liczba dowolnych połączonych kont";
 "access_screen_provider_gcalendar_data_source" = "Pobierz dane bezpośrednio z Kalendarza Google";

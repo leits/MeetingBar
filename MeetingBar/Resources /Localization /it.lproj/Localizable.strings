@@ -267,7 +267,7 @@
 "access_screen_access_granted_click_ok_title" = "Seleziona \"OK\" nel popup di macOS.";
 "access_screen_provider_picker_label" = "Seleziona calendar provider";
 "access_screen_provider_macos_title" = "Calendario macOS";
-"access_screen_provider_macos_recomended" = "(consigliato)";
+"access_screen_provider_macos_recommended" = "(consigliato)";
 "access_screen_provider_macos_data_source" = "Importa dati dal Calendario macOS";
 "access_screen_provider_macos_number_of_accounts" = "Qualsiasi numero di account connessi";
 "access_screen_provider_gcalendar_data_source" = "Importa dati direttamente da Google Calendar";

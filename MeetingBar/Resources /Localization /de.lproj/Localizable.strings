@@ -282,7 +282,7 @@
 "calendars_screen_start_button" = "MeetingBar starten";
 "access_screen_provider_picker_label" = "Wähle den Kalender Anbieter aus";
 "access_screen_provider_macos_title" = "MacOS Kalender App";
-"access_screen_provider_macos_recomended" = "(empfohlen)";
+"access_screen_provider_macos_recommended" = "(empfohlen)";
 "access_screen_provider_macos_data_source" = "Hole Daten von der MacOS Kalender App";
 "access_screen_provider_macos_number_of_accounts" = "Beliebig viele verbundene Konten";
 "access_screen_provider_gcalendar_data_source" = "Hole Daten direkt vom Google Kalender";

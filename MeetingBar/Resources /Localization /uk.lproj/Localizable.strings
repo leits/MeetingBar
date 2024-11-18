@@ -260,7 +260,7 @@
 "access_screen_access_granted_click_ok_title" = "Натисніть \"OK\" у вікні від MacOS.";
 "access_screen_provider_picker_label" = "Виберіть постачальника календарів";
 "access_screen_provider_macos_title" = "Системний Календар";
-"access_screen_provider_macos_recomended" = "(рекомендовано)";
+"access_screen_provider_macos_recommended" = "(рекомендовано)";
 "access_screen_provider_macos_data_source" = "Використовувати дані із системного Календаря";
 "access_screen_provider_macos_number_of_accounts" = "Будь-яка кількість під'єднаних об. записів до системного Календаря";
 "access_screen_provider_gcalendar_data_source" = "Використовувати дані напряму з Google Calendar";
