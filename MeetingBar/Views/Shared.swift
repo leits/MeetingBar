@@ -56,8 +56,13 @@ struct JoinEventNotificationPicker: View {
     @Default(.joinEventNotification) var joinEventNotification
     @Default(.joinEventNotificationTime) var joinEventNotificationTime
 
-    let (noAlertStyle, disabled) = checkNotificationSettings()
+    let noAlertStyle: Bool
+    let disabled: Bool
 
+    init() {
+        (noAlertStyle, disabled) = checkNotificationSettings()
+    }
+    
     var body: some View {
         HStack {
             Toggle("shared_send_notification_toggle".loco(), isOn: $joinEventNotification)
