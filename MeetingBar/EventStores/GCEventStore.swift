@@ -169,7 +169,7 @@ class GCEventStore: NSObject, EventStore, OIDExternalUserAgent {
                                         case "tentative":
                                             attendeeStatus = .tentative
                                         case "needsAction":
-                                            attendeeStatus = .inProcess
+                                            attendeeStatus = .pending
                                         default:
                                             attendeeStatus = .unknown
                                         }
