@@ -56,12 +56,9 @@ struct JoinEventNotificationPicker: View {
     @Default(.joinEventNotification) var joinEventNotification
     @Default(.joinEventNotificationTime) var joinEventNotificationTime
 
-    let noAlertStyle: Bool
-    let disabled: Bool
-
-    init() {
-        (noAlertStyle, disabled) = checkNotificationSettings()
-    }
+    var notificationSettings: (noAlertStyle: Bool, disabled: Bool) {
+            checkNotificationSettings()
+        }
 
     var body: some View {
         HStack {
@@ -74,12 +71,14 @@ struct JoinEventNotificationPicker: View {
             }.frame(width: 220, alignment: .leading).labelsHidden().disabled(!joinEventNotification)
         }
 
-        if noAlertStyle, !disabled, joinEventNotification {
-            Text("shared_send_notification_no_alert_style_tip".loco()).foregroundColor(.gray).font(.system(size: 12))
-        }
+        if joinEventNotification {
+            if notificationSettings.noAlertStyle, !notificationSettings.disabled {
+                Text("shared_send_notification_no_alert_style_tip".loco()).foregroundColor(.gray).font(.system(size: 12))
+            }
 
-        if disabled, joinEventNotification {
-            Text("shared_send_notification_disabled_tip".loco()).foregroundColor(.gray).font(.system(size: 12))
+            if notificationSettings.disabled {
+                Text("shared_send_notification_disabled_tip".loco()).foregroundColor(.gray).font(.system(size: 12))
+            }
         }
     }
 }
