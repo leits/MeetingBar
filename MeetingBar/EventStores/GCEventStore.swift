@@ -45,7 +45,7 @@ class GCEventStore: NSObject, EventStore, OIDExternalUserAgent {
                 return seal.fulfill([])
             }
 
-            if let url = URL(string: "https://www.googleapis.com/calendar/v3/users/me/calendarList?showHidden=true") {
+            if let url = URL(string: "https://www.googleapis.com/calendar/v3/users/me/calendarList?maxResults=250&showHidden=true") {
                 fetcherService.authorizer = auth
                 fetcherService.fetcher(with: url).beginFetch { data, error in
                     if error != nil {
