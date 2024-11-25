@@ -20,7 +20,7 @@ func registerNotificationCategories() {
     let acceptAction = UNNotificationAction(identifier: "JOIN_ACTION",
                                             title: "notifications_meetingbar_join_event_action".loco(),
                                             options: .foreground)
-    
+
     let dismissAction = UNNotificationAction(identifier: "DISMISS_ACTION",
                                              title: "notifications_meetingbar_dismiss_event_action".loco(),
                                              options: .foreground)

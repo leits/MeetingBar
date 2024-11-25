@@ -223,11 +223,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     }
 
     func userNotificationCenter(_: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-        
+
         defer {
             completionHandler()
         }
-        
+
         guard ["EVENT", "SNOOZE_EVENT"].contains(response.notification.request.content.categoryIdentifier),
               let eventID = response.notification.request.content.userInfo["eventID"] as? String,
               let event = statusBarItem.events.first(where: { $0.ID == eventID }) else {

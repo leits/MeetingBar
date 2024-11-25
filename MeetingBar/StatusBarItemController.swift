@@ -943,11 +943,11 @@ class StatusBarItemController {
             dismiss(event: event)
         }
     }
-    
+
     func dismiss(event: MBEvent) {
         let dismissedEvent = ProcessedEvent(id: event.ID, lastModifiedDate: event.lastModifiedDate, eventEndDate: event.endDate)
         Defaults[.dismissedEvents].append(dismissedEvent)
-        
+
         updateTitle()
         updateMenu()
     }
