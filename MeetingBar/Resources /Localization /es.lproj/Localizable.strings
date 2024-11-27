@@ -174,7 +174,7 @@
 "preferences_advanced_edit_script" = "Editar script";
 "preferences_advanced_save_script_button" = "Guardar script";
 "preferences_advanced_wrong_location_title" = "Ubicación incorrecta";
-"preferences_advanced_wrong_location_message" = "Por favor, selecciona la carpeta Usuario → Library → Application Scripts → leits.MeetingBar";
+"preferences_advanced_wrong_location_message" = "Seleccione la carpeta Usuario → Biblioteca → Scripts de aplicación → leits.MeetingBar";
 "preferences_advanced_wrong_location_button" = "¡Ya está!";
 "preferences_advanced_event_regex_title" = "Expresiones regulares personalizadas para filtrar reuniones";
 "preferences_advanced_regex_title" = "Expresiones regulares personalizadas para enlaces de reunión";
