@@ -23,8 +23,8 @@ final class I18N {
         if appLanguage == .system {
             resetToDefault()
             return true
-        } else if let newBunlde = checkLanguageAvailability(appLanguage.rawValue) {
-            bundle = newBunlde
+        } else if let newBundle = checkLanguageAvailability(appLanguage.rawValue) {
+            bundle = newBundle
             locale = Locale(identifier: appLanguage.rawValue)
             return true
         }
