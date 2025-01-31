@@ -223,7 +223,7 @@
 "preferences_appearance_menu_time_format_24_hour_value" = "24hodinový";
 "preferences_appearance_menu_time_format_12_hour_value" = "12hodinový (AM/PM)";
 "preferences_appearance_menu_time_format_title" = "Formát času:";
-"preferences_appearance_status_bar_next_event_toggle" = "Zobrazit pouze nadcházející události, které začínají nejpozději během";
+"preferences_appearance_status_bar_next_event_toggle" = "Zobrazit pouze události, které začínají nejpozději během";
 "preferences_appearance_status_bar_next_event_stepper" = "%d minut";
 "preferences_appearance_status_bar_title_event_title_value" = "název události";
 "preferences_appearance_status_bar_title_title" = "Název";
@@ -246,8 +246,8 @@
 "preferences_appearance_status_bar_title_dot_value" = "tečka (•)";
 "preferences_appearance_status_bar_icon_no_icon_value" = " Žádná";
 "preferences_appearance_status_bar_icon_specific_icon_value" = " Ikona dané události (např. MS Teams)";
-"preferences_appearance_status_bar_icon_calendar_icon_value" = " Ikona kalendáře";
-"preferences_appearance_status_bar_icon_app_icon_value" = " Ikona aplikace";
+"preferences_appearance_status_bar_icon_calendar_icon_value" = " Kalendář";
+"preferences_appearance_status_bar_icon_app_icon_value" = " MeetingBar";
 "preferences_appearance_status_bar_icon_title" = "Ikona";
 "preferences_appearance_status_bar_title" = "Řádek nabídek";
 "preferences_appearance_events_value_with_strikethrough" = "zobrazit jako přeškrtnuté";
@@ -271,7 +271,7 @@
 "preferences_general_feedback_title" = "Pokud máte jakékoli dotazy nebo připomínky,\nkontaktujte mě:";
 "preferences_general_patron_restore_purchases" = "Obnovit nákupy";
 "preferences_general_patron_thank_for_purchase" = "Díky! Podpořili jste MeetingBar na %d měsíců! 🎉";
-"preferences_general_patron_description" = "Tyto jednorázové nákupy se automaticky neobnovují.";
+"preferences_general_patron_description" = "Toto jsou jednorázové nákupy a automaticky se neobnovují.";
 "preferences_general_patron_twelve_months" = "12 měsíců – 11,99 USD";
 "preferences_general_patron_six_months" = "6 měsíců – 5,99 USD";
 "preferences_general_patron_three_months" = "3 měsíce – 2,99 USD";
@@ -309,7 +309,7 @@
 "window_title_onboarding" = "Vítejte v MeetingBaru";
 "next_meeting_empty_message" = "Super! Je čas na kafe";
 "next_meeting_empty_title" = "Dnes se nekonají žádné další schůzky";
-"create_meeting_error_message" = "Vlastní url \"%@\" chybí nebo je neplatná. Zadejte prosím hodnotu v předvolbách aplikace.";
+"create_meeting_error_message" = "Vlastní URL \"%@\" chybí nebo je neplatná. ";
 "create_meeting_error_title" = "Nelze vytvořit novou schůzku";
 "general_meeting" = "Schůzka";
 "general_save" = "Uložit";
