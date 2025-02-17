@@ -15,14 +15,14 @@
 "notifications_event_start_one_minute_body" = "Událost začíná za minutu";
 "notifications_event_start_three_minutes_body" = "Událost začíná za tři minuty";
 "notifications_event_start_five_minutes_body" = "Událost začíná za pět minut";
-"notifications_event_ends_soon_body" = "The event ends soon";
-"notifications_event_ends_one_minute_body" = "The event ends in one minute";
-"notifications_event_ends_three_minutes_body" = "The event ends in three minutes";
-"notifications_event_ends_five_minutes_body" = "The event ends in five minutes";
+"notifications_event_ends_soon_body" = "Tato událost brzy končí";
+"notifications_event_ends_one_minute_body" = "Tato událost skončí do jedné minuty";
+"notifications_event_ends_three_minutes_body" = "Tato událost skončí do tří minut";
+"notifications_event_ends_five_minutes_body" = "Tato událost skončí do pěti minut";
 "notifications_event_started_body" = "The event has started";
 "notifications_snooze_until_start" = "Snooze until start time";
 "notifications_snooze_for" = "Snooze for %@ min";
-"notifications_meetingbar_join_event_action" = "Join";
+"notifications_meetingbar_join_event_action" = "Připojit se";
 "store_patronage_purchase_cloud_service_revoked_message" = "Uživatel zrušil oprávnění k používání této cloudové služby";
 "store_patronage_purchase_cloud_service_network_connection_failed" = "Nepodařilo se připojit k síti";
 "store_patronage_purchase_cloud_service_permission_denied_message" = "Přístup k informacím o cloudové službě není povolen";
@@ -55,7 +55,7 @@
 
 // MARK: - Shared
 
-"shared_send_notification_toggle" = "Odeslat oznámení pro připojení k nadcházející schůzce";
+"shared_send_notification_toggle" = "Odeslat systémové oznámení";
 "shared_fullscreen_notification_toggle" = "Show a fullscreen notification";
 "access_screen_access_granted_click_ok_title" = "Ve vyskakovacím okně systému macOS klikněte na tlačítko \"OK\".";
 "access_screen_access_granted_title" = "Žádost o přístup ke kalendářům…";
@@ -70,16 +70,16 @@
 
 "access_screen_access_denied_title" = "Vypadá to, že jste zakázali přístup ke kalendářům.";
 "calendars_screen_start_button" = "Začít používat aplikaci";
-"access_screen_provider_picker_label" = "Select calendars provider";
-"access_screen_provider_macos_title" = "MacOS Calendar app";
-"access_screen_provider_macos_recommended" = "(recommended)";
-"access_screen_provider_macos_data_source" = "Get data from MacOS Calendar app";
+"access_screen_provider_picker_label" = "Vyberte poskytovatele kalendářů";
+"access_screen_provider_macos_title" = "aplikace MacOS Kalendář";
+"access_screen_provider_macos_recommended" = "(doporučeno)";
+"access_screen_provider_macos_data_source" = "Získat data z aplikace MacOS Kalendář";
 "access_screen_provider_macos_number_of_accounts" = "Any number of any connected accounts";
-"access_screen_provider_gcalendar_data_source" = "Get data directly from Google Calendar";
-"access_screen_provider_gcalendar_number_of_accounts" = "Only one Google account";
-"access_screen_provider_gcalendar_sign_in_title" = "Google Sign In";
+"access_screen_provider_gcalendar_data_source" = "Získat data přímo z Google Kalendář";
+"access_screen_provider_gcalendar_number_of_accounts" = "Pouze jeden Google účet";
+"access_screen_provider_gcalendar_sign_in_title" = "Google přihlášení";
 "access_screen_provider_gcalendar_sign_in_description" = "Allow MeetingBar access to your calendar in browser window";
-"access_screen_try_again" = "Try again";
+"access_screen_try_again" = "Zkuste znovu";
 
 // MARK: - Calendars screen
 
@@ -94,7 +94,7 @@
 "welcome_screen_shortcut_ad_hoc_meeting_title" = "pomocí zkratky:";
 "welcome_screen_ad_hoc_meeting_title" = "Vytvářet ad hoc schůzky v ";
 "welcome_screen_login_launch_toggle_title" = "Spouštět aplikaci MeetingBar po přihlášení";
-"status_bar_error_app_link_title" = "Nelze otevřít odkaz v aplikaci %@";
+"status_bar_error_app_link_title" = "Oops! Nelze otevřít odkaz v aplikaci %@";
 "status_bar_error_app_link_message" = "Ujistěte se, že máte nainstalovanou aplikaci %@, nebo v předvolbách nastavte, aby se její odkazy otevíraly ve webovém prohlížeči.";
 "status_bar_error_link_missed_message" = "Odkaz nebyl nalezen, nebo služba schůzky zatím není podporována";
 "status_bar_error_link_missed_title" = "Nelze se připojit k %@";
@@ -105,7 +105,7 @@
 "status_bar_quit" = "Ukončit MeetingBar";
 "status_bar_preferences" = "Předvolby";
 "status_bar_whats_new" = "Co je nového?";
-"status_bar_rate_app" = "Rate App";
+"status_bar_rate_app" = "Ohodnotit Aplikaci";
 "status_bar_hide_meeting_names" = "Skrýt název schůzky";
 "status_bar_show_meeting_names" = "Zobrazit název schůzky";
 "status_bar_quick_actions" = "Rychlé akce";
@@ -155,9 +155,9 @@
 "preferences_advanced_wrong_location_title" = "Špatné umístění";
 "preferences_advanced_save_script_button" = "Uložit skript";
 "preferences_advanced_apple_script_placeholder" = "# sem napište svůj skript\ntell application \"Music\" to pause";
-"preferences_advanced_run_script_on_event_start" = "Run AppleScript automatically";
-"preferences_advanced_test_script_on_next_event" = "Test on next event";
-"preferences_advanced_edit_script" = "Edit script";
+"preferences_advanced_run_script_on_event_start" = "Spustit AppleScript automaticky";
+"preferences_advanced_test_script_on_next_event" = "Vyzkoušet na příští události";
+"preferences_advanced_edit_script" = "Editovat script";
 "preferences_advanced_apple_script_checkmark" = "Spustit AppleScript po připojení ke schůzce";
 "preferences_advanced_event_regex_title" = "Custom regexes to filter out meetings";
 
@@ -166,10 +166,10 @@
 
 "preferences_advanced_setting_warning" = "⚠️ Tato nastavení použijte jen v případě, že rozumíte, k čemu je";
 "preferences_calendars_add_account_modal" = "Pro přidání externích kalendářů:\n1. Otevřete výchozí aplikaci Kalendář\n2. V nabídce klikněte na položku \"Přidat účet\"\n3. Vyberte a připojte svůj účet";
-"preferences_calendars_provider_section_title" = "Calendars provider";
-"preferences_calendars_provider_gcalendar_change_account" = "Change Google Account";
+"preferences_calendars_provider_section_title" = "Poskytovatel kalendářů";
+"preferences_calendars_provider_gcalendar_change_account" = "Změnit Google Účet";
 "preferences_calendars_provider_macos_switch" = "Switch to macOS Calendar";
-"preferences_calendars_provider_gcalendar_switch" = "Switch to Google Calendar API";
+"preferences_calendars_provider_gcalendar_switch" = "Přepnout na Google Kalendář API";
 "preferences_calendars_add_account_button" = "Přidat účet";
 "preferences_calendars_add_account_description" = "Nemůžete najít požadovaný kalendář?";
 
@@ -318,11 +318,12 @@
 "general_close" = "Zavřít";
 "general_cancel" = "Zrušit";
 "general_ok" = "OK";
-"status_bar_menu_dismiss_curent_meeting" = "Dismiss current meeting";
-"status_bar_menu_dismiss_next_meeting" = "Dismiss next meeting";
+"status_bar_menu_dismiss_curent_meeting" = "";
+"status_bar_menu_dismiss_next_meeting" = "";
 "status_bar_menu_remove_all_dismissals" = "Remove all dismissals";
 "status_bar_event_dismissed_mark" = "dismissed";
 "notification_next_meeting_dismissed_title" = "Dismissed %@";
 "notification_next_meeting_dismissed_message" = "You can remove dismissal from Quick Actions";
 "notification_all_dismissals_removed_title" = "Removed all dismissals";
 "notification_all_dismissals_removed_message" = "All dismissed meetings are back in action";
+"status_bar_section_refresh_sources" = "Obnovit zdroje";
