@@ -1,1 +1,14 @@
-
+"general_save" = "저장";
+"general_meeting" = "회의";
+"general_when_event_starts" = "이벤트 시작 시";
+"general_ok" = "OK";
+"general_cancel" = "취소";
+"general_close" = "닫기";
+"general_add" = "추가";
+"general_delete" = "삭제";
+"general_one_minute_before" = "1분 전";
+"general_three_minute_before" = "3분 전";
+"general_five_minute_before" = "5분 전";
+"create_meeting_error_title" = "새로운 회의를 생성할 수 없습니다";
+"create_meeting_error_message" = "사용자 지정 URL \"%@\" 이(가) 없거나 유효하지 않습니다. ";
+"next_meeting_empty_title" = "오늘 예정된 회의가 없습니다";
