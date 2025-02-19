@@ -623,7 +623,7 @@ func getIconForMeetingService(_ meetingService: MeetingServices?) -> NSImage {
         image = NSImage(named: "livekit_icon")!
         image.size = NSSize(width: 16, height: 16)
 
-    case .some(.livekit):
+    case .some(.meetecho):
         image = NSImage(named: "meetecho_icon")!
         image.size = NSSize(width: 16, height: 16)
 
