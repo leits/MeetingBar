@@ -223,40 +223,35 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     }
 
     func userNotificationCenter(_: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+
+        defer {
+            completionHandler()
+        }
+
+        guard ["EVENT", "SNOOZE_EVENT"].contains(response.notification.request.content.categoryIdentifier),
+              let eventID = response.notification.request.content.userInfo["eventID"] as? String,
+              let event = statusBarItem.events.first(where: { $0.ID == eventID }) else {
+            return
+        }
         switch response.actionIdentifier {
         case "JOIN_ACTION", UNNotificationDefaultActionIdentifier:
-            if response.notification.request.content.categoryIdentifier == "EVENT" || response.notification.request.content.categoryIdentifier == "SNOOZE_EVENT" {
-                if let eventID = response.notification.request.content.userInfo["eventID"] as? String {
-                    if let event = statusBarItem.events.first(where: { $0.ID == eventID }) {
-                        event.openMeeting()
-                    }
-                }
-            }
+            event.openMeeting()
+        case "DISMISS_ACTION":
+            statusBarItem.dismiss(event: event)
         case NotificationEventTimeAction.untilStart.rawValue:
-            handleSnoozeEvent(response, NotificationEventTimeAction.untilStart)
+            snoozeEventNotification(event, NotificationEventTimeAction.untilStart)
         case NotificationEventTimeAction.fiveMinuteLater.rawValue:
-            handleSnoozeEvent(response, NotificationEventTimeAction.fiveMinuteLater)
+            snoozeEventNotification(event, NotificationEventTimeAction.fiveMinuteLater)
         case NotificationEventTimeAction.tenMinuteLater.rawValue:
-            handleSnoozeEvent(response, NotificationEventTimeAction.tenMinuteLater)
+            snoozeEventNotification(event, NotificationEventTimeAction.tenMinuteLater)
         case NotificationEventTimeAction.fifteenMinuteLater.rawValue:
-            handleSnoozeEvent(response, NotificationEventTimeAction.fifteenMinuteLater)
+            snoozeEventNotification(event, NotificationEventTimeAction.fifteenMinuteLater)
         case NotificationEventTimeAction.thirtyMinuteLater.rawValue:
-            handleSnoozeEvent(response, NotificationEventTimeAction.thirtyMinuteLater)
+            snoozeEventNotification(event, NotificationEventTimeAction.thirtyMinuteLater)
         default:
             break
         }
 
-        completionHandler()
-    }
-
-    func handleSnoozeEvent(_ response: UNNotificationResponse, _ action: NotificationEventTimeAction) {
-        if response.notification.request.content.categoryIdentifier == "EVENT" || response.notification.request.content.categoryIdentifier == "SNOOZE_EVENT" {
-            if let eventID = response.notification.request.content.userInfo["eventID"] as? String {
-                if let event = statusBarItem.events.first(where: { $0.ID == eventID }) {
-                    snoozeEventNotification(event, action)
-                }
-            }
-        }
     }
 
     /*
@@ -335,7 +330,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     }
 
     @objc
-    func openPrefecencesWindow(_: NSStatusBarButton?) {
+    func openPreferencesWindow(_: NSStatusBarButton?) {
         let contentView = PreferencesView()
 
         if let preferencesWindow {
@@ -402,7 +397,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         if let string = event.paramDescriptor(forKeyword: keyDirectObject)?.stringValue,
            let url = URL(string: string) {
             if url == URL(string: "meetingbar://preferences") {
-                openPrefecencesWindow(nil)
+                openPreferencesWindow(nil)
             } else {
                 GCEventStore.shared
                     .currentAuthorizationFlow?.resumeExternalUserAgentFlow(with: url)
