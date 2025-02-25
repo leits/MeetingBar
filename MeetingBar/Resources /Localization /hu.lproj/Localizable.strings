@@ -138,3 +138,6 @@
 "preferences_configure_browsers_delete_alert_message" = "Törli a %@ böngésző konfigurációt?";
 "preferences_advanced_test_script_on_next_event" = "Tesztelés a következő eseményen";
 "preferences_advanced_save_script_button" = "Script mentése";
+"status_bar_menu_dismiss_next_meeting" = "Következő találkozó elbocsátása";
+"status_bar_section_refresh_sources" = "Források frissítése";
+"status_bar_menu_dismiss_curent_meeting" = "Jelenlegi találkozó elbocsátása";
