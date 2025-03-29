@@ -50,13 +50,12 @@ class ActionsOnEventStart: NSObject {
         }
         //
 
-        if let nextEvent = getNextEvent(events: app.statusBarItem.events, linkRequired: true) {
+        let fullscreenNotificationMeetingLinkOnly = Defaults[.fullscreenNotificationMeetingLinkOnly]
+
+        if let nextEvent = getNextEvent(events: app.statusBarItem.events, linkRequired: fullscreenNotificationMeetingLinkOnly) {
             let now = Date()
-
             let startEndRange = nextEvent.startDate ... nextEvent.endDate
-
             let timeInterval = nextEvent.startDate.timeIntervalSince(now)
-
             let allDayCandidate = nextEvent.isAllDay && startEndRange.contains(now)
 
             /*
@@ -65,9 +64,9 @@ class ActionsOnEventStart: NSObject {
              * ------------------------
              */
             let actionTimeForFullscreenNotification = Double(Defaults[.fullscreenNotificationTime].rawValue)
-            let nonAlldayCandidateForFullscreenNotification = (timeInterval > -15 && timeInterval < actionTimeForFullscreenNotification)
+            let nonAllDayCandidateForFullscreenNotification = (timeInterval > -15 && timeInterval < actionTimeForFullscreenNotification)
 
-            if fullscreenNotificationActive && (nonAlldayCandidateForFullscreenNotification || allDayCandidate) {
+            if fullscreenNotificationActive && (nonAllDayCandidateForFullscreenNotification || allDayCandidate) {
                 var events = Defaults[.processedEventsForFullscreenNotification]
 
                 let matchedEvent = events.first { $0.id == nextEvent.ID }
@@ -76,9 +75,7 @@ class ActionsOnEventStart: NSObject {
                 // we will remove the the current event from the scheduled events, so that we can run the script again ->
                 // this is an edge case when the event was already notified for, but scheduled for a later time.
                 if matchedEvent == nil || matchedEvent?.lastModifiedDate != nextEvent.lastModifiedDate {
-                    if nextEvent.meetingLink != nil {
-                        app.openFullscreenNotificationWindow(event: nextEvent)
-                    }
+                    app.openFullscreenNotificationWindow(event: nextEvent)
 
                     // update the executed events
                     if matchedEvent != nil {
