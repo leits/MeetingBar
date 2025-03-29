@@ -12,6 +12,13 @@ For next releases info look here: <https://github.com/leits/MeetingBar/releases>
 *   Fix readability of the statusbar text in multi-screen setups (#354)
 *   Detect hidden menubar icon (#429)
 *   Added feature to snooze the notification
+*   Meetings without a meeting links can now be displayed in fullscreen notifications. A new setting has been added to control that behaviour.
+* Preferences changes:
+	* Added a section "Notification"
+	* Added a new parameter related to full screen notification that you can disable to receives notification for meetings without links (Only for meetings with a link)
+* In the fullscreen notification, don't show the Meeting Link button if there is no meeting link.
+
+
 *   Fix crash due to meeting attendees without an email address (#460)
 
 ## Version 3.10.0
