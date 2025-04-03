@@ -269,7 +269,7 @@
 "access_screen_access_denied_relaunch_title" = "手動でアプリを起動して設定を続ける必要があります。";
 "access_screen_access_granted_title" = "カレンダーへのアクセス許可を求めています。";
 "access_screen_access_granted_click_ok_title" = "macOS のポップアップウィンドウで \"OK\" をクリックしてください。";
-"access_screen_provider_picker_label" = "Select calendars provider";
+"access_screen_provider_picker_label" = "カレンダーサービスを選択します";
 "access_screen_provider_macos_title" = "MacOS Calendar app";
 "access_screen_provider_macos_recommended" = "(recommended)";
 "access_screen_provider_macos_data_source" = "Get data from MacOS Calendar app";
