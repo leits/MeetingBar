@@ -29,6 +29,8 @@ enum ScriptType: String, Codable, CaseIterable {
  * 9. parameter - meeting url (string) - the url to the meeting found in notes, url or location - only one meeting url is supported - if no meeting url is set, the value will be "EMPTY"
  * 10. parameter - meeting service (string), e.g teams or zoom- if no meeting is found, the meeting service value is "EMPTY"
  * 11. parameter - meeting notes (string)- if no notes are set, value "EMPTY" will be used
+ * 12. parameter - calendar name (string) - the name of the calendar this event belongs to
+ * 13. parameter - calendar source (string) - the source/account of the calendar (e.g., iCloud, Gmail)
  */
 func createAppleScriptParametersForEvent(event: MBEvent) -> NSAppleEventDescriptor {
     let parameters = NSAppleEventDescriptor.list()
@@ -50,6 +52,10 @@ func createAppleScriptParametersForEvent(event: MBEvent) -> NSAppleEventDescript
     }
 
     parameters.insert(NSAppleEventDescriptor(string: event.notes ?? "EMPTY"), at: 0)
+
+    // Add calendar information
+    parameters.insert(NSAppleEventDescriptor(string: event.calendar.title), at: 0)
+    parameters.insert(NSAppleEventDescriptor(string: event.calendar.source), at: 0)
 
     return parameters
 }
