@@ -17,8 +17,7 @@ struct GeneralTab: View {
             Section {
                 LaunchAtLoginANDPreferredLanguagePicker()
                 Divider()
-                JoinEventNotificationPicker()
-                FullscreenNotificationPicker()
+                NotificationsSection()
                 Divider()
             }
             Section {
@@ -30,25 +29,38 @@ struct GeneralTab: View {
     }
 }
 
+struct NotificationsSection: View {
+    var body: some View {
+        Text("preferences_notifications_section_title".loco()).font(.headline).bold()
+        Section {
+            JoinEventNotificationPicker()
+            FullscreenNotificationPicker()
+        }.padding(.leading, 30)
+    }
+}
+
 struct ShortcutsSection: View {
     @State var showingModal = false
 
     var body: some View {
-        HStack {
-            Text("preferences_general_shortcut_create_meeting".loco())
-            KeyboardShortcuts.Recorder(for: .createMeetingShortcut)
+        Text("preferences_general_option_shortcuts".loco()).font(.headline).bold()
+        Section {
+            HStack {
+                Text("preferences_general_shortcut_create_meeting".loco())
+                KeyboardShortcuts.Recorder(for: .createMeetingShortcut)
 
-            Text("preferences_general_shortcut_join_next".loco())
-            KeyboardShortcuts.Recorder(for: .joinEventShortcut)
+                Text("preferences_general_shortcut_join_next".loco())
+                KeyboardShortcuts.Recorder(for: .joinEventShortcut)
 
-            Spacer()
+                Spacer()
 
-            Button(action: { self.showingModal.toggle() }) {
-                Text("preferences_general_all_shortcut".loco())
-            }.sheet(isPresented: $showingModal) {
-                ShortcutsModal()
+                Button(action: { self.showingModal.toggle() }) {
+                    Text("preferences_general_all_shortcut".loco())
+                }.sheet(isPresented: $showingModal) {
+                    ShortcutsModal()
+                }
             }
-        }
+        }.padding(.leading, 30)
     }
 }
 

@@ -18,14 +18,16 @@ struct FullscreenNotification: View {
             Rectangle.semiOpaqueWindow()
             VStack {
                 HStack {
-                    Image(nsImage: getIconForMeetingService(event.meetingLink?.service))
-                        .resizable().frame(width: 25, height: 25)
+                    if event.meetingLink != nil {
+                        Image(nsImage: getIconForMeetingService(event.meetingLink?.service))
+                            .resizable().frame(width: 25, height: 25)
+                    }
                     Text(event.title).font(.title)
                 }
                 VStack(spacing: 10) {
                     Text(getEventDateString(event))
                 }.padding(15)
-                
+
                 // display location of the event, very useful if you
                 // have a lot of meetings in a building with a lot of meeting rooms
                 if let location = event.location {
@@ -33,14 +35,16 @@ struct FullscreenNotification: View {
                         Text(location)
                     }.padding(15)
                 }
-             
+
                 HStack(spacing: 30) {
                     Button(action: dismiss) {
                         Text("general_close".loco()).padding(.vertical, 5).padding(.horizontal, 20)
                     }
-                    Button(action: joinEvent) {
-                        Text("notifications_meetingbar_join_event_action".loco()).padding(.vertical, 5).padding(.horizontal, 25)
-                    }.background(Color.accentColor).cornerRadius(5)
+                    if event.meetingLink != nil {
+                        Button(action: joinEvent) {
+                            Text("notifications_meetingbar_join_event_action".loco()).padding(.vertical, 5).padding(.horizontal, 25)
+                        }.background(Color.accentColor).cornerRadius(5)
+                    }
                 }
             }
         }
@@ -81,5 +85,6 @@ struct VisualEffect: NSViewRepresentable {
 }
 
 #Preview {
-    FullscreenNotification(event: generateFakeEvent(), window: nil)
+    FullscreenNotification(event: generateFakeEvent(includeMeetingLink: true), window: nil)
+    FullscreenNotification(event: generateFakeEvent(includeMeetingLink: false), window: nil)
 }

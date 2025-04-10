@@ -178,6 +178,11 @@ struct ChangelogView: View {
                             Text("🌍 Translation into Slovak and Dutch")
                         }
                     }
+                    if compareVersions("4.10.0", lastRevisedVersionInChangelog) {
+                        Section(header: Text("Version 4.10")) {
+                            Text("🖥️ Meetings without a meeting links can now be displayed in fullscreen notifications.")
+                        }
+                    }
                 }
             }.listStyle(SidebarListStyle())
             Button("general_close".loco(), action: close)
