@@ -37,17 +37,23 @@ struct AutomaticEventJoinPicker: View {
 
 struct FullscreenNotificationPicker: View {
     @Default(.fullscreenNotification) var fullscreenNotification
+    @Default(.fullscreenNotificationMeetingLinkOnly) var fullscreenNotificationMeetingLinkOnly
     @Default(.fullscreenNotificationTime) var fullscreenNotificationTime
 
     var body: some View {
-        HStack {
-            Toggle("shared_fullscreen_notification_toggle".loco(), isOn: $fullscreenNotification)
-            Picker("", selection: $fullscreenNotificationTime) {
-                Text("general_when_event_starts".loco()).tag(TimeBeforeEvent.atStart)
-                Text("general_one_minute_before".loco()).tag(TimeBeforeEvent.minuteBefore)
-                Text("general_three_minute_before".loco()).tag(TimeBeforeEvent.threeMinuteBefore)
-                Text("general_five_minute_before".loco()).tag(TimeBeforeEvent.fiveMinuteBefore)
-            }.frame(width: 220, alignment: .leading).labelsHidden().disabled(!fullscreenNotification)
+        VStack(alignment: .leading, spacing: 15) {
+            HStack {
+                Toggle("shared_fullscreen_notification_toggle".loco(), isOn: $fullscreenNotification)
+                Picker("", selection: $fullscreenNotificationTime) {
+                    Text("general_when_event_starts".loco()).tag(TimeBeforeEvent.atStart)
+                    Text("general_one_minute_before".loco()).tag(TimeBeforeEvent.minuteBefore)
+                    Text("general_three_minute_before".loco()).tag(TimeBeforeEvent.threeMinuteBefore)
+                    Text("general_five_minute_before".loco()).tag(TimeBeforeEvent.fiveMinuteBefore)
+                }.frame(width: 220, alignment: .leading).labelsHidden().disabled(!fullscreenNotification)
+            }
+            Section {
+                Toggle("shared_fullscreen_notification_meeting_link_only_toggle".loco(), isOn: $fullscreenNotificationMeetingLinkOnly).disabled(!fullscreenNotification)
+            }.padding(.leading, 30)
         }
     }
 }
@@ -74,13 +80,15 @@ struct JoinEventNotificationPicker: View {
             }.frame(width: 220, alignment: .leading).labelsHidden().disabled(!joinEventNotification)
         }
 
-        if noAlertStyle, !disabled, joinEventNotification {
-            Text("shared_send_notification_no_alert_style_tip".loco()).foregroundColor(.gray).font(.system(size: 12))
-        }
+        Section {
+            if noAlertStyle, !disabled, joinEventNotification {
+                Text("shared_send_notification_no_alert_style_tip".loco()).foregroundColor(.gray).font(.system(size: 12))
+            }
 
-        if disabled, joinEventNotification {
-            Text("shared_send_notification_disabled_tip".loco()).foregroundColor(.gray).font(.system(size: 12))
-        }
+            if disabled, joinEventNotification {
+                Text("shared_send_notification_disabled_tip".loco()).foregroundColor(.gray).font(.system(size: 12))
+            }
+        }.padding(.leading, 25)
     }
 }
 struct endEventNotificationPicker: View {
