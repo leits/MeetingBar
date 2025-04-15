@@ -325,6 +325,7 @@
 "notifications_event_ends_one_minute_body" = "The event ends in one minute";
 "notifications_event_ends_three_minutes_body" = "The event ends in three minutes";
 "notifications_event_ends_five_minutes_body" = "The event ends in five minutes";
+"notifications_meetingbar_dismiss_event_action" = "Dismiss";
 
 // MARK: - Link open
 
