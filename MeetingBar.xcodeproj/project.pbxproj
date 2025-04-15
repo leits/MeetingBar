@@ -17,7 +17,6 @@
 		144C017D2462D0C3000C9FFC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 144C017C2462D0C3000C9FFC /* AppDelegate.swift */; };
 		144C01812462D0C5000C9FFC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 144C01802462D0C5000C9FFC /* Assets.xcassets */; };
 		144C01872462D0C5000C9FFC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 144C01852462D0C5000C9FFC /* Main.storyboard */; };
-		14619A1E25EC26DF00F3098F /* MeetingServicesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14619A1D25EC26DF00F3098F /* MeetingServicesTests.swift */; };
 		14879B2B24E6889C00DB0A7E /* Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14879B2A24E6889C00DB0A7E /* Notifications.swift */; };
 		14B08ACE2749A57B002E3892 /* GTMAppAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 14B08ACD2749A57B002E3892 /* GTMAppAuth */; };
 		14B08AD42749AEF3002E3892 /* PromiseKit in Frameworks */ = {isa = PBXBuildFile; productRef = 14B08AD32749AEF3002E3892 /* PromiseKit */; };
@@ -27,9 +26,7 @@
 		40DC7054250E5E1000217DD9 /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC7053250E5E1000217DD9 /* ServiceManagement.framework */; };
 		4616E3A729BB62D100665FE0 /* LaunchAtLogin in Frameworks */ = {isa = PBXBuildFile; productRef = 4616E3A629BB62D100665FE0 /* LaunchAtLogin */; };
 		4672B58229C130160055E7D7 /* AppIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4672B58129C130160055E7D7 /* AppIntent.swift */; };
-		467351B729057BC900EE3987 /* StringExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 467351B629057BC900EE3987 /* StringExtensionsTests.swift */; };
 		46E4794C2801D53B00B48059 /* MeetingServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E4794B2801D53B00B48059 /* MeetingServices.swift */; };
-		46E4795228023A0C00B48059 /* HelpersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E4795128023A0C00B48059 /* HelpersTests.swift */; };
 		E26A0BFC263449E300F117A9 /* Scripts.swift in Sources */ = {isa = PBXBuildFile; fileRef = E26A0BFB263449E300F117A9 /* Scripts.swift */; };
 /* End PBXBuildFile section */
 
@@ -58,8 +55,6 @@
 		144C01892462D0C5000C9FFC /* MeetingBar.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MeetingBar.entitlements; sourceTree = "<group>"; };
 		14513C7726D697FB0026B40A /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		14619A1B25EC26DF00F3098F /* MeetingBarTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MeetingBarTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		14619A1D25EC26DF00F3098F /* MeetingServicesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingServicesTests.swift; sourceTree = "<group>"; };
-		14619A1F25EC26DF00F3098F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		14879B2A24E6889C00DB0A7E /* Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = "<group>"; };
 		14B08ACB27498308002E3892 /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = he.lproj/Localizable.strings; sourceTree = "<group>"; };
 		14C59B8425CF45340019C9E4 /* AppStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStore.swift; sourceTree = "<group>"; };
@@ -73,11 +68,9 @@
 		40DC7053250E5E1000217DD9 /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = System/Library/Frameworks/ServiceManagement.framework; sourceTree = SDKROOT; };
 		4642D3DA2BAB7733002A6729 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		4672B58129C130160055E7D7 /* AppIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIntent.swift; sourceTree = "<group>"; };
-		467351B629057BC900EE3987 /* StringExtensionsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringExtensionsTests.swift; sourceTree = "<group>"; };
 		46B7C51E2C04DF0D009E3B9B /* sk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sk; path = sk.lproj/Localizable.strings; sourceTree = "<group>"; };
 		46B7C51F2C04DFB8009E3B9B /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		46E4794B2801D53B00B48059 /* MeetingServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingServices.swift; sourceTree = "<group>"; };
-		46E4795128023A0C00B48059 /* HelpersTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpersTests.swift; sourceTree = "<group>"; };
 		783C50AD2B760A3100DF0C9A /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
 		D6D68C5327BCF93D009E8469 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Localizable.strings; sourceTree = "<group>"; };
 		E26A0BFB263449E300F117A9 /* Scripts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Scripts.swift; sourceTree = "<group>"; };
@@ -85,12 +78,23 @@
 		EA04E13F26B2664F00D183B8 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		37AF6E5D2DAEEF1800F38307 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 14619A1A25EC26DF00F3098F /* MeetingBarTests */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		37AF6E1A2DAEEEE900F38307 /* XCConfig */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = XCConfig; sourceTree = "<group>"; };
 		37AF6E202DAEEEF500F38307 /* EventStores */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = EventStores; sourceTree = "<group>"; };
 		37AF6E272DAEEEF500F38307 /* Preview Content */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "Preview Content"; sourceTree = "<group>"; };
 		37AF6E3B2DAEEEF500F38307 /* Views */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Views; sourceTree = "<group>"; };
 		37AF6E4F2DAEEEF500F38307 /* Extensions */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Extensions; sourceTree = "<group>"; };
+		37AF6E582DAEEF1800F38307 /* MeetingBarTests */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (37AF6E5D2DAEEF1800F38307 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = MeetingBarTests; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -124,7 +128,7 @@
 				14158D3A246C65AD0006436C /* README.md */,
 				37AF6E1A2DAEEEE900F38307 /* XCConfig */,
 				144C017B2462D0C3000C9FFC /* MeetingBar */,
-				14619A1C25EC26DF00F3098F /* MeetingBarTests */,
+				37AF6E582DAEEF1800F38307 /* MeetingBarTests */,
 				144C017A2462D0C3000C9FFC /* Products */,
 				40DC7052250E5E1000217DD9 /* Frameworks */,
 			);
@@ -164,17 +168,6 @@
 				144C01892462D0C5000C9FFC /* MeetingBar.entitlements */,
 			);
 			path = MeetingBar;
-			sourceTree = "<group>";
-		};
-		14619A1C25EC26DF00F3098F /* MeetingBarTests */ = {
-			isa = PBXGroup;
-			children = (
-				14619A1D25EC26DF00F3098F /* MeetingServicesTests.swift */,
-				467351B629057BC900EE3987 /* StringExtensionsTests.swift */,
-				46E4795128023A0C00B48059 /* HelpersTests.swift */,
-				14619A1F25EC26DF00F3098F /* Info.plist */,
-			);
-			path = MeetingBarTests;
 			sourceTree = "<group>";
 		};
 		1BF37A902604C8050053D53C /* Resources  */ = {
@@ -249,6 +242,9 @@
 			);
 			dependencies = (
 				14619A2125EC26DF00F3098F /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				37AF6E582DAEEF1800F38307 /* MeetingBarTests */,
 			);
 			name = MeetingBarTests;
 			productName = MeetingBarTests;
@@ -401,9 +397,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				467351B729057BC900EE3987 /* StringExtensionsTests.swift in Sources */,
-				14619A1E25EC26DF00F3098F /* MeetingServicesTests.swift in Sources */,
-				46E4795228023A0C00B48059 /* HelpersTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -587,7 +580,6 @@
 		144C018D2462D0C5000C9FFC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = MeetingBar/MeetingBar.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
@@ -618,7 +610,6 @@
 		144C018E2462D0C5000C9FFC /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = MeetingBar/MeetingBar.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
