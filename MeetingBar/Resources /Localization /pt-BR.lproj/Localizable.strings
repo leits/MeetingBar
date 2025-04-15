@@ -20,7 +20,7 @@
 "create_meeting_error_title" = "Não é possível criar uma reunião";
 "create_meeting_error_message" = "URL personalizada \"%@\" ausente ou inválida. ";
 "next_meeting_empty_title" = "Não há reuniões agendadas para hoje";
-"next_meeting_empty_message" = "Woohoo! É hora de fazer um cacau";
+"next_meeting_empty_message" = "Woohoo! É hora de preparar um chocolate quente";
 
 // MARK: - Window titles
 
@@ -39,7 +39,7 @@
 
 // MARK: - Preferences General
 
-"preferences_general_option_login_launch" = "Iniciar após o login";
+"preferences_general_option_login_launch" = "Abrir após o login";
 "preferences_general_option_preferred_language_title" = "Idioma:";
 "preferences_general_option_preferred_language_system_value" = "Sistema";
 "preferences_general_option_shortcuts" = "Atalhos";
@@ -59,17 +59,17 @@
 "preferences_general_patron_description" = "Essas são compras únicas e não serão renovadas automaticamente.";
 "preferences_general_patron_thank_for_purchase" = "Obrigado! Você apoiou o MeetingBar por %d meses 🎉";
 "preferences_general_patron_restore_purchases" = "Restaurar Compras";
-"preferences_general_feedback_title" = "Se você tiver alguma pergunta ou comentário,\nsinta-se à vontade para entrar em contato:";
+"preferences_general_feedback_title" = "Se você tiver alguma dúvida ou sugestão,\nsinta-se à vontade para entrar em contato:";
 "preferences_general_feedback_email" = "E-mail";
 
 // MARK: - Preferences Appearance
 
 "preferences_appearance_events_title" = "Eventos";
-"preferences_appearance_events_show_events_for_title" = "Mostrar eventos";
+"preferences_appearance_events_show_events_for_title" = "Mostrar eventos de";
 "preferences_appearance_events_show_events_for_today_value" = "hoje";
 "preferences_appearance_events_show_events_for_today_tomorrow_value" = "hoje e amanhã";
 "preferences_appearance_events_non_all_day_title" = "Outros eventos:";
-"preferences_appearance_events_value_inactive_without_meeting_link" = "mostrar reuniões sem link como inativas";
+"preferences_appearance_events_value_inactive_without_meeting_link" = "mostrar reuniões sem links como inativas";
 "preferences_appearance_events_value_hide_without_meeting_link" = "ocultar todas as reuniões sem links";
 "preferences_appearance_events_all_day_title" = "Eventos de dia inteiro:";
 "preferences_appearance_events_without_guest_title" = "Eventos sem convidados:";
@@ -80,15 +80,15 @@
 "preferences_appearance_events_value_show" = "mostrar";
 "preferences_appearance_events_value_hide" = "ocultar";
 "preferences_appearance_events_value_as_inactive" = "mostrar como inativo";
-"preferences_appearance_events_value_as_underlined" = "mostrar como sublinhado";
-"preferences_appearance_events_value_with_strikethrough" = "mostrar como riscado";
-"preferences_appearance_events_value_only_with_link" = "mostrar apenas aqueles com links de reunião";
+"preferences_appearance_events_value_as_underlined" = "mostrar sublinhado";
+"preferences_appearance_events_value_with_strikethrough" = "mostrar riscado";
+"preferences_appearance_events_value_only_with_link" = "mostrar apenas quando houver link da reunião";
 "preferences_appearance_status_bar_title" = "Barra de status";
 "preferences_appearance_status_bar_icon_title" = "Ícone";
 "preferences_appearance_status_bar_icon_app_icon_value" = "\U00A0MeetingBar";
-"preferences_appearance_status_bar_icon_calendar_icon_value" = "\U00A0Calendário";
-"preferences_appearance_status_bar_icon_specific_icon_value" = "\U00A0Ícone específico do evento (por exemplo, MS Teams)";
-"preferences_appearance_status_bar_icon_no_icon_value" = "\U00A0Sem ícone";
+"preferences_appearance_status_bar_icon_calendar_icon_value" = " Calendário";
+"preferences_appearance_status_bar_icon_specific_icon_value" = " Ícone específico do evento (por exemplo, MS Teams)";
+"preferences_appearance_status_bar_icon_no_icon_value" = " Sem ícone";
 "preferences_appearance_status_bar_title_title" = "Título";
 "preferences_appearance_status_bar_title_event_title_value" = "título do evento";
 "preferences_appearance_status_bar_title_dot_value" = "ponto (•)";
@@ -107,14 +107,14 @@
 "preferences_appearance_menu_time_format_12_hour_value" = "12 horas (AM/PM)";
 "preferences_appearance_menu_time_format_24_hour_value" = "24 horas";
 "preferences_appearance_menu_show_event_title" = "Mostrar evento:";
-"preferences_appearance_menu_show_event_end_time_value" = "horário de término";
+"preferences_appearance_menu_show_event_end_time_value" = "horário do fim";
 "preferences_appearance_menu_show_event_icon_value" = "ícone";
 "preferences_appearance_menu_show_event_details_value" = "detalhes como submenu";
 
 // MARK: - Preferences Services
 
 "preferences_services_link_meeting_title" = "Abrir todos os links de reunião em";
-"preferences_services_link_service_title" = "Abrir links do %@ em";
+"preferences_services_link_service_title" = "Abrir links %@ em";
 "preferences_services_link_default_browser_value" = "Navegador padrão";
 "preferences_services_supported_links_list" = "Links suportados para serviços:\n%@";
 "preferences_services_supported_links_mailback" = "Se o serviço que você usa não for suportado, você pode enviar um e-mail para os desenvolvedores";

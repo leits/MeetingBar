@@ -269,7 +269,7 @@
 "access_screen_access_denied_relaunch_title" = "手動でアプリを起動して設定を続ける必要があります。";
 "access_screen_access_granted_title" = "カレンダーへのアクセス許可を求めています。";
 "access_screen_access_granted_click_ok_title" = "macOS のポップアップウィンドウで \"OK\" をクリックしてください。";
-"access_screen_provider_picker_label" = "Select calendars provider";
+"access_screen_provider_picker_label" = "カレンダーサービスを選択します";
 "access_screen_provider_macos_title" = "MacOS Calendar app";
 "access_screen_provider_macos_recommended" = "(recommended)";
 "access_screen_provider_macos_data_source" = "Get data from MacOS Calendar app";
@@ -324,14 +324,14 @@
 "notifications_event_start_one_minute_body" = "イベント開始1分前";
 "notifications_event_start_three_minutes_body" = "イベント開始3分前";
 "notifications_event_start_five_minutes_body" = "イベント開始5分前";
-"notifications_event_ends_soon_body" = "The event ends soon";
-"notifications_event_ends_one_minute_body" = "The event ends in one minute";
-"notifications_event_ends_three_minutes_body" = "The event ends in three minutes";
-"notifications_event_ends_five_minutes_body" = "The event ends in five minutes";
-"notifications_event_started_body" = "The event has started";
-"notifications_snooze_until_start" = "Snooze until start time";
-"notifications_snooze_for" = "Snooze for %@ min";
-"notifications_meetingbar_join_event_action" = "Join";
+"notifications_event_ends_soon_body" = "イベントはまもなく終了します";
+"notifications_event_ends_one_minute_body" = "イベント終了まで1分";
+"notifications_event_ends_three_minutes_body" = "イベント終了まで3分";
+"notifications_event_ends_five_minutes_body" = "イベント終了まで5分";
+"notifications_event_started_body" = "イベント開始";
+"notifications_snooze_until_start" = "開始時間までスヌーズ";
+"notifications_snooze_for" = "%@分間スヌーズ";
+"notifications_meetingbar_join_event_action" = "参加";
 
 // MARK: - Link open
 

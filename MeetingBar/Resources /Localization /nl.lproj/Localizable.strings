@@ -169,7 +169,7 @@
 
 "status_bar_section_today" = "Vandaag";
 "status_bar_section_tomorrow" = "Morgen";
-"status_bar_empty_calendar_message" = "Selecteer uw agenda's in de instellingen\nom je meetings te zien";
+"status_bar_empty_calendar_message" = "Selecteer je agenda's in de instellingen\nom je meetings te zien";
 "status_bar_section_join_next_meeting" = "Direct deelnemen aan volgende meeting";
 "status_bar_section_join_from_clipboard" = "Meeting openen vanaf klembord";
 "status_bar_menu_dismiss_next_meeting" = "Volgende meeting afwijzen";
@@ -208,7 +208,7 @@
 "notification_next_meeting_dismissed_message" = "Je kan afgewezen niet verwijderen uit snelle acties";
 "status_bar_submenu_status_accepted" = " 👍 Geaccepteerd";
 "access_screen_provider_gcalendar_sign_in_title" = "Google Sign In";
-"access_screen_provider_gcalendar_sign_in_description" = "Geef MeetingBar toegang tot uw agenda in het venster van de webbrowser";
+"access_screen_provider_gcalendar_sign_in_description" = "Geef MeetingBar toegang tot je agenda in het venster van de webbrowser";
 
 // MARK: - Shared
 
@@ -237,7 +237,7 @@
 "status_bar_error_app_link_message" = "Zorg ervoor dat u de %@ hebt geïnstalleerd, of open dergelijke links in een webbrowser vanuit de voorkeuren.";
 "calendars_screen_start_button" = "Begin met het gebruiken van de app";
 "status_bar_error_link_missed_title" = "Oeps! Kan niet deelnemen aan de %@";
-"status_bar_error_link_missed_message" = "Link niet gevonden of uw meeting dienst wordt nog niet ondersteund";
+"status_bar_error_link_missed_message" = "Link niet gevonden of je dienst wordt nog niet ondersteund";
 "constants_meeting_service_phone" = "Telefoonnummer";
 "constants_meeting_service_zoom_native" = "Zoom native";
 "constants_meeting_service_other" = "Andere";
@@ -275,10 +275,10 @@
 // MARK: - Notifications
 
 "notifications_event_start_soon_body" = "De meeting begint binnenkort";
-"notifications_event_ends_soon_body" = "The event ends soon";
-"notifications_event_ends_one_minute_body" = "The event ends in one minute";
-"notifications_event_ends_three_minutes_body" = "The event ends in three minutes";
-"notifications_event_ends_five_minutes_body" = "The event ends in five minutes";
+"notifications_event_ends_soon_body" = "De meeting eindigt binnenkort";
+"notifications_event_ends_one_minute_body" = "De meeting eindigt in een minuut";
+"notifications_event_ends_three_minutes_body" = "De meeting eindigt in drie minuten";
+"notifications_event_ends_five_minutes_body" = "De meeting eindigt in vijf minuten";
 "notifications_event_started_body" = "De meeting is begonnen";
 "notifications_event_start_one_minute_body" = "De meeting begint over een minuut";
 "notifications_event_start_three_minutes_body" = "De meeting begint over drie minuten";
@@ -318,7 +318,7 @@
 // MARK: - Welcome screen
 
 "welcome_screen_greeting_main_title" = "Hi! MeetingBar is zo'n eenvoudige app dat alles bijna klaar is.";
-"welcome_screen_shortcut_next_meeting_title" = "Neem deel aan de volgende meeting met uw snelkoppeling:";
+"welcome_screen_shortcut_next_meeting_title" = "Neem deel aan de volgende meeting met je snelkoppeling:";
 "welcome_screen_greeting_additional_title" = "Laten we het 100% van jou maken!";
 "welcome_screen_ad_hoc_meeting_title" = "Creëer ad-hocmeeting in ";
 "welcome_screen_login_launch_toggle_title" = "Start MeetingBar bij inloggen";
