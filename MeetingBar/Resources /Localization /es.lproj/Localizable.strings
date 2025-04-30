@@ -136,9 +136,9 @@
 "preferences_configure_browsers_modal_add_browser_path" = "Ruta";
 "preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "Seleccionar navegador web";
 "preferences_configure_browsers_modal_alert_title" = "No se puede añadir la configuración del navegador";
-"preferences_configure_browsers_choose_broser_panel_title" = "Seleccionar aplicación de navegador web";
-"preferences_configure_browsers_choose_broser_panel_prompt" = "Seleccionar navegador web";
-"preferences_configure_browsers_choose_broser_panel_message" = "Seleccionar desde dónde ejecutar el navegador web.";
+"preferences_configure_browsers_choose_browser_panel_title" = "Seleccionar aplicación de navegador web";
+"preferences_configure_browsers_choose_browser_panel_prompt" = "Seleccionar navegador web";
+"preferences_configure_browsers_choose_browser_panel_message" = "Seleccionar desde dónde ejecutar el navegador web.";
 
 // MARK: - Preferences Bookmarks
 

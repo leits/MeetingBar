@@ -132,9 +132,9 @@
 "preferences_configure_browsers_modal_add_browser_path" = "Ścieżka";
 "preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "Wybierz przeglądarkę internetową";
 "preferences_configure_browsers_modal_alert_title" = "Nie można dodać konfiguracji przeglądarki";
-"preferences_configure_browsers_choose_broser_panel_title" = "Wybierz aplikację przeglądarki internetowej";
-"preferences_configure_browsers_choose_broser_panel_prompt" = "Wybierz przeglądarkę internetową";
-"preferences_configure_browsers_choose_broser_panel_message" = "Wybierz miejsce, z którego chcesz uruchomić przeglądarkę internetową.";
+"preferences_configure_browsers_choose_browser_panel_title" = "Wybierz aplikację przeglądarki internetowej";
+"preferences_configure_browsers_choose_browser_panel_prompt" = "Wybierz przeglądarkę internetową";
+"preferences_configure_browsers_choose_browser_panel_message" = "Wybierz miejsce, z którego chcesz uruchomić przeglądarkę internetową.";
 
 // MARK: - Preferences Bookmarks
 

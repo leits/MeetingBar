@@ -65,9 +65,9 @@
 "preferences_configure_browsers_modal_edit_browser_title" = "Webböngésző szerkesztése";
 "preferences_configure_browsers_modal_add_browser_path" = "Elérési útvonal";
 "preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "Válasszon webböngészőt";
-"preferences_configure_browsers_choose_broser_panel_title" = "Webböngésző alk. választása";
+"preferences_configure_browsers_choose_browser_panel_title" = "Webböngésző alk. választása";
 "preferences_configure_browsers_modal_alert_title" = "Nem adhat hozzá böngésző konfigurációt";
-"preferences_configure_browsers_choose_broser_panel_prompt" = "Válasszon webböngészőt";
+"preferences_configure_browsers_choose_browser_panel_prompt" = "Válasszon webböngészőt";
 "preferences_bookmarks_no_bookmarks_placeholder" = "Nincsenek még könyvjelzőid";
 "preferences_bookmarks_delete_bookmark_title" = "Törli a könyvjelzőt?";
 "preferences_bookmarks_delete_bookmark_message" = "Törli a %@ könyvjelzőt?";
@@ -129,7 +129,7 @@
 "preferences_appearance_status_bar_time_title" = "Idő";
 "preferences_configure_browsers_modal_add_browser_title" = "Webböngésző hozzáadása";
 "preferences_appearance_status_bar_title_event_title_value" = "esemény címe";
-"preferences_configure_browsers_choose_broser_panel_message" = "Válaszd ki, honnan futtassa a webböngészőt.";
+"preferences_configure_browsers_choose_browser_panel_message" = "Válaszd ki, honnan futtassa a webböngészőt.";
 "preferences_appearance_status_bar_title_hide_value" = "elrejtés";
 "preferences_appearance_menu_time_format_12_hour_value" = "12 órás (AM/PM)";
 "preferences_services_link_service_title" = "%@ linkek megnyitása ebben";
