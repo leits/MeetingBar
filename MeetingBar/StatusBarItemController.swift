@@ -758,7 +758,7 @@ class StatusBarItemController {
             quickActionsItem.submenu!.addItem(toggleMeetingTitleVisibilityItem)
         }
 
-        // MENU ITEM: QUICK ACTIONS: Refresh soruces
+        // MENU ITEM: QUICK ACTIONS: Refresh sources
         let refreshSourcesItem = NSMenuItem()
         refreshSourcesItem.title = "status_bar_section_refresh_sources".loco()
         refreshSourcesItem.action = #selector(refreshSources)
@@ -842,7 +842,7 @@ class StatusBarItemController {
 
         statusItemMenu.addItem(
             withTitle: "\("status_bar_preferences".loco())…",
-            action: #selector(AppDelegate.openPrefecencesWindow),
+            action: #selector(AppDelegate.openPreferencesWindow),
             keyEquivalent: ","
         )
 
@@ -940,12 +940,16 @@ class StatusBarItemController {
     @objc
     func dismissEvent(sender: NSMenuItem) {
         if let event: MBEvent = sender.representedObject as? MBEvent {
-            let dismissedEvent = ProcessedEvent(id: event.ID, lastModifiedDate: event.lastModifiedDate, eventEndDate: event.endDate)
-            Defaults[.dismissedEvents].append(dismissedEvent)
-
-            updateTitle()
-            updateMenu()
+            dismiss(event: event)
         }
+    }
+
+    func dismiss(event: MBEvent) {
+        let dismissedEvent = ProcessedEvent(id: event.ID, lastModifiedDate: event.lastModifiedDate, eventEndDate: event.endDate)
+        Defaults[.dismissedEvents].append(dismissedEvent)
+
+        updateTitle()
+        updateMenu()
     }
 
     @objc
