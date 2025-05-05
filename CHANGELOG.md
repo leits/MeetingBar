@@ -2,6 +2,12 @@
 
 For next releases info look here: <https://github.com/leits/MeetingBar/releases>
 
+## Version 4.11.0
+
+> (released)
+
+* Added action to dismiss the event from the notification
+
 ## Version 4.0.0
 
 > (released)

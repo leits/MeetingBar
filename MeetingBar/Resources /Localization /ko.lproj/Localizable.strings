@@ -12,3 +12,9 @@
 "create_meeting_error_title" = "새로운 회의를 생성할 수 없습니다";
 "create_meeting_error_message" = "사용자 지정 URL \"%@\" 이(가) 없거나 유효하지 않습니다. ";
 "next_meeting_empty_title" = "오늘 예정된 회의가 없습니다";
+"preferences_general_option_preferred_language_title" = "언어:";
+"preferences_tab_services" = "서비스";
+"preferences_tab_calendars" = "캘린더";
+"preferences_tab_bookmarks" = "북마크";
+"preferences_tab_general" = "일반";
+"preferences_tab_advanced" = "고급";

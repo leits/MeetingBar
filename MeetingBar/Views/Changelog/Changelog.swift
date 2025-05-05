@@ -178,6 +178,11 @@ struct ChangelogView: View {
                             Text("🌍 Translation into Slovak and Dutch")
                         }
                     }
+                    if compareVersions("4.11.0", lastRevisedVersionInChangelog) {
+                        Section(header: Text("Version 4.11")) {
+                            Text("Added action to dismiss the event from the notification")
+                        }
+                    }
                 }
             }.listStyle(SidebarListStyle())
             Button("general_close".loco(), action: close)
