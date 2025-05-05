@@ -56,7 +56,7 @@ func cleanupOutlookSafeLinks(rawText: String) -> String {
 }
 
 func getMatch(text: String, regex: NSRegularExpression) -> String? {
-    var  match: String?
+    var match: String?
 
     autoreleasepool {
         let resultsIterator = regex.matches(in: text, range: NSRange(text.startIndex..., in: text))
@@ -135,7 +135,7 @@ func createNSViewFromText(text: String) -> NSView {
         text.splitWithNewLineAttributedString(
             with: [
                 NSAttributedString.Key.paragraphStyle: paragraphStyle,
-                NSAttributedString.Key.font: NSFont.systemFont(ofSize: 14)
+                NSAttributedString.Key.font: NSFont.systemFont(ofSize: 14),
             ],
             maxWidth: 300.0
         )

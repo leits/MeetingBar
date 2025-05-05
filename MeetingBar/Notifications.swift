@@ -137,7 +137,7 @@ func displayAlert(title: String, text: String) {
 }
 
 func scheduleEventNotification(_ event: MBEvent) {
-    if !Defaults[.joinEventNotification] && !Defaults[.endOfEventNotification] {
+    if !Defaults[.joinEventNotification], !Defaults[.endOfEventNotification] {
         return
     }
 

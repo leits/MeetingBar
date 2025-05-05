@@ -57,8 +57,8 @@ struct JoinEventNotificationPicker: View {
     @Default(.joinEventNotificationTime) var joinEventNotificationTime
 
     var notificationSettings: (noAlertStyle: Bool, disabled: Bool) {
-            checkNotificationSettings()
-        }
+        checkNotificationSettings()
+    }
 
     var body: some View {
         HStack {
@@ -82,6 +82,7 @@ struct JoinEventNotificationPicker: View {
         }
     }
 }
+
 struct endEventNotificationPicker: View {
     @Default(.endOfEventNotification) var endOfEventNotification
     @Default(.endOfEventNotificationTime) var endOfEventNotificationTime
@@ -97,7 +98,6 @@ struct endEventNotificationPicker: View {
             }.frame(width: 220, alignment: .leading).labelsHidden().disabled(!endOfEventNotification)
             Text("βeta").font(.caption).foregroundColor(.orange)
         }
-
     }
 }
 
