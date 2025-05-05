@@ -103,7 +103,7 @@
 
 "welcome_screen_greeting_main_title" = "Salut ! MeetingBar est une application tellement simple que tout est presque prêt.";
 "status_bar_error_link_missed_message" = "Lien introuvable, ou votre service de réunion n'est pas encore pris en charge";
-"status_bar_error_link_missed_title" = "Oh la la ! Impossible de rejoindre la %@";
+"status_bar_error_link_missed_title" = "Aïe! Impossible de rejoindre la %@";
 "status_bar_event_status_in" = "dans %@";
 "status_bar_event_status_now" = "maintenant (il reste %@)";
 "status_bar_no_title" = "Sans titre";
@@ -274,7 +274,7 @@
 "preferences_general_patron_title" = "Devenir mécène";
 "preferences_general_external_contact" = "Contact";
 "preferences_general_external_patronage" = "Mécénat";
-"preferences_general_meeting_bar_description" = "MeetingBar est une application à code source ouvert créée par Andrii Leitsius 🇺🇦\nPour des réunions en ligne plus faciles et plus fluides";
+"preferences_general_meeting_bar_description" = "MeetingBar est une application à code source ouvert\ncréée par Andrii Leitsius 🇺🇦\nPour des réunions en ligne plus faciles et plus fluides";
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "Basculer la visibilité du titre dans la barre d'état :";
 "preferences_general_shortcut_join_from_clipboard" = "Rejoindre la réunion à partir du presse-papier :";
 "preferences_general_shortcut_join_next" = "Rejoindre la prochaine réunion :";

@@ -1009,7 +1009,7 @@ func createEventStatusString(title: String, startDate: Date, endDate: Date) -> (
         if Defaults[.hideMeetingTitle] {
             eventTitle = "general_meeting".loco()
         } else {
-            eventTitle = shortenTitle(title: title, offset: Defaults[.statusbarEventTitleLength])
+            eventTitle = shortenTitle(title: title, offset: Defaults[.statusbarEventTitleLength]).replacingOccurrences(of: "\n", with: " ")
         }
     case .dot:
         eventTitle = "•"
