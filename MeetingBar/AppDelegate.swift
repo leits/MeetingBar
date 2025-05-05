@@ -17,8 +17,7 @@ import UserNotifications
 
 @MainActor
 @NSApplicationMain
-class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotificationCenterDelegate
-{
+class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotificationCenterDelegate {
     var statusBarItem: StatusBarItemController!
     var eventStore: EventStore!
 
@@ -34,7 +33,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
         // Handle windows closing closing
         NotificationCenter.default.addObserver(
             self, selector: #selector(AppDelegate.windowClosed),
-            name: NSWindow.willCloseNotification, object: nil)
+            name: NSWindow.willCloseNotification, object: nil
+        )
         //
 
         if let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
@@ -78,10 +78,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
         let dnc = DistributedNotificationCenter.default()
         dnc.addObserver(
             self, selector: #selector(AppDelegate.lockListener),
-            name: .init("com.apple.screenIsLocked"), object: nil)
+            name: .init("com.apple.screenIsLocked"), object: nil
+        )
         dnc.addObserver(
             self, selector: #selector(AppDelegate.unlockListener),
-            name: .init("com.apple.screenIsUnlocked"), object: nil)
+            name: .init("com.apple.screenIsUnlocked"), object: nil
+        )
 
         // Shortcuts
         KeyboardShortcuts.onKeyUp(for: .createMeetingShortcut, action: createMeeting)
@@ -162,7 +164,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
 
         Task {
             for await value in Defaults.updates(.preferredLanguage)
-            where I18N.instance.changeLanguage(to: value) {
+                where I18N.instance.changeLanguage(to: value)
+            {
                 DispatchQueue.main.async {
                     self.statusBarItem.updateTitle()
                     self.statusBarItem.updateMenu()
@@ -191,19 +194,23 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
 
             NotificationCenter.default.addObserver(
                 self, selector: #selector(AppDelegate.eventStoreChanged),
-                name: .EKEventStoreChanged, object: EKEventStore.shared)
+                name: .EKEventStoreChanged, object: EKEventStore.shared
+            )
             NSAppleEventManager.shared().removeEventHandler(
-                forEventClass: AEEventClass(kInternetEventClass), andEventID: AEEventID(kAEGetURL))
+                forEventClass: AEEventClass(kInternetEventClass), andEventID: AEEventID(kAEGetURL)
+            )
         case .googleCalendar:
             eventStore = GCEventStore.shared
 
             NotificationCenter.default.removeObserver(
-                self, name: .EKEventStoreChanged, object: EKEventStore.shared)
+                self, name: .EKEventStoreChanged, object: EKEventStore.shared
+            )
             NSAppleEventManager.shared().setEventHandler(
                 self,
                 andSelector: #selector(handleURLEvent(getURLEvent:replyEvent:)),
                 forEventClass: AEEventClass(kInternetEventClass),
-                andEventID: AEEventID(kAEGetURL))
+                andEventID: AEEventID(kAEGetURL)
+            )
         }
     }
 
@@ -216,7 +223,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
     private func scheduleFetchEvents() {
         let timer = Timer(
             timeInterval: 180, target: self, selector: #selector(fetchEvents), userInfo: nil,
-            repeats: true)
+            repeats: true
+        )
         timer.tolerance = 10
         RunLoop.current.add(timer, forMode: .common)
     }
@@ -224,7 +232,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
     private func scheduleUpdateStatusBarItem() {
         let timer = Timer(
             timeInterval: 5, target: self, selector: #selector(updateStatusBarItem), userInfo: nil,
-            repeats: true)
+            repeats: true
+        )
         timer.tolerance = 1
         RunLoop.current.add(timer, forMode: .common)
     }
@@ -424,7 +433,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
         getURLEvent event: NSAppleEventDescriptor, replyEvent _: NSAppleEventDescriptor
     ) {
         if let string = event.paramDescriptor(forKeyword: keyDirectObject)?.stringValue,
-            let url = URL(string: string)
+           let url = URL(string: string)
         {
             if url == URL(string: "meetingbar://preferences") {
                 openPreferencesWindow(nil)

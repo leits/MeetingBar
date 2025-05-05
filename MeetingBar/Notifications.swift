@@ -17,45 +17,70 @@ func requestNotificationAuthorization() {
 }
 
 func registerNotificationCategories() {
-    let acceptAction = UNNotificationAction(identifier: "JOIN_ACTION",
-                                            title: "notifications_meetingbar_join_event_action".loco(),
-                                            options: .foreground)
+    let acceptAction = UNNotificationAction(
+        identifier: "JOIN_ACTION",
+        title: "notifications_meetingbar_join_event_action".loco(),
+        options: .foreground
+    )
 
-    let dismissAction = UNNotificationAction(identifier: "DISMISS_ACTION",
-                                             title: "notifications_meetingbar_dismiss_event_action".loco(),
-                                             options: .foreground)
+    let dismissAction = UNNotificationAction(
+        identifier: "DISMISS_ACTION",
+        title: "notifications_meetingbar_dismiss_event_action".loco(),
+        options: .foreground
+    )
 
-    let snoozeUntilStartTime = UNNotificationAction(identifier: NotificationEventTimeAction.untilStart.rawValue,
-                                                    title: "notifications_snooze_until_start".loco(),
-                                                    options: .foreground)
+    let snoozeUntilStartTime = UNNotificationAction(
+        identifier: NotificationEventTimeAction.untilStart.rawValue,
+        title: "notifications_snooze_until_start".loco(),
+        options: .foreground
+    )
 
-    let snooze5Min = UNNotificationAction(identifier: NotificationEventTimeAction.fiveMinuteLater.rawValue,
-                                          title: "notifications_snooze_for".loco(String(NotificationEventTimeAction.fiveMinuteLater.durationInMins)),
-                                          options: .foreground)
+    let snooze5Min = UNNotificationAction(
+        identifier: NotificationEventTimeAction.fiveMinuteLater.rawValue,
+        title: "notifications_snooze_for".loco(
+            String(NotificationEventTimeAction.fiveMinuteLater.durationInMins)),
+        options: .foreground
+    )
 
-    let snooze10Min = UNNotificationAction(identifier: NotificationEventTimeAction.tenMinuteLater.rawValue,
-                                           title: "notifications_snooze_for".loco(String(NotificationEventTimeAction.tenMinuteLater.durationInMins)),
-                                           options: .foreground)
+    let snooze10Min = UNNotificationAction(
+        identifier: NotificationEventTimeAction.tenMinuteLater.rawValue,
+        title: "notifications_snooze_for".loco(
+            String(NotificationEventTimeAction.tenMinuteLater.durationInMins)),
+        options: .foreground
+    )
 
-    let snooze15Min = UNNotificationAction(identifier: NotificationEventTimeAction.fifteenMinuteLater.rawValue,
-                                           title: "notifications_snooze_for".loco(String(NotificationEventTimeAction.fifteenMinuteLater.durationInMins)),
-                                           options: .foreground)
+    let snooze15Min = UNNotificationAction(
+        identifier: NotificationEventTimeAction.fifteenMinuteLater.rawValue,
+        title: "notifications_snooze_for".loco(
+            String(NotificationEventTimeAction.fifteenMinuteLater.durationInMins)),
+        options: .foreground
+    )
 
-    let snooze30Min = UNNotificationAction(identifier: NotificationEventTimeAction.thirtyMinuteLater.rawValue,
-                                           title: "notifications_snooze_for".loco(String(NotificationEventTimeAction.thirtyMinuteLater.durationInMins)),
-                                           options: .foreground)
+    let snooze30Min = UNNotificationAction(
+        identifier: NotificationEventTimeAction.thirtyMinuteLater.rawValue,
+        title: "notifications_snooze_for".loco(
+            String(NotificationEventTimeAction.thirtyMinuteLater.durationInMins)),
+        options: .foreground
+    )
 
-    let eventCategory = UNNotificationCategory(identifier: "EVENT",
-                                               actions: [acceptAction, dismissAction, snoozeUntilStartTime, snooze5Min, snooze10Min, snooze15Min, snooze30Min],
-                                               intentIdentifiers: [],
-                                               hiddenPreviewsBodyPlaceholder: "",
-                                               options: [.customDismissAction, .hiddenPreviewsShowTitle])
+    let eventCategory = UNNotificationCategory(
+        identifier: "EVENT",
+        actions: [
+            acceptAction, dismissAction, snoozeUntilStartTime, snooze5Min, snooze10Min, snooze15Min,
+            snooze30Min,
+        ],
+        intentIdentifiers: [],
+        hiddenPreviewsBodyPlaceholder: "",
+        options: [.customDismissAction, .hiddenPreviewsShowTitle]
+    )
 
-    let snoozeEventCategory = UNNotificationCategory(identifier: "SNOOZE_EVENT",
-                                                     actions: [acceptAction, dismissAction, snooze5Min, snooze10Min, snooze15Min, snooze30Min],
-                                                     intentIdentifiers: [],
-                                                     hiddenPreviewsBodyPlaceholder: "",
-                                                     options: [.customDismissAction, .hiddenPreviewsShowTitle])
+    let snoozeEventCategory = UNNotificationCategory(
+        identifier: "SNOOZE_EVENT",
+        actions: [acceptAction, dismissAction, snooze5Min, snooze10Min, snooze15Min, snooze30Min],
+        intentIdentifiers: [],
+        hiddenPreviewsBodyPlaceholder: "",
+        options: [.customDismissAction, .hiddenPreviewsShowTitle]
+    )
 
     let notificationCenter = UNUserNotificationCenter.current()
 
@@ -80,16 +105,15 @@ func sendUserNotification(_ title: String, _ text: String) {
 
     center.add(request) { error in
         if let error = error {
-            NSLog("%@", "request \(request.identifier) could not be added because of error \(error)")
+            NSLog(
+                "%@", "request \(request.identifier) could not be added because of error \(error)"
+            )
         }
     }
 }
 
-/**
- * check whether the notifications for meetingbar are enabled and alert or banner style is enabled.
- * in this case the method will return true, otherwise false.
- *
- */
+/// check whether the notifications for meetingbar are enabled and alert or banner style is enabled.
+/// in this case the method will return true, otherwise false.
 func notificationsEnabled() -> Bool {
     let center = UNUserNotificationCenter.current()
     let group = DispatchGroup()
@@ -99,8 +123,11 @@ func notificationsEnabled() -> Bool {
     var notificationsEnabled = false
 
     center.getNotificationSettings { notificationSettings in
-        correctAlertStyle = notificationSettings.alertStyle == UNAlertStyle.alert || notificationSettings.alertStyle == UNAlertStyle.banner
-        notificationsEnabled = notificationSettings.authorizationStatus != UNAuthorizationStatus.denied
+        correctAlertStyle =
+            notificationSettings.alertStyle == UNAlertStyle.alert
+                || notificationSettings.alertStyle == UNAlertStyle.banner
+        notificationsEnabled =
+            notificationSettings.authorizationStatus != UNAuthorizationStatus.denied
         group.leave()
     }
 
@@ -108,9 +135,7 @@ func notificationsEnabled() -> Bool {
     return correctAlertStyle && notificationsEnabled
 }
 
-/**
- * sends a notification to the user.
- */
+/// sends a notification to the user.
 func sendNotification(_ title: String, _ text: String) {
     requestNotificationAuthorization() // By the apple best practices
 
@@ -123,9 +148,7 @@ func sendNotification(_ title: String, _ text: String) {
     }
 }
 
-/**
- * adds an alert for the user- we will only use NSAlert if the user has switched off notifications
- */
+/// adds an alert for the user- we will only use NSAlert if the user has switched off notifications
 func displayAlert(title: String, text: String) {
     let userAlert = NSAlert()
     userAlert.messageText = title
@@ -164,9 +187,7 @@ func scheduleEventNotification(_ event: MBEvent) {
         } else {
             content.title = event.title
         }
-        if #available(macOS 12.0, *) {
-            content.interruptionLevel = .timeSensitive
-        }
+        content.interruptionLevel = .timeSensitive
 
         switch Defaults[.joinEventNotificationTime] {
         case .atStart:
@@ -184,10 +205,15 @@ func scheduleEventNotification(_ event: MBEvent) {
         content.threadIdentifier = "meetingbar"
 
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeInterval, repeats: false)
-        let request = UNNotificationRequest(identifier: notificationIDs.event_starts, content: content, trigger: trigger)
+        let request = UNNotificationRequest(
+            identifier: notificationIDs.event_starts, content: content, trigger: trigger
+        )
         center.add(request) { error in
             if let error = error {
-                NSLog("%@", "request \(request.identifier) could not be added because of error \(error)")
+                NSLog(
+                    "%@",
+                    "request \(request.identifier) could not be added because of error \(error)"
+                )
             }
         }
     }
@@ -209,9 +235,7 @@ func scheduleEventNotification(_ event: MBEvent) {
         } else {
             content.title = event.title
         }
-        if #available(macOS 12.0, *) {
-            content.interruptionLevel = .timeSensitive
-        }
+        content.interruptionLevel = .timeSensitive
 
         switch Defaults[.endOfEventNotificationTime] {
         case .atEnd:
@@ -223,16 +247,21 @@ func scheduleEventNotification(_ event: MBEvent) {
         case .fiveMinuteBefore:
             content.body = "notifications_event_ends_five_minutes_body".loco()
         }
-//        content.categoryIdentifier = "EVENT"
+        //        content.categoryIdentifier = "EVENT"
         content.sound = UNNotificationSound.default
         content.userInfo = ["eventID": event.ID]
         content.threadIdentifier = "meetingbar"
 
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeInterval, repeats: false)
-        let request = UNNotificationRequest(identifier: notificationIDs.event_ends, content: content, trigger: trigger)
+        let request = UNNotificationRequest(
+            identifier: notificationIDs.event_ends, content: content, trigger: trigger
+        )
         center.add(request) { error in
             if let error = error {
-                NSLog("%@", "request \(request.identifier) could not be added because of error \(error)")
+                NSLog(
+                    "%@",
+                    "request \(request.identifier) could not be added because of error \(error)"
+                )
             }
         }
     }
@@ -262,12 +291,12 @@ func snoozeEventNotification(_ event: MBEvent, _ interval: NotificationEventTime
     content.userInfo = ["eventID": event.ID]
     content.threadIdentifier = "meetingbar"
     content.body = "notifications_event_started_body".loco()
-    if #available(macOS 12.0, *) {
-        content.interruptionLevel = .timeSensitive
-    }
+    content.interruptionLevel = .timeSensitive
 
     let trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeInterval, repeats: false)
-    let request = UNNotificationRequest(identifier: notificationIDs.event_starts, content: content, trigger: trigger)
+    let request = UNNotificationRequest(
+        identifier: notificationIDs.event_starts, content: content, trigger: trigger
+    )
     center.add(request) { error in
         if let error = error {
             NSLog("%@", "request \(request) could not be added because of error \(error)")
@@ -280,7 +309,7 @@ func snoozeEventNotification(_ event: MBEvent, _ interval: NotificationEventTime
 func removePendingNotificationRequests(withID: String) {
     let center = UNUserNotificationCenter.current()
     center.removePendingNotificationRequests(withIdentifiers: [withID])
-//    center.removeAllPendingNotificationRequests()
+    //    center.removeAllPendingNotificationRequests()
 }
 
 func removeDeliveredNotifications() {
