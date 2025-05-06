@@ -6,9 +6,8 @@
 //  Copyright © 2021 Andrii Leitsius. All rights reserved.
 //
 
-import SwiftUI
-
 import Defaults
+import SwiftUI
 
 struct ServicesTab: View {
     @Default(.meetBrowser) var meetBrowser
@@ -27,14 +26,22 @@ struct ServicesTab: View {
     var body: some View {
         VStack {
             Section {
-                Picker(selection: $defaultBrowser, label: Text("preferences_services_link_meeting_title".loco()).frame(width: 200, alignment: .leading)) {
+                Picker(
+                    selection: $defaultBrowser,
+                    label: Text("preferences_services_link_meeting_title".loco()).frame(
+                        width: 200, alignment: .leading)
+                ) {
                     Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
                     ForEach(allBrowser, id: \.self) { (browser: Browser) in
                         Text(browser.name).tag(browser)
                     }
                 }
 
-                Picker(selection: $meetBrowser, label: Text("preferences_services_link_service_title".loco("Google Meet")).frame(width: 200, alignment: .leading)) {
+                Picker(
+                    selection: $meetBrowser,
+                    label: Text("preferences_services_link_service_title".loco("Google Meet"))
+                        .frame(width: 200, alignment: .leading)
+                ) {
                     Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
                     Text(MeetInOneBrowser.name).tag(MeetInOneBrowser)
                     ForEach(allBrowser, id: \.self) { (browser: Browser) in
@@ -42,28 +49,44 @@ struct ServicesTab: View {
                     }
                 }
 
-                Picker(selection: $zoomBrowser, label: Text("preferences_services_link_service_title".loco("Zoom")).frame(width: 200, alignment: .leading)) {
+                Picker(
+                    selection: $zoomBrowser,
+                    label: Text("preferences_services_link_service_title".loco("Zoom")).frame(
+                        width: 200, alignment: .leading)
+                ) {
                     Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
                     Text(ZoomAppBrowser.name).tag(ZoomAppBrowser)
                     ForEach(allBrowser, id: \.self) { (browser: Browser) in
                         Text(browser.name).tag(browser)
                     }
                 }
-                Picker(selection: $teamsBrowser, label: Text("preferences_services_link_service_title".loco("Teams")).frame(width: 200, alignment: .leading)) {
+                Picker(
+                    selection: $teamsBrowser,
+                    label: Text("preferences_services_link_service_title".loco("Teams")).frame(
+                        width: 200, alignment: .leading)
+                ) {
                     Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
                     Text(TeamsAppBrowser.name).tag(TeamsAppBrowser)
                     ForEach(allBrowser, id: \.self) { (browser: Browser) in
                         Text(browser.name).tag(browser)
                     }
                 }
-                Picker(selection: $slackBrowser, label: Text("preferences_services_link_service_title".loco("Slack")).frame(width: 200, alignment: .leading)) {
+                Picker(
+                    selection: $slackBrowser,
+                    label: Text("preferences_services_link_service_title".loco("Slack")).frame(
+                        width: 200, alignment: .leading)
+                ) {
                     Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
                     Text(SlackAppBrowser.name).tag(SlackAppBrowser)
                     ForEach(allBrowser, id: \.self) { (browser: Browser) in
                         Text(browser.name).tag(browser)
                     }
                 }
-                Picker(selection: $jitsiBrowser, label: Text("preferences_services_link_service_title".loco("Jitsi")).frame(width: 200, alignment: .leading)) {
+                Picker(
+                    selection: $jitsiBrowser,
+                    label: Text("preferences_services_link_service_title".loco("Jitsi")).frame(
+                        width: 200, alignment: .leading)
+                ) {
                     Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
                     Text(JitsiAppBrowser.name).tag(JitsiAppBrowser)
                     ForEach(allBrowser, id: \.self) { (browser: Browser) in
@@ -98,21 +121,31 @@ struct ServicesTab: View {
             Divider()
             VStack {
                 HStack {
-                    Text("preferences_services_create_meeting_title".loco()).frame(width: 150, alignment: .leading)
+                    Text("preferences_services_create_meeting_title".loco()).frame(
+                        width: 150, alignment: .leading)
                     CreateMeetingServicePicker()
                 }.padding(.horizontal, 10)
 
                 if createMeetingService == CreateMeetingServices.url {
                     HStack {
-                        Text("preferences_services_create_meeting_custom_url_value".loco()).frame(width: 150, alignment: .leading)
-                        TextField("preferences_services_create_meeting_custom_url_placeholder".loco(), text: $createMeetingServiceUrl).textFieldStyle(RoundedBorderTextFieldStyle())
+                        Text("preferences_services_create_meeting_custom_url_value".loco()).frame(
+                            width: 150, alignment: .leading)
+                        TextField(
+                            "preferences_services_create_meeting_custom_url_placeholder".loco(),
+                            text: $createMeetingServiceUrl
+                        ).textFieldStyle(RoundedBorderTextFieldStyle())
                     }.padding(.horizontal, 10)
                     HStack {
-                        Text("preferences_services_google_meet_tip".loco()).foregroundColor(.gray).font(.system(size: 12))
+                        Text("preferences_services_google_meet_tip".loco()).foregroundColor(.gray)
+                            .font(.system(size: 12))
                     }
                 }
                 HStack {
-                    Picker(selection: $browserForCreateMeeting, label: Text("preferences_services_create_meeting_browser_title".loco()).frame(width: 150, alignment: .leading)) {
+                    Picker(
+                        selection: $browserForCreateMeeting,
+                        label: Text("preferences_services_create_meeting_browser_title".loco())
+                            .frame(width: 150, alignment: .leading)
+                    ) {
                         Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
                         ForEach(allBrowser, id: \.self) { (browser: Browser) in
                             Text(browser.name).tag(browser)
@@ -149,9 +182,12 @@ struct CreateMeetingServicePicker: View {
             Text(CreateMeetingServices.teams.localizedValue).tag(CreateMeetingServices.teams)
             Text(CreateMeetingServices.jam.localizedValue).tag(CreateMeetingServices.jam)
             Text(CreateMeetingServices.coscreen.localizedValue).tag(CreateMeetingServices.coscreen)
-            Text(CreateMeetingServices.gcalendar.localizedValue).tag(CreateMeetingServices.gcalendar)
-            Text(CreateMeetingServices.outlook_live.localizedValue).tag(CreateMeetingServices.outlook_live)
-            Text(CreateMeetingServices.outlook_office365.localizedValue).tag(CreateMeetingServices.outlook_office365)
+            Text(CreateMeetingServices.gcalendar.localizedValue).tag(
+                CreateMeetingServices.gcalendar)
+            Text(CreateMeetingServices.outlook_live.localizedValue).tag(
+                CreateMeetingServices.outlook_live)
+            Text(CreateMeetingServices.outlook_office365.localizedValue).tag(
+                CreateMeetingServices.outlook_office365)
             Text(CreateMeetingServices.url.localizedValue).tag(CreateMeetingServices.url)
         }.labelsHidden()
     }

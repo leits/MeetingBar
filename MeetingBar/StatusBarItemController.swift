@@ -242,7 +242,7 @@ class StatusBarItemController {
 
                     let timeAttributes = [
                         NSAttributedString.Key.font: NSFont.systemFont(ofSize: 9),
-                        NSAttributedString.Key.foregroundColor: NSColor.lightGray
+                        NSAttributedString.Key.foregroundColor: NSColor.lightGray,
                     ]
                     menuTitle.append(NSAttributedString(string: "\n" + time, attributes: timeAttributes))
 

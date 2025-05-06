@@ -37,7 +37,6 @@ extension EKEventStore: EventStore {
             } else {
                 EKEventStore.shared.requestAccess(to: .event, completion: completionHandler)
             }
-
         }
     }
 

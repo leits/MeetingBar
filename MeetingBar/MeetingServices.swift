@@ -181,7 +181,6 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?
         } else {
             url.openIn(browser: browser)
         }
-
     case .teams:
         let browser = browser ?? Defaults[.teamsBrowser]
         if browser == TeamsAppBrowser {
@@ -256,7 +255,6 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?
         NSWorkspace.shared.open(URL(string: "facetime-audio://" + url.absoluteString)!)
     case .phone:
         NSWorkspace.shared.open(URL(string: "tel://" + url.absoluteString)!)
-
     default:
         url.openIn(browser: browser ?? Defaults[.defaultBrowser])
     }
@@ -325,7 +323,7 @@ struct LinksRegex {
     let pumble = try! NSRegularExpression(pattern: #"https?://meet\.pumble\.com/[a-z-]+"#)
     let suitConference = try! NSRegularExpression(pattern: #"https?://([a-z0-9.]+)?conference\.istesuit\.com/[^\s]*+"#)
     let doxyMe = try! NSRegularExpression(pattern: #"https://([a-z0-9.]+)?doxy\.me/[^\s]*"#)
-    let calcom =  try! NSRegularExpression(pattern: #"https?://app.cal\.com/video/[A-Za-z0-9./]+"#)
+    let calcom = try! NSRegularExpression(pattern: #"https?://app.cal\.com/video/[A-Za-z0-9./]+"#)
     let zmPage = try! NSRegularExpression(pattern: #"https?://([a-zA-Z0-9.]+)\.zm\.page"#)
     let livekit = try! NSRegularExpression(pattern: #"https?://meet[a-zA-Z0-9.]*\.livekit\.io/rooms/[a-zA-Z0-9-#]+"#)
     let meetecho = try! NSRegularExpression(pattern: #"https?://meetings\.conf\.meetecho\.com/.+"#)

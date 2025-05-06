@@ -7,18 +7,17 @@
 //
 
 import Cocoa
+import Defaults
 import EventKit
+import KeyboardShortcuts
+import PromiseKit
+import ServiceManagement
 import SwiftUI
 import UserNotifications
 
-import Defaults
-import KeyboardShortcuts
-import ServiceManagement
-
-import PromiseKit
-
+@MainActor
 @NSApplicationMain
-class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotificationCenterDelegate {
     var statusBarItem: StatusBarItemController!
     var eventStore: EventStore!
 
@@ -32,7 +31,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         checkAppSource()
 
         // Handle windows closing closing
-        NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.windowClosed), name: NSWindow.willCloseNotification, object: nil)
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(AppDelegate.windowClosed),
+            name: NSWindow.willCloseNotification, object: nil
+        )
         //
 
         if let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
@@ -74,8 +76,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
         // Handle sleep and wake up events
         let dnc = DistributedNotificationCenter.default()
-        dnc.addObserver(self, selector: #selector(AppDelegate.lockListener), name: .init("com.apple.screenIsLocked"), object: nil)
-        dnc.addObserver(self, selector: #selector(AppDelegate.unlockListener), name: .init("com.apple.screenIsUnlocked"), object: nil)
+        dnc.addObserver(
+            self, selector: #selector(AppDelegate.lockListener),
+            name: .init("com.apple.screenIsLocked"), object: nil
+        )
+        dnc.addObserver(
+            self, selector: #selector(AppDelegate.unlockListener),
+            name: .init("com.apple.screenIsUnlocked"), object: nil
+        )
 
         // Shortcuts
         KeyboardShortcuts.onKeyUp(for: .createMeetingShortcut, action: createMeeting)
@@ -97,14 +105,16 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         // Settings change observers
         Task {
             for await _ in Defaults.updates(
-                [.statusbarEventTitleLength, .eventTimeFormat,
-                 .eventTitleIconFormat, .showEventMaxTimeUntilEventThreshold,
-                 .showEventMaxTimeUntilEventEnabled, .showEventDetails,
-                 .shortenEventTitle, .menuEventTitleLength,
-                 .showEventEndTime, .showMeetingServiceIcon,
-                 .timeFormat, .bookmarks, .eventTitleFormat,
-                 .personalEventsAppereance, .pastEventsAppereance,
-                 .declinedEventsAppereance], initial: false
+                [
+                    .statusbarEventTitleLength, .eventTimeFormat,
+                    .eventTitleIconFormat, .showEventMaxTimeUntilEventThreshold,
+                    .showEventMaxTimeUntilEventEnabled, .showEventDetails,
+                    .shortenEventTitle, .menuEventTitleLength,
+                    .showEventEndTime, .showMeetingServiceIcon,
+                    .timeFormat, .bookmarks, .eventTitleFormat,
+                    .personalEventsAppereance, .pastEventsAppereance,
+                    .declinedEventsAppereance,
+                ], initial: false
             ) {
                 DispatchQueue.main.async {
                     self.statusBarItem.updateTitle()
@@ -131,10 +141,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
         Task {
             for await _ in Defaults.updates(
-                [.showEventsForPeriod, .customRegexes,
-                 .declinedEventsAppereance, .showPendingEvents,
-                 .showTentativeEvents,
-                 .allDayEvents, .nonAllDayEvents], initial: false
+                [
+                    .showEventsForPeriod, .customRegexes,
+                    .declinedEventsAppereance, .showPendingEvents,
+                    .showTentativeEvents,
+                    .allDayEvents, .nonAllDayEvents,
+                ], initial: false
             ) {
                 DispatchQueue.main.async {
                     self.statusBarItem.loadEvents()
@@ -151,12 +163,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
 
         Task {
-            for await value in Defaults.updates(.preferredLanguage) {
-                if I18N.instance.changeLanguage(to: value) {
-                    DispatchQueue.main.async {
-                        self.statusBarItem.updateTitle()
-                        self.statusBarItem.updateMenu()
-                    }
+            for await value in Defaults.updates(.preferredLanguage)
+                where I18N.instance.changeLanguage(to: value)
+            {
+                DispatchQueue.main.async {
+                    self.statusBarItem.updateTitle()
+                    self.statusBarItem.updateMenu()
                 }
             }
         }
@@ -180,16 +192,25 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         case .macOSEventKit:
             eventStore = EKEventStore.shared
 
-            NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.eventStoreChanged), name: .EKEventStoreChanged, object: EKEventStore.shared)
-            NSAppleEventManager.shared().removeEventHandler(forEventClass: AEEventClass(kInternetEventClass), andEventID: AEEventID(kAEGetURL))
+            NotificationCenter.default.addObserver(
+                self, selector: #selector(AppDelegate.eventStoreChanged),
+                name: .EKEventStoreChanged, object: EKEventStore.shared
+            )
+            NSAppleEventManager.shared().removeEventHandler(
+                forEventClass: AEEventClass(kInternetEventClass), andEventID: AEEventID(kAEGetURL)
+            )
         case .googleCalendar:
             eventStore = GCEventStore.shared
 
-            NotificationCenter.default.removeObserver(self, name: .EKEventStoreChanged, object: EKEventStore.shared)
-            NSAppleEventManager.shared().setEventHandler(self,
-                                                         andSelector: #selector(handleURLEvent(getURLEvent:replyEvent:)),
-                                                         forEventClass: AEEventClass(kInternetEventClass),
-                                                         andEventID: AEEventID(kAEGetURL))
+            NotificationCenter.default.removeObserver(
+                self, name: .EKEventStoreChanged, object: EKEventStore.shared
+            )
+            NSAppleEventManager.shared().setEventHandler(
+                self,
+                andSelector: #selector(handleURLEvent(getURLEvent:replyEvent:)),
+                forEventClass: AEEventClass(kInternetEventClass),
+                andEventID: AEEventID(kAEGetURL)
+            )
         }
     }
 
@@ -200,13 +221,19 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
      */
 
     private func scheduleFetchEvents() {
-        let timer = Timer(timeInterval: 180, target: self, selector: #selector(fetchEvents), userInfo: nil, repeats: true)
+        let timer = Timer(
+            timeInterval: 180, target: self, selector: #selector(fetchEvents), userInfo: nil,
+            repeats: true
+        )
         timer.tolerance = 10
         RunLoop.current.add(timer, forMode: .common)
     }
 
     private func scheduleUpdateStatusBarItem() {
-        let timer = Timer(timeInterval: 5, target: self, selector: #selector(updateStatusBarItem), userInfo: nil, repeats: true)
+        let timer = Timer(
+            timeInterval: 5, target: self, selector: #selector(updateStatusBarItem), userInfo: nil,
+            repeats: true
+        )
         timer.tolerance = 1
         RunLoop.current.add(timer, forMode: .common)
     }
@@ -218,19 +245,28 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
      */
 
     /// Implementation is necessary to show notifications even when the app has focus!
-    func userNotificationCenter(_: UNUserNotificationCenter, willPresent _: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        completionHandler([.alert, .badge, .sound])
+    func userNotificationCenter(
+        _: UNUserNotificationCenter, willPresent _: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) ->
+            Void
+    ) {
+        completionHandler([.list, .banner, .badge, .sound])
     }
 
-    func userNotificationCenter(_: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-
+    func userNotificationCenter(
+        _: UNUserNotificationCenter, didReceive response: UNNotificationResponse,
+        withCompletionHandler completionHandler: @escaping () -> Void
+    ) {
         defer {
             completionHandler()
         }
 
-        guard ["EVENT", "SNOOZE_EVENT"].contains(response.notification.request.content.categoryIdentifier),
-              let eventID = response.notification.request.content.userInfo["eventID"] as? String,
-              let event = statusBarItem.events.first(where: { $0.ID == eventID }) else {
+        guard
+            ["EVENT", "SNOOZE_EVENT"].contains(
+                response.notification.request.content.categoryIdentifier),
+            let eventID = response.notification.request.content.userInfo["eventID"] as? String,
+            let event = statusBarItem.events.first(where: { $0.ID == eventID })
+        else {
             return
         }
         switch response.actionIdentifier {
@@ -251,7 +287,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         default:
             break
         }
-
     }
 
     /*
@@ -312,7 +347,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             defer: false
         )
 
-        window.contentView = NSHostingView(rootView: FullscreenNotification(event: event, window: window))
+        window.contentView = NSHostingView(
+            rootView: FullscreenNotification(event: event, window: window))
         window.appearance = NSAppearance(named: .darkAqua)
         window.collectionBehavior = .canJoinAllSpaces
         window.collectionBehavior = .moveToActiveSpace
@@ -393,9 +429,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
      */
 
     @objc
-    func handleURLEvent(getURLEvent event: NSAppleEventDescriptor, replyEvent _: NSAppleEventDescriptor) {
+    func handleURLEvent(
+        getURLEvent event: NSAppleEventDescriptor, replyEvent _: NSAppleEventDescriptor
+    ) {
         if let string = event.paramDescriptor(forKeyword: keyDirectObject)?.stringValue,
-           let url = URL(string: string) {
+           let url = URL(string: string)
+        {
             if url == URL(string: "meetingbar://preferences") {
                 openPreferencesWindow(nil)
             } else {
