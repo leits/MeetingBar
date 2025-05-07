@@ -109,7 +109,7 @@
 "preferences_calendars_provider_macos_switch" = "Bytt til macOS-kalender";
 "preferences_calendars_provider_gcalendar_switch" = "Switch to Google Calendar API";
 "preferences_bookmarks_new_bookmark_already_exist" = "Et bokmerke med denne lenken/telefonen finnes allerede med navnet %@:\n%@";
-"preferences_configure_browsers_choose_broser_panel_message" = "Velg en nettleser fra hvilken som helst sti.";
+"preferences_configure_browsers_choose_browser_panel_message" = "Velg en nettleser fra hvilken som helst sti.";
 "preferences_configure_browsers_delete_alert_message" = "Ønsker du å slette %@-nettleseroppsettet?";
 "preferences_services_google_meet_tip" = "Tips: Meet støtter valg av konto via parameter, f.eks. https://meet.google.com/new?authuser=1";
 "preferences_appearance_status_bar_next_event_toggle" = "Vis kun begivenheter som starter innen";
@@ -213,8 +213,8 @@
 // MARK: - Preferences Bookmarks
 
 "preferences_bookmarks_no_bookmarks_placeholder" = "Du har ingen bokmerker enda";
-"preferences_configure_browsers_choose_broser_panel_prompt" = "Velg nettleser";
-"preferences_configure_browsers_choose_broser_panel_title" = "Velg et gyldig nettleserprogram";
+"preferences_configure_browsers_choose_browser_panel_prompt" = "Velg nettleser";
+"preferences_configure_browsers_choose_browser_panel_title" = "Velg et gyldig nettleserprogram";
 "preferences_configure_browsers_modal_alert_title" = "Kan ikke legge til nettleseroppsett";
 "preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "Velg nettleser";
 "preferences_configure_browsers_modal_add_browser_path" = "Sti";

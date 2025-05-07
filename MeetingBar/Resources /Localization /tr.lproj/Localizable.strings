@@ -102,9 +102,9 @@
 "preferences_services_create_meeting_browser_title" = "Web tarayıcı kullan";
 "preferences_configure_browsers_delete_alert_message" = "%@ tarayıcı konfigurasyonunu sil?";
 "preferences_configure_browsers_modal_edit_browser_title" = "Tarayıcı düzenle";
-"preferences_configure_browsers_choose_broser_panel_title" = "Bir tarayıcı uygulaması seç";
-"preferences_configure_browsers_choose_broser_panel_prompt" = "Tarayıcı seç";
-"preferences_configure_browsers_choose_broser_panel_message" = "Web tarayıcısının nereden çalıştırılacağını seçin.";
+"preferences_configure_browsers_choose_browser_panel_title" = "Bir tarayıcı uygulaması seç";
+"preferences_configure_browsers_choose_browser_panel_prompt" = "Tarayıcı seç";
+"preferences_configure_browsers_choose_browser_panel_message" = "Web tarayıcısının nereden çalıştırılacağını seçin.";
 
 // MARK: - Preferences Bookmarks
 

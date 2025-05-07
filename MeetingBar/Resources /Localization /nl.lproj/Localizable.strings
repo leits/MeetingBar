@@ -131,9 +131,9 @@
 "preferences_configure_browsers_modal_add_browser_name" = "Naam";
 "preferences_configure_browsers_modal_add_browser_path" = "Locatie";
 "preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "Kies webbrowser";
-"preferences_configure_browsers_choose_broser_panel_title" = "Kies een webbrowser app";
-"preferences_configure_browsers_choose_broser_panel_prompt" = "Kies een webbrowser";
-"preferences_configure_browsers_choose_broser_panel_message" = "Selecteer waar de webbrowser start.";
+"preferences_configure_browsers_choose_browser_panel_title" = "Kies een webbrowser app";
+"preferences_configure_browsers_choose_browser_panel_prompt" = "Kies een webbrowser";
+"preferences_configure_browsers_choose_browser_panel_message" = "Selecteer waar de webbrowser start.";
 
 // MARK: - Preferences Bookmarks
 

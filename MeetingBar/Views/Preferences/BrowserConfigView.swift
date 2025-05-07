@@ -206,9 +206,9 @@ struct BrowserConfigView: View {
             openPanel.canChooseFiles = true
             openPanel.canChooseDirectories = false
             openPanel.allowsMultipleSelection = false
-            openPanel.title = "preferences_configure_browsers_choose_broser_panel_title".loco()
-            openPanel.prompt = "preferences_configure_browsers_choose_broser_panel_prompt".loco()
-            openPanel.message = "preferences_configure_browsers_choose_broser_panel_message".loco()
+            openPanel.title = "preferences_configure_browsers_choose_browser_panel_title".loco()
+            openPanel.prompt = "preferences_configure_browsers_choose_browser_panel_prompt".loco()
+            openPanel.message = "preferences_configure_browsers_choose_browser_panel_message".loco()
 
             let appPath = try! FileManager.default.url(for: .allApplicationsDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
 

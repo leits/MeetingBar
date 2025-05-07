@@ -132,9 +132,9 @@
 "preferences_configure_browsers_modal_add_browser_path" = "Staza";
 "preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "Odaberi web-preglednik";
 "preferences_configure_browsers_modal_alert_title" = "Nije moguće dodati konfiguraciju preglednika";
-"preferences_configure_browsers_choose_broser_panel_title" = "Odaberi program web-preglednika";
-"preferences_configure_browsers_choose_broser_panel_prompt" = "Odaberi web-preglednik";
-"preferences_configure_browsers_choose_broser_panel_message" = "Odaberi otkuda pokrenuti web-preglednik.";
+"preferences_configure_browsers_choose_browser_panel_title" = "Odaberi program web-preglednika";
+"preferences_configure_browsers_choose_browser_panel_prompt" = "Odaberi web-preglednik";
+"preferences_configure_browsers_choose_browser_panel_message" = "Odaberi otkuda pokrenuti web-preglednik.";
 
 // MARK: - Preferences Bookmarks
 
