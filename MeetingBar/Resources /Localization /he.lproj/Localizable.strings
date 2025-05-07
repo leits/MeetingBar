@@ -324,3 +324,4 @@
 "notification_all_dismissals_removed_title" = "כל ההתעלמויות הוסרו";
 "notification_all_dismissals_removed_message" = "כל הפגישות שזכו להתעלמות חזרו להיות תקפות";
 "notifications_event_started_body" = "האירוע התחיל";
+"notifications_meetingbar_dismiss_event_action" = "התעלמות";
