@@ -63,7 +63,7 @@
 "preferences_appearance_events_past_title" = "Önceki etkinlikler:";
 "preferences_appearance_events_pending_title" = "Bekleyen etkinlikler";
 "preferences_appearance_events_declined_title" = "Reddedilen etkinlikler:";
-"preferences_appearance_events_tentative_title" = "Tentative events:";
+"preferences_appearance_events_tentative_title" = "Geçici Etkinlikler:";
 "preferences_appearance_events_value_show" = "göster";
 "preferences_appearance_events_value_hide" = "gizle";
 "preferences_appearance_events_value_as_underlined" = "altı çizgili göster";
@@ -311,7 +311,7 @@
 "store_patronage_purchase_cloud_service_permission_denied_message" = "Bulut servis bilgilerine erişim izni verilmedi";
 "notifications_event_start_three_minutes_body" = "Toplantı üç dakika içinde başlıyor";
 "shared_automatic_event_join_toggle" = "Bir sonraki etkinlik toplantısına otomatik olarak katıl";
-"shared_automatic_event_join_tip" = "Bu ayar, yapılandırılmış uygulamanızda veya tarayıcınızda bir sonraki toplantınızı otomatik olarak açacaktır.";
+"shared_automatic_event_join_tip" = "Bu ayar, yapılandırdığınız uygulamada veya tarayıcıda bir sonraki toplantınızı otomatik olarak açacaktır";
 
 // MARK: - Link open
 
@@ -332,3 +332,4 @@
 "notification_all_dismissals_removed_title" = "Tüm işten çıkarmalar kaldırıldı";
 "notification_all_dismissals_removed_message" = "Kapatılan tüm toplantılar tekrar aktif";
 "notifications_meetingbar_join_event_action" = "Katıl";
+"notifications_meetingbar_dismiss_event_action" = "Gözardı Et";
