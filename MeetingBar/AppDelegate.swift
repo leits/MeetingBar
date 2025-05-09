@@ -25,6 +25,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
 
     weak var preferencesWindow: NSWindow!
     private var defaultsWatchers = [Task<Void, Never>]()
+    private var fetchEventsTask: Task<Void, Never>?
+    private var statusLoopTask: Task<Void, Never>?
 
     func applicationDidFinishLaunching(_: Notification) {
         // AppStore sync
@@ -62,8 +64,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
         _ = eventStore.signIn().done {
             self.statusBarItem.loadCalendars()
         }
-        scheduleUpdateStatusBarItem()
-        scheduleFetchEvents()
+        startAsyncLoops()
         // ActionsOnEventStart
         ActionsOnEventStart(self).startWatching()
         //
@@ -227,22 +228,25 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
      * ------------------------
      */
 
-    private func scheduleFetchEvents() {
-        let timer = Timer(
-            timeInterval: 180, target: self, selector: #selector(fetchEvents), userInfo: nil,
-            repeats: true
-        )
-        timer.tolerance = 10
-        RunLoop.current.add(timer, forMode: .common)
-    }
+    // ---------------------------------
+    private func startAsyncLoops() {
+        // 3-minute event-fetch loop
+        fetchEventsTask = Task { [weak self] in
+            while !Task.isCancelled {
+                try? await Task.sleep(nanoseconds: UInt64(180) * UInt64(NSEC_PER_SEC))
+                guard let self else { break }
+                self.fetchEvents()
+            }
+        }
 
-    private func scheduleUpdateStatusBarItem() {
-        let timer = Timer(
-            timeInterval: 5, target: self, selector: #selector(updateStatusBarItem), userInfo: nil,
-            repeats: true
-        )
-        timer.tolerance = 1
-        RunLoop.current.add(timer, forMode: .common)
+        // 5-second title/menu refresh loop
+        statusLoopTask = Task { [weak self] in
+            while !Task.isCancelled {
+                try? await Task.sleep(nanoseconds: UInt64(5) * UInt64(NSEC_PER_SEC))
+                guard let self else { break }
+                self.updateStatusBarItem()
+            }
+        }
     }
 
     /*
@@ -482,10 +486,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
     @objc
     func quit(_: NSStatusBarButton) {
         defaultsWatchers.forEach { $0.cancel() }
+        fetchEventsTask?.cancel()
+        statusLoopTask?.cancel()
         NSApplication.shared.terminate(self)
     }
 
     func applicationWillTerminate(_ notification: Notification) {
         defaultsWatchers.forEach { $0.cancel() }
+        fetchEventsTask?.cancel()
+        statusLoopTask?.cancel()
     }
 }
