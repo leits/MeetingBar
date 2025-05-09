@@ -55,6 +55,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
         statusBarItem.setAppDelegate(appdelegate: self)
 
         registerNotificationCategories()
+        ensureNotificationAuthorization()
         UNUserNotificationCenter.current().delegate = self
 
         _ = eventStore.signIn().done {

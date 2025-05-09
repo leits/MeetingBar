@@ -10,9 +10,13 @@ import Defaults
 import EventKit
 import UserNotifications
 
-func requestNotificationAuthorization() {
-    let center = UNUserNotificationCenter.current()
+private var didRequestAuth = false
 
+func ensureNotificationAuthorization() {
+    guard !didRequestAuth else { return }   // ask once
+    didRequestAuth = true
+
+    let center = UNUserNotificationCenter.current()
     center.requestAuthorization(options: [.alert, .badge, .sound]) { _, _ in }
 }
 
@@ -90,7 +94,7 @@ func registerNotificationCategories() {
 }
 
 func sendUserNotification(_ title: String, _ text: String) {
-    requestNotificationAuthorization() // By the apple best practices
+    ensureNotificationAuthorization() // By the apple best practices
 
     let center = UNUserNotificationCenter.current()
 
@@ -137,7 +141,7 @@ func notificationsEnabled() -> Bool {
 
 /// sends a notification to the user.
 func sendNotification(_ title: String, _ text: String) {
-    requestNotificationAuthorization() // By the apple best practices
+    ensureNotificationAuthorization() // By the apple best practices
 
     if notificationsEnabled() {
         sendUserNotification(title, text)
@@ -164,7 +168,7 @@ func scheduleEventNotification(_ event: MBEvent) {
         return
     }
 
-    requestNotificationAuthorization() // By the apple best practices
+    ensureNotificationAuthorization() // By the apple best practices
 
     let now = Date()
 
@@ -268,7 +272,7 @@ func scheduleEventNotification(_ event: MBEvent) {
 }
 
 func snoozeEventNotification(_ event: MBEvent, _ interval: NotificationEventTimeAction) {
-    requestNotificationAuthorization() // By the apple best practices
+    ensureNotificationAuthorization() // By the apple best practices
     removePendingNotificationRequests(withID: notificationIDs.event_starts)
 
     let now = Date()
