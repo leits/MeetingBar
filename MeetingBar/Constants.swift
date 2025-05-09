@@ -9,12 +9,12 @@
 import Cocoa
 import Defaults
 
-var systemDefaultBrowser = Browser(name: "preferences_services_link_default_browser_value".loco(), path: "")
-var MeetInOneBrowser = Browser(name: "MeetInOne", path: "")
-var ZoomAppBrowser = Browser(name: "Zoom", path: "")
-var TeamsAppBrowser = Browser(name: "Teams", path: "")
-var JitsiAppBrowser = Browser(name: "Jitsi", path: "")
-var SlackAppBrowser = Browser(name: "Slack", path: "")
+let systemDefaultBrowser = Browser(name: "preferences_services_link_default_browser_value".loco(), path: "")
+let MeetInOneBrowser = Browser(name: "MeetInOne", path: "")
+let ZoomAppBrowser = Browser(name: "Zoom", path: "")
+let TeamsAppBrowser = Browser(name: "Teams", path: "")
+let JitsiAppBrowser = Browser(name: "Jitsi", path: "")
+let SlackAppBrowser = Browser(name: "Slack", path: "")
 
 enum statusbarEventTitleLengthLimits {
     static let min = 5
@@ -26,14 +26,14 @@ enum TitleTruncationRules {
 }
 
 enum Links {
-    static var patreon = URL(string: "https://www.patreon.com/meetingbar")!
-    static var buymeacoffee = URL(string: "https://www.buymeacoffee.com/meetingbar")!
-    static var github = URL(string: "https://github.com/leits/MeetingBar")!
-    static var telegram = URL(string: "https://t.me/leits")!
-    static var twitter = URL(string: "https://twitter.com/leits_dev")!
-    static var emailMe = URL(string: "mailto:leits.dev@gmail.com?subject=MeetingBar")!
-    static var calendarPreferences = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Calendars")!
-    static var rateAppInAppStore = URL(string: "itms-apps://apps.apple.com/app/id1532419400?action=write-review")!
+    static let patreon = URL(string: "https://www.patreon.com/meetingbar")!
+    static let buymeacoffee = URL(string: "https://www.buymeacoffee.com/meetingbar")!
+    static let github = URL(string: "https://github.com/leits/MeetingBar")!
+    static let telegram = URL(string: "https://t.me/leits")!
+    static let twitter = URL(string: "https://twitter.com/leits_dev")!
+    static let emailMe = URL(string: "mailto:leits.dev@gmail.com?subject=MeetingBar")!
+    static let calendarPreferences = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Calendars")!
+    static let rateAppInAppStore = URL(string: "itms-apps://apps.apple.com/app/id1532419400?action=write-review")!
 }
 
 enum TimeFormat: String, Defaults.Serializable, Codable, CaseIterable {

@@ -122,7 +122,7 @@ func hexStringToUIColor(hex: String) -> NSColor {
     )
 }
 
-func createNSViewFromText(text: String) -> NSView {
+@MainActor func createNSViewFromText(text: String) -> NSView {
     // Create views
     let paddingView = NSView()
     let textView = NSTextView()

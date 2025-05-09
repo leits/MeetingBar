@@ -61,7 +61,7 @@ func createAppleScriptParametersForEvent(event: MBEvent) -> NSAppleEventDescript
 }
 
 // runs the predefined script with parameters.
-func runMeetingStartsScript(event: MBEvent, type: ScriptType) {
+@MainActor func runMeetingStartsScript(event: MBEvent, type: ScriptType) {
     let parameters = createAppleScriptParametersForEvent(event: event)
 
     let appleEvent = NSAppleEventDescriptor(
@@ -97,7 +97,7 @@ func runMeetingStartsScript(event: MBEvent, type: ScriptType) {
  * runs the apple script with a sample event for enduser testing from the preferences dialog.
  * This method will create an in memory event and use the parameter to execute the apple script.
  */
-func runAppleScriptForNextEvent(events: [MBEvent]) {
+@MainActor func runAppleScriptForNextEvent(events: [MBEvent]) {
     if let nextEvent = getNextEvent(events: events) {
         runMeetingStartsScript(event: nextEvent, type: .meetingStart)
     } else {

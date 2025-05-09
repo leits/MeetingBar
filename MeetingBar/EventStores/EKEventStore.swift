@@ -6,7 +6,6 @@
 //  Copyright © 2020 Andrii Leitsius. All rights reserved.
 //
 import EventKit
-import PromiseKit
 
 // Ref: https://stackoverflow.com/a/66074963
 extension EKParticipant {
@@ -16,141 +15,133 @@ extension EKParticipant {
 }
 
 extension EKEventStore: EventStore {
-    static var shared = EKEventStore()
+    nonisolated(unsafe) static var shared = EKEventStore()
 
-    func signIn() -> Promise<Void> {
-        Promise { seal in
-            let completionHandler: EKEventStoreRequestAccessCompletionHandler = { granted, error in
-                if granted {
-                    var sources = EKEventStore.shared.sources
-                    sources.append(contentsOf: EKEventStore.shared.delegateSources)
+    func signIn() async throws {
+            try await withCheckedThrowingContinuation { cont in
+                let handler: EKEventStoreRequestAccessCompletionHandler = { granted, error in
+                    if granted {
+                        var sources = EKEventStore.shared.sources
+                        sources.append(contentsOf: EKEventStore.shared.delegateSources)
 
-                    EKEventStore.shared = EKEventStore(sources: sources)
-                    seal.fulfill(())
+                        EKEventStore.shared = EKEventStore(sources: sources)
+                        cont.resume()
+                    } else { cont.resume(throwing: error ?? NSError(domain: "EKEventStore", code: 0)) }
+                }
+
+                if #available(macOS 14, *) {
+                    EKEventStore.shared.requestFullAccessToEvents(completion: handler)
                 } else {
-                    seal.reject(error ?? NSError(domain: "EKEventStore", code: 0))
+                    EKEventStore.shared.requestAccess(to: .event, completion: handler)
                 }
             }
-
-            if #available(macOS 14.0, *) {
-                EKEventStore.shared.requestFullAccessToEvents(completion: completionHandler)
-            } else {
-                EKEventStore.shared.requestAccess(to: .event, completion: completionHandler)
-            }
         }
-    }
 
-    func signOut() -> Promise<Void> {
-        Promise { _ in }
-    }
+    func signOut() async {}
 
-    func refreshSources() {
+    func refreshSources() async {
         EKEventStore.shared.refreshSourcesIfNecessary()
     }
 
-    func fetchAllCalendars() -> Promise<[MBCalendar]> {
-        Promise { seal in
-            var allCalendars: [MBCalendar] = []
+    func fetchAllCalendars() async throws -> [MBCalendar] {
+        var allCalendars: [MBCalendar] = []
 
-            for calendar in EKEventStore.shared.calendars(for: .event) {
-                let calendar = MBCalendar(
-                    title: calendar.title,
-                    ID: calendar.calendarIdentifier,
-                    source: calendar.source.title,
-                    email: getGmailAccount(calendar.source.description),
-                    color: calendar.color
-                )
-                allCalendars.append(calendar)
-            }
-            return seal.fulfill(allCalendars)
+        for calendar in EKEventStore.shared.calendars(for: .event) {
+            let calendar = MBCalendar(
+                title: calendar.title,
+                ID: calendar.calendarIdentifier,
+                source: calendar.source.title,
+                email: getGmailAccount(calendar.source.description),
+                color: calendar.color
+            )
+            allCalendars.append(calendar)
         }
+        return allCalendars
     }
 
-    func fetchEventsForDateRange(calendars: [MBCalendar], dateFrom: Date, dateTo: Date) -> Promise<[MBEvent]> {
-        Promise { seal in
-            let selectedCalendars = EKEventStore.shared.calendars(for: .event).filter { calendars.map(\.ID).contains($0.calendarIdentifier) }
+    func fetchEventsForDateRange(for calendars: [MBCalendar], from dateFrom: Date, to dateTo: Date) async throws -> [MBEvent] {
+        let selectedCalendars = EKEventStore.shared.calendars(for: .event).filter { calendars.map(\.ID).contains($0.calendarIdentifier) }
 
-            if selectedCalendars.isEmpty {
-                return seal.fulfill([])
-            }
-
-            let predicate = predicateForEvents(withStart: dateFrom, end: dateTo, calendars: selectedCalendars)
-
-            var events: [MBEvent] = []
-            for rawEvent in EKEventStore.shared.events(matching: predicate) {
-                let calendar = calendars.first { $0.ID == rawEvent.calendar.calendarIdentifier }!
-
-                if calendar.email == nil, let email = rawEvent.attendees?.first(where: { $0.isCurrentUser })?.safeNSURL?.resourceSpecifier {
-                    calendar.email = email
-                }
-
-                var status: MBEventStatus
-                switch rawEvent.status {
-                case .confirmed:
-                    status = .confirmed
-                case .tentative:
-                    status = .tentative
-                case .canceled:
-                    status = .canceled
-                default:
-                    status = .none
-                }
-
-                let organizer = MBEventOrganizer(email: rawEvent.organizer?.url.absoluteString, name: rawEvent.organizer?.name)
-
-                var attendees: [MBEventAttendee] = []
-
-                for rawAttendee in rawEvent.attendees ?? [] {
-                    if rawAttendee.participantType != .person {
-                        continue
-                    }
-                    var attendeeStatus: MBEventAttendeeStatus
-                    switch rawAttendee.participantStatus {
-                    case .pending:
-                        attendeeStatus = .pending
-                    case .accepted:
-                        attendeeStatus = .accepted
-                    case .declined:
-                        attendeeStatus = .declined
-                    case .tentative:
-                        attendeeStatus = .tentative
-                    case .delegated:
-                        attendeeStatus = .delegated
-                    case .completed:
-                        attendeeStatus = .completed
-                    case .inProcess:
-                        attendeeStatus = .inProcess
-                    default:
-                        attendeeStatus = .unknown
-                    }
-
-                    let optional = rawAttendee.participantRole == .optional
-                    let email = rawAttendee.safeNSURL?.resourceSpecifier
-                    let attendee = MBEventAttendee(email: email, name: rawAttendee.name, status: attendeeStatus, optional: optional, isCurrentUser: rawAttendee.isCurrentUser)
-
-                    attendees.append(attendee)
-                }
-
-                let event = MBEvent(
-                    ID: rawEvent.calendarItemIdentifier,
-                    lastModifiedDate: rawEvent.lastModifiedDate,
-                    title: rawEvent.title,
-                    status: status,
-                    notes: rawEvent.notes,
-                    location: rawEvent.location,
-                    url: rawEvent.url,
-                    organizer: organizer,
-                    attendees: attendees,
-                    startDate: rawEvent.startDate,
-                    endDate: rawEvent.endDate,
-                    isAllDay: rawEvent.isAllDay,
-                    recurrent: rawEvent.hasRecurrenceRules,
-                    calendar: calendar
-                )
-                events.append(event)
-            }
-            seal.fulfill(events)
+        if selectedCalendars.isEmpty {
+            return []
         }
+
+        let predicate = predicateForEvents(withStart: dateFrom, end: dateTo, calendars: selectedCalendars)
+
+        var events: [MBEvent] = []
+        for rawEvent in EKEventStore.shared.events(matching: predicate) {
+            let calendar = calendars.first { $0.ID == rawEvent.calendar.calendarIdentifier }!
+
+            if calendar.email == nil, let email = rawEvent.attendees?.first(where: { $0.isCurrentUser })?.safeNSURL?.resourceSpecifier {
+                calendar.email = email
+            }
+
+            var status: MBEventStatus
+            switch rawEvent.status {
+            case .confirmed:
+                status = .confirmed
+            case .tentative:
+                status = .tentative
+            case .canceled:
+                status = .canceled
+            default:
+                status = .none
+            }
+
+            let organizer = MBEventOrganizer(email: rawEvent.organizer?.url.absoluteString, name: rawEvent.organizer?.name)
+
+            var attendees: [MBEventAttendee] = []
+
+            for rawAttendee in rawEvent.attendees ?? [] {
+                if rawAttendee.participantType != .person {
+                    continue
+                }
+                var attendeeStatus: MBEventAttendeeStatus
+                switch rawAttendee.participantStatus {
+                case .pending:
+                    attendeeStatus = .pending
+                case .accepted:
+                    attendeeStatus = .accepted
+                case .declined:
+                    attendeeStatus = .declined
+                case .tentative:
+                    attendeeStatus = .tentative
+                case .delegated:
+                    attendeeStatus = .delegated
+                case .completed:
+                    attendeeStatus = .completed
+                case .inProcess:
+                    attendeeStatus = .inProcess
+                default:
+                    attendeeStatus = .unknown
+                }
+
+                let optional = rawAttendee.participantRole == .optional
+                let email = rawAttendee.safeNSURL?.resourceSpecifier
+                let attendee = MBEventAttendee(email: email, name: rawAttendee.name, status: attendeeStatus, optional: optional, isCurrentUser: rawAttendee.isCurrentUser)
+
+                attendees.append(attendee)
+            }
+
+            let event = MBEvent(
+                ID: rawEvent.calendarItemIdentifier,
+                lastModifiedDate: rawEvent.lastModifiedDate,
+                title: rawEvent.title,
+                status: status,
+                notes: rawEvent.notes,
+                location: rawEvent.location,
+                url: rawEvent.url,
+                organizer: organizer,
+                attendees: attendees,
+                startDate: rawEvent.startDate,
+                endDate: rawEvent.endDate,
+                isAllDay: rawEvent.isAllDay,
+                recurrent: rawEvent.hasRecurrenceRules,
+                calendar: calendar
+            )
+            events.append(event)
+        }
+        return events
     }
 }
 

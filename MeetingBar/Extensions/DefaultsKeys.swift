@@ -5,7 +5,7 @@
 //  Created by Andrii Leitsius on 12.06.2020.
 //  Copyright © 2020 Andrii Leitsius. All rights reserved.
 //
-import Defaults
+@preconcurrency import Defaults
 import Foundation
 
 extension Defaults.Keys {

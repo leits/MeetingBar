@@ -11,12 +11,12 @@ import EventKit
 
 import Defaults
 import KeyboardShortcuts
-import PromiseKit
 
 /**
  * creates the menu in the system status bar, creates the menu items and controls the whole lifecycle.
  */
-class StatusBarItemController {
+@MainActor
+final class StatusBarItemController {
     var statusItem: NSStatusItem!
     var statusItemMenu: NSMenu!
 
@@ -70,17 +70,16 @@ class StatusBarItemController {
         self.appdelegate = appdelegate
     }
 
-    @MainActor func loadCalendars() {
-        _ = appdelegate.eventStore.fetchAllCalendars().done { calendars in
-            for calendar in calendars {
-                calendar.selected = Defaults[.selectedCalendarIDs].contains(calendar.ID)
-            }
-            self.calendars = calendars
-            self.loadEvents()
+    @MainActor func loadCalendars() async {
+        let calendars = try! await appdelegate.eventStore.fetchAllCalendars()
+        for idx in calendars.indices {
+            calendars[idx].selected = Defaults[.selectedCalendarIDs].contains(calendars[idx].ID)
         }
+        self.calendars = calendars
+        await loadEvents()
     }
 
-    @MainActor func loadEvents() {
+    @MainActor func loadEvents() async {
         let dateFrom = Calendar.current.startOfDay(for: Date())
         var dateTo: Date
 
@@ -91,9 +90,11 @@ class StatusBarItemController {
             dateTo = Calendar.current.date(byAdding: .day, value: 2, to: dateFrom)!
         }
 
-        _ = appdelegate.eventStore.fetchEventsForDateRange(calendars: calendars.filter(\.selected), dateFrom: dateFrom, dateTo: dateTo).done { events in
-            let filteredEvents = filterEvents(events)
-            self.events = filteredEvents.sorted { $0.startDate.compare($1.startDate) == .orderedAscending }
+            let raw = try! await appdelegate.eventStore.fetchEventsForDateRange(for: calendars.filter(\.selected),
+                             from: dateFrom,
+                             to: dateTo)
+
+            events = filterEvents(raw).sorted { $0.startDate < $1.startDate }
 
             // Update dismissed events in case the event end date has changed.
             if !Defaults[.dismissedEvents].isEmpty {
@@ -106,9 +107,8 @@ class StatusBarItemController {
                 Defaults[.dismissedEvents] = dismissedEvents
             }
 
-            self.updateTitle()
-            self.updateMenu()
-        }
+            updateTitle()
+            updateMenu()
     }
 
     func updateTitle() {
@@ -906,8 +906,10 @@ class StatusBarItemController {
 
     @MainActor @objc
     func refreshSources() {
-        appdelegate.eventStore.refreshSources()
-        loadCalendars()
+        Task {
+            await appdelegate.eventStore.refreshSources()
+            await loadCalendars()
+        }
     }
 
     @objc

@@ -10,13 +10,12 @@ import Cocoa
 import Defaults
 import EventKit
 import KeyboardShortcuts
-import PromiseKit
 import ServiceManagement
 import SwiftUI
 import UserNotifications
 
 @MainActor
-@NSApplicationMain
+@main
 class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotificationCenterDelegate {
     var statusBarItem: StatusBarItemController!
     var eventStore: EventStore!
@@ -24,6 +23,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
     var screenIsLocked: Bool = false
 
     weak var preferencesWindow: NSWindow!
+    private var defaultsWatchers = [Task<Void, Never>]()
+    private var fetchEventsTask: Task<Void, Never>?
+    private var statusLoopTask: Task<Void, Never>?
 
     func applicationDidFinishLaunching(_: Notification) {
         // AppStore sync
@@ -42,7 +44,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
         }
 
         statusBarItem = StatusBarItemController()
-
+//
         if Defaults[.onboardingCompleted] {
             setEventStoreProvider(provider: Defaults[.eventStoreProvider])
             setup()
@@ -54,14 +56,22 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
     func setup() {
         statusBarItem.setAppDelegate(appdelegate: self)
 
-        registerNotificationCategories()
         UNUserNotificationCenter.current().delegate = self
-
-        _ = eventStore.signIn().done {
-            self.statusBarItem.loadCalendars()
+        Task { @MainActor in
+          await ensureNotificationAuthorization()
+          registerNotificationCategories()
         }
-        scheduleUpdateStatusBarItem()
-        scheduleFetchEvents()
+
+        Task {
+            do {
+                try await eventStore.signIn()
+                await statusBarItem.loadCalendars()
+            } catch {
+                NSLog("Event-store sign-in failed: \(error)")
+            }
+        }
+
+        startAsyncLoops()
         // ActionsOnEventStart
         ActionsOnEventStart(self).startWatching()
         //
@@ -89,11 +99,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
         KeyboardShortcuts.onKeyUp(for: .createMeetingShortcut, action: createMeeting)
 
         KeyboardShortcuts.onKeyUp(for: .joinEventShortcut) {
-            self.statusBarItem.joinNextMeeting()
+            Task { @MainActor in self.statusBarItem.joinNextMeeting()}
         }
 
         KeyboardShortcuts.onKeyUp(for: .openMenuShortcut) {
-            self.statusBarItem.openMenu()
+            Task { @MainActor in self.statusBarItem.openMenu()}
         }
 
         KeyboardShortcuts.onKeyUp(for: .openClipboardShortcut, action: openLinkFromClipboard)
@@ -103,6 +113,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
         }
 
         // Settings change observers
+        defaultsWatchers.append(
         Task {
             for await _ in Defaults.updates(
                 [
@@ -116,19 +127,16 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
                     .declinedEventsAppereance
                 ], initial: false
             ) {
-                DispatchQueue.main.async {
-                    self.statusBarItem.updateTitle()
-                    self.statusBarItem.updateMenu()
-                }
+                self.statusBarItem.updateTitle()
+                self.statusBarItem.updateMenu()
             }
-        }
+        })
 
+        defaultsWatchers.append(
         Task {
             for await _ in Defaults.updates(.hideMeetingTitle, initial: false) {
-                DispatchQueue.main.async {
-                    self.statusBarItem.updateMenu()
-                    self.statusBarItem.updateTitle()
-                }
+                self.statusBarItem.updateMenu()
+                self.statusBarItem.updateTitle()
 
                 // Reschedule next notification with updated event name visibility
                 removePendingNotificationRequests(withID: notificationIDs.event_starts)
@@ -137,8 +145,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
                     scheduleEventNotification(nextEvent)
                 }
             }
-        }
+        })
 
+        defaultsWatchers.append(
         Task {
             for await _ in Defaults.updates(
                 [
@@ -148,30 +157,27 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
                     .allDayEvents, .nonAllDayEvents
                 ], initial: false
             ) {
-                DispatchQueue.main.async {
-                    self.statusBarItem.loadEvents()
-                }
+                await self.statusBarItem.loadEvents()
             }
-        }
+        })
 
+        defaultsWatchers.append(
         Task {
             for await _ in Defaults.updates(.selectedCalendarIDs, initial: false) {
-                DispatchQueue.main.async {
-                    self.statusBarItem.loadCalendars()
-                }
+                await self.statusBarItem.loadCalendars()
             }
-        }
+        })
 
+        defaultsWatchers.append(
         Task {
             for await value in Defaults.updates(.preferredLanguage)
                 where I18N.instance.changeLanguage(to: value) {
-                DispatchQueue.main.async {
                     self.statusBarItem.updateTitle()
                     self.statusBarItem.updateMenu()
-                }
             }
-        }
+        })
 
+        defaultsWatchers.append(
         Task {
             for await value in Defaults.updates(.joinEventNotification, initial: false) {
                 if value == true {
@@ -182,7 +188,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
                     removePendingNotificationRequests(withID: notificationIDs.event_starts)
                 }
             }
-        }
+        })
     }
 
     func setEventStoreProvider(provider: EventStoreProvider) {
@@ -219,22 +225,23 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
      * ------------------------
      */
 
-    private func scheduleFetchEvents() {
-        let timer = Timer(
-            timeInterval: 180, target: self, selector: #selector(fetchEvents), userInfo: nil,
-            repeats: true
-        )
-        timer.tolerance = 10
-        RunLoop.current.add(timer, forMode: .common)
-    }
+    // ---------------------------------
+    private func startAsyncLoops() {
+        // 3-minute event-fetch loop
+        fetchEventsTask = Task.detached(priority: .background) { [weak self] in
+            while let self, !Task.isCancelled {
+                try? await Task.sleep(nanoseconds: 180 * UInt64(NSEC_PER_SEC))
+                await MainActor.run { self.fetchEvents() }
+            }
+        }
 
-    private func scheduleUpdateStatusBarItem() {
-        let timer = Timer(
-            timeInterval: 5, target: self, selector: #selector(updateStatusBarItem), userInfo: nil,
-            repeats: true
-        )
-        timer.tolerance = 1
-        RunLoop.current.add(timer, forMode: .common)
+        // 5-second title/menu refresh loop
+        statusLoopTask = Task.detached(priority: .utility) { [weak self] in
+            while let self, !Task.isCancelled {
+                try? await Task.sleep(nanoseconds: 5 * UInt64(NSEC_PER_SEC))
+                await MainActor.run { self.updateStatusBarItem() }
+            }
+        }
     }
 
     /*
@@ -447,32 +454,39 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
         if statusBarItem == nil {
             return
         }
-        DispatchQueue.main.async {
-            self.statusBarItem.loadEvents()
+        Task {
+            await self.statusBarItem.loadEvents()
         }
     }
 
     @objc
     private func fetchEvents() {
-        DispatchQueue.main.async {
+        Task {
             if self.statusBarItem.calendars.isEmpty, !Defaults[.selectedCalendarIDs].isEmpty {
-                self.statusBarItem.loadCalendars()
+                await self.statusBarItem.loadCalendars()
             } else {
-                self.statusBarItem.loadEvents()
+                await self.statusBarItem.loadEvents()
             }
         }
     }
 
     @objc
     private func updateStatusBarItem() {
-        DispatchQueue.main.async {
-            self.statusBarItem.updateTitle()
-            self.statusBarItem.updateMenu()
-        }
+        self.statusBarItem.updateTitle()
+        self.statusBarItem.updateMenu()
     }
 
     @objc
     func quit(_: NSStatusBarButton) {
+        defaultsWatchers.forEach { $0.cancel() }
+        fetchEventsTask?.cancel()
+        statusLoopTask?.cancel()
         NSApplication.shared.terminate(self)
+    }
+
+    func applicationWillTerminate(_ notification: Notification) {
+        defaultsWatchers.forEach { $0.cancel() }
+        fetchEventsTask?.cancel()
+        statusLoopTask?.cancel()
     }
 }
