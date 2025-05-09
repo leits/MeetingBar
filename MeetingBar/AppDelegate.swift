@@ -24,6 +24,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
     var screenIsLocked: Bool = false
 
     weak var preferencesWindow: NSWindow!
+    private var defaultsWatchers = [Task<Void, Never>]()
 
     func applicationDidFinishLaunching(_: Notification) {
         // AppStore sync
@@ -104,6 +105,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
         }
 
         // Settings change observers
+        defaultsWatchers.append(
         Task {
             for await _ in Defaults.updates(
                 [
@@ -122,8 +124,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
                     self.statusBarItem.updateMenu()
                 }
             }
-        }
+        })
 
+        defaultsWatchers.append(
         Task {
             for await _ in Defaults.updates(.hideMeetingTitle, initial: false) {
                 DispatchQueue.main.async {
@@ -138,8 +141,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
                     scheduleEventNotification(nextEvent)
                 }
             }
-        }
+        })
 
+        defaultsWatchers.append(
         Task {
             for await _ in Defaults.updates(
                 [
@@ -153,16 +157,18 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
                     self.statusBarItem.loadEvents()
                 }
             }
-        }
+        })
 
+        defaultsWatchers.append(
         Task {
             for await _ in Defaults.updates(.selectedCalendarIDs, initial: false) {
                 DispatchQueue.main.async {
                     self.statusBarItem.loadCalendars()
                 }
             }
-        }
+        })
 
+        defaultsWatchers.append(
         Task {
             for await value in Defaults.updates(.preferredLanguage)
                 where I18N.instance.changeLanguage(to: value) {
@@ -171,8 +177,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
                     self.statusBarItem.updateMenu()
                 }
             }
-        }
+        })
 
+        defaultsWatchers.append(
         Task {
             for await value in Defaults.updates(.joinEventNotification, initial: false) {
                 if value == true {
@@ -183,7 +190,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
                     removePendingNotificationRequests(withID: notificationIDs.event_starts)
                 }
             }
-        }
+        })
     }
 
     func setEventStoreProvider(provider: EventStoreProvider) {
@@ -474,6 +481,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
 
     @objc
     func quit(_: NSStatusBarButton) {
+        defaultsWatchers.forEach { $0.cancel() }
         NSApplication.shared.terminate(self)
+    }
+
+    func applicationWillTerminate(_ notification: Notification) {
+        defaultsWatchers.forEach { $0.cancel() }
     }
 }
