@@ -262,82 +262,77 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?
     }
 }
 
-struct LinksRegex {
-    let meet = try! NSRegularExpression(pattern: #"https?://meet.google.com/(_meet/)?[a-z-]+"#)
-    let zoom = try! NSRegularExpression(pattern: #"https:\/\/(?:[a-zA-Z0-9-.]+)?zoom(-x)?\.(?:us|com|com\.cn|de)\/(?:my|[a-z]{1,2}|webinar)\/[-a-zA-Z0-9()@:%_\+.~#?&=\/]*"#)
-    let zoom_native = try! NSRegularExpression(pattern: #"zoommtg://([a-z0-9-.]+)?zoom(-x)?\.(?:us|com|com\.cn|de)/join[-a-zA-Z0-9()@:%_\+.~#?&=\/]*"#)
-    let teams = try! NSRegularExpression(pattern: #"https?://(gov.)?teams\.microsoft\.(com|us)/l/meetup-join/[a-zA-Z0-9_%\/=\-\+\.?]+"#)
-    let webex = try! NSRegularExpression(pattern: #"https?://([a-z0-9-.]+)?webex\.com/[^\s%]*"#)
-    let chime = try! NSRegularExpression(pattern: #"https?://([a-z0-9-.]+)?chime\.aws/[0-9]*"#)
-    let jitsi = try! NSRegularExpression(pattern: #"https?://meet\.jit\.si/[^\s]*"#)
-    let ringcentral = try! NSRegularExpression(pattern: #"https?://([a-z0-9.]+)?ringcentral\.com/[^\s]*"#)
-    let gotomeeting = try! NSRegularExpression(pattern: #"https?://([a-z0-9.]+)?gotomeeting\.com/[^\s]*"#)
-    let gotowebinar = try! NSRegularExpression(pattern: #"https?://([a-z0-9.]+)?gotowebinar\.com/[^\s]*"#)
-    let bluejeans = try! NSRegularExpression(pattern: #"https?://([a-z0-9.]+)?bluejeans\.com/[^\s]*"#)
-    let eight_x_eight = try! NSRegularExpression(pattern: #"https?://8x8\.vc/[^\s]*"#)
-    let demio = try! NSRegularExpression(pattern: #"https?://event\.demio\.com/[^\s]*"#)
-    let join_me = try! NSRegularExpression(pattern: #"https?://join\.me/[^\s]*"#)
-    let whereby = try! NSRegularExpression(pattern: #"https?://whereby\.com/[^\s]*"#)
-    let uberconference = try! NSRegularExpression(pattern: #"https?://uberconference\.com/[^\s]*"#)
-    let blizz = try! NSRegularExpression(pattern: #"https?://go\.blizz\.com/[^\s]*"#)
-    let teamviewer_meeting = try! NSRegularExpression(pattern: #"https?://go\.teamviewer\.com/[^\s]*"#)
-    let vsee = try! NSRegularExpression(pattern: #"https?://vsee\.com/[^\s]*"#)
-    let starleaf = try! NSRegularExpression(pattern: #"https?://meet\.starleaf\.com/[^\s]*"#)
-    let duo = try! NSRegularExpression(pattern: #"https?://duo\.app\.goo\.gl/[^\s]*"#)
-    let voov = try! NSRegularExpression(pattern: #"https?://voovmeeting\.com/[^\s]*"#)
-    let facebook_workspace = try! NSRegularExpression(pattern: #"https?://([a-z0-9-.]+)?workplace\.com/groupcall/[^\s]+"#)
-    let skype = try! NSRegularExpression(pattern: #"https?://join\.skype\.com/[^\s]*"#)
-    let lifesize = try! NSRegularExpression(pattern: #"https?://call\.lifesizecloud\.com/[^\s]*"#)
-    let youtube = try! NSRegularExpression(pattern: #"https?://((www|m)\.)?(youtube\.com|youtu\.be)/[^\s]*"#)
-    let vonageMeetings = try! NSRegularExpression(pattern: #"https?://meetings\.vonage\.com/[0-9]{9}"#)
-    let meetStream = try! NSRegularExpression(pattern: #"https?://stream\.meet\.google\.com/stream/[a-z0-9-]+"#)
-    let around = try! NSRegularExpression(pattern: #"https?://(meet\.)?around\.co/[^\s]*"#)
-    let jam = try! NSRegularExpression(pattern: #"https?://jam\.systems/[^\s]*"#)
-    let discord = try! NSRegularExpression(pattern: #"(http|https|discord)://(www\.)?(canary\.)?discord(app)?\.([a-zA-Z]{2,})(.+)?"#)
-    let blackboard_collab = try! NSRegularExpression(pattern: #"https?://us\.bbcollab\.com/[^\s]*"#)
-    let coscreen = try! NSRegularExpression(pattern: #"https?://join\.coscreen\.co/[^\s]*"#)
-    let vowel = try! NSRegularExpression(pattern: #"https?://([a-z0-9.]+)?vowel\.com/#/g/[^\s]*"#)
-    let zhumu = try! NSRegularExpression(pattern: #"https://welink\.zhumu\.com/j/[0-9]+?pwd=[a-zA-Z0-9]+"#)
-    let lark = try! NSRegularExpression(pattern: #" https://vc\.larksuite\.com/j/[0-9]+"#)
-    let feishu = try! NSRegularExpression(pattern: #"https://vc\.feishu\.cn/j/[0-9]+"#)
-    let vimeo = try! NSRegularExpression(pattern: #"https://vimeo\.com/(showcase|event)/[0-9]+|https://venues\.vimeo\.com/[^\s]+"#)
-    let ovice = try! NSRegularExpression(pattern: #"https://([a-z0-9-.]+)?ovice\.in/[^\s]*"#)
-    let facetime = try! NSRegularExpression(pattern: #"https://facetime\.apple\.com/join[^\s]*"#)
-    let chorus = try! NSRegularExpression(pattern: #"https?://go\.chorus\.ai/[^\s]+"#)
-    let pop = try! NSRegularExpression(pattern: #"https?://pop\.com/j/[0-9-]+"#)
-    let gong = try! NSRegularExpression(pattern: #"https?://([a-z0-9-.]+)?join\.gong\.io/[^\s]+"#)
-    let livestorm = try! NSRegularExpression(pattern: #"https?://app\.livestorm\.com/p/[^\s]+"#)
-    let luma = try! NSRegularExpression(pattern: #"https://lu\.ma/join/[^\s]*"#)
-    let preply = try! NSRegularExpression(pattern: #"https://preply\.com/[^\s]*"#)
-    let userzoom = try! NSRegularExpression(pattern: #"https://go\.userzoom\.com/participate/[a-z0-9-]+"#)
-    let venue = try! NSRegularExpression(pattern: #"https://app\.venue\.live/app/[^\s]*"#)
-    let teemyco = try! NSRegularExpression(pattern: #"https://app\.teemyco\.com/room/[^\s]*"#)
-    let demodesk = try! NSRegularExpression(pattern: #"https://demodesk\.com/[^\s]*"#)
-    let zoho_cliq = try! NSRegularExpression(pattern: #"https://cliq\.zoho\.eu/meetings/[^\s]*"#)
-    let zoomgov = try! NSRegularExpression(pattern: #"https?://([a-z0-9.]+)?zoomgov\.com/j/[a-zA-Z0-9?&=]+"#)
-    let skype4biz = try! NSRegularExpression(pattern: #"https?://meet\.lync\.com/[^\s]*"#)
-    let skype4biz_selfhosted = try! NSRegularExpression(pattern: #"https?:\/\/(meet|join)\.[^\s]*\/[a-z0-9.]+/meet\/[A-Za-z0-9./]+"#)
-    let hangouts = try! NSRegularExpression(pattern: #"https?://hangouts\.google\.com/[^\s]*"#)
-    let slack = try! NSRegularExpression(pattern: #"https?://app\.slack\.com/huddle/[A-Za-z0-9./]+"#)
-    let reclaim = try! NSRegularExpression(pattern: #"https?://reclaim\.ai/z/[A-Za-z0-9./]+"#)
-    let tuple = try! NSRegularExpression(pattern: #"https://tuple\.app/c/[^\s]*"#)
-    let gather = try! NSRegularExpression(pattern: #"https?://app.gather.town/app/[A-Za-z0-9]+/[A-Za-z0-9_%\-]+\?(spawnToken|meeting)=[^\s]*"#)
-    let pumble = try! NSRegularExpression(pattern: #"https?://meet\.pumble\.com/[a-z-]+"#)
-    let suitConference = try! NSRegularExpression(pattern: #"https?://([a-z0-9.]+)?conference\.istesuit\.com/[^\s]*+"#)
-    let doxyMe = try! NSRegularExpression(pattern: #"https://([a-z0-9.]+)?doxy\.me/[^\s]*"#)
-    let calcom = try! NSRegularExpression(pattern: #"https?://app.cal\.com/video/[A-Za-z0-9./]+"#)
-    let zmPage = try! NSRegularExpression(pattern: #"https?://([a-zA-Z0-9.]+)\.zm\.page"#)
-    let livekit = try! NSRegularExpression(pattern: #"https?://meet[a-zA-Z0-9.]*\.livekit\.io/rooms/[a-zA-Z0-9-#]+"#)
-    let meetecho = try! NSRegularExpression(pattern: #"https?://meetings\.conf\.meetecho\.com/.+"#)
-}
+private let meetingLinkRegexes: [MeetingServices: NSRegularExpression] = [
+  .meet: try! NSRegularExpression(pattern: #"https?://meet.google.com/(_meet/)?[a-z-]+"#),
+  .zoom: try! NSRegularExpression(pattern: #"https:\/\/(?:[a-zA-Z0-9-.]+)?zoom(-x)?\.(?:us|com|com\.cn|de)\/(?:my|[a-z]{1,2}|webinar)\/[-a-zA-Z0-9()@:%_\+.~#?&=\/]*"#),
+  .zoom_native: try! NSRegularExpression(pattern: #"zoommtg://([a-z0-9-.]+)?zoom(-x)?\.(?:us|com|com\.cn|de)/join[-a-zA-Z0-9()@:%_\+.~#?&=\/]*"#),
+  .teams: try! NSRegularExpression(pattern: #"https?://(gov.)?teams\.microsoft\.(com|us)/l/meetup-join/[a-zA-Z0-9_%\/=\-\+\.?]+"#),
+  .webex: try! NSRegularExpression(pattern: #"https?://([a-z0-9-.]+)?webex\.com/[^\s%]*"#),
+  .chime: try! NSRegularExpression(pattern: #"https?://([a-z0-9-.]+)?chime\.aws/[0-9]*"#),
+  .jitsi: try! NSRegularExpression(pattern: #"https?://meet\.jit\.si/[^\s]*"#),
+  .ringcentral: try! NSRegularExpression(pattern: #"https?://([a-z0-9.]+)?ringcentral\.com/[^\s]*"#),
+  .gotomeeting: try! NSRegularExpression(pattern: #"https?://([a-z0-9.]+)?gotomeeting\.com/[^\s]*"#),
+  .gotowebinar: try! NSRegularExpression(pattern: #"https?://([a-z0-9.]+)?gotowebinar\.com/[^\s]*"#),
+  .bluejeans: try! NSRegularExpression(pattern: #"https?://([a-z0-9.]+)?bluejeans\.com/[^\s]*"#),
+  .eight_x_eight: try! NSRegularExpression(pattern: #"https?://8x8\.vc/[^\s]*"#),
+  .demio: try! NSRegularExpression(pattern: #"https?://event\.demio\.com/[^\s]*"#),
+  .join_me: try! NSRegularExpression(pattern: #"https?://join\.me/[^\s]*"#),
+  .whereby: try! NSRegularExpression(pattern: #"https?://whereby\.com/[^\s]*"#),
+  .uberconference: try! NSRegularExpression(pattern: #"https?://uberconference\.com/[^\s]*"#),
+  .blizz: try! NSRegularExpression(pattern: #"https?://go\.blizz\.com/[^\s]*"#),
+  .teamviewer_meeting: try! NSRegularExpression(pattern: #"https?://go\.teamviewer\.com/[^\s]*"#),
+  .vsee: try! NSRegularExpression(pattern: #"https?://vsee\.com/[^\s]*"#),
+  .starleaf: try! NSRegularExpression(pattern: #"https?://meet\.starleaf\.com/[^\s]*"#),
+  .duo: try! NSRegularExpression(pattern: #"https?://duo\.app\.goo\.gl/[^\s]*"#),
+  .voov: try! NSRegularExpression(pattern: #"https?://voovmeeting\.com/[^\s]*"#),
+  .facebook_workspace: try! NSRegularExpression(pattern: #"https?://([a-z0-9-.]+)?workplace\.com/groupcall/[^\s]+"#),
+  .skype: try! NSRegularExpression(pattern: #"https?://join\.skype\.com/[^\s]*"#),
+  .lifesize: try! NSRegularExpression(pattern: #"https?://call\.lifesizecloud\.com/[^\s]*"#),
+  .youtube: try! NSRegularExpression(pattern: #"https?://((www|m)\.)?(youtube\.com|youtu\.be)/[^\s]*"#),
+  .vonageMeetings: try! NSRegularExpression(pattern: #"https?://meetings\.vonage\.com/[0-9]{9}"#),
+  .meetStream: try! NSRegularExpression(pattern: #"https?://stream\.meet\.google\.com/stream/[a-z0-9-]+"#),
+  .around: try! NSRegularExpression(pattern: #"https?://(meet\.)?around\.co/[^\s]*"#),
+  .jam: try! NSRegularExpression(pattern: #"https?://jam\.systems/[^\s]*"#),
+  .discord: try! NSRegularExpression(pattern: #"(http|https|discord)://(www\.)?(canary\.)?discord(app)?\.([a-zA-Z]{2,})(.+)?"#),
+  .blackboard_collab: try! NSRegularExpression(pattern: #"https?://us\.bbcollab\.com/[^\s]*"#),
+  .coscreen: try! NSRegularExpression(pattern: #"https?://join\.coscreen\.co/[^\s]*"#),
+  .vowel: try! NSRegularExpression(pattern: #"https?://([a-z0-9.]+)?vowel\.com/#/g/[^\s]*"#),
+  .zhumu: try! NSRegularExpression(pattern: #"https://welink\.zhumu\.com/j/[0-9]+?pwd=[a-zA-Z0-9]+"#),
+  .lark: try! NSRegularExpression(pattern: #" https://vc\.larksuite\.com/j/[0-9]+"#),
+  .feishu: try! NSRegularExpression(pattern: #"https://vc\.feishu\.cn/j/[0-9]+"#),
+  .vimeo: try! NSRegularExpression(pattern: #"https://vimeo\.com/(showcase|event)/[0-9]+|https://venues\.vimeo\.com/[^\s]+"#),
+  .ovice: try! NSRegularExpression(pattern: #"https://([a-z0-9-.]+)?ovice\.in/[^\s]*"#),
+  .facetime: try! NSRegularExpression(pattern: #"https://facetime\.apple\.com/join[^\s]*"#),
+  .chorus: try! NSRegularExpression(pattern: #"https?://go\.chorus\.ai/[^\s]+"#),
+  .pop: try! NSRegularExpression(pattern: #"https?://pop\.com/j/[0-9-]+"#),
+  .gong: try! NSRegularExpression(pattern: #"https?://([a-z0-9-.]+)?join\.gong\.io/[^\s]+"#),
+  .livestorm: try! NSRegularExpression(pattern: #"https?://app\.livestorm\.com/p/[^\s]+"#),
+  .luma: try! NSRegularExpression(pattern: #"https://lu\.ma/join/[^\s]*"#),
+  .preply: try! NSRegularExpression(pattern: #"https://preply\.com/[^\s]*"#),
+  .userzoom: try! NSRegularExpression(pattern: #"https://go\.userzoom\.com/participate/[a-z0-9-]+"#),
+  .venue: try! NSRegularExpression(pattern: #"https://app\.venue\.live/app/[^\s]*"#),
+  .teemyco: try! NSRegularExpression(pattern: #"https://app\.teemyco\.com/room/[^\s]*"#),
+  .demodesk: try! NSRegularExpression(pattern: #"https://demodesk\.com/[^\s]*"#),
+  .zoho_cliq: try! NSRegularExpression(pattern: #"https://cliq\.zoho\.eu/meetings/[^\s]*"#),
+  .zoomgov: try! NSRegularExpression(pattern: #"https?://([a-z0-9.]+)?zoomgov\.com/j/[a-zA-Z0-9?&=]+"#),
+  .skype4biz: try! NSRegularExpression(pattern: #"https?://meet\.lync\.com/[^\s]*"#),
+  .skype4biz_selfhosted: try! NSRegularExpression(pattern: #"https?:\/\/(meet|join)\.[^\s]*\/[a-z0-9.]+/meet\/[A-Za-z0-9./]+"#),
+  .hangouts: try! NSRegularExpression(pattern: #"https?://hangouts\.google\.com/[^\s]*"#),
+  .slack: try! NSRegularExpression(pattern: #"https?://app\.slack\.com/huddle/[A-Za-z0-9./]+"#),
+  .reclaim: try! NSRegularExpression(pattern: #"https?://reclaim\.ai/z/[A-Za-z0-9./]+"#),
+  .tuple: try! NSRegularExpression(pattern: #"https://tuple\.app/c/[^\s]*"#),
+  .gather: try! NSRegularExpression(pattern: #"https?://app.gather.town/app/[A-Za-z0-9]+/[A-Za-z0-9_%\-]+\?(spawnToken|meeting)=[^\s]*"#),
+  .pumble: try! NSRegularExpression(pattern: #"https?://meet\.pumble\.com/[a-z-]+"#),
+  .suitConference: try! NSRegularExpression(pattern: #"https?://([a-z0-9.]+)?conference\.istesuit\.com/[^\s]*+"#),
+  .doxyMe: try! NSRegularExpression(pattern: #"https://([a-z0-9.]+)?doxy\.me/[^\s]*"#),
+  .calcom: try! NSRegularExpression(pattern: #"https?://app.cal\.com/video/[A-Za-z0-9./]+"#),
+  .zmPage: try! NSRegularExpression(pattern: #"https?://([a-zA-Z0-9.]+)\.zm\.page"#),
+  .livekit: try! NSRegularExpression(pattern: #"https?://meet[a-zA-Z0-9.]*\.livekit\.io/rooms/[a-zA-Z0-9-#]+"#),
+  .meetecho: try! NSRegularExpression(pattern: #"https?://meetings\.conf\.meetecho\.com/.+"#)
+]
 
-func getRegexForMeetingService(_ service: MeetingServices) -> NSRegularExpression? {
-    let mirror = Mirror(reflecting: SharedLinkRegex)
-
-    if let linkRegex = mirror.children.first(where: { $0.label == String(describing: service) }) {
-        return linkRegex.value as? NSRegularExpression
-    }
-    return nil
+func regex(for service: MeetingServices) -> NSRegularExpression? {
+  meetingLinkRegexes[service]
 }
 
 func detectMeetingLink(_ rawText: String) -> MeetingLink? {
@@ -354,15 +349,12 @@ func detectMeetingLink(_ rawText: String) -> MeetingLink? {
     }
 
     if text.contains("://") {
-        for service in MeetingServices.allCases {
-            if let regex = getRegexForMeetingService(service) {
-                if let link = getMatch(text: text, regex: regex) {
-                    if let url = URL(string: link) {
-                        return MeetingLink(service: service, url: url)
-                    }
-                }
+        for (svc, regex) in meetingLinkRegexes {
+            if let match = regex.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)) {
+              let url = String(text[Range(match.range, in: text)!])
+              return MeetingLink(service: svc, url: URL(string: url)!)
             }
-        }
+          }
     }
     return nil
 }
