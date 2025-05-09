@@ -332,4 +332,4 @@
 "notification_all_dismissals_removed_title" = "Tüm işten çıkarmalar kaldırıldı";
 "notification_all_dismissals_removed_message" = "Kapatılan tüm toplantılar tekrar aktif";
 "notifications_meetingbar_join_event_action" = "Katıl";
-"notifications_meetingbar_dismiss_event_action" = "Gözardı Et";
+"notifications_meetingbar_dismiss_event_action" = "Yoksay";
