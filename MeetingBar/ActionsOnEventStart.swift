@@ -9,6 +9,7 @@
 import Defaults
 import Foundation
 
+@MainActor
 class ActionsOnEventStart: NSObject {
     var app: AppDelegate
     var timer: Timer?

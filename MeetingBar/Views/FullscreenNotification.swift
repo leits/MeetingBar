@@ -61,17 +61,18 @@ struct FullscreenNotification: View {
 }
 
 public extension View {
-    func semiOpaqueWindow() -> some View {
+    static func semiOpaqueWindow() -> some View {
         VisualEffect()
             .ignoresSafeArea()
     }
 }
 
 struct VisualEffect: NSViewRepresentable {
-    func makeNSView(context _: Context) -> NSVisualEffectView {
+    func makeNSView(context _: Context) -> NSView {
         let view = NSVisualEffectView()
-        view.material = .ultraThin
+        view.material = .underWindowBackground
         view.blendingMode = .withinWindow
+        view.state = .active
         return view
     }
 

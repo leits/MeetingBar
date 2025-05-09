@@ -70,7 +70,7 @@ class StatusBarItemController {
         self.appdelegate = appdelegate
     }
 
-    func loadCalendars() {
+    @MainActor func loadCalendars() {
         _ = appdelegate.eventStore.fetchAllCalendars().done { calendars in
             for calendar in calendars {
                 calendar.selected = Defaults[.selectedCalendarIDs].contains(calendar.ID)
@@ -80,7 +80,7 @@ class StatusBarItemController {
         }
     }
 
-    func loadEvents() {
+    @MainActor func loadEvents() {
         let dateFrom = Calendar.current.startOfDay(for: Date())
         var dateTo: Date
 
@@ -242,7 +242,7 @@ class StatusBarItemController {
 
                     let timeAttributes = [
                         NSAttributedString.Key.font: NSFont.systemFont(ofSize: 9),
-                        NSAttributedString.Key.foregroundColor: NSColor.lightGray,
+                        NSAttributedString.Key.foregroundColor: NSColor.lightGray
                     ]
                     menuTitle.append(NSAttributedString(string: "\n" + time, attributes: timeAttributes))
 
@@ -904,7 +904,7 @@ class StatusBarItemController {
         Defaults[.hideMeetingTitle].toggle()
     }
 
-    @objc
+    @MainActor @objc
     func refreshSources() {
         appdelegate.eventStore.refreshSources()
         loadCalendars()

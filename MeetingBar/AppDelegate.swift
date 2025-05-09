@@ -113,7 +113,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
                     .showEventEndTime, .showMeetingServiceIcon,
                     .timeFormat, .bookmarks, .eventTitleFormat,
                     .personalEventsAppereance, .pastEventsAppereance,
-                    .declinedEventsAppereance,
+                    .declinedEventsAppereance
                 ], initial: false
             ) {
                 DispatchQueue.main.async {
@@ -145,7 +145,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
                     .showEventsForPeriod, .customRegexes,
                     .declinedEventsAppereance, .showPendingEvents,
                     .showTentativeEvents,
-                    .allDayEvents, .nonAllDayEvents,
+                    .allDayEvents, .nonAllDayEvents
                 ], initial: false
             ) {
                 DispatchQueue.main.async {
@@ -164,8 +164,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
 
         Task {
             for await value in Defaults.updates(.preferredLanguage)
-                where I18N.instance.changeLanguage(to: value)
-            {
+                where I18N.instance.changeLanguage(to: value) {
                 DispatchQueue.main.async {
                     self.statusBarItem.updateTitle()
                     self.statusBarItem.updateMenu()
@@ -433,8 +432,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
         getURLEvent event: NSAppleEventDescriptor, replyEvent _: NSAppleEventDescriptor
     ) {
         if let string = event.paramDescriptor(forKeyword: keyDirectObject)?.stringValue,
-           let url = URL(string: string)
-        {
+           let url = URL(string: string) {
             if url == URL(string: "meetingbar://preferences") {
                 openPreferencesWindow(nil)
             } else {
