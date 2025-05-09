@@ -11,13 +11,13 @@ import EventKit
 import UserNotifications
 
 private var didRequestAuth = false
+private let notificationCenter = UNUserNotificationCenter.current()
 
 func ensureNotificationAuthorization() {
     guard !didRequestAuth else { return }   // ask once
     didRequestAuth = true
 
-    let center = UNUserNotificationCenter.current()
-    center.requestAuthorization(options: [.alert, .badge, .sound]) { _, _ in }
+    notificationCenter.requestAuthorization(options: [.alert, .badge, .sound]) { _, _ in }
 }
 
 func registerNotificationCategories() {
@@ -86,16 +86,12 @@ func registerNotificationCategories() {
         options: [.customDismissAction, .hiddenPreviewsShowTitle]
     )
 
-    let notificationCenter = UNUserNotificationCenter.current()
-
     notificationCenter.setNotificationCategories([eventCategory, snoozeEventCategory])
 
     notificationCenter.getNotificationCategories { _ in }
 }
 
 func sendUserNotification(_ title: String, _ text: String) {
-    let center = UNUserNotificationCenter.current()
-
     let content = UNMutableNotificationContent()
     content.title = title
     content.body = text
@@ -104,7 +100,7 @@ func sendUserNotification(_ title: String, _ text: String) {
 
     let request = UNNotificationRequest(identifier: identifier, content: content, trigger: nil)
 
-    center.add(request) { error in
+    notificationCenter.add(request) { error in
         if let error = error {
             NSLog(
                 "%@", "request \(request.identifier) could not be added because of error \(error)"
@@ -115,34 +111,19 @@ func sendUserNotification(_ title: String, _ text: String) {
 
 /// check whether the notifications for meetingbar are enabled and alert or banner style is enabled.
 /// in this case the method will return true, otherwise false.
-func notificationsEnabled() -> Bool {
-    let center = UNUserNotificationCenter.current()
-    let group = DispatchGroup()
-    group.enter()
-
-    var correctAlertStyle = false
-    var notificationsEnabled = false
-
-    center.getNotificationSettings { notificationSettings in
-        correctAlertStyle =
-            notificationSettings.alertStyle == UNAlertStyle.alert
-                || notificationSettings.alertStyle == UNAlertStyle.banner
-        notificationsEnabled =
-            notificationSettings.authorizationStatus != UNAuthorizationStatus.denied
-        group.leave()
-    }
-
-    group.wait()
-    return correctAlertStyle && notificationsEnabled
+func notificationsEnabled() async -> Bool {
+    let settings = await notificationCenter.notificationSettings()
+    let styleOK = settings.alertStyle == .alert || settings.alertStyle == .banner
+    return styleOK && settings.authorizationStatus != .denied
 }
 
 /// sends a notification to the user.
 func sendNotification(_ title: String, _ text: String) {
-    if notificationsEnabled() {
-        sendUserNotification(title, text)
-    } else {
-        DispatchQueue.main.async {
-            displayAlert(title: title, text: text)
+    Task {
+        if await notificationsEnabled() {
+            sendUserNotification(title, text)
+        } else {
+            await MainActor.run { displayAlert(title: title, text: text) }
         }
     }
 }
@@ -158,10 +139,22 @@ func displayAlert(title: String, text: String) {
     userAlert.runModal()
 }
 
+// Termporary workaround to not schedule notification for the same event on every update
+private struct EventFP: Equatable {
+    let id: String
+    let start: Date
+    let end: Date
+}
+private var lastScheduleEventFP: EventFP?
+
 func scheduleEventNotification(_ event: MBEvent) {
     if !Defaults[.joinEventNotification], !Defaults[.endOfEventNotification] {
         return
     }
+
+    let fp = EventFP(id: event.ID, start: event.startDate, end: event.endDate)
+    guard fp != lastScheduleEventFP else { return }   // ← skip already scheduled if no changes
+    lastScheduleEventFP = fp
 
     let now = Date()
 
@@ -175,8 +168,6 @@ func scheduleEventNotification(_ event: MBEvent) {
         }
 
         removePendingNotificationRequests(withID: notificationIDs.event_starts)
-
-        let center = UNUserNotificationCenter.current()
 
         let content = UNMutableNotificationContent()
         if Defaults[.hideMeetingTitle] {
@@ -205,7 +196,7 @@ func scheduleEventNotification(_ event: MBEvent) {
         let request = UNNotificationRequest(
             identifier: notificationIDs.event_starts, content: content, trigger: trigger
         )
-        center.add(request) { error in
+        notificationCenter.add(request) { error in
             if let error = error {
                 NSLog(
                     "%@",
@@ -223,8 +214,6 @@ func scheduleEventNotification(_ event: MBEvent) {
         if timeInterval < 0.5 {
             return
         }
-
-        let center = UNUserNotificationCenter.current()
 
         let content = UNMutableNotificationContent()
         if Defaults[.hideMeetingTitle] {
@@ -253,7 +242,7 @@ func scheduleEventNotification(_ event: MBEvent) {
         let request = UNNotificationRequest(
             identifier: notificationIDs.event_ends, content: content, trigger: trigger
         )
-        center.add(request) { error in
+        notificationCenter.add(request) { error in
             if let error = error {
                 NSLog(
                     "%@",
@@ -268,7 +257,6 @@ func snoozeEventNotification(_ event: MBEvent, _ interval: NotificationEventTime
     removePendingNotificationRequests(withID: notificationIDs.event_starts)
 
     let now = Date()
-    let center = UNUserNotificationCenter.current()
     var timeInterval = Double(interval.durationInSeconds)
     let content = UNMutableNotificationContent()
 
@@ -293,7 +281,7 @@ func snoozeEventNotification(_ event: MBEvent, _ interval: NotificationEventTime
     let request = UNNotificationRequest(
         identifier: notificationIDs.event_starts, content: content, trigger: trigger
     )
-    center.add(request) { error in
+    notificationCenter.add(request) { error in
         if let error = error {
             NSLog("%@", "request \(request) could not be added because of error \(error)")
         } else {
@@ -303,12 +291,10 @@ func snoozeEventNotification(_ event: MBEvent, _ interval: NotificationEventTime
 }
 
 func removePendingNotificationRequests(withID: String) {
-    let center = UNUserNotificationCenter.current()
-    center.removePendingNotificationRequests(withIdentifiers: [withID])
+    notificationCenter.removePendingNotificationRequests(withIdentifiers: [withID])
     //    center.removeAllPendingNotificationRequests()
 }
 
 func removeDeliveredNotifications() {
-    let center = UNUserNotificationCenter.current()
-    center.removeAllDeliveredNotifications()
+    notificationCenter.removeAllDeliveredNotifications()
 }
