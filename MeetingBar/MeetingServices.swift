@@ -10,6 +10,8 @@ import AppKit
 import Defaults
 import Foundation
 
+private let SharedLinkRegex = LinksRegex()
+
 enum MeetingServices: String, Codable, CaseIterable {
     case phone = "Phone"
     case meet = "Google Meet"
@@ -330,8 +332,7 @@ struct LinksRegex {
 }
 
 func getRegexForMeetingService(_ service: MeetingServices) -> NSRegularExpression? {
-    let regexes = LinksRegex()
-    let mirror = Mirror(reflecting: regexes)
+    let mirror = Mirror(reflecting: SharedLinkRegex)
 
     if let linkRegex = mirror.children.first(where: { $0.label == String(describing: service) }) {
         return linkRegex.value as? NSRegularExpression
