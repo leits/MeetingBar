@@ -58,7 +58,8 @@ struct CalendarsTab: View {
                     if eventStoreProvider == .googleCalendar {
                         Text("Google Calendar API")
                         Button("preferences_calendars_provider_gcalendar_change_account".loco()) {
-                            _ = appDelegate!.eventStore.signOut().done {
+                            Task {
+                                await appDelegate!.eventStore.signOut()
                                 changeEventStoreProvider(.googleCalendar)
                             }
                         }
@@ -78,8 +79,8 @@ struct CalendarsTab: View {
             }
         }.padding()
             .onAppear {
-                DispatchQueue.main.async {
-                    appDelegate!.statusBarItem.loadCalendars()
+                Task {
+                    await appDelegate!.statusBarItem.loadCalendars()
                 }
             }
             .onReceive(timer) { _ in loadCalendarList() }
@@ -93,9 +94,10 @@ struct CalendarsTab: View {
 
         appDelegate!.setEventStoreProvider(provider: provider)
 
-        _ = appDelegate!.eventStore.signIn().done {
-            DispatchQueue.main.async {
-                appDelegate!.statusBarItem.loadCalendars()
+        Task {
+            do {
+                try await appDelegate!.eventStore.signIn()
+                await appDelegate!.statusBarItem.loadCalendars()
             }
         }
     }

@@ -8,21 +8,19 @@
 
 import AppKit
 import Defaults
-import PromiseKit
 
 enum EventStoreProvider: String, Defaults.Serializable, Codable {
     case macOSEventKit = "MacOS Calendar App"
     case googleCalendar = "Google Calendar API"
 }
 
-protocol EventStore {
-    func signIn() -> Promise<Void>
+@MainActor
+protocol EventStore: AnyObject {
+    func signIn() async throws
+    func signOut() async
+    func refreshSources() async
 
-    func signOut() -> Promise<Void>
+    func fetchAllCalendars() async throws -> [MBCalendar]
 
-    func refreshSources()
-
-    func fetchAllCalendars() -> Promise<[MBCalendar]>
-
-    func fetchEventsForDateRange(calendars: [MBCalendar], dateFrom: Date, dateTo: Date) -> Promise<[MBEvent]>
+    func fetchEventsForDateRange(for calendars: [MBCalendar], from: Date, to: Date) async throws -> [MBEvent]
 }
