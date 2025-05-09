@@ -94,8 +94,6 @@ func registerNotificationCategories() {
 }
 
 func sendUserNotification(_ title: String, _ text: String) {
-    ensureNotificationAuthorization() // By the apple best practices
-
     let center = UNUserNotificationCenter.current()
 
     let content = UNMutableNotificationContent()
@@ -141,8 +139,6 @@ func notificationsEnabled() -> Bool {
 
 /// sends a notification to the user.
 func sendNotification(_ title: String, _ text: String) {
-    ensureNotificationAuthorization() // By the apple best practices
-
     if notificationsEnabled() {
         sendUserNotification(title, text)
     } else {
@@ -167,8 +163,6 @@ func scheduleEventNotification(_ event: MBEvent) {
     if !Defaults[.joinEventNotification], !Defaults[.endOfEventNotification] {
         return
     }
-
-    ensureNotificationAuthorization() // By the apple best practices
 
     let now = Date()
 
@@ -272,7 +266,6 @@ func scheduleEventNotification(_ event: MBEvent) {
 }
 
 func snoozeEventNotification(_ event: MBEvent, _ interval: NotificationEventTimeAction) {
-    ensureNotificationAuthorization() // By the apple best practices
     removePendingNotificationRequests(withID: notificationIDs.event_starts)
 
     let now = Date()
