@@ -32,7 +32,7 @@ enum EventDetailsTypeAppEnum: String, AppEnum {
         .calendarTitle: "Calendar",
         .url: "URL",
         .notes: "Notes",
-        .location: "Location",
+        .location: "Location"
     ]
 }
 
@@ -57,7 +57,7 @@ struct GetNearestEventDetails: AppIntent {
         guard let app = await NSApplication.shared.delegate as! AppDelegate? else {
             return .result(value: nil)
         }
-        guard let nextEvent = getNextEvent(events: app.statusBarItem.events) else {
+        guard let nextEvent = await getNextEvent(events: app.statusBarItem.events) else {
             return .result(value: nil)
         }
 
@@ -95,7 +95,7 @@ struct JoinNearestMeetingIntent: AppIntent {
 
     func perform() async throws -> some IntentResult {
         if let app = await NSApplication.shared.delegate as! AppDelegate? {
-            app.statusBarItem.joinNextMeeting()
+            await app.statusBarItem.joinNextMeeting()
         }
         return .result()
     }
@@ -108,7 +108,7 @@ struct DismissNearestMeetingIntent: AppIntent {
 
     func perform() async throws -> some IntentResult {
         if let app = await NSApplication.shared.delegate as! AppDelegate? {
-            app.statusBarItem.dismissNextMeetingAction()
+            await app.statusBarItem.dismissNextMeetingAction()
         }
         return .result()
     }

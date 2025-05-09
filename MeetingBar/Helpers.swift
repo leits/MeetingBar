@@ -135,7 +135,7 @@ func createNSViewFromText(text: String) -> NSView {
         text.splitWithNewLineAttributedString(
             with: [
                 NSAttributedString.Key.paragraphStyle: paragraphStyle,
-                NSAttributedString.Key.font: NSFont.systemFont(ofSize: 14),
+                NSAttributedString.Key.font: NSFont.systemFont(ofSize: 14)
             ],
             maxWidth: 300.0
         )

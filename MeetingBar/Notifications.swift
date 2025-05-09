@@ -67,7 +67,7 @@ func registerNotificationCategories() {
         identifier: "EVENT",
         actions: [
             acceptAction, dismissAction, snoozeUntilStartTime, snooze5Min, snooze10Min, snooze15Min,
-            snooze30Min,
+            snooze30Min
         ],
         intentIdentifiers: [],
         hiddenPreviewsBodyPlaceholder: "",
