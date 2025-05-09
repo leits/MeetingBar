@@ -367,7 +367,13 @@ func detectMeetingLink(_ rawText: String) -> MeetingLink? {
     return nil
 }
 
+private var iconCache: [MeetingServices?: NSImage] = [:]
+
 func getIconForMeetingService(_ meetingService: MeetingServices?) -> NSImage {
+    if let cached = iconCache[meetingService] {
+        return cached
+    }
+
     var image = NSImage(named: "no_online_session")!
     image.size = NSSize(width: 16, height: 16)
 
@@ -656,5 +662,6 @@ func getIconForMeetingService(_ meetingService: MeetingServices?) -> NSImage {
         break
     }
 
+    iconCache[meetingService] = image
     return image
 }
