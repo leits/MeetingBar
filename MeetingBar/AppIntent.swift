@@ -53,38 +53,30 @@ struct GetNearestEventDetails: AppIntent {
         Summary("Get the nearest event's \(\.$type)")
     }
 
-    func perform() async throws -> some IntentResult & ReturnsValue<String?> {
-        guard let app = await NSApplication.shared.delegate as! AppDelegate? else {
-            return .result(value: nil)
-        }
-        guard let nextEvent = await getNextEvent(events: app.statusBarItem.events) else {
-            return .result(value: nil)
-        }
+    func perform() async throws
+        -> some IntentResult & ReturnsValue<String?> {
 
-        let result: String? = { () -> String? in
+        // Hop to the main actor only for the AppKit interaction
+        let value: String? = await MainActor.run {
+            guard
+                let appDelegate = NSApplication.shared.delegate as? AppDelegate,
+                let nextEvent   = getNextEvent(events: appDelegate.statusBarItem.events)
+            else { return nil }
+
             switch type {
-            case .title:
-                return nextEvent.title
-            case .calendarTitle:
-                return nextEvent.calendar.title
-            case .meetingLink:
-                return nextEvent.meetingLink?.url.absoluteString
-            case .meetingService:
-                return nextEvent.meetingLink?.service?.localizedValue
-            case .url:
-                return nextEvent.url?.absoluteString
-            case .notes:
-                return nextEvent.notes
-            case .location:
-                return nextEvent.location
-            case .startDate:
-                return nextEvent.startDate.formatted()
-            case .endDate:
-                return nextEvent.endDate.formatted()
+            case .title:          return nextEvent.title
+            case .calendarTitle:  return nextEvent.calendar.title
+            case .meetingLink:    return nextEvent.meetingLink?.url.absoluteString
+            case .meetingService: return nextEvent.meetingLink?.service?.localizedValue
+            case .url:            return nextEvent.url?.absoluteString
+            case .notes:          return nextEvent.notes
+            case .location:       return nextEvent.location
+            case .startDate:      return nextEvent.startDate.formatted()
+            case .endDate:        return nextEvent.endDate.formatted()
             }
-        }()
+        }
 
-        return .result(value: result)
+        return .result(value: value)
     }
 }
 
@@ -94,11 +86,13 @@ struct JoinNearestMeetingIntent: AppIntent {
     static let description = IntentDescription("Join the nearest (current or next) event meeting.")
 
     func perform() async throws -> some IntentResult {
-        if let app = await NSApplication.shared.delegate as! AppDelegate? {
-            await app.statusBarItem.joinNextMeeting()
+            await MainActor.run {
+                (NSApplication.shared.delegate as? AppDelegate)?
+                    .statusBarItem
+                    .joinNextMeeting()
+            }
+            return .result()
         }
-        return .result()
-    }
 }
 
 @available(macOS 13.0, *)
@@ -107,9 +101,11 @@ struct DismissNearestMeetingIntent: AppIntent {
     static let description = IntentDescription("Dismiss the nearest (current or next) event meeting.")
 
     func perform() async throws -> some IntentResult {
-        if let app = await NSApplication.shared.delegate as! AppDelegate? {
-            await app.statusBarItem.dismissNextMeetingAction()
+            await MainActor.run {
+                (NSApplication.shared.delegate as? AppDelegate)?
+                    .statusBarItem
+                    .dismissNextMeetingAction()
+            }
+            return .result()
         }
-        return .result()
-    }
 }

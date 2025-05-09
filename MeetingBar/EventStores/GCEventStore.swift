@@ -25,7 +25,7 @@ class GCEventStore: NSObject, EventStore, OIDExternalUserAgent {
 
     var currentAuthorizationFlow: OIDExternalUserAgentSession?
 
-    static let shared = GCEventStore()
+    nonisolated(unsafe) static let shared = GCEventStore()
 
     var auth: GTMAppAuthFetcherAuthorization?
     lazy var fetcherService = GTMSessionFetcherService()

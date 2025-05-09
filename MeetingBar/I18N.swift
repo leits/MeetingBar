@@ -9,7 +9,7 @@
 import Foundation
 
 final class I18N {
-    static let instance = I18N()
+    nonisolated(unsafe) static let instance = I18N()
 
     private var bundle = Bundle.main
     var locale = Locale.current

@@ -16,7 +16,7 @@ extension EKParticipant {
 }
 
 extension EKEventStore: EventStore {
-    static var shared = EKEventStore()
+    nonisolated(unsafe) static var shared = EKEventStore()
 
     func signIn() -> Promise<Void> {
         Promise { seal in

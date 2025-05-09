@@ -106,14 +106,14 @@ struct MeetingLink: Equatable {
 }
 
 enum CreateMeetingLinks {
-    static var meet = URL(string: "https://meet.google.com/new")!
-    static var zoom = URL(string: "https://zoom.us/start?confno=123456789&zc=0")!
-    static var teams = URL(string: "https://teams.microsoft.com/l/meeting/new?subject=")!
-    static var jam = URL(string: "https://jam.systems/new")!
-    static var coscreen = URL(string: "https://cs.new")!
-    static var gcalendar = URL(string: "https://calendar.google.com/calendar/u/0/r/eventedit")!
-    static var outlook_live = URL(string: "https://outlook.live.com/calendar/0/action/compose")!
-    static var outlook_office365 = URL(string: "https://outlook.office365.com/calendar/0/action/compose")!
+    static let meet = URL(string: "https://meet.google.com/new")!
+    static let zoom = URL(string: "https://zoom.us/start?confno=123456789&zc=0")!
+    static let teams = URL(string: "https://teams.microsoft.com/l/meeting/new?subject=")!
+    static let jam = URL(string: "https://jam.systems/new")!
+    static let coscreen = URL(string: "https://cs.new")!
+    static let gcalendar = URL(string: "https://calendar.google.com/calendar/u/0/r/eventedit")!
+    static let outlook_live = URL(string: "https://outlook.live.com/calendar/0/action/compose")!
+    static let outlook_office365 = URL(string: "https://outlook.office365.com/calendar/0/action/compose")!
 }
 
 enum CreateMeetingServices: String, Defaults.Serializable, Codable, CaseIterable {
@@ -367,8 +367,10 @@ func detectMeetingLink(_ rawText: String) -> MeetingLink? {
     return nil
 }
 
+@MainActor
 private var iconCache: [MeetingServices?: NSImage] = [:]
 
+@MainActor
 func getIconForMeetingService(_ meetingService: MeetingServices?) -> NSImage {
     if let cached = iconCache[meetingService] {
         return cached

@@ -16,7 +16,7 @@ import SwiftUI
 import UserNotifications
 
 @MainActor
-@NSApplicationMain
+@main
 class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotificationCenterDelegate {
     var statusBarItem: StatusBarItemController!
     var eventStore: EventStore!

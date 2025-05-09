@@ -16,6 +16,7 @@ import PromiseKit
 /**
  * creates the menu in the system status bar, creates the menu items and controls the whole lifecycle.
  */
+@MainActor
 class StatusBarItemController {
     var statusItem: NSStatusItem!
     var statusItemMenu: NSMenu!

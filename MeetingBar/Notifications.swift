@@ -10,10 +10,18 @@ import Defaults
 import EventKit
 import UserNotifications
 
-private var didRequestAuth = false
-private let notificationCenter = UNUserNotificationCenter.current()
+@MainActor private var didRequestAuth = false
+nonisolated(unsafe) private let notificationCenter = UNUserNotificationCenter.current()
 
-func ensureNotificationAuthorization() {
+// Termporary workaround to not schedule notification for the same event on every update
+private struct EventFP: Equatable {
+    let id: String
+    let start: Date
+    let end: Date
+}
+@MainActor private var lastScheduleEventFP: EventFP?
+
+@MainActor func ensureNotificationAuthorization() {
     guard !didRequestAuth else { return }   // ask once
     didRequestAuth = true
 
@@ -129,6 +137,7 @@ func sendNotification(_ title: String, _ text: String) {
 }
 
 /// adds an alert for the user- we will only use NSAlert if the user has switched off notifications
+@MainActor
 func displayAlert(title: String, text: String) {
     let userAlert = NSAlert()
     userAlert.messageText = title
@@ -139,15 +148,7 @@ func displayAlert(title: String, text: String) {
     userAlert.runModal()
 }
 
-// Termporary workaround to not schedule notification for the same event on every update
-private struct EventFP: Equatable {
-    let id: String
-    let start: Date
-    let end: Date
-}
-private var lastScheduleEventFP: EventFP?
-
-func scheduleEventNotification(_ event: MBEvent) {
+@MainActor func scheduleEventNotification(_ event: MBEvent) {
     if !Defaults[.joinEventNotification], !Defaults[.endOfEventNotification] {
         return
     }
