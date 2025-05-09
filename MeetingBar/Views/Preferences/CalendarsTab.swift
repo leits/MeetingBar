@@ -152,6 +152,7 @@ struct CalendarRow: View {
             } else {
                 Defaults[.selectedCalendarIDs].removeAll { $0 == calendar.ID }
             }
+            Defaults[.selectedCalendarIDs] = Array(Set(Defaults[.selectedCalendarIDs])) // Deduplication
         }
     }
 }
