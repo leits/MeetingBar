@@ -54,7 +54,7 @@ class MBEventAttendee {
 }
 
 // ToDo: move to struct
-class MBEvent: @unchecked Sendable {
+public class MBEvent: @unchecked Sendable {
     let ID: String
     let lastModifiedDate: Date?
     let calendar: MBCalendar

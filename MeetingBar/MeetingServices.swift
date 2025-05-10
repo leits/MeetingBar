@@ -10,8 +10,6 @@ import AppKit
 import Defaults
 import Foundation
 
-private let SharedLinkRegex = LinksRegex()
-
 enum MeetingServices: String, Codable, CaseIterable {
     case phone = "Phone"
     case meet = "Google Meet"
@@ -359,10 +357,8 @@ func detectMeetingLink(_ rawText: String) -> MeetingLink? {
     return nil
 }
 
-@MainActor
-private var iconCache: [MeetingServices?: NSImage] = [:]
+nonisolated(unsafe) private var iconCache: [MeetingServices?: NSImage] = [:]
 
-@MainActor
 func getIconForMeetingService(_ meetingService: MeetingServices?) -> NSImage {
     if let cached = iconCache[meetingService] {
         return cached

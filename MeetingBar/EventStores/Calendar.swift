@@ -23,11 +23,11 @@ final public class MBCalendar: Hashable, Sendable {
         self.color = color
     }
 
-    func hash(into hasher: inout Hasher) {
+    public func hash(into hasher: inout Hasher) {
         hasher.combine(ID)
     }
 
-    static func == (lhs: MBCalendar, rhs: MBCalendar) -> Bool {
+    public static func == (lhs: MBCalendar, rhs: MBCalendar) -> Bool {
         lhs.ID == rhs.ID
     }
 }
