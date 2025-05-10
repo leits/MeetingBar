@@ -8,12 +8,11 @@
 
 import AppKit
 
-class MBCalendar: Hashable {
+final public class MBCalendar: Hashable, Sendable {
     let title: String
     let ID: String
     let source: String
-    var email: String?
-    var selected = false
+    let email: String?
     let color: NSColor
 
     init(title: String, ID: String, source: String?, email: String?, color: NSColor) {
