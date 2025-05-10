@@ -8,12 +8,11 @@
 
 import AppKit
 
-class MBCalendar: Hashable {
+final public class MBCalendar: Hashable, Sendable {
     let title: String
     let ID: String
     let source: String
-    var email: String?
-    var selected = false
+    let email: String?
     let color: NSColor
 
     init(title: String, ID: String, source: String?, email: String?, color: NSColor) {
@@ -24,11 +23,11 @@ class MBCalendar: Hashable {
         self.color = color
     }
 
-    func hash(into hasher: inout Hasher) {
+    public func hash(into hasher: inout Hasher) {
         hasher.combine(ID)
     }
 
-    static func == (lhs: MBCalendar, rhs: MBCalendar) -> Bool {
+    public static func == (lhs: MBCalendar, rhs: MBCalendar) -> Bool {
         lhs.ID == rhs.ID
     }
 }

@@ -72,9 +72,6 @@ final class StatusBarItemController {
 
     @MainActor func loadCalendars() async {
         let calendars = try! await appdelegate.eventStore.fetchAllCalendars()
-        for idx in calendars.indices {
-            calendars[idx].selected = Defaults[.selectedCalendarIDs].contains(calendars[idx].ID)
-        }
         self.calendars = calendars
         await loadEvents()
     }
@@ -90,25 +87,27 @@ final class StatusBarItemController {
             dateTo = Calendar.current.date(byAdding: .day, value: 2, to: dateFrom)!
         }
 
-            let raw = try! await appdelegate.eventStore.fetchEventsForDateRange(for: calendars.filter(\.selected),
-                             from: dateFrom,
-                             to: dateTo)
+        let selectedCalendars = calendars.filter( { Defaults[.selectedCalendarIDs].contains($0.ID) })
 
-            events = filterEvents(raw).sorted { $0.startDate < $1.startDate }
+        let raw = try! await appdelegate.eventStore.fetchEventsForDateRange(for: selectedCalendars,
+                         from: dateFrom,
+                         to: dateTo)
 
-            // Update dismissed events in case the event end date has changed.
-            if !Defaults[.dismissedEvents].isEmpty {
-                var dismissedEvents: [ProcessedEvent] = []
-                for dismissedEvent in Defaults[.dismissedEvents] {
-                    if let event = self.events.first(where: { $0.ID == dismissedEvent.id }), event.endDate.timeIntervalSinceNow > 0 {
-                        dismissedEvents.append(ProcessedEvent(id: event.ID, eventEndDate: event.endDate))
-                    }
+        events = filterEvents(raw).sorted { $0.startDate < $1.startDate }
+
+        // Update dismissed events in case the event end date has changed.
+        if !Defaults[.dismissedEvents].isEmpty {
+            var dismissedEvents: [ProcessedEvent] = []
+            for dismissedEvent in Defaults[.dismissedEvents] {
+                if let event = self.events.first(where: { $0.ID == dismissedEvent.id }), event.endDate.timeIntervalSinceNow > 0 {
+                    dismissedEvents.append(ProcessedEvent(id: event.ID, eventEndDate: event.endDate))
                 }
-                Defaults[.dismissedEvents] = dismissedEvents
             }
+            Defaults[.dismissedEvents] = dismissedEvents
+        }
 
-            updateTitle()
-            updateMenu()
+        updateTitle()
+        updateMenu()
     }
 
     func updateTitle() {
@@ -116,7 +115,7 @@ final class StatusBarItemController {
         var time = ""
         var nextEvent: MBEvent!
         let nextEventState: NextEventState
-        if calendars.contains(where: { $0.selected }) {
+        if calendars.isEmpty || Defaults[.selectedCalendarIDs].isEmpty {
             nextEvent = getNextEvent(events: events)
             nextEventState = {
                 guard let nextEvent = nextEvent else {
@@ -272,7 +271,7 @@ final class StatusBarItemController {
         statusItemMenu.autoenablesItems = false
         statusItemMenu.removeAllItems()
 
-        if calendars.contains(where: { $0.selected }) {
+        if calendars.isEmpty || Defaults[.selectedCalendarIDs].isEmpty {
             let today = Date()
             switch Defaults[.showEventsForPeriod] {
             case .today:
@@ -668,7 +667,7 @@ final class StatusBarItemController {
     func createJoinSection() {
         // MENU ITEM: Join the meeting
         var nextEvent: MBEvent?
-        if calendars.contains(where: { $0.selected }) {
+        if calendars.isEmpty || Defaults[.selectedCalendarIDs].isEmpty {
             nextEvent = getNextEvent(events: events)
         }
 
