@@ -140,13 +140,17 @@ final class StatusBarItemController {
             case let .nextEvent(event):
                 (title, time) = createEventStatusString(title: event.title, startDate: event.startDate, endDate: event.endDate)
                 if Defaults[.joinEventNotification] {
-                    scheduleEventNotification(event)
+                    Task {
+                        await scheduleEventNotification(event)
+                    }
                 }
             case let .afterThreshold(event):
                 // Not sure, what the title should be in this case.
                 title = "⏰"
                 if Defaults[.joinEventNotification] {
-                    scheduleEventNotification(event)
+                    Task {
+                        await scheduleEventNotification(event)
+                    }
                 }
             }
         } else {

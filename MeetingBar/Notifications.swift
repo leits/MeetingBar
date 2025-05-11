@@ -28,7 +28,7 @@ private struct EventFP: Equatable {
     } catch {}
 }
 
-func registerNotificationCategories() {
+@MainActor func registerNotificationCategories() {
     let acceptAction = UNNotificationAction(
         identifier: "JOIN_ACTION",
         title: "notifications_meetingbar_join_event_action".loco(),
@@ -94,9 +94,8 @@ func registerNotificationCategories() {
         options: [.customDismissAction, .hiddenPreviewsShowTitle]
     )
 
-    UNUserNotificationCenter.current().setNotificationCategories([eventCategory, snoozeEventCategory])
-
-    UNUserNotificationCenter.current().getNotificationCategories { _ in }
+    let center = UNUserNotificationCenter.current()
+    center.setNotificationCategories([eventCategory, snoozeEventCategory])
 }
 
 func sendUserNotification(_ title: String, _ text: String) {
@@ -149,7 +148,7 @@ func displayAlert(title: String, text: String) {
     userAlert.runModal()
 }
 
-@MainActor func scheduleEventNotification(_ event: MBEvent) {
+@MainActor func scheduleEventNotification(_ event: MBEvent) async {
     if !Defaults[.joinEventNotification], !Defaults[.endOfEventNotification] {
         return
     }
@@ -198,13 +197,15 @@ func displayAlert(title: String, text: String) {
         let request = UNNotificationRequest(
             identifier: notificationIDs.event_starts, content: content, trigger: trigger
         )
-        UNUserNotificationCenter.current().add(request) { error in
-            if let error = error {
-                NSLog(
-                    "%@",
-                    "request \(request.identifier) could not be added because of error \(error)"
-                )
-            }
+
+        let center = UNUserNotificationCenter.current()
+        do {
+            try await center.add(request)
+        } catch let error {
+            NSLog(
+                "%@",
+                "request \(request.identifier) could not be added because of error \(error)"
+            )
         }
     }
 
@@ -256,7 +257,7 @@ func displayAlert(title: String, text: String) {
 }
 
 @MainActor
-func snoozeEventNotification(_ event: MBEvent, _ interval: NotificationEventTimeAction) {
+func snoozeEventNotification(_ event: MBEvent, _ interval: NotificationEventTimeAction) async {
     removePendingNotificationRequests(withID: notificationIDs.event_starts)
 
     let now = Date()
