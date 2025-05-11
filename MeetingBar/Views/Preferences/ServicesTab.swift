@@ -43,7 +43,7 @@ struct ServicesTab: View {
                         .frame(width: 200, alignment: .leading)
                 ) {
                     Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
-                    Text(MeetInOneBrowser.name).tag(MeetInOneBrowser)
+                    Text(meetInOneBrowser.name).tag(meetInOneBrowser)
                     ForEach(allBrowser, id: \.self) { (browser: Browser) in
                         Text(browser.name).tag(browser)
                     }
@@ -55,7 +55,7 @@ struct ServicesTab: View {
                         width: 200, alignment: .leading)
                 ) {
                     Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
-                    Text(ZoomAppBrowser.name).tag(ZoomAppBrowser)
+                    Text(zoomAppBrowser.name).tag(zoomAppBrowser)
                     ForEach(allBrowser, id: \.self) { (browser: Browser) in
                         Text(browser.name).tag(browser)
                     }
@@ -66,7 +66,7 @@ struct ServicesTab: View {
                         width: 200, alignment: .leading)
                 ) {
                     Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
-                    Text(TeamsAppBrowser.name).tag(TeamsAppBrowser)
+                    Text(teamsAppBrowser.name).tag(teamsAppBrowser)
                     ForEach(allBrowser, id: \.self) { (browser: Browser) in
                         Text(browser.name).tag(browser)
                     }
@@ -77,7 +77,7 @@ struct ServicesTab: View {
                         width: 200, alignment: .leading)
                 ) {
                     Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
-                    Text(SlackAppBrowser.name).tag(SlackAppBrowser)
+                    Text(slackAppBrowser.name).tag(slackAppBrowser)
                     ForEach(allBrowser, id: \.self) { (browser: Browser) in
                         Text(browser.name).tag(browser)
                     }
@@ -88,7 +88,7 @@ struct ServicesTab: View {
                         width: 200, alignment: .leading)
                 ) {
                     Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
-                    Text(JitsiAppBrowser.name).tag(JitsiAppBrowser)
+                    Text(jitsiAppBrowser.name).tag(jitsiAppBrowser)
                     ForEach(allBrowser, id: \.self) { (browser: Browser) in
                         Text(browser.name).tag(browser)
                     }

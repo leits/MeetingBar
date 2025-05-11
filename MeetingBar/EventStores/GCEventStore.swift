@@ -11,19 +11,19 @@ import AppKit
 import Foundation
 import GTMAppAuth
 
-let GoogleClientNumber = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_CLIENT_NUMBER") as! String
-let GoogleClientSecret = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_CLIENT_SECRET") as! String
-let GoogleAuthKeychainName = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_AUTH_KEYCHAIN_NAME") as! String
+let googleClientNumber = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_CLIENT_NUMBER") as! String
+let googleClientSecret = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_CLIENT_SECRET") as! String
+let googleAuthKeychainName = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_AUTH_KEYCHAIN_NAME") as! String
 
 extension OIDServiceConfiguration: @unchecked @retroactive Sendable {}
 extension GTMSessionFetcherService: @unchecked @retroactive Sendable {}
 
 class GCEventStore: NSObject, EventStore, @preconcurrency OIDExternalUserAgent {
     private static let kIssuer = "https://accounts.google.com"
-    private static let kClientID = "\(GoogleClientNumber).apps.googleusercontent.com"
-    private static let kClientSecret = GoogleClientSecret
-    private static let kRedirectURI = "com.googleusercontent.apps.\(GoogleClientNumber):/oauthredirect"
-    private static let AuthKeychainName = GoogleAuthKeychainName
+    private static let kClientID = "\(googleClientNumber).apps.googleusercontent.com"
+    private static let kClientSecret = googleClientSecret
+    private static let kRedirectURI = "com.googleusercontent.apps.\(googleClientNumber):/oauthredirect"
+    private static let AuthKeychainName = googleAuthKeychainName
 
     var currentAuthorizationFlow: OIDExternalUserAgentSession?
 

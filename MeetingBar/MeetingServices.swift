@@ -175,7 +175,7 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?
     switch service {
     case .meet:
         let browser = browser ?? Defaults[.meetBrowser]
-        if browser == MeetInOneBrowser {
+        if browser == meetInOneBrowser {
             let meetInOneUrl = URL(string: "meetinone://url=" + url.absoluteString)!
             meetInOneUrl.openInDefaultBrowser()
         } else {
@@ -183,7 +183,7 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?
         }
     case .teams:
         let browser = browser ?? Defaults[.teamsBrowser]
-        if browser == TeamsAppBrowser {
+        if browser == teamsAppBrowser {
             var teamsAppURL = URLComponents(url: url, resolvingAgainstBaseURL: false)!
             teamsAppURL.scheme = "msteams"
             let result = teamsAppURL.url!.openInDefaultBrowser()
@@ -196,7 +196,7 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?
         }
     case .zoom, .zoomgov:
         let browser = browser ?? Defaults[.zoomBrowser]
-        if browser == ZoomAppBrowser {
+        if browser == zoomAppBrowser {
             if url.absoluteString.contains("/my/") {
                 url.openIn(browser: systemDefaultBrowser)
             }
@@ -223,7 +223,7 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?
         }
     case .jitsi:
         let browser = browser ?? Defaults[.jitsiBrowser]
-        if browser == JitsiAppBrowser {
+        if browser == jitsiAppBrowser {
             var jitsiAppUrl = URLComponents(url: url, resolvingAgainstBaseURL: false)!
             jitsiAppUrl.scheme = "jitsi-meet"
             let result = jitsiAppUrl.url!.openInDefaultBrowser()
@@ -236,7 +236,7 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?
         }
     case .slack:
         let browser = browser ?? Defaults[.slackBrowser]
-        if browser == SlackAppBrowser {
+        if browser == slackAppBrowser {
             let teamID = url.pathComponents[2]
             let huddleID = url.pathComponents[3]
 
