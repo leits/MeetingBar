@@ -171,21 +171,21 @@ func getInstallationDate() -> Date? {
 func maintainDefaultsBackwardCompatibility() {
     if UserDefaults.standard.object(forKey: "useAppForZoomLinks") != nil {
         if UserDefaults.standard.bool(forKey: "useAppForZoomLinks") {
-            Defaults[.zoomBrowser] = ZoomAppBrowser
+            Defaults[.zoomBrowser] = zoomAppBrowser
         }
         UserDefaults.standard.removeObject(forKey: "useAppForZoomLinks")
     }
 
     if UserDefaults.standard.object(forKey: "useAppForTeamsLinks") != nil {
         if UserDefaults.standard.bool(forKey: "useAppForTeamsLinks") {
-            Defaults[.teamsBrowser] = TeamsAppBrowser
+            Defaults[.teamsBrowser] = teamsAppBrowser
         }
         UserDefaults.standard.removeObject(forKey: "useAppForTeamsLinks")
     }
 
     if UserDefaults.standard.object(forKey: "useAppForJitsiLinks") != nil {
         if UserDefaults.standard.bool(forKey: "useAppForJitsiLinks") {
-            Defaults[.jitsiBrowser] = JitsiAppBrowser
+            Defaults[.jitsiBrowser] = jitsiAppBrowser
         }
         UserDefaults.standard.removeObject(forKey: "useAppForJitsiLinks")
     }
@@ -258,7 +258,7 @@ func generateFakeEvent() -> MBEvent {
     let calendar = MBCalendar(title: "Fake calendar", ID: "fake_cal", source: nil, email: nil, color: .black)
 
     let event = MBEvent(
-        ID: "test_event",
+        id: "test_event",
         lastModifiedDate: nil,
         title: "Test event",
         status: .confirmed,

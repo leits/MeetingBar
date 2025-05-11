@@ -9,14 +9,14 @@
 import AppKit
 import Defaults
 
-enum MBEventStatus: Int {
+public enum MBEventStatus: Int, Sendable {
     case none = 0
     case confirmed = 1
     case tentative = 2
     case canceled = 3
 }
 
-class MBEventOrganizer {
+public struct MBEventOrganizer: Hashable, Sendable {
     let name: String
     let email: String?
 
@@ -26,7 +26,7 @@ class MBEventOrganizer {
     }
 }
 
-enum MBEventAttendeeStatus: Int {
+public enum MBEventAttendeeStatus: Int, Sendable {
     case unknown = 0
     case pending = 1
     case accepted = 2
@@ -37,12 +37,12 @@ enum MBEventAttendeeStatus: Int {
     case inProcess = 7
 }
 
-class MBEventAttendee {
-    let name: String
-    let email: String?
-    let status: MBEventAttendeeStatus
-    var optional = false
-    let isCurrentUser: Bool
+public struct MBEventAttendee: Hashable, Sendable {
+    public let name: String
+    public let email: String?
+    public let status: MBEventAttendeeStatus
+    public var optional = false
+    public let isCurrentUser: Bool
 
     init(email: String?, name: String? = nil, status: MBEventAttendeeStatus, optional: Bool = false, isCurrentUser: Bool = false) {
         self.email = email
@@ -54,25 +54,26 @@ class MBEventAttendee {
 }
 
 // ToDo: move to struct
-public class MBEvent: @unchecked Sendable {
-    let ID: String
-    let lastModifiedDate: Date?
-    let calendar: MBCalendar
-    let title: String
-    var status: MBEventStatus
-    var participationStatus: MBEventAttendeeStatus = .unknown
-    var meetingLink: MeetingLink?
-    var organizer: MBEventOrganizer?
-    let url: URL?
-    let notes: String?
-    let location: String?
-    let startDate: Date
-    let endDate: Date
-    var isAllDay: Bool
-    let recurrent: Bool
-    var attendees: [MBEventAttendee] = []
+public struct MBEvent: Identifiable, Hashable, Sendable {
+    public var id: String
 
-    init(ID: String,
+    public let lastModifiedDate: Date?
+    public let calendar: MBCalendar
+    public let title: String
+    public var status: MBEventStatus
+    public var participationStatus: MBEventAttendeeStatus = .unknown
+    public var meetingLink: MeetingLink?
+    public var organizer: MBEventOrganizer?
+    public let url: URL?
+    public let notes: String?
+    public let location: String?
+    public let startDate: Date
+    public let endDate: Date
+    public var isAllDay: Bool
+    public let recurrent: Bool
+    public var attendees: [MBEventAttendee] = []
+
+    init(id: String,
          lastModifiedDate: Date?,
          title: String?,
          status: MBEventStatus,
@@ -87,7 +88,7 @@ public class MBEvent: @unchecked Sendable {
          recurrent: Bool,
          calendar: MBCalendar) {
         self.calendar = calendar
-        self.ID = ID
+        self.id = id
         self.lastModifiedDate = lastModifiedDate
         self.title = title ?? "status_bar_no_title".loco()
         self.status = status
@@ -126,8 +127,8 @@ public class MBEvent: @unchecked Sendable {
         for linkField in linkFields {
             if var detectedLink = detectMeetingLink(linkField) {
                 if detectedLink.service == .meet,
-                   let account = calendar.email,
-                   let urlEncodedAccount = account.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
+                   let authAccount = calendar.email ?? attendees.first(where: { $0.isCurrentUser })?.email,
+                   let urlEncodedAccount = authAccount.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
                     detectedLink.url = URL(string: (detectedLink.url.absoluteString) + "?authuser=\(urlEncodedAccount)")!
                 }
                 meetingLink = detectedLink
@@ -258,7 +259,7 @@ func getNextEvent(events: [MBEvent], linkRequired: Bool = false) -> MBEvent? {
 
     for event in nextEvents {
         // Skip event if dismissed
-        if Defaults[.dismissedEvents].contains(where: { $0.id == event.ID }) {
+        if Defaults[.dismissedEvents].contains(where: { $0.id == event.id }) {
             continue
         }
 

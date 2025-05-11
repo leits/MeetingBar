@@ -99,8 +99,8 @@ final class StatusBarItemController {
         if !Defaults[.dismissedEvents].isEmpty {
             var dismissedEvents: [ProcessedEvent] = []
             for dismissedEvent in Defaults[.dismissedEvents] {
-                if let event = self.events.first(where: { $0.ID == dismissedEvent.id }), event.endDate.timeIntervalSinceNow > 0 {
-                    dismissedEvents.append(ProcessedEvent(id: event.ID, eventEndDate: event.endDate))
+                if let event = self.events.first(where: { $0.id == dismissedEvent.id }), event.endDate.timeIntervalSinceNow > 0 {
+                    dismissedEvents.append(ProcessedEvent(id: event.id, eventEndDate: event.endDate))
                 }
             }
             Defaults[.dismissedEvents] = dismissedEvents
@@ -115,7 +115,7 @@ final class StatusBarItemController {
         var time = ""
         var nextEvent: MBEvent!
         let nextEventState: NextEventState
-        if calendars.isEmpty || Defaults[.selectedCalendarIDs].isEmpty {
+        if Defaults[.selectedCalendarIDs].isEmpty == false {
             nextEvent = getNextEvent(events: events)
             nextEventState = {
                 guard let nextEvent = nextEvent else {
@@ -140,13 +140,17 @@ final class StatusBarItemController {
             case let .nextEvent(event):
                 (title, time) = createEventStatusString(title: event.title, startDate: event.startDate, endDate: event.endDate)
                 if Defaults[.joinEventNotification] {
-                    scheduleEventNotification(event)
+                    Task {
+                        await scheduleEventNotification(event)
+                    }
                 }
             case let .afterThreshold(event):
                 // Not sure, what the title should be in this case.
                 title = "⏰"
                 if Defaults[.joinEventNotification] {
-                    scheduleEventNotification(event)
+                    Task {
+                        await scheduleEventNotification(event)
+                    }
                 }
             }
         } else {
@@ -271,7 +275,7 @@ final class StatusBarItemController {
         statusItemMenu.autoenablesItems = false
         statusItemMenu.removeAllItems()
 
-        if calendars.isEmpty || Defaults[.selectedCalendarIDs].isEmpty {
+        if  Defaults[.selectedCalendarIDs].isEmpty == false {
             let today = Date()
             switch Defaults[.showEventsForPeriod] {
             case .today:
@@ -369,7 +373,7 @@ final class StatusBarItemController {
             eventTitle = shortenTitle(title: event.title, offset: Defaults[.menuEventTitleLength])
         }
 
-        if Defaults[.dismissedEvents].contains(where: { $0.id == event.ID }) {
+        if Defaults[.dismissedEvents].contains(where: { $0.id == event.id }) {
             let dismissedMark = "status_bar_event_dismissed_mark".loco()
             eventTitle = "[\(dismissedMark)] \(eventTitle)"
         }
@@ -627,7 +631,7 @@ final class StatusBarItemController {
             copyLinkItem.representedObject = event
 
             // Dismiss/undismiss meeting
-            if Defaults[.dismissedEvents].contains(where: { $0.id == event.ID }) {
+            if Defaults[.dismissedEvents].contains(where: { $0.id == event.id }) {
                 let undismissItem = eventMenu.addItem(withTitle: "status_bar_submenu_undismiss_meeting".loco(), action: #selector(undismissEvent), keyEquivalent: "")
                 undismissItem.target = self
                 undismissItem.representedObject = event
@@ -645,7 +649,7 @@ final class StatusBarItemController {
             // Open in App
             let openItem = eventMenu.addItem(withTitle: "status_bar_submenu_open_in_calendar".loco(), action: #selector(openEventInCalendar), keyEquivalent: "")
             openItem.target = self
-            openItem.representedObject = event.ID
+            openItem.representedObject = event.id
 
             // Open in fanctastical if fantastical is installed
             if isFantasticalInstalled {
@@ -667,7 +671,7 @@ final class StatusBarItemController {
     func createJoinSection() {
         // MENU ITEM: Join the meeting
         var nextEvent: MBEvent?
-        if calendars.isEmpty || Defaults[.selectedCalendarIDs].isEmpty {
+        if Defaults[.selectedCalendarIDs].isEmpty == false {
             nextEvent = getNextEvent(events: events)
         }
 
@@ -875,7 +879,7 @@ final class StatusBarItemController {
     @objc
     func dismissNextMeetingAction() {
         if let nextEvent = getNextEvent(events: events) {
-            let dismissedEvent = ProcessedEvent(id: nextEvent.ID, lastModifiedDate: nextEvent.lastModifiedDate, eventEndDate: nextEvent.endDate)
+            let dismissedEvent = ProcessedEvent(id: nextEvent.id, lastModifiedDate: nextEvent.lastModifiedDate, eventEndDate: nextEvent.endDate)
             Defaults[.dismissedEvents].append(dismissedEvent)
             sendNotification("notification_next_meeting_dismissed_title".loco(nextEvent.title), "notification_next_meeting_dismissed_message".loco())
 
@@ -946,7 +950,7 @@ final class StatusBarItemController {
     }
 
     func dismiss(event: MBEvent) {
-        let dismissedEvent = ProcessedEvent(id: event.ID, lastModifiedDate: event.lastModifiedDate, eventEndDate: event.endDate)
+        let dismissedEvent = ProcessedEvent(id: event.id, lastModifiedDate: event.lastModifiedDate, eventEndDate: event.endDate)
         Defaults[.dismissedEvents].append(dismissedEvent)
 
         updateTitle()
@@ -956,7 +960,7 @@ final class StatusBarItemController {
     @objc
     func undismissEvent(sender: NSMenuItem) {
         if let event: MBEvent = sender.representedObject as? MBEvent {
-            Defaults[.dismissedEvents] = Defaults[.dismissedEvents].filter { $0.id != event.ID }
+            Defaults[.dismissedEvents] = Defaults[.dismissedEvents].filter { $0.id != event.id }
 
             updateTitle()
             updateMenu()

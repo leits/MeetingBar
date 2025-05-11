@@ -28,7 +28,7 @@ private struct EventFP: Equatable {
     } catch {}
 }
 
-func registerNotificationCategories() {
+@MainActor func registerNotificationCategories() {
     let acceptAction = UNNotificationAction(
         identifier: "JOIN_ACTION",
         title: "notifications_meetingbar_join_event_action".loco(),
@@ -94,12 +94,11 @@ func registerNotificationCategories() {
         options: [.customDismissAction, .hiddenPreviewsShowTitle]
     )
 
-    UNUserNotificationCenter.current().setNotificationCategories([eventCategory, snoozeEventCategory])
-
-    UNUserNotificationCenter.current().getNotificationCategories { _ in }
+    let center = UNUserNotificationCenter.current()
+    center.setNotificationCategories([eventCategory, snoozeEventCategory])
 }
 
-func sendUserNotification(_ title: String, _ text: String) {
+func sendUserNotification(_ title: String, _ text: String) async {
     let content = UNMutableNotificationContent()
     content.title = title
     content.body = text
@@ -108,12 +107,14 @@ func sendUserNotification(_ title: String, _ text: String) {
 
     let request = UNNotificationRequest(identifier: identifier, content: content, trigger: nil)
 
-    UNUserNotificationCenter.current().add(request) { error in
-        if let error = error {
-            NSLog(
-                "%@", "request \(request.identifier) could not be added because of error \(error)"
-            )
-        }
+    let center = UNUserNotificationCenter.current()
+    do {
+        try await center.add(request)
+    } catch let error {
+        NSLog(
+            "%@",
+            "request \(request.identifier) could not be added because of error \(error)"
+        )
     }
 }
 
@@ -129,7 +130,7 @@ func notificationsEnabled() async -> Bool {
 func sendNotification(_ title: String, _ text: String) {
     Task {
         if await notificationsEnabled() {
-            sendUserNotification(title, text)
+            await sendUserNotification(title, text)
         } else {
             await MainActor.run {
                 displayAlert(title: title, text: text)
@@ -149,12 +150,12 @@ func displayAlert(title: String, text: String) {
     userAlert.runModal()
 }
 
-@MainActor func scheduleEventNotification(_ event: MBEvent) {
+@MainActor func scheduleEventNotification(_ event: MBEvent) async {
     if !Defaults[.joinEventNotification], !Defaults[.endOfEventNotification] {
         return
     }
 
-    let fp = EventFP(id: event.ID, start: event.startDate, end: event.endDate)
+    let fp = EventFP(id: event.id, start: event.startDate, end: event.endDate)
     guard fp != lastScheduleEventFP else { return }   // ← skip already scheduled if no changes
     lastScheduleEventFP = fp
 
@@ -191,20 +192,22 @@ func displayAlert(title: String, text: String) {
         }
         content.categoryIdentifier = "EVENT"
         content.sound = UNNotificationSound.default
-        content.userInfo = ["eventID": event.ID]
+        content.userInfo = ["eventID": event.id]
         content.threadIdentifier = "meetingbar"
 
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeInterval, repeats: false)
         let request = UNNotificationRequest(
             identifier: notificationIDs.event_starts, content: content, trigger: trigger
         )
-        UNUserNotificationCenter.current().add(request) { error in
-            if let error = error {
-                NSLog(
-                    "%@",
-                    "request \(request.identifier) could not be added because of error \(error)"
-                )
-            }
+
+        let center = UNUserNotificationCenter.current()
+        do {
+            try await center.add(request)
+        } catch let error {
+            NSLog(
+                "%@",
+                "request \(request.identifier) could not be added because of error \(error)"
+            )
         }
     }
 
@@ -237,26 +240,27 @@ func displayAlert(title: String, text: String) {
         }
         //        content.categoryIdentifier = "EVENT"
         content.sound = UNNotificationSound.default
-        content.userInfo = ["eventID": event.ID]
+        content.userInfo = ["eventID": event.id]
         content.threadIdentifier = "meetingbar"
 
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeInterval, repeats: false)
         let request = UNNotificationRequest(
             identifier: notificationIDs.event_ends, content: content, trigger: trigger
         )
-        UNUserNotificationCenter.current().add(request) { error in
-            if let error = error {
-                NSLog(
-                    "%@",
-                    "request \(request.identifier) could not be added because of error \(error)"
-                )
-            }
+        let center = UNUserNotificationCenter.current()
+        do {
+            try await center.add(request)
+        } catch let error {
+            NSLog(
+                "%@",
+                "request \(request.identifier) could not be added because of error \(error)"
+            )
         }
     }
 }
 
 @MainActor
-func snoozeEventNotification(_ event: MBEvent, _ interval: NotificationEventTimeAction) {
+func snoozeEventNotification(_ event: MBEvent, _ interval: NotificationEventTimeAction) async {
     removePendingNotificationRequests(withID: notificationIDs.event_starts)
 
     let now = Date()
@@ -275,7 +279,7 @@ func snoozeEventNotification(_ event: MBEvent, _ interval: NotificationEventTime
 
     content.categoryIdentifier = "SNOOZE_EVENT"
     content.sound = UNNotificationSound.default
-    content.userInfo = ["eventID": event.ID]
+    content.userInfo = ["eventID": event.id]
     content.threadIdentifier = "meetingbar"
     content.body = "notifications_event_started_body".loco()
     content.interruptionLevel = .timeSensitive
@@ -284,12 +288,14 @@ func snoozeEventNotification(_ event: MBEvent, _ interval: NotificationEventTime
     let request = UNNotificationRequest(
         identifier: notificationIDs.event_starts, content: content, trigger: trigger
     )
-    UNUserNotificationCenter.current().add(request) { error in
-        if let error = error {
-            NSLog("%@", "request \(request) could not be added because of error \(error)")
-        } else {
-            NSLog("%@", "request \(request) was added")
-        }
+    let center = UNUserNotificationCenter.current()
+    do {
+        try await center.add(request)
+    } catch let error {
+        NSLog(
+            "%@",
+            "request \(request.identifier) could not be added because of error \(error)"
+        )
     }
 }
 

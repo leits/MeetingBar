@@ -44,7 +44,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
         }
 
         statusBarItem = StatusBarItemController()
-//
+
         if Defaults[.onboardingCompleted] {
             setEventStoreProvider(provider: Defaults[.eventStoreProvider])
             setup()
@@ -142,7 +142,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
                 removePendingNotificationRequests(withID: notificationIDs.event_starts)
                 removePendingNotificationRequests(withID: notificationIDs.event_ends)
                 if let nextEvent = getNextEvent(events: self.statusBarItem.events) {
-                    scheduleEventNotification(nextEvent)
+                    Task {
+                        await scheduleEventNotification(nextEvent)
+                    }
                 }
             }
         })
@@ -182,7 +184,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
             for await value in Defaults.updates(.joinEventNotification, initial: false) {
                 if value == true {
                     if let nextEvent = getNextEvent(events: self.statusBarItem.events) {
-                        scheduleEventNotification(nextEvent)
+                        Task {
+                            await scheduleEventNotification(nextEvent)
+                        }
                     }
                 } else {
                     removePendingNotificationRequests(withID: notificationIDs.event_starts)
@@ -271,27 +275,29 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
             ["EVENT", "SNOOZE_EVENT"].contains(
                 response.notification.request.content.categoryIdentifier),
             let eventID = response.notification.request.content.userInfo["eventID"] as? String,
-            let event = statusBarItem.events.first(where: { $0.ID == eventID })
+            let event = statusBarItem.events.first(where: { $0.id == eventID })
         else {
             return
         }
-        switch response.actionIdentifier {
-        case "JOIN_ACTION", UNNotificationDefaultActionIdentifier:
-            event.openMeeting()
-        case "DISMISS_ACTION":
-            statusBarItem.dismiss(event: event)
-        case NotificationEventTimeAction.untilStart.rawValue:
-            snoozeEventNotification(event, NotificationEventTimeAction.untilStart)
-        case NotificationEventTimeAction.fiveMinuteLater.rawValue:
-            snoozeEventNotification(event, NotificationEventTimeAction.fiveMinuteLater)
-        case NotificationEventTimeAction.tenMinuteLater.rawValue:
-            snoozeEventNotification(event, NotificationEventTimeAction.tenMinuteLater)
-        case NotificationEventTimeAction.fifteenMinuteLater.rawValue:
-            snoozeEventNotification(event, NotificationEventTimeAction.fifteenMinuteLater)
-        case NotificationEventTimeAction.thirtyMinuteLater.rawValue:
-            snoozeEventNotification(event, NotificationEventTimeAction.thirtyMinuteLater)
-        default:
-            break
+        Task {
+            switch response.actionIdentifier {
+            case "JOIN_ACTION", UNNotificationDefaultActionIdentifier:
+                event.openMeeting()
+            case "DISMISS_ACTION":
+                statusBarItem.dismiss(event: event)
+            case NotificationEventTimeAction.untilStart.rawValue:
+                await snoozeEventNotification(event, NotificationEventTimeAction.untilStart)
+            case NotificationEventTimeAction.fiveMinuteLater.rawValue:
+                await snoozeEventNotification(event, NotificationEventTimeAction.fiveMinuteLater)
+            case NotificationEventTimeAction.tenMinuteLater.rawValue:
+                await snoozeEventNotification(event, NotificationEventTimeAction.tenMinuteLater)
+            case NotificationEventTimeAction.fifteenMinuteLater.rawValue:
+                await snoozeEventNotification(event, NotificationEventTimeAction.fifteenMinuteLater)
+            case NotificationEventTimeAction.thirtyMinuteLater.rawValue:
+                await snoozeEventNotification(event, NotificationEventTimeAction.thirtyMinuteLater)
+            default:
+                break
+            }
         }
     }
 
