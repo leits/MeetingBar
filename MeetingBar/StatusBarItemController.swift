@@ -115,7 +115,7 @@ final class StatusBarItemController {
         var time = ""
         var nextEvent: MBEvent!
         let nextEventState: NextEventState
-        if calendars.isEmpty || Defaults[.selectedCalendarIDs].isEmpty {
+        if Defaults[.selectedCalendarIDs].isEmpty == false {
             nextEvent = getNextEvent(events: events)
             nextEventState = {
                 guard let nextEvent = nextEvent else {
@@ -275,7 +275,7 @@ final class StatusBarItemController {
         statusItemMenu.autoenablesItems = false
         statusItemMenu.removeAllItems()
 
-        if calendars.isEmpty || Defaults[.selectedCalendarIDs].isEmpty {
+        if  Defaults[.selectedCalendarIDs].isEmpty == false {
             let today = Date()
             switch Defaults[.showEventsForPeriod] {
             case .today:
@@ -671,7 +671,7 @@ final class StatusBarItemController {
     func createJoinSection() {
         // MENU ITEM: Join the meeting
         var nextEvent: MBEvent?
-        if calendars.isEmpty || Defaults[.selectedCalendarIDs].isEmpty {
+        if Defaults[.selectedCalendarIDs].isEmpty == false {
             nextEvent = getNextEvent(events: events)
         }
 
