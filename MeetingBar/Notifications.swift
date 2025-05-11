@@ -153,7 +153,7 @@ func displayAlert(title: String, text: String) {
         return
     }
 
-    let fp = EventFP(id: event.ID, start: event.startDate, end: event.endDate)
+    let fp = EventFP(id: event.id, start: event.startDate, end: event.endDate)
     guard fp != lastScheduleEventFP else { return }   // ← skip already scheduled if no changes
     lastScheduleEventFP = fp
 
@@ -190,7 +190,7 @@ func displayAlert(title: String, text: String) {
         }
         content.categoryIdentifier = "EVENT"
         content.sound = UNNotificationSound.default
-        content.userInfo = ["eventID": event.ID]
+        content.userInfo = ["eventID": event.id]
         content.threadIdentifier = "meetingbar"
 
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeInterval, repeats: false)
@@ -238,7 +238,7 @@ func displayAlert(title: String, text: String) {
         }
         //        content.categoryIdentifier = "EVENT"
         content.sound = UNNotificationSound.default
-        content.userInfo = ["eventID": event.ID]
+        content.userInfo = ["eventID": event.id]
         content.threadIdentifier = "meetingbar"
 
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeInterval, repeats: false)
@@ -276,7 +276,7 @@ func snoozeEventNotification(_ event: MBEvent, _ interval: NotificationEventTime
 
     content.categoryIdentifier = "SNOOZE_EVENT"
     content.sound = UNNotificationSound.default
-    content.userInfo = ["eventID": event.ID]
+    content.userInfo = ["eventID": event.id]
     content.threadIdentifier = "meetingbar"
     content.body = "notifications_event_started_body".loco()
     content.interruptionLevel = .timeSensitive

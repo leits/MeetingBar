@@ -119,7 +119,7 @@ extension EKEventStore: EventStore {
             }
 
             let event = MBEvent(
-                ID: rawEvent.calendarItemIdentifier,
+                id: rawEvent.calendarItemIdentifier,
                 lastModifiedDate: rawEvent.lastModifiedDate,
                 title: rawEvent.title,
                 status: status,

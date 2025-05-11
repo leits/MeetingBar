@@ -284,7 +284,7 @@ class GCEventStore: NSObject, EventStore, @preconcurrency OIDExternalUserAgent {
             let recurrent = (item["recurringEventId"] != nil) ? true : false
 
             return MBEvent(
-                ID: eventID,
+                id: eventID,
                 lastModifiedDate: lastModifiedDate,
                 title: title,
                 status: status,

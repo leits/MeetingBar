@@ -258,7 +258,7 @@ func generateFakeEvent() -> MBEvent {
     let calendar = MBCalendar(title: "Fake calendar", ID: "fake_cal", source: nil, email: nil, color: .black)
 
     let event = MBEvent(
-        ID: "test_event",
+        id: "test_event",
         lastModifiedDate: nil,
         title: "Test event",
         status: .confirmed,

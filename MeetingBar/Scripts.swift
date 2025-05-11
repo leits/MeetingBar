@@ -34,7 +34,7 @@ enum ScriptType: String, Codable, CaseIterable {
  */
 func createAppleScriptParametersForEvent(event: MBEvent) -> NSAppleEventDescriptor {
     let parameters = NSAppleEventDescriptor.list()
-    parameters.insert(NSAppleEventDescriptor(string: event.ID), at: 0)
+    parameters.insert(NSAppleEventDescriptor(string: event.id), at: 0)
     parameters.insert(NSAppleEventDescriptor(string: event.title), at: 0)
     parameters.insert(NSAppleEventDescriptor(boolean: event.isAllDay), at: 0)
     parameters.insert(NSAppleEventDescriptor(date: event.startDate), at: 0)

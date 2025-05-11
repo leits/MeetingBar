@@ -275,7 +275,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
             ["EVENT", "SNOOZE_EVENT"].contains(
                 response.notification.request.content.categoryIdentifier),
             let eventID = response.notification.request.content.userInfo["eventID"] as? String,
-            let event = statusBarItem.events.first(where: { $0.ID == eventID })
+            let event = statusBarItem.events.first(where: { $0.id == eventID })
         else {
             return
         }

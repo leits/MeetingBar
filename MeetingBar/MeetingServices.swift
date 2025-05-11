@@ -98,7 +98,7 @@ enum MeetingServices: String, Codable, CaseIterable {
     }
 }
 
-struct MeetingLink: Equatable {
+public struct MeetingLink: Hashable, Equatable, Sendable {
     let service: MeetingServices?
     var url: URL
 }

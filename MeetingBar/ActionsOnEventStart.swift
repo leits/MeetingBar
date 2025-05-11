@@ -71,7 +71,7 @@ class ActionsOnEventStart: NSObject {
             if fullscreenNotificationActive && (nonAlldayCandidateForFullscreenNotification || allDayCandidate) {
                 var events = Defaults[.processedEventsForFullscreenNotification]
 
-                let matchedEvent = events.first { $0.id == nextEvent.ID }
+                let matchedEvent = events.first { $0.id == nextEvent.id }
 
                 // if a script was executed already for the event, but the start date is different,
                 // we will remove the the current event from the scheduled events, so that we can run the script again ->
@@ -83,9 +83,9 @@ class ActionsOnEventStart: NSObject {
 
                     // update the executed events
                     if matchedEvent != nil {
-                        events = events.filter { $0.id != nextEvent.ID }
+                        events = events.filter { $0.id != nextEvent.id }
                     }
-                    events.append(ProcessedEvent(id: nextEvent.ID, lastModifiedDate: nextEvent.lastModifiedDate, eventEndDate: nextEvent.endDate))
+                    events.append(ProcessedEvent(id: nextEvent.id, lastModifiedDate: nextEvent.lastModifiedDate, eventEndDate: nextEvent.endDate))
                     Defaults[.processedEventsForFullscreenNotification] = events
                 }
             }
@@ -101,7 +101,7 @@ class ActionsOnEventStart: NSObject {
             if autoJoinActionActive && (nonAlldayCandidateForAutoJoin || allDayCandidate) {
                 var events = Defaults[.processedEventsForAutoJoin]
 
-                let matchedEvent = events.first { $0.id == nextEvent.ID }
+                let matchedEvent = events.first { $0.id == nextEvent.id }
 
                 // if a script was executed already for the event, but the start date is different,
                 // we will remove the the current event from the scheduled events, so that we can run the script again ->
@@ -113,9 +113,9 @@ class ActionsOnEventStart: NSObject {
 
                     // update the executed events
                     if matchedEvent != nil {
-                        events = events.filter { $0.id != nextEvent.ID }
+                        events = events.filter { $0.id != nextEvent.id }
                     }
-                    events.append(ProcessedEvent(id: nextEvent.ID, lastModifiedDate: nextEvent.lastModifiedDate, eventEndDate: nextEvent.endDate))
+                    events.append(ProcessedEvent(id: nextEvent.id, lastModifiedDate: nextEvent.lastModifiedDate, eventEndDate: nextEvent.endDate))
                     Defaults[.processedEventsForAutoJoin] = events
                 }
             }
@@ -131,7 +131,7 @@ class ActionsOnEventStart: NSObject {
             if runEventStartScriptActionActive, nonAlldayCandidateForRunStartEventScript || allDayCandidate {
                 var events = Defaults[.processedEventsForRunScriptOnEventStart]
 
-                let matchedEvent = events.first { $0.id == nextEvent.ID }
+                let matchedEvent = events.first { $0.id == nextEvent.id }
 
                 // if a script was executed already for the event, but the start date is different,
                 // we will remove the the current event from the scheduled events,
@@ -142,9 +142,9 @@ class ActionsOnEventStart: NSObject {
 
                     // update the executed events
                     if matchedEvent != nil {
-                        events = events.filter { $0.id != nextEvent.ID }
+                        events = events.filter { $0.id != nextEvent.id }
                     }
-                    events.append(ProcessedEvent(id: nextEvent.ID, lastModifiedDate: nextEvent.lastModifiedDate, eventEndDate: nextEvent.endDate))
+                    events.append(ProcessedEvent(id: nextEvent.id, lastModifiedDate: nextEvent.lastModifiedDate, eventEndDate: nextEvent.endDate))
                     Defaults[.processedEventsForRunScriptOnEventStart] = events
                 }
             }
