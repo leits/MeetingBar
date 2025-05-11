@@ -126,8 +126,8 @@ public class MBEvent: @unchecked Sendable {
         for linkField in linkFields {
             if var detectedLink = detectMeetingLink(linkField) {
                 if detectedLink.service == .meet,
-                   let account = calendar.email,
-                   let urlEncodedAccount = account.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
+                   let authAccount = calendar.email ?? attendees.first(where: { $0.isCurrentUser })?.email,
+                   let urlEncodedAccount = authAccount.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
                     detectedLink.url = URL(string: (detectedLink.url.absoluteString) + "?authuser=\(urlEncodedAccount)")!
                 }
                 meetingLink = detectedLink
