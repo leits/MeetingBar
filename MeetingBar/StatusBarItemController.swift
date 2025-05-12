@@ -87,7 +87,7 @@ final class StatusBarItemController {
             dateTo = Calendar.current.date(byAdding: .day, value: 2, to: dateFrom)!
         }
 
-        let selectedCalendars = calendars.filter( { Defaults[.selectedCalendarIDs].contains($0.ID) })
+        let selectedCalendars = calendars.filter( { Defaults[.selectedCalendarIDs].contains($0.id) })
 
         let raw = try! await appdelegate.eventStore.fetchEventsForDateRange(for: selectedCalendars,
                          from: dateFrom,

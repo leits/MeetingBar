@@ -98,7 +98,7 @@ class GCEventStore: NSObject, EventStore, @preconcurrency OIDExternalUserAgent {
             let calendarID = item["id"] as? String ?? ""
             let backgroundColor = item["backgroundColor"] as? String ?? ""
 
-            return MBCalendar(title: title, ID: calendarID, source: auth.userEmail, email: auth.userEmail, color: hexStringToUIColor(hex: backgroundColor))
+            return MBCalendar(title: title, id: calendarID, source: auth.userEmail, email: auth.userEmail, color: hexStringToUIColor(hex: backgroundColor))
         }
     }
 
@@ -114,7 +114,7 @@ class GCEventStore: NSObject, EventStore, @preconcurrency OIDExternalUserAgent {
         let timeMax = iso.string(from: dateTo)
 
         let url = URL(string:
-          "https://www.googleapis.com/calendar/v3/calendars/\(calendar.ID)/events" +
+          "https://www.googleapis.com/calendar/v3/calendars/\(calendar.id)/events" +
           "?singleEvents=true&orderBy=startTime&timeMax=\(timeMax)&timeMin=\(timeMin)")!
 
         let items = try await fetchJSON(url, authorizedWith: auth)
