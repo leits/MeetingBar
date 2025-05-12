@@ -8,26 +8,18 @@
 
 import AppKit
 
-final public class MBCalendar: Hashable, Sendable {
+public struct MBCalendar: Hashable, Sendable {
     let title: String
-    let ID: String
+    let id: String
     let source: String
     let email: String?
     let color: NSColor
 
-    init(title: String, ID: String, source: String?, email: String?, color: NSColor) {
+    init(title: String, id: String, source: String?, email: String?, color: NSColor) {
         self.title = title
-        self.ID = ID
+        self.id = id
         self.source = source ?? "unknown"
         self.email = email
         self.color = color
-    }
-
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(ID)
-    }
-
-    public static func == (lhs: MBCalendar, rhs: MBCalendar) -> Bool {
-        lhs.ID == rhs.ID
     }
 }
