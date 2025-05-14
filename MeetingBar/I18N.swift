@@ -14,6 +14,16 @@ final class I18N {
     private var bundle = Bundle.main
     var locale = Locale.current
 
+    private let englishBundle: Bundle = {
+        guard
+            let path = Bundle.main.path(forResource: "en", ofType: "lproj"),
+            let b = Bundle(path: path)
+        else {
+            return Bundle.main
+        }
+        return b
+    }()
+
     private init() {}
 
     // MARK: - App language
@@ -47,7 +57,11 @@ final class I18N {
     // MARK: - Loco
 
     func localizedString(for key: String) -> String {
-        bundle.localizedString(forKey: key, value: "$\(key)$", table: nil)
+        let localized = bundle.localizedString(forKey: key, value: "$\(key)$", table: nil)
+        if localized == key {
+            return englishBundle.localizedString(forKey: key, value: key, table: nil)
+        }
+        return localized
     }
 
     func localizedString(for key: String, _ arg: CVarArg) -> String {
