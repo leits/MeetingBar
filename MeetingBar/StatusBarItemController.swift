@@ -7,7 +7,7 @@
 //
 
 import Cocoa
-import EventKit
+import Combine
 
 import Defaults
 import KeyboardShortcuts
@@ -27,6 +27,8 @@ final class StatusBarItemController {
 
     weak var appdelegate: AppDelegate!
 
+    private var cancellables = Set<AnyCancellable>()
+
     init() {
         statusItem = NSStatusBar.system.statusItem(
             withLength: NSStatusItem.variableLength
@@ -45,7 +47,74 @@ final class StatusBarItemController {
         let menuItem = statusItemMenu.addItem(withTitle: "window_title_onboarding".loco(), action: nil, keyEquivalent: "")
         menuItem.isEnabled = false
 
-        // Shortcuts
+        setupDefaultsObservers()
+        setupKeyboardShortcuts()
+    }
+
+    private func setupDefaultsObservers() {
+        // For all these keys, just redraw:
+        Defaults.publisher(
+            keys: .statusbarEventTitleLength, .eventTimeFormat,
+            .eventTitleIconFormat, .showEventMaxTimeUntilEventThreshold,
+            .showEventMaxTimeUntilEventEnabled, .showEventDetails,
+            .shortenEventTitle, .menuEventTitleLength,
+            .showEventEndTime, .showMeetingServiceIcon,
+            .timeFormat, .bookmarks, .eventTitleFormat,
+            .personalEventsAppereance, .pastEventsAppereance,
+            .declinedEventsAppereance
+        , options: [])
+          .receive(on: DispatchQueue.main)
+          .sink { [weak self] _ in
+            self?.updateTitle()
+            self?.updateMenu()
+          }
+          .store(in: &cancellables)
+
+        Defaults.publisher(.hideMeetingTitle, options: [])
+          .receive(on: DispatchQueue.main)
+          .sink { [weak self] _ in
+              self?.updateMenu()
+              self?.updateTitle()
+
+              // Reschedule next notification with updated event name visibility
+              removePendingNotificationRequests(withID: notificationIDs.event_starts)
+              removePendingNotificationRequests(withID: notificationIDs.event_ends)
+              if let nextEvent = self?.events.nextEvent() {
+                  Task {
+                      await scheduleEventNotification(nextEvent)
+                  }
+              }
+          }
+          .store(in: &cancellables)
+
+        Defaults.publisher(.preferredLanguage, options: [.initial])
+          .receive(on: DispatchQueue.main)
+          .sink { [weak self] change in
+              if I18N.instance.changeLanguage(to: change.newValue) {
+                  self?.updateMenu()
+                  self?.updateTitle()
+              }
+          }
+          .store(in: &cancellables)
+
+        Defaults.publisher(.joinEventNotification, options: [])
+          .receive(on: DispatchQueue.main)
+          .sink { [weak self] change in
+              if change.newValue == true {
+                  if let nextEvent = self?.events.nextEvent() {
+                      Task {
+                          await scheduleEventNotification(nextEvent)
+                      }
+                  }
+              } else {
+                  removePendingNotificationRequests(withID: notificationIDs.event_starts)
+              }
+
+          }
+          .store(in: &cancellables)
+    }
+
+    private func setupKeyboardShortcuts() {
         KeyboardShortcuts.onKeyUp(for: .createMeetingShortcut, action: createMeeting)
 
         KeyboardShortcuts.onKeyUp(for: .joinEventShortcut) {
@@ -736,8 +805,8 @@ final class StatusBarItemController {
         // MENU ITEM: QUICK ACTIONS: Refresh sources
         let refreshSourcesItem = NSMenuItem()
         refreshSourcesItem.title = "status_bar_section_refresh_sources".loco()
-        refreshSourcesItem.action = #selector(AppDelegate.handleManualRefresh)
-        refreshSourcesItem.target = appdelegate
+        refreshSourcesItem.action = #selector(handleManualRefresh)
+        refreshSourcesItem.target = self
         refreshSourcesItem.keyEquivalent = ""
         quickActionsItem.submenu!.addItem(refreshSourcesItem)
     }
@@ -904,6 +973,12 @@ final class StatusBarItemController {
             let url = URL(string: "ical://ekevent/\(identifier)")!
             url.openInDefaultBrowser()
         }
+    }
+
+    @objc private func handleManualRefresh() {
+      Task {
+          do { try await self.appdelegate.eventManager.refreshSources() } catch { NSLog("Refresh failed: \(error)") }
+      }
     }
 
     @objc
