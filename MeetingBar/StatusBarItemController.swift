@@ -20,7 +20,6 @@ final class StatusBarItemController {
     var statusItem: NSStatusItem!
     var statusItemMenu: NSMenu!
 
-    var calendars: [MBCalendar] = []
     var events: [MBEvent] = []
 
     lazy var isFantasticalInstalled = checkIsFantasticalInstalled()
@@ -70,53 +69,13 @@ final class StatusBarItemController {
         self.appdelegate = appdelegate
     }
 
-    @MainActor func loadCalendars() async {
-        let calendars = try! await appdelegate.eventStore.fetchAllCalendars()
-        self.calendars = calendars
-        await loadEvents()
-    }
-
-    @MainActor func loadEvents() async {
-        let dateFrom = Calendar.current.startOfDay(for: Date())
-        var dateTo: Date
-
-        switch Defaults[.showEventsForPeriod] {
-        case .today:
-            dateTo = Calendar.current.date(byAdding: .day, value: 1, to: dateFrom)!
-        case .today_n_tomorrow:
-            dateTo = Calendar.current.date(byAdding: .day, value: 2, to: dateFrom)!
-        }
-
-        let selectedCalendars = calendars.filter( { Defaults[.selectedCalendarIDs].contains($0.id) })
-
-        let raw = try! await appdelegate.eventStore.fetchEventsForDateRange(for: selectedCalendars,
-                         from: dateFrom,
-                         to: dateTo)
-
-        events = filterEvents(raw).sorted { $0.startDate < $1.startDate }
-
-        // Update dismissed events in case the event end date has changed.
-        if !Defaults[.dismissedEvents].isEmpty {
-            var dismissedEvents: [ProcessedEvent] = []
-            for dismissedEvent in Defaults[.dismissedEvents] {
-                if let event = self.events.first(where: { $0.id == dismissedEvent.id }), event.endDate.timeIntervalSinceNow > 0 {
-                    dismissedEvents.append(ProcessedEvent(id: event.id, eventEndDate: event.endDate))
-                }
-            }
-            Defaults[.dismissedEvents] = dismissedEvents
-        }
-
-        updateTitle()
-        updateMenu()
-    }
-
     func updateTitle() {
         var title = "MeetingBar"
         var time = ""
         var nextEvent: MBEvent!
         let nextEventState: NextEventState
         if Defaults[.selectedCalendarIDs].isEmpty == false {
-            nextEvent = getNextEvent(events: events)
+            nextEvent = events.nextEvent()
             nextEventState = {
                 guard let nextEvent = nextEvent else {
                     return .none
@@ -670,11 +629,7 @@ final class StatusBarItemController {
 
     func createJoinSection() {
         // MENU ITEM: Join the meeting
-        var nextEvent: MBEvent?
-        if Defaults[.selectedCalendarIDs].isEmpty == false {
-            nextEvent = getNextEvent(events: events)
-        }
-
+        let nextEvent = events.nextEvent()
         let now = Date()
 
         if let nextEvent = nextEvent {
@@ -764,8 +719,8 @@ final class StatusBarItemController {
         // MENU ITEM: QUICK ACTIONS: Refresh sources
         let refreshSourcesItem = NSMenuItem()
         refreshSourcesItem.title = "status_bar_section_refresh_sources".loco()
-        refreshSourcesItem.action = #selector(refreshSources)
-        refreshSourcesItem.target = self
+        refreshSourcesItem.action = #selector(AppDelegate.handleManualRefresh)
+        refreshSourcesItem.target = appdelegate
         refreshSourcesItem.keyEquivalent = ""
         quickActionsItem.submenu!.addItem(refreshSourcesItem)
     }
@@ -869,7 +824,7 @@ final class StatusBarItemController {
 
     @objc
     func joinNextMeeting() {
-        if let nextEvent = getNextEvent(events: events) {
+        if let nextEvent = events.nextEvent() {
             nextEvent.openMeeting()
         } else {
             sendNotification("next_meeting_empty_title".loco(), "next_meeting_empty_message".loco())
@@ -878,7 +833,7 @@ final class StatusBarItemController {
 
     @objc
     func dismissNextMeetingAction() {
-        if let nextEvent = getNextEvent(events: events) {
+        if let nextEvent = events.nextEvent() {
             let dismissedEvent = ProcessedEvent(id: nextEvent.id, lastModifiedDate: nextEvent.lastModifiedDate, eventEndDate: nextEvent.endDate)
             Defaults[.dismissedEvents].append(dismissedEvent)
             sendNotification("notification_next_meeting_dismissed_title".loco(nextEvent.title), "notification_next_meeting_dismissed_message".loco())
@@ -905,14 +860,6 @@ final class StatusBarItemController {
     @objc
     func toggleMeetingTitleVisibility() {
         Defaults[.hideMeetingTitle].toggle()
-    }
-
-    @MainActor @objc
-    func refreshSources() {
-        Task {
-            await appdelegate.eventStore.refreshSources()
-            await loadCalendars()
-        }
     }
 
     @objc

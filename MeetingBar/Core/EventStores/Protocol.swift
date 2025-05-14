@@ -9,7 +9,7 @@
 import AppKit
 import Defaults
 
-enum EventStoreProvider: String, Defaults.Serializable, Codable {
+public enum EventStoreProvider: String, Defaults.Serializable, Codable {
     case macOSEventKit = "MacOS Calendar App"
     case googleCalendar = "Google Calendar API"
 }

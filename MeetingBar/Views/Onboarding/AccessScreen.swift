@@ -34,7 +34,7 @@ struct AccessScreen: View {
                         }
                         Spacer()
                         VStack {
-                            Button(action: { requestAccess(provider: .macOSEventKit) }) {
+                            Button(action: { Task { await requestAccess(provider: .macOSEventKit)}}) {
                                 Text("Use macOS Calendar").font(.headline)
                             }
                         }.frame(width: 200, height: 50)
@@ -48,7 +48,7 @@ struct AccessScreen: View {
                         }
                         Spacer()
                         VStack {
-                            Button(action: { requestAccess(provider: .googleCalendar) }, label: {
+                            Button(action: { Task { await requestAccess(provider: .googleCalendar)}}, label: {
                                 Image("googleSignInButton").resizable().aspectRatio(contentMode: .fit).frame(width: 150)
                             }).buttonStyle(PlainButtonStyle())
                         }.frame(width: 200, height: 50)
@@ -60,7 +60,7 @@ struct AccessScreen: View {
                     VStack(spacing: 20) {
                         Text("access_screen_provider_gcalendar_sign_in_title".loco()).bold()
                         Text("access_screen_provider_gcalendar_sign_in_description".loco())
-                        Button("access_screen_try_again".loco()) { requestAccess(provider: .googleCalendar) }
+                        Button("access_screen_try_again".loco()) { Task { await requestAccess(provider: .googleCalendar)} }
                     }
                 } else {
                     if !requestFailed {
@@ -83,19 +83,17 @@ struct AccessScreen: View {
         }.padding()
     }
 
-    func requestAccess(provider: EventStoreProvider) {
+    func requestAccess(provider: EventStoreProvider) async {
         providerSelected = true
 
         Defaults[.eventStoreProvider] = provider
         if let app = NSApplication.shared.delegate as! AppDelegate? {
-            app.setEventStoreProvider(provider: provider)
+            await app.eventManager.setEventStoreProvider(Defaults[.eventStoreProvider])
             Task {
                 do {
-                    try await app.eventStore.signIn()
+                    try await app.eventManager.provider.signIn()
                     Defaults[.onboardingCompleted] = true
                     app.setup()
-                    await app.statusBarItem.loadCalendars()
-
                     self.viewRouter.currentScreen = .calendars
 
                 } catch {

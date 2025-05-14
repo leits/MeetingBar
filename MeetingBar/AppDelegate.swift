@@ -13,19 +13,21 @@ import KeyboardShortcuts
 import ServiceManagement
 import SwiftUI
 import UserNotifications
+import Combine
 
 @MainActor
 @main
 class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotificationCenterDelegate {
     var statusBarItem: StatusBarItemController!
-    var eventStore: EventStore!
+    var eventManager: EventManager!
 
     var screenIsLocked: Bool = false
 
     weak var preferencesWindow: NSWindow!
     private var defaultsWatchers = [Task<Void, Never>]()
-    private var fetchEventsTask: Task<Void, Never>?
     private var statusLoopTask: Task<Void, Never>?
+
+    private var eventCancellable: AnyCancellable?
 
     func applicationDidFinishLaunching(_: Notification) {
         // AppStore sync
@@ -46,8 +48,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
         statusBarItem = StatusBarItemController()
 
         if Defaults[.onboardingCompleted] {
-            setEventStoreProvider(provider: Defaults[.eventStoreProvider])
-            setup()
+            Task {
+                eventManager = await EventManager()
+                setup()
+
+            }
         } else {
             openOnboardingWindow()
         }
@@ -56,20 +61,33 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
     func setup() {
         statusBarItem.setAppDelegate(appdelegate: self)
 
+        NSAppleEventManager.shared().setEventHandler(
+            self,
+            andSelector: #selector(AppDelegate.handleURLEvent(getURLEvent:replyEvent:)),
+            forEventClass: AEEventClass(kInternetEventClass),
+            andEventID: AEEventID(kAEGetURL)
+        )
+
         UNUserNotificationCenter.current().delegate = self
         Task { @MainActor in
           await ensureNotificationAuthorization()
           registerNotificationCategories()
         }
 
-        Task {
-            do {
-                try await eventStore.signIn()
-                await statusBarItem.loadCalendars()
-            } catch {
-                NSLog("Event-store sign-in failed: \(error)")
+        eventCancellable = eventManager.$events
+          .receive(on: DispatchQueue.main)          // ensure UI work on main thread
+          .sink { [weak self] events in
+            guard let self = self else { return }
+            // 1) update your model
+            self.statusBarItem.events = events
+            // 2) redraw
+            self.statusBarItem.updateTitle()
+            self.statusBarItem.updateMenu()
+            // 3) schedule next notification
+            if let next = events.nextEvent() {
+              Task { await scheduleEventNotification(next) }
             }
-        }
+          }
 
         startAsyncLoops()
         // ActionsOnEventStart
@@ -141,32 +159,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
                 // Reschedule next notification with updated event name visibility
                 removePendingNotificationRequests(withID: notificationIDs.event_starts)
                 removePendingNotificationRequests(withID: notificationIDs.event_ends)
-                if let nextEvent = getNextEvent(events: self.statusBarItem.events) {
+                if let nextEvent = self.statusBarItem.events.nextEvent() {
                     Task {
                         await scheduleEventNotification(nextEvent)
                     }
                 }
-            }
-        })
-
-        defaultsWatchers.append(
-        Task {
-            for await _ in Defaults.updates(
-                [
-                    .showEventsForPeriod, .customRegexes,
-                    .declinedEventsAppereance, .showPendingEvents,
-                    .showTentativeEvents,
-                    .allDayEvents, .nonAllDayEvents
-                ], initial: false
-            ) {
-                await self.statusBarItem.loadEvents()
-            }
-        })
-
-        defaultsWatchers.append(
-        Task {
-            for await _ in Defaults.updates(.selectedCalendarIDs, initial: false) {
-                await self.statusBarItem.loadCalendars()
             }
         })
 
@@ -183,7 +180,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
         Task {
             for await value in Defaults.updates(.joinEventNotification, initial: false) {
                 if value == true {
-                    if let nextEvent = getNextEvent(events: self.statusBarItem.events) {
+                    if let nextEvent = self.statusBarItem.events.nextEvent() {
                         Task {
                             await scheduleEventNotification(nextEvent)
                         }
@@ -195,54 +192,29 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
         })
     }
 
-    func setEventStoreProvider(provider: EventStoreProvider) {
-        Defaults[.eventStoreProvider] = provider
-        switch provider {
-        case .macOSEventKit:
-            eventStore = EKEventStore.shared
-
-            NotificationCenter.default.addObserver(
-                self, selector: #selector(AppDelegate.eventStoreChanged),
-                name: .EKEventStoreChanged, object: EKEventStore.shared
-            )
-            NSAppleEventManager.shared().removeEventHandler(
-                forEventClass: AEEventClass(kInternetEventClass), andEventID: AEEventID(kAEGetURL)
-            )
-        case .googleCalendar:
-            eventStore = GCEventStore.shared
-
-            NotificationCenter.default.removeObserver(
-                self, name: .EKEventStoreChanged, object: EKEventStore.shared
-            )
-            NSAppleEventManager.shared().setEventHandler(
-                self,
-                andSelector: #selector(handleURLEvent(getURLEvent:replyEvent:)),
-                forEventClass: AEEventClass(kInternetEventClass),
-                andEventID: AEEventID(kAEGetURL)
-            )
-        }
-    }
-
     /*
      * -----------------------
      * MARK: - Scheduled tasks
      * ------------------------
      */
-
-    // ---------------------------------
     private func startAsyncLoops() {
-        // 3-minute event-fetch loop
-        fetchEventsTask = Task.detached(priority: .background) { [weak self] in
-            while let self, !Task.isCancelled {
-                try? await Task.sleep(nanoseconds: 180 * UInt64(NSEC_PER_SEC))
-                await MainActor.run { self.fetchEvents() }
-            }
-        }
-
-        // 5-second title/menu refresh loop
+        // Redraw status bar item on hh:mm:00
         statusLoopTask = Task.detached(priority: .utility) { [weak self] in
             while let self, !Task.isCancelled {
-                try? await Task.sleep(nanoseconds: 5 * UInt64(NSEC_PER_SEC))
+                // Compute now & next minute boundary
+                let now = Date()
+                let calendar = Calendar.current
+                let nextMinute = calendar.nextDate(
+                    after: now,
+                    matching: DateComponents(second: 0),
+                    matchingPolicy: .nextTime
+                )!
+
+                // Sleep until that boundary
+                let interval = nextMinute.timeIntervalSince(now)
+                try? await Task.sleep(nanoseconds: UInt64(interval * Double(NSEC_PER_SEC)))
+
+                // Once we hit hh:mm:00, redraw
                 await MainActor.run { self.updateStatusBarItem() }
             }
         }
@@ -379,7 +351,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
 
     @objc
     func openPreferencesWindow(_: NSStatusBarButton?) {
-        let contentView = PreferencesView()
+        let contentView = PreferencesView().environmentObject(eventManager)
 
         if let preferencesWindow {
             // if a window is already open, focus on it instead of opening another one.
@@ -456,24 +428,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
     }
 
     @objc
-    func eventStoreChanged(_: NSNotification) {
-        if statusBarItem == nil {
-            return
+    func handleManualRefresh() {
+      Task {
+        do {
+          try await eventManager.refreshSources()
+        } catch {
+            NSLog("Refresh Failed: \(error)")
         }
-        Task {
-            await self.statusBarItem.loadEvents()
-        }
-    }
-
-    @objc
-    private func fetchEvents() {
-        Task {
-            if self.statusBarItem.calendars.isEmpty, !Defaults[.selectedCalendarIDs].isEmpty {
-                await self.statusBarItem.loadCalendars()
-            } else {
-                await self.statusBarItem.loadEvents()
-            }
-        }
+      }
     }
 
     @objc
@@ -485,14 +447,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
     @objc
     func quit(_: NSStatusBarButton) {
         defaultsWatchers.forEach { $0.cancel() }
-        fetchEventsTask?.cancel()
         statusLoopTask?.cancel()
         NSApplication.shared.terminate(self)
     }
 
     func applicationWillTerminate(_ notification: Notification) {
         defaultsWatchers.forEach { $0.cancel() }
-        fetchEventsTask?.cancel()
         statusLoopTask?.cancel()
     }
 }

@@ -68,7 +68,19 @@ public extension Array where Element == MBEvent {
                     continue // Skip this event
                 }
             }
+
+            // Filter declined events
+            switch Defaults[.declinedEventsAppereance] {
+            case .show_inactive, .strikethrough:
+                break
+            case .hide:
+                if event.participationStatus == .declined {
+                    continue // Skip this event
+                }
+            }
+
             result.append(event)
+
         }
         return result
     }

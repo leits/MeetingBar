@@ -12,119 +12,94 @@ import SwiftUI
 import Defaults
 
 struct CalendarsTab: View {
-    @State var calendarsBySource: [String: [MBCalendar]] = [:]
-    @State var showingAddAcountModal = false
-
-    weak var appDelegate = NSApplication.shared.delegate as! AppDelegate?
-
-    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-
-    @Default(.selectedCalendarIDs) var selectedCalendarIDs
-    @Default(.eventStoreProvider) var eventStoreProvider
+    @ObservedObject var eventManager: EventManager
 
     var body: some View {
         VStack(alignment: .leading) {
-            HStack {
-                Text("preferences_calendars_select_calendars_title".loco())
-                Spacer()
-            }
-            VStack(spacing: 15) {
-                List {
-                    ForEach(Array(self.calendarsBySource.keys), id: \.self) { source in
-                        Section(header: Text(source)) {
-                            ForEach(self.calendarsBySource[source]!, id: \.ID) { calendar in
-                                CalendarRow(calendar: calendar)
-                            }
-                        }
+            Text("preferences_calendars_select_calendars_title".loco())
+                .font(.headline)
+                .padding(.bottom, 8)
+            ProviderPicker(eventManager: eventManager)
+            List {
+                if eventManager.calendars.isEmpty {
+                    if Defaults[.eventStoreProvider] == .macOSEventKit {
+                        AccessDeniedBanner()
+                    } else {
+                        ProgressView("Loading calendars…").frame(maxWidth: .infinity, alignment: .center)
+                    }
+                    Button("Refresh") {
+                        Task { try await eventManager.refreshSources()}
                     }
 
-                    if eventStoreProvider == .macOSEventKit, calendarsBySource.isEmpty {
-                        HStack {
-                            Text("access_screen_access_screen_access_denied_go_to_title".loco())
-                            Button("access_screen_access_denied_system_preferences_button".loco()) { NSWorkspace.shared.open(Links.calendarPreferences) }
-                            Text("access_screen_access_denied_checkbox_title".loco())
-                        }
-                        Text("access_screen_access_denied_relaunch_title".loco())
-                    }
-                }.listStyle(SidebarListStyle())
-            }
-            Divider()
-
-            VStack(alignment: .leading) {
-                HStack {
-                    Text("preferences_calendars_provider_section_title".loco()).font(.headline).bold()
-                }
-                HStack {
-                    if eventStoreProvider == .googleCalendar {
-                        Text("Google Calendar API")
-                        Button("preferences_calendars_provider_gcalendar_change_account".loco()) {
-                            Task {
-                                await appDelegate!.eventStore.signOut()
-                                changeEventStoreProvider(.googleCalendar)
-                            }
-                        }
-                        Spacer()
-
-                        Button("preferences_calendars_provider_macos_switch".loco()) { changeEventStoreProvider(.macOSEventKit) }
-                    } else if eventStoreProvider == .macOSEventKit {
-                        Text("access_screen_provider_macos_title".loco())
-                        Button("preferences_calendars_add_account_button".loco()) { self.showingAddAcountModal.toggle() }
-                            .sheet(isPresented: $showingAddAcountModal) {
-                                AddAccountModal()
-                            }
-                        Spacer()
-                        Button("preferences_calendars_provider_gcalendar_switch".loco()) { changeEventStoreProvider(.googleCalendar) }
-                    }
-                }.padding(.horizontal, 10)
-            }
-        }.padding()
-            .onAppear {
-                Task {
-                    await appDelegate!.statusBarItem.loadCalendars()
+                } else {
+                    CalendarSectionsView(calendars: eventManager.calendars)
                 }
             }
-            .onReceive(timer) { _ in loadCalendarList() }
-            .onDisappear { timer.upstream.connect().cancel() }
-    }
-
-    func changeEventStoreProvider(_ provider: EventStoreProvider) {
-        selectedCalendarIDs = []
-        appDelegate!.statusBarItem.calendars = []
-        appDelegate!.statusBarItem.events = []
-
-        appDelegate!.setEventStoreProvider(provider: provider)
-
-        Task {
-            do {
-                try await appDelegate!.eventStore.signIn()
-                await appDelegate!.statusBarItem.loadCalendars()
-            }
+            .listStyle(SidebarListStyle())
         }
-    }
-
-    func loadCalendarList() {
-        calendarsBySource = Dictionary(grouping: appDelegate!.statusBarItem.calendars) { $0.source }
+        .padding()
     }
 }
 
-struct AddAccountModal: View {
-    @Environment(\.presentationMode) var presentationMode
+struct CalendarSectionsView: View {
+    let calendars: [MBCalendar]
+
+    // 1. Compute once, with explicit types
+    private var grouped: [String: [MBCalendar]] {
+        Dictionary(grouping: calendars, by: \.source)
+    }
+    private var sources: [String] {
+        grouped.keys.sorted()
+    }
 
     var body: some View {
-        VStack {
-            Spacer()
-            VStack(alignment: .leading) {
-                Text("preferences_calendars_add_account_modal".loco())
-            }
-            Spacer()
-            HStack {
-                Button(action: {
-                    self.presentationMode.wrappedValue.dismiss()
-                }) {
-                    Text("general_close".loco())
+        ForEach(sources, id: \.self) { source in
+            Section(header: Text(source)) {
+                ForEach(grouped[source]!, id: \.id) { cal in
+                    CalendarRow(calendar: cal)
                 }
             }
-        }.padding().frame(width: 400, height: 200)
+        }
+    }
+}
+
+struct ProviderPicker: View {
+    @ObservedObject var eventManager: EventManager
+    @State private var picker: EventStoreProvider = Defaults[.eventStoreProvider]
+
+    var body: some View {
+        HStack {
+            Picker("", selection: $picker) {
+                Text("access_screen_provider_macos_title".loco()).tag(EventStoreProvider.macOSEventKit)
+                Text("Google Calendar API").tag(EventStoreProvider.googleCalendar)
+            }
+            .onChange(of: picker) { provider in
+                Task { await eventManager.setEventStoreProvider(provider) }
+            }
+
+            if Defaults[.eventStoreProvider] == .googleCalendar {
+                Button("preferences_calendars_provider_gcalendar_change_account".loco()) {
+                    Task {
+                        await eventManager.provider.signOut()
+                        await eventManager.setEventStoreProvider(.googleCalendar)
+                    }
+                }
+
+            }
+        }
+    }
+}
+
+struct AccessDeniedBanner: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("access_screen_access_denied_go_to_title".loco())
+            Button("access_screen_access_denied_system_preferences_button".loco()) {
+                NSWorkspace.shared.open(Links.calendarPreferences)
+            }
+            Text("access_screen_access_denied_relaunch_title".loco())
+        }
+        .padding(.top, 8)
     }
 }
 
@@ -134,7 +109,7 @@ struct CalendarRow: View {
 
     init(calendar: MBCalendar) {
         self.calendar = calendar
-        isSelected = Defaults[.selectedCalendarIDs].contains(calendar.ID)
+        isSelected = Defaults[.selectedCalendarIDs].contains(calendar.id)
     }
 
     var body: some View {
@@ -146,13 +121,13 @@ struct CalendarRow: View {
             }
         }
         .onAppear {
-            isSelected = Defaults[.selectedCalendarIDs].contains(calendar.ID)
+            isSelected = Defaults[.selectedCalendarIDs].contains(calendar.id)
         }
-        .onReceive([isSelected].publisher.first()) { newValue in
+        .onChange(of: isSelected) { newValue in
             if newValue {
-                Defaults[.selectedCalendarIDs].append(calendar.ID)
+                Defaults[.selectedCalendarIDs].append(calendar.id)
             } else {
-                Defaults[.selectedCalendarIDs].removeAll { $0 == calendar.ID }
+                Defaults[.selectedCalendarIDs].removeAll { $0 == calendar.id }
             }
             Defaults[.selectedCalendarIDs] = Array(Set(Defaults[.selectedCalendarIDs])) // Deduplication
         }

@@ -255,7 +255,7 @@ func openLinkFromClipboard() {
 }
 
 func generateFakeEvent() -> MBEvent {
-    let calendar = MBCalendar(title: "Fake calendar", ID: "fake_cal", source: nil, email: nil, color: .black)
+    let calendar = MBCalendar(title: "Fake calendar", id: "fake_cal", source: nil, email: nil, color: .black)
 
     let event = MBEvent(
         id: "test_event",
