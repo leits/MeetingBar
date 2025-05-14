@@ -6,21 +6,84 @@
 //  Copyright © 2025 Andrii Leitsius. All rights reserved.
 //
 import XCTest
-import Defaults
+import Combine
 @testable import MeetingBar
 
+@MainActor
 class EventManagerTests: XCTestCase {
-    func test_stream_emitsFilteredAndSortedEvents() async throws {
-        let ev1 = makeFakeEvent(id: "e1", start: Date().addingTimeInterval(300), end: Date().addingTimeInterval(400))
-        let ev2 = makeFakeEvent(id: "e1", start: Date().addingTimeInterval(100), end: Date().addingTimeInterval(200))
-        let calendars = [ev1.calendar, ev2.calendar]
-        let fake = await FakeEventStore(calendars: calendars, events: [ev1, ev2])
+  private var cancellables = Set<AnyCancellable>()
 
-        let manager = EventManager(provider: fake)
+  func testInjectedStorePublishesCalendarsAndEvents() {
+    // 1) Prepare fakes
+    let fakeCal = MBCalendar(title: "Cal A", id: "calA", source: nil, email: nil, color: .black)
+    let fakeEvt = makeFakeEvent(
+      id: "E1",
+      start: Date().addingTimeInterval(60),
+      end: Date().addingTimeInterval(3600)
+    )
+    let fakeStore = FakeEventStore(
+      calendars: [fakeCal],
+      events: [fakeEvt]
+    )
 
-        try await manager.loadCalendars()
-        let firstBatch = await manager.stream().first(where: { _ in true })
+    // 2) Create manager with test initializer
+    let manager = EventManager(
+      provider: fakeStore,
+      refreshInterval: 0.05
+    )
 
-        XCTAssertEqual(firstBatch, [ev2, ev1])  // sorted by startDate
-    }
+    // 3) Observe first non-empty values of calendars & events
+    let calExpectation = expectation(description: "calendars published")
+    manager.$calendars
+      .drop(while: \.isEmpty)
+      .first()
+      .sink { cals in
+        XCTAssertEqual(cals, [fakeCal])
+        calExpectation.fulfill()
+      }
+      .store(in: &cancellables)
+
+    let evtExpectation = expectation(description: "events published")
+    manager.$events
+      .drop(while: \.isEmpty)
+      .first()
+      .sink { evts in
+        XCTAssertEqual(evts, [fakeEvt])
+        evtExpectation.fulfill()
+      }
+      .store(in: &cancellables)
+
+    // 4) Wait
+    wait(for: [calExpectation, evtExpectation], timeout: 1.0)
+  }
+
+  func testManualRefreshAfterSwappingStore() async {
+    // 1) Start with one store…
+    let initialStore = FakeEventStore(calendars: [], events: [])
+    let manager = EventManager(provider: initialStore, refreshInterval: 0.05)
+
+    // …then swap in a richer store
+    let newCal = MBCalendar(title: "New", id: "newCal", source: nil, email: nil, color: .black)
+    let newEvt = makeFakeEvent(id: "X", start: Date(), end: Date().addingTimeInterval(600))
+    let newStore = FakeEventStore(calendars: [newCal], events: [newEvt])
+
+    manager.provider = newStore   // inject…
+     try! await manager.refreshSources() // …and manually trigger
+
+    let expCal = expectation(description: "got swapped calendars")
+    manager.$calendars
+      .drop(while: \.isEmpty)
+      .first()
+      .sink { XCTAssertEqual($0, [newCal]); expCal.fulfill() }
+      .store(in: &cancellables)
+
+    let expEvt = expectation(description: "got swapped events")
+    manager.$events
+      .drop(while: \.isEmpty)
+      .first()
+      .sink { XCTAssertEqual($0, [newEvt]); expEvt.fulfill() }
+      .store(in: &cancellables)
+
+      await fulfillment(of: [expCal, expEvt], timeout: 1.0)
+  }
 }
