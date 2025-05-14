@@ -144,11 +144,16 @@ public class EventManager: ObservableObject {
         ).map { _ in () }.eraseToAnyPublisher()
 
         // B) Periodic timer trigger
-        let timerPub = Timer
-          .publish(every: refreshInterval, on: .main, in: .common)
-          .autoconnect()
-          .map { _ in () }
-          .eraseToAnyPublisher()
+        let timerPub: AnyPublisher<Void, Never>
+          if refreshInterval > 0 {
+            timerPub = Timer
+              .publish(every: refreshInterval, on: .main, in: .common)
+              .autoconnect()
+              .map { _ in () }
+              .eraseToAnyPublisher()
+          } else {
+            timerPub = Empty().eraseToAnyPublisher()
+          }
 
         // C) Manual trigger
         let manualPub = refreshSubject.eraseToAnyPublisher()
@@ -186,4 +191,17 @@ public class EventManager: ObservableObject {
           }
           .store(in: &cancellables)
     }
+
+    #if DEBUG
+    /// Test-only initializer: inject your own store and skip
+    /// the async system-store configuration.
+    public init(provider: EventStore,
+                refreshInterval: TimeInterval = 0) {
+        self.refreshInterval = refreshInterval
+        self.provider = provider
+        // no storeChangeCancellable for real notifications
+        setupPublishers()
+        refreshSubject.send()
+    }
+    #endif
 }
