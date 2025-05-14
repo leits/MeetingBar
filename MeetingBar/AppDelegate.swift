@@ -106,23 +106,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
             name: .init("com.apple.screenIsUnlocked"), object: nil
         )
 
-        // Shortcuts
-        KeyboardShortcuts.onKeyUp(for: .createMeetingShortcut, action: createMeeting)
-
-        KeyboardShortcuts.onKeyUp(for: .joinEventShortcut) {
-            Task { @MainActor in self.statusBarItem.joinNextMeeting()}
-        }
-
-        KeyboardShortcuts.onKeyUp(for: .openMenuShortcut) {
-            Task { @MainActor in self.statusBarItem.openMenu()}
-        }
-
-        KeyboardShortcuts.onKeyUp(for: .openClipboardShortcut, action: openLinkFromClipboard)
-
-        KeyboardShortcuts.onKeyUp(for: .toggleMeetingTitleVisibilityShortcut) {
-            Defaults[.hideMeetingTitle].toggle()
-        }
-
         // Settings change observers
         defaultsWatchers.append(
         Task {
