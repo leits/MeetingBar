@@ -168,38 +168,6 @@ func getInstallationDate() -> Date? {
     return try? FileManager.default.attributesOfItem(atPath: (urlToDocumentsFolder?.path)!)[.creationDate] as? Date
 }
 
-func maintainDefaultsBackwardCompatibility() {
-    if UserDefaults.standard.object(forKey: "useAppForZoomLinks") != nil {
-        if UserDefaults.standard.bool(forKey: "useAppForZoomLinks") {
-            Defaults[.zoomBrowser] = zoomAppBrowser
-        }
-        UserDefaults.standard.removeObject(forKey: "useAppForZoomLinks")
-    }
-
-    if UserDefaults.standard.object(forKey: "useAppForTeamsLinks") != nil {
-        if UserDefaults.standard.bool(forKey: "useAppForTeamsLinks") {
-            Defaults[.teamsBrowser] = teamsAppBrowser
-        }
-        UserDefaults.standard.removeObject(forKey: "useAppForTeamsLinks")
-    }
-
-    if UserDefaults.standard.object(forKey: "useAppForJitsiLinks") != nil {
-        if UserDefaults.standard.bool(forKey: "useAppForJitsiLinks") {
-            Defaults[.jitsiBrowser] = jitsiAppBrowser
-        }
-        UserDefaults.standard.removeObject(forKey: "useAppForJitsiLinks")
-    }
-
-    Defaults.migrate(.selectedCalendarIDs, to: .v5)
-    Defaults.migrate(.processedEventsForAutoJoin, to: .v5)
-    Defaults.migrate(.dismissedEvents, to: .v5)
-    Defaults.migrate(.bookmarks, to: .v5)
-    Defaults.migrate(.browsers, to: .v5)
-    Defaults.migrate(.processedEventsForRunScriptOnEventStart, to: .v5)
-    Defaults.migrate(.customRegexes, to: .v5)
-    Defaults.migrate(.filterEventRegexes, to: .v5)
-}
-
 /*
  * -----------------------
  * MARK: - Fantastical

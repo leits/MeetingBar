@@ -95,10 +95,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
             addInstalledBrowser()
         }
 
-        // Backward compatibility for user defaults changes
-        maintainDefaultsBackwardCompatibility()
-        //
-
         // Handle sleep and wake up events
         let dnc = DistributedNotificationCenter.default()
         dnc.addObserver(
