@@ -35,7 +35,7 @@ struct CalendarsTab: View {
                     CalendarSectionsView(calendars: eventManager.calendars)
                 }
             }
-            .listStyle(SidebarListStyle())
+            .listStyle(.sidebar)
         }
         .padding()
     }
@@ -132,4 +132,12 @@ struct CalendarRow: View {
             Defaults[.selectedCalendarIDs] = Array(Set(Defaults[.selectedCalendarIDs])) // Deduplication
         }
     }
+}
+#Preview {
+    List {
+        CalendarSectionsView(calendars: [MBCalendar(title: "Calendar #1", id: "1", source: "Source #1", email: nil, color: .brown)])
+
+            CalendarSectionsView(calendars: [MBCalendar(title: "Calendar #2", id: "2", source: "Source #2", email: nil, color: .blue)])
+    }.listStyle(.sidebar)
+    .frame(width: 300, height: 200)
 }

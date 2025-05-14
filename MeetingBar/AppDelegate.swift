@@ -6,11 +6,8 @@
 //  Copyright © 2020 Andrii Leitsius. All rights reserved.
 //
 
-import Cocoa
 import Defaults
-import EventKit
 import KeyboardShortcuts
-import ServiceManagement
 import SwiftUI
 import UserNotifications
 import Combine
@@ -98,10 +95,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
             addInstalledBrowser()
         }
 
-        // Backward compatibility for user defaults changes
-        maintainDefaultsBackwardCompatibility()
-        //
-
         // Handle sleep and wake up events
         let dnc = DistributedNotificationCenter.default()
         dnc.addObserver(
@@ -112,23 +105,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
             self, selector: #selector(AppDelegate.unlockListener),
             name: .init("com.apple.screenIsUnlocked"), object: nil
         )
-
-        // Shortcuts
-        KeyboardShortcuts.onKeyUp(for: .createMeetingShortcut, action: createMeeting)
-
-        KeyboardShortcuts.onKeyUp(for: .joinEventShortcut) {
-            Task { @MainActor in self.statusBarItem.joinNextMeeting()}
-        }
-
-        KeyboardShortcuts.onKeyUp(for: .openMenuShortcut) {
-            Task { @MainActor in self.statusBarItem.openMenu()}
-        }
-
-        KeyboardShortcuts.onKeyUp(for: .openClipboardShortcut, action: openLinkFromClipboard)
-
-        KeyboardShortcuts.onKeyUp(for: .toggleMeetingTitleVisibilityShortcut) {
-            Defaults[.hideMeetingTitle].toggle()
-        }
 
         // Settings change observers
         defaultsWatchers.append(
@@ -215,7 +191,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
                 try? await Task.sleep(nanoseconds: UInt64(interval * Double(NSEC_PER_SEC)))
 
                 // Once we hit hh:mm:00, redraw
-                await MainActor.run { self.updateStatusBarItem() }
+                await MainActor.run {
+                    self.statusBarItem.updateTitle()
+                    self.statusBarItem.updateMenu()
+                }
             }
         }
     }
@@ -436,12 +415,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
             NSLog("Refresh Failed: \(error)")
         }
       }
-    }
-
-    @objc
-    private func updateStatusBarItem() {
-        self.statusBarItem.updateTitle()
-        self.statusBarItem.updateMenu()
     }
 
     @objc

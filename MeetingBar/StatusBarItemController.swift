@@ -44,6 +44,23 @@ final class StatusBarItemController {
         statusItem.button?.imagePosition = .imageLeft
         let menuItem = statusItemMenu.addItem(withTitle: "window_title_onboarding".loco(), action: nil, keyEquivalent: "")
         menuItem.isEnabled = false
+
+        // Shortcuts
+        KeyboardShortcuts.onKeyUp(for: .createMeetingShortcut, action: createMeeting)
+
+        KeyboardShortcuts.onKeyUp(for: .joinEventShortcut) {
+            Task { @MainActor in self.joinNextMeeting()}
+        }
+
+        KeyboardShortcuts.onKeyUp(for: .openMenuShortcut) {
+            Task { @MainActor in self.openMenu()}
+        }
+
+        KeyboardShortcuts.onKeyUp(for: .openClipboardShortcut, action: openLinkFromClipboard)
+
+        KeyboardShortcuts.onKeyUp(for: .toggleMeetingTitleVisibilityShortcut) {
+            Defaults[.hideMeetingTitle].toggle()
+        }
     }
 
     @objc
