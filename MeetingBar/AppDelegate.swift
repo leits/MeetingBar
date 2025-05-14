@@ -191,7 +191,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
                 try? await Task.sleep(nanoseconds: UInt64(interval * Double(NSEC_PER_SEC)))
 
                 // Once we hit hh:mm:00, redraw
-                await MainActor.run { self.updateStatusBarItem() }
+                await MainActor.run {
+                    self.statusBarItem.updateTitle()
+                    self.statusBarItem.updateMenu()
+                }
             }
         }
     }
@@ -412,12 +415,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
             NSLog("Refresh Failed: \(error)")
         }
       }
-    }
-
-    @objc
-    private func updateStatusBarItem() {
-        self.statusBarItem.updateTitle()
-        self.statusBarItem.updateMenu()
     }
 
     @objc
