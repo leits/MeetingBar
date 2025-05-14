@@ -14,10 +14,12 @@ extension EKParticipant {
     }
 }
 
+extension EKEventStore: @unchecked @retroactive Sendable {}
+
 extension EKEventStore: EventStore {
     nonisolated(unsafe) static var shared = EKEventStore()
 
-    func signIn() async throws {
+    public func signIn() async throws {
             try await withCheckedThrowingContinuation { cont in
                 let handler: EKEventStoreRequestAccessCompletionHandler = { granted, error in
                     if granted {
@@ -37,19 +39,19 @@ extension EKEventStore: EventStore {
             }
         }
 
-    func signOut() async {}
+    public func signOut() async {}
 
-    func refreshSources() async {
+    public func refreshSources() async {
         EKEventStore.shared.refreshSourcesIfNecessary()
     }
 
-    func fetchAllCalendars() async throws -> [MBCalendar] {
+    public func fetchAllCalendars() async throws -> [MBCalendar] {
         var allCalendars: [MBCalendar] = []
 
         for calendar in EKEventStore.shared.calendars(for: .event) {
             let calendar = MBCalendar(
                 title: calendar.title,
-                ID: calendar.calendarIdentifier,
+                id: calendar.calendarIdentifier,
                 source: calendar.source.title,
                 email: getGmailAccount(calendar.source.description),
                 color: calendar.color
@@ -59,8 +61,8 @@ extension EKEventStore: EventStore {
         return allCalendars
     }
 
-    func fetchEventsForDateRange(for calendars: [MBCalendar], from dateFrom: Date, to dateTo: Date) async throws -> [MBEvent] {
-        let selectedCalendars = EKEventStore.shared.calendars(for: .event).filter { calendars.map(\.ID).contains($0.calendarIdentifier) }
+    public func fetchEventsForDateRange(for calendars: [MBCalendar], from dateFrom: Date, to dateTo: Date) async throws -> [MBEvent] {
+        let selectedCalendars = EKEventStore.shared.calendars(for: .event).filter { calendars.map(\.id).contains($0.calendarIdentifier) }
 
         if selectedCalendars.isEmpty {
             return []
@@ -70,7 +72,7 @@ extension EKEventStore: EventStore {
 
         var events: [MBEvent] = []
         for rawEvent in EKEventStore.shared.events(matching: predicate) {
-            let calendar = calendars.first { $0.ID == rawEvent.calendar.calendarIdentifier }!
+            let calendar = calendars.first { $0.id == rawEvent.calendar.calendarIdentifier }!
             var status: MBEventStatus
             switch rawEvent.status {
             case .confirmed:

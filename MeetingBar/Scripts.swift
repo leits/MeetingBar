@@ -98,7 +98,7 @@ func createAppleScriptParametersForEvent(event: MBEvent) -> NSAppleEventDescript
  * This method will create an in memory event and use the parameter to execute the apple script.
  */
 @MainActor func runAppleScriptForNextEvent(events: [MBEvent]) {
-    if let nextEvent = getNextEvent(events: events) {
+    if let nextEvent = events.nextEvent() {
         runMeetingStartsScript(event: nextEvent, type: .meetingStart)
     } else {
         sendNotification("next_meeting_empty_title".loco(), "next_meeting_empty_message".loco())

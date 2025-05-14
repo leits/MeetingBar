@@ -51,7 +51,7 @@ class ActionsOnEventStart: NSObject {
         }
         //
 
-        if let nextEvent = getNextEvent(events: app.statusBarItem.events, linkRequired: true) {
+        if let nextEvent = app.statusBarItem.events.nextEvent(linkRequired: true) {
             let now = Date()
 
             let startEndRange = nextEvent.startDate ... nextEvent.endDate

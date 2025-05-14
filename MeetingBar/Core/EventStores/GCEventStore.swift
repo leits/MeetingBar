@@ -115,15 +115,13 @@ class GCEventStore: NSObject, EventStore, @preconcurrency OIDExternalUserAgent {
 
         let url = URL(string:
           "https://www.googleapis.com/calendar/v3/calendars/\(calendar.id)/events" +
-          "?singleEvents=true&orderBy=startTime&timeMax=\(timeMax)&timeMin=\(timeMin)")!
-
+          "?singleEvents=true&eventTypes=default&orderBy=startTime&timeMax=\(timeMax)&timeMin=\(timeMin)")!
         let items = try await fetchJSON(url, authorizedWith: auth)
 
         return items.compactMap { GCParser.event(from: $0, calendar: calendar) }
     }
 
     func fetchEventsForDateRange(for calendars: [MBCalendar], from: Date, to: Date) async throws -> [MBEvent] {
-
         var events: [MBEvent] = []
 
         for cal in calendars {

@@ -9,13 +9,13 @@
 import AppKit
 import Defaults
 
-enum EventStoreProvider: String, Defaults.Serializable, Codable {
+public enum EventStoreProvider: String, Defaults.Serializable, Codable {
     case macOSEventKit = "MacOS Calendar App"
     case googleCalendar = "Google Calendar API"
 }
 
 @MainActor
-protocol EventStore: AnyObject {
+public protocol EventStore: AnyObject, Sendable {
     func signIn() async throws
     func signOut() async
     func refreshSources() async

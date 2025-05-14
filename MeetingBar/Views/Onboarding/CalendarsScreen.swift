@@ -12,10 +12,11 @@ import Defaults
 
 struct CalendarsScreen: View {
     @Default(.selectedCalendarIDs) var selectedCalendarIDs
+    @EnvironmentObject var eventManager: EventManager
 
     var body: some View {
         VStack {
-            CalendarsTab()
+            CalendarsTab(eventManager: eventManager)
             Divider()
             HStack {
                 Spacer()

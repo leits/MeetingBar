@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct PreferencesView: View {
+    @EnvironmentObject var eventManager: EventManager
+
     var body: some View {
         VStack {
             TabView {
@@ -15,7 +17,7 @@ struct PreferencesView: View {
                 AppearanceTab().tabItem { Text("preferences_tab_appearance".loco()) }
                 ServicesTab().tabItem { Text("preferences_tab_services".loco()) }
                 BookmarksTab().tabItem { Text("preferences_tab_bookmarks".loco()) }
-                CalendarsTab().tabItem { Text("preferences_tab_calendars".loco()) }
+                CalendarsTab(eventManager: eventManager).tabItem { Text("preferences_tab_calendars".loco()) }
                 AdvancedTab().tabItem { Text("preferences_tab_advanced".loco()) }
             }
         }.padding()
