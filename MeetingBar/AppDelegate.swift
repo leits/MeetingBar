@@ -21,7 +21,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
     var screenIsLocked: Bool = false
 
     weak var preferencesWindow: NSWindow!
-    private var defaultsWatchers = [Task<Void, Never>]()
     private var statusLoopTask: Task<Void, Never>?
 
     private var eventCancellable: AnyCancellable?
@@ -105,67 +104,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
             self, selector: #selector(AppDelegate.unlockListener),
             name: .init("com.apple.screenIsUnlocked"), object: nil
         )
-
-        // Settings change observers
-        defaultsWatchers.append(
-        Task {
-            for await _ in Defaults.updates(
-                [
-                    .statusbarEventTitleLength, .eventTimeFormat,
-                    .eventTitleIconFormat, .showEventMaxTimeUntilEventThreshold,
-                    .showEventMaxTimeUntilEventEnabled, .showEventDetails,
-                    .shortenEventTitle, .menuEventTitleLength,
-                    .showEventEndTime, .showMeetingServiceIcon,
-                    .timeFormat, .bookmarks, .eventTitleFormat,
-                    .personalEventsAppereance, .pastEventsAppereance,
-                    .declinedEventsAppereance
-                ], initial: false
-            ) {
-                self.statusBarItem.updateTitle()
-                self.statusBarItem.updateMenu()
-            }
-        })
-
-        defaultsWatchers.append(
-        Task {
-            for await _ in Defaults.updates(.hideMeetingTitle, initial: false) {
-                self.statusBarItem.updateMenu()
-                self.statusBarItem.updateTitle()
-
-                // Reschedule next notification with updated event name visibility
-                removePendingNotificationRequests(withID: notificationIDs.event_starts)
-                removePendingNotificationRequests(withID: notificationIDs.event_ends)
-                if let nextEvent = self.statusBarItem.events.nextEvent() {
-                    Task {
-                        await scheduleEventNotification(nextEvent)
-                    }
-                }
-            }
-        })
-
-        defaultsWatchers.append(
-        Task {
-            for await value in Defaults.updates(.preferredLanguage)
-                where I18N.instance.changeLanguage(to: value) {
-                    self.statusBarItem.updateTitle()
-                    self.statusBarItem.updateMenu()
-            }
-        })
-
-        defaultsWatchers.append(
-        Task {
-            for await value in Defaults.updates(.joinEventNotification, initial: false) {
-                if value == true {
-                    if let nextEvent = self.statusBarItem.events.nextEvent() {
-                        Task {
-                            await scheduleEventNotification(nextEvent)
-                        }
-                    }
-                } else {
-                    removePendingNotificationRequests(withID: notificationIDs.event_starts)
-                }
-            }
-        })
     }
 
     /*
@@ -407,25 +345,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
     }
 
     @objc
-    func handleManualRefresh() {
-      Task {
-        do {
-          try await eventManager.refreshSources()
-        } catch {
-            NSLog("Refresh Failed: \(error)")
-        }
-      }
-    }
-
-    @objc
     func quit(_: NSStatusBarButton) {
-        defaultsWatchers.forEach { $0.cancel() }
         statusLoopTask?.cancel()
         NSApplication.shared.terminate(self)
     }
 
     func applicationWillTerminate(_ notification: Notification) {
-        defaultsWatchers.forEach { $0.cancel() }
         statusLoopTask?.cancel()
     }
 }
