@@ -6,11 +6,8 @@
 //  Copyright © 2020 Andrii Leitsius. All rights reserved.
 //
 
-import Cocoa
 import Defaults
-import EventKit
 import KeyboardShortcuts
-import ServiceManagement
 import SwiftUI
 import UserNotifications
 import Combine
