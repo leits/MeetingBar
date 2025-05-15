@@ -23,8 +23,15 @@ jobs:
       - name: Install xcbeautify
         run: brew install xcbeautify
 
+      - name: Check path
+        shell: bash
+        run: |
+          pwd
+          ls
+          cd MeetingBar
+          ls
+
       - name: Build and run unit tests
-        working-directory: MeetingBar
         shell: bash
         run: |
           set -o pipefail
