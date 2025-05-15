@@ -1,5 +1,5 @@
 //
-//  Calendar.swift
+//  MBCalendar.swift
 //  MeetingBar
 //
 //  Created by Andrii Leitsius on 09.04.2022.

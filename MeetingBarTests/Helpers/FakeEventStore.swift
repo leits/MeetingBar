@@ -14,16 +14,16 @@ final class FakeEventStore: EventStore {
     var stubbedEvents: [MBEvent]
 
     init(calendars: [MBCalendar] = [], events: [MBEvent] = []) {
-        self.stubbedCalendars = calendars
-        self.stubbedEvents = events
+        stubbedCalendars = calendars
+        stubbedEvents = events
     }
 
     func fetchAllCalendars() async throws -> [MBCalendar] {
         return stubbedCalendars
     }
 
-    func fetchEventsForDateRange(for calendars: [MBCalendar],
-                                 from: Date, to: Date) async throws -> [MBEvent] {
+    func fetchEventsForDateRange(for _: [MBCalendar],
+                                 from _: Date, to _: Date) async throws -> [MBEvent] {
         return stubbedEvents
     }
 

@@ -12,14 +12,13 @@ import Combine
 import Defaults
 import KeyboardShortcuts
 
-
 private enum MenuStyleConstants {
-    static let defaultFontSize: CGFloat    = 13
-    static let runningIconName             = "running_icon"
-    static let appIconName                 = "AppIcon"
-    static let calendarCheckmarkIconName   = "iconCalendarCheckmark"
-    static let calendarIconName            = "iconCalendar"
-    static let iconSize: NSSize            = .init(width: 16, height: 16)
+    static let defaultFontSize: CGFloat = 13
+    static let runningIconName = "running_icon"
+    static let appIconName = "AppIcon"
+    static let calendarCheckmarkIconName = "iconCalendarCheckmark"
+    static let calendarIconName = "iconCalendar"
+    static let iconSize: NSSize = .init(width: 16, height: 16)
 }
 
 /**
@@ -71,68 +70,68 @@ final class StatusBarItemController {
             .showEventEndTime, .showMeetingServiceIcon,
             .timeFormat, .bookmarks, .eventTitleFormat,
             .personalEventsAppereance, .pastEventsAppereance,
-            .declinedEventsAppereance
-        , options: [])
-          .receive(on: DispatchQueue.main)
-          .sink { [weak self] _ in
+            .declinedEventsAppereance,
+            options: []
+        )
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] _ in
             self?.updateTitle()
             self?.updateMenu()
-          }
-          .store(in: &cancellables)
+        }
+        .store(in: &cancellables)
 
         Defaults.publisher(.hideMeetingTitle, options: [])
-          .receive(on: DispatchQueue.main)
-          .sink { [weak self] _ in
-              self?.updateMenu()
-              self?.updateTitle()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.updateMenu()
+                self?.updateTitle()
 
-              // Reschedule next notification with updated event name visibility
-              removePendingNotificationRequests(withID: notificationIDs.event_starts)
-              removePendingNotificationRequests(withID: notificationIDs.event_ends)
-              if let nextEvent = self?.events.nextEvent() {
-                  Task {
-                      await scheduleEventNotification(nextEvent)
-                  }
-              }
-          }
-          .store(in: &cancellables)
+                // Reschedule next notification with updated event name visibility
+                removePendingNotificationRequests(withID: notificationIDs.event_starts)
+                removePendingNotificationRequests(withID: notificationIDs.event_ends)
+                if let nextEvent = self?.events.nextEvent() {
+                    Task {
+                        await scheduleEventNotification(nextEvent)
+                    }
+                }
+            }
+            .store(in: &cancellables)
 
         Defaults.publisher(.preferredLanguage, options: [.initial])
-          .receive(on: DispatchQueue.main)
-          .sink { [weak self] change in
-              if I18N.instance.changeLanguage(to: change.newValue) {
-                  self?.updateMenu()
-                  self?.updateTitle()
-              }
-          }
-          .store(in: &cancellables)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] change in
+                if I18N.instance.changeLanguage(to: change.newValue) {
+                    self?.updateMenu()
+                    self?.updateTitle()
+                }
+            }
+            .store(in: &cancellables)
 
         Defaults.publisher(.joinEventNotification, options: [])
-          .receive(on: DispatchQueue.main)
-          .sink { [weak self] change in
-              if change.newValue == true {
-                  if let nextEvent = self?.events.nextEvent() {
-                      Task {
-                          await scheduleEventNotification(nextEvent)
-                      }
-                  }
-              } else {
-                  removePendingNotificationRequests(withID: notificationIDs.event_starts)
-              }
-
-          }
-          .store(in: &cancellables)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] change in
+                if change.newValue == true {
+                    if let nextEvent = self?.events.nextEvent() {
+                        Task {
+                            await scheduleEventNotification(nextEvent)
+                        }
+                    }
+                } else {
+                    removePendingNotificationRequests(withID: notificationIDs.event_starts)
+                }
+            }
+            .store(in: &cancellables)
     }
 
     private func setupKeyboardShortcuts() {
         KeyboardShortcuts.onKeyUp(for: .createMeetingShortcut, action: createMeeting)
 
         KeyboardShortcuts.onKeyUp(for: .joinEventShortcut) {
-            Task { @MainActor in self.joinNextMeeting()}
+            Task { @MainActor in self.joinNextMeeting() }
         }
 
         KeyboardShortcuts.onKeyUp(for: .openMenuShortcut) {
-            Task { @MainActor in self.openMenu()}
+            Task { @MainActor in self.openMenu() }
         }
 
         KeyboardShortcuts.onKeyUp(for: .openClipboardShortcut, action: openLinkFromClipboard)
@@ -330,7 +329,7 @@ final class StatusBarItemController {
         statusItemMenu.autoenablesItems = false
         statusItemMenu.removeAllItems()
 
-        if  Defaults[.selectedCalendarIDs].isEmpty == false {
+        if Defaults[.selectedCalendarIDs].isEmpty == false {
             let today = Date()
             switch Defaults[.showEventsForPeriod] {
             case .today:
@@ -747,8 +746,6 @@ final class StatusBarItemController {
         createEventItem.target = self
         createEventItem.setShortcut(for: .createMeetingShortcut)
 
-        statusItemMenu.addItem(createEventItem)
-
         // MENU ITEM: Quick actions menu
         let quickActionsItem = statusItemMenu.addItem(
             withTitle: "status_bar_quick_actions".loco(),
@@ -791,15 +788,14 @@ final class StatusBarItemController {
         // MENU ITEM: QUICK ACTIONS: Toggle meeting name visibility
         if Defaults[.eventTitleFormat] == .show {
             let title = Defaults[.hideMeetingTitle]
-            ? "status_bar_show_meeting_names".loco()
-            : "status_bar_hide_meeting_names".loco()
+                ? "status_bar_show_meeting_names".loco()
+                : "status_bar_hide_meeting_names".loco()
 
             let toggleMeetingTitleVisibilityItem = quickActionsItem.submenu!.addItem(
                 withTitle: title, action: #selector(toggleMeetingTitleVisibility), keyEquivalent: ""
             )
             toggleMeetingTitleVisibilityItem.setShortcut(for: .toggleMeetingTitleVisibilityShortcut)
             toggleMeetingTitleVisibilityItem.target = self
-
         }
 
         // MENU ITEM: QUICK ACTIONS: Refresh sources
@@ -829,7 +825,10 @@ final class StatusBarItemController {
             bookmarksMenu = NSMenu(title: "status_bar_section_bookmarks_menu".loco())
             bookmarksItem.submenu = bookmarksMenu
         } else {
-            bookmarksItem.attributedTitle = NSAttributedString(string: "status_bar_section_bookmarks_title".loco(), attributes: [NSAttributedString.Key.font: NSFont.boldSystemFont(ofSize: MenuStyleConstants.defaultFontSize)])
+            bookmarksItem.attributedTitle = NSAttributedString(
+                string: "status_bar_section_bookmarks_title".loco(),
+                attributes: [NSAttributedString.Key.font: NSFont.boldSystemFont(ofSize: MenuStyleConstants.defaultFontSize)]
+            )
             bookmarksItem.isEnabled = false
             bookmarksMenu = statusItemMenu
         }
@@ -975,9 +974,9 @@ final class StatusBarItemController {
     }
 
     @objc private func handleManualRefresh() {
-      Task {
-          do { try await self.appdelegate.eventManager.refreshSources() } catch { NSLog("Refresh failed: \(error)") }
-      }
+        Task {
+            do { try await self.appdelegate.eventManager.refreshSources() } catch { NSLog("Refresh failed: \(error)") }
+        }
     }
 
     @objc

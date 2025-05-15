@@ -31,8 +31,8 @@
 
 "preferences_tab_general" = "General";
 "preferences_tab_appearance" = "Appearance";
-"preferences_tab_services" = "Services";
 "preferences_tab_bookmarks" = "Bookmarks";
+"preferences_tab_links" = "Links";
 "preferences_tab_calendars" = "Calendars";
 "preferences_tab_advanced" = "Advanced";
 

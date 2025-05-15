@@ -19,18 +19,20 @@ struct AutomaticEventJoinPicker: View {
     @Default(.automaticEventJoinTime) var automaticEventJoinTime
 
     var body: some View {
-        HStack {
-            Toggle("shared_automatic_event_join_toggle".loco(), isOn: $automaticEventJoin)
-            Picker("", selection: $automaticEventJoinTime) {
-                Text("general_when_event_starts".loco()).tag(TimeBeforeEvent.atStart)
-                Text("general_one_minute_before".loco()).tag(TimeBeforeEvent.minuteBefore)
-                Text("general_three_minute_before".loco()).tag(TimeBeforeEvent.threeMinuteBefore)
-                Text("general_five_minute_before".loco()).tag(TimeBeforeEvent.fiveMinuteBefore)
-            }.frame(width: 220, alignment: .leading).labelsHidden().disabled(!automaticEventJoin)
-        }
+        VStack {
+            HStack {
+                Toggle("shared_automatic_event_join_toggle".loco(), isOn: $automaticEventJoin)
+                Picker("", selection: $automaticEventJoinTime) {
+                    Text("general_when_event_starts".loco()).tag(TimeBeforeEvent.atStart)
+                    Text("general_one_minute_before".loco()).tag(TimeBeforeEvent.minuteBefore)
+                    Text("general_three_minute_before".loco()).tag(TimeBeforeEvent.threeMinuteBefore)
+                    Text("general_five_minute_before".loco()).tag(TimeBeforeEvent.fiveMinuteBefore)
+                }.frame(width: 220, alignment: .leading).labelsHidden().disabled(!automaticEventJoin)
+            }
 
-        if automaticEventJoin {
-            Text("shared_automatic_event_join_tip".loco()).foregroundColor(.gray).font(.system(size: 12))
+            if automaticEventJoin {
+                Text("shared_automatic_event_join_tip".loco()).foregroundColor(.gray).font(.system(size: 12))
+            }
         }
     }
 }
@@ -83,7 +85,7 @@ struct JoinEventNotificationPicker: View {
     }
 }
 
-struct endEventNotificationPicker: View {
+struct EndEventNotificationPicker: View {
     @Default(.endOfEventNotification) var endOfEventNotification
     @Default(.endOfEventNotificationTime) var endOfEventNotificationTime
 
@@ -155,4 +157,18 @@ struct LaunchAtLoginANDPreferredLanguagePicker: View {
             }.frame(width: 250)
         }
     }
+}
+
+#Preview {
+    VStack(alignment: .leading) {
+        AutomaticEventJoinPicker()
+        Divider()
+        FullscreenNotificationPicker()
+        Divider()
+        JoinEventNotificationPicker()
+        Divider()
+        EndEventNotificationPicker()
+        Divider()
+        LaunchAtLoginANDPreferredLanguagePicker()
+    }.padding()
 }

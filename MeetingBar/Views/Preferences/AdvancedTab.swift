@@ -12,22 +12,31 @@ import Defaults
 
 struct AdvancedTab: View {
     var body: some View {
-        VStack(alignment: .leading) {
-            endEventNotificationPicker()
-            AutomaticEventJoinPicker()
-            Divider()
-            ScriptSection()
-            Divider()
-            FilterEventRegexesSection()
-            Divider()
-            MeetingRegexesSection()
-            Divider()
+        VStack {
+            GroupBox(label: Label("Event Notifications", systemImage: "bell")) {
+                VStack(spacing: 10) {
+                    AutomaticEventJoinPicker()
+                    EndEventNotificationPicker()
+                }.frame(maxWidth: .infinity, alignment: .leading)
+            }
+            GroupBox(label: Label("AppleScript Hooks", systemImage: "applescript")) {
+                VStack(spacing: 10) {
+                    ScriptSection()
+                }
+            }
+            GroupBox(label: Label("Regex Filters", systemImage: "line.horizontal.3.decrease.circle")) {
+                VStack(spacing: 10) {
+                    FilterEventRegexesSection()
+                    MeetingRegexesSection()
+                }
+            }
+            Spacer()
             HStack {
                 Spacer()
                 Text("preferences_advanced_setting_warning".loco())
                 Spacer()
             }
-        }.padding()
+        }
     }
 }
 
@@ -218,13 +227,9 @@ struct FilterEventRegexesSection: View {
     @State private var selectedRegex = ""
 
     var body: some View {
-        Section {
-            HStack {
-                Text("preferences_advanced_event_regex_title".loco())
-                Spacer()
-                Button("preferences_advanced_regex_add_button".loco()) { openEditRegexModal("") }
-            }
+        DisclosureGroup("preferences_advanced_event_regex_title".loco()) {
             List {
+                Button("preferences_advanced_regex_add_button".loco()) { openEditRegexModal("") }.buttonStyle(.borderedProminent)
                 ForEach(filterEventRegexes, id: \.self) { regex in
                     HStack {
                         Text(regex)
@@ -233,10 +238,11 @@ struct FilterEventRegexesSection: View {
                         Button("x") { removeRegex(regex) }
                     }
                 }
-            }
-            .sheet(isPresented: $showingEditRegexModal) {
-                EditRegexModal(regex: selectedRegex, function: addRegex)
-            }
+            }.frame(height: 100)
+                .listStyle(.inset(alternatesRowBackgrounds: true))
+                .sheet(isPresented: $showingEditRegexModal) {
+                    EditRegexModal(regex: selectedRegex, function: addRegex)
+                }
         }.padding(.leading, 19)
     }
 
@@ -266,13 +272,9 @@ struct MeetingRegexesSection: View {
     @State private var selectedRegex = ""
 
     var body: some View {
-        Section {
-            HStack {
-                Text("preferences_advanced_regex_title".loco())
-                Spacer()
-                Button("preferences_advanced_regex_add_button".loco()) { openEditRegexModal("") }
-            }
+        DisclosureGroup("preferences_advanced_regex_title".loco()) {
             List {
+                Button("preferences_advanced_regex_add_button".loco()) { openEditRegexModal("") }.buttonStyle(.borderedProminent)
                 ForEach(customRegexes, id: \.self) { regex in
                     HStack {
                         Text(regex)
@@ -281,10 +283,11 @@ struct MeetingRegexesSection: View {
                         Button("x") { removeRegex(regex) }
                     }
                 }
-            }
-            .sheet(isPresented: $showingEditRegexModal) {
-                EditRegexModal(regex: selectedRegex, function: addRegex)
-            }
+            }.frame(height: 100)
+                .listStyle(.inset(alternatesRowBackgrounds: true))
+                .sheet(isPresented: $showingEditRegexModal) {
+                    EditRegexModal(regex: selectedRegex, function: addRegex)
+                }
         }.padding(.leading, 19)
     }
 
@@ -355,4 +358,8 @@ struct EditRegexModal: View {
             showingAlert = true
         }
     }
+}
+
+#Preview {
+    AdvancedTab().padding().frame(width: 700, height: 620)
 }

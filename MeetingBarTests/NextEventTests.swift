@@ -6,8 +6,8 @@
 //  Copyright © 2025 Andrii Leitsius. All rights reserved.
 //
 
-import XCTest
 @testable import MeetingBar
+import XCTest
 
 /// Make sure this lives in your test target, and that
 /// all your test cases subclass BaseTestCase so they
@@ -37,7 +37,7 @@ class NextEventTests: XCTestCase {
     func test_skipsEventsWithoutLink_whenLinkRequired() {
         let noLink = makeFakeEvent(
             id: "A",
-            start: now.addingTimeInterval( 50),
+            start: now.addingTimeInterval(50),
             end: now.addingTimeInterval(100),
             withLink: false
         )
@@ -78,15 +78,15 @@ class NextEventTests: XCTestCase {
         )
         let canceled = makeFakeEvent(
             id: "C",
-            start: now.addingTimeInterval( 50),
+            start: now.addingTimeInterval(50),
             end: now.addingTimeInterval(110),
             status: .canceled,
             withLink: true
         )
         let declined = makeFakeEvent(
             id: "D",
-            start: now.addingTimeInterval( 10),
-            end: now.addingTimeInterval( 70),
+            start: now.addingTimeInterval(10),
+            end: now.addingTimeInterval(70),
             withLink: true,
             participationStatus: .declined
         )
@@ -99,10 +99,10 @@ class NextEventTests: XCTestCase {
         let running = makeFakeEvent(
             id: "R",
             start: now.addingTimeInterval(-600),
-            end: now.addingTimeInterval( 600),
+            end: now.addingTimeInterval(600),
             withLink: true
         )
-        let future  = makeFakeEvent(
+        let future = makeFakeEvent(
             id: "F",
             start: now.addingTimeInterval(500),
             end: now.addingTimeInterval(800),

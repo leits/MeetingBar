@@ -6,8 +6,8 @@
 //  Copyright © 2025 Andrii Leitsius. All rights reserved.
 //
 
-import Foundation
 import Defaults
+import Foundation
 
 public extension Array where Element == MBEvent {
     /// Returns only those events that pass all the user’s Defaults filters.
@@ -80,7 +80,6 @@ public extension Array where Element == MBEvent {
             }
 
             result.append(event)
-
         }
         return result
     }
@@ -102,7 +101,7 @@ public extension Array where Element == MBEvent {
         }
 
         // Filter out passed or not started events
-        var futureEvents = self.filter { $0.endDate > startPeriod && $0.startDate < endPeriod }
+        var futureEvents = filter { $0.endDate > startPeriod && $0.startDate < endPeriod }
 
         // Filter out personal events, if not marked as 'active'
         if Defaults[.personalEventsAppereance] != .show_active {

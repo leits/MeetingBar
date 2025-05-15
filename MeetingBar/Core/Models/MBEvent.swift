@@ -1,5 +1,5 @@
 //
-//  Event.swift
+//  MBEvent.swift
 //  MeetingBar
 //
 //  Created by Andrii Leitsius on 09.04.2022.
@@ -53,7 +53,6 @@ public struct MBEventAttendee: Hashable, Sendable {
     }
 }
 
-// ToDo: move to struct
 public struct MBEvent: Identifiable, Hashable, Sendable {
     public var id: String
 

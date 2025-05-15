@@ -55,24 +55,23 @@ struct GetNearestEventDetails: AppIntent {
 
     func perform() async throws
         -> some IntentResult & ReturnsValue<String?> {
-
         // Hop to the main actor only for the AppKit interaction
         let value: String? = await MainActor.run {
             guard
                 let appDelegate = NSApplication.shared.delegate as? AppDelegate,
-                let nextEvent   = appDelegate.statusBarItem.events.nextEvent()
+                let nextEvent = appDelegate.statusBarItem.events.nextEvent()
             else { return nil }
 
             switch type {
-            case .title:          return nextEvent.title
-            case .calendarTitle:  return nextEvent.calendar.title
-            case .meetingLink:    return nextEvent.meetingLink?.url.absoluteString
+            case .title: return nextEvent.title
+            case .calendarTitle: return nextEvent.calendar.title
+            case .meetingLink: return nextEvent.meetingLink?.url.absoluteString
             case .meetingService: return nextEvent.meetingLink?.service?.localizedValue
-            case .url:            return nextEvent.url?.absoluteString
-            case .notes:          return nextEvent.notes
-            case .location:       return nextEvent.location
-            case .startDate:      return nextEvent.startDate.formatted()
-            case .endDate:        return nextEvent.endDate.formatted()
+            case .url: return nextEvent.url?.absoluteString
+            case .notes: return nextEvent.notes
+            case .location: return nextEvent.location
+            case .startDate: return nextEvent.startDate.formatted()
+            case .endDate: return nextEvent.endDate.formatted()
             }
         }
 
@@ -86,13 +85,13 @@ struct JoinNearestMeetingIntent: AppIntent {
     static let description = IntentDescription("Join the nearest (current or next) event meeting.")
 
     func perform() async throws -> some IntentResult {
-            await MainActor.run {
-                (NSApplication.shared.delegate as? AppDelegate)?
-                    .statusBarItem
-                    .joinNextMeeting()
-            }
-            return .result()
+        await MainActor.run {
+            (NSApplication.shared.delegate as? AppDelegate)?
+                .statusBarItem
+                .joinNextMeeting()
         }
+        return .result()
+    }
 }
 
 @available(macOS 13.0, *)
@@ -101,11 +100,11 @@ struct DismissNearestMeetingIntent: AppIntent {
     static let description = IntentDescription("Dismiss the nearest (current or next) event meeting.")
 
     func perform() async throws -> some IntentResult {
-            await MainActor.run {
-                (NSApplication.shared.delegate as? AppDelegate)?
-                    .statusBarItem
-                    .dismissNextMeetingAction()
-            }
-            return .result()
+        await MainActor.run {
+            (NSApplication.shared.delegate as? AppDelegate)?
+                .statusBarItem
+                .dismissNextMeetingAction()
         }
+        return .result()
+    }
 }

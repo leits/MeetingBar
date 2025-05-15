@@ -20,24 +20,24 @@ extension EKEventStore: EventStore {
     nonisolated(unsafe) static var shared = EKEventStore()
 
     public func signIn() async throws {
-            try await withCheckedThrowingContinuation { cont in
-                let handler: EKEventStoreRequestAccessCompletionHandler = { granted, error in
-                    if granted {
-                        var sources = EKEventStore.shared.sources
-                        sources.append(contentsOf: EKEventStore.shared.delegateSources)
+        try await withCheckedThrowingContinuation { cont in
+            let handler: EKEventStoreRequestAccessCompletionHandler = { granted, error in
+                if granted {
+                    var sources = EKEventStore.shared.sources
+                    sources.append(contentsOf: EKEventStore.shared.delegateSources)
 
-                        EKEventStore.shared = EKEventStore(sources: sources)
-                        cont.resume()
-                    } else { cont.resume(throwing: error ?? NSError(domain: "EKEventStore", code: 0)) }
-                }
+                    EKEventStore.shared = EKEventStore(sources: sources)
+                    cont.resume()
+                } else { cont.resume(throwing: error ?? NSError(domain: "EKEventStore", code: 0)) }
+            }
 
-                if #available(macOS 14, *) {
-                    EKEventStore.shared.requestFullAccessToEvents(completion: handler)
-                } else {
-                    EKEventStore.shared.requestAccess(to: .event, completion: handler)
-                }
+            if #available(macOS 14, *) {
+                EKEventStore.shared.requestFullAccessToEvents(completion: handler)
+            } else {
+                EKEventStore.shared.requestAccess(to: .event, completion: handler)
             }
         }
+    }
 
     public func signOut() async {}
 

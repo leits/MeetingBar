@@ -16,19 +16,18 @@ struct CalendarsTab: View {
 
     var body: some View {
         VStack(alignment: .leading) {
-            Text("preferences_calendars_select_calendars_title".loco())
-                .font(.headline)
-                .padding(.bottom, 8)
-            ProviderPicker(eventManager: eventManager)
+            GroupBox(label: Label("Data Source", systemImage: "server.rack")) {
+                ProviderPicker(eventManager: eventManager)
+            }
+            .padding(.bottom, 5)
+            Label("preferences_calendars_select_calendars_title".loco(), systemImage: "calendar").padding(5)
             List {
                 if eventManager.calendars.isEmpty {
                     if Defaults[.eventStoreProvider] == .macOSEventKit {
                         AccessDeniedBanner()
-                    } else {
-                        ProgressView("Loading calendars…").frame(maxWidth: .infinity, alignment: .center)
                     }
                     Button("Refresh") {
-                        Task { try await eventManager.refreshSources()}
+                        Task { try await eventManager.refreshSources() }
                     }
 
                 } else {
@@ -37,7 +36,6 @@ struct CalendarsTab: View {
             }
             .listStyle(.sidebar)
         }
-        .padding()
     }
 }
 
@@ -48,6 +46,7 @@ struct CalendarSectionsView: View {
     private var grouped: [String: [MBCalendar]] {
         Dictionary(grouping: calendars, by: \.source)
     }
+
     private var sources: [String] {
         grouped.keys.sorted()
     }
@@ -84,7 +83,6 @@ struct ProviderPicker: View {
                         await eventManager.setEventStoreProvider(.googleCalendar)
                     }
                 }
-
             }
         }
     }
@@ -133,11 +131,12 @@ struct CalendarRow: View {
         }
     }
 }
+
 #Preview {
     List {
         CalendarSectionsView(calendars: [MBCalendar(title: "Calendar #1", id: "1", source: "Source #1", email: nil, color: .brown)])
 
-            CalendarSectionsView(calendars: [MBCalendar(title: "Calendar #2", id: "2", source: "Source #2", email: nil, color: .blue)])
+        CalendarSectionsView(calendars: [MBCalendar(title: "Calendar #2", id: "2", source: "Source #2", email: nil, color: .blue)])
     }.listStyle(.sidebar)
-    .frame(width: 300, height: 200)
+        .frame(width: 300, height: 200)
 }

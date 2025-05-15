@@ -6,11 +6,11 @@
 //  Copyright © 2025 Andrii Leitsius. All rights reserved.
 //
 import Cocoa
-import Foundation
-import Defaults
-import UserNotifications
-import EventKit
 import Combine
+import Defaults
+import EventKit
+import Foundation
+import UserNotifications
 
 public enum EventManagerError: Error {
     case eventStoreNotAvailable
@@ -31,11 +31,12 @@ public class EventManager: ObservableObject {
     private var storeChangeCancellable: AnyCancellable?
 
     // MARK: - Initialization
+
     public init(refreshInterval: TimeInterval = 180) async {
         self.refreshInterval = refreshInterval
-        self.provider = await MainActor.run {
+        provider = await MainActor.run {
             switch Defaults[.eventStoreProvider] {
-            case .macOSEventKit:  return EKEventStore.shared
+            case .macOSEventKit: return EKEventStore.shared
             case .googleCalendar: return GCEventStore.shared
             }
         }
@@ -66,7 +67,7 @@ public class EventManager: ObservableObject {
         switch providerName {
         case .macOSEventKit:
             let store = await MainActor.run { EKEventStore.shared }
-            self.provider = store
+            provider = store
 
             // observe EKEventStoreChanged
             storeChangeCancellable = NotificationCenter.default
@@ -84,14 +85,14 @@ public class EventManager: ObservableObject {
 
         case .googleCalendar:
             let store = await MainActor.run { GCEventStore.shared }
-            self.provider = store
+            provider = store
         }
     }
 
     public func refreshSources() async throws {
         await provider.refreshSources()
         refreshSubject.send()
-      }
+    }
 
     /// Fetches events for the selected calendars within the specified date range
     private func fetchEvents(fromCalendars: [MBCalendar]) async throws -> [MBEvent] {
@@ -105,13 +106,13 @@ public class EventManager: ObservableObject {
             dateTo = Calendar.current.date(byAdding: .day, value: 2, to: dateFrom)!
         }
 
-        let selectedCalendars = fromCalendars.filter( { Defaults[.selectedCalendarIDs].contains($0.id) })
+        let selectedCalendars = fromCalendars.filter { Defaults[.selectedCalendarIDs].contains($0.id) }
 
         let rawEvents: [MBEvent]
         do {
             rawEvents = try await provider.fetchEventsForDateRange(for: selectedCalendars,
-                         from: dateFrom,
-                         to: dateTo)
+                                                                   from: dateFrom,
+                                                                   to: dateTo)
         } catch {
             throw EventManagerError.eventFetchFailed(error)
         }
@@ -127,33 +128,31 @@ public class EventManager: ObservableObject {
             Defaults[.dismissedEvents] = dismissedEvents
         }
         return rawEvents.filtered().sorted { $0.startDate < $1.startDate }
-
     }
 
     private func setupPublishers() {
         // A) Defaults changes as an “empty” trigger
         let defaultsPub = Defaults.publisher(keys:
-          .selectedCalendarIDs,
-          .showEventsForPeriod,
-          .customRegexes,
-          .declinedEventsAppereance,
-          .showPendingEvents,
-          .showTentativeEvents,
-          .allDayEvents,
-          .nonAllDayEvents, options: []
-        ).map { _ in () }.eraseToAnyPublisher()
+            .selectedCalendarIDs,
+            .showEventsForPeriod,
+            .customRegexes,
+            .declinedEventsAppereance,
+            .showPendingEvents,
+            .showTentativeEvents,
+            .allDayEvents,
+            .nonAllDayEvents, options: []).map { _ in () }.eraseToAnyPublisher()
 
         // B) Periodic timer trigger
         let timerPub: AnyPublisher<Void, Never>
-          if refreshInterval > 0 {
+        if refreshInterval > 0 {
             timerPub = Timer
-              .publish(every: refreshInterval, on: .main, in: .common)
-              .autoconnect()
-              .map { _ in () }
-              .eraseToAnyPublisher()
-          } else {
+                .publish(every: refreshInterval, on: .main, in: .common)
+                .autoconnect()
+                .map { _ in () }
+                .eraseToAnyPublisher()
+        } else {
             timerPub = Empty().eraseToAnyPublisher()
-          }
+        }
 
         // C) Manual trigger
         let manualPub = refreshSubject.eraseToAnyPublisher()
@@ -163,45 +162,45 @@ public class EventManager: ObservableObject {
 
         // E) When any fires, fetch calendars & events
         trigger
-          .flatMap { [weak self] _ -> AnyPublisher<([MBCalendar], [MBEvent]), Never> in
-            guard let self = self else {
-              return Just(([], [])).eraseToAnyPublisher()
-            }
-            return Future { promise in
-              Task {
-                do {
-                  let cals = try await self.provider.fetchAllCalendars()
-                  let evts = try await self.fetchEvents(fromCalendars: cals)
-                  promise(.success((cals, evts)))
-                } catch {
-                  NSLog("EventManager refresh failed: \(error)")
-                  promise(.success(([], [])))
+            .flatMap { [weak self] _ -> AnyPublisher<([MBCalendar], [MBEvent]), Never> in
+                guard let self = self else {
+                    return Just(([], [])).eraseToAnyPublisher()
                 }
-              }
+                return Future { promise in
+                    Task {
+                        do {
+                            let cals = try await self.provider.fetchAllCalendars()
+                            let evts = try await self.fetchEvents(fromCalendars: cals)
+                            promise(.success((cals, evts)))
+                        } catch {
+                            NSLog("EventManager refresh failed: \(error)")
+                            promise(.success(([], [])))
+                        }
+                    }
+                }
+                .eraseToAnyPublisher()
             }
-            .eraseToAnyPublisher()
-          }
-          // **important: hop back to the main run-loop before assigning**
-          .receive(on: RunLoop.main)
-          .sink { [weak self] (cals, evts) in
-            // now we’re safely on the main actor / main thread
-            NSLog("EventManager refreshed calendars: \(cals.count), events: \(evts.count)") // TODO: Remove debug log
-            self?.calendars = cals
-            self?.events    = evts
-          }
-          .store(in: &cancellables)
+            // **important: hop back to the main run-loop before assigning**
+            .receive(on: RunLoop.main)
+            .sink { [weak self] cals, evts in
+                // now we’re safely on the main actor / main thread
+                NSLog("EventManager refreshed calendars: \(cals.count), events: \(evts.count)") // TODO: Remove debug log
+                self?.calendars = cals
+                self?.events = evts
+            }
+            .store(in: &cancellables)
     }
 
     #if DEBUG
-    /// Test-only initializer: inject your own store and skip
-    /// the async system-store configuration.
-    public init(provider: EventStore,
-                refreshInterval: TimeInterval = 0) {
-        self.refreshInterval = refreshInterval
-        self.provider = provider
-        // no storeChangeCancellable for real notifications
-        setupPublishers()
-        refreshSubject.send()
-    }
+        /// Test-only initializer: inject your own store and skip
+        /// the async system-store configuration.
+        public init(provider: EventStore,
+                    refreshInterval: TimeInterval = 0) {
+            self.refreshInterval = refreshInterval
+            self.provider = provider
+            // no storeChangeCancellable for real notifications
+            setupPublishers()
+            refreshSubject.send()
+        }
     #endif
 }

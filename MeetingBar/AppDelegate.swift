@@ -6,11 +6,11 @@
 //  Copyright © 2020 Andrii Leitsius. All rights reserved.
 //
 
+import Combine
 import Defaults
 import KeyboardShortcuts
 import SwiftUI
 import UserNotifications
-import Combine
 
 @MainActor
 @main
@@ -47,7 +47,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
             Task {
                 eventManager = await EventManager()
                 setup()
-
             }
         } else {
             openOnboardingWindow()
@@ -66,24 +65,24 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
 
         UNUserNotificationCenter.current().delegate = self
         Task { @MainActor in
-          await ensureNotificationAuthorization()
-          registerNotificationCategories()
+            await ensureNotificationAuthorization()
+            registerNotificationCategories()
         }
 
         eventCancellable = eventManager.$events
-          .receive(on: DispatchQueue.main)          // ensure UI work on main thread
-          .sink { [weak self] events in
-            guard let self = self else { return }
-            // 1) update your model
-            self.statusBarItem.events = events
-            // 2) redraw
-            self.statusBarItem.updateTitle()
-            self.statusBarItem.updateMenu()
-            // 3) schedule next notification
-            if let next = events.nextEvent() {
-              Task { await scheduleEventNotification(next) }
+            .receive(on: DispatchQueue.main) // ensure UI work on main thread
+            .sink { [weak self] events in
+                guard let self = self else { return }
+                // 1) update your model
+                self.statusBarItem.events = events
+                // 2) redraw
+                self.statusBarItem.updateTitle()
+                self.statusBarItem.updateMenu()
+                // 3) schedule next notification
+                if let next = events.nextEvent() {
+                    Task { await scheduleEventNotification(next) }
+                }
             }
-          }
 
         startAsyncLoops()
         // ActionsOnEventStart
@@ -350,7 +349,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
         NSApplication.shared.terminate(self)
     }
 
-    func applicationWillTerminate(_ notification: Notification) {
+    func applicationWillTerminate(_: Notification) {
         statusLoopTask?.cancel()
     }
 }

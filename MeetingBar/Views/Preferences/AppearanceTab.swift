@@ -13,168 +13,10 @@ struct AppearanceTab: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
             EventsSection()
-            Divider()
             StatusBarSection()
-            Divider()
             MenuSection()
             Spacer()
-        }.padding()
-    }
-}
-
-struct StatusBarSection: View {
-    @Default(.eventTitleIconFormat) var eventTitleIconFormat
-    @Default(.eventTitleFormat) var eventTitleFormat
-    @Default(.eventTimeFormat) var eventTimeFormat
-    @Default(.statusbarEventTitleLength) var statusbarEventTitleLength
-    @Default(.showEventMaxTimeUntilEventThreshold) var showEventMaxTimeUntilEventThreshold
-    @Default(.showEventMaxTimeUntilEventEnabled) var showEventMaxTimeUntilEventEnabled
-
-    var body: some View {
-        Text("preferences_appearance_status_bar_title".loco()).font(.headline).bold()
-        Section {
-            HStack {
-                Picker(
-                    "preferences_appearance_status_bar_icon_title".loco(),
-                    selection: $eventTitleIconFormat
-                ) {
-                    HStack {
-                        Image(nsImage: getImage(iconName: EventTitleIconFormat.calendar.rawValue))
-                            .resizable()
-                            .frame(width: 16.0, height: 16.0)
-                        Text("preferences_appearance_status_bar_icon_calendar_icon_value".loco())
-                    }.tag(EventTitleIconFormat.calendar)
-
-                    HStack {
-                        Image(nsImage: getImage(iconName: EventTitleIconFormat.appicon.rawValue))
-                            .resizable()
-                            .frame(width: 16.0, height: 16.0)
-                        Text("preferences_appearance_status_bar_icon_app_icon_value".loco())
-                    }.tag(EventTitleIconFormat.appicon)
-
-                    HStack {
-                        Image(nsImage: getImage(iconName: EventTitleIconFormat.eventtype.rawValue))
-                            .resizable()
-                            .frame(width: 16.0, height: 16.0)
-                        Text("preferences_appearance_status_bar_icon_specific_icon_value".loco())
-                    }.tag(EventTitleIconFormat.eventtype)
-
-                    HStack {
-                        Image(nsImage: getImage(iconName: EventTitleIconFormat.none.rawValue))
-                            .resizable()
-                            .frame(width: 16.0, height: 16.0)
-                        Text("preferences_appearance_status_bar_icon_no_icon_value".loco())
-                    }.tag(EventTitleIconFormat.none)
-                }
-            }.frame(width: 300)
-
-            HStack {
-                Picker(
-                    "preferences_appearance_status_bar_title_title".loco(),
-                    selection: $eventTitleFormat
-                ) {
-                    Text("preferences_appearance_status_bar_title_event_title_value".loco()).tag(
-                        EventTitleFormat.show)
-                    Text("preferences_appearance_status_bar_title_dot_value".loco()).tag(
-                        EventTitleFormat.dot)
-                    Text("preferences_appearance_status_bar_title_hide_value".loco()).tag(
-                        EventTitleFormat.none)
-                }.frame(width: 300)
-                if eventTitleFormat == EventTitleFormat.show {
-                    Stepper(
-                        "preferences_appearance_status_bar_title_shorten_stepper".loco(
-                            statusbarEventTitleLength),
-                        value: $statusbarEventTitleLength,
-                        in: statusbarEventTitleLengthLimits
-                            .min ... statusbarEventTitleLengthLimits.max,
-                        step: 5
-                    )
-                }
-            }
-            HStack {
-                Picker(
-                    "preferences_appearance_status_bar_time_title".loco(),
-                    selection: $eventTimeFormat
-                ) {
-                    Text("preferences_appearance_status_bar_time_show_value".loco()).tag(
-                        EventTimeFormat.show)
-                    Text("preferences_appearance_status_bar_time_show_under_title_value".loco())
-                        .tag(EventTimeFormat.show_under_title)
-                }
-            }.frame(width: 300)
-
-            HStack {
-                Toggle(
-                    "preferences_appearance_status_bar_next_event_toggle".loco(),
-                    isOn: $showEventMaxTimeUntilEventEnabled
-                )
-                Stepper(
-                    "preferences_appearance_status_bar_next_event_stepper".loco(
-                        showEventMaxTimeUntilEventThreshold),
-                    value: $showEventMaxTimeUntilEventThreshold, in: 5 ... 720, step: 5
-                )
-                .disabled(!showEventMaxTimeUntilEventEnabled)
-            }
-        }.padding(.horizontal, 10)
-    }
-
-    func getImage(iconName: String) -> NSImage {
-        let icon = NSImage(named: iconName)
-        icon!.size = NSSize(width: 16, height: 16)
-        return icon!
-    }
-}
-
-struct MenuSection: View {
-    @Default(.timeFormat) var timeFormat
-    @Default(.shortenEventTitle) var shortenEventTitle
-    @Default(.menuEventTitleLength) var menuEventTitleLength
-    @Default(.showEventEndTime) var showEventEndTime
-    @Default(.showEventDetails) var showEventDetails
-    @Default(.showMeetingServiceIcon) var showMeetingServiceIcon
-
-    var body: some View {
-        Text("preferences_appearance_menu_title".loco()).font(.headline).bold()
-        Section {
-            HStack {
-                Toggle(
-                    "preferences_appearance_menu_shorten_event_title_toggle".loco(),
-                    isOn: $shortenEventTitle
-                )
-                Stepper(
-                    "preferences_appearance_menu_shorten_event_title_stepper".loco(
-                        menuEventTitleLength), value: $menuEventTitleLength, in: 20 ... 100, step: 5
-                ).disabled(!shortenEventTitle)
-            }
-            Group {
-                HStack {
-                    Picker(
-                        "preferences_appearance_menu_time_format_title".loco(),
-                        selection: $timeFormat
-                    ) {
-                        Text("preferences_appearance_menu_time_format_12_hour_value".loco()).tag(
-                            TimeFormat.am_pm)
-                        Text("preferences_appearance_menu_time_format_24_hour_value".loco()).tag(
-                            TimeFormat.military)
-                    }
-                }.frame(width: 300)
-                HStack {
-                    Text("preferences_appearance_menu_show_event_title".loco())
-                    Toggle(
-                        "preferences_appearance_menu_show_event_end_time_value".loco(),
-                        isOn: $showEventEndTime
-                    )
-                    Toggle(
-                        "preferences_appearance_menu_show_event_icon_value".loco(),
-                        isOn: $showMeetingServiceIcon
-                    )
-                    Toggle(
-                        "preferences_appearance_menu_show_event_details_value".loco(),
-                        isOn: $showEventDetails
-                    )
-                }
-            }
-        }.padding(.horizontal, 10)
+        }
     }
 }
 
@@ -189,8 +31,7 @@ struct EventsSection: View {
     @Default(.showEventsForPeriod) var showEventsForPeriod
 
     var body: some View {
-        Text("preferences_appearance_events_title".loco()).font(.headline).bold()
-        Section {
+        GroupBox(label: Label("preferences_appearance_events_title".loco(), systemImage: "calendar.day.timeline.left")) {
             HStack {
                 Picker(
                     "preferences_appearance_events_show_events_for_title".loco(),
@@ -268,6 +109,7 @@ struct EventsSection: View {
                         TentativeEventsAppereance.hide)
                 }
             }
+
             HStack {
                 Picker(
                     "preferences_appearance_events_pending_title".loco(),
@@ -295,6 +137,165 @@ struct EventsSection: View {
                         DeclinedEventsAppereance.hide)
                 }
             }
-        }.padding(.horizontal, 10)
+        }
     }
+}
+
+struct StatusBarSection: View {
+    @Default(.eventTitleIconFormat) var eventTitleIconFormat
+    @Default(.eventTitleFormat) var eventTitleFormat
+    @Default(.eventTimeFormat) var eventTimeFormat
+    @Default(.statusbarEventTitleLength) var statusbarEventTitleLength
+    @Default(.showEventMaxTimeUntilEventThreshold) var showEventMaxTimeUntilEventThreshold
+    @Default(.showEventMaxTimeUntilEventEnabled) var showEventMaxTimeUntilEventEnabled
+
+    var body: some View {
+        GroupBox(label: Label("preferences_appearance_status_bar_title".loco(), systemImage: "menubar.rectangle")) {
+            Section {
+                HStack {
+                    Picker(
+                        "preferences_appearance_status_bar_icon_title".loco(),
+                        selection: $eventTitleIconFormat
+                    ) {
+                        HStack {
+                            Image(nsImage: getImage(iconName: EventTitleIconFormat.calendar.rawValue))
+                                .resizable()
+                                .frame(width: 16.0, height: 16.0)
+                            Text("preferences_appearance_status_bar_icon_calendar_icon_value".loco())
+                        }.tag(EventTitleIconFormat.calendar)
+
+                        HStack {
+                            Image(nsImage: getImage(iconName: EventTitleIconFormat.appicon.rawValue))
+                                .resizable()
+                                .frame(width: 16.0, height: 16.0)
+                            Text("preferences_appearance_status_bar_icon_app_icon_value".loco())
+                        }.tag(EventTitleIconFormat.appicon)
+
+                        HStack {
+                            Image(nsImage: getImage(iconName: EventTitleIconFormat.eventtype.rawValue))
+                                .resizable()
+                                .frame(width: 16.0, height: 16.0)
+                            Text("preferences_appearance_status_bar_icon_specific_icon_value".loco())
+                        }.tag(EventTitleIconFormat.eventtype)
+
+                        HStack {
+                            Image(nsImage: getImage(iconName: EventTitleIconFormat.none.rawValue))
+                                .resizable()
+                                .frame(width: 16.0, height: 16.0)
+                            Text("preferences_appearance_status_bar_icon_no_icon_value".loco())
+                        }.tag(EventTitleIconFormat.none)
+                    }
+                }.frame(width: 300)
+
+                HStack {
+                    Picker(
+                        "preferences_appearance_status_bar_title_title".loco(),
+                        selection: $eventTitleFormat
+                    ) {
+                        Text("preferences_appearance_status_bar_title_event_title_value".loco()).tag(
+                            EventTitleFormat.show)
+                        Text("preferences_appearance_status_bar_title_dot_value".loco()).tag(
+                            EventTitleFormat.dot)
+                        Text("preferences_appearance_status_bar_title_hide_value".loco()).tag(
+                            EventTitleFormat.none)
+                    }.frame(width: 300)
+                    if eventTitleFormat == EventTitleFormat.show {
+                        Stepper(
+                            "preferences_appearance_status_bar_title_shorten_stepper".loco(
+                                statusbarEventTitleLength),
+                            value: $statusbarEventTitleLength,
+                            in: statusbarEventTitleLengthLimits
+                                .min ... statusbarEventTitleLengthLimits.max,
+                            step: 5
+                        )
+                    }
+                }
+
+                HStack {
+                    Picker(
+                        "preferences_appearance_status_bar_time_title".loco(),
+                        selection: $eventTimeFormat
+                    ) {
+                        Text("preferences_appearance_status_bar_time_show_value".loco()).tag(
+                            EventTimeFormat.show)
+                        Text("preferences_appearance_status_bar_time_show_under_title_value".loco())
+                            .tag(EventTimeFormat.show_under_title)
+                    }
+                }.frame(width: 300)
+
+                HStack {
+                    Toggle(
+                        "preferences_appearance_status_bar_next_event_toggle".loco(),
+                        isOn: $showEventMaxTimeUntilEventEnabled
+                    )
+                    Stepper(
+                        "preferences_appearance_status_bar_next_event_stepper".loco(
+                            showEventMaxTimeUntilEventThreshold),
+                        value: $showEventMaxTimeUntilEventThreshold, in: 5 ... 720, step: 5
+                    )
+                    .disabled(!showEventMaxTimeUntilEventEnabled)
+                }
+            }.frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    func getImage(iconName: String) -> NSImage {
+        let icon = NSImage(named: iconName)
+        icon!.size = NSSize(width: 16, height: 16)
+        return icon!
+    }
+}
+
+struct MenuSection: View {
+    @Default(.timeFormat) var timeFormat
+    @Default(.shortenEventTitle) var shortenEventTitle
+    @Default(.menuEventTitleLength) var menuEventTitleLength
+    @Default(.showEventEndTime) var showEventEndTime
+    @Default(.showEventDetails) var showEventDetails
+    @Default(.showMeetingServiceIcon) var showMeetingServiceIcon
+
+    var body: some View {
+        GroupBox(label: Label("Menu", systemImage: "filemenu.and.selection")) {
+            Section {
+                HStack {
+                    Toggle(
+                        "preferences_appearance_menu_shorten_event_title_toggle".loco(),
+                        isOn: $shortenEventTitle
+                    )
+                    Stepper(
+                        "preferences_appearance_menu_shorten_event_title_stepper".loco(
+                            menuEventTitleLength), value: $menuEventTitleLength, in: 20 ... 100, step: 5
+                    ).disabled(!shortenEventTitle)
+                }
+                Picker(
+                    "preferences_appearance_menu_time_format_title".loco(),
+                    selection: $timeFormat
+                ) {
+                    Text("preferences_appearance_menu_time_format_12_hour_value".loco()).tag(
+                        TimeFormat.am_pm)
+                    Text("preferences_appearance_menu_time_format_24_hour_value".loco()).tag(
+                        TimeFormat.military)
+                }.frame(width: 300)
+                HStack {
+                    Text("preferences_appearance_menu_show_event_title".loco())
+                    Toggle(
+                        "preferences_appearance_menu_show_event_end_time_value".loco(),
+                        isOn: $showEventEndTime
+                    )
+                    Toggle(
+                        "preferences_appearance_menu_show_event_icon_value".loco(),
+                        isOn: $showMeetingServiceIcon
+                    )
+                    Toggle(
+                        "preferences_appearance_menu_show_event_details_value".loco(),
+                        isOn: $showEventDetails
+                    )
+                }.padding(.top, 3)
+            }.frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+}
+
+#Preview {
+    AppearanceTab().padding().frame(width: 700, height: 620)
 }
