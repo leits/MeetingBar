@@ -39,6 +39,7 @@ jobs:
         with:
           name: MeetingBar Tests
           path: build/test-results/*.xml
+          reporter: jest-junit
 
 
       - name: Upload coverage to Codecov
