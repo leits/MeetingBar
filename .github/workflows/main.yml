@@ -20,10 +20,6 @@ jobs:
       - name: Show current version of Xcode
         run: xcodebuild -version
 
-      - name: Install tools
-        run: |
-          brew install xcpretty
-
       - name: Run Tests & Generate JUnit
         shell: bash
         run: |
@@ -47,3 +43,5 @@ jobs:
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
