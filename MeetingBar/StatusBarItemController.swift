@@ -747,8 +747,6 @@ final class StatusBarItemController {
         createEventItem.target = self
         createEventItem.setShortcut(for: .createMeetingShortcut)
 
-        statusItemMenu.addItem(createEventItem)
-
         // MENU ITEM: Quick actions menu
         let quickActionsItem = statusItemMenu.addItem(
             withTitle: "status_bar_quick_actions".loco(),
