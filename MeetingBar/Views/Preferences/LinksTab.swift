@@ -9,7 +9,7 @@
 import Defaults
 import SwiftUI
 
-struct ServicesTab: View {
+struct LinksTab: View {
     @Default(.meetBrowser) var meetBrowser
     @Default(.browserForCreateMeeting) var browserForCreateMeeting
     @Default(.defaultBrowser) var defaultBrowser
@@ -95,29 +95,6 @@ struct ServicesTab: View {
                 }
             }.padding(.horizontal, 10)
 
-            Section {
-                // Move other to end of list
-                let services = MeetingServices.allCases.sorted { lhs, rhs in
-                    if lhs == .other {
-                        return false
-                    }
-                    if rhs == .other {
-                        return true
-                    }
-                    return lhs.localizedValue < rhs.localizedValue
-                }
-                .map(\.localizedValue)
-                .joined(separator: ", ")
-
-                Text("preferences_services_supported_links_list".loco(services))
-                HStack {
-                    Text("preferences_services_supported_links_mailback".loco())
-                    Button("✉️") {
-                        Links.emailMe.openInDefaultBrowser()
-                    }
-                }
-            }.foregroundColor(.gray).font(.system(size: 12)).padding(.horizontal, 10)
-
             Divider()
             VStack {
                 HStack {
@@ -191,4 +168,8 @@ struct CreateMeetingServicePicker: View {
             Text(CreateMeetingServices.url.localizedValue).tag(CreateMeetingServices.url)
         }.labelsHidden()
     }
+}
+
+#Preview {
+    ServicesTab().padding().frame(width: 700, height: 620)
 }
