@@ -14,19 +14,24 @@ import KeyboardShortcuts
 struct GeneralTab: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
-            Section {
+            GroupBox(label: Label("General Settings", systemImage: "gearshape")) {
                 LaunchAtLoginANDPreferredLanguagePicker()
-                Divider()
-                JoinEventNotificationPicker()
-                FullscreenNotificationPicker()
-                Divider()
             }
-            Section {
+            GroupBox(label: Label("Event Notifications", systemImage: "bell.badge.fill")) {
+                VStack(alignment: .leading, spacing: 8) {
+                    JoinEventNotificationPicker()
+                    FullscreenNotificationPicker()
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .padding(.top, 8)
+            GroupBox(label: Label("Keyboard Shortcuts", systemImage: "keyboard")) {
                 ShortcutsSection()
-                Divider()
+            }.padding(.top, 8)
+            GroupBox(label: Label("About & Support", systemImage: "person.crop.circle")) {
                 PatronageAppSection()
-            }
-        }.padding()
+            }.padding(.top, 8)
+        }
     }
 }
 
@@ -198,4 +203,8 @@ struct ContactModal: View {
             }
         }.padding().frame(width: 300, height: 220)
     }
+}
+
+#Preview() {
+    GeneralTab().padding().frame(width: 700, height: 620)
 }

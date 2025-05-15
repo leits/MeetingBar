@@ -223,3 +223,7 @@ struct BrowserConfigView: View {
         }
     }
 }
+
+#Preview {
+    BrowserConfigView()
+}
