@@ -14,11 +14,10 @@ func makeFakeEvent(
     start: Date,
     end: Date,
     isAllDay: Bool = false,
-    status: MBEventStatus = .confirmed,
+    status _: MBEventStatus = .confirmed,
     withLink: Bool = false,
     participationStatus: MBEventAttendeeStatus = .accepted
 ) -> MBEvent {
-
     let calendar = MBCalendar(title: "Fake calendar \(id)", id: "cal_\(id)", source: nil, email: nil, color: .black)
 
     let link = withLink ? URL(string: "https://zoom.us/j/5551112222")! : nil

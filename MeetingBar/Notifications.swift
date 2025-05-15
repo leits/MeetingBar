@@ -18,10 +18,11 @@ private struct EventFP: Equatable {
     let start: Date
     let end: Date
 }
+
 @MainActor private var lastScheduleEventFP: EventFP?
 
 @MainActor func ensureNotificationAuthorization() async {
-    guard !didRequestAuth else { return }   // ask once
+    guard !didRequestAuth else { return } // ask once
     didRequestAuth = true
     do {
         try await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound])
@@ -110,7 +111,7 @@ func sendUserNotification(_ title: String, _ text: String) async {
     let center = UNUserNotificationCenter.current()
     do {
         try await center.add(request)
-    } catch let error {
+    } catch {
         NSLog(
             "%@",
             "request \(request.identifier) could not be added because of error \(error)"
@@ -138,6 +139,7 @@ func sendNotification(_ title: String, _ text: String) {
         }
     }
 }
+
 /// adds an alert for the user- we will only use NSAlert if the user has switched off notifications
 @MainActor
 func displayAlert(title: String, text: String) {
@@ -156,7 +158,7 @@ func displayAlert(title: String, text: String) {
     }
 
     let fp = EventFP(id: event.id, start: event.startDate, end: event.endDate)
-    guard fp != lastScheduleEventFP else { return }   // ← skip already scheduled if no changes
+    guard fp != lastScheduleEventFP else { return } // ← skip already scheduled if no changes
     lastScheduleEventFP = fp
 
     let now = Date()
@@ -203,7 +205,7 @@ func displayAlert(title: String, text: String) {
         let center = UNUserNotificationCenter.current()
         do {
             try await center.add(request)
-        } catch let error {
+        } catch {
             NSLog(
                 "%@",
                 "request \(request.identifier) could not be added because of error \(error)"
@@ -250,7 +252,7 @@ func displayAlert(title: String, text: String) {
         let center = UNUserNotificationCenter.current()
         do {
             try await center.add(request)
-        } catch let error {
+        } catch {
             NSLog(
                 "%@",
                 "request \(request.identifier) could not be added because of error \(error)"
@@ -291,7 +293,7 @@ func snoozeEventNotification(_ event: MBEvent, _ interval: NotificationEventTime
     let center = UNUserNotificationCenter.current()
     do {
         try await center.add(request)
-    } catch let error {
+    } catch {
         NSLog(
             "%@",
             "request \(request.identifier) could not be added because of error \(error)"

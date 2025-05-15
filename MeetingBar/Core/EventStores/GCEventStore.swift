@@ -41,40 +41,41 @@ class GCEventStore: NSObject, EventStore, @preconcurrency OIDExternalUserAgent {
         if let auth, auth.canAuthorize() { return }
 
         let config = try await withCheckedThrowingContinuation { cont in
-                OIDAuthorizationService.discoverConfiguration(
-                    forIssuer: URL(string: Self.kIssuer)!) { cfg, err in
-                        if let cfg { cont.resume(returning: cfg) } else { cont.resume(throwing: err ?? NSError(domain: "GoogleSignIn", code: 0)) }
-                }
+            OIDAuthorizationService.discoverConfiguration(
+                forIssuer: URL(string: Self.kIssuer)!) { cfg, err in
+                if let cfg { cont.resume(returning: cfg) } else { cont.resume(throwing: err ?? NSError(domain: "GoogleSignIn", code: 0)) }
             }
+        }
 
         try await withCheckedThrowingContinuation { cont in
-                let scopes = [
-                    "email",
-                    "https://www.googleapis.com/auth/calendar.calendarlist.readonly",
-                    "https://www.googleapis.com/auth/calendar.events.readonly"
-                ]
+            let scopes = [
+                "email",
+                "https://www.googleapis.com/auth/calendar.calendarlist.readonly",
+                "https://www.googleapis.com/auth/calendar.events.readonly"
+            ]
 
-                let request = OIDAuthorizationRequest(
-                    configuration: config,
-                    clientId: Self.kClientID,
-                    clientSecret: Self.kClientSecret,
-                    scopes: scopes,
-                    redirectURL: URL(string: Self.kRedirectURI)!,
-                    responseType: OIDResponseTypeCode,
-                    additionalParameters: nil)
+            let request = OIDAuthorizationRequest(
+                configuration: config,
+                clientId: Self.kClientID,
+                clientSecret: Self.kClientSecret,
+                scopes: scopes,
+                redirectURL: URL(string: Self.kRedirectURI)!,
+                responseType: OIDResponseTypeCode,
+                additionalParameters: nil
+            )
 
-                self.currentAuthorizationFlow = OIDAuthState
-                    .authState(byPresenting: request, externalUserAgent: self) { state, error in
-                        if let state {
-                            self.setAuthorization(auth:
-                                GTMAppAuthFetcherAuthorization(authState: state))
-                            sendNotification("Google Account connected", "\(self.auth?.userEmail ?? "") is connected")
-                            cont.resume()
-                        } else {
-                            cont.resume(throwing: error ?? NSError(domain: "GoogleSignIn", code: 1))
-                        }
+            self.currentAuthorizationFlow = OIDAuthState
+                .authState(byPresenting: request, externalUserAgent: self) { state, error in
+                    if let state {
+                        self.setAuthorization(auth:
+                            GTMAppAuthFetcherAuthorization(authState: state))
+                        sendNotification("Google Account connected", "\(self.auth?.userEmail ?? "") is connected")
+                        cont.resume()
+                    } else {
+                        cont.resume(throwing: error ?? NSError(domain: "GoogleSignIn", code: 1))
                     }
-            }
+                }
+        }
     }
 
     func signOut() async {
@@ -105,8 +106,8 @@ class GCEventStore: NSObject, EventStore, @preconcurrency OIDExternalUserAgent {
     private func getCalendarEventsForDateRange(
         calendar: MBCalendar,
         dateFrom: Date,
-        dateTo: Date) async throws -> [MBEvent] {
-
+        dateTo: Date
+    ) async throws -> [MBEvent] {
         guard let auth else { throw NSError(domain: "GoogleSignIn", code: 0) }
 
         let iso = ISO8601DateFormatter()
@@ -114,8 +115,8 @@ class GCEventStore: NSObject, EventStore, @preconcurrency OIDExternalUserAgent {
         let timeMax = iso.string(from: dateTo)
 
         let url = URL(string:
-          "https://www.googleapis.com/calendar/v3/calendars/\(calendar.id)/events" +
-          "?singleEvents=true&eventTypes=default&orderBy=startTime&timeMax=\(timeMax)&timeMin=\(timeMin)")!
+            "https://www.googleapis.com/calendar/v3/calendars/\(calendar.id)/events" +
+                "?singleEvents=true&eventTypes=default&orderBy=startTime&timeMax=\(timeMax)&timeMin=\(timeMin)")!
         let items = try await fetchJSON(url, authorizedWith: auth)
 
         return items.compactMap { GCParser.event(from: $0, calendar: calendar) }
@@ -126,9 +127,10 @@ class GCEventStore: NSObject, EventStore, @preconcurrency OIDExternalUserAgent {
 
         for cal in calendars {
             let ev = try await getCalendarEventsForDateRange(
-                       calendar: cal,
-                       dateFrom: from,
-                       dateTo: to)
+                calendar: cal,
+                dateFrom: from,
+                dateTo: to
+            )
             events.append(contentsOf: ev)
         }
         return events
@@ -149,7 +151,7 @@ class GCEventStore: NSObject, EventStore, @preconcurrency OIDExternalUserAgent {
     private func saveState() {
         let key = Self.AuthKeychainName
 
-        guard let auth = self.auth else {
+        guard let auth = auth else {
             GTMAppAuthFetcherAuthorization.removeFromKeychain(forName: key)
             return
         }
@@ -175,10 +177,10 @@ class GCEventStore: NSObject, EventStore, @preconcurrency OIDExternalUserAgent {
     }
 
     // MARK: - Networking helper
+
     private func fetchJSON(_ url: URL,
                            authorizedWith auth: GTMAppAuthFetcherAuthorization)
-    async throws -> [[String: Any]] {
-
+        async throws -> [[String: Any]] {
         try await withCheckedThrowingContinuation { cont in
             fetcherService.authorizer = auth
             fetcherService.fetcher(with: url).beginFetch { data, error in
@@ -188,7 +190,7 @@ class GCEventStore: NSObject, EventStore, @preconcurrency OIDExternalUserAgent {
                 }
                 do {
                     let top = try JSONSerialization.jsonObject(with: data)
-                                                 as? [String: Any] ?? [:]
+                        as? [String: Any] ?? [:]
                     let items = top["items"] as? [[String: Any]] ?? []
                     Task { @MainActor in cont.resume(returning: items) }
                 } catch {
@@ -199,6 +201,7 @@ class GCEventStore: NSObject, EventStore, @preconcurrency OIDExternalUserAgent {
     }
 
     // MARK: - Google JSON ➜ MBEvent
+
     enum GCParser {
         static func event(from item: [String: Any],
                           calendar: MBCalendar) -> MBEvent? {
@@ -299,5 +302,4 @@ class GCEventStore: NSObject, EventStore, @preconcurrency OIDExternalUserAgent {
             )
         }
     }
-
 }

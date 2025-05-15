@@ -1,5 +1,5 @@
-import XCTest
 @testable import MeetingBar
+import XCTest
 
 final class ScriptsTests: XCTestCase {
     func testCreateAppleScriptParametersForEvent() {
