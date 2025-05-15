@@ -333,3 +333,4 @@
 "notification_all_dismissals_removed_title" = "Usuń wszystkie odwołania";
 "notification_all_dismissals_removed_message" = "Wszystkie odwołania spotkania wracają do akcji";
 "status_bar_section_refresh_sources" = "Odśwież źródła";
+"notifications_meetingbar_dismiss_event_action" = "Odrzuć";

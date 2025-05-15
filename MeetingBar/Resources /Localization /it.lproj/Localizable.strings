@@ -70,7 +70,7 @@
 "preferences_appearance_events_past_title" = "Eventi passati:";
 "preferences_appearance_events_pending_title" = "Eventi in sospeso";
 "preferences_appearance_events_declined_title" = "Eventi rifiutati:";
-"preferences_appearance_events_tentative_title" = "Tentative events:";
+"preferences_appearance_events_tentative_title" = "Eventi provvisori:";
 "preferences_appearance_events_value_show" = "mostra";
 "preferences_appearance_events_value_hide" = "nascondi";
 "preferences_appearance_events_value_as_inactive" = "mostra come inattivo";
@@ -330,3 +330,4 @@
 
 "link_url_cant_open_title" = "Oops! Impossibile aprire il link in %@";
 "link_url_cant_open_message" = "Assicurati di aver %@ installato, oppure apri questi link in un browser dalle preferenze.";
+"notifications_meetingbar_dismiss_event_action" = "Abbandona";
