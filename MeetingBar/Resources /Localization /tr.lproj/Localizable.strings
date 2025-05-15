@@ -332,3 +332,4 @@
 "notification_all_dismissals_removed_message" = "Kapatılan tüm toplantılar tekrar aktif";
 "notifications_meetingbar_join_event_action" = "Katıl";
 "notifications_meetingbar_dismiss_event_action" = "Yoksay";
+"preferences_tab_links" = "Bağlantılar";
