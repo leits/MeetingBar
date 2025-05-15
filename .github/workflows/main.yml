@@ -41,8 +41,23 @@ jobs:
           path: build/test-results/*.xml
           reporter: jest-junit
 
+      - name: Install Slather
+        run: |
+          gem install slather
+
+      - name: Generate Coverage Report
+        shell: bash
+        run: |
+          slather coverage \
+            --scheme MeetingBar \
+            --cobertura-xml \
+            --output-directory build/coverage \
+            MeetingBar.xcodeproj
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
+        if: always()
         with:
+          files: build/coverage/cobertura.xml
+          fail_ci_if_error: true
           token: ${{ secrets.CODECOV_TOKEN }}
