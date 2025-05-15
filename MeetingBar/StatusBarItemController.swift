@@ -12,6 +12,16 @@ import Combine
 import Defaults
 import KeyboardShortcuts
 
+
+private enum MenuStyleConstants {
+    static let defaultFontSize: CGFloat    = 13
+    static let runningIconName             = "running_icon"
+    static let appIconName                 = "AppIcon"
+    static let calendarCheckmarkIconName   = "iconCalendarCheckmark"
+    static let calendarIconName            = "iconCalendar"
+    static let iconSize: NSSize            = .init(width: 16, height: 16)
+}
+
 /**
  * creates the menu in the system status bar, creates the menu items and controls the whole lifecycle.
  */
@@ -41,8 +51,8 @@ final class StatusBarItemController {
         statusItem.button?.sendAction(on: [NSEvent.EventTypeMask.rightMouseDown, NSEvent.EventTypeMask.leftMouseUp, NSEvent.EventTypeMask.leftMouseDown])
 
         // Temporary icon and menu before app delegate setup
-        statusItem.button?.image = NSImage(named: "AppIcon")!
-        statusItem.button?.image?.size = NSSize(width: 16, height: 16)
+        statusItem.button?.image = NSImage(named: MenuStyleConstants.appIconName)!
+        statusItem.button?.image?.size = MenuStyleConstants.iconSize
         statusItem.button?.imagePosition = .imageLeft
         let menuItem = statusItemMenu.addItem(withTitle: "window_title_onboarding".loco(), action: nil, keyEquivalent: "")
         menuItem.isEnabled = false
@@ -210,18 +220,18 @@ final class StatusBarItemController {
                 case .appicon:
                     button.image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
                 default:
-                    button.image = NSImage(named: "iconCalendarCheckmark")
+                    button.image = NSImage(named: MenuStyleConstants.calendarCheckmarkIconName)
                 }
-                button.image?.size = NSSize(width: 16, height: 16)
+                button.image?.size = MenuStyleConstants.iconSize
             } else if title == "MeetingBar" {
-                button.image = NSImage(named: "AppIcon")!
-                button.image?.size = NSSize(width: 16, height: 16)
+                button.image = NSImage(named: MenuStyleConstants.appIconName)!
+                button.image?.size = MenuStyleConstants.iconSize
             } else if case .afterThreshold = nextEventState {
                 switch Defaults[.eventTitleIconFormat] {
                 case .appicon:
                     button.image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
                 default:
-                    button.image = NSImage(named: "iconCalendar")
+                    button.image = NSImage(named: MenuStyleConstants.calendarIconName)
                 }
             }
 
@@ -235,7 +245,7 @@ final class StatusBarItemController {
                     }
 
                     button.image = image
-                    button.image?.size = NSSize(width: 16, height: 16)
+                    button.image?.size = MenuStyleConstants.iconSize
                 }
 
                 if button.image?.name() == "no_online_session" {
@@ -254,7 +264,7 @@ final class StatusBarItemController {
                     }
 
                     var styles = [NSAttributedString.Key: Any]()
-                    styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: 13)
+                    styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: MenuStyleConstants.defaultFontSize)
 
                     if nextEvent.participationStatus == .pending, Defaults[.showPendingEvents] == PendingEventsAppereance.show_underlined {
                         styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
@@ -375,7 +385,7 @@ final class StatusBarItemController {
             action: nil,
             keyEquivalent: ""
         )
-        titleItem.attributedTitle = NSAttributedString(string: dateTitle, attributes: [NSAttributedString.Key.font: NSFont.boldSystemFont(ofSize: 13)])
+        titleItem.attributedTitle = NSAttributedString(string: dateTitle, attributes: [NSAttributedString.Key.font: NSFont.boldSystemFont(ofSize: MenuStyleConstants.defaultFontSize)])
         titleItem.isEnabled = false
 
         // Events
@@ -544,8 +554,8 @@ final class StatusBarItemController {
             if shouldShowAsActive {
                 // create our NSTextAttachment
                 let runningImage = NSTextAttachment()
-                runningImage.image = NSImage(named: "running_icon")
-                runningImage.image?.size = NSSize(width: 16, height: 16)
+                runningImage.image = NSImage(named: MenuStyleConstants.runningIconName)
+                runningImage.image?.size = MenuStyleConstants.iconSize
 
                 // wrap the attachment in its own attributed string so we can append it
                 let runningIcon = NSAttributedString(attachment: runningImage)
@@ -819,7 +829,7 @@ final class StatusBarItemController {
             bookmarksMenu = NSMenu(title: "status_bar_section_bookmarks_menu".loco())
             bookmarksItem.submenu = bookmarksMenu
         } else {
-            bookmarksItem.attributedTitle = NSAttributedString(string: "status_bar_section_bookmarks_title".loco(), attributes: [NSAttributedString.Key.font: NSFont.boldSystemFont(ofSize: 13)])
+            bookmarksItem.attributedTitle = NSAttributedString(string: "status_bar_section_bookmarks_title".loco(), attributes: [NSAttributedString.Key.font: NSFont.boldSystemFont(ofSize: MenuStyleConstants.defaultFontSize)])
             bookmarksItem.isEnabled = false
             bookmarksMenu = statusItemMenu
         }
