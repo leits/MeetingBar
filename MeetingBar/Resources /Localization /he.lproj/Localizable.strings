@@ -30,7 +30,6 @@
 "preferences_general_patron_twelve_months" = "שנה - 11.99 דולר";
 "preferences_general_patron_description" = "אלו רכישות חד־פעמיות והן לא תתחדשנה.";
 "general_ok" = "אישור";
-"preferences_tab_services" = "שירותים";
 "preferences_tab_appearance" = "מראה";
 "preferences_general_patron_thank_for_purchase" = "תודה רבה! תמכת ב־MeetingBar למשך %d חודשים 🎉";
 "status_bar_submenu_attendees_status_unknown" = " [?]";
