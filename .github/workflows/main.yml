@@ -20,17 +20,30 @@ jobs:
       - name: Show current version of Xcode
         run: xcodebuild -version
 
-      - name: Install xcbeautify
-        run: brew install xcbeautify
+      - name: Install tools
+        run: |
+          brew install xcpretty
 
-      - name: Build and run unit tests
+      - name: Run Tests & Generate JUnit
         shell: bash
         run: |
           set -o pipefail
           xcodebuild \
             -scheme MeetingBar \
             -configuration Debug \
+            -enableCodeCoverage YES \
             build test \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
-          | xcbeautify
+          | xcpretty --report junit --output build/test-results/report.junit.xml
+
+      - name: Publish Test Results
+        uses: dorny/test-reporter@v2
+        if: always()
+        with:
+          name: MeetingBar Tests
+          path: build/test-results/*.xml
+
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
