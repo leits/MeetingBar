@@ -89,9 +89,9 @@
 "preferences_configure_browsers_modal_add_browser_path" = "נתיב";
 "preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "בחירת דפדפן";
 "preferences_configure_browsers_modal_alert_title" = "לא ניתן להוסיף הגדרות דפדפן";
-"preferences_configure_browsers_choose_broser_panel_title" = "נא לבחור יישום דפדפן";
-"preferences_configure_browsers_choose_broser_panel_prompt" = "בחירת דפדפן";
-"preferences_configure_browsers_choose_broser_panel_message" = "נא לבחור מאיפה להריץ את הדפדפן.";
+"preferences_configure_browsers_choose_browser_panel_title" = "נא לבחור יישום דפדפן";
+"preferences_configure_browsers_choose_browser_panel_prompt" = "בחירת דפדפן";
+"preferences_configure_browsers_choose_browser_panel_message" = "נא לבחור מאיפה להריץ את הדפדפן.";
 
 // MARK: - Preferences Bookmarks
 

@@ -138,9 +138,9 @@
 "preferences_configure_browsers_modal_add_browser_path" = "パス";
 "preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "ウェブブラウザーの選択";
 "preferences_configure_browsers_modal_alert_title" = "ブラウザー設定を追加できませんでした";
-"preferences_configure_browsers_choose_broser_panel_title" = "ウェブブラウザーアプリを選択してください";
-"preferences_configure_browsers_choose_broser_panel_prompt" = "ウェブブラウザーの選択";
-"preferences_configure_browsers_choose_broser_panel_message" = "ウェブブラウザーをどこから起動するか選択します。";
+"preferences_configure_browsers_choose_browser_panel_title" = "ウェブブラウザーアプリを選択してください";
+"preferences_configure_browsers_choose_browser_panel_prompt" = "ウェブブラウザーの選択";
+"preferences_configure_browsers_choose_browser_panel_message" = "ウェブブラウザーをどこから起動するか選択します。";
 
 // MARK: - Preferences Bookmarks
 

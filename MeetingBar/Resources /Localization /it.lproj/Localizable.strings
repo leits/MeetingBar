@@ -131,9 +131,9 @@
 "preferences_configure_browsers_modal_add_browser_path" = "Percorso";
 "preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "Scegli il browser";
 "preferences_configure_browsers_modal_alert_title" = "Non posso aggiungere la configurazione del browser";
-"preferences_configure_browsers_choose_broser_panel_title" = "Seleziona l'app di un browser";
-"preferences_configure_browsers_choose_broser_panel_prompt" = "Scegli un browser";
-"preferences_configure_browsers_choose_broser_panel_message" = "Seleziona da dove lanciare il browser.";
+"preferences_configure_browsers_choose_browser_panel_title" = "Seleziona l'app di un browser";
+"preferences_configure_browsers_choose_browser_panel_prompt" = "Scegli un browser";
+"preferences_configure_browsers_choose_browser_panel_message" = "Seleziona da dove lanciare il browser.";
 
 // MARK: - Preferences Bookmarks
 
