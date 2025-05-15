@@ -89,4 +89,27 @@ final class EventFilteringTests: XCTestCase {
         let result = [pending, confirmed].filtered()
         XCTAssertEqual(result.map(\.id), ["confirmed"])
     }
+
+    func test_filtered_excludesAllEventsMatchingRegex() {
+        // set up a simple “filterout” pattern
+        Defaults[.filterEventRegexes] = ["filterout"]
+
+        let now = Date()
+        // two events whose titles both match “filterout”
+        let slot1 = makeFakeEvent(id: "filterout1",
+                                  start: now.addingTimeInterval(600),
+                                  end: now.addingTimeInterval(1200))
+        let slot2 = makeFakeEvent(id: "filterout2",
+                                  start: now.addingTimeInterval(1200),
+                                  end: now.addingTimeInterval(1800))
+
+        // one event that doesn’t match
+        let other = makeFakeEvent(id: "other",
+                                  start: now.addingTimeInterval(1800),
+                                  end: now.addingTimeInterval(2400))
+
+        let result = [slot1, slot2, other].filtered()
+        // both slot1 and slot2 should be filtered out, only “other” remains
+        XCTAssertEqual(result.map(\.id), ["other"])
+    }
 }
