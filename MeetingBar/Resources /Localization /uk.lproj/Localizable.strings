@@ -333,3 +333,4 @@
 "notification_all_dismissals_removed_message" = "Всі пропущені зустрічі знову у календарі";
 "notifications_event_started_body" = "Подія розпочалась";
 "notifications_meetingbar_dismiss_event_action" = "Відхилити";
+"preferences_tab_links" = "Посилання";
