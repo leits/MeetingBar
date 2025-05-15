@@ -61,3 +61,10 @@ jobs:
           files: build/coverage/cobertura.xml
           fail_ci_if_error: true
           token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Upload test results to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/test-results-action@v1
+        with:
+          directory: build/test-results
+          token: ${{ secrets.CODECOV_TOKEN }}
