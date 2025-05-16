@@ -145,17 +145,25 @@ public extension Array where Element == MBEvent {
                 continue
             }
 
+            // Skip event if past events should be skipped
+            if event.startDate < now, Defaults[.ongoingEventVisibility] == .hideImmediateAfter {
+                continue
+            }
+
+            // Skip event if past events should be skipped after 10 min
+            if event.startDate < now.addingTimeInterval(600), Defaults[.ongoingEventVisibility] == .showTenMinAfter {
+                continue
+            }
+
             // If the current event is still going on,
-            // but the next event is closer than 13 minutes later
+            // but the next event is closer than 10 minutes later and settings are set to switch
             // then show the next event
             if nextEvent == nil {
                 // Save our next event candidate and continue to look for the second one
                 nextEvent = event
                 continue
             } else {
-                // Show our second next event candidate if it closer the 13 min from now
-                let soon = now.addingTimeInterval(780) // 13 min from now
-                if event.startDate < soon {
+                if event.startDate < now.addingTimeInterval(600), Defaults[.ongoingEventVisibility] == .showTenMinBeforeNext {
                     nextEvent = event
                 } else {
                     break

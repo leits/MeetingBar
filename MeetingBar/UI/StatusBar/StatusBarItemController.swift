@@ -70,7 +70,7 @@ final class StatusBarItemController {
             .showEventEndTime, .showMeetingServiceIcon,
             .timeFormat, .bookmarks, .eventTitleFormat,
             .personalEventsAppereance, .pastEventsAppereance,
-            .declinedEventsAppereance,
+            .declinedEventsAppereance, .ongoingEventVisibility,
             options: []
         )
         .receive(on: DispatchQueue.main)

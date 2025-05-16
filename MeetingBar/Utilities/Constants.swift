@@ -105,6 +105,12 @@ enum ShowEventsForPeriod: String, Defaults.Serializable, Codable, CaseIterable {
     case today_n_tomorrow
 }
 
+enum OngoingEventVisibility: String, Defaults.Serializable, Codable, CaseIterable {
+    case hideImmediateAfter
+    case showTenMinAfter
+    case showTenMinBeforeNext
+}
+
 enum NotificationEventTimeAction: String, Codable {
     case untilStart = "SNOOZE_UNTIL_START_TIME"
     case fiveMinuteLater = "SNOOZE_FOR_5_MIN"

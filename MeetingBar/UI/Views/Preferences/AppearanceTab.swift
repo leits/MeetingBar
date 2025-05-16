@@ -148,6 +148,7 @@ struct StatusBarSection: View {
     @Default(.statusbarEventTitleLength) var statusbarEventTitleLength
     @Default(.showEventMaxTimeUntilEventThreshold) var showEventMaxTimeUntilEventThreshold
     @Default(.showEventMaxTimeUntilEventEnabled) var showEventMaxTimeUntilEventEnabled
+    @Default(.ongoingEventVisibility) var ongoingEventVisibility
 
     var body: some View {
         GroupBox(label: Label("preferences_appearance_status_bar_title".loco(), systemImage: "menubar.rectangle")) {
@@ -185,7 +186,7 @@ struct StatusBarSection: View {
                             Text("preferences_appearance_status_bar_icon_no_icon_value".loco())
                         }.tag(EventTitleIconFormat.none)
                     }
-                }.frame(width: 300)
+                }.frame(width: 325)
 
                 HStack {
                     Picker(
@@ -198,7 +199,7 @@ struct StatusBarSection: View {
                             EventTitleFormat.dot)
                         Text("preferences_appearance_status_bar_title_hide_value".loco()).tag(
                             EventTitleFormat.none)
-                    }.frame(width: 300)
+                    }.frame(width: 325)
                     if eventTitleFormat == EventTitleFormat.show {
                         Stepper(
                             "preferences_appearance_status_bar_title_shorten_stepper".loco(
@@ -221,7 +222,7 @@ struct StatusBarSection: View {
                         Text("preferences_appearance_status_bar_time_show_under_title_value".loco())
                             .tag(EventTimeFormat.show_under_title)
                     }
-                }.frame(width: 300)
+                }.frame(width: 325)
 
                 HStack {
                     Toggle(
@@ -235,6 +236,14 @@ struct StatusBarSection: View {
                     )
                     .disabled(!showEventMaxTimeUntilEventEnabled)
                 }
+                Picker("preferences_appearance_status_bar_ongoing_title".loco(), selection: $ongoingEventVisibility) {
+                    Text("preferences_appearance_status_bar_ongoing_time_immediate_value".loco()).tag(
+                        OngoingEventVisibility.hideImmediateAfter)
+                    Text("preferences_appearance_status_bar_ongoing_time_ten_after_value".loco()).tag(
+                        OngoingEventVisibility.showTenMinAfter)
+                    Text("preferences_appearance_status_bar_ongoing_time_ten_before_next_value".loco()).tag(
+                        OngoingEventVisibility.showTenMinBeforeNext)
+                }.frame(width: 325)
             }.frame(maxWidth: .infinity, alignment: .leading)
         }
     }
@@ -275,7 +284,7 @@ struct MenuSection: View {
                         TimeFormat.am_pm)
                     Text("preferences_appearance_menu_time_format_24_hour_value".loco()).tag(
                         TimeFormat.military)
-                }.frame(width: 300)
+                }.frame(width: 325)
                 HStack {
                     Text("preferences_appearance_menu_show_event_title".loco())
                     Toggle(

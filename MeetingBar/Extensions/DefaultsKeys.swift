@@ -44,6 +44,8 @@ extension Defaults.Keys {
     static let hideMeetingTitle = Key<Bool>("hideMeetingTitle", default: false)
     static let dismissedEvents = Key<[ProcessedEvent]>("dismissedEvents", default: [])
 
+    static let ongoingEventVisibility = Key<OngoingEventVisibility>("ongoingEventVisibility", default: .showTenMinBeforeNext)
+
     // Menu Appearance
     // if the event title in the menu should be shortened or not -> the length will be stored in field menuEventTitleLength
     static let shortenEventTitle = Key<Bool>("shortenEventTitle", default: true)
