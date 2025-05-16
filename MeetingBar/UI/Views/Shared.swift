@@ -112,8 +112,8 @@ func checkNotificationSettings() -> (Bool, Bool) {
     group.enter()
 
     center.getNotificationSettings { notificationSettings in
-        noAlertStyle = notificationSettings.alertStyle != UNAlertStyle.alert
-        notificationsDisabled = notificationSettings.authorizationStatus == UNAuthorizationStatus.denied
+        noAlertStyle = notificationSettings.alertStyle != .alert
+        notificationsDisabled = notificationSettings.authorizationStatus == .denied
         group.leave()
     }
 
