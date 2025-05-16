@@ -23,7 +23,7 @@ public class EventManager: ObservableObject {
     @Published public private(set) var calendars: [MBCalendar] = []
     @Published public private(set) var events: [MBEvent] = []
 
-    public var provider: EventStore // TODO: Make private
+    private var provider: EventStore
     private let refreshInterval: TimeInterval
     private var cancellables = Set<AnyCancellable>()
     private let refreshSubject = PassthroughSubject<Void, Never>()
@@ -45,11 +45,16 @@ public class EventManager: ObservableObject {
         refreshSubject.send() // initial load
     }
 
-    public func setEventStoreProvider(_ providerName: EventStoreProvider) async {
-        Defaults[.eventStoreProvider] = providerName
+    public func changeEventStoreProvider(_ newProvider: EventStoreProvider, withSignOut: Bool = false) async {
+        Defaults[.eventStoreProvider] = newProvider
         Defaults[.selectedCalendarIDs] = []
         calendars = []
-        await configureProvider(providerName)
+
+        if withSignOut {
+            await provider.signOut()
+        }
+
+        await configureProvider(newProvider)
 
         // immediately reload everything
         do {

@@ -783,6 +783,7 @@ final class StatusBarItemController {
         let openLinkFromClipboardItem = quickActionsItem.submenu!.addItem(
             withTitle: "status_bar_section_join_from_clipboard".loco(), action: #selector(openLinkFromClipboardAction), keyEquivalent: ""
         )
+        openLinkFromClipboardItem.target = self
         openLinkFromClipboardItem.setShortcut(for: .openClipboardShortcut)
 
         // MENU ITEM: QUICK ACTIONS: Toggle meeting name visibility

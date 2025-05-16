@@ -73,14 +73,13 @@ struct ProviderPicker: View {
                 Text("Google Calendar API").tag(EventStoreProvider.googleCalendar)
             }
             .onChange(of: picker) { provider in
-                Task { await eventManager.setEventStoreProvider(provider) }
+                Task { await eventManager.changeEventStoreProvider(provider) }
             }
 
             if Defaults[.eventStoreProvider] == .googleCalendar {
                 Button("preferences_calendars_provider_gcalendar_change_account".loco()) {
                     Task {
-                        await eventManager.provider.signOut()
-                        await eventManager.setEventStoreProvider(.googleCalendar)
+                        await eventManager.changeEventStoreProvider(.googleCalendar, withSignOut: true)
                     }
                 }
             }
