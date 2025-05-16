@@ -189,7 +189,6 @@ public class EventManager: ObservableObject {
             .receive(on: RunLoop.main)
             .sink { [weak self] cals, evts in
                 // now we’re safely on the main actor / main thread
-                NSLog("EventManager refreshed calendars: \(cals.count), events: \(evts.count)") // TODO: Remove debug log
                 self?.calendars = cals
                 self?.events = evts
             }
