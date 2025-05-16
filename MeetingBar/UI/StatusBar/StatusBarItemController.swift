@@ -799,11 +799,12 @@ final class StatusBarItemController {
         }
 
         // MENU ITEM: QUICK ACTIONS: Refresh sources
-        quickActionsItem.submenu!.addItem(
+        let refrsehItem = quickActionsItem.submenu!.addItem(
             withTitle: "status_bar_section_refresh_sources".loco(),
             action: #selector(handleManualRefresh),
             keyEquivalent: ""
         )
+        refrsehItem.target = self
     }
 
     /*
