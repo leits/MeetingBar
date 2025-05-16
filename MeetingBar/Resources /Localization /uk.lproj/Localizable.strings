@@ -334,3 +334,7 @@
 "notifications_event_started_body" = "Подія розпочалась";
 "notifications_meetingbar_dismiss_event_action" = "Відхилити";
 "preferences_tab_links" = "Посилання";
+"preferences_appearance_status_bar_ongoing_time_immediate_value" = "приховати після запуску";
+"preferences_appearance_status_bar_ongoing_title" = "Поточна видимість події:";
+"preferences_appearance_status_bar_ongoing_time_ten_before_next_value" = "приховати за 10 хвилин до наступної події";
+"preferences_appearance_status_bar_ongoing_time_ten_after_value" = "приховати через 10 хвилин після початку";
