@@ -112,7 +112,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
      */
     private func startAsyncLoops() {
         // Redraw status bar item on hh:mm:00
-        statusLoopTask = Task.detached(priority: .utility) { [weak self] in
+        statusLoopTask = Task(priority: .utility) { [weak self] in
             while let self, !Task.isCancelled {
                 // Compute now & next minute boundary
                 let now = Date()
