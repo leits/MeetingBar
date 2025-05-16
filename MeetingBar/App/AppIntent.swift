@@ -20,6 +20,7 @@ enum EventDetailsTypeAppEnum: String, AppEnum {
     case url
     case notes
     case location
+    case attendees
 
     static let typeDisplayRepresentation = TypeDisplayRepresentation(name: "Event Details Type")
 
@@ -32,7 +33,8 @@ enum EventDetailsTypeAppEnum: String, AppEnum {
         .calendarTitle: "Calendar",
         .url: "URL",
         .notes: "Notes",
-        .location: "Location"
+        .location: "Location",
+        .attendees: "Attendees"
     ]
 }
 
@@ -72,9 +74,10 @@ struct GetNearestEventDetails: AppIntent {
             case .location: return nextEvent.location
             case .startDate: return nextEvent.startDate.formatted()
             case .endDate: return nextEvent.endDate.formatted()
+            case .attendees:
+                return nextEvent.attendees.map { "\($0.name) <\($0.email ?? "unknown")>" }.joined(separator: ", ")
             }
         }
-
         return .result(value: value)
     }
 }

@@ -14,7 +14,11 @@ final class ScriptsTests: XCTestCase {
             location: "Meeting Room 1",
             url: URL(string: "https://zoom.us/j/5551112222")!,
             organizer: nil,
-            attendees: [MBEventAttendee(email: nil, status: .accepted)], startDate: Date(),
+            attendees: [
+                MBEventAttendee(email: "j@s.com", name: "John Smith", status: .accepted),
+                MBEventAttendee(email: "p@s.com", name: "Olivia Smith", status: .accepted)
+            ],
+            startDate: Date(),
             endDate: Date().addingTimeInterval(3600),
             isAllDay: false,
             recurrent: true,
@@ -26,9 +30,10 @@ final class ScriptsTests: XCTestCase {
         print(parameters)
 
         // Then: Verify all parameters are present and in correct order
-        XCTAssertEqual(parameters.numberOfItems, 13, "Should have 13 parameters including calendar info")
+        XCTAssertEqual(parameters.numberOfItems, 14, "Should have 13 parameters including calendar info")
 
         // Verify calendar parameters (last two parameters)
+        XCTAssertEqual(parameters.atIndex(14)?.stringValue, "John Smith <j@s.com>, Olivia Smith <p@s.com>", "Calendar source should be last parameter")
         XCTAssertEqual(parameters.atIndex(13)?.stringValue, "iCloud", "Calendar source should be last parameter")
         XCTAssertEqual(parameters.atIndex(12)?.stringValue, "Work Calendar", "Calendar name should be second to last")
 
@@ -36,7 +41,7 @@ final class ScriptsTests: XCTestCase {
         XCTAssertEqual(parameters.atIndex(11)?.stringValue, "Test Notes", "Notes parameter position")
         XCTAssertEqual(parameters.atIndex(10)?.stringValue, "Zoom", "Meeting service parameter position")
         XCTAssertEqual(parameters.atIndex(9)?.stringValue, "https://zoom.us/j/5551112222", "Meeting URL parameter position")
-        XCTAssertEqual(parameters.atIndex(8)?.int32Value, 1, "Attendee count parameter position")
+        XCTAssertEqual(parameters.atIndex(8)?.int32Value, 2, "Attendee count parameter position")
         XCTAssertTrue(parameters.atIndex(7)?.booleanValue ?? false, "Recurring parameter position")
         XCTAssertEqual(parameters.atIndex(6)?.stringValue, "Meeting Room 1", "Location parameter position")
         XCTAssertNotNil(parameters.atIndex(5)?.dateValue, "End date parameter position")

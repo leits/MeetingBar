@@ -31,6 +31,7 @@ enum ScriptType: String, Codable, CaseIterable {
  * 11. parameter - meeting notes (string)- if no notes are set, value "EMPTY" will be used
  * 12. parameter - calendar name (string) - the name of the calendar this event belongs to
  * 13. parameter - calendar source (string) - the source/account of the calendar (e.g., iCloud, Gmail)
+ * 13. parameter - attendees (string) - list of event attendees in "Name <email>" comma-separated format
  */
 func createAppleScriptParametersForEvent(event: MBEvent) -> NSAppleEventDescriptor {
     let parameters = NSAppleEventDescriptor.list()
@@ -56,6 +57,8 @@ func createAppleScriptParametersForEvent(event: MBEvent) -> NSAppleEventDescript
     // Add calendar information
     parameters.insert(NSAppleEventDescriptor(string: event.calendar.title), at: 0)
     parameters.insert(NSAppleEventDescriptor(string: event.calendar.source), at: 0)
+    let attendeesString = event.attendees.map { "\($0.name) <\($0.email ?? "unknown")>" }.joined(separator: ", ")
+    parameters.insert(NSAppleEventDescriptor(string: attendeesString), at: 0)
 
     return parameters
 }
