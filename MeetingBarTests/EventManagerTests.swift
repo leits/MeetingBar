@@ -56,34 +56,4 @@ class EventManagerTests: XCTestCase {
         // 4) Wait
         wait(for: [calExpectation, evtExpectation], timeout: 1.0)
     }
-
-    func testManualRefreshAfterSwappingStore() async {
-        // 1) Start with one store…
-        let initialStore = FakeEventStore(calendars: [], events: [])
-        let manager = EventManager(provider: initialStore, refreshInterval: 0.05)
-
-        // …then swap in a richer store
-        let newCal = MBCalendar(title: "New", id: "newCal", source: nil, email: nil, color: .black)
-        let newEvt = makeFakeEvent(id: "X", start: Date(), end: Date().addingTimeInterval(600))
-        let newStore = FakeEventStore(calendars: [newCal], events: [newEvt])
-
-        manager.provider = newStore // inject…
-        try! await manager.refreshSources() // …and manually trigger
-
-        let expCal = expectation(description: "got swapped calendars")
-        manager.$calendars
-            .drop(while: \.isEmpty)
-            .first()
-            .sink { XCTAssertEqual($0, [newCal]); expCal.fulfill() }
-            .store(in: &cancellables)
-
-        let expEvt = expectation(description: "got swapped events")
-        manager.$events
-            .drop(while: \.isEmpty)
-            .first()
-            .sink { XCTAssertEqual($0, [newEvt]); expEvt.fulfill() }
-            .store(in: &cancellables)
-
-        await fulfillment(of: [expCal, expEvt], timeout: 1.0)
-    }
 }

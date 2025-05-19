@@ -237,7 +237,7 @@ class GCEventStore: NSObject, EventStore, @preconcurrency OIDExternalUserAgent {
             accessToken: access,
             refreshToken: refresh,
             expiry: tr.accessTokenExpirationDate ?? Date(),
-            email: userEmail),
+            email: userEmail)
         )
     }
 
