@@ -10,9 +10,10 @@
 		1418907C26F23CCD00DCD9B1 /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = 1418907B26F23CCD00DCD9B1 /* KeyboardShortcuts */; };
 		1418907F26F23CF600DCD9B1 /* Defaults in Frameworks */ = {isa = PBXBuildFile; productRef = 1418907E26F23CF600DCD9B1 /* Defaults */; };
 		1432D98C25C4B94900FD121D /* SwiftyStoreKit in Frameworks */ = {isa = PBXBuildFile; productRef = 1432D98B25C4B94900FD121D /* SwiftyStoreKit */; };
-		14B08ACE2749A57B002E3892 /* GTMAppAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 14B08ACD2749A57B002E3892 /* GTMAppAuth */; };
 		40DC7054250E5E1000217DD9 /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC7053250E5E1000217DD9 /* ServiceManagement.framework */; };
 		4616E3A729BB62D100665FE0 /* LaunchAtLogin in Frameworks */ = {isa = PBXBuildFile; productRef = 4616E3A629BB62D100665FE0 /* LaunchAtLogin */; };
+		467D98092DDB501F00EB205C /* AppAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 467D98082DDB501F00EB205C /* AppAuth */; };
+		467D980B2DDB501F00EB205C /* AppAuthCore in Frameworks */ = {isa = PBXBuildFile; productRef = 467D980A2DDB501F00EB205C /* AppAuthCore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,9 +61,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				467D98092DDB501F00EB205C /* AppAuth in Frameworks */,
 				40DC7054250E5E1000217DD9 /* ServiceManagement.framework in Frameworks */,
 				4616E3A729BB62D100665FE0 /* LaunchAtLogin in Frameworks */,
-				14B08ACE2749A57B002E3892 /* GTMAppAuth in Frameworks */,
+				467D980B2DDB501F00EB205C /* AppAuthCore in Frameworks */,
 				1418907C26F23CCD00DCD9B1 /* KeyboardShortcuts in Frameworks */,
 				1432D98C25C4B94900FD121D /* SwiftyStoreKit in Frameworks */,
 				1418907F26F23CF600DCD9B1 /* Defaults in Frameworks */,
@@ -133,8 +135,9 @@
 				1432D98B25C4B94900FD121D /* SwiftyStoreKit */,
 				1418907B26F23CCD00DCD9B1 /* KeyboardShortcuts */,
 				1418907E26F23CF600DCD9B1 /* Defaults */,
-				14B08ACD2749A57B002E3892 /* GTMAppAuth */,
 				4616E3A629BB62D100665FE0 /* LaunchAtLogin */,
+				467D98082DDB501F00EB205C /* AppAuth */,
+				467D980A2DDB501F00EB205C /* AppAuthCore */,
 			);
 			productName = MeetingBar;
 			productReference = 144C01792462D0C3000C9FFC /* MeetingBar.app */;
@@ -213,8 +216,8 @@
 				1432D98A25C4B94900FD121D /* XCRemoteSwiftPackageReference "SwiftyStoreKit" */,
 				1418907A26F23CCD00DCD9B1 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */,
 				1418907D26F23CF600DCD9B1 /* XCRemoteSwiftPackageReference "Defaults" */,
-				14B08ACC2749A57B002E3892 /* XCRemoteSwiftPackageReference "GTMAppAuth" */,
 				4616E3A529BB62D100665FE0 /* XCRemoteSwiftPackageReference "LaunchAtLogin" */,
+				467D98072DDB4ED700EB205C /* XCRemoteSwiftPackageReference "AppAuth-iOS" */,
 			);
 			productRefGroup = 144C017A2462D0C3000C9FFC /* Products */;
 			projectDirPath = "";
@@ -603,20 +606,20 @@
 				minimumVersion = 0.16.3;
 			};
 		};
-		14B08ACC2749A57B002E3892 /* XCRemoteSwiftPackageReference "GTMAppAuth" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/google/GTMAppAuth";
-			requirement = {
-				kind = upToNextMinorVersion;
-				minimumVersion = 1.3.1;
-			};
-		};
 		4616E3A529BB62D100665FE0 /* XCRemoteSwiftPackageReference "LaunchAtLogin" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/sindresorhus/LaunchAtLogin";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 5.0.2;
+			};
+		};
+		467D98072DDB4ED700EB205C /* XCRemoteSwiftPackageReference "AppAuth-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/openid/AppAuth-iOS.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -637,15 +640,20 @@
 			package = 1432D98A25C4B94900FD121D /* XCRemoteSwiftPackageReference "SwiftyStoreKit" */;
 			productName = SwiftyStoreKit;
 		};
-		14B08ACD2749A57B002E3892 /* GTMAppAuth */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 14B08ACC2749A57B002E3892 /* XCRemoteSwiftPackageReference "GTMAppAuth" */;
-			productName = GTMAppAuth;
-		};
 		4616E3A629BB62D100665FE0 /* LaunchAtLogin */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 4616E3A529BB62D100665FE0 /* XCRemoteSwiftPackageReference "LaunchAtLogin" */;
 			productName = LaunchAtLogin;
+		};
+		467D98082DDB501F00EB205C /* AppAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 467D98072DDB4ED700EB205C /* XCRemoteSwiftPackageReference "AppAuth-iOS" */;
+			productName = AppAuth;
+		};
+		467D980A2DDB501F00EB205C /* AppAuthCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 467D98072DDB4ED700EB205C /* XCRemoteSwiftPackageReference "AppAuth-iOS" */;
+			productName = AppAuthCore;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

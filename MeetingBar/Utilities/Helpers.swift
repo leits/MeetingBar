@@ -242,3 +242,13 @@ func generateFakeEvent() -> MBEvent {
     )
     return event
 }
+
+extension Data {
+    init?(base64URL urlString: String) {
+        var st = urlString.replacingOccurrences(of: "-", with: "+")
+                         .replacingOccurrences(of: "_", with: "/")
+        let pad = 4 - st.count % 4
+        if pad < 4 { st.append(String(repeating: "=", count: pad)) }
+        self.init(base64Encoded: st)
+    }
+}
