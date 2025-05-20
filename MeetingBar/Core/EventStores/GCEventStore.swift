@@ -16,33 +16,6 @@ let googleAuthKeychainName = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_AU
 
 extension OIDServiceConfiguration: @unchecked @retroactive Sendable {}
 
-struct GoogleTokens: Codable, Equatable {
-    let accessToken: String
-    let refreshToken: String
-    let expiry: Date               // exact exp-time from Google
-    let email: String?
-
-    var isExpired: Bool { expiry <= Date().addingTimeInterval(30) } // 30 s buffer
-}
-
-enum GoogleTokenStorage {
-    private static let service = "com.meetingbar.google.tokens"
-
-    static func save(_ tokens: GoogleTokens?) {
-        guard let tokens,
-              let data = try? JSONEncoder().encode(tokens) else {
-            Keychain.delete(for: service)
-            return
-        }
-        Keychain.save(data: data, for: service)
-    }
-
-    static func load() -> GoogleTokens? {
-        guard let data = Keychain.load(for: service) else { return nil }
-        return try? JSONDecoder().decode(GoogleTokens.self, from: data)
-    }
-}
-
 enum AuthError: Error {
     case notSignedIn
     case refreshFailed
@@ -52,6 +25,16 @@ extension OIDAuthState {
     var isTokenFresh: Bool {
         guard let exp = lastTokenResponse?.accessTokenExpirationDate else { return false }
         return exp > Date().addingTimeInterval(30) }
+
+    var userEmail: String? {
+            guard let idToken = lastTokenResponse?.idToken else { return nil }
+            let parts = idToken.split(separator: ".")
+            guard parts.count > 1,
+                  let payloadData = Data(base64Encoded: String(parts[1])),
+                  let json = try? JSONSerialization.jsonObject(with: payloadData) as? [String: Any]
+            else { return nil }
+            return json["email"] as? String
+        }
 }
 
 class GCEventStore: NSObject, EventStore, @preconcurrency OIDExternalUserAgent {
@@ -118,6 +101,7 @@ class GCEventStore: NSObject, EventStore, @preconcurrency OIDExternalUserAgent {
                 .authState(byPresenting: request, externalUserAgent: self) { state, error in
                     if let state {
                         self.authState = state
+                        self.userEmail = state.userEmail
                         sendNotification("Google Account connected", "\(self.userEmail ?? "") is connected")
                         cont.resume()
                     } else {
@@ -221,63 +205,42 @@ class GCEventStore: NSObject, EventStore, @preconcurrency OIDExternalUserAgent {
         }
 
     private func persistAuthState() {
-        guard let state = authState,
-              let tr = state.lastTokenResponse,
-              let access = tr.accessToken,
-              let refresh = tr.refreshToken else {
-            GoogleTokenStorage.save(nil); return
+        guard let state = authState else {
+            Keychain.delete(for: Self.AuthKeychainName)
+            return
         }
-        if let id = tr.idToken, let part = id.split(separator: ".").dropFirst().first,
-                      let data = Data(base64URL: String(part)),
-               let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
-            userEmail = json["email"] as? String
+        do {
+            let data = try NSKeyedArchiver.archivedData(
+                withRootObject: state,
+                requiringSecureCoding: true
+            )
+            Keychain.save(data: data, for: Self.AuthKeychainName)
+        } catch {
+            NSLog("Error archiving OIDAuthState: \(error)")
         }
-
-        GoogleTokenStorage.save(.init(
-            accessToken: access,
-            refreshToken: refresh,
-            expiry: tr.accessTokenExpirationDate ?? Date(),
-            email: userEmail)
-        )
     }
 
     private func restoreAuthState() -> OIDAuthState? {
-        guard let saved = GoogleTokenStorage.load() else { return nil }
-        userEmail = saved.email
-
-        let cfg = OIDServiceConfiguration(
-            authorizationEndpoint: URL(string: "https://accounts.google.com/o/oauth2/v2/auth")!,
-            tokenEndpoint: URL(string: "https://oauth2.googleapis.com/token")!
-        )
-
-        let tokenJSON: [String: any NSCopying & NSObjectProtocol] = [
-                "access_token": saved.accessToken as NSString,
-                "refresh_token": saved.refreshToken as NSString,
-                "expires_in": NSNumber(value: Int(saved.expiry.timeIntervalSinceNow))
-            ]
-
-        let tokenReq = OIDTokenRequest(configuration: cfg,
-                                       grantType: OIDGrantTypeRefreshToken,
-                                       authorizationCode: nil,
-                                       redirectURL: nil,
-                                       clientID: Self.kClientID,
-                                       clientSecret: Self.kClientSecret,
-                                       scope: nil,
-                                       refreshToken: saved.refreshToken,
-                                       codeVerifier: nil,
-                                       additionalParameters: nil)
-
-        let tokenResp = OIDTokenResponse(request: tokenReq, parameters: tokenJSON)
-
-        return OIDAuthState(authorizationResponse: nil,
-                            tokenResponse: tokenResp,
-                            registrationResponse: nil)
+        guard let data = Keychain.load(for: Self.AuthKeychainName) else { return nil }
+        do {
+            guard let state = try NSKeyedUnarchiver.unarchivedObject(
+                ofClass: OIDAuthState.self,
+                from: data
+            ) else {
+                return nil
+            }
+            self.userEmail = state.userEmail
+            return state
+        } catch {
+            NSLog("Error unarchiving OIDAuthState: \(error)")
+            return nil
+        }
     }
 
     private func clearAuthState() {
         authState = nil
         userEmail = nil
-        GoogleTokenStorage.save(nil)
+        Keychain.delete(for: Self.AuthKeychainName)
     }
 
     private func validAccessToken() async throws -> String {
@@ -298,11 +261,11 @@ class GCEventStore: NSObject, EventStore, @preconcurrency OIDExternalUserAgent {
         let task = Task<String, Error> {
             defer { refreshTask = nil }
             return try await withCheckedThrowingContinuation { cont in
-                state.setNeedsTokenRefresh()
-                state.performAction { newToken, _, error in
-                    if let newToken {
-                        cont.resume(returning: newToken)
+                state.performAction { accessToken, _, error in
+                    if let token = accessToken {
+                        cont.resume(returning: token)
                     } else {
+                        self.clearAuthState()
                         cont.resume(throwing: error ?? AuthError.refreshFailed)
                     }
                 }
@@ -359,7 +322,7 @@ class GCEventStore: NSObject, EventStore, @preconcurrency OIDExternalUserAgent {
         )
         req.httpMethod = "POST"
         req.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-        req.httpBody = "token=\(token)".data(using: .utf8)
+        req.httpBody = Data("token=\(token)".utf8)
 
         let (_, resp) = try await urlSession.data(for: req)
         guard let http = resp as? HTTPURLResponse,
