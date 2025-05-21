@@ -83,7 +83,6 @@
 "preferences_advanced_regex_edit_button" = "szerkesztés";
 "status_bar_section_today" = "Ma";
 "create_meeting_error_message" = "Egyéni URL \"%@\" hiányzik vagy érvénytelen. ";
-"preferences_tab_services" = "Szolgáltatások";
 "preferences_tab_calendars" = "Naptárak";
 "preferences_tab_advanced" = "Speciális";
 "preferences_general_option_login_launch" = "Indítás bejelentkezés után";

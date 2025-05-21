@@ -8,6 +8,8 @@
 
 import KeyboardShortcuts
 
+extension KeyboardShortcuts.Name: @unchecked @retroactive Sendable {}
+
 extension KeyboardShortcuts.Name {
     static let createMeetingShortcut = Self("createMeetingShortcut")
     static let openMenuShortcut = Self("openMenuShortcut")

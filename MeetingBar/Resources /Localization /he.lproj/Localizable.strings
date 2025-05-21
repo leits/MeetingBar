@@ -30,7 +30,6 @@
 "preferences_general_patron_twelve_months" = "שנה - 11.99 דולר";
 "preferences_general_patron_description" = "אלו רכישות חד־פעמיות והן לא תתחדשנה.";
 "general_ok" = "אישור";
-"preferences_tab_services" = "שירותים";
 "preferences_tab_appearance" = "מראה";
 "preferences_general_patron_thank_for_purchase" = "תודה רבה! תמכת ב־MeetingBar למשך %d חודשים 🎉";
 "status_bar_submenu_attendees_status_unknown" = " [?]";
@@ -193,7 +192,7 @@
 "general_three_minute_before" = "3 דקות לפני";
 "constants_create_meeting_service_url" = "כתובת משלך";
 "constants_meeting_service_zoom_native" = "Zoom טבעי";
-"shared_send_notification_no_alert_style_tip" = "⚠️ הגדרות ההתראות ב־macOS שלך עבור MeetingBar לא מוגדרות להוציא התראות. יש לעשות זאת אם מעניין אותך להשתמש בהתראות דביקות.";
+"shared_send_notification_no_alert_style_tip" = "לתשומת ליבך: התראות מוגדרות ככרזות, לכן הן מופיעות לזמן קצר לפני שנעלמות. כדי להשאיר אותן על המסך עד לסילוקן ידנית, יש להחליף להתראות בהגדרות ההתראה ב־macOS שלך.";
 "shared_send_notification_disabled_tip" = "⚠️ הגדרות ההתראות ב־macOS שלך עבור MeetingBar כבויות. יש להפעיל את ההתראות בהגדרות המערכת של macOS כדי לעקוב אחר פגישות.";
 "shared_automatic_event_join_toggle" = "להצטרף אוטומטית בפגישת האירוע הבאה";
 "shared_automatic_event_join_tip" = "הגדרה זאת תפתח את הפגישה הבאה שלך ביישום או בדפדפן שהגדרת";
@@ -324,3 +323,9 @@
 "notification_all_dismissals_removed_title" = "כל ההתעלמויות הוסרו";
 "notification_all_dismissals_removed_message" = "כל הפגישות שזכו להתעלמות חזרו להיות תקפות";
 "notifications_event_started_body" = "האירוע התחיל";
+"notifications_meetingbar_dismiss_event_action" = "התעלמות";
+"preferences_tab_links" = "קישורים";
+"preferences_appearance_status_bar_ongoing_time_immediate_value" = "להסתיר לאחר ההתחלה";
+"preferences_appearance_status_bar_ongoing_time_ten_after_value" = "להסתיר 10 דקות לאחר ההתחלה";
+"preferences_appearance_status_bar_ongoing_time_ten_before_next_value" = "להסתיר 10 דקות לפני האירוע הבא";
+"preferences_appearance_status_bar_ongoing_title" = "חשיפה של אירוע פעיל:";

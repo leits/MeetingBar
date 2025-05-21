@@ -31,7 +31,6 @@
 
 "preferences_tab_general" = "General";
 "preferences_tab_appearance" = "Apariencia";
-"preferences_tab_services" = "Servicios";
 "preferences_tab_bookmarks" = "Marcadores";
 "preferences_tab_calendars" = "Calendarios";
 "preferences_tab_advanced" = "Avanzado";
@@ -332,3 +331,4 @@
 
 "link_url_cant_open_title" = "¡Ups! No se puede abrir el enlace en %@";
 "link_url_cant_open_message" = "Asegúrate de tener %@ instalado o abre esos enlaces en un navegador web desde preferencias en su lugar.";
+"notifications_meetingbar_dismiss_event_action" = "Rechazar";

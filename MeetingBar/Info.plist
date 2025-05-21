@@ -1,64 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>
-	<key>NSCalendarsFullAccessUsageDescription</key>
-	<string>To get events to show on status bar</string>
-	<key>CFBundleDevelopmentRegion</key>
-	<string>$(DEVELOPMENT_LANGUAGE)</string>
-	<key>CFBundleExecutable</key>
-	<string>$(EXECUTABLE_NAME)</string>
-	<key>CFBundleIdentifier</key>
-	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-	<key>CFBundleInfoDictionaryVersion</key>
-	<string>6.0</string>
-	<key>CFBundleName</key>
-	<string>$(PRODUCT_NAME)</string>
-	<key>CFBundlePackageType</key>
-	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
-	<key>CFBundleShortVersionString</key>
-	<string>$(MARKETING_VERSION)</string>
-	<key>CFBundleTypeRole</key>
-	<string>Editor</string>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>com.googleusercontent.apps.$(GOOGLE_CLIENT_NUMBER)</string>
-				<string>meetingbar</string>
-			</array>
-		</dict>
-	</array>
-	<key>CFBundleVersion</key>
-	<string>$(CURRENT_PROJECT_VERSION)</string>
-	<key>GOOGLE_AUTH_KEYCHAIN_NAME</key>
-	<string>$(GOOGLE_AUTH_KEYCHAIN_NAME)</string>
-	<key>GOOGLE_CLIENT_NUMBER</key>
-	<string>$(GOOGLE_CLIENT_NUMBER)</string>
-	<key>GOOGLE_CLIENT_SECRET</key>
-	<string>$(GOOGLE_CLIENT_SECRET)</string>
-	<key>LSApplicationCategoryType</key>
-	<string>public.app-category.productivity</string>
-	<key>LSMinimumSystemVersion</key>
-	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
-	<key>LSUIElement</key>
-	<true/>
-	<key>NSCalendarsUsageDescription</key>
-	<string>To get events to show on status bar</string>
-	<key>NSHumanReadableCopyright</key>
-	<string>Copyright © 2020 Andrii Leitsius. All rights reserved.</string>
-	<key>NSMainStoryboardFile</key>
-	<string>Main</string>
-	<key>NSPrincipalClass</key>
-	<string>NSApplication</string>
-	<key>NSSupportsAutomaticTermination</key>
-	<true/>
-	<key>NSSupportsSuddenTermination</key>
-	<true/>
-	<key>NSUserNotificationAlertStyle</key>
-	<string>alert</string>
-</dict>
+	<dict>
+		<key>ITSAppUsesNonExemptEncryption</key>
+		<false />
+		<key>NSCalendarsFullAccessUsageDescription</key>
+		<string>To get events to show on status bar</string>
+		<key>CFBundleDevelopmentRegion</key>
+		<string>$(DEVELOPMENT_LANGUAGE)</string>
+		<key>CFBundleExecutable</key>
+		<string>$(EXECUTABLE_NAME)</string>
+		<key>CFBundleIdentifier</key>
+		<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+		<key>CFBundleInfoDictionaryVersion</key>
+		<string>6.0</string>
+		<key>CFBundleName</key>
+		<string>$(PRODUCT_NAME)</string>
+		<key>CFBundlePackageType</key>
+		<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
+		<key>CFBundleShortVersionString</key>
+		<string>$(MARKETING_VERSION)</string>
+		<key>CFBundleTypeRole</key>
+		<string>Editor</string>
+		<key>CFBundleURLTypes</key>
+		<array>
+			<dict>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>com.googleusercontent.apps.$(GOOGLE_CLIENT_NUMBER)</string>
+					<string>meetingbar</string>
+				</array>
+			</dict>
+		</array>
+		<key>CFBundleVersion</key>
+		<string>$(CURRENT_PROJECT_VERSION)</string>
+		<key>GOOGLE_AUTH_KEYCHAIN_NAME</key>
+		<string>$(GOOGLE_AUTH_KEYCHAIN_NAME)</string>
+		<key>GOOGLE_CLIENT_NUMBER</key>
+		<string>$(GOOGLE_CLIENT_NUMBER)</string>
+		<key>GOOGLE_CLIENT_SECRET</key>
+		<string>$(GOOGLE_CLIENT_SECRET)</string>
+		<key>LSApplicationCategoryType</key>
+		<string>public.app-category.productivity</string>
+		<key>LSMinimumSystemVersion</key>
+		<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
+		<key>LSUIElement</key>
+		<true />
+		<key>NSCalendarsUsageDescription</key>
+		<string>To get events to show on status bar</string>
+		<key>NSHumanReadableCopyright</key>
+		<string>Copyright © 2020 Andrii Leitsius. All rights reserved.</string>
+		<key>NSMainStoryboardFile</key>
+		<string>Main</string>
+		<key>NSPrincipalClass</key>
+		<string>NSApplication</string>
+		<key>NSSupportsAutomaticTermination</key>
+		<true />
+		<key>NSSupportsSuddenTermination</key>
+		<true />
+	</dict>
 </plist>

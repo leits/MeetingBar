@@ -28,7 +28,6 @@
 
 "preferences_tab_general" = "Ogólne";
 "preferences_tab_appearance" = "Wygląd";
-"preferences_tab_services" = "Usługi";
 "preferences_tab_bookmarks" = "Zakładki";
 "preferences_tab_calendars" = "Kalendarze";
 "preferences_tab_advanced" = "Zaawansowane";
@@ -334,3 +333,4 @@
 "notification_all_dismissals_removed_title" = "Usuń wszystkie odwołania";
 "notification_all_dismissals_removed_message" = "Wszystkie odwołania spotkania wracają do akcji";
 "status_bar_section_refresh_sources" = "Odśwież źródła";
+"notifications_meetingbar_dismiss_event_action" = "Odrzuć";

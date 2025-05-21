@@ -28,7 +28,6 @@
 
 "preferences_tab_general" = "Загальні";
 "preferences_tab_appearance" = "Вигляд";
-"preferences_tab_services" = "Сервіси";
 "preferences_tab_bookmarks" = "Закладки";
 "preferences_tab_calendars" = "Календарі";
 "preferences_tab_advanced" = "Розширені";
@@ -277,7 +276,7 @@
 "general_one_minute_before" = "за 1 хвилину до початку";
 "general_three_minute_before" = "за 3 хвилини до початку";
 "general_five_minute_before" = "за 5 хвилин до початку";
-"shared_send_notification_no_alert_style_tip" = "⚠️ У системних параметрах сповіщення від MeetingBar зараз не налаштовані як \"Попередження\". Будь ласка, увімкніть \"Попередження\", щоб сповіщення не зникали автоматично.";
+"shared_send_notification_no_alert_style_tip" = "Примітка: Сповіщення налаштовано на банер, тому вони з’являються ненадовго, перш ніж зникнути. Щоб вони залишалися на екрані, доки ви їх не закриєте, перемкніться до опції «Сповіщення» в налаштуваннях сповіщень macOS.";
 "shared_send_notification_disabled_tip" = "⚠️ Сповіщення від MeetingBar вимкнені у системних параметрах. Будь ласка, увімкніть їх, щоб не проґавити зустріч.";
 "shared_automatic_event_join_toggle" = "Автоматично долучитись до наступної зустрічі";
 "shared_automatic_event_join_tip" = "Це налаштування автоматично відкриє вашу наступну зустріч у вибраному застосунку чи браузері";
@@ -333,3 +332,9 @@
 "notification_all_dismissals_removed_title" = "Повернено пропущені зустрічі";
 "notification_all_dismissals_removed_message" = "Всі пропущені зустрічі знову у календарі";
 "notifications_event_started_body" = "Подія розпочалась";
+"notifications_meetingbar_dismiss_event_action" = "Відхилити";
+"preferences_tab_links" = "Посилання";
+"preferences_appearance_status_bar_ongoing_time_immediate_value" = "приховати після запуску";
+"preferences_appearance_status_bar_ongoing_title" = "Поточна видимість події:";
+"preferences_appearance_status_bar_ongoing_time_ten_before_next_value" = "приховати за 10 хвилин до наступної події";
+"preferences_appearance_status_bar_ongoing_time_ten_after_value" = "приховати через 10 хвилин після початку";
