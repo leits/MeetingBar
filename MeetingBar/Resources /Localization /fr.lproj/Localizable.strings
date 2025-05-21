@@ -185,9 +185,9 @@
 
 "preferences_bookmarks_no_bookmarks_placeholder" = "Vous n'avez pas encore de marque-pages";
 "preferences_tab_bookmarks" = "Marque-pages";
-"preferences_configure_browsers_choose_broser_panel_message" = "Sélectionnez l'endroit duquel exécuter le navigateur web.";
-"preferences_configure_browsers_choose_broser_panel_prompt" = "Choisir le navigateur web";
-"preferences_configure_browsers_choose_broser_panel_title" = "Sélectionnez une appli de navigation web";
+"preferences_configure_browsers_choose_browser_panel_message" = "Sélectionnez l'endroit duquel exécuter le navigateur web.";
+"preferences_configure_browsers_choose_browser_panel_prompt" = "Choisir le navigateur web";
+"preferences_configure_browsers_choose_browser_panel_title" = "Sélectionnez une appli de navigation web";
 "preferences_configure_browsers_modal_alert_title" = "Impossible d'ajouter la configuration du navigateur";
 "preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "Choisir le navigateur web";
 "preferences_configure_browsers_modal_add_browser_path" = "Chemin";
