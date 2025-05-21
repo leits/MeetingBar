@@ -22,7 +22,7 @@
 
 "window_title_preferences" = "Налаштування MeetingBar";
 "window_title_onboarding" = "Ласкаво просимо у MeetingBar";
-"windows_title_changelog" = "Що нового у MeetingBar?";
+"windows_title_changelog" = "Що нового у MeetingBar";
 
 // MARK: - Preferences tabs
 
@@ -132,9 +132,9 @@
 "preferences_configure_browsers_modal_add_browser_path" = "Шлях";
 "preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "Виберіть браузер";
 "preferences_configure_browsers_modal_alert_title" = "Ой леле! Не вдалось додати браузер";
-"preferences_configure_browsers_choose_browser_panel_title" = "Виберіть коректний браузер";
-"preferences_configure_browsers_choose_browser_panel_prompt" = "Виберіть браузер";
-"preferences_configure_browsers_choose_browser_panel_message" = "Виберіть браузер із будь-яким розташуванням.";
+"preferences_configure_browsers_choose_browser_panel_title" = "Виберіть програму веб-браузера";
+"preferences_configure_browsers_choose_browser_panel_prompt" = "Виберіть веббраузер";
+"preferences_configure_browsers_choose_browser_panel_message" = "Виберіть, звідки запускати веббраузер.";
 
 // MARK: - Preferences Bookmarks
 
@@ -291,7 +291,7 @@
 
 // MARK: - Store
 
-"store_patronage_title" = "MeetingBar Patronage";
+"store_patronage_title" = "Патронат MeetingBar";
 "store_patronage_restore_success_message" = "Успішно відновлено";
 "store_patronage_restore_nothing_message" = "Нічого відновлювати";
 "store_patronage_purchase_success_message" = "Успішно оплачено. Дякую за підтримку!";
