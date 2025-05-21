@@ -90,7 +90,7 @@ struct ProviderPicker: View {
 struct AccessDeniedBanner: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text("access_screen_access_denied_go_to_title".loco())
+            Text("access_screen_access_screen_access_denied_go_to_title".loco())
             Button("access_screen_access_denied_system_preferences_button".loco()) {
                 NSWorkspace.shared.open(Links.calendarPreferences)
             }
