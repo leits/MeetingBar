@@ -349,14 +349,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
         NSApplication.shared.terminate(self)
     }
 
-    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
-        if eventManager == nil {
-            return true
-        }
-        openPreferencesWindow(nil)
-        return true
-    }
-
     func applicationWillTerminate(_: Notification) {
         statusLoopTask?.cancel()
     }
