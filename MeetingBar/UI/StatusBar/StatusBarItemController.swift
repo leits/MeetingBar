@@ -11,6 +11,7 @@ import Combine
 
 import Defaults
 import KeyboardShortcuts
+import SwiftUI
 
 private enum MenuStyleConstants {
     static let defaultFontSize: CGFloat = 13
@@ -330,7 +331,29 @@ final class StatusBarItemController {
         statusItemMenu.removeAllItems()
 
         if Defaults[.selectedCalendarIDs].isEmpty == false {
-            let today = Date()
+            let today = Calendar.current.startOfDay(for: Date())
+            let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today)!
+
+            // VIEW
+            if Defaults[.showTimelineInMenu], events.isEmpty == false {
+                let segments = events.map {
+                    DaySegment(start: max($0.startDate, today),
+                               end: min($0.endDate, tomorrow),
+                               color: Color($0.calendar.color))
+                }
+
+                let timeline = DayRelativeTimelineView(segments: segments, currentDate: Date())
+                let hosting  = NSHostingView(rootView: timeline)
+                hosting.autoresizingMask = [.width]
+                hosting.frame.size.height = timeline.preferredHeight
+
+                let item = NSMenuItem()
+                item.view = hosting
+                statusItemMenu.addItem(item)
+                statusItemMenu.addItem(.separator())
+            }
+            //
+
             switch Defaults[.showEventsForPeriod] {
             case .today:
                 createDateSection(date: today, title: "status_bar_section_today".loco(), events: events)
@@ -340,7 +363,6 @@ final class StatusBarItemController {
 
                 statusItemMenu.addItem(NSMenuItem.separator())
 
-                let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today)!
                 let tomorrowEvents = events.filter { Calendar.current.isDate($0.startDate, inSameDayAs: tomorrow) }
                 createDateSection(date: tomorrow, title: "status_bar_section_tomorrow".loco(), events: tomorrowEvents)
             }

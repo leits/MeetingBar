@@ -262,10 +262,16 @@ struct MenuSection: View {
     @Default(.showEventEndTime) var showEventEndTime
     @Default(.showEventDetails) var showEventDetails
     @Default(.showMeetingServiceIcon) var showMeetingServiceIcon
+    @Default(.showTimelineInMenu) var showTimelineInMenu
 
     var body: some View {
         GroupBox(label: Label("Menu", systemImage: "filemenu.and.selection")) {
             Section {
+
+                Toggle(
+                    "preferences_appearance_menu_show_timeline_toggle".loco(),
+                    isOn: $showTimelineInMenu
+                )
                 HStack {
                     Toggle(
                         "preferences_appearance_menu_shorten_event_title_toggle".loco(),

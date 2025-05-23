@@ -104,6 +104,7 @@
 "preferences_appearance_status_bar_next_event_toggle" = "Show only events starting within";
 "preferences_appearance_status_bar_next_event_stepper" = "%d minutes";
 "preferences_appearance_menu_title" = "Menu";
+"preferences_appearance_menu_show_timeline_toggle" = "Show visual timeline of the day";
 "preferences_appearance_menu_shorten_event_title_toggle" = "Shorten event title to";
 "preferences_appearance_menu_shorten_event_title_stepper" = "%d characters";
 "preferences_appearance_menu_time_format_title" = "Time format:";
