@@ -80,6 +80,7 @@ enum MeetingServices: String, Codable, CaseIterable {
     case zmPage = "zm.page"
     case livekit = "LiveKit Meet"
     case meetecho = "Meetecho"
+    case streamyard = "StreamYard"
     case other = "Other"
 
     var localizedValue: String {
@@ -326,7 +327,8 @@ private let meetingLinkRegexes: [MeetingServices: NSRegularExpression] = [
     .calcom: try! NSRegularExpression(pattern: #"https?://app.cal\.com/video/[A-Za-z0-9./]+"#),
     .zmPage: try! NSRegularExpression(pattern: #"https?://([a-zA-Z0-9.]+)\.zm\.page"#),
     .livekit: try! NSRegularExpression(pattern: #"https?://meet[a-zA-Z0-9.]*\.livekit\.io/rooms/[a-zA-Z0-9-#]+"#),
-    .meetecho: try! NSRegularExpression(pattern: #"https?://meetings\.conf\.meetecho\.com/.+"#)
+    .meetecho: try! NSRegularExpression(pattern: #"https?://meetings\.conf\.meetecho\.com/.+"#),
+    .streamyard: try! NSRegularExpression(pattern: #"https://(?:www\.)?streamyard\.com/(?:guest/)?([a-z0-9]{8,13})(?:/|\?[^ \n]*)?"#)
 ]
 
 func regex(for service: MeetingServices) -> NSRegularExpression? {
@@ -620,6 +622,10 @@ func getIconForMeetingService(_ meetingService: MeetingServices?) -> NSImage {
 
     case .some(.meetecho):
         image = NSImage(named: "meetecho_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    case .some(.streamyard):
+        image = NSImage(named: "streamyard_icon")!
         image.size = NSSize(width: 16, height: 16)
 
     // tested and verified
