@@ -189,7 +189,7 @@
 "access_screen_provider_gcalendar_sign_in_title" = "Google'da Oturum Açın";
 "access_screen_provider_gcalendar_sign_in_description" = "Tarayıcı penceresinde MeetingBar'ın takviminize erişmesine izin verin";
 "access_screen_try_again" = "Tekrar deneyin";
-"shared_send_notification_no_alert_style_tip" = "⚠️ macOS bildirim ayarlarınız MeetingBar için yapılandırılmamış. Bildirim istiyorsanız bunu açmanız gerekir.";
+"shared_send_notification_no_alert_style_tip" = "Not: Bildirimler Banner'lara ayarlanmıştır, bu nedenle kaybolmadan önce kısa bir süre görünürler. Siz kapatana kadar ekranda kalmalarını sağlamak için macOS bildirim ayarlarınızda Uyarılar'a geçin.";
 
 // MARK: - Constants
 "constants_create_meeting_service_url" = "Özel bağlantı";
@@ -333,3 +333,8 @@
 "notifications_meetingbar_join_event_action" = "Katıl";
 "notifications_meetingbar_dismiss_event_action" = "Yoksay";
 "preferences_tab_links" = "Bağlantılar";
+"preferences_appearance_menu_show_timeline_toggle" = "Günün görsel zaman çizelgesini göster";
+"preferences_appearance_status_bar_ongoing_title" = "Devam eden etkinlik görünürlüğü:";
+"preferences_appearance_status_bar_ongoing_time_immediate_value" = "başladıktan sonra gizle";
+"preferences_appearance_status_bar_ongoing_time_ten_after_value" = "başladıktan 10 dakika sonra gizle";
+"preferences_appearance_status_bar_ongoing_time_ten_before_next_value" = "bir sonraki etkinlikten 10 dakika önce gizle";
