@@ -3,7 +3,11 @@ name: Test
 
 on:
   push:
+    paths:
+      - '**/*.swift'
   pull_request:
+    paths:
+      - '**/*.swift'
 
 jobs:
   Tests:
