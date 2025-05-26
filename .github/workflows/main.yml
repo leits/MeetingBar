@@ -14,14 +14,57 @@ jobs:
       - name: List available Xcode versions
         run: ls /Applications | grep Xcode
         
-      - name: Set up Xcode version
-        run: sudo xcode-select -s /Applications/Xcode_15.2.app/Contents/Developer
+      - name: Select Xcode 16.2
+        run: sudo xcode-select -s /Applications/Xcode_16.2.app/Contents/Developer
         
       - name: Show current version of Xcode
         run: xcodebuild -version
 
-      - name: Install xcbeautify
-        run: brew install xcbeautify
+      - name: Run Tests & Generate JUnit
+        shell: bash
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -scheme MeetingBar \
+            -configuration Debug \
+            -enableCodeCoverage YES \
+            build test \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+          | xcpretty --report junit --output build/test-results/report.junit.xml
 
-      - name: Run unit tests
-        run: xcodebuild -scheme MeetingBar test CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO | xcbeautify
+      - name: Publish Test Results
+        uses: dorny/test-reporter@v2
+        if: always()
+        with:
+          name: MeetingBar Tests
+          path: build/test-results/*.xml
+          reporter: jest-junit
+
+      - name: Install Slather
+        run: |
+          gem install slather
+
+      - name: Generate Coverage Report
+        shell: bash
+        run: |
+          slather coverage \
+            --scheme MeetingBar \
+            --cobertura-xml \
+            --output-directory build/coverage \
+            MeetingBar.xcodeproj
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        if: always()
+        with:
+          files: build/coverage/cobertura.xml
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Upload test results to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/test-results-action@v1
+        with:
+          directory: build/test-results
+          token: ${{ secrets.CODECOV_TOKEN }}

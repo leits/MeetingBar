@@ -45,7 +45,14 @@ let meetings = [
     MeetingLink(service: .calcom, url: URL(string: "https://app.cal.com/video/1de4BmdXEb983kIUHomUnA")!),
     MeetingLink(service: .zmPage, url: URL(string: "https://meetingbar.zm.page")!),
     MeetingLink(service: .livekit, url: URL(string: "https://meet.livekit.io/rooms/et5r-y80t#r56ryirofs8jjfi3rnxu8ab3qhjsRn6die6mvjhwux82opmkao8bfjb9wggnr2L6")!),
-    MeetingLink(service: .livekit, url: URL(string: "https://meet.staging.livekit.io/rooms/of4q-y10s")!)
+    MeetingLink(service: .livekit, url: URL(string: "https://meet.staging.livekit.io/rooms/of4q-y10s")!),
+    MeetingLink(service: .meetecho, url: URL(string: "https://meetings.conf.meetecho.com/ietf122/?session=34071")!),
+    // webex
+    MeetingLink(service: .webex, url: URL(string: "https://yourmeetingsite.webex.com/meet/username")!),
+    MeetingLink(service: .webex, url: URL(string: "https://yourmeetingsite.webex.com/yourbusinessID/j.php?MTID=aO5678eFGH")!),
+    // streamyard
+    MeetingLink(service: .streamyard, url: URL(string: "https://streamyard.com/jexample29t")!),
+    MeetingLink(service: .streamyard, url: URL(string: "https://streamyard.com/guest/u6qes7i8cj?utm_source=test")!)
 ]
 
 class MeetingServicesTests: XCTestCase {

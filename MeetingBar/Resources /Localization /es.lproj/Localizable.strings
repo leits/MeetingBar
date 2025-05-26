@@ -31,7 +31,6 @@
 
 "preferences_tab_general" = "General";
 "preferences_tab_appearance" = "Apariencia";
-"preferences_tab_services" = "Servicios";
 "preferences_tab_bookmarks" = "Marcadores";
 "preferences_tab_calendars" = "Calendarios";
 "preferences_tab_advanced" = "Avanzado";
@@ -136,9 +135,9 @@
 "preferences_configure_browsers_modal_add_browser_path" = "Ruta";
 "preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "Seleccionar navegador web";
 "preferences_configure_browsers_modal_alert_title" = "No se puede añadir la configuración del navegador";
-"preferences_configure_browsers_choose_broser_panel_title" = "Seleccionar aplicación de navegador web";
-"preferences_configure_browsers_choose_broser_panel_prompt" = "Seleccionar navegador web";
-"preferences_configure_browsers_choose_broser_panel_message" = "Seleccionar desde dónde ejecutar el navegador web.";
+"preferences_configure_browsers_choose_browser_panel_title" = "Seleccionar aplicación de navegador web";
+"preferences_configure_browsers_choose_browser_panel_prompt" = "Seleccionar navegador web";
+"preferences_configure_browsers_choose_browser_panel_message" = "Seleccionar desde dónde ejecutar el navegador web.";
 
 // MARK: - Preferences Bookmarks
 
@@ -332,3 +331,4 @@
 
 "link_url_cant_open_title" = "¡Ups! No se puede abrir el enlace en %@";
 "link_url_cant_open_message" = "Asegúrate de tener %@ instalado o abre esos enlaces en un navegador web desde preferencias en su lugar.";
+"notifications_meetingbar_dismiss_event_action" = "Rechazar";

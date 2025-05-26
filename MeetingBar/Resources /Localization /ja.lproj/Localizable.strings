@@ -14,7 +14,7 @@
 "general_save" = "保存";
 "general_meeting" = "ミーティング";
 "create_meeting_error_title" = "新しいミーティングが作成できませんでした";
-"create_meeting_error_message" = "カスタムURL \"%@\" が存在しないか異常です。設定で正しい値を入力してください。";
+"create_meeting_error_message" = "カスタムURL \"%@\" が存在しないか異常です。 ";
 "next_meeting_empty_title" = "今日はもうミーティングがありません";
 "next_meeting_empty_message" = "ウオー！ココアを作る時間です";
 
@@ -30,7 +30,6 @@
 
 "preferences_tab_general" = "一般";
 "preferences_tab_appearance" = "外観";
-"preferences_tab_services" = "サービス";
 "preferences_tab_bookmarks" = "ブックマーク";
 "preferences_tab_calendars" = "カレンダー";
 "preferences_tab_advanced" = "高度な設定";
@@ -56,7 +55,7 @@
 "preferences_general_patron_six_months" = "6ヶ月 - 5.99 USD";
 "preferences_general_patron_twelve_months" = "12ヶ月 - 11.99 USD";
 "preferences_general_patron_description" = "これらは一回限りの購入で、自動更新されません。";
-"preferences_general_patron_thank_for_purchase" = "ありがとう！あなたは%dヶ月間 MeetingBar をサポートします！🎉";
+"preferences_general_patron_thank_for_purchase" = "ありがとう！MeetingBar をサポートしてくれて %d か月になりました！🎉";
 "preferences_general_patron_restore_purchases" = "購入の復元";
 "preferences_general_feedback_title" = "質問やフィードバックがあれば、\nお気軽にお問い合わせください:";
 "preferences_general_feedback_email" = "メール";
@@ -115,7 +114,7 @@
 
 
 "preferences_services_link_meeting_title" = "すべてのミーティングリンクを開くアプリ";
-"preferences_services_link_service_title" = "%@ を開くアプリ";
+"preferences_services_link_service_title" = "%@でリンクを開く";
 "preferences_services_link_default_browser_value" = "標準のウェブブラウザー";
 "preferences_services_supported_links_list" = "サポートしているサービス一覧:\n%@";
 "preferences_services_supported_links_mailback" = "もしあなたが使っているサービスが無ければ開発チームにご連絡ください";
@@ -139,9 +138,9 @@
 "preferences_configure_browsers_modal_add_browser_path" = "パス";
 "preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "ウェブブラウザーの選択";
 "preferences_configure_browsers_modal_alert_title" = "ブラウザー設定を追加できませんでした";
-"preferences_configure_browsers_choose_broser_panel_title" = "ウェブブラウザーアプリを選択してください";
-"preferences_configure_browsers_choose_broser_panel_prompt" = "ウェブブラウザーの選択";
-"preferences_configure_browsers_choose_broser_panel_message" = "ウェブブラウザーをどこから起動するか選択します。";
+"preferences_configure_browsers_choose_browser_panel_title" = "ウェブブラウザーアプリを選択してください";
+"preferences_configure_browsers_choose_browser_panel_prompt" = "ウェブブラウザーの選択";
+"preferences_configure_browsers_choose_browser_panel_message" = "ウェブブラウザーをどこから起動するか選択します。";
 
 // MARK: - Preferences Bookmarks
 
@@ -230,7 +229,7 @@
 "status_bar_show_meeting_names" = "ミーティング名を表示する";
 "status_bar_hide_meeting_names" = "ミーティング名を隠す";
 "status_bar_whats_new" = "お知らせ";
-"status_bar_rate_app" = "Rate App";
+"status_bar_rate_app" = "アプリを評価する";
 "status_bar_preferences" = "設定";
 "status_bar_quit" = "MeetingBar を終了";
 "status_bar_no_title" = "タイトルなし";
@@ -271,20 +270,20 @@
 "access_screen_access_granted_click_ok_title" = "macOS のポップアップウィンドウで \"OK\" をクリックしてください。";
 "access_screen_provider_picker_label" = "カレンダーサービスを選択します";
 "access_screen_provider_macos_title" = "MacOS Calendar app";
-"access_screen_provider_macos_recommended" = "(recommended)";
-"access_screen_provider_macos_data_source" = "Get data from MacOS Calendar app";
+"access_screen_provider_macos_recommended" = "(推奨)";
+"access_screen_provider_macos_data_source" = "macOSのカレンダーアプリからデータを取得";
 "access_screen_provider_macos_number_of_accounts" = "Any number of any connected accounts";
 "access_screen_provider_gcalendar_data_source" = "Get data directly from Google Calendar";
 "access_screen_provider_gcalendar_number_of_accounts" = "Only one Google account";
-"access_screen_provider_gcalendar_sign_in_title" = "Google Sign In";
-"access_screen_provider_gcalendar_sign_in_description" = "Allow MeetingBar access to your calendar in browser window";
-"access_screen_try_again" = "Try again";
+"access_screen_provider_gcalendar_sign_in_title" = "Googleでログイン";
+"access_screen_provider_gcalendar_sign_in_description" = "MeetingBarアプリがブラウザのカレンダーにアクセスすることを許可";
+"access_screen_try_again" = "もう一度試してください";
 
 // MARK: - Shared
 
 
 "shared_send_notification_toggle" = "イベント開始前に通知する";
-"shared_fullscreen_notification_toggle" = "Show a fullscreen notification";
+"shared_fullscreen_notification_toggle" = "全画面通知";
 "general_when_event_starts" = "イベントが始まったとき";
 "general_one_minute_before" = "1分前";
 "general_three_minute_before" = "3分前";

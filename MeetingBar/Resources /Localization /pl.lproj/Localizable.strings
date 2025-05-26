@@ -28,7 +28,6 @@
 
 "preferences_tab_general" = "Ogólne";
 "preferences_tab_appearance" = "Wygląd";
-"preferences_tab_services" = "Usługi";
 "preferences_tab_bookmarks" = "Zakładki";
 "preferences_tab_calendars" = "Kalendarze";
 "preferences_tab_advanced" = "Zaawansowane";
@@ -132,9 +131,9 @@
 "preferences_configure_browsers_modal_add_browser_path" = "Ścieżka";
 "preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "Wybierz przeglądarkę internetową";
 "preferences_configure_browsers_modal_alert_title" = "Nie można dodać konfiguracji przeglądarki";
-"preferences_configure_browsers_choose_broser_panel_title" = "Wybierz aplikację przeglądarki internetowej";
-"preferences_configure_browsers_choose_broser_panel_prompt" = "Wybierz przeglądarkę internetową";
-"preferences_configure_browsers_choose_broser_panel_message" = "Wybierz miejsce, z którego chcesz uruchomić przeglądarkę internetową.";
+"preferences_configure_browsers_choose_browser_panel_title" = "Wybierz aplikację przeglądarki internetowej";
+"preferences_configure_browsers_choose_browser_panel_prompt" = "Wybierz przeglądarkę internetową";
+"preferences_configure_browsers_choose_browser_panel_message" = "Wybierz miejsce, z którego chcesz uruchomić przeglądarkę internetową.";
 
 // MARK: - Preferences Bookmarks
 
@@ -334,3 +333,4 @@
 "notification_all_dismissals_removed_title" = "Usuń wszystkie odwołania";
 "notification_all_dismissals_removed_message" = "Wszystkie odwołania spotkania wracają do akcji";
 "status_bar_section_refresh_sources" = "Odśwież źródła";
+"notifications_meetingbar_dismiss_event_action" = "Odrzuć";

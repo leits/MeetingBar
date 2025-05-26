@@ -189,9 +189,9 @@
 // MARK: - Preferences Bookmarks
 
 "preferences_bookmarks_no_bookmarks_placeholder" = "Zatím nemáte žádné záložky";
-"preferences_configure_browsers_choose_broser_panel_message" = "Vyberte, odkud se má webový prohlížeč spustit.";
-"preferences_configure_browsers_choose_broser_panel_prompt" = "Vybrat webový prohlížeč";
-"preferences_configure_browsers_choose_broser_panel_title" = "Vyberte aplikaci webového prohlížeče";
+"preferences_configure_browsers_choose_browser_panel_message" = "Vyberte, odkud se má webový prohlížeč spustit.";
+"preferences_configure_browsers_choose_browser_panel_prompt" = "Vybrat webový prohlížeč";
+"preferences_configure_browsers_choose_browser_panel_title" = "Vyberte aplikaci webového prohlížeče";
 "preferences_configure_browsers_modal_alert_title" = "Nelze přidat konfiguraci prohlížeče";
 "preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "Vybrat webový prohlížeč";
 "preferences_configure_browsers_modal_add_browser_path" = "Cesta";
@@ -295,7 +295,6 @@
 "preferences_tab_advanced" = "Pokročilé";
 "preferences_tab_calendars" = "Kalendáře";
 "preferences_tab_bookmarks" = "Záložky";
-"preferences_tab_services" = "Služby";
 "preferences_tab_appearance" = "Vzhled";
 
 // MARK: - Preferences tabs

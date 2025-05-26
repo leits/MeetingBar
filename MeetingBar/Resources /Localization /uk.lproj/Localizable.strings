@@ -22,13 +22,12 @@
 
 "window_title_preferences" = "Налаштування MeetingBar";
 "window_title_onboarding" = "Ласкаво просимо у MeetingBar";
-"windows_title_changelog" = "Що нового у MeetingBar?";
+"windows_title_changelog" = "Що нового у MeetingBar";
 
 // MARK: - Preferences tabs
 
 "preferences_tab_general" = "Загальні";
 "preferences_tab_appearance" = "Вигляд";
-"preferences_tab_services" = "Сервіси";
 "preferences_tab_bookmarks" = "Закладки";
 "preferences_tab_calendars" = "Календарі";
 "preferences_tab_advanced" = "Розширені";
@@ -133,9 +132,9 @@
 "preferences_configure_browsers_modal_add_browser_path" = "Шлях";
 "preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "Виберіть браузер";
 "preferences_configure_browsers_modal_alert_title" = "Ой леле! Не вдалось додати браузер";
-"preferences_configure_browsers_choose_broser_panel_title" = "Виберіть коректний браузер";
-"preferences_configure_browsers_choose_broser_panel_prompt" = "Виберіть браузер";
-"preferences_configure_browsers_choose_broser_panel_message" = "Виберіть браузер із будь-яким розташуванням.";
+"preferences_configure_browsers_choose_browser_panel_title" = "Виберіть програму веб-браузера";
+"preferences_configure_browsers_choose_browser_panel_prompt" = "Виберіть веббраузер";
+"preferences_configure_browsers_choose_browser_panel_message" = "Виберіть, звідки запускати веббраузер.";
 
 // MARK: - Preferences Bookmarks
 
@@ -277,7 +276,7 @@
 "general_one_minute_before" = "за 1 хвилину до початку";
 "general_three_minute_before" = "за 3 хвилини до початку";
 "general_five_minute_before" = "за 5 хвилин до початку";
-"shared_send_notification_no_alert_style_tip" = "⚠️ У системних параметрах сповіщення від MeetingBar зараз не налаштовані як \"Попередження\". Будь ласка, увімкніть \"Попередження\", щоб сповіщення не зникали автоматично.";
+"shared_send_notification_no_alert_style_tip" = "Примітка: Сповіщення налаштовано на банер, тому вони з’являються ненадовго, перш ніж зникнути. Щоб вони залишалися на екрані, доки ви їх не закриєте, перемкніться до опції «Сповіщення» в налаштуваннях сповіщень macOS.";
 "shared_send_notification_disabled_tip" = "⚠️ Сповіщення від MeetingBar вимкнені у системних параметрах. Будь ласка, увімкніть їх, щоб не проґавити зустріч.";
 "shared_automatic_event_join_toggle" = "Автоматично долучитись до наступної зустрічі";
 "shared_automatic_event_join_tip" = "Це налаштування автоматично відкриє вашу наступну зустріч у вибраному застосунку чи браузері";
@@ -292,7 +291,7 @@
 
 // MARK: - Store
 
-"store_patronage_title" = "MeetingBar Patronage";
+"store_patronage_title" = "Патронат MeetingBar";
 "store_patronage_restore_success_message" = "Успішно відновлено";
 "store_patronage_restore_nothing_message" = "Нічого відновлювати";
 "store_patronage_purchase_success_message" = "Успішно оплачено. Дякую за підтримку!";
@@ -333,3 +332,10 @@
 "notification_all_dismissals_removed_title" = "Повернено пропущені зустрічі";
 "notification_all_dismissals_removed_message" = "Всі пропущені зустрічі знову у календарі";
 "notifications_event_started_body" = "Подія розпочалась";
+"notifications_meetingbar_dismiss_event_action" = "Відхилити";
+"preferences_tab_links" = "Посилання";
+"preferences_appearance_status_bar_ongoing_time_immediate_value" = "приховати після запуску";
+"preferences_appearance_status_bar_ongoing_title" = "Поточна видимість події:";
+"preferences_appearance_status_bar_ongoing_time_ten_before_next_value" = "приховати за 10 хвилин до наступної події";
+"preferences_appearance_status_bar_ongoing_time_ten_after_value" = "приховати через 10 хвилин після початку";
+"preferences_appearance_menu_show_timeline_toggle" = "Показати візуальну хронологію дня";

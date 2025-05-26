@@ -112,7 +112,6 @@
 
 "preferences_tab_general" = "Všeobecné";
 "preferences_tab_appearance" = "Vzhľad";
-"preferences_tab_services" = "Služby";
 "preferences_tab_bookmarks" = "Záložky";
 "preferences_tab_calendars" = "Kalendáre";
 "preferences_tab_advanced" = "Pokročilé";
@@ -190,9 +189,9 @@
 "preferences_configure_browsers_modal_add_browser_path" = "Cesta";
 "preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "Vybrať webový prehliadač";
 "preferences_configure_browsers_modal_alert_title" = "Nie je možné pridať konfiguráciu prehliadača";
-"preferences_configure_browsers_choose_broser_panel_title" = "Vyber webový prehliadač";
-"preferences_configure_browsers_choose_broser_panel_prompt" = "Vyber webový prehliadač";
-"preferences_configure_browsers_choose_broser_panel_message" = "Vyber, odkiaľ chceš spustiť webový prehliadač.";
+"preferences_configure_browsers_choose_browser_panel_title" = "Vyber webový prehliadač";
+"preferences_configure_browsers_choose_browser_panel_prompt" = "Vyber webový prehliadač";
+"preferences_configure_browsers_choose_browser_panel_message" = "Vyber, odkiaľ chceš spustiť webový prehliadač.";
 
 // MARK: - Preferences Bookmarks
 

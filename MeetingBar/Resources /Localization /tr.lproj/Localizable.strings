@@ -32,7 +32,6 @@
 
 "preferences_tab_general" = "Genel";
 "preferences_tab_appearance" = "Görünüm";
-"preferences_tab_services" = "Servisler";
 "preferences_tab_bookmarks" = "Yer İmleri";
 "preferences_tab_calendars" = "Takvimler";
 "preferences_tab_advanced" = "Gelişmiş";
@@ -63,7 +62,7 @@
 "preferences_appearance_events_past_title" = "Önceki etkinlikler:";
 "preferences_appearance_events_pending_title" = "Bekleyen etkinlikler";
 "preferences_appearance_events_declined_title" = "Reddedilen etkinlikler:";
-"preferences_appearance_events_tentative_title" = "Tentative events:";
+"preferences_appearance_events_tentative_title" = "Geçici Etkinlikler:";
 "preferences_appearance_events_value_show" = "göster";
 "preferences_appearance_events_value_hide" = "gizle";
 "preferences_appearance_events_value_as_underlined" = "altı çizgili göster";
@@ -102,9 +101,9 @@
 "preferences_services_create_meeting_browser_title" = "Web tarayıcı kullan";
 "preferences_configure_browsers_delete_alert_message" = "%@ tarayıcı konfigurasyonunu sil?";
 "preferences_configure_browsers_modal_edit_browser_title" = "Tarayıcı düzenle";
-"preferences_configure_browsers_choose_broser_panel_title" = "Bir tarayıcı uygulaması seç";
-"preferences_configure_browsers_choose_broser_panel_prompt" = "Tarayıcı seç";
-"preferences_configure_browsers_choose_broser_panel_message" = "Web tarayıcısının nereden çalıştırılacağını seçin.";
+"preferences_configure_browsers_choose_browser_panel_title" = "Bir tarayıcı uygulaması seç";
+"preferences_configure_browsers_choose_browser_panel_prompt" = "Tarayıcı seç";
+"preferences_configure_browsers_choose_browser_panel_message" = "Web tarayıcısının nereden çalıştırılacağını seçin.";
 
 // MARK: - Preferences Bookmarks
 
@@ -190,7 +189,7 @@
 "access_screen_provider_gcalendar_sign_in_title" = "Google'da Oturum Açın";
 "access_screen_provider_gcalendar_sign_in_description" = "Tarayıcı penceresinde MeetingBar'ın takviminize erişmesine izin verin";
 "access_screen_try_again" = "Tekrar deneyin";
-"shared_send_notification_no_alert_style_tip" = "⚠️ macOS bildirim ayarlarınız MeetingBar için yapılandırılmamış. Bildirim istiyorsanız bunu açmanız gerekir.";
+"shared_send_notification_no_alert_style_tip" = "Not: Bildirimler Banner'lara ayarlanmıştır, bu nedenle kaybolmadan önce kısa bir süre görünürler. Siz kapatana kadar ekranda kalmalarını sağlamak için macOS bildirim ayarlarınızda Uyarılar'a geçin.";
 
 // MARK: - Constants
 "constants_create_meeting_service_url" = "Özel bağlantı";
@@ -311,7 +310,7 @@
 "store_patronage_purchase_cloud_service_permission_denied_message" = "Bulut servis bilgilerine erişim izni verilmedi";
 "notifications_event_start_three_minutes_body" = "Toplantı üç dakika içinde başlıyor";
 "shared_automatic_event_join_toggle" = "Bir sonraki etkinlik toplantısına otomatik olarak katıl";
-"shared_automatic_event_join_tip" = "Bu ayar, yapılandırılmış uygulamanızda veya tarayıcınızda bir sonraki toplantınızı otomatik olarak açacaktır.";
+"shared_automatic_event_join_tip" = "Bu ayar, yapılandırdığınız uygulamada veya tarayıcıda bir sonraki toplantınızı otomatik olarak açacaktır";
 
 // MARK: - Link open
 
@@ -332,3 +331,10 @@
 "notification_all_dismissals_removed_title" = "Tüm işten çıkarmalar kaldırıldı";
 "notification_all_dismissals_removed_message" = "Kapatılan tüm toplantılar tekrar aktif";
 "notifications_meetingbar_join_event_action" = "Katıl";
+"notifications_meetingbar_dismiss_event_action" = "Yoksay";
+"preferences_tab_links" = "Bağlantılar";
+"preferences_appearance_menu_show_timeline_toggle" = "Günün görsel zaman çizelgesini göster";
+"preferences_appearance_status_bar_ongoing_title" = "Devam eden etkinlik görünürlüğü:";
+"preferences_appearance_status_bar_ongoing_time_immediate_value" = "başladıktan sonra gizle";
+"preferences_appearance_status_bar_ongoing_time_ten_after_value" = "başladıktan 10 dakika sonra gizle";
+"preferences_appearance_status_bar_ongoing_time_ten_before_next_value" = "bir sonraki etkinlikten 10 dakika önce gizle";

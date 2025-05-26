@@ -28,9 +28,9 @@
 "store_patronage_restore_success_message" = "Wiederhergestellt";
 "constants_meeting_service_url" = "URL";
 "constants_meeting_service_other" = "Andere";
-"preferences_configure_browsers_choose_broser_panel_message" = "Festlegen von wo der Webbrowser starten soll.";
-"preferences_configure_browsers_choose_broser_panel_prompt" = "Webbrowser auswählen";
-"preferences_configure_browsers_choose_broser_panel_title" = "Webbrowser-App auswählen";
+"preferences_configure_browsers_choose_browser_panel_message" = "Festlegen von wo der Webbrowser starten soll.";
+"preferences_configure_browsers_choose_browser_panel_prompt" = "Webbrowser auswählen";
+"preferences_configure_browsers_choose_browser_panel_title" = "Webbrowser-App auswählen";
 "preferences_configure_browsers_modal_alert_title" = "Webbrowser-Konfiguration kann nicht hinzugefügt werden";
 "preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "Webbrowser auswählen";
 "preferences_configure_browsers_modal_add_browser_path" = "Pfad";
@@ -114,7 +114,6 @@
 "preferences_tab_advanced" = "Erweitert";
 "preferences_tab_calendars" = "Kalender";
 "preferences_tab_bookmarks" = "Lesezeichen";
-"preferences_tab_services" = "Services";
 "preferences_tab_appearance" = "Darstellung";
 
 // MARK: - Preferences tabs

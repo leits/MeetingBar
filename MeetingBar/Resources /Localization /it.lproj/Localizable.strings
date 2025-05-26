@@ -27,7 +27,6 @@
 
 "preferences_tab_general" = "Generali";
 "preferences_tab_appearance" = "Aspetto";
-"preferences_tab_services" = "Servizi";
 "preferences_tab_bookmarks" = "Segnalibri";
 "preferences_tab_calendars" = "Calendari";
 "preferences_tab_advanced" = "Avanzate";
@@ -71,7 +70,7 @@
 "preferences_appearance_events_past_title" = "Eventi passati:";
 "preferences_appearance_events_pending_title" = "Eventi in sospeso";
 "preferences_appearance_events_declined_title" = "Eventi rifiutati:";
-"preferences_appearance_events_tentative_title" = "Tentative events:";
+"preferences_appearance_events_tentative_title" = "Eventi provvisori:";
 "preferences_appearance_events_value_show" = "mostra";
 "preferences_appearance_events_value_hide" = "nascondi";
 "preferences_appearance_events_value_as_inactive" = "mostra come inattivo";
@@ -132,9 +131,9 @@
 "preferences_configure_browsers_modal_add_browser_path" = "Percorso";
 "preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "Scegli il browser";
 "preferences_configure_browsers_modal_alert_title" = "Non posso aggiungere la configurazione del browser";
-"preferences_configure_browsers_choose_broser_panel_title" = "Seleziona l'app di un browser";
-"preferences_configure_browsers_choose_broser_panel_prompt" = "Scegli un browser";
-"preferences_configure_browsers_choose_broser_panel_message" = "Seleziona da dove lanciare il browser.";
+"preferences_configure_browsers_choose_browser_panel_title" = "Seleziona un'app del browser web";
+"preferences_configure_browsers_choose_browser_panel_prompt" = "Scegli il browser web";
+"preferences_configure_browsers_choose_browser_panel_message" = "Seleziona da dove eseguire il browser web.";
 
 // MARK: - Preferences Bookmarks
 
@@ -284,7 +283,7 @@
 "general_one_minute_before" = "1 minuto prima";
 "general_three_minute_before" = "3 minuti prima";
 "general_five_minute_before" = "5 minuti prima";
-"shared_send_notification_no_alert_style_tip" = "⚠️ Le impostazioni per le notifiche di macOS per MeetingBar non sono impostate per gli avvisi. Aggiorna le impostazioni se desideri notifiche persistenti.";
+"shared_send_notification_no_alert_style_tip" = "Nota: le notifiche sono impostate su Banner, quindi appaiono brevemente prima di scomparire. Per mantenerle sullo schermo finché non le chiudi, passa ad Avvisi nelle impostazioni di notifica di macOS.";
 "shared_send_notification_disabled_tip" = "⚠️ Le impostazioni per le notifiche di macOS per MeetingBar sono disattivate. Attiva le notifiche nelle impostazioni di sistema di macOS per tenere traccia delle riunioni.";
 "shared_automatic_event_join_toggle" = "Partecipa automaticamente alla prossima riunione";
 "shared_automatic_event_join_tip" = "Quest'impostazione aprirà automaticamente la tua prossima riunione nell'app o nel browser configurati";
@@ -331,3 +330,9 @@
 
 "link_url_cant_open_title" = "Oops! Impossibile aprire il link in %@";
 "link_url_cant_open_message" = "Assicurati di aver %@ installato, oppure apri questi link in un browser dalle preferenze.";
+"notifications_meetingbar_dismiss_event_action" = "Abbandona";
+"preferences_tab_links" = "Link";
+"preferences_appearance_status_bar_ongoing_title" = "Visibilità continua dell'evento:";
+"preferences_appearance_status_bar_ongoing_time_immediate_value" = "nascondi dopo l'avvio";
+"preferences_appearance_status_bar_ongoing_time_ten_after_value" = "nascondi 10   minuti dopo l'inizio";
+"preferences_appearance_status_bar_ongoing_time_ten_before_next_value" = "nascondi 10 minuti prima del prossimo evento";

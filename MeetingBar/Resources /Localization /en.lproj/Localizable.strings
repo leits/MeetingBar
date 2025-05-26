@@ -31,8 +31,8 @@
 
 "preferences_tab_general" = "General";
 "preferences_tab_appearance" = "Appearance";
-"preferences_tab_services" = "Services";
 "preferences_tab_bookmarks" = "Bookmarks";
+"preferences_tab_links" = "Links";
 "preferences_tab_calendars" = "Calendars";
 "preferences_tab_advanced" = "Advanced";
 
@@ -97,9 +97,14 @@
 "preferences_appearance_status_bar_time_show_value" = "show";
 "preferences_appearance_status_bar_time_show_under_title_value" = "show under title";
 "preferences_appearance_status_bar_time_hide_value" = "hide";
+"preferences_appearance_status_bar_ongoing_title" = "Ongoing event visibility:";
+"preferences_appearance_status_bar_ongoing_time_immediate_value" = "hide after start";
+"preferences_appearance_status_bar_ongoing_time_ten_after_value" = "hide 10 min  after start";
+"preferences_appearance_status_bar_ongoing_time_ten_before_next_value" = "hide 10 min before next event";
 "preferences_appearance_status_bar_next_event_toggle" = "Show only events starting within";
 "preferences_appearance_status_bar_next_event_stepper" = "%d minutes";
 "preferences_appearance_menu_title" = "Menu";
+"preferences_appearance_menu_show_timeline_toggle" = "Show visual timeline of the day";
 "preferences_appearance_menu_shorten_event_title_toggle" = "Shorten event title to";
 "preferences_appearance_menu_shorten_event_title_stepper" = "%d characters";
 "preferences_appearance_menu_time_format_title" = "Time format:";
@@ -136,9 +141,9 @@
 "preferences_configure_browsers_modal_add_browser_path" = "Path";
 "preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "Choose web browser";
 "preferences_configure_browsers_modal_alert_title" = "Can't add browser config";
-"preferences_configure_browsers_choose_broser_panel_title" = "Select a web browser app";
-"preferences_configure_browsers_choose_broser_panel_prompt" = "Choose web browser";
-"preferences_configure_browsers_choose_broser_panel_message" = "Select where to run the web browser from.";
+"preferences_configure_browsers_choose_browser_panel_title" = "Select a web browser app";
+"preferences_configure_browsers_choose_browser_panel_prompt" = "Choose web browser";
+"preferences_configure_browsers_choose_browser_panel_message" = "Select where to run the web browser from.";
 
 // MARK: - Preferences Bookmarks
 
@@ -283,7 +288,7 @@
 
 "shared_send_notification_toggle" = "Send a system notification";
 "shared_fullscreen_notification_toggle" = "Show a fullscreen notification";
-"shared_send_notification_no_alert_style_tip" = "⚠️ Your macOS notification settings for MeetingBar are not set to alert. Do so if you want persistent notifications.";
+"shared_send_notification_no_alert_style_tip" = "Note: Notifications are set to Banners, so they appear briefly before disappearing. To keep them onscreen until you dismiss them, switch to Alerts in your macOS notification settings.";
 "shared_send_notification_disabled_tip" = "⚠️ Your macOS notification settings for MeetingBar are off. Turn on notifications in the macOS system settings to keep track of meetings.";
 "shared_automatic_event_join_toggle" = "Automatically join next event meeting";
 "shared_automatic_event_join_tip" = "This setting will automatically open your next meeting in your configured app or browser";
@@ -325,6 +330,7 @@
 "notifications_event_ends_one_minute_body" = "The event ends in one minute";
 "notifications_event_ends_three_minutes_body" = "The event ends in three minutes";
 "notifications_event_ends_five_minutes_body" = "The event ends in five minutes";
+"notifications_meetingbar_dismiss_event_action" = "Dismiss";
 
 // MARK: - Link open
 
