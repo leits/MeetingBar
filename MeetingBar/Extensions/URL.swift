@@ -23,6 +23,21 @@ extension URL {
             configuration.activates = true
             configuration.addsToRecentItems = true
 
+            guard browserPath.hasSuffix(".app") else {
+                let process = Process()
+                process.executableURL = URL(fileURLWithPath: browserPath)
+                process.arguments = [self.absoluteString]
+
+                do {
+                    try process.run()
+                    process.waitUntilExit()
+                } catch {
+                    sendNotification("link_url_cant_open_title".loco(browserName), "link_url_cant_open_message".loco(browserName))
+                    openInDefaultBrowser()
+                }
+                return
+            }
+
             NSWorkspace.shared.open([self], withApplicationAt: URL(fileURLWithPath: browserPath), configuration: configuration) { app, _ in
                 guard app != nil else {
                     sendNotification("link_url_cant_open_title".loco(browserName), "link_url_cant_open_message".loco(browserName))
