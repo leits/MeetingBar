@@ -1,36 +1,55 @@
+reporter: "github-actions-logging"
+
+included:
+  - MeetingBar
+  - MeetingBarTests
+
+excluded:
+  - Carthage
+  - Pods
+  - .build
+  - build
+  - DerivedData
+
 disabled_rules:
-  - force_try
-  - multiple_closures_with_trailing_closure
-  - force_cast
-  - cyclomatic_complexity
-  - type_name
   - file_length
   - function_body_length
   - type_body_length
+  - cyclomatic_complexity
+  - type_name
+  - multiple_closures_with_trailing_closure
+  - force_cast
+  - force_try
+  - force_unwrapping
+
 opt_in_rules:
   - number_separator
+  - empty_count
+  - fatal_error_message
+  - joined_default_parameter
+  - redundant_nil_coalescing
+  - redundant_void_return
+  - trailing_comma
+  - yoda_condition
+
 analyzer_rules:
   - unused_declaration
   - unused_import
+
 number_separator:
   minimum_length: 5
-line_length: 200
+
+line_length:
+  warning: 200
+  error: 250
+
 identifier_name:
-  max_length:
-    warning: 100
-    error: 100
   min_length:
     warning: 2
     error: 2
+  max_length:
+    warning: 100
+    error: 100
+  allowed_symbols: ["_"]
   validates_start_with_lowercase: warning
-  allowed_symbols:
-    - '_'
-  excluded:
-    - 'x'
-    - 'y'
-    - 'a'
-    - 'b'
-    - 'x1'
-    - 'x2'
-    - 'y1'
-    - 'y2'
+  excluded: [x, y, a, b, x1, x2, y1, y2]
