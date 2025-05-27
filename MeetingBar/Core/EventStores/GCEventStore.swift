@@ -313,7 +313,7 @@ class GCEventStore: NSObject, EventStore, @preconcurrency OIDExternalUserAgent {
         }
 
         let root = try JSONSerialization.jsonObject(with: data) as? [String: Any] ?? [:]
-        return root["items"] as? [[String: Any]] ?? []
+        return root["items"] as! [[String: Any]]
     }
 
     private func revoke(token: String) async throws {

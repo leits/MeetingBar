@@ -171,7 +171,7 @@ public class EventManager: ObservableObject {
                 guard let self = self else {
                     return Just(([], [])).eraseToAnyPublisher()
                 }
-                return Future { promise in
+                return Future<([MBCalendar], [MBEvent]), Error> { promise in
                     Task {
                         do {
                             let cals = try await self.provider.fetchAllCalendars()
@@ -182,6 +182,10 @@ public class EventManager: ObservableObject {
                             promise(.success(([], [])))
                         }
                     }
+                }
+                .catch { error -> Empty<([MBCalendar], [MBEvent]), Never> in
+                    NSLog("EventManager refresh failed: \(error)")
+                    return Empty(completeImmediately: true)
                 }
                 .eraseToAnyPublisher()
             }
