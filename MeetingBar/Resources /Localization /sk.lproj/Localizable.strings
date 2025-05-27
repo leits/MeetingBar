@@ -35,7 +35,7 @@
 "shared_send_notification_toggle" = "Upozorniť systémovým hlásením";
 "shared_send_notification_disabled_tip" = "⚠️ Tvoje MacOS nastavenia hlásení pre MeetingBar sú vypnuté. Zapni upozornenia v Systémových nastaveniach macOS pre prehľad o stretnutiach.";
 "shared_automatic_event_join_toggle" = "Automaticky sa pripojiť k ďalšiemu stretnutiu";
-"shared_send_notification_no_alert_style_tip" = "⚠️ Tvoje MacOS nastavenia hlásení pre MeetingBar nie sú nastavené na upozorňovať. Urob tak pre neustále upozornenia.";
+"shared_send_notification_no_alert_style_tip" = "Poznámka: Upozornenia sú nastavené ako bannery, takže sa krátko zobrazia a potom zmiznú. Ak chcete, aby zostali na obrazovke, kým ich nezrušíte, prepnite v nastaveniach upozornení v systéme macOS na možnosť Upozornenia.";
 "next_meeting_empty_title" = "Dnes nie sú žiadne naplánované stretnutia";
 "create_meeting_error_title" = "Nie je možné vytvoriť nové stretnutie";
 "preferences_general_shortcut_create_meeting" = "Vytvoriť stretnutie:";
@@ -71,7 +71,7 @@
 "status_bar_event_start_time_all_day" = "Celý deň";
 "status_bar_submenu_copy_meeting_link" = "Skopírovať odkaz na stretnutie";
 "status_bar_error_link_missed_title" = "Ups! Nemôžem sa pripojiť k %@";
-"status_bar_error_app_link_title" = "Ups! Nedá sa otvoriť odkaz v %@";
+"status_bar_error_app_link_title" = "Ups! Nepodarilo sa otvoriť odkaz v %@";
 "status_bar_error_app_link_message" = "Uisti sa, že máš nainštalovaný %@ alebo namiesto toho otvor takéto odkazy z predvolieb vo webovom prehliadači.";
 "access_screen_access_screen_access_denied_go_to_title" = "Prejdi do";
 "access_screen_access_denied_system_preferences_button" = "Systémových nastavení";
@@ -95,7 +95,7 @@
 
 // MARK: - Link open
 
-"link_url_cant_open_title" = "Ups! Nedá sa otvoriť odkaz v %@";
+"link_url_cant_open_title" = "Ups! Nepodarilo sa otvoriť odkaz v %@";
 "link_url_cant_open_message" = "Uisti sa, že máš nainštalovaný %@, alebo namiesto toho otvor takéto odkazy z predvolieb vo webovom prehliadači.";
 "preferences_services_supported_links_mailback" = "Ak služba, ktorú používaš, nie je podporovaná, môžeš poslať email vývojárom";
 "preferences_general_patron_twelve_months" = "12 mesiacov - 11,99 USD";
@@ -148,7 +148,7 @@
 "preferences_appearance_events_value_with_strikethrough" = "zobraziť s preškrtnutím";
 "preferences_appearance_status_bar_title" = "Lišta";
 "preferences_appearance_status_bar_icon_title" = "Ikona";
-"preferences_appearance_status_bar_icon_app_icon_value" = " MeetingBar";
+"preferences_appearance_status_bar_icon_app_icon_value" = " . MeetingBar";
 "preferences_appearance_status_bar_icon_calendar_icon_value" = " Kalendár";
 "preferences_appearance_status_bar_icon_specific_icon_value" = " Ikona konkrétnej udalosti (napr. MS Teams)";
 "preferences_appearance_status_bar_icon_no_icon_value" = " Bez ikony";
@@ -189,9 +189,9 @@
 "preferences_configure_browsers_modal_add_browser_path" = "Cesta";
 "preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "Vybrať webový prehliadač";
 "preferences_configure_browsers_modal_alert_title" = "Nie je možné pridať konfiguráciu prehliadača";
-"preferences_configure_browsers_choose_browser_panel_title" = "Vyber webový prehliadač";
-"preferences_configure_browsers_choose_browser_panel_prompt" = "Vyber webový prehliadač";
-"preferences_configure_browsers_choose_browser_panel_message" = "Vyber, odkiaľ chceš spustiť webový prehliadač.";
+"preferences_configure_browsers_choose_browser_panel_title" = "Vyberte aplikáciu webového prehliadača";
+"preferences_configure_browsers_choose_browser_panel_prompt" = "Vyberte aplikáciu webového prehliadača";
+"preferences_configure_browsers_choose_browser_panel_message" = "Vyberte, odkiaľ sa má spustiť webový prehliadač.";
 
 // MARK: - Preferences Bookmarks
 
@@ -325,3 +325,10 @@
 "notification_all_dismissals_removed_title" = "Odstránené všetky zrušené";
 "status_bar_section_date_nothing" = "Na %@ nič";
 "status_bar_submenu_undismiss_meeting" = "Odstrániť zrušenie";
+"preferences_appearance_menu_show_timeline_toggle" = "Zobraziť vizuálnu časovú os dňa";
+"notifications_meetingbar_dismiss_event_action" = "Zavrieť";
+"preferences_tab_links" = "Odkazy";
+"preferences_appearance_status_bar_ongoing_title" = "Priebežná viditeľnosť udalosti:";
+"preferences_appearance_status_bar_ongoing_time_immediate_value" = "skryť po spustení";
+"preferences_appearance_status_bar_ongoing_time_ten_after_value" = "skryť 10 minút.. po začiatku";
+"preferences_appearance_status_bar_ongoing_time_ten_before_next_value" = "skryť 10 minút pred ďalšou udalosťou";
