@@ -8,9 +8,10 @@
 import Combine
 @testable import MeetingBar
 import XCTest
+import Defaults
 
 @MainActor
-class EventManagerTests: XCTestCase {
+class EventManagerTests: BaseTestCase {
     private var cancellables = Set<AnyCancellable>()
 
     func testInjectedStorePublishesCalendarsAndEvents() {

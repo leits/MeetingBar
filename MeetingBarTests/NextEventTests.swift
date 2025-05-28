@@ -8,13 +8,30 @@
 
 @testable import MeetingBar
 import XCTest
+import Defaults
 
 /// Make sure this lives in your test target, and that
 /// all your test cases subclass BaseTestCase so they
 /// don’t touch the real Defaults.
-class NextEventTests: XCTestCase {
+class NextEventTests: BaseTestCase {
     /// Shortcut to “now” so all offsets are relative.
     private let now = Date()
+
+    override func setUp() {
+        super.setUp()
+
+        // Permissive Defaults so no event is filtered out unintentionally
+        Defaults[.allDayEvents]               = .show
+        Defaults[.nonAllDayEvents]            = .show
+        Defaults[.showPendingEvents]          = .show
+        Defaults[.showTentativeEvents]        = .show
+        Defaults[.declinedEventsAppereance]   = .show_inactive
+        Defaults[.ongoingEventVisibility]     = .showTenMinBeforeNext
+        Defaults[.personalEventsAppereance]   = .show_active
+        Defaults[.filterEventRegexes]         = []
+        Defaults[.dismissedEvents]            = []
+        Defaults[.showEventsForPeriod]        = .today_n_tomorrow
+    }
 
     func test_picksSoonestFutureEvent() {
         let e1 = makeFakeEvent(

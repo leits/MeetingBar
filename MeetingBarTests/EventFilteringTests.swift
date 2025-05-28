@@ -10,7 +10,7 @@ import Defaults
 @testable import MeetingBar
 import XCTest
 
-final class EventFilteringTests: XCTestCase {
+final class EventFilteringTests: BaseTestCase {
     override func setUp() {
         super.setUp()
         // Reset all the toggles to their “show everything” defaults
