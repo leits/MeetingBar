@@ -76,7 +76,6 @@ final class MenuBuilderTests: BaseTestCase {
         // --- Act ---------------------------------------------------------------------
         let items   = builder.buildPreferencesSection()
         let titles  = MenuBuilder.plainTitles(of: items)
-        print(titles)
 
         // --- Assert ------------------------------------------------------------------
         XCTAssertTrue(titles.contains(where: { $0.contains("status_bar_whats_new".loco()) }),
@@ -155,4 +154,126 @@ final class MenuBuilderTests: BaseTestCase {
             "status_bar_quick_actions".loco()
         ])
     }
+}
+
+@MainActor
+final class MenuBuilderEventItemTests: BaseTestCase {
+
+    // Dummy target that owns selector stubs
+    private class Dummy: NSObject {
+        @objc func stub() {}
+    }
+
+    // MARK: – Helper ----------------------------------------------------------
+
+    /// Build a single `NSMenuItem` for the given event (index 1 of Date-section)
+    private func buildItem(event: MBEvent) -> NSMenuItem? {
+        let items = MenuBuilder(target: Dummy())
+            .buildDateSection(date: Date(),
+                              title: "T",
+                              events: [event])
+        return items.count > 1 ? items[1] : nil              // 0 = header
+    }
+
+    // MARK: – Tests -----------------------------------------------------------
+
+    /// Placeholder text when no events
+    func test_NoEvents() {
+        let dateSection = MenuBuilder(target: Dummy())
+            .buildDateSection(date: Date(), title: "T", events: [])
+        XCTAssertTrue(dateSection[1].title.contains("status_bar_section_date_nothing".loco("t")))
+
+    }
+    /// declined + `.hide` ⇒ item should be skipped completely
+    func test_declinedEventHiddenWhenAppearanceIsHide() {
+        Defaults[.declinedEventsAppereance] = .hide
+
+        var event = makeFakeEvent(id: "D",
+                              start: Date().addingTimeInterval(600),
+                              end: Date().addingTimeInterval(1200))
+        event.participationStatus = .declined
+
+        let item = buildItem(event: event)
+        XCTAssertNil(item)
+    }
+
+    /// pending + `.show_underlined` ⇒ underline attribute present
+    func test_pendingEventUnderlined() {
+        Defaults[.showPendingEvents] = .show_underlined
+
+        var event = makeFakeEvent(id: "P",
+                              start: Date().addingTimeInterval(600),
+                              end: Date().addingTimeInterval(1200))
+        event.participationStatus = .pending
+
+        let item = buildItem(event: event)
+
+        let underline = item!.attributedTitle?
+            .attribute(.underlineStyle, at: 0, effectiveRange: nil) as? Int
+        XCTAssertNotNil(underline,
+                        "pending event should be underlined when setting is .show_underlined")
+    }
+
+    /// showEventDetails == true ⇒ submenu with title/status exists
+    func test_submenuCreatedWhenShowEventDetailsTrue() {
+        Defaults[.showEventDetails] = true
+
+        var event = makeFakeEvent(id: "DET",
+                              start: Date().addingTimeInterval(600),
+                              end: Date().addingTimeInterval(1200))
+        // add an attendee so Status section appears
+        event.attendees = [MBEventAttendee(email: nil, name: "Alice",
+                                       status: .accepted,
+                                       optional: false,
+                                       isCurrentUser: false)]
+
+        let item = buildItem(event: event)
+
+        let subItems = item?.submenu?.items ?? []
+        XCTAssertNotNil(item?.submenu)
+        XCTAssertEqual(subItems.first?.title, "Event DET")
+        XCTAssertTrue(subItems.contains { $0.title.lowercased().contains("status") })
+    }
+
+    /// running event (state == .mixed) ⇒ bold font applied
+    func test_runningEventGetsBoldFont() {
+        let now = Date()
+        let runEvent = makeFakeEvent(
+            id: "RUN",
+            start: now.addingTimeInterval(-300),     // started 5 min ago
+            end: now.addingTimeInterval( 900)      // ends in 15 min
+        )
+
+        let item = buildItem(event: runEvent)
+        XCTAssertEqual(item?.state, .mixed)
+
+        let font = item!.attributedTitle?
+            .attribute(.font, at: 0, effectiveRange: nil) as? NSFont
+        XCTAssertTrue(font?.fontDescriptor.symbolicTraits.contains(.bold) ?? false,
+                      "running event title should be bold")
+    }
+}
+
+@MainActor
+final class MenuBuilderQuickActionsTests: BaseTestCase {
+
+    private class Dummy: NSObject {}
+
+    func test_quickActionsIncludesDismissRemove() {
+        let next = makeFakeEvent(id: "Q",
+                                 start: Date().addingTimeInterval(30),
+                                 end: Date().addingTimeInterval(900))
+        // there is at least one dismissed event -> menu should add “Remove all”
+        Defaults[.dismissedEvents] = [ProcessedEvent(id: "123", eventEndDate: Date())]
+
+        let root = MenuBuilder(target: Dummy())
+            .buildJoinSection(nextEvent: next)
+
+        // last element is quick actions header
+        let qa = root.last!
+        let titles = MenuBuilder.plainTitles(of: qa.submenu!.items)
+        XCTAssertTrue(titles.contains { $0.contains("dismiss") })
+        XCTAssertTrue(titles.contains { $0.contains("status_bar_menu_remove_all_dismissals".loco()) })
+    }
+
 }

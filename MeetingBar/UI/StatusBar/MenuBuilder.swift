@@ -50,6 +50,7 @@ struct MenuBuilder {
                 keyEquivalent: ""
             )
             item.isEnabled = false
+            items.append(item)
         }
         for event in sortedEvents {
             if let item = makeEventItem(event) {
@@ -563,7 +564,9 @@ struct MenuBuilder {
 
             // Open in fanctastical if fantastical is installed
             if isFantasticalInstalled {
-                let fantasticalItem = eventMenu.addItem(withTitle: "status_bar_submenu_open_in_fantastical".loco(), action: #selector(StatusBarItemController.openEventInFantastical), keyEquivalent: "")
+                let fantasticalItem = eventMenu.addItem(
+                    withTitle: "status_bar_submenu_open_in_fantastical".loco(),
+                    action: #selector(StatusBarItemController.openEventInFantastical), keyEquivalent: "")
                 fantasticalItem.target = target
                 fantasticalItem.representedObject = event
             }

@@ -23,7 +23,6 @@ final class TimelineLogicTests: XCTestCase {
     func testRowPacking_withoutOverlap_putsAllInOneRow() {
         let calc  = DayTimelineLayoutCalculator()
         let rows  = calc.rows(for: [seg(0, 10), seg(20, 30)])
-        print(rows)
         XCTAssertEqual(rows.count, 1)
         XCTAssertEqual(rows[0].count, 2)
     }
