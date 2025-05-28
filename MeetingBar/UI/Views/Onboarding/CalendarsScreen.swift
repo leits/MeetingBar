@@ -12,7 +12,12 @@ import Defaults
 
 struct CalendarsScreen: View {
     @Default(.selectedCalendarIDs) var selectedCalendarIDs
-    @EnvironmentObject var eventManager: EventManager
+    let eventManager: EventManager
+
+    init() {
+        let app = NSApplication.shared.delegate as! AppDelegate
+        eventManager = app.eventManager
+    }
 
     var body: some View {
         VStack {

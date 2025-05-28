@@ -83,11 +83,13 @@ struct AccessScreen: View {
         }.padding()
     }
 
+    @MainActor
     func requestAccess(provider: EventStoreProvider) async {
         providerSelected = true
 
         Defaults[.eventStoreProvider] = provider
         if let app = NSApplication.shared.delegate as! AppDelegate? {
+            app.eventManager = await EventManager()
             await app.eventManager.changeEventStoreProvider(Defaults[.eventStoreProvider])
             Defaults[.onboardingCompleted] = true
             app.setup()
