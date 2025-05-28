@@ -252,3 +252,19 @@ extension Data {
         self.init(base64Encoded: st)
     }
 }
+
+extension NSImage {
+    /// Returns a copy tinted with macOS disabled text colour.
+    func tintedDisabled() -> NSImage {
+        let copy = self.copy() as! NSImage
+        copy.lockFocus()
+        NSColor.disabledControlTextColor
+                    .withAlphaComponent(0.4)
+                    .set()
+        let rect = NSRect(origin: .zero, size: copy.size)
+        rect.fill(using: .sourceAtop)        // keep alpha, replace colour
+
+        copy.unlockFocus()
+        return copy
+    }
+}
