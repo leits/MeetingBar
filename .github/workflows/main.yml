@@ -1,4 +1,3 @@
-# This is a basic workflow to help you get started with Actions
 name: Test
 
 on:
@@ -11,18 +10,40 @@ on:
 
 jobs:
   Tests:
-    runs-on: macOS-latest
+    runs-on: macos-latest
+
     steps:
       - uses: actions/checkout@v4
-      
+
+      # Cache DerivedData for faster builds
+      - name: Cache DerivedData
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Developer/Xcode/DerivedData
+          key: ${{ runner.os }}-deriveddata-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-deriveddata-
+
+      # Cache RubyGems for Slather (if Gemfile is present)
+      - name: Cache RubyGems
+        uses: actions/cache@v4
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-gems-
+
       - name: List available Xcode versions
         run: ls /Applications | grep Xcode
-        
+
       - name: Select Xcode 16.2
         run: sudo xcode-select -s /Applications/Xcode_16.2.app/Contents/Developer
-        
+
       - name: Show current version of Xcode
         run: xcodebuild -version
+
+      - name: Install xcpretty
+        run: gem install xcpretty
 
       - name: Run Tests & Generate JUnit
         shell: bash
@@ -46,8 +67,7 @@ jobs:
           reporter: jest-junit
 
       - name: Install Slather
-        run: |
-          gem install slather
+        run: gem install slather
 
       - name: Generate Coverage Report
         shell: bash
