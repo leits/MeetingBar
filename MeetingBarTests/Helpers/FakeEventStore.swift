@@ -18,24 +18,21 @@ final class FakeEventStore: EventStore {
         stubbedEvents = events
     }
 
+    // MARK: - EventStore
+
     func fetchAllCalendars() async throws -> [MBCalendar] {
-        return stubbedCalendars
+        stubbedCalendars
     }
 
-    func fetchEventsForDateRange(for _: [MBCalendar],
-                                 from _: Date, to _: Date) async throws -> [MBEvent] {
-        return stubbedEvents
+    func fetchEventsForDateRange(
+        for _: [MBCalendar],
+        from _: Date,
+        to _: Date
+    ) async throws -> [MBEvent] {
+        stubbedEvents
     }
 
-    func refreshSources() async {
-        // no-op
-    }
-
-    func signIn() async throws {
-        // no-op
-    }
-
-    func signOut() async {
-        // no-op
-    }
+    func refreshSources() async { /* no-op */ }
+    func signIn() async throws { /* no-op */ }
+    func signOut() async { /* no-op */ }
 }
