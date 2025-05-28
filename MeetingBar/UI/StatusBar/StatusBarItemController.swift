@@ -72,6 +72,7 @@ final class StatusBarItemController {
             .timeFormat, .bookmarks, .eventTitleFormat,
             .personalEventsAppereance, .pastEventsAppereance,
             .declinedEventsAppereance, .ongoingEventVisibility,
+            .showTimelineInMenu,
             options: []
         )
         .receive(on: DispatchQueue.main)
