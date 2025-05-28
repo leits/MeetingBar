@@ -15,7 +15,6 @@ disabled_rules:
   - file_length
   - function_body_length
   - type_body_length
-  - cyclomatic_complexity
   - type_name
   - multiple_closures_with_trailing_closure
   - force_cast
@@ -42,6 +41,9 @@ number_separator:
 line_length:
   warning: 200
   error: 250
+
+cyclomatic_complexity:
+  warning: 15
 
 identifier_name:
   min_length:
