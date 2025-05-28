@@ -23,7 +23,7 @@ public class EventManager: ObservableObject {
     @Published public private(set) var calendars: [MBCalendar] = []
     @Published public private(set) var events: [MBEvent] = []
 
-    private var provider: EventStore
+    var provider: EventStore
     private let refreshInterval: TimeInterval
     private var cancellables = Set<AnyCancellable>()
     private let refreshSubject = PassthroughSubject<Void, Never>()
