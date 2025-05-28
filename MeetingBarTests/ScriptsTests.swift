@@ -27,7 +27,6 @@ final class ScriptsTests: XCTestCase {
 
         // When: Create AppleScript parameters
         let parameters = createAppleScriptParametersForEvent(event: event)
-        print(parameters)
 
         // Then: Verify all parameters are present and in correct order
         XCTAssertEqual(parameters.numberOfItems, 14, "Should have 13 parameters including calendar info")
