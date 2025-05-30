@@ -336,3 +336,4 @@
 "preferences_appearance_status_bar_ongoing_time_immediate_value" = "nascondi dopo l'avvio";
 "preferences_appearance_status_bar_ongoing_time_ten_after_value" = "nascondi 10   minuti dopo l'inizio";
 "preferences_appearance_status_bar_ongoing_time_ten_before_next_value" = "nascondi 10 minuti prima del prossimo evento";
+"preferences_appearance_menu_show_timeline_toggle" = "Mostra la cronologia visiva della giornata";
