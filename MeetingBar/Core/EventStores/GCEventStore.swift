@@ -22,99 +22,137 @@ enum AuthError: Error {
 }
 
 extension OIDAuthState {
+    /// token is considered fresh if it expires later than 30 seconds from now
     var isTokenFresh: Bool {
         guard let exp = lastTokenResponse?.accessTokenExpirationDate else { return false }
-        return exp > Date().addingTimeInterval(30) }
+        return exp > Date().addingTimeInterval(30)
+    }
 
+    /// convenience email extraction from ID token
     var userEmail: String? {
-            guard let idToken = lastTokenResponse?.idToken else { return nil }
-            let parts = idToken.split(separator: ".")
-            guard parts.count > 1,
-                  let payloadData = Data(base64Encoded: String(parts[1])),
-                  let json = try? JSONSerialization.jsonObject(with: payloadData) as? [String: Any]
-            else { return nil }
-            return json["email"] as? String
-        }
+        guard let idToken = lastTokenResponse?.idToken else { return nil }
+        let parts = idToken.split(separator: ".")
+        guard parts.count > 1,
+              let payloadData = Data(base64Encoded: String(parts[1])),
+              let json = try? JSONSerialization.jsonObject(with: payloadData) as? [String: Any]
+        else { return nil }
+        return json["email"] as? String
+    }
 }
 
-class GCEventStore: NSObject, EventStore, @preconcurrency OIDExternalUserAgent {
-    private static let kIssuer = "https://accounts.google.com"
-    private static let kClientID = "\(googleClientNumber).apps.googleusercontent.com"
+// MARK: - GCEventStore
+@MainActor
+final class GCEventStore: NSObject,
+                           EventStore,
+                           @preconcurrency OIDExternalUserAgent,
+                          @preconcurrency OIDAuthStateChangeDelegate,
+                          @preconcurrency OIDAuthStateErrorDelegate {
+
+    // MARK: Static constants
+    private static let kIssuer       = "https://accounts.google.com"
+    private static let kClientID     = "\(googleClientNumber).apps.googleusercontent.com"
     private static let kClientSecret = googleClientSecret
-    private static let kRedirectURI = "com.googleusercontent.apps.\(googleClientNumber):/oauthredirect"
-    private static let AuthKeychainName = googleAuthKeychainName
+    private static let kRedirectURI  = "com.googleusercontent.apps.\(googleClientNumber):/oauthredirect"
+    private static let kKeychainName = googleAuthKeychainName
 
-    var currentAuthorizationFlow: OIDExternalUserAgentSession?
-
-    static let shared = GCEventStore()
+    // MARK: Stored properties
+    @MainActor var currentAuthorizationFlow: OIDExternalUserAgentSession?
+    private(set) var userEmail: String?
 
     private var authState: OIDAuthState? {
-        didSet { persistAuthState() }
+        didSet {
+            // ensure delegates always set
+            authState?.stateChangeDelegate = self
+            authState?.errorDelegate       = self
+            persistAuthState()
+        }
     }
-    private(set) var userEmail: String?
 
     private var signInTask: Task<Void, Error>?
     private var refreshTask: Task<String, Error>?
 
+    // Shared URLSession to leverage connection reuse
     private static let session: URLSession = {
         let cfg = URLSessionConfiguration.default
         cfg.httpMaximumConnectionsPerHost = 6
         cfg.waitsForConnectivity          = true
         return URLSession(configuration: cfg)
     }()
-
     private var urlSession: URLSession { Self.session }
 
-    override private init() {
+    // Singleton
+    static let shared = GCEventStore()
+    private override init() {
         super.init()
-        authState = restoreAuthState()
+        self.authState = restoreAuthState()
+        // delegates were set in didSet, but set them again just in case restore returned nil
+        self.authState?.stateChangeDelegate = self
+        self.authState?.errorDelegate       = self
     }
 
+    // MARK: Public API
+
     func signIn() async throws {
+        // if already authorised, nothing to do
         if authState?.isAuthorized == true { return }
 
+        // discover configuration for Google issuer
         let config = try await withCheckedThrowingContinuation { cont in
-            OIDAuthorizationService.discoverConfiguration(
-                forIssuer: URL(string: Self.kIssuer)!) { cfg, err in
-                if let cfg { cont.resume(returning: cfg) } else { cont.resume(throwing: err ?? NSError(domain: "GoogleSignIn", code: 0)) }
+            OIDAuthorizationService.discoverConfiguration(forIssuer: URL(string: Self.kIssuer)!) { cfg, err in
+                if let cfg { cont.resume(returning: cfg) } else { cont.resume(throwing: err ?? NSError(domain: "GoogleSignIn", code: -1)) }
             }
         }
 
+        // request scopes we need
+        let scopes = [
+            "email",
+            "https://www.googleapis.com/auth/calendar.calendarlist.readonly",
+            "https://www.googleapis.com/auth/calendar.events.readonly"
+        ]
+
+        // additional parameters to be sure we get refresh_token
+        let extra = [
+            "access_type": "offline",
+            "prompt": "consent"
+        ]
+
+        let request = OIDAuthorizationRequest(
+            configuration: config,
+            clientId: Self.kClientID,
+            clientSecret: Self.kClientSecret,
+            scopes: scopes,
+            redirectURL: URL(string: Self.kRedirectURI)!,
+            responseType: OIDResponseTypeCode,
+            additionalParameters: extra
+        )
+
         try await withCheckedThrowingContinuation { cont in
-            let scopes = [
-                "email",
-                "https://www.googleapis.com/auth/calendar.calendarlist.readonly",
-                "https://www.googleapis.com/auth/calendar.events.readonly"
-            ]
-
-            let request = OIDAuthorizationRequest(
-                configuration: config,
-                clientId: Self.kClientID,
-                clientSecret: Self.kClientSecret,
-                scopes: scopes,
-                redirectURL: URL(string: Self.kRedirectURI)!,
-                responseType: OIDResponseTypeCode,
-                additionalParameters: nil
-            )
-
-            self.currentAuthorizationFlow = OIDAuthState
-                .authState(byPresenting: request, externalUserAgent: self) { state, error in
-                    if let state {
-                        self.authState = state
-                        self.userEmail = state.userEmail
-                        sendNotification("Google Account connected", "\(self.userEmail ?? "") is connected")
-                        cont.resume()
-                    } else {
-                        cont.resume(throwing: error ?? NSError(domain: "GoogleSignIn", code: 1))
-                    }
+            self.currentAuthorizationFlow = OIDAuthState.authState(byPresenting: request,
+                                                                   externalUserAgent: self) { [weak self] state, error in
+                guard let self else { return }
+                if let state {
+                    self.authState = state    // didSet handles persistence & delegates
+                    self.userEmail = state.userEmail
+                    sendNotification("Google Account connected", "\(self.userEmail ?? "") is connected")
+                    cont.resume()
+                } else {
+                    cont.resume(throwing: error ?? NSError(domain: "GoogleSignIn", code: 1))
                 }
+            }
         }
     }
 
     func signOut() async {
         guard let state = authState else { return }
 
-        // Revoke tokens
+        if let flow = currentAuthorizationFlow {
+                currentAuthorizationFlow = nil
+                await MainActor.run { flow.cancel() }
+            } else {
+                currentAuthorizationFlow = nil
+            }
+
+        // Revoke tokens in parallel
         let access  = state.lastTokenResponse?.accessToken
         let refresh = state.lastTokenResponse?.refreshToken
         await withTaskGroup(of: Void.self) { grp in
@@ -122,11 +160,8 @@ class GCEventStore: NSObject, EventStore, @preconcurrency OIDExternalUserAgent {
             if let ref = refresh { grp.addTask { try? await self.revoke(token: ref) } }
         }
 
-        // Cancel flows and sessions
-        await currentAuthorizationFlow?.cancel()           // AppAuth
-        urlSession.invalidateAndCancel()                   // URLSession
+        urlSession.invalidateAndCancel()
 
-        // Clean-up state and session
         clearAuthState()
     }
 
@@ -135,34 +170,30 @@ class GCEventStore: NSObject, EventStore, @preconcurrency OIDExternalUserAgent {
     func fetchAllCalendars() async throws -> [MBCalendar] {
         try await ensureSignedIn()
 
-        let url = URL(string:
-            "https://www.googleapis.com/calendar/v3/users/me/calendarList?maxResults=250&showHidden=true")!
-
+        let url = URL(string: "https://www.googleapis.com/calendar/v3/users/me/calendarList?maxResults=250&showHidden=true")!
         let items = try await fetchJSON(url)
 
-        return items.compactMap { item in
-            let title = item["summary"] as? String ?? ""
-            let calendarID = item["id"] as? String ?? ""
-            let backgroundColor = item["backgroundColor"] as? String ?? ""
+        return items.compactMap { item -> MBCalendar? in
+            guard let title = item["summary"] as? String,
+                  let calendarID = item["id"] as? String,
+                  let backgroundColor = item["backgroundColor"] as? String else { return nil }
 
-            return MBCalendar(title: title, id: calendarID, source: userEmail, email: userEmail, color: hexStringToUIColor(hex: backgroundColor))
+            return MBCalendar(title: title,
+                              id: calendarID,
+                              source: userEmail,
+                              email: userEmail,
+                              color: hexStringToUIColor(hex: backgroundColor))
         }
     }
 
-    private func getCalendarEventsForDateRange(
-        calendar: MBCalendar,
-        dateFrom: Date,
-        dateTo: Date
-    ) async throws -> [MBEvent] {
-
+    private func getCalendarEventsForDateRange(calendar: MBCalendar,
+                                               dateFrom: Date,
+                                               dateTo: Date) async throws -> [MBEvent] {
         let iso = ISO8601DateFormatter()
         let timeMin = iso.string(from: dateFrom)
         let timeMax = iso.string(from: dateTo)
 
-        let url = URL(string:
-          "https://www.googleapis.com/calendar/v3/calendars/\(calendar.id)/events")!
-
-        var comps = URLComponents(url: url, resolvingAgainstBaseURL: false)!
+        var comps = URLComponents(string: "https://www.googleapis.com/calendar/v3/calendars/\(calendar.id)/events")!
         comps.queryItems = [
             .init(name: "singleEvents", value: "true"),
             .init(name: "orderBy", value: "startTime"),
@@ -170,103 +201,61 @@ class GCEventStore: NSObject, EventStore, @preconcurrency OIDExternalUserAgent {
             .init(name: "timeMax", value: timeMax),
             .init(name: "timeMin", value: timeMin)
         ]
-        let items = try await fetchJSON(comps.url!)
 
+        let items = try await fetchJSON(comps.url!)
         return items.compactMap { GCParser.event(from: $0, calendar: calendar) }
     }
 
-    func fetchEventsForDateRange(for calendars: [MBCalendar], from: Date, to: Date) async throws -> [MBEvent] {
+    func fetchEventsForDateRange(for calendars: [MBCalendar],
+                                 from: Date,
+                                 to: Date) async throws -> [MBEvent] {
         try await ensureSignedIn()
-        var events: [MBEvent] = []
-
+        var result: [MBEvent] = []
         for cal in calendars {
-            let ev = try await getCalendarEventsForDateRange(
-                calendar: cal,
-                dateFrom: from,
-                dateTo: to
-            )
-            events.append(contentsOf: ev)
+            let ev = try await getCalendarEventsForDateRange(calendar: cal, dateFrom: from, dateTo: to)
+            result.append(contentsOf: ev)
         }
-        return events
+        return result
     }
 
+    // MARK: - Private helpers
     private func ensureSignedIn() async throws {
-            if authState?.isAuthorized == true { return }
+        if authState?.isAuthorized == true { return }
 
-            if let running = signInTask { return try await running.value }
+        if let running = signInTask { return try await running.value }
 
-            let task = Task { () throws in
-                defer { signInTask = nil }
-                try await signIn()
-            }
-
-            signInTask = task
-            try await task.value
+        let task = Task {
+            try await signIn()
         }
-
-    private func persistAuthState() {
-        guard let state = authState else {
-            Keychain.delete(for: Self.AuthKeychainName)
-            return
-        }
-        do {
-            let data = try NSKeyedArchiver.archivedData(
-                withRootObject: state,
-                requiringSecureCoding: true
-            )
-            Keychain.save(data: data, for: Self.AuthKeychainName)
-        } catch {
-            NSLog("Error archiving OIDAuthState: \(error)")
-        }
-    }
-
-    private func restoreAuthState() -> OIDAuthState? {
-        guard let data = Keychain.load(for: Self.AuthKeychainName) else { return nil }
-        do {
-            guard let state = try NSKeyedUnarchiver.unarchivedObject(
-                ofClass: OIDAuthState.self,
-                from: data
-            ) else {
-                return nil
-            }
-            self.userEmail = state.userEmail
-            return state
-        } catch {
-            NSLog("Error unarchiving OIDAuthState: \(error)")
-            return nil
-        }
-    }
-
-    private func clearAuthState() {
-        authState = nil
-        userEmail = nil
-        Keychain.delete(for: Self.AuthKeychainName)
+        signInTask = task
+        try await task.value
+        signInTask = nil
     }
 
     private func validAccessToken() async throws -> String {
         guard let state = authState else { throw AuthError.notSignedIn }
 
-        // Return token if fresh
-        if state.isTokenFresh,
-           let token = state.lastTokenResponse?.accessToken {
-            return token
-        }
+        // fresh token? -> return
+        if state.isTokenFresh, let token = state.lastTokenResponse?.accessToken { return token }
 
-        // Wait for refresh if running
-        if let running = refreshTask {
-            return try await running.value
-        }
+        // існує task refresh
+        if let running = refreshTask { return try await running.value }
 
-        // Create task for refresh
         let task = Task<String, Error> {
             defer { refreshTask = nil }
             return try await withCheckedThrowingContinuation { cont in
-                state.performAction { accessToken, _, error in
+                state.performAction { [weak self] accessToken, _, error in
+                    guard let self else { return }
                     if let token = accessToken {
-                        cont.resume(returning: token)
+                        cont.resume(returning: token) // stateChangeDelegate persists new tokens
+                    } else if let err = error as NSError? {
+                        // only treat OAuth domain errors as fatal
+                        if err.domain == OIDOAuthTokenErrorDomain {
+                            self.clearAuthState()
+                        }
+                        cont.resume(throwing: err)
                     } else {
-                        self.clearAuthState()
-                        cont.resume(throwing: error ?? AuthError.refreshFailed)
+                        cont.resume(throwing: AuthError.refreshFailed)
                     }
                 }
             }
@@ -276,22 +265,40 @@ class GCEventStore: NSObject, EventStore, @preconcurrency OIDExternalUserAgent {
         return try await task.value
     }
 
-    @MainActor
-    func present(_ request: OIDExternalUserAgentRequest, session _: OIDExternalUserAgentSession) -> Bool {
-        if let url = request.externalUserAgentRequestURL(),
-           NSWorkspace.shared.open(url) {
-            return true
+    // MARK: Keychain persistence
+
+    private func persistAuthState() {
+        guard let state = authState else {
+            Keychain.delete(for: Self.kKeychainName)
+            return
         }
-
-        return false
+        do {
+            let data = try NSKeyedArchiver.archivedData(withRootObject: state, requiringSecureCoding: true)
+            Keychain.save(data: data, for: Self.kKeychainName)
+        } catch {
+            NSLog("Error archiving OIDAuthState: \(error)")
+        }
     }
 
-    @MainActor
-    func dismiss(animated _: Bool, completion: @escaping () -> Void) {
-        completion()
+    private func restoreAuthState() -> OIDAuthState? {
+        guard let data = Keychain.load(for: Self.kKeychainName) else { return nil }
+        do {
+            guard let state = try NSKeyedUnarchiver.unarchivedObject(ofClass: OIDAuthState.self, from: data) else { return nil }
+            userEmail = state.userEmail
+            return state
+        } catch {
+            NSLog("Error unarchiving OIDAuthState: \(error)")
+            return nil
+        }
     }
 
-    // MARK: - Networking helper
+    private func clearAuthState() {
+        authState  = nil
+        userEmail  = nil
+        Keychain.delete(for: Self.kKeychainName)
+    }
+
+    // MARK: Networking helper
     private func fetchJSON(_ url: URL) async throws -> [[String: Any]] {
         let token = try await validAccessToken()
 
@@ -303,10 +310,11 @@ class GCEventStore: NSObject, EventStore, @preconcurrency OIDExternalUserAgent {
         if let http = response as? HTTPURLResponse {
             switch http.statusCode {
             case 401, 403:
-                clearAuthState()                  // refresh & keychain wipe
+                // refresh token revoked – force re‑login
+                clearAuthState()
                 throw AuthError.notSignedIn
             case 200...299:
-                break                            // OK
+                break
             default:
                 throw NSError(domain: "HTTP", code: http.statusCode)
             }
@@ -317,22 +325,42 @@ class GCEventStore: NSObject, EventStore, @preconcurrency OIDExternalUserAgent {
     }
 
     private func revoke(token: String) async throws {
-        var req = URLRequest(
-            url: URL(string: "https://oauth2.googleapis.com/revoke")!
-        )
+        var req = URLRequest(url: URL(string: "https://oauth2.googleapis.com/revoke")!)
         req.httpMethod = "POST"
         req.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
         req.httpBody = Data("token=\(token)".utf8)
 
         let (_, resp) = try await urlSession.data(for: req)
-        guard let http = resp as? HTTPURLResponse,
-              http.statusCode == 200 else {
+        guard let http = resp as? HTTPURLResponse, http.statusCode == 200 else {
             throw NSError(domain: "GoogleRevoke", code: (resp as? HTTPURLResponse)?.statusCode ?? -1)
         }
     }
 
-    // MARK: - Google JSON ➜ MBEvent
+    // MARK: - OIDAuthState Delegates
+    func didChange(_ state: OIDAuthState) {
+        // persist every change (e.g., refreshed token)
+        persistAuthState()
+    }
 
+    func authState(_ state: OIDAuthState, didEncounterAuthorizationError error: Error) {
+        let nsErr = error as NSError
+        if nsErr.domain == OIDOAuthTokenErrorDomain {
+            // refresh token invalid → clean state & notify
+            clearAuthState()
+        }
+    }
+
+    // MARK: - OIDExternalUserAgent
+    func present(_ request: OIDExternalUserAgentRequest, session _: OIDExternalUserAgentSession) -> Bool {
+        if let url = request.externalUserAgentRequestURL(), NSWorkspace.shared.open(url) {
+            return true
+        }
+        return false
+    }
+
+    func dismiss(animated _: Bool, completion: @escaping () -> Void) { completion() }
+
+    // MARK: - Google JSON ➜ MBEvent converter
     enum GCParser {
         static func event(from item: [String: Any],
                           calendar: MBCalendar) -> MBEvent? {

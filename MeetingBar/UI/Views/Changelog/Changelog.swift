@@ -180,7 +180,13 @@ struct ChangelogView: View {
                     }
                     if compareVersions("4.11.0", lastRevisedVersionInChangelog) {
                         Section(header: Text("Version 4.11")) {
-                            Text("Added action to dismiss the event from the notification")
+                            Text("🪄 Major performance and stability improvements (core rewrite)")
+                            Text("👀 Visual timeline of your day added to the menu")
+                            Text("• Calendar info now available via AppleScript interface")
+                            Text("• Added action to dismiss the event from the notification")
+                            Text("• Added support for LiveKit Meet, Meetecho, and StreamYard links")
+                            Text("• You can now set any executable as a \"browser\" to open meeting links")
+                            Text("and a lot of bug fixes and translations updates")
                         }
                     }
                 }
