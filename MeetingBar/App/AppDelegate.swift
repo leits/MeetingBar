@@ -43,6 +43,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
 
         statusBarItem = StatusBarItemController()
 
+        NSAppleEventManager.shared().setEventHandler(
+            self,
+            andSelector: #selector(AppDelegate.handleURLEvent(getURLEvent:replyEvent:)),
+            forEventClass: AEEventClass(kInternetEventClass),
+            andEventID: AEEventID(kAEGetURL)
+        )
+
         if Defaults[.onboardingCompleted] {
             Task {
                 eventManager = await EventManager()
@@ -55,13 +62,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
 
     func setup() {
         statusBarItem.setAppDelegate(appdelegate: self)
-
-        NSAppleEventManager.shared().setEventHandler(
-            self,
-            andSelector: #selector(AppDelegate.handleURLEvent(getURLEvent:replyEvent:)),
-            forEventClass: AEEventClass(kInternetEventClass),
-            andEventID: AEEventID(kAEGetURL)
-        )
 
         UNUserNotificationCenter.current().delegate = self
         Task { @MainActor in
