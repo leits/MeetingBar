@@ -110,11 +110,13 @@ final class GCEventStore: NSObject,
             "https://www.googleapis.com/auth/calendar.events.readonly"
         ]
 
-        // additional parameters to be sure we get refresh_token
-        let extra = [
-            "access_type": "offline",
-            "prompt": "consent"
+        // request a refresh token the first time we sign in
+        var extra: [String: String] = [
+            "access_type": "offline"
         ]
+        if authState?.lastTokenResponse?.refreshToken == nil {
+            extra["prompt"] = "consent"
+        }
 
         let request = OIDAuthorizationRequest(
             configuration: config,
@@ -159,8 +161,6 @@ final class GCEventStore: NSObject,
             if let acc = access { grp.addTask { try? await self.revoke(token: acc) } }
             if let ref = refresh { grp.addTask { try? await self.revoke(token: ref) } }
         }
-
-        urlSession.invalidateAndCancel()
 
         clearAuthState()
     }
@@ -228,8 +228,8 @@ final class GCEventStore: NSObject,
             try await signIn()
         }
         signInTask = task
+        defer { signInTask = nil }
         try await task.value
-        signInTask = nil
     }
 
     private func validAccessToken() async throws -> String {
