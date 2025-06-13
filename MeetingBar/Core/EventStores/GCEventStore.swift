@@ -22,10 +22,10 @@ enum AuthError: Error {
 }
 
 extension OIDAuthState {
-    /// token is considered fresh if it expires later than 30 seconds from now
+    /// token is considered fresh if it expires later than 300 seconds from now
     var isTokenFresh: Bool {
         guard let exp = lastTokenResponse?.accessTokenExpirationDate else { return false }
-        return exp > Date().addingTimeInterval(30)
+        return exp > Date().addingTimeInterval(300)
     }
 
     /// convenience email extraction from ID token
@@ -249,6 +249,8 @@ final class GCEventStore: NSObject,
         let task = Task<String, Error> {
             defer { refreshTask = nil }
             return try await withCheckedThrowingContinuation { cont in
+                if forceRefresh { state.setNeedsTokenRefresh() }
+
                 state.performAction { [weak self] accessToken, _, error in
                     guard let self else { return }
                     if let token = accessToken {
