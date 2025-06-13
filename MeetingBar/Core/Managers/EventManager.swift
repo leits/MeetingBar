@@ -58,7 +58,7 @@ public class EventManager: ObservableObject {
 
         // immediately reload everything
         do {
-            try await provider.signIn()
+            try await provider.signIn(forcePrompt: false)
             refreshSubject.send()
         } catch {
             NSLog("Error after switching provider: \(error)")
