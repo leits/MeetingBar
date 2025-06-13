@@ -19,7 +19,7 @@ extension EKEventStore: @unchecked @retroactive Sendable {}
 extension EKEventStore: EventStore {
     nonisolated(unsafe) static var shared = EKEventStore()
 
-    public func signIn() async throws {
+    public func signIn(forcePrompt: Bool = false) async throws {
         try await withCheckedThrowingContinuation { cont in
             let handler: EKEventStoreRequestAccessCompletionHandler = { granted, error in
                 if granted {

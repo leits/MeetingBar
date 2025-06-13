@@ -16,7 +16,7 @@ public enum EventStoreProvider: String, Defaults.Serializable, Codable {
 
 @MainActor
 public protocol EventStore: AnyObject, Sendable {
-    func signIn() async throws
+    func signIn(forcePrompt: Bool) async throws
     func signOut() async
     func refreshSources() async
 
