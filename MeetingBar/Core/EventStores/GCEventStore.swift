@@ -237,13 +237,15 @@ final class GCEventStore: NSObject,
         try await task.value
     }
 
-    private func validAccessToken() async throws -> String {
+    private func validAccessToken(forceRefresh: Bool = false) async throws -> String {
         guard let state = authState else { throw AuthError.notSignedIn }
 
-        // fresh token? -> return
-        if state.isTokenFresh, let token = state.lastTokenResponse?.accessToken { return token }
+        if !forceRefresh,
+           state.isTokenFresh,
+           let token = state.lastTokenResponse?.accessToken {
+            return token
+        }
 
-        // існує task refresh
         if let running = refreshTask { return try await running.value }
 
         let task = Task<String, Error> {
@@ -255,14 +257,12 @@ final class GCEventStore: NSObject,
                     guard let self else { return }
                     if let token = accessToken {
                         cont.resume(returning: token) // stateChangeDelegate persists new tokens
-                    } else if let err = error as NSError? {
-                        // only treat OAuth domain errors as fatal
-                        if err.domain == OIDOAuthTokenErrorDomain {
+                    } else {
+                        if let err = error as NSError?,
+                           err.domain == OIDOAuthTokenErrorDomain {
                             self.clearAuthState()
                         }
-                        cont.resume(throwing: err)
-                    } else {
-                        cont.resume(throwing: AuthError.refreshFailed)
+                        cont.resume(throwing: error ?? AuthError.refreshFailed)
                     }
                 }
             }
@@ -306,7 +306,7 @@ final class GCEventStore: NSObject,
     }
 
     // MARK: Networking helper
-    private func fetchJSON(_ url: URL) async throws -> [[String: Any]] {
+    private func fetchJSON(_ url: URL, retrying: Bool = false) async throws -> [[String: Any]] {
         let token = try await validAccessToken()
 
         var req = URLRequest(url: url)
@@ -317,6 +317,11 @@ final class GCEventStore: NSObject,
         if let http = response as? HTTPURLResponse {
             switch http.statusCode {
             case 401, 403:
+                if !retrying {
+                    // force-refresh and retry
+                    _ = try await validAccessToken(forceRefresh: true)
+                    return try await fetchJSON(url, retrying: true)
+                }
                 // refresh token revoked – force re‑login
                 clearAuthState()
                 throw AuthError.notSignedIn
