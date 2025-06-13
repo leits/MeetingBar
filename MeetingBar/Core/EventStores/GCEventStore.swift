@@ -92,7 +92,7 @@ final class GCEventStore: NSObject,
 
     // MARK: Public API
 
-    func signIn() async throws {
+    func signIn(forcePrompt: Bool = false) async throws {
         // if already authorised, nothing to do
         if authState?.isAuthorized == true { return }
 
@@ -111,9 +111,12 @@ final class GCEventStore: NSObject,
         ]
 
         // additional parameters to be sure we get refresh_token
-        let extra = [
+        var extra = [
             "access_type": "offline"
         ]
+        if forcePrompt {
+            extra["prompt"] = "consent"
+        }
 
         let request = OIDAuthorizationRequest(
             configuration: config,
@@ -217,12 +220,17 @@ final class GCEventStore: NSObject,
 
     // MARK: - Private helpers
     private func ensureSignedIn() async throws {
-        if authState?.isAuthorized == true { return }
+        if authState?.isAuthorized == true,
+           authState?.lastTokenResponse?.refreshToken != nil {
+            return
+        }
 
         if let running = signInTask { return try await running.value }
 
+        let forceConsent = authState?.lastTokenResponse?.refreshToken == nil
+
         let task = Task {
-            try await signIn()
+            try await signIn(forcePrompt: forceConsent)
         }
         signInTask = task
         defer { signInTask = nil }
