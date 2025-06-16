@@ -139,7 +139,7 @@ struct LaunchAtLoginANDPreferredLanguagePicker: View {
                         Text("Deutsch").tag(AppLanguage.german)
                         Text("Français").tag(AppLanguage.french)
                         Text("Hrvatski").tag(AppLanguage.croatian)
-                        Text("Norks").tag(AppLanguage.norwegian)
+                        Text("Norsk").tag(AppLanguage.norwegian)
                         Text("Čeština").tag(AppLanguage.czech)
                         Text("日本語").tag(AppLanguage.japanese)
                         Text("Polski").tag(AppLanguage.polish)
