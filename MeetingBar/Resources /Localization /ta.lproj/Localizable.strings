@@ -271,3 +271,9 @@
 "notifications_event_start_soon_body" = "நிகழ்வு விரைவில் தொடங்குகிறது";
 "notifications_event_started_body" = "நிகழ்வு தொடங்கியது";
 "preferences_tab_links" = "இணைப்புகள்";
+"preferences_appearance_menu_show_timeline_toggle" = "அன்றைய காட்சி காலவரிசையைக் காட்டு";
+"preferences_appearance_status_bar_ongoing_title" = "தற்போதைய நிகழ்வு தெரிவுநிலை:";
+"preferences_appearance_status_bar_ongoing_time_immediate_value" = "தொடக்கத்திற்குப் பிறகு மறை";
+"preferences_appearance_status_bar_ongoing_time_ten_after_value" = "தொடங்கிய பிறகு 10 மணித்துளி மறைக்கவும்";
+"preferences_appearance_status_bar_ongoing_time_ten_before_next_value" = "அடுத்த நிகழ்வுக்கு 10 நிமிடங்களுக்கு முன் மறைக்கவும்";
+"notifications_meetingbar_dismiss_event_action" = "தள்ளுபடி";
