@@ -122,9 +122,9 @@
 "preferences_configure_browsers_modal_add_browser_path" = "பாதை";
 "preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "வலை உலாவியைத் தேர்வுசெய்க";
 "preferences_configure_browsers_modal_alert_title" = "உலாவி கட்டமைப்பைச் சேர்க்க முடியாது";
-"preferences_configure_browsers_choose_browser_panel_title" = "வலை உலாவி பயன்பாட்டைத் தேர்ந்தெடுக்கவும்";
+"preferences_configure_browsers_choose_browser_panel_title" = "வலை உலாவிப் பயன்பாட்டைத் தேர்ந்தெடு";
 "preferences_configure_browsers_choose_browser_panel_prompt" = "வலை உலாவியைத் தேர்வுசெய்க";
-"preferences_configure_browsers_choose_browser_panel_message" = "வலை உலாவியை எங்கிருந்து இயக்க வேண்டும் என்பதைத் தேர்ந்தெடுக்கவும்.";
+"preferences_configure_browsers_choose_browser_panel_message" = "வலை உலாவியை எங்கிருந்து இயக்க வேண்டும் என்பதைத் தேர்ந்தெடு.";
 "preferences_bookmarks_no_bookmarks_placeholder" = "உங்களிடம் இன்னும் புக்மார்க்குகள் இல்லை";
 "preferences_bookmarks_delete_bookmark_title" = "புத்தகக்குறியை நீக்கவா?";
 "preferences_bookmarks_delete_bookmark_message" = "%@ புத்தகக்குறியை நீக்கு?";
@@ -247,7 +247,7 @@
 "access_screen_try_again" = "மீண்டும் முயற்சிக்கவும்";
 "shared_send_notification_toggle" = "கணினி அறிவிப்பை அனுப்பவும்";
 "shared_fullscreen_notification_toggle" = "முழுத்திரை அறிவிப்பைக் காட்டு";
-"shared_send_notification_no_alert_style_tip" = "Metty சந்திப்புக்கான உங்கள் MACOS அறிவிப்பு அமைப்புகள் எச்சரிக்கை செய்ய அமைக்கப்படவில்லை. நீங்கள் தொடர்ந்து அறிவிப்புகளை விரும்பினால் அவ்வாறு செய்யுங்கள்.";
+"shared_send_notification_no_alert_style_tip" = "குறிப்பு: அறிவிப்புகள் பதாகைகளுக்கு அமைக்கப்பட்டுள்ளன, எனவே அவை மறைந்து போவதற்கு முன்பு சுருக்கமாகத் தோன்றும். நீங்கள் அவற்றை நிராகரிக்கும் வரை அவற்றை திரையில் வைத்திருக்க, உங்கள் MACOS அறிவிப்பு அமைப்புகளில் எச்சரிக்கைகளுக்கு மாறவும்.";
 "shared_send_notification_disabled_tip" = "Metter சந்திப்புக்கான உங்கள் MACOS அறிவிப்பு அமைப்புகள் முடக்கப்பட்டுள்ளன. கூட்டங்களைக் கண்காணிக்க MACOS கணினி அமைப்புகளில் அறிவிப்புகளை இயக்கவும்.";
 "constants_meeting_service_other" = "மற்றொன்று";
 "shared_automatic_event_join_toggle" = "அடுத்த நிகழ்வு கூட்டத்தில் தானாகவே சேரவும்";
@@ -270,3 +270,4 @@
 "store_patronage_purchase_cloud_service_revoked_message" = "இந்த முகில் சேவையைப் பயன்படுத்த பயனர் ரத்து செய்துள்ளார்";
 "notifications_event_start_soon_body" = "நிகழ்வு விரைவில் தொடங்குகிறது";
 "notifications_event_started_body" = "நிகழ்வு தொடங்கியது";
+"preferences_tab_links" = "இணைப்புகள்";
