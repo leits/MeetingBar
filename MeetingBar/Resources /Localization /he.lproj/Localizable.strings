@@ -329,3 +329,4 @@
 "preferences_appearance_status_bar_ongoing_time_ten_after_value" = "להסתיר 10 דקות לאחר ההתחלה";
 "preferences_appearance_status_bar_ongoing_time_ten_before_next_value" = "להסתיר 10 דקות לפני האירוע הבא";
 "preferences_appearance_status_bar_ongoing_title" = "חשיפה של אירוע פעיל:";
+"preferences_appearance_menu_show_timeline_toggle" = "הצג ציר זמן חזותי של היום";
