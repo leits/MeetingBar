@@ -63,7 +63,7 @@
 "preferences_appearance_status_bar_time_title" = "שעה";
 "preferences_appearance_status_bar_time_hide_value" = "הסתרה";
 "preferences_appearance_menu_title" = "תפריט";
-"preferences_appearance_menu_shorten_event_title_toggle" = "קיצור כותרות אירועים לכדי";
+"preferences_appearance_menu_shorten_event_title_toggle" = "קיצור כותרות אירועים לאורך";
 "preferences_appearance_menu_shorten_event_title_stepper" = "%d תווים";
 "preferences_appearance_menu_time_format_title" = "תבנית השעה:";
 "preferences_appearance_menu_show_event_title" = "הצגת אירוע:";
@@ -329,4 +329,4 @@
 "preferences_appearance_status_bar_ongoing_time_ten_after_value" = "להסתיר 10 דקות לאחר ההתחלה";
 "preferences_appearance_status_bar_ongoing_time_ten_before_next_value" = "להסתיר 10 דקות לפני האירוע הבא";
 "preferences_appearance_status_bar_ongoing_title" = "חשיפה של אירוע פעיל:";
-"preferences_appearance_menu_show_timeline_toggle" = "הצג ציר זמן חזותי של היום";
+"preferences_appearance_menu_show_timeline_toggle" = "הצגת ציר זמן חזותי של היום";
