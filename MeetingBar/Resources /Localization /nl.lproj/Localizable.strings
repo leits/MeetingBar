@@ -258,7 +258,7 @@
 // MARK: - Constants
 "constants_create_meeting_service_url" = "Gepersonaliseerde webadres";
 "constants_meeting_service_url" = "Webadres";
-"shared_send_notification_no_alert_style_tip" = "⚠️ Je macOS meldingsinstellingen voor MeetingBar zijn niet ingesteld waarschuwingen te ontvangen. Doe dit als je permanente meldingen wilt zien.";
+"shared_send_notification_no_alert_style_tip" = "Opmerking: Meldingen zijn ingesteld op Stroken, dus ze verschijnen kort en verdwijnen daarna weer. Om ze op het scherm te houden totdat je ze zelf sluit, schakel je over naar Waarschuwingen in de meldingsinstellingen van macOS.";
 "access_screen_provider_macos_title" = "macOS Agenda-app";
 "shared_automatic_event_join_toggle" = "Neem automatisch deel aan de volgende meeting";
 "store_patronage_restore_nothing_message" = "Niets om te herstellen";
@@ -327,5 +327,7 @@
 "shared_automatic_event_join_tip" = "Met deze instelling wordt je volgende meeting automatisch geopend in je geconfigureerde app of webbrowser";
 "preferences_appearance_status_bar_ongoing_title" = "Zichtbaarheid van lopende evenementen:";
 "preferences_appearance_status_bar_ongoing_time_immediate_value" = "verbergen na start";
-"preferences_appearance_status_bar_ongoing_time_ten_after_value" = "verberg 10 min  na start";
+"preferences_appearance_status_bar_ongoing_time_ten_after_value" = "verberg 10 minuten  na start";
 "preferences_appearance_status_bar_ongoing_time_ten_before_next_value" = "verberg 10 minuten voor volgende evenement";
+"preferences_appearance_menu_show_timeline_toggle" = "Toon visuele tijdlijn van de dag";
+"notifications_meetingbar_dismiss_event_action" = "Sluiten";
