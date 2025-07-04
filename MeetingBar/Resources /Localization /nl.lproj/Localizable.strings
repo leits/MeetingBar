@@ -330,4 +330,5 @@
 "preferences_appearance_status_bar_ongoing_time_ten_after_value" = "verberg 10 minuten  na start";
 "preferences_appearance_status_bar_ongoing_time_ten_before_next_value" = "verberg 10 minuten voor volgende evenement";
 "preferences_appearance_menu_show_timeline_toggle" = "Toon visuele tijdlijn van de dag";
-"notifications_meetingbar_dismiss_event_action" = "Sluiten";
+"notifications_meetingbar_dismiss_event_action" = "Annuleren";
+"preferences_tab_links" = "Links";
