@@ -325,3 +325,7 @@
 "access_screen_provider_gcalendar_data_source" = "Ontvang gegevens rechtstreeks uit Google Calendar";
 "shared_send_notification_disabled_tip" = "⚠️ Je macOS meldingsinstellingen voor MeetingBar zijn uitgeschakeld. Schakel meldingen in de macOS systeeminstellingen in om meetings bij te houden.";
 "shared_automatic_event_join_tip" = "Met deze instelling wordt je volgende meeting automatisch geopend in je geconfigureerde app of webbrowser";
+"preferences_appearance_status_bar_ongoing_title" = "Zichtbaarheid van lopende evenementen:";
+"preferences_appearance_status_bar_ongoing_time_immediate_value" = "verbergen na start";
+"preferences_appearance_status_bar_ongoing_time_ten_after_value" = "verberg 10 min  na start";
+"preferences_appearance_status_bar_ongoing_time_ten_before_next_value" = "verberg 10 minuten voor volgende evenement";
