@@ -37,7 +37,7 @@
 // MARK: - Preferences Appearance
 
 "preferences_appearance_events_title" = "Meetings";
-"preferences_appearance_events_show_events_for_title" = "Toon meetings voor:";
+"preferences_appearance_events_show_events_for_title" = "Toon meetings voor";
 "preferences_appearance_events_non_all_day_title" = "Andere meetings:";
 "preferences_appearance_events_all_day_title" = "Dag meetings:";
 "preferences_appearance_events_past_title" = "Verlopen meetings:";
