@@ -323,3 +323,8 @@
 "notification_all_dismissals_removed_title" = "Toutes les annulations ont été retirées";
 "notification_all_dismissals_removed_message" = "Les réunions rejetées sont de nouveau en activité";
 "notifications_event_started_body" = "L'évènement a commencé";
+"preferences_tab_links" = "Liens";
+"preferences_appearance_status_bar_ongoing_title" = "Visibilité de l'évènement en cours :";
+"preferences_appearance_status_bar_ongoing_time_immediate_value" = "masquer après le début";
+"preferences_appearance_status_bar_ongoing_time_ten_after_value" = "masquer 10 min après le début";
+"preferences_appearance_status_bar_ongoing_time_ten_before_next_value" = "masquer 10 min avant le prochain évènement";
