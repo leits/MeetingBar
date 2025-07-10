@@ -24,5 +24,10 @@
 "preferences_general_external_patronage" = "후원";
 "preferences_general_external_contact" = "Contact";
 "preferences_general_patron_title" = "Patron 후원하기";
-"preferences_general_patron_three_months" = "3 개월 - 2.99 USD";
+"preferences_general_patron_three_months" = "3개월 - 2.99 USD";
 "preferences_general_patron_six_months" = "6개월 - 5.99 USD";
+"preferences_general_patron_twelve_months" = "12개월 - 11.99 USD";
+"preferences_general_patron_description" = "일회성 구매로 연장되지 않습니다.";
+"preferences_general_patron_thank_for_purchase" = "%d개월 동안 MeetingBar 후원해 주셔서 감사합니다!🎉";
+"preferences_general_patron_restore_purchases" = "구매 복원";
+"preferences_general_feedback_title" = "문의나 개선이 필요하면 언제든지 편하게 연락해 주세요:";
