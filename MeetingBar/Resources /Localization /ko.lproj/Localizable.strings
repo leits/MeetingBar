@@ -30,4 +30,10 @@
 "preferences_general_patron_description" = "일회성 구매로 연장되지 않습니다.";
 "preferences_general_patron_thank_for_purchase" = "%d개월 동안 MeetingBar 후원해 주셔서 감사합니다!🎉";
 "preferences_general_patron_restore_purchases" = "구매 복원";
-"preferences_general_feedback_title" = "문의나 개선이 필요하면 언제든지 편하게 연락해 주세요:";
+"preferences_general_feedback_title" = "문의나 개선이 필요하면\n언제든지 편하게 연락해 주세요:";
+"preferences_general_feedback_email" = "이메일";
+"preferences_appearance_events_title" = "이벤트";
+"preferences_appearance_events_show_events_for_title" = "이벤트 표시";
+"preferences_appearance_events_show_events_for_today_value" = "오늘";
+"preferences_appearance_events_show_events_for_today_tomorrow_value" = "내일까지";
+"preferences_appearance_events_non_all_day_title" = "기타 이벤트";
