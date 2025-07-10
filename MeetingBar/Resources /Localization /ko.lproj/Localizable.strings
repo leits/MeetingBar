@@ -45,5 +45,8 @@
 "preferences_appearance_events_pending_title" = "보류 이벤트";
 "preferences_appearance_events_declined_title" = "거절 이벤트:";
 "preferences_appearance_events_tentative_title" = "임시 이벤트:";
-"preferences_appearance_events_value_show" = "표시";
+"preferences_appearance_events_value_show" = "보기";
 "preferences_appearance_events_value_hide" = "숨기기";
+"preferences_appearance_events_value_as_inactive" = "비활성으로 표시";
+"preferences_appearance_events_value_as_underlined" = "밑줄";
+"preferences_appearance_events_value_with_strikethrough" = "취소선";
