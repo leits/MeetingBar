@@ -36,4 +36,14 @@
 "preferences_appearance_events_show_events_for_title" = "이벤트 표시";
 "preferences_appearance_events_show_events_for_today_value" = "오늘";
 "preferences_appearance_events_show_events_for_today_tomorrow_value" = "내일까지";
-"preferences_appearance_events_non_all_day_title" = "기타 이벤트";
+"preferences_appearance_events_non_all_day_title" = "기타 이벤트:";
+"preferences_appearance_events_value_inactive_without_meeting_link" = "회의를 연결할 수 없으면 비활성화";
+"preferences_appearance_events_value_hide_without_meeting_link" = "회의를 연결할 수 없으면 숨기기";
+"preferences_appearance_events_all_day_title" = "종일 이벤트:";
+"preferences_appearance_events_without_guest_title" = "참석자 없는 이벤트:";
+"preferences_appearance_events_past_title" = "지난 이벤트:";
+"preferences_appearance_events_pending_title" = "보류 이벤트";
+"preferences_appearance_events_declined_title" = "거절 이벤트:";
+"preferences_appearance_events_tentative_title" = "임시 이벤트:";
+"preferences_appearance_events_value_show" = "표시";
+"preferences_appearance_events_value_hide" = "숨기기";
