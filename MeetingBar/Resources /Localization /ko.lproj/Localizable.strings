@@ -85,5 +85,6 @@
 "preferences_appearance_status_bar_next_event_stepper" = "%d분";
 "preferences_appearance_menu_title" = "메뉴";
 "preferences_appearance_menu_show_timeline_toggle" = "오늘 타임라인 표시";
-"preferences_appearance_menu_shorten_event_title_toggle" = "이벤트 제목을 말줄임표 표시";
+"preferences_appearance_menu_shorten_event_title_toggle" = "이벤트 제목을 말줄임표로 표시";
 "preferences_appearance_menu_shorten_event_title_stepper" = "%d자";
+"preferences_appearance_menu_time_format_title" = "시간 형식";
