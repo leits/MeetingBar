@@ -61,4 +61,9 @@
 "window_title_preferences" = "MeetingBar 설정";
 "next_meeting_empty_message" = "야호! 코코아 마실 시간이에요";
 "window_title_onboarding" = "환영합니다";
-"preferences_appearance_events_value_only_with_link" = "연결 가능한 회의만 표시";
+"preferences_appearance_events_value_only_with_link" = "연결할 수 있는 회의만 표시";
+"preferences_appearance_status_bar_title" = "메뉴 막대";
+"preferences_appearance_status_bar_icon_title" = "아이콘";
+"preferences_appearance_status_bar_icon_app_icon_value" = " MeetingBar";
+"preferences_appearance_status_bar_icon_calendar_icon_value" = " Calendar";
+"preferences_appearance_status_bar_icon_specific_icon_value" = " 이벤트 관련 아이콘 (e.g. MS Teams)";
