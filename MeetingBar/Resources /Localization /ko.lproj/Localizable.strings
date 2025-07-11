@@ -108,4 +108,13 @@
 "preferences_configure_browsers_delete_alert_title" = "웹 브라우저 설정을 삭제할까요?";
 "preferences_configure_browsers_delete_alert_message" = "%@ 브라우저 설정을 삭제할까요?";
 "preferences_configure_browsers_add_button_browser_title" = "웹 브라우저";
-"preferences_configure_browsers_add_button_all_system_title" = "시스템 웹 브라우저";
+"preferences_configure_browsers_add_button_all_system_title" = "모든 시스템 웹 브라우저";
+"preferences_configure_browsers_modal_add_browser_title" = "웹 브라우저 추가";
+"preferences_configure_browsers_modal_edit_browser_title" = "웹 브라우저 변경";
+"preferences_configure_browsers_modal_add_browser_name" = "이름";
+"preferences_configure_browsers_modal_add_browser_path" = "경로";
+"preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "웹 브라우저 선택";
+"preferences_configure_browsers_modal_alert_title" = "웹 브라우저 설정을 추가할 수 없어요";
+"preferences_configure_browsers_choose_browser_panel_title" = "웹 브라우저 선택";
+"preferences_configure_browsers_choose_browser_panel_prompt" = "웹 브라우저 선택";
+"preferences_configure_browsers_choose_browser_panel_message" = "웹 브라우저 선택";
