@@ -52,4 +52,13 @@
 "preferences_appearance_events_value_with_strikethrough" = "취소선";
 "preferences_general_option_shortcuts" = "단축키";
 "preferences_general_all_shortcut" = "전체 단축키";
-"preferences_general_shortcut_open_menu" = "메뉴 열기";
+"preferences_general_shortcut_open_menu" = "메뉴 열기:";
+"preferences_general_option_preferred_language_system_value" = "시스템";
+"preferences_tab_links" = "연결";
+"preferences_tab_appearance" = "모양";
+"preferences_general_option_login_launch" = "로그인 시 실행";
+"windows_title_changelog" = "MeetingBar – 새로운 기능";
+"window_title_preferences" = "MeetingBar 설정";
+"next_meeting_empty_message" = "야호! 코코아 마실 시간이에요";
+"window_title_onboarding" = "환영합니다";
+"preferences_appearance_events_value_only_with_link" = "연결 가능한 회의만 표시";
