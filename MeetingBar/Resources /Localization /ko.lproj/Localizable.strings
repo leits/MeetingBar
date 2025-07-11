@@ -164,4 +164,11 @@
 "status_bar_menu_remove_all_dismissals" = "무시한 모든 회의 복원하기";
 "status_bar_event_dismissed_mark" = "무시됨";
 "notification_next_meeting_dismissed_title" = "무시됨 %@";
-"notification_next_meeting_dismissed_message" = "무시된 회의는 빠른 행동에서 해제할 수 있습니다.";
+"notification_next_meeting_dismissed_message" = "무시된 회의는 빠른 행동에서 복원할 수 있어요";
+"notification_all_dismissals_removed_title" = "모든 회의가 복원됨";
+"notification_all_dismissals_removed_message" = "모든 무시된 회의가 복원됨";
+"status_bar_section_join_create_meeting" = "회의 생성";
+"status_bar_section_bookmarks_title" = "북마크";
+"status_bar_section_bookmarks_menu" = "북마크 메뉴";
+"status_bar_section_date_nothing" = "Nothing for %@";
+"status_bar_event_start_time_all_day" = "종일";
