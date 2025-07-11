@@ -65,5 +65,16 @@
 "preferences_appearance_status_bar_title" = "메뉴 막대";
 "preferences_appearance_status_bar_icon_title" = "아이콘";
 "preferences_appearance_status_bar_icon_app_icon_value" = " MeetingBar";
-"preferences_appearance_status_bar_icon_calendar_icon_value" = " Calendar";
+"preferences_appearance_status_bar_icon_calendar_icon_value" = " 달력";
 "preferences_appearance_status_bar_icon_specific_icon_value" = " 이벤트 관련 아이콘 (e.g. MS Teams)";
+"preferences_appearance_status_bar_icon_no_icon_value" = " 미표시";
+"preferences_appearance_status_bar_title_title" = "제목";
+"preferences_appearance_status_bar_title_event_title_value" = "이벤트 제목";
+"preferences_appearance_status_bar_title_dot_value" = "점 (•)";
+"preferences_appearance_status_bar_title_hide_value" = "숨김";
+"preferences_appearance_status_bar_title_shorten_stepper" = "%d자부터 말줄임표로 표시";
+"preferences_appearance_status_bar_time_title" = "시간";
+"preferences_appearance_status_bar_time_show_value" = "보기";
+"preferences_appearance_status_bar_time_show_under_title_value" = "제목 아래 표시";
+"preferences_appearance_status_bar_time_hide_value" = "숨기기";
+"preferences_appearance_status_bar_ongoing_title" = "진행 중인 이벤트 표시";
