@@ -161,4 +161,7 @@
 "status_bar_section_refresh_sources" = "새로고침";
 "status_bar_menu_dismiss_curent_meeting" = "회의 무시하기";
 "status_bar_menu_dismiss_next_meeting" = "다음 회의 무시하기";
-"status_bar_menu_remove_all_dismissals" = "모두 무시하기";
+"status_bar_menu_remove_all_dismissals" = "무시한 모든 회의 복원하기";
+"status_bar_event_dismissed_mark" = "무시됨";
+"notification_next_meeting_dismissed_title" = "무시됨 %@";
+"notification_next_meeting_dismissed_message" = "무시된 회의는 빠른 행동에서 해제할 수 있습니다.";
