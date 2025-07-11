@@ -77,4 +77,12 @@
 "preferences_appearance_status_bar_time_show_value" = "보기";
 "preferences_appearance_status_bar_time_show_under_title_value" = "제목 아래 표시";
 "preferences_appearance_status_bar_time_hide_value" = "숨기기";
-"preferences_appearance_status_bar_ongoing_title" = "진행 중인 이벤트 표시";
+"preferences_appearance_status_bar_ongoing_title" = "진행 중인 이벤트 표시:";
+"preferences_appearance_status_bar_ongoing_time_immediate_value" = "시작 시 숨기기";
+"preferences_appearance_status_bar_ongoing_time_ten_after_value" = "시작 10분 후 숨기기";
+"preferences_appearance_status_bar_ongoing_time_ten_before_next_value" = "다음 이벤트 10분 전 숨기기";
+"preferences_appearance_status_bar_next_event_toggle" = "시작 전 이벤트 표시";
+"preferences_appearance_status_bar_next_event_stepper" = "%d분";
+"preferences_appearance_menu_title" = "메뉴";
+"preferences_appearance_menu_show_timeline_toggle" = "오늘 타임라인 표시";
+"preferences_appearance_menu_shorten_event_title_toggle" = "이벤트 제목의 말줄임표 표시";
