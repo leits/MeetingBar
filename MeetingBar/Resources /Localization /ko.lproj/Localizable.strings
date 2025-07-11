@@ -229,3 +229,5 @@
 "access_screen_access_granted_click_ok_title" = "Click \"OK\" in the macOS popup.";
 "access_screen_provider_picker_label" = "캘린더 제공업체 선택";
 "access_screen_provider_macos_title" = "MacOS Calendar app";
+"access_screen_provider_macos_recommended" = "(추천)";
+"access_screen_provider_macos_data_source" = "MacOS Calendar app 데이터 가져오기";
