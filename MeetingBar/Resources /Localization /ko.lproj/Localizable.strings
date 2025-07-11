@@ -159,5 +159,6 @@
 "status_bar_section_join_current_meeting" = "현재 이벤트 회의 참석";
 "status_bar_section_join_from_clipboard" = "클립보드로부터 회의 참석";
 "status_bar_section_refresh_sources" = "새로고침";
-"status_bar_menu_dismiss_curent_meeting" = "회의 종료";
+"status_bar_menu_dismiss_curent_meeting" = "회의 무시하기";
 "status_bar_menu_dismiss_next_meeting" = "다음 회의 무시하기";
+"status_bar_menu_remove_all_dismissals" = "모두 무시하기";
