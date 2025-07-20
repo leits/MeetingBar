@@ -13,6 +13,7 @@
 "notifications_event_ends_one_minute_body" = "Das Ereignis endet in einer Minute";
 "notifications_event_ends_three_minutes_body" = "Das Ereignis endet in drei Minuten";
 "notifications_event_ends_five_minutes_body" = "Das Ereignis endet in fünf Minuten";
+"notifications_meetingbar_dismiss_event_action" = "Dieses Ereignis verwerfen";
 "notifications_snooze_until_start" = "Schlummern bis zur Startzeit";
 "notifications_snooze_for" = "Schlummern für %@ Minuten";
 "notifications_meetingbar_join_event_action" = "Beitreten";
