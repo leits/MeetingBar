@@ -61,7 +61,7 @@
 
 // MARK: - Constants
 "shared_send_notification_disabled_tip" = "⚠️ Vos paramètres de notification macOS pour MeetingBar sont désactivés. Activez les notifications dans les paramètres système de macOS pour garder une trace des réunions.";
-"shared_send_notification_no_alert_style_tip" = "⚠️ Vos paramètres de notification macOS pour MeetingBar ne sont pas réglés sur alerte. Faites-le si vous voulez des notifications persistantes.";
+"shared_send_notification_no_alert_style_tip" = "Remarque : les notifications sont réglées sur Bannières, c'est-à-dire qu'elles apparaissent brièvement avant de disparaître. Pour qu'elles restent affichées à l'écran jusqu'à ce que vous les supprimiez, passez en mode \"Alertes\" dans les paramètres de notification de macOS.";
 "general_five_minute_before" = "5 minutes avant";
 "general_three_minute_before" = "3 minutes avant";
 "general_one_minute_before" = "1 minute avant";
@@ -187,7 +187,7 @@
 "preferences_tab_bookmarks" = "Marque-pages";
 "preferences_configure_browsers_choose_browser_panel_message" = "Sélectionnez l'endroit duquel exécuter le navigateur web.";
 "preferences_configure_browsers_choose_browser_panel_prompt" = "Choisir le navigateur web";
-"preferences_configure_browsers_choose_browser_panel_title" = "Sélectionnez une appli de navigation web";
+"preferences_configure_browsers_choose_browser_panel_title" = "Sélectionner une appli de navigateur web";
 "preferences_configure_browsers_modal_alert_title" = "Impossible d'ajouter la configuration du navigateur";
 "preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "Choisir le navigateur web";
 "preferences_configure_browsers_modal_add_browser_path" = "Chemin";
@@ -328,3 +328,5 @@
 "preferences_appearance_status_bar_ongoing_time_immediate_value" = "masquer après le début";
 "preferences_appearance_status_bar_ongoing_time_ten_after_value" = "masquer 10 min après le début";
 "preferences_appearance_status_bar_ongoing_time_ten_before_next_value" = "masquer 10 min avant le prochain évènement";
+"preferences_appearance_menu_show_timeline_toggle" = "Afficher la chronologie visuelle de la journée";
+"notifications_meetingbar_dismiss_event_action" = "Rejeter";
