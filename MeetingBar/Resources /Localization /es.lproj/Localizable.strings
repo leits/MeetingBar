@@ -283,7 +283,7 @@
 
 "shared_send_notification_toggle" = "Enviar una notificación del sistema";
 "shared_fullscreen_notification_toggle" = "Mostrar una notificación a pantalla completa";
-"shared_send_notification_no_alert_style_tip" = "⚠️ Tus configuraciones de notificación de macOS para MeetingBar no están establecidas como alertas. Cámbialo si deseas notificaciones persistentes.";
+"shared_send_notification_no_alert_style_tip" = "⚠️ Tus configuraciones de notificación de macOS para MeetingBar no están establecidas como alertas. Cámbialo si deseas notificaciones persistentes. Nota: Las notificaciones estan puestas en \"Banners\", Asi que aparecen brevemente antes de irse, para mantenerlas en la pantalla hasta que se vayan cambia a Alertas en la configuraciòn de notificaciones en tu MacOs.";
 "shared_send_notification_disabled_tip" = "⚠️ Tus configuraciones de notificación de macOS para MeetingBar están desactivadas. Activa las notificaciones en la configuración del sistema de macOS para llevar un seguimiento de las reuniones.";
 "shared_automatic_event_join_toggle" = "Auto-unirse a la próxima reunión de evento";
 "shared_automatic_event_join_tip" = "Este ajuste automáticamente abrirá tu próxima reunión en la aplicación o navegador configurado";
@@ -332,3 +332,9 @@
 "link_url_cant_open_title" = "¡Ups! No se puede abrir el enlace en %@";
 "link_url_cant_open_message" = "Asegúrate de tener %@ instalado o abre esos enlaces en un navegador web desde preferencias en su lugar.";
 "notifications_meetingbar_dismiss_event_action" = "Rechazar";
+"preferences_tab_links" = "Enlaces";
+"preferences_appearance_status_bar_ongoing_title" = "Visibilidad el evento actual:";
+"preferences_appearance_status_bar_ongoing_time_immediate_value" = "Esconder despues de empezar";
+"preferences_appearance_status_bar_ongoing_time_ten_after_value" = "esconder 10 min después de empezar";
+"preferences_appearance_status_bar_ongoing_time_ten_before_next_value" = "esconder 10 min antes del próximo evento";
+"preferences_appearance_menu_show_timeline_toggle" = "Mostrar la linea de tiempo del dia";
