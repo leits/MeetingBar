@@ -46,7 +46,7 @@
 "preferences_general_shortcut_open_menu" = "Abrir menu:";
 "preferences_general_shortcut_create_meeting" = "Criar reunião:";
 "preferences_general_shortcut_join_next" = "Entrar na próxima reunião:";
-"preferences_general_shortcut_join_from_clipboard" = "Entrar na reunião a partir da área de transferência:";
+"preferences_general_shortcut_join_from_clipboard" = "Entrar na reunião pelo link na área de transferência:";
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "Alternar visibilidade do título na barra de status:";
 "preferences_general_meeting_bar_description" = "MeetingBar é um aplicativo Open Source\ncriado por Andrii Leitsius 🇺🇦\nPara reuniões mais fluidas e fáceis";
 "preferences_general_external_patronage" = "Apoio";
