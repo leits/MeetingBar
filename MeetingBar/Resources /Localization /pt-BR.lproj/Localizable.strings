@@ -84,7 +84,7 @@
 "preferences_appearance_events_value_only_with_link" = "mostrar apenas quando houver link da reunião";
 "preferences_appearance_status_bar_title" = "Barra de status";
 "preferences_appearance_status_bar_icon_title" = "Ícone";
-"preferences_appearance_status_bar_icon_app_icon_value" = "\U00A0MeetingBar";
+"preferences_appearance_status_bar_icon_app_icon_value" = " .BarraDeReunião";
 "preferences_appearance_status_bar_icon_calendar_icon_value" = " Calendário";
 "preferences_appearance_status_bar_icon_specific_icon_value" = " Ícone específico do evento (por exemplo, MS Teams)";
 "preferences_appearance_status_bar_icon_no_icon_value" = " Sem ícone";
@@ -126,7 +126,7 @@
 // MARK: - Preferences Services Browsers Configuration
 
 "preferences_configure_browsers_button" = "Configurar navegadores da web";
-"preferences_configure_browsers_delete_alert_title" = "Excluir configuração de navegador da web?";
+"preferences_configure_browsers_delete_alert_title" = "Excluir configurações de navegador da web?";
 "preferences_configure_browsers_delete_alert_message" = "Excluir a configuração do navegador %@?";
 "preferences_configure_browsers_add_button_browser_title" = "Navegador da Web";
 "preferences_configure_browsers_add_button_all_system_title" = "Todos os navegadores do sistema";
@@ -136,8 +136,8 @@
 "preferences_configure_browsers_modal_add_browser_path" = "Caminho";
 "preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "Escolher navegador da web";
 "preferences_configure_browsers_modal_alert_title" = "Não é possível adicionar configuração do navegador";
-"preferences_configure_browsers_choose_browser_panel_title" = "Selecionar um aplicativo de navegador da web";
-"preferences_configure_browsers_choose_browser_panel_prompt" = "Escolha um navegador da web";
+"preferences_configure_browsers_choose_browser_panel_title" = "Selecionar um aplicativo de navegador web";
+"preferences_configure_browsers_choose_browser_panel_prompt" = "Escolher navegador da web";
 "preferences_configure_browsers_choose_browser_panel_message" = "Selecione de onde executar o navegador da web.";
 
 // MARK: - Preferences Bookmarks
@@ -157,7 +157,7 @@
 
 "preferences_calendars_select_calendars_title" = "Selecione os calendários para mostrar eventos na barra de status";
 "preferences_calendars_add_account_description" = "Não encontrou o calendário que você precisa?";
-"preferences_calendars_add_account_button" = "Adicionar conta do calendário";
+"preferences_calendars_add_account_button" = "Adicionar conta de calendário";
 "preferences_calendars_add_account_modal" = "Para adicionar calendários externos:\n1. Abra o aplicativo de calendário padrão\n2. Clique em 'Adicionar conta' no menu\n3. Escolha e conecte sua conta";
 "preferences_calendars_provider_section_title" = "Provedor de calendários";
 "preferences_calendars_provider_gcalendar_change_account" = "Alterar Conta do Google";
@@ -166,7 +166,7 @@
 
 // MARK: - Preferences Advanced
 
-"preferences_advanced_setting_warning" = "⚠️ Use essas configurações apenas se você entender o que elas fazem";
+"preferences_advanced_setting_warning" = "⚠️ Apenas use essas configurações se você entender o que elas fazem";
 "preferences_advanced_apple_script_checkmark" = "Executar AppleScript ao entrar em uma reunião";
 "preferences_advanced_apple_script_placeholder" = "# escreva seu script aqui\ndiga à aplicação \"Música\" para pausar";
 "preferences_advanced_run_script_on_event_start" = "Executar AppleScript automaticamente";
@@ -335,3 +335,9 @@
 
 "shared_fullscreen_notification_toggle" = "Exibir notificação em tela cheia";
 "preferences_tab_links" = "Links";
+"preferences_appearance_status_bar_ongoing_title" = "Mostrar reuniões em andamento:";
+"preferences_appearance_status_bar_ongoing_time_immediate_value" = "Ocultar e depois de iniciar";
+"preferences_appearance_status_bar_ongoing_time_ten_after_value" = "Ocultar 10 min .. depois inicie";
+"preferences_appearance_status_bar_ongoing_time_ten_before_next_value" = "Ocultar 10 min antes do próximo evento";
+"preferences_appearance_menu_show_timeline_toggle" = "Mostre visualmente a linha do tempo do dia";
+"notifications_meetingbar_dismiss_event_action" = "Dispensar";
