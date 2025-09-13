@@ -326,3 +326,4 @@
 "notification_all_dismissals_removed_title" = "Alle verworfenen entfernt";
 "notification_all_dismissals_removed_message" = "Alle verworfenen Meetings sind wieder in Aktion";
 "notifications_event_started_body" = "Die Veranstaltung hat begonnen";
+"preferences_tab_links" = "Links";
