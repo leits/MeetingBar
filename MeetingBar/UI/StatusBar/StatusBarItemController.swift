@@ -266,7 +266,11 @@ final class StatusBarItemController {
                     eventTitle += " " + time
                 }
                 if Defaults[.eventLocationFormat] == .show && !processedLocation.isEmpty {
-                    eventTitle += " • " + processedLocation
+                    if !eventTitle.isEmpty {
+                        eventTitle += " • " + processedLocation
+                    } else {
+                        eventTitle = processedLocation
+                    }
                 }
 
                 let hasTimeUnderTitle = Defaults[.eventTimeFormat] == .show_under_title
@@ -287,38 +291,44 @@ final class StatusBarItemController {
                     styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
                 }
 
-                if (!hasTimeUnderTitle && !hasLocationUnderTitle) || Defaults[.eventTitleFormat] == .none {
+                // Compute second line content first
+                var secondLineContent = ""
+
+                if hasTimeUnderTitle {
+                    secondLineContent = time
+                }
+
+                if hasLocationUnderTitle {
+                    if !secondLineContent.isEmpty {
+                        secondLineContent += " • " + processedLocation
+                    } else {
+                        secondLineContent = processedLocation
+                    }
+                }
+
+                let shouldRenderSingleLine = !hasTimeUnderTitle && !hasLocationUnderTitle
+                if shouldRenderSingleLine {
                     menuTitle.append(NSAttributedString(string: eventTitle, attributes: styles))
                 } else {
-                    styles[NSAttributedString.Key.baselineOffset] = -3
-
-                    menuTitle.append(NSAttributedString(string: eventTitle, attributes: styles))
+                    let hasFirstLineContent = !eventTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                    if hasFirstLineContent {
+                        styles[NSAttributedString.Key.baselineOffset] = -3
+                        menuTitle.append(NSAttributedString(string: eventTitle, attributes: styles))
+                    }
 
                     let paragraphStyle = NSMutableParagraphStyle()
                     paragraphStyle.lineHeightMultiple = 0.7
                     paragraphStyle.alignment = .center
 
-                    var secondLineContent = ""
-
-                    if hasTimeUnderTitle {
-                        secondLineContent = time
-                    }
-
-                    if hasLocationUnderTitle {
-                        if !secondLineContent.isEmpty {
-                            secondLineContent += " • " + processedLocation
-                        } else {
-                            secondLineContent = processedLocation
-                        }
-                    }
-
                     let secondLineAttributes = [
                         NSAttributedString.Key.font: NSFont.systemFont(ofSize: 9),
                         NSAttributedString.Key.foregroundColor: NSColor.lightGray
                     ]
+
+                    let separator = hasFirstLineContent ? "\n" : ""
                     menuTitle.append(
                         NSAttributedString(
-                            string: "\n" + secondLineContent, attributes: secondLineAttributes))
+                            string: separator + secondLineContent, attributes: secondLineAttributes))
 
                     menuTitle.addAttributes([NSAttributedString.Key.paragraphStyle: paragraphStyle], range: NSRange(location: 0, length: menuTitle.length))
                 }
