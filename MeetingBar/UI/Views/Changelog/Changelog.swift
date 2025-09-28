@@ -189,6 +189,11 @@ struct ChangelogView: View {
                             Text("and a lot of bug fixes and translations updates")
                         }
                     }
+                    if compareVersions("4.12.0", lastRevisedVersionInChangelog) {
+                        Section(header: Text("Version 4.12")) {
+                            Text("• Location display settings for status bar")
+                        }
+                    }
                 }
             }.listStyle(SidebarListStyle())
             Button("general_close".loco(), action: close)
