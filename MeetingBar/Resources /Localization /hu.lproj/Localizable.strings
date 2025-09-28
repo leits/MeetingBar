@@ -127,8 +127,8 @@
 "preferences_general_meeting_bar_description" = "A MeetingBar egy nyílt forráskódú alkalmazás\nAndrii Leitsius🇺🇦 által létrehozott\nA simább és könnyebb online találkozókért";
 "preferences_appearance_status_bar_time_title" = "Idő";
 "preferences_appearance_status_bar_location_title" = "Helyszín";
-"preferences_appearance_status_bar_location_show_value" = "megjelenítés";
-"preferences_appearance_status_bar_location_show_under_title_value" = "megjelenítés cím alatt";
+"preferences_appearance_status_bar_location_show_value" = "mutat";
+"preferences_appearance_status_bar_location_show_under_title_value" = "cím alatt mutatni";
 "preferences_appearance_status_bar_location_hide_value" = "elrejtés";
 "preferences_configure_browsers_modal_add_browser_title" = "Webböngésző hozzáadása";
 "preferences_appearance_status_bar_title_event_title_value" = "esemény címe";
