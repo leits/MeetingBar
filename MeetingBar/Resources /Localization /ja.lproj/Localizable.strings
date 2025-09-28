@@ -97,6 +97,10 @@
 "preferences_appearance_status_bar_time_show_value" = "表示";
 "preferences_appearance_status_bar_time_show_under_title_value" = "タイトルの下に表示";
 "preferences_appearance_status_bar_time_hide_value" = "非表示";
+"preferences_appearance_status_bar_location_title" = "場所";
+"preferences_appearance_status_bar_location_show_value" = "表示";
+"preferences_appearance_status_bar_location_show_under_title_value" = "タイトルの下に表示";
+"preferences_appearance_status_bar_location_hide_value" = "非表示";
 "preferences_appearance_status_bar_next_event_toggle" = "開始中のイベントのみ表示";
 "preferences_appearance_status_bar_next_event_stepper" = "%d分";
 "preferences_appearance_menu_title" = "メニュー";

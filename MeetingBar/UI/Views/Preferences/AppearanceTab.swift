@@ -145,6 +145,7 @@ struct StatusBarSection: View {
     @Default(.eventTitleIconFormat) var eventTitleIconFormat
     @Default(.eventTitleFormat) var eventTitleFormat
     @Default(.eventTimeFormat) var eventTimeFormat
+    @Default(.eventLocationFormat) var eventLocationFormat
     @Default(.statusbarEventTitleLength) var statusbarEventTitleLength
     @Default(.showEventMaxTimeUntilEventThreshold) var showEventMaxTimeUntilEventThreshold
     @Default(.showEventMaxTimeUntilEventEnabled) var showEventMaxTimeUntilEventEnabled
@@ -221,6 +222,25 @@ struct StatusBarSection: View {
                             EventTimeFormat.show)
                         Text("preferences_appearance_status_bar_time_show_under_title_value".loco())
                             .tag(EventTimeFormat.show_under_title)
+                        Text("preferences_appearance_status_bar_time_hide_value".loco()).tag(
+                            EventTimeFormat.hide)
+                    }
+                }.frame(width: 325)
+
+                HStack {
+                    Picker(
+                        "preferences_appearance_status_bar_location_title".loco(),
+                        selection: $eventLocationFormat
+                    ) {
+                        Text("preferences_appearance_status_bar_location_show_value".loco()).tag(
+                            EventLocationFormat.show)
+                        Text(
+                            "preferences_appearance_status_bar_location_show_under_title_value"
+                                .loco()
+                        )
+                        .tag(EventLocationFormat.show_under_title)
+                        Text("preferences_appearance_status_bar_location_hide_value".loco()).tag(
+                            EventLocationFormat.hide)
                     }
                 }.frame(width: 325)
 

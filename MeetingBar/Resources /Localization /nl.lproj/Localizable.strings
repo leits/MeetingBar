@@ -95,6 +95,10 @@
 "preferences_appearance_status_bar_title_hide_value" = "verberg";
 "preferences_appearance_status_bar_title_shorten_stepper" = "verkorten tot %d tekens";
 "preferences_appearance_status_bar_time_title" = "Tijd";
+"preferences_appearance_status_bar_location_title" = "Locatie";
+"preferences_appearance_status_bar_location_show_value" = "toon";
+"preferences_appearance_status_bar_location_show_under_title_value" = "toon onder titel";
+"preferences_appearance_status_bar_location_hide_value" = "verberg";
 "preferences_appearance_status_bar_time_show_value" = "toon";
 "preferences_appearance_status_bar_time_show_under_title_value" = "toon oder titel";
 "preferences_appearance_status_bar_time_hide_value" = "verberg";

@@ -126,6 +126,10 @@
 "preferences_advanced_setting_warning" = "⚠️ Csak akkor használd ezeket a beállításokat, ha érted amit csinálnak";
 "preferences_general_meeting_bar_description" = "A MeetingBar egy nyílt forráskódú alkalmazás\nAndrii Leitsius🇺🇦 által létrehozott\nA simább és könnyebb online találkozókért";
 "preferences_appearance_status_bar_time_title" = "Idő";
+"preferences_appearance_status_bar_location_title" = "Helyszín";
+"preferences_appearance_status_bar_location_show_value" = "megjelenítés";
+"preferences_appearance_status_bar_location_show_under_title_value" = "megjelenítés cím alatt";
+"preferences_appearance_status_bar_location_hide_value" = "elrejtés";
 "preferences_configure_browsers_modal_add_browser_title" = "Webböngésző hozzáadása";
 "preferences_appearance_status_bar_title_event_title_value" = "esemény címe";
 "preferences_configure_browsers_choose_browser_panel_message" = "Válaszd ki, honnan futtassa a webböngészőt.";

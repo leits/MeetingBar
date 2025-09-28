@@ -77,6 +77,10 @@
 "preferences_appearance_status_bar_time_show_value" = "보기";
 "preferences_appearance_status_bar_time_show_under_title_value" = "제목 아래 표시";
 "preferences_appearance_status_bar_time_hide_value" = "숨기기";
+"preferences_appearance_status_bar_location_title" = "위치";
+"preferences_appearance_status_bar_location_show_value" = "보기";
+"preferences_appearance_status_bar_location_show_under_title_value" = "제목 아래 표시";
+"preferences_appearance_status_bar_location_hide_value" = "숨기기";
 "preferences_appearance_status_bar_ongoing_title" = "진행 중인 이벤트 표시:";
 "preferences_appearance_status_bar_ongoing_time_immediate_value" = "시작 시 숨기기";
 "preferences_appearance_status_bar_ongoing_time_ten_after_value" = "시작 10분 후 숨기기";

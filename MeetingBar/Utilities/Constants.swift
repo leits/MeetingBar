@@ -62,6 +62,13 @@ enum EventTimeFormat: String, Defaults.Serializable, Codable, CaseIterable {
     case hide
 }
 
+/// format for location in statusbar - can be shown, be under title or be hidden
+enum EventLocationFormat: String, Defaults.Serializable, Codable, CaseIterable {
+    case show
+    case show_under_title
+    case hide
+}
+
 enum DeclinedEventsAppereance: String, Defaults.Serializable, Codable, CaseIterable {
     case strikethrough
     case show_inactive

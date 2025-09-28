@@ -93,6 +93,10 @@
 "preferences_appearance_status_bar_time_show_value" = "pokaż";
 "preferences_appearance_status_bar_time_show_under_title_value" = "pokaż pod tytułem";
 "preferences_appearance_status_bar_time_hide_value" = "ukryj";
+"preferences_appearance_status_bar_location_title" = "Lokalizacja";
+"preferences_appearance_status_bar_location_show_value" = "pokaż";
+"preferences_appearance_status_bar_location_show_under_title_value" = "pokaż pod tytułem";
+"preferences_appearance_status_bar_location_hide_value" = "ukryj";
 "preferences_appearance_status_bar_next_event_toggle" = "Pokaż tylko wydarzenia rozpoczynające się w ciągu";
 "preferences_appearance_status_bar_next_event_stepper" = "%d minut";
 "preferences_appearance_menu_title" = "Menu";

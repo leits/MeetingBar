@@ -230,6 +230,10 @@
 "preferences_appearance_status_bar_time_show_under_title_value" = "afficher sous le titre";
 "preferences_appearance_status_bar_time_show_value" = "afficher";
 "preferences_appearance_status_bar_time_title" = "Heure";
+"preferences_appearance_status_bar_location_title" = "Lieu";
+"preferences_appearance_status_bar_location_show_value" = "afficher";
+"preferences_appearance_status_bar_location_show_under_title_value" = "afficher sous le titre";
+"preferences_appearance_status_bar_location_hide_value" = "masquer";
 "preferences_appearance_status_bar_title_shorten_stepper" = "raccourcir à %d caractères";
 "preferences_appearance_status_bar_title_hide_value" = "masquer";
 "preferences_appearance_status_bar_title_dot_value" = "point (•)";

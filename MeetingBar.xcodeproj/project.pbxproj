@@ -209,7 +209,7 @@
 				hu,
 				ko,
 				ta,
-				enm,
+				pt,
 			);
 			mainGroup = 144C01702462D0C3000C9FFC;
 			packageReferences = (
