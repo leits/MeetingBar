@@ -62,7 +62,7 @@
 "preferences_appearance_events_show_events_for_title" = "Prikaži događaje za";
 "preferences_appearance_events_show_events_for_today_value" = "danas";
 "preferences_appearance_events_show_events_for_today_tomorrow_value" = "danas ili sutra";
-"preferences_appearance_events_non_all_day_title" = "Ostali događaji:";
+"preferences_appearance_events_non_all_day_title" = "Drugi događaji:";
 "preferences_appearance_events_value_inactive_without_meeting_link" = "prikaži događaje bez poveznica kao neaktivne";
 "preferences_appearance_events_value_hide_without_meeting_link" = "sakrij sve bez poveznica na sastanke";
 "preferences_appearance_events_all_day_title" = "Cjelodnevni događaji:";
@@ -92,7 +92,7 @@
 "preferences_appearance_status_bar_time_show_value" = "prikaži";
 "preferences_appearance_status_bar_time_show_under_title_value" = "prikaži ispod naslova";
 "preferences_appearance_status_bar_time_hide_value" = "sakrij";
-"preferences_appearance_status_bar_next_event_toggle" = "Prikaži samo događaje koji počinju u idućih";
+"preferences_appearance_status_bar_next_event_toggle" = "Prikaži samo događaje koji počinju u roku od";
 "preferences_appearance_status_bar_next_event_stepper" = "%d min";
 "preferences_appearance_menu_title" = "Izbornik";
 "preferences_appearance_menu_shorten_event_title_toggle" = "Skrati naslov događaja na";
@@ -163,13 +163,13 @@
 
 "preferences_advanced_setting_warning" = "⚠️ Koristi ove postavke samo ako razumiješ što rade";
 "preferences_advanced_apple_script_checkmark" = "Pokreni AppleScript kad se pridružuješ sastanku";
-"preferences_advanced_apple_script_placeholder" = "# ovdje upiši tvoja skripta\nnaredi aplikaciji „Glazba“ da zaustavi reprodukciju";
+"preferences_advanced_apple_script_placeholder" = "# ovdje upiši tvoja skripta\nnaredi programu „Glazba“ da zaustavi reprodukciju";
 "preferences_advanced_run_script_on_event_start" = "Pokreni AppleScript automatski";
 "preferences_advanced_test_script_on_next_event" = "Testiraj na sljedećem događaju";
 "preferences_advanced_edit_script" = "Uredi skripta";
 "preferences_advanced_save_script_button" = "Spremi skripta";
 "preferences_advanced_wrong_location_title" = "Krivo mjesto";
-"preferences_advanced_wrong_location_message" = "Odaberi Korisnici → Medijateka → Application Scripts → leits.MeetingBar mapa";
+"preferences_advanced_wrong_location_message" = "Odaberi mapu Korisnici → Medijateka → Application Scripts → leits.MeetingBar";
 "preferences_advanced_wrong_location_button" = "Razumijem!";
 "preferences_advanced_regex_title" = "Prilagođen regularni izrazi za poveznicu sastanka";
 "preferences_advanced_regex_add_button" = "Dodaj regularni izraz";
@@ -272,8 +272,8 @@
 "general_one_minute_before" = "1 minutu prije";
 "general_three_minute_before" = "3 minute prije";
 "general_five_minute_before" = "5 minuta prije";
-"shared_send_notification_no_alert_style_tip" = "⚠️ Tvoje macOS postavke obavještavanja za MeetingBar trenutačno nisu postavljene na upozoravanje. Aktiviraj upozorenja ako želiš dobivati obavijesti.";
-"shared_send_notification_disabled_tip" = "⚠️ Tvoje macOS postavke obavještavanja za MeetingBar trenutačno su isključene. Za praćenje sastanaka uključi obavijesti u postavkama macOS sustava.";
+"shared_send_notification_no_alert_style_tip" = "Napomena: Obavijesti su postavljene na „Baneri” koje se kratko prikazuju prije nego nestanu. Ako ih želiš zadržati na ekranu sve dok ih ne ukloniš, promijeni opcije u postavci „Obavijesti” na macOS-u.";
+"shared_send_notification_disabled_tip" = "⚠️ Tvoje macOS postavke obavještavanja za MeetingBar su trenutačno isključene. Za praćenje sastanaka uključi obavijesti u postavkama macOS sustava.";
 "shared_automatic_event_join_toggle" = "Automatski se pridruži sljedećem sastanku";
 "shared_automatic_event_join_tip" = "Ova postavka automatski otvara tvoj sljedeći sastanak u konfiguriranon programu ili pregledniku";
 
@@ -307,9 +307,9 @@
 "notifications_event_start_three_minutes_body" = "Događaj počinje za tri minute";
 "notifications_event_start_five_minutes_body" = "Događaj počinje za pet minuta";
 "notifications_event_ends_soon_body" = "Događaj uskoro završava";
-"notifications_event_ends_one_minute_body" = "Događaj završava u jednoj minuti";
-"notifications_event_ends_three_minutes_body" = "Događaj završava u tri minute";
-"notifications_event_ends_five_minutes_body" = "Događaj završava u pet minuta";
+"notifications_event_ends_one_minute_body" = "Događaj završava za jednu minutu";
+"notifications_event_ends_three_minutes_body" = "Događaj završava za tri minute";
+"notifications_event_ends_five_minutes_body" = "Događaj završava za pet minuta";
 "notifications_snooze_until_start" = "Odgodi do vremena početka";
 "notifications_snooze_for" = "Odgodi za %@ min";
 "notifications_meetingbar_join_event_action" = "Pridruži se";
@@ -329,3 +329,10 @@
 "notification_all_dismissals_removed_title" = "Uklonjena su sva raspuštanja";
 "notification_all_dismissals_removed_message" = "Svi raspušteni sastanci su ponovo vraćeni";
 "notifications_event_started_body" = "Događaj je započeo";
+"preferences_tab_links" = "Poveznice";
+"preferences_appearance_status_bar_ongoing_title" = "Vidljivost događaja u tijeku:";
+"preferences_appearance_status_bar_ongoing_time_immediate_value" = "sakrij nakon početka";
+"preferences_appearance_status_bar_ongoing_time_ten_after_value" = "sakrij 10 min nakon početka";
+"preferences_appearance_status_bar_ongoing_time_ten_before_next_value" = "sakrij 10 min prije sljedećeg događaja";
+"preferences_appearance_menu_show_timeline_toggle" = "Prikaži vizualnu vremensku crtu dana";
+"notifications_meetingbar_dismiss_event_action" = "Raspusti";
