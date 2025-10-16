@@ -300,7 +300,7 @@ private let meetingLinkRegexes: [MeetingServices: NSRegularExpression] = [
     .lark: try! NSRegularExpression(pattern: #" https://vc\.larksuite\.com/j/[0-9]+"#),
     .feishu: try! NSRegularExpression(pattern: #"https://vc\.feishu\.cn/j/[0-9]+"#),
     .vimeo: try! NSRegularExpression(pattern: #"https://vimeo\.com/(showcase|event)/[0-9]+|https://venues\.vimeo\.com/[^\s]+"#),
-    .ovice: try! NSRegularExpression(pattern: #"https://([a-z0-9-.]+)?ovice\.in/[^\s]*"#),
+    .ovice: try! NSRegularExpression(pattern: #"https://([a-z0-9-.]+)?ovice\.(in|com)/[^\s]*"#),
     .facetime: try! NSRegularExpression(pattern: #"https://facetime\.apple\.com/join[^\s]*"#),
     .chorus: try! NSRegularExpression(pattern: #"https?://go\.chorus\.ai/[^\s]+"#),
     .pop: try! NSRegularExpression(pattern: #"https?://pop\.com/j/[0-9-]+"#),
