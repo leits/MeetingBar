@@ -61,6 +61,10 @@
 "preferences_appearance_status_bar_time_show_under_title_value" = "unter Titel anzeigen";
 "preferences_appearance_status_bar_time_show_value" = "anzeigen";
 "preferences_appearance_status_bar_time_title" = "Uhrzeit";
+"preferences_appearance_status_bar_location_title" = "Ort";
+"preferences_appearance_status_bar_location_show_value" = "anzeigen";
+"preferences_appearance_status_bar_location_show_under_title_value" = "unter Titel anzeigen";
+"preferences_appearance_status_bar_location_hide_value" = "ausblenden";
 "preferences_appearance_status_bar_title_shorten_stepper" = "auf %d Zeichen kürzen";
 "preferences_appearance_status_bar_title_hide_value" = "ausblenden";
 "preferences_appearance_status_bar_title_dot_value" = "Punkt (•)";

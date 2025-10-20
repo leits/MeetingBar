@@ -37,6 +37,7 @@ extension Defaults.Keys {
     // Status Bar Appearance
     static let eventTitleFormat = Key<EventTitleFormat>("eventTitleFormat", default: .show)
     static let eventTimeFormat = Key<EventTimeFormat>("eventTimeFormat", default: .show)
+    static let eventLocationFormat = Key<EventLocationFormat>("eventLocationFormat", default: .hide)
 
     static let eventTitleIconFormat = Key<EventTitleIconFormat>("eventTitleIconFormat", default: .none)
     static let statusbarEventTitleLength = Key<Int>("statusbarEventTitleLength", default: statusbarEventTitleLengthLimits.max)

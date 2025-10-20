@@ -61,7 +61,13 @@
 "preferences_appearance_status_bar_title_title" = "כותרת";
 "preferences_appearance_status_bar_title_event_title_value" = "כותרת אירוע";
 "preferences_appearance_status_bar_time_title" = "שעה";
+"preferences_appearance_status_bar_time_show_value" = "הצגה";
+"preferences_appearance_status_bar_time_show_under_title_value" = "הצגה תחת הכותרת";
 "preferences_appearance_status_bar_time_hide_value" = "הסתרה";
+"preferences_appearance_status_bar_location_title" = "מיקום";
+"preferences_appearance_status_bar_location_show_value" = "הצגה";
+"preferences_appearance_status_bar_location_show_under_title_value" = "הצגה תחת הכותרת";
+"preferences_appearance_status_bar_location_hide_value" = "הסתרה";
 "preferences_appearance_menu_title" = "תפריט";
 "preferences_appearance_menu_shorten_event_title_toggle" = "קיצור כותרות אירועים לאורך";
 "preferences_appearance_menu_shorten_event_title_stepper" = "%d תווים";

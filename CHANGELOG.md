@@ -4,6 +4,7 @@ For next releases info look here: <https://github.com/leits/MeetingBar/releases>
 
 ## Unreleased
 
+* Location display settings for status bar
 * Fix typo in language list (#839)
 
 ## Version 4.11.0

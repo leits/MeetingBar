@@ -89,6 +89,10 @@
 "preferences_appearance_status_bar_time_show_value" = "காட்டு";
 "preferences_appearance_status_bar_time_show_under_title_value" = "தலைப்பின் கீழ் காட்டு";
 "preferences_appearance_status_bar_time_hide_value" = "மறை";
+"preferences_appearance_status_bar_location_title" = "இடம்";
+"preferences_appearance_status_bar_location_show_value" = "காட்டு";
+"preferences_appearance_status_bar_location_show_under_title_value" = "தலைப்பின் கீழ் காட்டு";
+"preferences_appearance_status_bar_location_hide_value" = "மறை";
 "preferences_appearance_status_bar_next_event_toggle" = "தொடங்கும் நிகழ்வுகளை மட்டுமே காட்டு";
 "preferences_appearance_status_bar_next_event_stepper" = "%d நிமிடங்கள்";
 "preferences_appearance_menu_title" = "பட்டியல்";

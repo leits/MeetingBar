@@ -63,7 +63,7 @@ final class StatusBarItemController {
     private func setupDefaultsObservers() {
         // For all these keys, just redraw:
         Defaults.publisher(
-            keys: .statusbarEventTitleLength, .eventTimeFormat,
+            keys: .statusbarEventTitleLength, .eventTimeFormat, .eventLocationFormat,
             .eventTitleIconFormat, .showEventMaxTimeUntilEventThreshold,
             .showEventMaxTimeUntilEventEnabled, .showEventDetails,
             .shortenEventTitle, .menuEventTitleLength,
@@ -257,52 +257,78 @@ final class StatusBarItemController {
                 // create an NSMutableAttributedString that we'll append everything to
                 let menuTitle = NSMutableAttributedString()
 
-                if Defaults[.eventTimeFormat] != .show_under_title || Defaults[.eventTitleFormat] == .none {
-                    var eventTitle = title
-                    if Defaults[.eventTimeFormat] == .show {
-                        eventTitle += " " + time
+                let processedLocation = processLocationForDisplay(
+                    location: nextEvent.location,
+                    offset: Defaults[.statusbarEventTitleLength])
+
+                var eventTitle = title
+                if Defaults[.eventTimeFormat] == .show {
+                    eventTitle += " " + time
+                }
+                if Defaults[.eventLocationFormat] == .show && !processedLocation.isEmpty {
+                    if !eventTitle.isEmpty {
+                        eventTitle += " • " + processedLocation
+                    } else {
+                        eventTitle = processedLocation
                     }
+                }
 
-                    var styles = [NSAttributedString.Key: Any]()
-                    styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: MenuStyleConstants.defaultFontSize)
+                let hasTimeUnderTitle = Defaults[.eventTimeFormat] == .show_under_title
+                let hasLocationUnderTitle = Defaults[.eventLocationFormat] == .show_under_title && !processedLocation.isEmpty
 
-                    if nextEvent.participationStatus == .pending, Defaults[.showPendingEvents] == .show_underlined {
-                        styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
+                var styles = [NSAttributedString.Key: Any]()
+                styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: MenuStyleConstants.defaultFontSize)
+
+                if nextEvent.participationStatus == .pending, Defaults[.showPendingEvents] == .show_inactive {
+                    styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
+                } else if nextEvent.participationStatus == .pending, Defaults[.showPendingEvents] == .show_underlined {
+                    styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
+                }
+
+                if nextEvent.participationStatus == .tentative, Defaults[.showTentativeEvents] == .show_inactive {
+                    styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
+                } else if nextEvent.participationStatus == .tentative, Defaults[.showTentativeEvents] == .show_underlined {
+                    styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
+                }
+
+                // Compute second line content first
+                var secondLineContent = ""
+
+                if hasTimeUnderTitle {
+                    secondLineContent = time
+                }
+
+                if hasLocationUnderTitle {
+                    if !secondLineContent.isEmpty {
+                        secondLineContent += " • " + processedLocation
+                    } else {
+                        secondLineContent = processedLocation
                     }
+                }
 
-                    if nextEvent.participationStatus == .tentative, Defaults[.showTentativeEvents] == .show_underlined {
-                        styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
-                    }
-
+                let shouldRenderSingleLine = !hasTimeUnderTitle && !hasLocationUnderTitle
+                if shouldRenderSingleLine {
                     menuTitle.append(NSAttributedString(string: eventTitle, attributes: styles))
                 } else {
+                    let hasFirstLineContent = !eventTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                    if hasFirstLineContent {
+                        styles[NSAttributedString.Key.baselineOffset] = -3
+                        menuTitle.append(NSAttributedString(string: eventTitle, attributes: styles))
+                    }
+
                     let paragraphStyle = NSMutableParagraphStyle()
                     paragraphStyle.lineHeightMultiple = 0.7
                     paragraphStyle.alignment = .center
 
-                    var styles = [NSAttributedString.Key: Any]()
-                    styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: 12)
-                    styles[NSAttributedString.Key.baselineOffset] = -3
-
-                    if nextEvent.participationStatus == .pending, Defaults[.showPendingEvents] == .show_inactive {
-                        styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
-                    } else if nextEvent.participationStatus == .pending, Defaults[.showPendingEvents] == .show_underlined {
-                        styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
-                    }
-
-                    if nextEvent.participationStatus == .tentative, Defaults[.showTentativeEvents] == .show_inactive {
-                        styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
-                    } else if nextEvent.participationStatus == .tentative, Defaults[.showTentativeEvents] == .show_underlined {
-                        styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
-                    }
-
-                    menuTitle.append(NSAttributedString(string: title, attributes: styles))
-
-                    let timeAttributes = [
+                    let secondLineAttributes = [
                         NSAttributedString.Key.font: NSFont.systemFont(ofSize: 9),
                         NSAttributedString.Key.foregroundColor: NSColor.lightGray
                     ]
-                    menuTitle.append(NSAttributedString(string: "\n" + time, attributes: timeAttributes))
+
+                    let separator = hasFirstLineContent ? "\n" : ""
+                    menuTitle.append(
+                        NSAttributedString(
+                            string: separator + secondLineContent, attributes: secondLineAttributes))
 
                     menuTitle.addAttributes([NSAttributedString.Key.paragraphStyle: paragraphStyle], range: NSRange(location: 0, length: menuTitle.length))
                 }
@@ -534,6 +560,22 @@ func shortenTitle(title: String?, offset: Int) -> String {
     }
 
     return eventTitle
+}
+
+func processLocationForDisplay(location: String?, offset: Int) -> String {
+    guard let location = location, !location.isEmpty else { return "" }
+
+    let firstLine = location.components(separatedBy: .newlines).first ?? ""
+
+    var processedLocation = firstLine.trimmingCharacters(in: TitleTruncationRules.excludeAtEnds)
+    if processedLocation.count > offset {
+        let index = processedLocation.index(processedLocation.startIndex, offsetBy: offset - 1)
+        processedLocation = String(processedLocation[...index]).trimmingCharacters(
+            in: TitleTruncationRules.excludeAtEnds)
+        processedLocation += "..."
+    }
+
+    return processedLocation
 }
 
 func createEventStatusString(title: String, startDate: Date, endDate: Date) -> (String, String) {

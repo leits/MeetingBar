@@ -78,6 +78,12 @@
 "preferences_appearance_status_bar_title_shorten_stepper" = "%d karakterle kısıtla";
 "preferences_appearance_status_bar_time_title" = "Zaman";
 "preferences_appearance_status_bar_time_show_value" = "göster";
+"preferences_appearance_status_bar_time_show_under_title_value" = "başlık altında göster";
+"preferences_appearance_status_bar_time_hide_value" = "gizle";
+"preferences_appearance_status_bar_location_title" = "Konum";
+"preferences_appearance_status_bar_location_show_value" = "göster";
+"preferences_appearance_status_bar_location_show_under_title_value" = "başlık altında göster";
+"preferences_appearance_status_bar_location_hide_value" = "gizle";
 "preferences_appearance_status_bar_next_event_stepper" = "%d dakika";
 "preferences_appearance_menu_title" = "Menü";
 "preferences_appearance_menu_shorten_event_title_toggle" = "Etkinlik başlığını kısalt";
