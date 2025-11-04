@@ -264,13 +264,13 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?
             var riversideAppURL = URLComponents(url: url, resolvingAgainstBaseURL: false)!
             riversideAppURL.scheme = "riversidefm"
             var result = riversideAppURL.url!.openInDefaultBrowser()
-            
+
             // If that fails, try riverside.fm:// scheme
             if !result {
                 riversideAppURL.scheme = "riverside.fm"
                 result = riversideAppURL.url!.openInDefaultBrowser()
             }
-            
+
             // If both app schemes fail, fall back to browser
             if !result {
                 sendNotification("status_bar_error_app_link_title".loco("Riverside"), "status_bar_error_app_link_message".loco("Riverside"))
