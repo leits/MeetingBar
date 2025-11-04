@@ -5,6 +5,9 @@ For next releases info look here: <https://github.com/leits/MeetingBar/releases>
 ## Unreleased
 
 * Fix typo in language list (#839)
+* Fix multiple typos in the repo (#875)
+* Fix URL in PR template (#875) 
+* Add Riverside meeting service (#875)
 
 ## Version 4.11.0
 
