@@ -97,7 +97,7 @@ and small bug fixes
 *   Quick Actions ⚡
     *   Show/hide meeting title in status bar
     *   Open meeting from clipboard
-*   Customizable appereance for events without meeting links
+*   Customizable appearance for events without meeting links
 *   Localization (Ukrainian and Russian)
 *   Create meetings in Jam
 *   Open event in Fantastical from event submenu
@@ -144,7 +144,7 @@ Fixed:
 > (released 11th Feb 2021)
 
 *   Add Around integration
-*   Hide show time under title option for Big Sure
+*   Hide show time under title option for Big Sur
 *   Fix issues with service icons
 *   Fix URLs for Firefox and Microsoft Edge
 
@@ -161,7 +161,7 @@ Fixed:
 *   Full control of the **app appearance**:
     *   Customize icon, title, and time in the status bar
     *   Show event end time and icon in the menu
-    *   Limitate event title length in the menu
+    *   Limit event title length in the menu
 *   Wider settings for **displaying events**. Configure pending events, all-day events, and events without guests.
 *   **Custom link** for ad hoc meeting
 *   Global shortcut to open the app
