@@ -2,6 +2,10 @@
 
 For next releases info look here: <https://github.com/leits/MeetingBar/releases>
 
+## Unreleased
+
+* Update MS Teams icon to new design
+
 ## 5.0.0 (2026-06-19)
 
 MeetingBar 5 is an architecture and product refresh. It improves the
