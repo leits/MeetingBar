@@ -334,3 +334,9 @@
 "notification_all_dismissals_removed_message" = "Wszystkie odwołania spotkania wracają do akcji";
 "status_bar_section_refresh_sources" = "Odśwież źródła";
 "notifications_meetingbar_dismiss_event_action" = "Odrzuć";
+"preferences_tab_links" = "Linki";
+"preferences_appearance_status_bar_ongoing_title" = "Widoczność trwającego wydarzenia:";
+"preferences_appearance_status_bar_ongoing_time_immediate_value" = "ukryj po rozpoczęciu";
+"preferences_appearance_menu_show_timeline_toggle" = "Pokaż wizualizację osi czasu dnia";
+"preferences_appearance_status_bar_ongoing_time_ten_after_value" = "ukryj 10 min  po rozpoczęciu";
+"preferences_appearance_status_bar_ongoing_time_ten_before_next_value" = "ukryj do 10 min przed następnym wydarzeniem";
