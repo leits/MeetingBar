@@ -133,7 +133,7 @@
 "preferences_configure_browsers_modal_alert_title" = "Nie można dodać konfiguracji przeglądarki";
 "preferences_configure_browsers_choose_browser_panel_title" = "Wybierz aplikację przeglądarki internetowej";
 "preferences_configure_browsers_choose_browser_panel_prompt" = "Wybierz przeglądarkę internetową";
-"preferences_configure_browsers_choose_browser_panel_message" = "Wybierz miejsce, z którego chcesz uruchomić przeglądarkę internetową.";
+"preferences_configure_browsers_choose_browser_panel_message" = "Wybierz miejsce uruchomienia przeglądarki internetowej.";
 
 // MARK: - Preferences Bookmarks
 
@@ -271,7 +271,7 @@
 "general_one_minute_before" = "1 minutę przed";
 "general_three_minute_before" = "3 minuty przed";
 "general_five_minute_before" = "5 minut przed";
-"shared_send_notification_no_alert_style_tip" = "⚠️ Twoje ustawienia powiadomień macOS dla MeetingBar nie są ustawione na alert. Zrób to, jeśli chcesz mieć trwałe powiadomienia.";
+"shared_send_notification_no_alert_style_tip" = "Uwaga: Powiadomienia są ustawione jako banery, więc pojawiają się na krótko przed zniknięciem. Żeby były widoczne na ekranie, dopóki ich nie zamkniesz, wybierz opcję Alerty w ustawieniach powiadomień systemu macOS.";
 "shared_send_notification_disabled_tip" = "⚠️ Twoje ustawienia powiadomień macOS dla MeetingBar są wyłączone. Włącz powiadomienia w ustawieniach systemowych macOS, aby śledzić spotkania.";
 "shared_automatic_event_join_toggle" = "Automatycznie dołącz do następnego spotkania";
 "shared_automatic_event_join_tip" = "To ustawienie automatycznie otworzy następne spotkanie w skonfigurowanej aplikacji lub przeglądarce";
