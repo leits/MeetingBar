@@ -14,6 +14,8 @@ final class FakeEventStore: EventStore {
     var stubbedEvents: [MBEvent]
     var shouldThrowOnFetchCalendars: Bool = false
     var shouldThrowOnFetchEvents: Bool = false
+    var fetchCalendarsCallCount: Int = 0
+    var fetchEventsCallCount: Int = 0
 
     init(calendars: [MBCalendar] = [], events: [MBEvent] = []) {
         stubbedCalendars = calendars
@@ -23,6 +25,7 @@ final class FakeEventStore: EventStore {
     // MARK: - EventStore
 
     func fetchAllCalendars() async throws -> [MBCalendar] {
+        fetchCalendarsCallCount += 1
         if shouldThrowOnFetchCalendars {
             throw EventManagerError.eventStoreNotAvailable
         }
@@ -34,6 +37,7 @@ final class FakeEventStore: EventStore {
         from _: Date,
         to _: Date
     ) async throws -> [MBEvent] {
+        fetchEventsCallCount += 1
         if shouldThrowOnFetchEvents {
             throw EventManagerError.eventStoreNotAvailable
         }
