@@ -174,20 +174,17 @@ public class EventManager: ObservableObject {
                 return Deferred {
                     Future<([MBCalendar], [MBEvent]), Error> { promise in
                         Task {
+                            let current = await MainActor.run { (self.calendars, self.events) }
                             do {
                                 let cals = try await self.provider.fetchAllCalendars()
                                 let evts = try await self.fetchEvents(fromCalendars: cals)
                                 promise(.success((cals, evts)))
                             } catch {
                                 NSLog("EventManager refresh failed: \(error)")
-                                promise(.success(([], [])))
+                                promise(.success(current))
                             }
                         }
                     }
-                }
-                .catch { error -> Empty<([MBCalendar], [MBEvent]), Never> in
-                    NSLog("EventManager refresh failed: \(error)")
-                    return Empty(completeImmediately: true)
                 }
                 .eraseToAnyPublisher()
             }
