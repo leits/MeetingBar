@@ -167,7 +167,7 @@ public class EventManager: ObservableObject {
 
         // E) When any fires, fetch calendars & events
         trigger
-            .flatMap { [weak self] _ -> AnyPublisher<([MBCalendar], [MBEvent]), Never> in
+            .flatMap(maxPublishers: .max(1)) { [weak self] _ -> AnyPublisher<([MBCalendar], [MBEvent]), Never> in
                 guard let self = self else {
                     return Just(([], [])).eraseToAnyPublisher()
                 }

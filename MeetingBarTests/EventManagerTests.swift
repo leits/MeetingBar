@@ -196,3 +196,51 @@ final class RefreshTriggerTests: BaseTestCase {
         await fulfillment(of: [exp], timeout: 1)
     }
 }
+
+@MainActor
+final class RefreshErrorHandlingTests: BaseTestCase {
+
+    private var cancellables = Set<AnyCancellable>()
+
+    func test_eventsPreservedOnRefreshFailure() async throws {
+        // Arrange: set up fake store with initial data
+        let initialCal = MBCalendar(title: "Initial Cal", id: "cal1", source: nil, email: nil, color: .black)
+        let initialEvent = makeFakeEvent(
+            id: "E1",
+            start: Date().addingTimeInterval(60),
+            end: Date().addingTimeInterval(3600)
+        )
+        let store = FakeEventStore(calendars: [initialCal], events: [initialEvent])
+        let manager = EventManager(provider: store, refreshInterval: 0)
+
+        // Wait for initial data to be published
+        let initialExp = expectation(description: "initial data")
+        manager.$events
+            .drop(while: \.isEmpty)
+            .first()
+            .sink { events in
+                XCTAssertEqual(events, [initialEvent])
+                initialExp.fulfill()
+            }
+            .store(in: &cancellables)
+
+        await fulfillment(of: [initialExp], timeout: 1.0)
+
+        // Verify initial calendars were also published
+        XCTAssertEqual(manager.calendars, [initialCal])
+
+        // Act: configure store to throw errors on next fetch
+        store.shouldThrowOnFetchCalendars = true
+        store.shouldThrowOnFetchEvents = true
+
+        // Trigger refresh that will fail
+        try await manager.refreshSources()
+
+        // Give time for the refresh to complete
+        try await Task.sleep(nanoseconds: 100_000_000) // 0.1 seconds
+
+        // Assert: calendars and events should still contain initial data (not empty)
+        XCTAssertEqual(manager.calendars, [initialCal], "Calendars should be preserved on fetch failure")
+        XCTAssertEqual(manager.events, [initialEvent], "Events should be preserved on fetch failure")
+    }
+}

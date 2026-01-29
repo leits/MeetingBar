@@ -12,6 +12,8 @@ import Foundation
 final class FakeEventStore: EventStore {
     var stubbedCalendars: [MBCalendar]
     var stubbedEvents: [MBEvent]
+    var shouldThrowOnFetchCalendars: Bool = false
+    var shouldThrowOnFetchEvents: Bool = false
 
     init(calendars: [MBCalendar] = [], events: [MBEvent] = []) {
         stubbedCalendars = calendars
@@ -21,7 +23,10 @@ final class FakeEventStore: EventStore {
     // MARK: - EventStore
 
     func fetchAllCalendars() async throws -> [MBCalendar] {
-        stubbedCalendars
+        if shouldThrowOnFetchCalendars {
+            throw EventManagerError.eventStoreNotAvailable
+        }
+        return stubbedCalendars
     }
 
     func fetchEventsForDateRange(
@@ -29,7 +34,10 @@ final class FakeEventStore: EventStore {
         from _: Date,
         to _: Date
     ) async throws -> [MBEvent] {
-        stubbedEvents
+        if shouldThrowOnFetchEvents {
+            throw EventManagerError.eventStoreNotAvailable
+        }
+        return stubbedEvents
     }
 
     func refreshSources() async { /* no-op */ }
