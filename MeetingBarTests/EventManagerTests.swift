@@ -196,3 +196,72 @@ final class RefreshTriggerTests: BaseTestCase {
         await fulfillment(of: [exp], timeout: 1)
     }
 }
+
+@MainActor
+final class RefreshErrorHandlingTests: BaseTestCase {
+
+    private var cancellables = Set<AnyCancellable>()
+
+    func test_eventsPreservedOnRefreshFailure() async throws {
+        // Arrange: set up fake store with initial data
+        let initialCal = MBCalendar(title: "Initial Cal", id: "cal1", source: nil, email: nil, color: .black)
+        let initialEvent = makeFakeEvent(
+            id: "E1",
+            start: Date().addingTimeInterval(60),
+            end: Date().addingTimeInterval(3600)
+        )
+        let store = FakeEventStore(calendars: [initialCal], events: [initialEvent])
+        let manager = EventManager(provider: store, refreshInterval: 0)
+
+        // Wait for initial data to be published
+        let initialExp = expectation(description: "initial data")
+        manager.$events
+            .drop(while: \.isEmpty)
+            .first()
+            .sink { events in
+                XCTAssertEqual(events, [initialEvent])
+                initialExp.fulfill()
+            }
+            .store(in: &cancellables)
+
+        await fulfillment(of: [initialExp], timeout: 1.0)
+
+        // Verify initial calendars were also published
+        XCTAssertEqual(manager.calendars, [initialCal])
+
+        // Record the initial call counts
+        let initialCalendarCallCount = store.fetchCalendarsCallCount
+        let initialEventsCallCount = store.fetchEventsCallCount
+
+        // Act: configure store to throw errors on next fetch
+        store.shouldThrowOnFetchCalendars = true
+        store.shouldThrowOnFetchEvents = true
+
+        // Set up expectation that published values won't change (no new publications expected)
+        // We use a negated expectation since we DON'T want the values to change
+        var receivedUnexpectedUpdate = false
+        let noChangeSubscription = manager.$calendars
+            .dropFirst() // skip current value
+            .sink { _ in
+                receivedUnexpectedUpdate = true
+            }
+
+        // Trigger refresh that will fail
+        try await manager.refreshSources()
+
+        // Wait for async operations to complete
+        try await Task.sleep(nanoseconds: 200_000_000) // 0.2 seconds
+
+        // Assert: verify fetch was attempted (call count increased)
+        XCTAssertGreaterThan(store.fetchCalendarsCallCount, initialCalendarCallCount, "Fetch should have been attempted")
+
+        // Assert: calendars and events should still contain initial data (not empty)
+        XCTAssertEqual(manager.calendars, [initialCal], "Calendars should be preserved on fetch failure")
+        XCTAssertEqual(manager.events, [initialEvent], "Events should be preserved on fetch failure")
+
+        // Verify no unexpected updates occurred
+        XCTAssertFalse(receivedUnexpectedUpdate, "Published values should not have changed since they match the fallback values")
+
+        noChangeSubscription.cancel()
+    }
+}
