@@ -92,12 +92,30 @@ public extension Array where Element == MBEvent {
         let startPeriod = Calendar.current.date(byAdding: .minute, value: 1, to: now)!
         var endPeriod: Date
 
-        let todayMidnight = Calendar.current.startOfDay(for: now)
+        let calendar = Calendar.current
+        let todayMidnight = calendar.startOfDay(for: now)
         switch Defaults[.showEventsForPeriod] {
         case .today:
-            endPeriod = Calendar.current.date(byAdding: .day, value: 1, to: todayMidnight)!
+            endPeriod = calendar.date(byAdding: .day, value: 1, to: todayMidnight)!
         case .today_n_tomorrow:
-            endPeriod = Calendar.current.date(byAdding: .day, value: 2, to: todayMidnight)!
+            endPeriod = calendar.date(byAdding: .day, value: 2, to: todayMidnight)!
+        case .fiveDays:
+            endPeriod = calendar.date(byAdding: .day, value: 5, to: todayMidnight)!
+        case .sevenDays:
+            endPeriod = calendar.date(byAdding: .day, value: 7, to: todayMidnight)!
+        case .workWeek:
+            let weekday = calendar.component(.weekday, from: todayMidnight) // 1 = Sunday, 7 = Saturday
+            if weekday == 1 {
+                let nextMonday = calendar.date(byAdding: .day, value: 1, to: todayMidnight)!
+                endPeriod = calendar.date(byAdding: .day, value: 5, to: nextMonday)!
+            } else if weekday == 7 {
+                let nextMonday = calendar.date(byAdding: .day, value: 2, to: todayMidnight)!
+                endPeriod = calendar.date(byAdding: .day, value: 5, to: nextMonday)!
+            } else {
+                let daysUntilFriday = 6 - weekday
+                let friday = calendar.date(byAdding: .day, value: daysUntilFriday, to: todayMidnight)!
+                endPeriod = calendar.date(byAdding: .day, value: 1, to: friday)!
+            }
         }
 
         // Filter out passed or not started events

@@ -321,6 +321,33 @@ final class StatusBarItemController {
      * ------------------------
      */
 
+    /// Returns the start-of-day dates for each day in the given period, from today (or next Monday for work week on weekend).
+    private static func daysInPeriod(_ period: ShowEventsForPeriod, from today: Date, calendar: Calendar) -> [Date] {
+        switch period {
+        case .fiveDays:
+            return (0 ..< 5).map { calendar.date(byAdding: .day, value: $0, to: today)! }
+        case .sevenDays:
+            return (0 ..< 7).map { calendar.date(byAdding: .day, value: $0, to: today)! }
+        case .workWeek:
+            let weekday = calendar.component(.weekday, from: today) // 1 = Sunday, 7 = Saturday
+            if weekday == 1 {
+                // Sunday: next week Mon–Fri
+                let nextMonday = calendar.date(byAdding: .day, value: 1, to: today)!
+                return (0 ..< 5).map { calendar.date(byAdding: .day, value: $0, to: nextMonday)! }
+            } else if weekday == 7 {
+                // Saturday: next week Mon–Fri
+                let nextMonday = calendar.date(byAdding: .day, value: 2, to: today)!
+                return (0 ..< 5).map { calendar.date(byAdding: .day, value: $0, to: nextMonday)! }
+            } else {
+                // Monday (2) through Friday (6): today through Friday
+                let daysUntilFriday = 6 - weekday
+                return (0 ... daysUntilFriday).map { calendar.date(byAdding: .day, value: $0, to: today)! }
+            }
+        case .today, .today_n_tomorrow:
+            return [today]
+        }
+    }
+
     func updateMenu() {
         // Don't update the menu while it's open to avoid flickering
         if statusItem.menu != nil {
@@ -368,6 +395,27 @@ final class StatusBarItemController {
                 let tomorrowEvents = events.filter { Calendar.current.isDate($0.startDate, inSameDayAs: tomorrow) }
                 statusItemMenu.items += builder.buildDateSection(date: tomorrow, title: "status_bar_section_tomorrow".loco(), events: tomorrowEvents)
 
+            case .fiveDays, .sevenDays, .workWeek:
+                let calendar = Calendar.current
+                let dayDates = Self.daysInPeriod(Defaults[.showEventsForPeriod], from: today, calendar: calendar)
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "E, d MMM"
+                dateFormatter.locale = I18N.instance.locale
+                for (index, dayStart) in dayDates.enumerated() {
+                    if index > 0 {
+                        statusItemMenu.addItem(NSMenuItem.separator())
+                    }
+                    let dayEvents = events.filter { calendar.isDate($0.startDate, inSameDayAs: dayStart) }
+                    let sectionTitle: String
+                    if calendar.isDate(dayStart, inSameDayAs: today) {
+                        sectionTitle = "status_bar_section_today".loco()
+                    } else if calendar.isDate(dayStart, inSameDayAs: tomorrow) {
+                        sectionTitle = "status_bar_section_tomorrow".loco()
+                    } else {
+                        sectionTitle = dateFormatter.string(from: dayStart)
+                    }
+                    statusItemMenu.items += builder.buildDateSection(date: dayStart, title: sectionTitle, events: dayEvents)
+                }
             }
         } else {
             let text = "status_bar_empty_calendar_message".loco()

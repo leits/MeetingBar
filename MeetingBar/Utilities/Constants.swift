@@ -103,6 +103,9 @@ enum PastEventsAppereance: String, Defaults.Serializable, Codable, CaseIterable 
 enum ShowEventsForPeriod: String, Defaults.Serializable, Codable, CaseIterable {
     case today
     case today_n_tomorrow
+    case fiveDays
+    case sevenDays
+    case workWeek
 }
 
 enum OngoingEventVisibility: String, Defaults.Serializable, Codable, CaseIterable {

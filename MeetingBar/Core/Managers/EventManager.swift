@@ -104,11 +104,32 @@ public class EventManager: ObservableObject {
         let dateFrom = Calendar.current.startOfDay(for: Date())
         var dateTo: Date
 
+        let calendar = Calendar.current
         switch Defaults[.showEventsForPeriod] {
         case .today:
-            dateTo = Calendar.current.date(byAdding: .day, value: 1, to: dateFrom)!
+            dateTo = calendar.date(byAdding: .day, value: 1, to: dateFrom)!
         case .today_n_tomorrow:
-            dateTo = Calendar.current.date(byAdding: .day, value: 2, to: dateFrom)!
+            dateTo = calendar.date(byAdding: .day, value: 2, to: dateFrom)!
+        case .fiveDays:
+            dateTo = calendar.date(byAdding: .day, value: 5, to: dateFrom)!
+        case .sevenDays:
+            dateTo = calendar.date(byAdding: .day, value: 7, to: dateFrom)!
+        case .workWeek:
+            let weekday = calendar.component(.weekday, from: dateFrom) // 1 = Sunday, 7 = Saturday
+            if weekday == 1 {
+                // Sunday: next week Mon–Fri
+                let nextMonday = calendar.date(byAdding: .day, value: 1, to: dateFrom)!
+                dateTo = calendar.date(byAdding: .day, value: 5, to: nextMonday)!
+            } else if weekday == 7 {
+                // Saturday: next week Mon–Fri
+                let nextMonday = calendar.date(byAdding: .day, value: 2, to: dateFrom)!
+                dateTo = calendar.date(byAdding: .day, value: 5, to: nextMonday)!
+            } else {
+                // Monday (2) through Friday (6): this week through end of Friday
+                let daysUntilFriday = 6 - weekday
+                let friday = calendar.date(byAdding: .day, value: daysUntilFriday, to: dateFrom)!
+                dateTo = calendar.date(byAdding: .day, value: 1, to: friday)!
+            }
         }
 
         let selectedCalendars = fromCalendars.filter { Defaults[.selectedCalendarIDs].contains($0.id) }
