@@ -61,7 +61,7 @@
 "preferences_appearance_menu_show_event_details_value" = "details als submenu";
 "preferences_services_link_default_browser_value" = "Standaard webbrowser";
 "preferences_services_supported_links_list" = "Ondersteunde links voor diensten:\n%@";
-"general_ok" = "OK";
+"general_ok" = "Oke";
 "general_cancel" = "Annuleren";
 "general_close" = "Sluiten";
 "general_add" = "Toevoegen";

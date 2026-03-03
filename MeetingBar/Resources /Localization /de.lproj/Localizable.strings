@@ -29,7 +29,7 @@
 "store_patronage_restore_success_message" = "Wiederhergestellt";
 "constants_meeting_service_url" = "URL";
 "constants_meeting_service_other" = "Andere";
-"preferences_configure_browsers_choose_browser_panel_message" = "Festlegen von wo der Webbrowser starten soll.";
+"preferences_configure_browsers_choose_browser_panel_message" = "Festlegen, von wo der Webbrowser starten soll.";
 "preferences_configure_browsers_choose_browser_panel_prompt" = "Webbrowser auswählen";
 "preferences_configure_browsers_choose_browser_panel_title" = "Webbrowser-App auswählen";
 "preferences_configure_browsers_modal_alert_title" = "Webbrowser-Konfiguration kann nicht hinzugefügt werden";
@@ -147,7 +147,7 @@
 "status_bar_quick_actions" = "Schnellaktionen";
 "status_bar_submenu_copy_meeting_link" = "Meeting-Link kopieren";
 "status_bar_submenu_dismiss_meeting" = "Meeting verwerfen";
-"status_bar_submenu_undismiss_meeting" = "Dismissal entfernen";
+"status_bar_submenu_undismiss_meeting" = "Verwerfen entfernen";
 "status_bar_submenu_email_attendees" = "E-Mail an Teilnehmer";
 "status_bar_submenu_open_in_fantastical" = "Fantastical öffnen";
 "status_bar_submenu_open_in_calendar" = "In Kalender-App öffnen";
@@ -309,7 +309,7 @@
 "store_patronage_purchase_cloud_service_revoked_message" = "Der Benutzer hat die Erlaubnis zur Nutzung dieses Cloud-Services widerrufen";
 "constants_meeting_service_zoom_native" = "Zoom native";
 "shared_send_notification_disabled_tip" = "⚠️Benachrichtigungen für MeetingBar sind derzeit in den Systemeinstellungen von macOS deaktiviert. Bitte die Benachrichtigungen im Bereich \"Mitteilungen\" für MeetingBar aktivieren um kein Meeting zu verpassen.";
-"shared_send_notification_no_alert_style_tip" = "⚠️ Benachrichtigungen für MeetingBar sind derzeit in den Systemeinstellungen von macOS deaktiviert. Bitte die Benachrichtigungen im Bereich \"Mitteilungen\" für MeetingBar aktivieren.";
+"shared_send_notification_no_alert_style_tip" = "Hinweis: Benachrichtigungen sind als Banner eingestellt, deshalb erscheinen sie kurzzeitig, bevor sie wieder verschwinden. Damit die Benachrichtigungen bis zum Verwerfen sichtbar bleiben, müssen sie als Alarme in den macOS-Benachrichtungseinstellungen eingestellt werden.";
 "welcome_screen_shortcut_next_meeting_title" = "Am nächsten Meeting mit Tastaturkürzel teilnehmen:";
 "welcome_screen_ad_hoc_meeting_title" = "Ad-hoc-Meetings erstellen mit ";
 "status_bar_error_link_missed_message" = "Meeting-Link nicht gefunden, oder Ihr Service wird noch nicht unterstützt";
@@ -326,3 +326,9 @@
 "notification_all_dismissals_removed_title" = "Alle verworfenen entfernt";
 "notification_all_dismissals_removed_message" = "Alle verworfenen Meetings sind wieder in Aktion";
 "notifications_event_started_body" = "Die Veranstaltung hat begonnen";
+"preferences_tab_links" = "Links";
+"preferences_appearance_status_bar_ongoing_title" = "Sichtbarkeit aktiver Ereignisse:";
+"preferences_appearance_status_bar_ongoing_time_immediate_value" = "nach Beginn ausblenden";
+"preferences_appearance_status_bar_ongoing_time_ten_after_value" = "10 min nach Beginn ausblenden";
+"preferences_appearance_status_bar_ongoing_time_ten_before_next_value" = "10 min vor dem nächsten Ereignis ausblenden";
+"preferences_appearance_menu_show_timeline_toggle" = "Visuellen Zeitstrahl für den Tag anzeigen";
