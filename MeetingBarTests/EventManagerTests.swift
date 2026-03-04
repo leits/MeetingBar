@@ -195,4 +195,38 @@ final class RefreshTriggerTests: BaseTestCase {
 
         await fulfillment(of: [exp], timeout: 1)
     }
+
+    func test_eventsPreservedOnRefreshError() async throws {
+        let ev = makeFakeEvent(id: "Preserved",
+                               start: .init(),
+                               end: .init().addingTimeInterval(60))
+        let store = FakeEventStore(events: [ev])
+        let manager = EventManager(provider: store, refreshInterval: 0)
+
+        // Load initial events
+        let initialExp = expectation(description: "initial events loaded")
+        manager.$events
+            .drop(while: \.isEmpty)
+            .first()
+            .sink { _ in initialExp.fulfill() }
+            .store(in: &cancellables)
+        await fulfillment(of: [initialExp], timeout: 1.0)
+
+        // Subscribe to detect any unexpected update before triggering the failing refresh
+        let noUpdateExp = expectation(description: "events should not change on error")
+        noUpdateExp.isInverted = true
+        manager.$events
+            .dropFirst()
+            .first()
+            .sink { _ in noUpdateExp.fulfill() }
+            .store(in: &cancellables)
+
+        // Configure store to fail and trigger refresh
+        store.shouldThrow = true
+        try await manager.refreshSources()
+
+        // Verify no update was published within a short window
+        await fulfillment(of: [noUpdateExp], timeout: 0.5)
+        XCTAssertEqual(manager.events, [ev])
+    }
 }

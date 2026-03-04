@@ -167,27 +167,27 @@ public class EventManager: ObservableObject {
 
         // E) When any fires, fetch calendars & events
         trigger
-            .flatMap { [weak self] _ -> AnyPublisher<([MBCalendar], [MBEvent]), Never> in
+            .flatMap { [weak self] _ -> AnyPublisher<([MBCalendar], [MBEvent])?, Never> in
                 guard let self = self else {
-                    return Just(([], [])).eraseToAnyPublisher()
+                    return Just(nil).eraseToAnyPublisher()
                 }
                 return Deferred {
-                    Future<([MBCalendar], [MBEvent]), Error> { promise in
+                    Future<([MBCalendar], [MBEvent])?, Error> { promise in
                         Task {
-                            let current = await MainActor.run { (self.calendars, self.events) }
                             do {
                                 let cals = try await self.provider.fetchAllCalendars()
                                 let evts = try await self.fetchEvents(fromCalendars: cals)
                                 promise(.success((cals, evts)))
                             } catch {
                                 NSLog("EventManager refresh failed: \(error)")
-                                promise(.success(current))
+                                promise(.success(nil))
                             }
                         }
                     }
                 }
                 .eraseToAnyPublisher()
             }
+            .compactMap { $0 }
             // **important: hop back to the main run-loop before assigning**
             .receive(on: RunLoop.main)
             .sink { [weak self] cals, evts in
