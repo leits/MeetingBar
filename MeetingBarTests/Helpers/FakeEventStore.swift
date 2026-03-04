@@ -12,6 +12,7 @@ import Foundation
 final class FakeEventStore: EventStore {
     var stubbedCalendars: [MBCalendar]
     var stubbedEvents: [MBEvent]
+    var shouldThrow = false
 
     init(calendars: [MBCalendar] = [], events: [MBEvent] = []) {
         stubbedCalendars = calendars
@@ -21,7 +22,8 @@ final class FakeEventStore: EventStore {
     // MARK: - EventStore
 
     func fetchAllCalendars() async throws -> [MBCalendar] {
-        stubbedCalendars
+        if shouldThrow { throw NSError(domain: "FakeStore", code: 1) }
+        return stubbedCalendars
     }
 
     func fetchEventsForDateRange(
