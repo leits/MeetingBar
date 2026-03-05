@@ -43,6 +43,9 @@ struct ShortcutsSection: View {
             Text("preferences_general_shortcut_create_meeting".loco())
             KeyboardShortcuts.Recorder(for: .createMeetingShortcut)
 
+            Text("status_bar_section_join_current_meeting".loco() + ":")
+            KeyboardShortcuts.Recorder(for: .joinCurrentEventShortcut)
+
             Text("preferences_general_shortcut_join_next".loco())
             KeyboardShortcuts.Recorder(for: .joinEventShortcut)
 
@@ -73,6 +76,11 @@ struct ShortcutsModal: View {
                     Text("preferences_general_shortcut_create_meeting".loco())
                     Spacer()
                     KeyboardShortcuts.Recorder(for: .createMeetingShortcut)
+                }
+                HStack {
+                    Text("status_bar_section_join_current_meeting".loco() + ":")
+                    Spacer()
+                    KeyboardShortcuts.Recorder(for: .joinCurrentEventShortcut)
                 }
                 HStack {
                     Text("preferences_general_shortcut_join_next".loco())
