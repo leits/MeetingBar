@@ -405,6 +405,9 @@ final class StatusBarItemController {
     }
 
     @objc
+    /// Joins the meeting link for the event currently in progress.
+    ///
+    /// If there is no active event, a user-facing notification is shown.
     func joinCurrentMeeting() {
         if let currentEvent = events.currentEvent() {
             currentEvent.openMeeting()

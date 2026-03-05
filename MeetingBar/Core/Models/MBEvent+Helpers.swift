@@ -174,7 +174,10 @@ public extension Array where Element == MBEvent {
     }
 
     /// Returns the event that is currently in progress.
+    ///
     /// Unlike `nextEvent()`, this does not depend on ongoing visibility settings.
+    /// - Parameter linkRequired: If `true`, only events with a meeting link are considered.
+    /// - Returns: The currently running event that passes filters, or `nil`.
     func currentEvent(linkRequired: Bool = false) -> MBEvent? {
         let now = Date()
 
