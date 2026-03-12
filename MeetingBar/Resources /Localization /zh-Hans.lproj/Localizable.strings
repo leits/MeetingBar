@@ -1,0 +1,10 @@
+"general_ok" = "好的";
+"general_cancel" = "取消";
+"general_close" = "关闭";
+"general_one_minute_before" = "1分钟前";
+"general_three_minute_before" = "3分钟前";
+"general_five_minute_before" = "5分钟前";
+"create_meeting_error_title" = "无法创建新的会议";
+"create_meeting_error_message" = "自定义URL\"%@\"缺失或无效。 ";
+"preferences_general_option_preferred_language_title" = "语言：";
+"preferences_general_option_shortcuts" = "快捷方式";
