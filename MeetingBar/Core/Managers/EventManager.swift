@@ -30,10 +30,24 @@ public class EventManager: ObservableObject {
 
     private var storeChangeCancellable: AnyCancellable?
 
+    /// Maximum number of retry attempts for failed refreshes
+    private static let maxRetryAttempts = 5
+
+    /// Base delay (in seconds) for exponential backoff.
+    /// Overridable in tests via the DEBUG initializer.
+    private let baseRetryDelay: TimeInterval
+
+    /// How long (in seconds) before event data is considered stale and worth re-fetching
+    private static let staleThreshold: TimeInterval = 900  // 15 minutes
+
+    /// Timestamp of the last successful event fetch
+    private var lastSuccessfulRefresh: Date = .distantPast
+
     // MARK: - Initialization
 
     public init(refreshInterval: TimeInterval = 180) async {
         self.refreshInterval = refreshInterval
+        self.baseRetryDelay = 2
         provider = await MainActor.run {
             switch Defaults[.eventStoreProvider] {
             case .macOSEventKit: return EKEventStore.shared
@@ -99,6 +113,17 @@ public class EventManager: ObservableObject {
         refreshSubject.send()
     }
 
+    /// Trigger an immediate refresh (e.g. after screen unlock / wake).
+    /// Skips the refresh if the last successful fetch was within the stale threshold,
+    /// to avoid unnecessary API calls on quick lock/unlock cycles.
+    public func triggerRefresh() {
+        guard Date().timeIntervalSince(lastSuccessfulRefresh) > Self.staleThreshold else {
+            NSLog("EventManager skipping refresh — last successful refresh was \(Int(Date().timeIntervalSince(lastSuccessfulRefresh)))s ago (threshold: \(Int(Self.staleThreshold))s)")
+            return
+        }
+        refreshSubject.send()
+    }
+
     /// Fetches events for the selected calendars within the specified date range
     private func fetchEvents(fromCalendars: [MBCalendar]) async throws -> [MBEvent] {
         let dateFrom = Calendar.current.startOfDay(for: Date())
@@ -135,6 +160,52 @@ public class EventManager: ObservableObject {
         return rawEvents.filtered().sorted { $0.startDate < $1.startDate }
     }
 
+    /// Attempts to fetch calendars & events, retrying with exponential backoff
+    /// on failure. Stops after `maxRetryAttempts` and returns empty results.
+    private func fetchWithRetry() async -> ([MBCalendar], [MBEvent]) {
+        var attempt = 0
+
+        while attempt < Self.maxRetryAttempts {
+            do {
+                // On retries, attempt to re-authenticate in case the token expired
+                if attempt > 0 {
+                    NSLog("EventManager retry attempt \(attempt)/\(Self.maxRetryAttempts) — re-authenticating…")
+                    try await provider.signIn(forcePrompt: false)
+                }
+
+                let cals = try await provider.fetchAllCalendars()
+                let evts = try await fetchEvents(fromCalendars: cals)
+
+                if attempt > 0 {
+                    NSLog("EventManager retry succeeded on attempt \(attempt + 1)")
+                }
+                lastSuccessfulRefresh = Date()
+                return (cals, evts)
+            } catch {
+                attempt += 1
+                NSLog("EventManager refresh failed (attempt \(attempt)/\(Self.maxRetryAttempts)): \(error)")
+
+                if attempt >= Self.maxRetryAttempts {
+                    NSLog("EventManager giving up after \(Self.maxRetryAttempts) attempts")
+                    if NSClassFromString("XCTestCase") == nil {
+                        sendNotification(
+                            "Calendar refresh failed",
+                            "MeetingBar could not load your events. Try switching calendars in Preferences."
+                        )
+                    }
+                    return ([], [])
+                }
+
+                // Exponential backoff: e.g. 2s, 4s, 8s, 16s, 32s
+                let delay = baseRetryDelay * pow(2.0, Double(attempt - 1))
+                NSLog("EventManager will retry in \(delay)s…")
+                try? await Task.sleep(nanoseconds: UInt64(delay * Double(NSEC_PER_SEC)))
+            }
+        }
+
+        return ([], [])
+    }
+
     private func setupPublishers() {
         // A) Defaults changes as an “empty” trigger
         let defaultsPub = Defaults.publisher(keys:
@@ -165,7 +236,7 @@ public class EventManager: ObservableObject {
         // D) Merge them all
         let trigger = Publishers.Merge3(defaultsPub, timerPub, manualPub)
 
-        // E) When any fires, fetch calendars & events
+        // E) When any fires, fetch calendars & events with exponential backoff retry
         trigger
             .flatMap { [weak self] _ -> AnyPublisher<([MBCalendar], [MBEvent]), Never> in
                 guard let self = self else {
@@ -174,27 +245,21 @@ public class EventManager: ObservableObject {
                 return Deferred {
                     Future<([MBCalendar], [MBEvent]), Error> { promise in
                         Task {
-                            do {
-                                let cals = try await self.provider.fetchAllCalendars()
-                                let evts = try await self.fetchEvents(fromCalendars: cals)
-                                promise(.success((cals, evts)))
-                            } catch {
-                                NSLog("EventManager refresh failed: \(error)")
-                                promise(.success(([], [])))
-                            }
+                            let result = await self.fetchWithRetry()
+                            promise(.success(result))
                         }
                     }
                 }
-                .catch { error -> Empty<([MBCalendar], [MBEvent]), Never> in
+                .catch { error -> Just<([MBCalendar], [MBEvent])> in
                     NSLog("EventManager refresh failed: \(error)")
-                    return Empty(completeImmediately: true)
+                    return Just(([], []))
                 }
                 .eraseToAnyPublisher()
             }
             // **important: hop back to the main run-loop before assigning**
             .receive(on: RunLoop.main)
             .sink { [weak self] cals, evts in
-                // now we’re safely on the main actor / main thread
+                // now we're safely on the main actor / main thread
                 self?.calendars = cals
                 self?.events = evts
             }
@@ -205,12 +270,20 @@ public class EventManager: ObservableObject {
         /// Test-only initializer: inject your own store and skip
         /// the async system-store configuration.
         public init(provider: EventStore,
-                    refreshInterval: TimeInterval = 0) {
+                    refreshInterval: TimeInterval = 0,
+                    baseRetryDelay: TimeInterval = 0.01) {
             self.refreshInterval = refreshInterval
+            self.baseRetryDelay = baseRetryDelay
             self.provider = provider
             // no storeChangeCancellable for real notifications
             setupPublishers()
             refreshSubject.send()
+        }
+
+        /// Allows tests to override the last successful refresh timestamp
+        /// to simulate stale/fresh state.
+        func setLastSuccessfulRefresh(_ date: Date) {
+            lastSuccessfulRefresh = date
         }
     #endif
 }

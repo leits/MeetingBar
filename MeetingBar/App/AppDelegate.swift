@@ -26,6 +26,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
     private var eventCancellable: AnyCancellable?
 
     func applicationDidFinishLaunching(_: Notification) {
+        // Skip UI setup when running under XCTest
+        if NSClassFromString("XCTestCase") != nil {
+            return
+        }
+
         // AppStore sync
         completeStoreTransactions()
         checkAppSource()
@@ -102,6 +107,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
         dnc.addObserver(
             self, selector: #selector(AppDelegate.unlockListener),
             name: .init("com.apple.screenIsUnlocked"), object: nil
+        )
+
+        // Also listen for system wake (covers cases where screen lock/unlock
+        // notifications may not fire, e.g. Touch ID auto-unlock).
+        NSWorkspace.shared.notificationCenter.addObserver(
+            self, selector: #selector(AppDelegate.didWakeListener),
+            name: NSWorkspace.didWakeNotification, object: nil
         )
     }
 
@@ -320,6 +332,16 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
     @objc
     func unlockListener(notification _: NSNotification) {
         screenIsLocked = false
+        // Trigger an immediate calendar refresh after screen unlock / wake
+        // so events are up-to-date when the user returns.
+        eventManager?.triggerRefresh()
+    }
+
+    @objc
+    func didWakeListener(notification _: NSNotification) {
+        // Trigger a refresh after system wake to cover cases where
+        // screen lock/unlock notifications may not fire.
+        eventManager?.triggerRefresh()
     }
 
     /*
