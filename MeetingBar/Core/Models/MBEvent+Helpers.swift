@@ -84,6 +84,39 @@ public extension Array where Element == MBEvent {
         return result
     }
 
+    /// When there is an ongoing event and a subsequent event starts within
+    /// `gapThreshold` seconds of the current event's end, returns both.
+    /// Returns `(current, upcoming)` — either or both may be nil.
+    func currentAndUpcomingEvent(gapThreshold: TimeInterval = 900) -> (current: MBEvent?, upcoming: MBEvent?) {
+        let now = Date()
+
+        // Find the ongoing event (started but not ended)
+        let current = first(where: {
+            !$0.isAllDay
+            && $0.startDate <= now
+            && $0.endDate > now
+            && $0.participationStatus != .declined
+            && $0.status != .canceled
+        })
+
+        guard let current = current else {
+            return (nil, nil)
+        }
+
+        // Find the next event that starts after now but within
+        // `gapThreshold` seconds of the current event's end.
+        let upcoming = first(where: {
+            !$0.isAllDay
+            && $0.id != current.id
+            && $0.startDate > now
+            && $0.startDate <= current.endDate.addingTimeInterval(gapThreshold)
+            && $0.participationStatus != .declined
+            && $0.status != .canceled
+        })
+
+        return (current, upcoming)
+    }
+
     /// From a pre-filtered, sorted array, find the nearest upcoming MBEvent.
     func nextEvent(linkRequired: Bool = false) -> MBEvent? {
         var nextEvent: MBEvent?

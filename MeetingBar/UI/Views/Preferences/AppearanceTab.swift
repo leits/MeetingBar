@@ -149,6 +149,8 @@ struct StatusBarSection: View {
     @Default(.showEventMaxTimeUntilEventThreshold) var showEventMaxTimeUntilEventThreshold
     @Default(.showEventMaxTimeUntilEventEnabled) var showEventMaxTimeUntilEventEnabled
     @Default(.ongoingEventVisibility) var ongoingEventVisibility
+    @Default(.nextEventFlipMode) var nextEventFlipMode
+    @Default(.nextEventFlipIntervalSeconds) var nextEventFlipIntervalSeconds
 
     var body: some View {
         GroupBox(label: Label("preferences_appearance_status_bar_title".loco(), systemImage: "menubar.rectangle")) {
@@ -244,6 +246,29 @@ struct StatusBarSection: View {
                     Text("preferences_appearance_status_bar_ongoing_time_ten_before_next_value".loco()).tag(
                         OngoingEventVisibility.showTenMinBeforeNext)
                 }.frame(width: 325)
+
+                HStack {
+                    Picker("Next event preview:", selection: $nextEventFlipMode) {
+                        Text("Disabled").tag(NextEventFlipMode.disabled)
+                        Text("Show after start").tag(NextEventFlipMode.showAfterStart)
+                        Text("Show after 10 min").tag(NextEventFlipMode.showAfterTenMin)
+                    }
+                    .fixedSize()
+                    .disabled(ongoingEventVisibility != .showTenMinBeforeNext)
+                    .help(ongoingEventVisibility != .showTenMinBeforeNext
+                        ? "Requires \"Ongoing event visibility\" to be set to \"hide 10 min before next event\""
+                        : "Alternate between showing the current and upcoming event in the status bar")
+
+                    if nextEventFlipMode != .disabled && ongoingEventVisibility == .showTenMinBeforeNext {
+                        Picker("Flip every", selection: $nextEventFlipIntervalSeconds) {
+                            ForEach([2, 3, 5, 7, 10, 15], id: \.self) { sec in
+                                Text("\(sec)s").tag(sec)
+                            }
+                        }
+                        .fixedSize()
+                        .help("How often to alternate between current and upcoming event")
+                    }
+                }
             }.frame(maxWidth: .infinity, alignment: .leading)
         }
     }

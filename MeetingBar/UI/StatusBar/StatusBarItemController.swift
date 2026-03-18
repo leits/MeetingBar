@@ -38,6 +38,14 @@ final class StatusBarItemController {
 
     private var cancellables = Set<AnyCancellable>()
 
+    // MARK: - Flip timer for current/upcoming event alternation
+
+    /// When true, the status bar shows the upcoming event; otherwise the current event.
+    private var showingUpcomingEvent = false
+
+    /// Task that drives the flip between current and upcoming event.
+    private var flipTask: Task<Void, Never>?
+
     init() {
         statusItem = NSStatusBar.system.statusItem(
             withLength: NSStatusItem.variableLength
@@ -166,6 +174,211 @@ final class StatusBarItemController {
     }
 
     func updateTitle() {
+        let flipMode = Defaults[.nextEventFlipMode]
+
+        // Flip feature requires ongoing event visibility to be "hide 10 min before next"
+        guard flipMode != .disabled,
+              Defaults[.ongoingEventVisibility] == .showTenMinBeforeNext else {
+            stopFlipTimer()
+            renderNormalTitle()
+            return
+        }
+
+        let pair = events.currentAndUpcomingEvent()
+        if let current = pair.current, let upcoming = pair.upcoming {
+            let now = Date()
+            let minutesIntoCurrent = now.timeIntervalSince(current.startDate) / 60
+
+            let minMinutesIn: Double = (flipMode == .showAfterTenMin) ? 10.0 : 0.0
+
+            // Only start flipping when the current meeting is far enough in.
+            guard minutesIntoCurrent >= minMinutesIn else {
+                stopFlipTimer()
+                renderNormalTitle()
+                return
+            }
+
+            // We have both a current and upcoming event — start the flip timer
+            // and render whichever side we're currently showing.
+            startFlipTimer()
+            if showingUpcomingEvent {
+                renderUpcomingEvent(upcoming, whileCurrent: current)
+            } else {
+                renderEvent(current)
+            }
+            return
+        }
+
+        // No flip scenario — stop the timer and render normally
+        stopFlipTimer()
+        renderNormalTitle()
+    }
+
+    // MARK: - Flip timer management
+
+    private func startFlipTimer() {
+        // Don't start a new timer if one is already running
+        guard flipTask == nil else { return }
+        flipTask = Task { [weak self] in
+            while let self, !Task.isCancelled {
+                let interval = TimeInterval(Defaults[.nextEventFlipIntervalSeconds])
+                try? await Task.sleep(nanoseconds: UInt64(interval * Double(NSEC_PER_SEC)))
+                guard !Task.isCancelled else { break }
+                await MainActor.run {
+                    self.showingUpcomingEvent.toggle()
+                    self.updateTitle()
+                }
+            }
+        }
+    }
+
+    private func stopFlipTimer() {
+        flipTask?.cancel()
+        flipTask = nil
+        showingUpcomingEvent = false
+    }
+
+    // MARK: - Render the "upcoming event" side of the flip
+
+    private func renderUpcomingEvent(_ upcoming: MBEvent, whileCurrent current: MBEvent) {
+        guard let button = statusItem.button else { return }
+        button.image = nil
+        button.title = ""
+
+        let (upcomingTitle, upcomingTime) = createEventStatusString(
+            title: upcoming.title,
+            startDate: upcoming.startDate,
+            endDate: upcoming.endDate
+        )
+
+        // Set the icon
+        if Defaults[.eventTitleIconFormat] != .none {
+            let image: NSImage
+            if Defaults[.eventTitleIconFormat] == .eventtype {
+                image = getIconForMeetingService(upcoming.meetingLink?.service)
+            } else {
+                image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
+            }
+            button.image = image
+            button.image?.size = MenuStyleConstants.iconSize
+        }
+
+        if button.image?.name() == "no_online_session" {
+            button.imagePosition = .noImage
+        } else {
+            button.imagePosition = .imageLeft
+        }
+
+        let menuTitle = NSMutableAttributedString()
+
+        // Bold "Next: " prefix
+        let boldFont = NSFont.boldSystemFont(ofSize: MenuStyleConstants.defaultFontSize)
+        let regularFont = NSFont.systemFont(ofSize: MenuStyleConstants.defaultFontSize)
+
+        menuTitle.append(NSAttributedString(
+            string: "Next: ",
+            attributes: [.font: boldFont]
+        ))
+
+        var eventText = upcomingTitle
+        if Defaults[.eventTimeFormat] == .show {
+            eventText += " " + upcomingTime
+        }
+
+        menuTitle.append(NSAttributedString(
+            string: eventText,
+            attributes: [.font: regularFont]
+        ))
+
+        button.attributedTitle = menuTitle
+        button.toolTip = "Now: \(current.title)\nNext: \(upcoming.title)"
+    }
+
+    // MARK: - Normal title rendering (original logic)
+
+    private func renderEvent(_ event: MBEvent) {
+        guard let button = statusItem.button else { return }
+        button.image = nil
+        button.title = ""
+        button.toolTip = nil
+
+        let (title, time) = createEventStatusString(
+            title: event.title,
+            startDate: event.startDate,
+            endDate: event.endDate
+        )
+
+        if Defaults[.eventTitleIconFormat] != .none {
+            let image: NSImage
+            if Defaults[.eventTitleIconFormat] == .eventtype {
+                image = getIconForMeetingService(event.meetingLink?.service)
+            } else {
+                image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
+            }
+            button.image = image
+            button.image?.size = MenuStyleConstants.iconSize
+        }
+
+        if button.image?.name() == "no_online_session" {
+            button.imagePosition = .noImage
+        } else {
+            button.imagePosition = .imageLeft
+        }
+
+        let menuTitle = NSMutableAttributedString()
+
+        if Defaults[.eventTimeFormat] != .show_under_title || Defaults[.eventTitleFormat] == .none {
+            var eventTitle = title
+            if Defaults[.eventTimeFormat] == .show {
+                eventTitle += " " + time
+            }
+
+            var styles = [NSAttributedString.Key: Any]()
+            styles[.font] = NSFont.systemFont(ofSize: MenuStyleConstants.defaultFontSize)
+
+            if event.participationStatus == .pending, Defaults[.showPendingEvents] == .show_underlined {
+                styles[.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
+            }
+            if event.participationStatus == .tentative, Defaults[.showTentativeEvents] == .show_underlined {
+                styles[.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
+            }
+
+            menuTitle.append(NSAttributedString(string: eventTitle, attributes: styles))
+        } else {
+            let paragraphStyle = NSMutableParagraphStyle()
+            paragraphStyle.lineHeightMultiple = 0.7
+            paragraphStyle.alignment = .center
+
+            var styles = [NSAttributedString.Key: Any]()
+            styles[.font] = NSFont.systemFont(ofSize: 12)
+            styles[.baselineOffset] = -3
+
+            if event.participationStatus == .pending, Defaults[.showPendingEvents] == .show_inactive {
+                styles[.foregroundColor] = NSColor.disabledControlTextColor
+            } else if event.participationStatus == .pending, Defaults[.showPendingEvents] == .show_underlined {
+                styles[.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
+            }
+            if event.participationStatus == .tentative, Defaults[.showTentativeEvents] == .show_inactive {
+                styles[.foregroundColor] = NSColor.disabledControlTextColor
+            } else if event.participationStatus == .tentative, Defaults[.showTentativeEvents] == .show_underlined {
+                styles[.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
+            }
+
+            menuTitle.append(NSAttributedString(string: title, attributes: styles))
+
+            let timeAttributes: [NSAttributedString.Key: Any] = [
+                .font: NSFont.systemFont(ofSize: 9),
+                .foregroundColor: NSColor.lightGray
+            ]
+            menuTitle.append(NSAttributedString(string: "\n" + time, attributes: timeAttributes))
+            menuTitle.addAttributes([.paragraphStyle: paragraphStyle], range: NSRange(location: 0, length: menuTitle.length))
+        }
+
+        button.attributedTitle = menuTitle
+        button.toolTip = event.title
+    }
+
+    private func renderNormalTitle() {
         var title = "MeetingBar"
         var time = ""
         var nextEvent: MBEvent!
@@ -179,8 +392,6 @@ final class StatusBarItemController {
                 guard Defaults[.showEventMaxTimeUntilEventEnabled] else {
                     return .nextEvent(nextEvent)
                 }
-                // Positive, if in the future. Negative, if already started.
-                // Current or past events therefore don't get ignored.
                 let timeUntilStart = nextEvent.startDate.timeIntervalSinceNow
                 let thresholdInSeconds = TimeInterval(Defaults[.showEventMaxTimeUntilEventThreshold] * 60)
                 return timeUntilStart < thresholdInSeconds ? .nextEvent(nextEvent) : .afterThreshold(nextEvent)
@@ -200,7 +411,6 @@ final class StatusBarItemController {
                     }
                 }
             case let .afterThreshold(event):
-                // Not sure, what the title should be in this case.
                 title = "⏰"
                 if Defaults[.joinEventNotification] {
                     Task {
@@ -236,81 +446,7 @@ final class StatusBarItemController {
             }
 
             if button.image == nil {
-                if Defaults[.eventTitleIconFormat] != .none {
-                    let image: NSImage
-                    if Defaults[.eventTitleIconFormat] == .eventtype {
-                        image = getIconForMeetingService(nextEvent.meetingLink?.service)
-                    } else {
-                        image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
-                    }
-
-                    button.image = image
-                    button.image?.size = MenuStyleConstants.iconSize
-                }
-
-                if button.image?.name() == "no_online_session" {
-                    button.imagePosition = .noImage
-                } else {
-                    button.imagePosition = .imageLeft
-                }
-
-                // create an NSMutableAttributedString that we'll append everything to
-                let menuTitle = NSMutableAttributedString()
-
-                if Defaults[.eventTimeFormat] != .show_under_title || Defaults[.eventTitleFormat] == .none {
-                    var eventTitle = title
-                    if Defaults[.eventTimeFormat] == .show {
-                        eventTitle += " " + time
-                    }
-
-                    var styles = [NSAttributedString.Key: Any]()
-                    styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: MenuStyleConstants.defaultFontSize)
-
-                    if nextEvent.participationStatus == .pending, Defaults[.showPendingEvents] == .show_underlined {
-                        styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
-                    }
-
-                    if nextEvent.participationStatus == .tentative, Defaults[.showTentativeEvents] == .show_underlined {
-                        styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
-                    }
-
-                    menuTitle.append(NSAttributedString(string: eventTitle, attributes: styles))
-                } else {
-                    let paragraphStyle = NSMutableParagraphStyle()
-                    paragraphStyle.lineHeightMultiple = 0.7
-                    paragraphStyle.alignment = .center
-
-                    var styles = [NSAttributedString.Key: Any]()
-                    styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: 12)
-                    styles[NSAttributedString.Key.baselineOffset] = -3
-
-                    if nextEvent.participationStatus == .pending, Defaults[.showPendingEvents] == .show_inactive {
-                        styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
-                    } else if nextEvent.participationStatus == .pending, Defaults[.showPendingEvents] == .show_underlined {
-                        styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
-                    }
-
-                    if nextEvent.participationStatus == .tentative, Defaults[.showTentativeEvents] == .show_inactive {
-                        styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
-                    } else if nextEvent.participationStatus == .tentative, Defaults[.showTentativeEvents] == .show_underlined {
-                        styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
-                    }
-
-                    menuTitle.append(NSAttributedString(string: title, attributes: styles))
-
-                    let timeAttributes = [
-                        NSAttributedString.Key.font: NSFont.systemFont(ofSize: 9),
-                        NSAttributedString.Key.foregroundColor: NSColor.lightGray
-                    ]
-                    menuTitle.append(NSAttributedString(string: "\n" + time, attributes: timeAttributes))
-
-                    menuTitle.addAttributes([NSAttributedString.Key.paragraphStyle: paragraphStyle], range: NSRange(location: 0, length: menuTitle.length))
-                }
-
-                button.attributedTitle = menuTitle
-                if nextEvent != nil {
-                    button.toolTip = nextEvent.title
-                }
+                renderEvent(nextEvent)
             }
         }
     }
