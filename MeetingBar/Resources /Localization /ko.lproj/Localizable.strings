@@ -231,3 +231,4 @@
 "access_screen_provider_macos_title" = "MacOS Calendar app";
 "access_screen_provider_macos_recommended" = "(추천)";
 "access_screen_provider_macos_data_source" = "MacOS Calendar app 데이터 가져오기";
+"shared_fullscreen_notification_all_screens_toggle" = "모든 화면에 표시";

@@ -283,6 +283,7 @@
 
 "shared_send_notification_toggle" = "Enviar una notificación del sistema";
 "shared_fullscreen_notification_toggle" = "Mostrar una notificación a pantalla completa";
+"shared_fullscreen_notification_all_screens_toggle" = "Mostrar en todas las pantallas";
 "shared_send_notification_no_alert_style_tip" = "⚠️ Tus configuraciones de notificación de macOS para MeetingBar no están establecidas como alertas. Cámbialo si deseas notificaciones persistentes. Nota: Las notificaciones estan puestas en \"Banners\", Asi que aparecen brevemente antes de irse, para mantenerlas en la pantalla hasta que se vayan cambia a Alertas en la configuraciòn de notificaciones en tu MacOs.";
 "shared_send_notification_disabled_tip" = "⚠️ Tus configuraciones de notificación de macOS para MeetingBar están desactivadas. Activa las notificaciones en la configuración del sistema de macOS para llevar un seguimiento de las reuniones.";
 "shared_automatic_event_join_toggle" = "Auto-unirse a la próxima reunión de evento";

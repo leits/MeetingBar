@@ -289,6 +289,7 @@
 "notifications_event_ends_three_minutes_body" = "Udalosť sa končí o tri minúty";
 "notifications_event_ends_five_minutes_body" = "Udalosť sa končí o päť minút";
 "shared_fullscreen_notification_toggle" = "Zobraziť upozornenie na celú obrazovku";
+"shared_fullscreen_notification_all_screens_toggle" = "Zobraziť na všetkých obrazovkách";
 "constants_meeting_service_zoom_native" = "Zoom natívne";
 
 // MARK: - Store

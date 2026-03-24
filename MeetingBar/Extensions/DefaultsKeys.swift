@@ -30,6 +30,7 @@ extension Defaults.Keys {
 
     static let fullscreenNotification = Key<Bool>("fullscreenNotification", default: false)
     static let fullscreenNotificationTime = Key<TimeBeforeEvent>("fullscreenNotificationTime", default: .atStart)
+    static let fullscreenNotificationAllScreens = Key<Bool>("fullscreenNotificationAllScreens", default: false)
     static let processedEventsForFullscreenNotification = Key<[ProcessedEvent]>("processedEventsForFullscreenNotification", default: [])
 
     static let preferredLanguage = Key<AppLanguage>("preferredLanguage", default: .system)

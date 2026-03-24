@@ -238,31 +238,41 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
     }
 
     func openFullscreenNotificationWindow(event: MBEvent) {
-        let screenFrame = NSScreen.main?.frame ?? NSRect(x: 0, y: 0, width: 800, height: 600)
+        let screens: [NSScreen]
+        if Defaults[.fullscreenNotificationAllScreens] {
+            screens = NSScreen.screens
+        } else {
+            screens = [NSScreen.main].compactMap { $0 }
+        }
 
-        let window = NSWindow(
-            contentRect: screenFrame,
-            styleMask: [.borderless],
-            backing: .buffered,
-            defer: false
-        )
+        guard !screens.isEmpty else { return }
 
-        window.contentView = NSHostingView(
-            rootView: FullscreenNotification(event: event, window: window))
-        window.appearance = NSAppearance(named: .darkAqua)
-        window.collectionBehavior = .canJoinAllSpaces
-        window.collectionBehavior = .moveToActiveSpace
+        var windows: [NSWindow] = []
 
-        window.titlebarAppearsTransparent = true
-        window.styleMask.insert(.fullSizeContentView)
-        window.title = "Meetingbar Fullscreen Notification"
-        window.level = .screenSaver
+        for screen in screens {
+            let window = NSWindow(
+                contentRect: screen.frame,
+                styleMask: [.borderless],
+                backing: .buffered,
+                defer: false
+            )
+            window.appearance = NSAppearance(named: .darkAqua)
+            window.collectionBehavior = .canJoinAllSpaces
+            window.collectionBehavior = .moveToActiveSpace
+            window.titlebarAppearsTransparent = true
+            window.styleMask.insert(.fullSizeContentView)
+            window.title = "Meetingbar Fullscreen Notification"
+            window.level = .screenSaver
+            windows.append(window)
+        }
 
-        let controller = NSWindowController(window: window)
-        controller.showWindow(self)
-
-        window.center()
-        window.orderFrontRegardless()
+        for window in windows {
+            window.contentView = NSHostingView(
+                rootView: FullscreenNotification(event: event, windows: windows))
+            let controller = NSWindowController(window: window)
+            controller.showWindow(self)
+            window.orderFrontRegardless()
+        }
     }
 
     @objc

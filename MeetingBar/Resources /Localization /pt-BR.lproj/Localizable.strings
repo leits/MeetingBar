@@ -334,6 +334,7 @@
 
 
 "shared_fullscreen_notification_toggle" = "Exibir notificação em tela cheia";
+"shared_fullscreen_notification_all_screens_toggle" = "Mostrar em todas as telas";
 "preferences_tab_links" = "Links";
 "preferences_appearance_status_bar_ongoing_title" = "Mostrar reuniões em andamento:";
 "preferences_appearance_status_bar_ongoing_time_immediate_value" = "Ocultar e depois de iniciar";

@@ -189,6 +189,7 @@
 "status_bar_submenu_status_declined" = " 👎 Afgewezen";
 "access_screen_try_again" = "Opnieuw proberen";
 "shared_fullscreen_notification_toggle" = "Toon een melding op volledig scherm";
+"shared_fullscreen_notification_all_screens_toggle" = "Op alle schermen weergeven";
 "preferences_bookmarks_new_bookmark_title" = "Nieuwe bladwijzer";
 "preferences_bookmarks_new_bookmark_name" = "Naam";
 "preferences_bookmarks_new_bookmark_service" = "Dienst";
