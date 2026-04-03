@@ -254,8 +254,7 @@ struct CalendarRow: View {
 
     var body: some View {
         Toggle(isOn: $isSelected) {
-            HStack {
-                Text("")
+            HStack(spacing: 6) {
                 Circle().fill(Color(calendar.color)).frame(width: 10, height: 10)
                 Text(calendar.title)
             }

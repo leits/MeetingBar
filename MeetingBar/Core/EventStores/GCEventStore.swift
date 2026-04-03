@@ -434,7 +434,10 @@ final class GCEventStore: NSObject,
     enum GCParser {
         static func event(from item: [String: Any],
                           calendar: MBCalendar) -> MBEvent? {
-            let eventID = item["id"] as! String
+            guard let eventID = item["id"] as? String else {
+                NSLog("GCParser: missing event id")
+                return nil
+            }
 
             let formatter = ISO8601DateFormatter()
             let lastModifiedDate = formatter.date(from: item["updated"] as? String ?? "")
@@ -491,27 +494,37 @@ final class GCEventStore: NSObject,
                 attendees.append(attendee)
             }
 
-            var startDate: Date
-            var endDate: Date
-            var isAllDay: Bool
-
-            let itemStart = item["start"] as! [String: String]
-            let itemEnd = item["end"] as! [String: String]
-
-            if let startDateTime = itemStart["dateTime"], let endDateTime = itemEnd["dateTime"] {
-                let formatter = ISO8601DateFormatter()
-                startDate = formatter.date(from: startDateTime)!
-                endDate = formatter.date(from: endDateTime)!
-                isAllDay = false
-            } else {
-                let formatter = DateFormatter()
-                formatter.dateFormat = "yyyy-MM-dd"
-                startDate = formatter.date(from: itemStart["date"]!)!
-                endDate = formatter.date(from: itemEnd["date"]!)!
-                isAllDay = true
+            guard let itemStart = item["start"] as? [String: String],
+                  let itemEnd = item["end"] as? [String: String]
+            else {
+                NSLog("GCParser: missing start/end for event \(eventID)")
+                return nil
             }
 
-            let recurrent = (item["recurringEventId"] != nil) ? true : false
+            let startDate: Date
+            let endDate: Date
+            let isAllDay: Bool
+
+            if let startDateTime = itemStart["dateTime"],
+               let endDateTime = itemEnd["dateTime"],
+               let parsedStart = ISO8601DateFormatter().date(from: startDateTime),
+               let parsedEnd = ISO8601DateFormatter().date(from: endDateTime) {
+                startDate = parsedStart
+                endDate = parsedEnd
+                isAllDay = false
+            } else if let startDateStr = itemStart["date"],
+                      let endDateStr = itemEnd["date"],
+                      let parsedStart = DateFormatter.yyyyMMdd.date(from: startDateStr),
+                      let parsedEnd = DateFormatter.yyyyMMdd.date(from: endDateStr) {
+                startDate = parsedStart
+                endDate = parsedEnd
+                isAllDay = true
+            } else {
+                NSLog("GCParser: invalid date format for event \(eventID)")
+                return nil
+            }
+
+            let recurrent = item["recurringEventId"] != nil
 
             return MBEvent(
                 id: eventID,
