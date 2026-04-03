@@ -117,15 +117,15 @@ struct GoogleAccountsSection: View {
             titleVisibility: .visible,
             presenting: accountToRemove
         ) { account in
-            Button("preferences_calendars_remove_account_action", role: .destructive) {
+            Button("preferences_calendars_remove_account_action".loco(account.email), role: .destructive) {
                 Task {
                     await GCEventStore.shared.removeAccount(account)
                     try? await eventManager.refreshSources()
                 }
             }
             Button("preferences_calendars_cancel", role: .cancel) {}
-        } message: { _ in
-            Text("preferences_calendars_remove_account_message")
+        } message: { account in
+            Text("preferences_calendars_remove_account_message".loco(account.email))
         }
     }
 }
