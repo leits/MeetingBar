@@ -23,8 +23,6 @@ public class EventManager: ObservableObject {
     @Published public private(set) var calendars: [MBCalendar] = []
     @Published public private(set) var events: [MBEvent] = []
 
-    static weak var shared: EventManager?
-
     var provider: EventStore
     private let refreshInterval: TimeInterval
     private var cancellables = Set<AnyCancellable>()
@@ -45,7 +43,6 @@ public class EventManager: ObservableObject {
         await configureProvider(Defaults[.eventStoreProvider])
         setupPublishers()
         refreshSubject.send() // initial load
-        EventManager.shared = self
     }
 
     public func changeEventStoreProvider(_ newProvider: EventStoreProvider, withSignOut: Bool = false) async {

@@ -20,6 +20,7 @@ extension OIDServiceConfiguration: @unchecked @retroactive Sendable {}
 enum AuthError: Error {
     case notSignedIn
     case refreshFailed
+    case invalidResponse
 }
 
 extension OIDAuthState {
@@ -52,6 +53,7 @@ final class GCEventStore: NSObject,
     private static let kClientID     = "\(googleClientNumber).apps.googleusercontent.com"
     private static let kClientSecret = googleClientSecret
     private static let kRedirectURI  = "com.googleusercontent.apps.\(googleClientNumber):/oauthredirect"
+    private static let legacyKeychainName = googleAuthKeychainName
 
     // MARK: Stored properties
     @MainActor var currentAuthorizationFlow: OIDExternalUserAgentSession?
@@ -63,8 +65,6 @@ final class GCEventStore: NSObject,
     }
 
     private var authStates: [String: OIDAuthState] = [:]
-
-    private var signInTask: Task<Void, Error>?
     private var refreshTask: [String: Task<String, Error>] = [:]
 
     // Shared URLSession to leverage connection reuse
@@ -80,6 +80,7 @@ final class GCEventStore: NSObject,
     static let shared = GCEventStore()
     private override init() {
         super.init()
+        migrateLegacyAuthStateIfNeeded()
         restoreAllAuthStates()
     }
 
@@ -141,23 +142,26 @@ final class GCEventStore: NSObject,
     }
 
     func removeAccount(_ account: GoogleAccount) async {
-        guard let state = authStates[account.id] else { return }
-
-        let access  = state.lastTokenResponse?.accessToken
-        let refresh = state.lastTokenResponse?.refreshToken
-        await withTaskGroup(of: Void.self) { grp in
-            if let acc = access { grp.addTask { try? await self.revoke(token: acc) } }
-            if let ref = refresh { grp.addTask { try? await self.revoke(token: ref) } }
+        if let state = authStates[account.id] {
+            let access  = state.lastTokenResponse?.accessToken
+            let refresh = state.lastTokenResponse?.refreshToken
+            await withTaskGroup(of: Void.self) { grp in
+                if let acc = access { grp.addTask { try? await self.revoke(token: acc) } }
+                if let ref = refresh { grp.addTask { try? await self.revoke(token: ref) } }
+            }
+            authStates.removeValue(forKey: account.id)
         }
 
-        authStates.removeValue(forKey: account.id)
         accounts.removeAll { $0.id == account.id }
         Keychain.delete(for: accountKeychainKey(accountId: account.id))
+
+        let prefix = "\(account.id):"
+        Defaults[.selectedCalendarIDs] = Defaults[.selectedCalendarIDs].filter { !$0.hasPrefix(prefix) }
     }
 
     func signIn(forcePrompt: Bool = false) async throws {
         if !accounts.isEmpty { return }
-        _ = try await addAccount()
+        _ = try await addAccountWithForcePrompt(forcePrompt)
     }
 
     func signOut() async {
@@ -244,10 +248,58 @@ final class GCEventStore: NSObject,
         return "\(googleAuthKeychainName)_\(accountId)"
     }
 
-    private func ensureAccountSignedIn(_ accountId: String) async throws {
-        guard let state = authStates[accountId] else { throw AuthError.notSignedIn }
-        if state.isAuthorized, state.lastTokenResponse?.refreshToken != nil { return }
-        throw AuthError.notSignedIn
+    private func addAccountWithForcePrompt(_ forcePrompt: Bool) async throws -> GoogleAccount {
+        let accountId = UUID().uuidString
+
+        let config = try await withCheckedThrowingContinuation { cont in
+            OIDAuthorizationService.discoverConfiguration(forIssuer: URL(string: Self.kIssuer)!) { cfg, err in
+                if let cfg { cont.resume(returning: cfg) } else { cont.resume(throwing: err ?? NSError(domain: "GoogleSignIn", code: -1)) }
+            }
+        }
+
+        let scopes = [
+            "email",
+            "https://www.googleapis.com/auth/calendar.calendarlist.readonly",
+            "https://www.googleapis.com/auth/calendar.events.readonly"
+        ]
+
+        var extraParams: [String: String] = ["access_type": "offline"]
+        if forcePrompt {
+            extraParams["prompt"] = "consent"
+        }
+
+        let request = OIDAuthorizationRequest(
+            configuration: config,
+            clientId: Self.kClientID,
+            clientSecret: Self.kClientSecret,
+            scopes: scopes,
+            redirectURL: URL(string: Self.kRedirectURI)!,
+            responseType: OIDResponseTypeCode,
+            additionalParameters: extraParams
+        )
+
+        return try await withCheckedThrowingContinuation { cont in
+            pendingAuthAccountId = accountId
+            currentAuthorizationFlow = OIDAuthState.authState(byPresenting: request,
+                                                               externalUserAgent: self) { [weak self] state, error in
+                guard let self else { return }
+                self.pendingAuthAccountId = nil
+                self.currentAuthorizationFlow = nil
+
+                if let state, let email = state.userEmail {
+                    let account = GoogleAccount(id: accountId, email: email)
+                    self.authStates[accountId] = state
+                    state.stateChangeDelegate = self
+                    state.errorDelegate = self
+                    self.persistAuthState(for: account)
+                    self.accounts.append(account)
+                    sendNotification("Google Account connected", "\(email) is connected")
+                    cont.resume(returning: account)
+                } else {
+                    cont.resume(throwing: error ?? NSError(domain: "GoogleSignIn", code: 1))
+                }
+            }
+        }
     }
 
     private func validAccessToken(for accountId: String, forceRefresh: Bool = false) async throws -> String {
@@ -285,6 +337,29 @@ final class GCEventStore: NSObject,
 
         refreshTask[accountId] = task
         return try await task.value
+    }
+
+    // MARK: Legacy migration
+
+    private func migrateLegacyAuthStateIfNeeded() {
+        guard accounts.isEmpty,
+              let data = Keychain.load(for: Self.legacyKeychainName),
+              let state = try? NSKeyedUnarchiver.unarchivedObject(ofClass: OIDAuthState.self, from: data),
+              let email = state.userEmail
+        else { return }
+
+        let accountId = UUID().uuidString
+        let account = GoogleAccount(id: accountId, email: email)
+        let newKey = accountKeychainKey(accountId: accountId)
+
+        do {
+            let newData = try NSKeyedArchiver.archivedData(withRootObject: state, requiringSecureCoding: true)
+            Keychain.save(data: newData, for: newKey)
+            Keychain.delete(for: Self.legacyKeychainName)
+            accounts = [account]
+        } catch {
+            NSLog("Failed to migrate legacy auth state: \(error)")
+        }
     }
 
     // MARK: Keychain persistence
@@ -345,8 +420,12 @@ final class GCEventStore: NSObject,
             }
         }
 
-        let root = try JSONSerialization.jsonObject(with: data) as? [String: Any] ?? [:]
-        return root["items"] as! [[String: Any]]
+        guard let root = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let items = root["items"] as? [[String: Any]]
+        else {
+            throw AuthError.invalidResponse
+        }
+        return items
     }
 
     private func revoke(token: String) async throws {
@@ -364,13 +443,13 @@ final class GCEventStore: NSObject,
     // MARK: - OIDAuthState Delegates
 
     nonisolated func didChange(_ state: OIDAuthState) {
-        let accessToken = state.lastTokenResponse?.accessToken
+        let stateIdentity = ObjectIdentifier(state)
         Task { @MainActor in
-            if let account = self.accounts.first(where: { account in
-                guard let storedState = self.authStates[account.id] else { return false }
-                return storedState.lastTokenResponse?.accessToken == accessToken
-            }) {
-                self.persistAuthState(for: account)
+            for (accountId, storedState) in self.authStates where ObjectIdentifier(storedState) == stateIdentity {
+                if let account = self.accounts.first(where: { $0.id == accountId }) {
+                    self.persistAuthState(for: account)
+                }
+                break
             }
         }
     }
@@ -378,13 +457,13 @@ final class GCEventStore: NSObject,
     nonisolated func authState(_ state: OIDAuthState, didEncounterAuthorizationError error: Error) {
         let nsErr = error as NSError
         if nsErr.domain == OIDOAuthTokenErrorDomain {
-            let accessToken = state.lastTokenResponse?.accessToken
+            let stateIdentity = ObjectIdentifier(state)
             Task { @MainActor in
-                if let account = self.accounts.first(where: { account in
-                    guard let storedState = self.authStates[account.id] else { return false }
-                    return storedState.lastTokenResponse?.accessToken == accessToken
-                }) {
-                    await self.removeAccount(account)
+                for (accountId, storedState) in self.authStates where ObjectIdentifier(storedState) == stateIdentity {
+                    if let account = self.accounts.first(where: { $0.id == accountId }) {
+                        await self.removeAccount(account)
+                    }
+                    break
                 }
             }
         }

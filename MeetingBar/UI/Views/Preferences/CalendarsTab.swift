@@ -87,6 +87,7 @@ struct GoogleAccountsSection: View {
                     }
                     .buttonStyle(.plain)
                     .help("Remove \(account.email)")
+                    .accessibilityLabel("Remove Google account \(account.email)")
                 }
                 .padding(.vertical, 2)
             }
