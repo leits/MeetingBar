@@ -11,9 +11,26 @@ import AppKit
 import Defaults
 import Foundation
 
-let googleClientNumber = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_CLIENT_NUMBER") as! String
-let googleClientSecret = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_CLIENT_SECRET") as! String
-let googleAuthKeychainName = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_AUTH_KEYCHAIN_NAME") as! String
+let googleClientNumber: String = {
+    guard let value = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_CLIENT_NUMBER") as? String, !value.isEmpty else {
+        fatalError("GOOGLE_CLIENT_NUMBER not configured. Add it to your Xcode scheme's Environment Variables or Info.plist.")
+    }
+    return value
+}()
+
+let googleClientSecret: String = {
+    guard let value = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_CLIENT_SECRET") as? String, !value.isEmpty else {
+        fatalError("GOOGLE_CLIENT_SECRET not configured. Add it to your Xcode scheme's Environment Variables or Info.plist.")
+    }
+    return value
+}()
+
+let googleAuthKeychainName: String = {
+    guard let value = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_AUTH_KEYCHAIN_NAME") as? String, !value.isEmpty else {
+        fatalError("GOOGLE_AUTH_KEYCHAIN_NAME not configured. Add it to your Xcode scheme's Environment Variables or Info.plist.")
+    }
+    return value
+}()
 
 extension OIDServiceConfiguration: @unchecked @retroactive Sendable {}
 
