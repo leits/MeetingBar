@@ -11,26 +11,31 @@ import AppKit
 import Defaults
 import Foundation
 
-let googleClientNumber: String = {
-    guard let value = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_CLIENT_NUMBER") as? String, !value.isEmpty else {
-        fatalError("GOOGLE_CLIENT_NUMBER not configured. Add it to your Xcode scheme's Environment Variables or Info.plist.")
-    }
-    return value
+let googleClientNumber: String? = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_CLIENT_NUMBER") as? String
+let googleClientSecret: String? = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_CLIENT_SECRET") as? String
+let googleAuthKeychainName: String? = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_AUTH_KEYCHAIN_NAME") as? String
+
+let isMockMode: Bool = {
+    #if DEBUG
+    return ProcessInfo.processInfo.environment["MOCK_GOOGLE_CALENDAR"] == "1"
+    #else
+    return false
+    #endif
 }()
 
-let googleClientSecret: String = {
-    guard let value = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_CLIENT_SECRET") as? String, !value.isEmpty else {
-        fatalError("GOOGLE_CLIENT_SECRET not configured. Add it to your Xcode scheme's Environment Variables or Info.plist.")
-    }
-    return value
-}()
+enum MockError: Error, LocalizedError {
+    case credentialsMissing
+    case noMoreMockAccounts
 
-let googleAuthKeychainName: String = {
-    guard let value = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_AUTH_KEYCHAIN_NAME") as? String, !value.isEmpty else {
-        fatalError("GOOGLE_AUTH_KEYCHAIN_NAME not configured. Add it to your Xcode scheme's Environment Variables or Info.plist.")
+    var errorDescription: String? {
+        switch self {
+        case .credentialsMissing:
+            return "Google OAuth credentials not configured. Set GOOGLE_CLIENT_NUMBER and GOOGLE_CLIENT_SECRET in your Xcode scheme, or enable MOCK_GOOGLE_CALENDAR=1 for mock mode."
+        case .noMoreMockAccounts:
+            return "All mock accounts are already added."
+        }
     }
-    return value
-}()
+}
 
 extension OIDServiceConfiguration: @unchecked @retroactive Sendable {}
 
@@ -67,10 +72,10 @@ final class GCEventStore: NSObject,
 
     // MARK: Static constants
     private static let kIssuer       = "https://accounts.google.com"
-    private static let kClientID     = "\(googleClientNumber).apps.googleusercontent.com"
-    private static let kClientSecret = googleClientSecret
-    private static let kRedirectURI  = "com.googleusercontent.apps.\(googleClientNumber):/oauthredirect"
-    private static let legacyKeychainName = googleAuthKeychainName
+    private static let kClientID     = googleClientNumber.map { "\($0).apps.googleusercontent.com" } ?? ""
+    private static let kClientSecret = googleClientSecret ?? ""
+    private static let kRedirectURI  = googleClientNumber.map { "com.googleusercontent.apps.\($0):/oauthredirect" } ?? ""
+    private static let legacyKeychainName = googleAuthKeychainName ?? "MeetingBarGoogleAuth"
 
     // MARK: Stored properties
     @MainActor var currentAuthorizationFlow: OIDExternalUserAgentSession?
@@ -82,7 +87,10 @@ final class GCEventStore: NSObject,
     }
 
     private var authStates: [String: OIDAuthState] = [:]
+    private var mockAuthorizedAccounts: Set<String> = []
     private var refreshTask: [String: Task<String, Error>] = [:]
+    private var mockCalendarData: [String: [[String: Any]]] = [:]
+    private var mockEventData: [String: [[String: Any]]] = [:]
 
     // Shared URLSession to leverage connection reuse
     private static let session: URLSession = {
@@ -109,6 +117,14 @@ final class GCEventStore: NSObject,
     }
 
     func addAccount() async throws -> GoogleAccount {
+        if isMockMode {
+            return try await addMockAccount()
+        }
+
+        guard let redirectURL = URL(string: Self.kRedirectURI), !Self.kClientID.isEmpty else {
+            throw MockError.credentialsMissing
+        }
+
         let config = try await withCheckedThrowingContinuation { cont in
             OIDAuthorizationService.discoverConfiguration(forIssuer: URL(string: Self.kIssuer)!) { cfg, err in
                 if let cfg { cont.resume(returning: cfg) } else { cont.resume(throwing: err ?? NSError(domain: "GoogleSignIn", code: -1)) }
@@ -126,7 +142,7 @@ final class GCEventStore: NSObject,
             clientId: Self.kClientID,
             clientSecret: Self.kClientSecret,
             scopes: scopes,
-            redirectURL: URL(string: Self.kRedirectURI)!,
+            redirectURL: redirectURL,
             responseType: OIDResponseTypeCode,
             additionalParameters: ["access_type": "offline"]
         )
@@ -166,6 +182,75 @@ final class GCEventStore: NSObject,
         }
     }
 
+    private func addMockAccount() async throws -> GoogleAccount {
+        let mockEmails = ["personal@example.com", "work@example.com", "dev@example.com"]
+        let existingEmails = Set(accounts.map(\.email))
+        let availableEmails = mockEmails.filter { !existingEmails.contains($0) }
+
+        guard let email = availableEmails.first else {
+            throw MockError.noMoreMockAccounts
+        }
+
+        let accountId = UUID().uuidString
+        let account = GoogleAccount(id: accountId, email: email)
+
+        let mockCalendars: [[String: Any]] = [
+            ["id": "\(accountId):primary", "summary": "Primary", "backgroundColor": "#039BE5"],
+            ["id": "\(accountId):meetings", "summary": "Meetings", "backgroundColor": "#33B679"],
+            ["id": "\(accountId):personal", "summary": "Personal", "backgroundColor": "#F4511E"],
+            ["id": "\(accountId):tasks", "summary": "Tasks", "backgroundColor": "#9E69AF"]
+        ]
+
+        mockCalendarData[accountId] = mockCalendars
+
+        let now = ISO8601DateFormatter().string(from: Date())
+        let mockEvents: [[String: Any]] = [
+            [
+                "id": "\(accountId)-evt-1",
+                "summary": "Team Standup",
+                "status": "confirmed",
+                "updated": now,
+                "start": ["dateTime": "2024-01-15T09:00:00Z"],
+                "end": ["dateTime": "2024-01-15T09:30:00Z"],
+                "conferenceData": [
+                    "entryPoints": [
+                        ["entryPointType": "video", "uri": "https://meet.google.com/abc-def"]
+                    ]
+                ],
+                "attendees": [
+                    ["email": email, "displayName": "You", "responseStatus": "accepted", "optional": false, "self": true]
+                ]
+            ],
+            [
+                "id": "\(accountId)-evt-2",
+                "summary": "Lunch Break",
+                "status": "confirmed",
+                "updated": now,
+                "start": ["dateTime": "2024-01-15T12:00:00Z"],
+                "end": ["dateTime": "2024-01-15T13:00:00Z"]
+            ],
+            [
+                "id": "\(accountId)-evt-3",
+                "summary": "Sprint Planning",
+                "status": "tentative",
+                "updated": now,
+                "start": ["dateTime": "2024-01-16T10:00:00Z"],
+                "end": ["dateTime": "2024-01-16T11:00:00Z"],
+                "location": "Conference Room A",
+                "description": "Plan next sprint items"
+            ]
+        ]
+
+        mockEventData[accountId] = mockEvents
+
+        mockAuthorizedAccounts.insert(accountId)
+        accounts.append(account)
+
+        sendNotification("Mock: Google Account connected", "\(email) (mock)")
+
+        return account
+    }
+
     func removeAccount(_ account: GoogleAccount) async {
         let state = authStates.removeValue(forKey: account.id)
         accounts.removeAll { $0.id == account.id }
@@ -173,6 +258,9 @@ final class GCEventStore: NSObject,
 
         let prefix = "\(account.id):"
         Defaults[.selectedCalendarIDs] = Defaults[.selectedCalendarIDs].filter { !$0.hasPrefix(prefix) }
+
+        mockCalendarData.removeValue(forKey: account.id)
+        mockEventData.removeValue(forKey: account.id)
 
         if let state {
             let access  = state.lastTokenResponse?.accessToken
@@ -209,6 +297,21 @@ final class GCEventStore: NSObject,
         var allCalendars: [MBCalendar] = []
 
         for account in accounts {
+            if isMockMode {
+                let calendars = (mockCalendarData[account.id] ?? []).compactMap { item -> MBCalendar? in
+                    guard let title = item["summary"] as? String,
+                          let calendarID = item["id"] as? String,
+                          let backgroundColor = item["backgroundColor"] as? String else { return nil }
+                    return MBCalendar(title: title,
+                                      id: calendarID,
+                                      source: account.email,
+                                      email: account.email,
+                                      color: hexStringToUIColor(hex: backgroundColor))
+                }
+                allCalendars.append(contentsOf: calendars)
+                continue
+            }
+
             guard let state = authStates[account.id], state.isAuthorized else { continue }
 
             let url = URL(string: "https://www.googleapis.com/calendar/v3/users/me/calendarList?maxResults=250&showHidden=true")!
@@ -236,6 +339,13 @@ final class GCEventStore: NSObject,
                                                accountId: String,
                                                dateFrom: Date,
                                                dateTo: Date) async throws -> [MBEvent] {
+        if isMockMode {
+            let events = (mockEventData[accountId] ?? []).compactMap { item -> MBEvent? in
+                GCParser.event(from: item, calendar: calendar)
+            }
+            return events
+        }
+
         let iso = ISO8601DateFormatter()
         let timeMin = iso.string(from: dateFrom)
         let timeMax = iso.string(from: dateTo)
@@ -270,6 +380,14 @@ final class GCEventStore: NSObject,
         }
 
         for (accountId, accountCalendars) in calendarsByAccount {
+            if isMockMode {
+                for cal in accountCalendars {
+                    let ev = try await getCalendarEventsForDateRange(calendar: cal, accountId: accountId, dateFrom: from, dateTo: to)
+                    result.append(contentsOf: ev)
+                }
+                continue
+            }
+
             guard let state = authStates[accountId], state.isAuthorized else { continue }
 
             for cal in accountCalendars {
@@ -284,7 +402,7 @@ final class GCEventStore: NSObject,
     // MARK: - Private helpers
 
     private func accountKeychainKey(accountId: String) -> String {
-        return "\(googleAuthKeychainName)_\(accountId)"
+        return "\(googleAuthKeychainName ?? "MeetingBarGoogleAuth")_\(accountId)"
     }
 
     private func validAccessToken(for accountId: String, forceRefresh: Bool = false) async throws -> String {
