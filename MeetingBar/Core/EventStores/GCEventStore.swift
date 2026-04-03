@@ -130,7 +130,7 @@ final class GCEventStore: NSObject,
                     state.errorDelegate = self
                     self.persistAuthState(for: account)
                     self.accounts.append(account)
-                    sendNotification("Google Account connected", "\(email) is connected")
+                    sendNotification("notifications_google_account_connected_title".loco(), "notifications_google_account_connected_body".loco(email))
                     cont.resume(returning: account)
                 } else {
                     cont.resume(throwing: error ?? NSError(domain: "GoogleSignIn", code: 1))
@@ -141,11 +141,19 @@ final class GCEventStore: NSObject,
 
     func removeAccount(_ account: GoogleAccount) async {
         if let state = authStates[account.id] {
-            let access  = state.lastTokenResponse?.accessToken
+            let access = state.lastTokenResponse?.accessToken
             let refresh = state.lastTokenResponse?.refreshToken
             await withTaskGroup(of: Void.self) { grp in
-                if let acc = access { grp.addTask { try? await self.revoke(token: acc) } }
-                if let ref = refresh { grp.addTask { try? await self.revoke(token: ref) } }
+                if let acc = access {
+                    grp.addTask {
+                        do { try await self.revoke(token: acc) } catch { NSLog("GCEventStore: failed to revoke access token: \(error)") }
+                    }
+                }
+                if let ref = refresh {
+                    grp.addTask {
+                        do { try await self.revoke(token: ref) } catch { NSLog("GCEventStore: failed to revoke refresh token: \(error)") }
+                    }
+                }
             }
             authStates.removeValue(forKey: account.id)
         }

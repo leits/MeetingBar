@@ -356,3 +356,8 @@
 "preferences_calendars_add_google_account_sheet_description" = "You'll be redirected to Google to sign in and grant calendar access.";
 "preferences_calendars_waiting_for_authentication" = "Waiting for authentication...";
 "preferences_calendars_sign_in_with_google" = "Sign in with Google";
+
+// MARK: - Google Account Notifications
+
+"notifications_google_account_connected_title" = "Google Account connected";
+"notifications_google_account_connected_body" = "%@ is connected";
