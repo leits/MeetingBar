@@ -336,3 +336,23 @@
 
 "link_url_cant_open_title" = "Oops! Unable to open the link in %@";
 "link_url_cant_open_message" = "Ensure you have %@ installed, or open such links in a web browser from the preferences instead.";
+
+// MARK: - Multi-account Google Calendar
+
+"preferences_calendars_google_accounts_title" = "Google Accounts";
+"preferences_calendars_no_accounts_connected" = "No accounts connected. Add a Google account to get started.";
+"preferences_calendars_no_calendars_available" = "No calendars available. Try refreshing or check account access.";
+"preferences_calendars_refresh" = "Refresh";
+"preferences_calendars_no_google_accounts_connected" = "No Google accounts connected";
+"preferences_calendars_account_connected" = "Connected";
+"preferences_calendars_remove_account_help" = "Remove %@";
+"preferences_calendars_remove_account_label" = "Remove Google account %@";
+"preferences_calendars_add_google_account" = "Add Google Account";
+"preferences_calendars_remove_account_dialog_title" = "Remove Account";
+"preferences_calendars_remove_account_action" = "Remove %@";
+"preferences_calendars_cancel" = "Cancel";
+"preferences_calendars_remove_account_message" = "This will remove %@ and all its calendars from MeetingBar. You can add it back later.";
+"preferences_calendars_add_google_account_sheet_title" = "Add Google Account";
+"preferences_calendars_add_google_account_sheet_description" = "You'll be redirected to Google to sign in and grant calendar access.";
+"preferences_calendars_waiting_for_authentication" = "Waiting for authentication...";
+"preferences_calendars_sign_in_with_google" = "Sign in with Google";

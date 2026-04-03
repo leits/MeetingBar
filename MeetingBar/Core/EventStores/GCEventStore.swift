@@ -115,7 +115,7 @@ final class GCEventStore: NSObject,
             additionalParameters: ["access_type": "offline"]
         )
 
-        let account = try await withCheckedThrowingContinuation { cont in
+        return try await withCheckedThrowingContinuation { cont in
             pendingAuthAccountId = accountId
             currentAuthorizationFlow = OIDAuthState.authState(byPresenting: request,
                                                                externalUserAgent: self) { [weak self] state, error in
@@ -137,8 +137,6 @@ final class GCEventStore: NSObject,
                 }
             }
         }
-
-        return account
     }
 
     func removeAccount(_ account: GoogleAccount) async {
@@ -159,9 +157,9 @@ final class GCEventStore: NSObject,
         Defaults[.selectedCalendarIDs] = Defaults[.selectedCalendarIDs].filter { !$0.hasPrefix(prefix) }
     }
 
-    func signIn(forcePrompt: Bool = false) async throws {
+    func signIn(forcePrompt _: Bool) async throws {
         if !accounts.isEmpty { return }
-        _ = try await addAccountWithForcePrompt(forcePrompt)
+        _ = try await addAccount()
     }
 
     func signOut() async {
@@ -207,7 +205,10 @@ final class GCEventStore: NSObject,
         let timeMin = iso.string(from: dateFrom)
         let timeMax = iso.string(from: dateTo)
 
-        let originalCalendarId = String(calendar.id.dropFirst("\(accountId):".count))
+        let prefix = "\(accountId):"
+        guard calendar.id.hasPrefix(prefix) else { return [] }
+        let originalCalendarId = String(calendar.id.dropFirst(prefix.count))
+
         var comps = URLComponents(string: "https://www.googleapis.com/calendar/v3/calendars/\(originalCalendarId)/events")!
         comps.queryItems = [
             .init(name: "singleEvents", value: "true"),
@@ -227,7 +228,10 @@ final class GCEventStore: NSObject,
         var result: [MBEvent] = []
 
         let calendarsByAccount = Dictionary(grouping: calendars) { calendar in
-            calendar.id.components(separatedBy: ":").first ?? ""
+            if let idx = calendar.id.firstIndex(of: ":") {
+                return String(calendar.id[..<idx])
+            }
+            return ""
         }
 
         for (accountId, accountCalendars) in calendarsByAccount {
@@ -246,60 +250,6 @@ final class GCEventStore: NSObject,
 
     private func accountKeychainKey(accountId: String) -> String {
         return "\(googleAuthKeychainName)_\(accountId)"
-    }
-
-    private func addAccountWithForcePrompt(_ forcePrompt: Bool) async throws -> GoogleAccount {
-        let accountId = UUID().uuidString
-
-        let config = try await withCheckedThrowingContinuation { cont in
-            OIDAuthorizationService.discoverConfiguration(forIssuer: URL(string: Self.kIssuer)!) { cfg, err in
-                if let cfg { cont.resume(returning: cfg) } else { cont.resume(throwing: err ?? NSError(domain: "GoogleSignIn", code: -1)) }
-            }
-        }
-
-        let scopes = [
-            "email",
-            "https://www.googleapis.com/auth/calendar.calendarlist.readonly",
-            "https://www.googleapis.com/auth/calendar.events.readonly"
-        ]
-
-        var extraParams: [String: String] = ["access_type": "offline"]
-        if forcePrompt {
-            extraParams["prompt"] = "consent"
-        }
-
-        let request = OIDAuthorizationRequest(
-            configuration: config,
-            clientId: Self.kClientID,
-            clientSecret: Self.kClientSecret,
-            scopes: scopes,
-            redirectURL: URL(string: Self.kRedirectURI)!,
-            responseType: OIDResponseTypeCode,
-            additionalParameters: extraParams
-        )
-
-        return try await withCheckedThrowingContinuation { cont in
-            pendingAuthAccountId = accountId
-            currentAuthorizationFlow = OIDAuthState.authState(byPresenting: request,
-                                                               externalUserAgent: self) { [weak self] state, error in
-                guard let self else { return }
-                self.pendingAuthAccountId = nil
-                self.currentAuthorizationFlow = nil
-
-                if let state, let email = state.userEmail {
-                    let account = GoogleAccount(id: accountId, email: email)
-                    self.authStates[accountId] = state
-                    state.stateChangeDelegate = self
-                    state.errorDelegate = self
-                    self.persistAuthState(for: account)
-                    self.accounts.append(account)
-                    sendNotification("Google Account connected", "\(email) is connected")
-                    cont.resume(returning: account)
-                } else {
-                    cont.resume(throwing: error ?? NSError(domain: "GoogleSignIn", code: 1))
-                }
-            }
-        }
     }
 
     private func validAccessToken(for accountId: String, forceRefresh: Bool = false) async throws -> String {
