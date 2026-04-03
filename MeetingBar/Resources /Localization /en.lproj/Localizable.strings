@@ -361,3 +361,4 @@
 
 "notifications_google_account_connected_title" = "Google Account connected";
 "notifications_google_account_connected_body" = "%@ is connected";
+"notifications_google_account_refreshed_body" = "%@ calendars refreshed";

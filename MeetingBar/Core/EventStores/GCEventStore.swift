@@ -82,6 +82,7 @@ final class GCEventStore: NSObject,
         super.init()
         migrateLegacyAuthStateIfNeeded()
         restoreAllAuthStates()
+        pruneAccountsMissingAuthState()
     }
 
     // MARK: Public API
@@ -91,8 +92,6 @@ final class GCEventStore: NSObject,
     }
 
     func addAccount() async throws -> GoogleAccount {
-        let accountId = UUID().uuidString
-
         let config = try await withCheckedThrowingContinuation { cont in
             OIDAuthorizationService.discoverConfiguration(forIssuer: URL(string: Self.kIssuer)!) { cfg, err in
                 if let cfg { cont.resume(returning: cfg) } else { cont.resume(throwing: err ?? NSError(domain: "GoogleSignIn", code: -1)) }
@@ -116,7 +115,7 @@ final class GCEventStore: NSObject,
         )
 
         return try await withCheckedThrowingContinuation { cont in
-            pendingAuthAccountId = accountId
+            pendingAuthAccountId = UUID().uuidString
             currentAuthorizationFlow = OIDAuthState.authState(byPresenting: request,
                                                                externalUserAgent: self) { [weak self] state, error in
                 guard let self else { return }
@@ -124,6 +123,17 @@ final class GCEventStore: NSObject,
                 self.currentAuthorizationFlow = nil
 
                 if let state, let email = state.userEmail {
+                    if let existing = self.accounts.first(where: { $0.email == email }) {
+                        self.authStates[existing.id] = state
+                        state.stateChangeDelegate = self
+                        state.errorDelegate = self
+                        self.persistAuthState(for: existing)
+                        sendNotification("notifications_google_account_connected_title".loco(), "notifications_google_account_refreshed_body".loco(email))
+                        cont.resume(returning: existing)
+                        return
+                    }
+
+                    let accountId = UUID().uuidString
                     let account = GoogleAccount(id: accountId, email: email)
                     self.authStates[accountId] = state
                     state.stateChangeDelegate = self
@@ -140,8 +150,15 @@ final class GCEventStore: NSObject,
     }
 
     func removeAccount(_ account: GoogleAccount) async {
-        if let state = authStates[account.id] {
-            let access = state.lastTokenResponse?.accessToken
+        let state = authStates.removeValue(forKey: account.id)
+        accounts.removeAll { $0.id == account.id }
+        Keychain.delete(for: accountKeychainKey(accountId: account.id))
+
+        let prefix = "\(account.id):"
+        Defaults[.selectedCalendarIDs] = Defaults[.selectedCalendarIDs].filter { !$0.hasPrefix(prefix) }
+
+        if let state {
+            let access  = state.lastTokenResponse?.accessToken
             let refresh = state.lastTokenResponse?.refreshToken
             await withTaskGroup(of: Void.self) { grp in
                 if let acc = access {
@@ -155,14 +172,7 @@ final class GCEventStore: NSObject,
                     }
                 }
             }
-            authStates.removeValue(forKey: account.id)
         }
-
-        accounts.removeAll { $0.id == account.id }
-        Keychain.delete(for: accountKeychainKey(accountId: account.id))
-
-        let prefix = "\(account.id):"
-        Defaults[.selectedCalendarIDs] = Defaults[.selectedCalendarIDs].filter { !$0.hasPrefix(prefix) }
     }
 
     func signIn(forcePrompt _: Bool) async throws {
@@ -348,6 +358,18 @@ final class GCEventStore: NSObject,
                 NSLog("Error unarchiving OIDAuthState: \(error)")
             }
         }
+    }
+
+    private func pruneAccountsMissingAuthState() {
+        let validIds = Set(authStates.keys)
+        let broken = accounts.filter { !validIds.contains($0.id) }
+        guard !broken.isEmpty else { return }
+
+        for account in broken {
+            NSLog("GCEventStore: pruning account %@ with missing auth state", account.email)
+            Keychain.delete(for: accountKeychainKey(accountId: account.id))
+        }
+        accounts = accounts.filter { validIds.contains($0.id) }
     }
 
     // MARK: Networking helper

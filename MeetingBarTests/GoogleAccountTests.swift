@@ -97,7 +97,7 @@ final class MultiAccountCalendarTests: BaseTestCase {
         XCTAssertEqual(allIds.count, Set(allIds).count)
     }
 
-    func test_selectedCalendarIDsCleanedOnAccountRemoval() {
+    func test_selectedCalendarIDsCleanedOnAccountRemoval() async {
         let accountId = "acc-to-remove"
         let keptAccountId = "acc-kept"
 
@@ -109,14 +109,16 @@ final class MultiAccountCalendarTests: BaseTestCase {
         ]
 
         let account = GoogleAccount(id: accountId, email: "remove@example.com")
-        let prefix = "\(account.id):"
-        Defaults[.selectedCalendarIDs] = Defaults[.selectedCalendarIDs].filter { !$0.hasPrefix(prefix) }
+        Defaults[.googleAccounts] = [account]
+
+        await GCEventStore.shared.removeAccount(account)
 
         XCTAssertEqual(Defaults[.selectedCalendarIDs].count, 2)
         XCTAssertTrue(Defaults[.selectedCalendarIDs].contains("\(keptAccountId):primary"))
         XCTAssertTrue(Defaults[.selectedCalendarIDs].contains("unprefixed-calendar"))
         XCTAssertFalse(Defaults[.selectedCalendarIDs].contains("\(accountId):primary"))
         XCTAssertFalse(Defaults[.selectedCalendarIDs].contains("\(accountId):meetings"))
+        XCTAssertTrue(Defaults[.googleAccounts].isEmpty)
     }
 
     func test_calendarIdExtractionWithFirstColon() {
