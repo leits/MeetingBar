@@ -11,13 +11,29 @@ import AppKit
 import Defaults
 import Foundation
 
-let googleClientNumber: String? = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_CLIENT_NUMBER") as? String
-let googleClientSecret: String? = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_CLIENT_SECRET") as? String
-let googleAuthKeychainName: String? = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_AUTH_KEYCHAIN_NAME") as? String
+let googleClientNumber: String? = {
+    guard let value = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_CLIENT_NUMBER") as? String,
+          !value.isEmpty,
+          !value.hasPrefix("$(") else { return nil }
+    return value
+}()
+let googleClientSecret: String? = {
+    guard let value = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_CLIENT_SECRET") as? String,
+          !value.isEmpty,
+          !value.hasPrefix("$(") else { return nil }
+    return value
+}()
+let googleAuthKeychainName: String? = {
+    guard let value = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_AUTH_KEYCHAIN_NAME") as? String,
+          !value.isEmpty,
+          !value.hasPrefix("$(") else { return nil }
+    return value
+}()
 
 let isMockMode: Bool = {
     #if DEBUG
-    return ProcessInfo.processInfo.environment["MOCK_GOOGLE_CALENDAR"] == "1"
+    if ProcessInfo.processInfo.environment["MOCK_GOOGLE_CALENDAR"] == "1" { return true }
+    return googleClientNumber == nil || googleClientSecret == nil
     #else
     return false
     #endif
