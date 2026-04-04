@@ -604,60 +604,14 @@ final class GCEventStore: NSObject,
                 return nil
             }
 
-            let formatter = ISO8601DateFormatter()
-            let lastModifiedDate = formatter.date(from: item["updated"] as? String ?? "")
+            let lastModifiedDate = ISO8601DateFormatter().date(from: item["updated"] as? String ?? "")
             let title = item["summary"] as? String
-            var status: MBEventStatus
-            switch item["status"] as? String {
-            case "confirmed":
-                status = .confirmed
-            case "tentative":
-                status = .tentative
-            case "cancelled":
-                status = .canceled
-            default:
-                status = .none
-            }
-
+            let status = parseStatus(item["status"] as? String)
             let notes = item["description"] as? String
             let location = item["location"] as? String
-
-            var url: URL?
-            if let conferenceData = item["conferenceData"] as? [String: Any] {
-                if let entryPoints = conferenceData["entryPoints"] as? [[String: String]] {
-                    if let videoEntryPoint = entryPoints.first(where: { $0["entryPointType"] == "video" }) {
-                        url = URL(string: videoEntryPoint["uri"] ?? "")
-                    }
-                }
-            }
-
-            let organizerRaw = item["organizer"] as? [String: String]
-            let organizer = MBEventOrganizer(email: organizerRaw?["email"], name: organizerRaw?["name"])
-
-            var attendees: [MBEventAttendee] = []
-            let rawAttendees = item["attendees"] as? [[String: Any]] ?? []
-            for jsonAttendee in rawAttendees {
-                let email = jsonAttendee["email"] as? String
-                let name = jsonAttendee["displayName"] as? String
-                let optional = jsonAttendee["optional"] as? Bool ?? false
-                let isCurrentUser = jsonAttendee["self"] as? Bool ?? false
-
-                var attendeeStatus: MBEventAttendeeStatus
-                switch jsonAttendee["responseStatus"] as? String {
-                case "accepted":
-                    attendeeStatus = .accepted
-                case "declined":
-                    attendeeStatus = .declined
-                case "tentative":
-                    attendeeStatus = .tentative
-                case "needsAction":
-                    attendeeStatus = .pending
-                default:
-                    attendeeStatus = .unknown
-                }
-                let attendee = MBEventAttendee(email: email, name: name, status: attendeeStatus, optional: optional, isCurrentUser: isCurrentUser)
-                attendees.append(attendee)
-            }
+            let url = parseVideoURL(item["conferenceData"] as? [String: Any])
+            let organizer = parseOrganizer(item["organizer"] as? [String: String])
+            let attendees = parseAttendees(item["attendees"] as? [[String: Any]])
 
             guard let itemStart = item["start"] as? [String: String],
                   let itemEnd = item["end"] as? [String: String]
@@ -666,25 +620,7 @@ final class GCEventStore: NSObject,
                 return nil
             }
 
-            let startDate: Date
-            let endDate: Date
-            let isAllDay: Bool
-
-            if let startDateTime = itemStart["dateTime"],
-               let endDateTime = itemEnd["dateTime"],
-               let parsedStart = ISO8601DateFormatter().date(from: startDateTime),
-               let parsedEnd = ISO8601DateFormatter().date(from: endDateTime) {
-                startDate = parsedStart
-                endDate = parsedEnd
-                isAllDay = false
-            } else if let startDateStr = itemStart["date"],
-                      let endDateStr = itemEnd["date"],
-                      let parsedStart = DateFormatter.yyyyMMdd.date(from: startDateStr),
-                      let parsedEnd = DateFormatter.yyyyMMdd.date(from: endDateStr) {
-                startDate = parsedStart
-                endDate = parsedEnd
-                isAllDay = true
-            } else {
+            guard let dates = parseDates(itemStart, itemEnd) else {
                 NSLog("GCParser: invalid date format for event \(eventID)")
                 return nil
             }
@@ -701,12 +637,75 @@ final class GCEventStore: NSObject,
                 url: url,
                 organizer: organizer,
                 attendees: attendees,
-                startDate: startDate,
-                endDate: endDate,
-                isAllDay: isAllDay,
+                startDate: dates.start,
+                endDate: dates.end,
+                isAllDay: dates.isAllDay,
                 recurrent: recurrent,
                 calendar: calendar
             )
         }
     }
+}
+
+private func parseStatus(_ raw: String?) -> MBEventStatus {
+    switch raw {
+    case "confirmed": return .confirmed
+    case "tentative": return .tentative
+    case "cancelled": return .canceled
+    default: return .none
+    }
+}
+
+private func parseVideoURL(_ conferenceData: [String: Any]?) -> URL? {
+    guard let entryPoints = conferenceData?["entryPoints"] as? [[String: String]] else { return nil }
+    guard let video = entryPoints.first(where: { $0["entryPointType"] == "video" }) else { return nil }
+    return URL(string: video["uri"] ?? "")
+}
+
+private func parseOrganizer(_ raw: [String: String]?) -> MBEventOrganizer {
+    MBEventOrganizer(email: raw?["email"], name: raw?["name"])
+}
+
+private func parseAttendees(_ raw: [[String: Any]]?) -> [MBEventAttendee] {
+    guard let raw else { return [] }
+    return raw.compactMap { json -> MBEventAttendee? in
+        guard let email = json["email"] as? String else { return nil }
+        let name = json["displayName"] as? String
+        let optional = json["optional"] as? Bool ?? false
+        let isCurrentUser = json["self"] as? Bool ?? false
+        let status = parseAttendeeStatus(json["responseStatus"] as? String)
+        return MBEventAttendee(email: email, name: name, status: status, optional: optional, isCurrentUser: isCurrentUser)
+    }
+}
+
+private func parseAttendeeStatus(_ raw: String?) -> MBEventAttendeeStatus {
+    switch raw {
+    case "accepted": return .accepted
+    case "declined": return .declined
+    case "tentative": return .tentative
+    case "needsAction": return .pending
+    default: return .unknown
+    }
+}
+
+private struct ParsedDates {
+    let start: Date
+    let end: Date
+    let isAllDay: Bool
+}
+
+private func parseDates(_ start: [String: String], _ end: [String: String]) -> ParsedDates? {
+    if let startStr = start["dateTime"],
+       let endStr = end["dateTime"],
+       let parsedStart = ISO8601DateFormatter().date(from: startStr),
+       let parsedEnd = ISO8601DateFormatter().date(from: endStr) {
+        return ParsedDates(start: parsedStart, end: parsedEnd, isAllDay: false)
+    }
+    if let startStr = start["date"],
+       let endStr = end["date"],
+       let parsedStart = DateFormatter.yyyyMMdd.date(from: startStr),
+       let parsedEnd = DateFormatter.yyyyMMdd.date(from: endStr) {
+        return ParsedDates(start: parsedStart, end: parsedEnd, isAllDay: true)
+    }
+    return nil
 }
