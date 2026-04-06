@@ -219,15 +219,18 @@ final class GCEventStore: NSObject,
 
         mockCalendarData[accountId] = mockCalendars
 
-        let now = ISO8601DateFormatter().string(from: Date())
+        let iso = ISO8601DateFormatter()
+        let today = Calendar.current.startOfDay(for: Date())
+        let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today)!
+        let now = iso.string(from: Date())
         let mockEvents: [[String: Any]] = [
             [
                 "id": "\(accountId)-evt-1",
                 "summary": "Team Standup",
                 "status": "confirmed",
                 "updated": now,
-                "start": ["dateTime": "2024-01-15T09:00:00Z"],
-                "end": ["dateTime": "2024-01-15T09:30:00Z"],
+                "start": ["dateTime": iso.string(from: today.addingTimeInterval(9 * 3600))],
+                "end": ["dateTime": iso.string(from: today.addingTimeInterval(9.5 * 3600))],
                 "conferenceData": [
                     "entryPoints": [
                         ["entryPointType": "video", "uri": "https://meet.google.com/abc-def"]
@@ -242,16 +245,16 @@ final class GCEventStore: NSObject,
                 "summary": "Lunch Break",
                 "status": "confirmed",
                 "updated": now,
-                "start": ["dateTime": "2024-01-15T12:00:00Z"],
-                "end": ["dateTime": "2024-01-15T13:00:00Z"]
+                "start": ["dateTime": iso.string(from: today.addingTimeInterval(12 * 3600))],
+                "end": ["dateTime": iso.string(from: today.addingTimeInterval(13 * 3600))]
             ],
             [
                 "id": "\(accountId)-evt-3",
                 "summary": "Sprint Planning",
                 "status": "tentative",
                 "updated": now,
-                "start": ["dateTime": "2024-01-16T10:00:00Z"],
-                "end": ["dateTime": "2024-01-16T11:00:00Z"],
+                "start": ["dateTime": iso.string(from: tomorrow.addingTimeInterval(10 * 3600))],
+                "end": ["dateTime": iso.string(from: tomorrow.addingTimeInterval(11 * 3600))],
                 "location": "Conference Room A",
                 "description": "Plan next sprint items"
             ]
