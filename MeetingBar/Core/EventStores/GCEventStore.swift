@@ -156,7 +156,7 @@ final class GCEventStore: NSObject,
 
         // Revoke tokens in parallel
         let access  = state.lastTokenResponse?.accessToken
-        let refresh = state.lastTokenResponse?.refreshToken
+        let refresh = state.refreshToken
         await withTaskGroup(of: Void.self) { grp in
             if let acc = access { grp.addTask { try? await self.revoke(token: acc) } }
             if let ref = refresh { grp.addTask { try? await self.revoke(token: ref) } }
@@ -221,13 +221,13 @@ final class GCEventStore: NSObject,
     // MARK: - Private helpers
     private func ensureSignedIn() async throws {
         if authState?.isAuthorized == true,
-           authState?.lastTokenResponse?.refreshToken != nil {
+           authState?.refreshToken != nil {
             return
         }
 
         if let running = signInTask { return try await running.value }
 
-        let forceConsent = authState?.lastTokenResponse?.refreshToken == nil
+        let forceConsent = authState?.refreshToken == nil
 
         let task = Task {
             try await signIn(forcePrompt: forceConsent)
