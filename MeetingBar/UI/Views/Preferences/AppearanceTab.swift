@@ -149,6 +149,7 @@ struct StatusBarSection: View {
     @Default(.showEventMaxTimeUntilEventThreshold) var showEventMaxTimeUntilEventThreshold
     @Default(.showEventMaxTimeUntilEventEnabled) var showEventMaxTimeUntilEventEnabled
     @Default(.ongoingEventVisibility) var ongoingEventVisibility
+    @Default(.timeBasedStatusBarColor) var timeBasedStatusBarColor
 
     var body: some View {
         GroupBox(label: Label("preferences_appearance_status_bar_title".loco(), systemImage: "menubar.rectangle")) {
@@ -236,6 +237,11 @@ struct StatusBarSection: View {
                     )
                     .disabled(!showEventMaxTimeUntilEventEnabled)
                 }
+                Toggle(
+                    "preferences_appearance_status_bar_time_color_toggle".loco(),
+                    isOn: $timeBasedStatusBarColor
+                )
+
                 Picker("preferences_appearance_status_bar_ongoing_title".loco(), selection: $ongoingEventVisibility) {
                     Text("preferences_appearance_status_bar_ongoing_time_immediate_value".loco()).tag(
                         OngoingEventVisibility.hideImmediateAfter)
