@@ -93,8 +93,8 @@ final class GCEventStore: NSObject,
     // MARK: Public API
 
     func signIn(forcePrompt: Bool = false) async throws {
-        // if already authorised, nothing to do
-        if authState?.isAuthorized == true { return }
+        // Skip sign-in only for reusable sessions and when consent is not forced.
+        if Self.shouldSkipSignIn(forcePrompt: forcePrompt, state: authState) { return }
 
         // discover configuration for Google issuer
         let config = try await withCheckedThrowingContinuation { cont in
@@ -234,6 +234,11 @@ final class GCEventStore: NSObject,
         signInTask = task
         defer { signInTask = nil }
         try await task.value
+    }
+
+    nonisolated static func shouldSkipSignIn(forcePrompt: Bool, state: OIDAuthState?) -> Bool {
+        guard !forcePrompt, let state else { return false }
+        return state.isAuthorized && state.refreshToken != nil
     }
 
 #if DEBUG

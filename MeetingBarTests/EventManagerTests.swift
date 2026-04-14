@@ -200,6 +200,15 @@ final class RefreshTriggerTests: BaseTestCase {
 
 @MainActor
 final class GCEventStoreCoverageTests: BaseTestCase {
+    func testSignInSkipLogicHonorsForcePrompt() {
+        let authorizedWithRefresh = makeAuthState(refreshToken: "refresh-token-1")
+        XCTAssertTrue(GCEventStore.shouldSkipSignIn(forcePrompt: false, state: authorizedWithRefresh))
+        XCTAssertFalse(GCEventStore.shouldSkipSignIn(forcePrompt: true, state: authorizedWithRefresh))
+
+        let authorizedWithoutRefresh = makeAuthState(refreshToken: nil)
+        XCTAssertFalse(GCEventStore.shouldSkipSignIn(forcePrompt: false, state: authorizedWithoutRefresh))
+    }
+
     func testEnsureSignedInUsesRefreshTokenSessionChecks() async throws {
         let store = GCEventStore.shared
         let originalState = store._test_getAuthState()
