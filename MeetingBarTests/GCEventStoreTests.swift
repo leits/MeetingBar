@@ -17,11 +17,7 @@ final class GCEventStoreTests: XCTestCase {
         let refreshRequest = try XCTUnwrap(authState.tokenRefreshRequest())
         let refreshedTokenResponse = OIDTokenResponse(
             request: refreshRequest,
-            parameters: [
-                "access_token": "access-token-2",
-                "token_type": "Bearer",
-                "expires_in": 3600
-            ]
+            parameters: tokenParameters(accessToken: "access-token-2", refreshToken: nil)
         )
         authState.update(with: refreshedTokenResponse, error: nil)
 
@@ -59,21 +55,27 @@ final class GCEventStoreTests: XCTestCase {
         let response = OIDAuthorizationResponse(
             request: request,
             parameters: [
-                "code": "authorization-code"
+                "code": "authorization-code" as NSString
             ]
         )
         let tokenRequest = try XCTUnwrap(response.tokenExchangeRequest())
 
-        var tokenParameters: [String: NSObject & NSCopying] = [
+        let tokenParameters = tokenParameters(accessToken: "access-token-1", refreshToken: refreshToken)
+
+        let tokenResponse = OIDTokenResponse(request: tokenRequest, parameters: tokenParameters)
+        return OIDAuthState(authorizationResponse: response, tokenResponse: tokenResponse)
+    }
+
+    private func tokenParameters(accessToken: String, refreshToken: String?) -> [String: NSObject & NSCopying] {
+        var parameters: [String: NSObject & NSCopying] = [
             "access_token": "access-token-1" as NSString,
             "token_type": "Bearer" as NSString,
             "expires_in": 3600 as NSNumber
         ]
         if let refreshToken {
-            tokenParameters["refresh_token"] = refreshToken as NSString
+            parameters["refresh_token"] = refreshToken as NSString
         }
-
-        let tokenResponse = OIDTokenResponse(request: tokenRequest, parameters: tokenParameters)
-        return OIDAuthState(authorizationResponse: response, tokenResponse: tokenResponse)
+        parameters["access_token"] = accessToken as NSString
+        return parameters
     }
 }

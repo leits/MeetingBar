@@ -236,16 +236,16 @@ final class GCEventStore: NSObject,
         try await task.value
     }
 
-    static func refreshToken(in state: OIDAuthState) -> String? {
+    nonisolated static func refreshToken(in state: OIDAuthState) -> String? {
         state.refreshToken
     }
 
-    static func hasAuthorizedSession(_ state: OIDAuthState?) -> Bool {
+    nonisolated static func hasAuthorizedSession(_ state: OIDAuthState?) -> Bool {
         guard let state else { return false }
         return state.isAuthorized && refreshToken(in: state) != nil
     }
 
-    static func shouldForceConsent(_ state: OIDAuthState?) -> Bool {
+    nonisolated static func shouldForceConsent(_ state: OIDAuthState?) -> Bool {
         guard let state else { return true }
         return refreshToken(in: state) == nil
     }
