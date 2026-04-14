@@ -156,7 +156,7 @@ final class GCEventStore: NSObject,
 
         // Revoke tokens in parallel
         let access  = state.lastTokenResponse?.accessToken
-        let refresh = Self.refreshToken(in: state)
+        let refresh = state.refreshToken
         await withTaskGroup(of: Void.self) { grp in
             if let acc = access { grp.addTask { try? await self.revoke(token: acc) } }
             if let ref = refresh { grp.addTask { try? await self.revoke(token: ref) } }
@@ -220,13 +220,13 @@ final class GCEventStore: NSObject,
 
     // MARK: - Private helpers
     private func ensureSignedIn() async throws {
-        if Self.hasAuthorizedSession(authState) {
+        if authState?.isAuthorized == true,
+           authState?.refreshToken != nil {
             return
         }
 
+        let forceConsent = authState?.refreshToken == nil
         if let running = signInTask { return try await running.value }
-
-        let forceConsent = Self.shouldForceConsent(authState)
 
         let task = Task {
             try await signIn(forcePrompt: forceConsent)
@@ -234,20 +234,6 @@ final class GCEventStore: NSObject,
         signInTask = task
         defer { signInTask = nil }
         try await task.value
-    }
-
-    nonisolated static func refreshToken(in state: OIDAuthState) -> String? {
-        state.refreshToken
-    }
-
-    nonisolated static func hasAuthorizedSession(_ state: OIDAuthState?) -> Bool {
-        guard let state else { return false }
-        return state.isAuthorized && refreshToken(in: state) != nil
-    }
-
-    nonisolated static func shouldForceConsent(_ state: OIDAuthState?) -> Bool {
-        guard let state else { return true }
-        return refreshToken(in: state) == nil
     }
 
 #if DEBUG
@@ -262,6 +248,10 @@ final class GCEventStore: NSObject,
 
     func _test_ensureSignedIn() async throws {
         try await ensureSignedIn()
+    }
+
+    func _test_setSignInTask(_ task: Task<Void, Error>?) {
+        signInTask = task
     }
 #endif
 
