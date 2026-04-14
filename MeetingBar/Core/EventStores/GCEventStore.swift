@@ -250,6 +250,21 @@ final class GCEventStore: NSObject,
         return refreshToken(in: state) == nil
     }
 
+#if DEBUG
+    func _test_getAuthState() -> OIDAuthState? {
+        authState
+    }
+
+    func _test_setAuthState(_ state: OIDAuthState?) {
+        authState = state
+        userEmail = state?.userEmail
+    }
+
+    func _test_ensureSignedIn() async throws {
+        try await ensureSignedIn()
+    }
+#endif
+
     private func validAccessToken(forceRefresh: Bool = false) async throws -> String {
         guard let state = authState else { throw AuthError.notSignedIn }
 
