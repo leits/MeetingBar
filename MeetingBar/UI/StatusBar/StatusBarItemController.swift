@@ -549,9 +549,9 @@ func countdownColor(for event: MBEvent) -> NSColor {
         timeRemaining = event.startDate.timeIntervalSinceNow
     }
 
-    if timeRemaining > 15 * 60 {
+    if timeRemaining >= 15 * 60 {
         return .systemGreen
-    } else if timeRemaining > 5 * 60 {
+    } else if timeRemaining >= 5 * 60 {
         return .systemYellow
     } else {
         return .systemRed
