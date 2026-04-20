@@ -33,7 +33,7 @@ struct ChangelogView: View {
                             Text("⚡ Quick Actions: ")
                             Text("  - Show/hide meeting title in status bar")
                             Text("  - Open meeting from clipboard")
-                            Text("• Customizable appereance for events without meeting links")
+                            Text("• Customizable appearance for events without meeting links")
                             Text("• Localization")
                             Text("• Create meetings in Jam")
                             Text("• Open event in Fantastical from event submenu")

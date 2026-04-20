@@ -8,7 +8,7 @@ A few sentences describing the overall goals of the pull request's commits.
 ## Checklist
 - [ ] Localized
 - [ ] Added to changelog:
-  - [ ] [Changelog View](https://github.com/leits/MeetingBar/blob/master/MeetingBar/Views/Changelog/Changelog.swift)
+  - [ ] [Changelog View](https://github.com/leits/MeetingBar/blob/master/MeetingBar/UI/Views/Changelog/Changelog.swift)
   - [ ] [CHANGELOG.md](https://github.com/leits/MeetingBar/blob/master/CHANGELOG.md)
 
 ### Steps to Test or Reproduce

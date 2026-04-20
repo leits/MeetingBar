@@ -15,6 +15,7 @@ let zoomAppBrowser = Browser(name: "Zoom", path: "")
 let teamsAppBrowser = Browser(name: "Teams", path: "")
 let jitsiAppBrowser = Browser(name: "Jitsi", path: "")
 let slackAppBrowser = Browser(name: "Slack", path: "")
+let riversideAppBrowser = Browser(name: "Riverside", path: "")
 
 enum statusbarEventTitleLengthLimits {
     static let min = 5
