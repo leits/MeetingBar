@@ -267,6 +267,7 @@
 
 "shared_send_notification_toggle" = "System-Benachrichtigung senden";
 "shared_fullscreen_notification_toggle" = "Benachrichtigung im Vollbildmodus anzeigen";
+"shared_fullscreen_notification_all_screens_toggle" = "Auf allen Bildschirmen anzeigen";
 "access_screen_access_granted_click_ok_title" = "Im macOS-Popup auf „OK“ klicken.";
 "access_screen_access_granted_title" = "Zugriff auf Kalender anfordern…";
 "access_screen_access_denied_relaunch_title" = "Anschließend die App manuell starten, um die Einrichtung fortzusetzen.";

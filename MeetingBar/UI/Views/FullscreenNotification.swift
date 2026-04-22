@@ -11,7 +11,7 @@ import SwiftUI
 
 struct FullscreenNotification: View {
     var event: MBEvent
-    var window: NSWindow?
+    var windows: [NSWindow]
 
     var body: some View {
         ZStack {
@@ -51,12 +51,12 @@ struct FullscreenNotification: View {
     }
 
     func dismiss() {
-        window?.close()
+        windows.forEach { $0.close() }
     }
 
     func joinEvent() {
         event.openMeeting()
-        window?.close()
+        windows.forEach { $0.close() }
     }
 }
 
@@ -80,5 +80,5 @@ struct VisualEffect: NSViewRepresentable {
 }
 
 #Preview {
-    FullscreenNotification(event: generateFakeEvent(), window: nil)
+    FullscreenNotification(event: generateFakeEvent(), windows: [])
 }

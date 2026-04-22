@@ -247,6 +247,7 @@
 "access_screen_try_again" = "மீண்டும் முயற்சிக்கவும்";
 "shared_send_notification_toggle" = "கணினி அறிவிப்பை அனுப்பவும்";
 "shared_fullscreen_notification_toggle" = "முழுத்திரை அறிவிப்பைக் காட்டு";
+"shared_fullscreen_notification_all_screens_toggle" = "அனைத்து திரைகளிலும் காட்டு";
 "shared_send_notification_no_alert_style_tip" = "குறிப்பு: அறிவிப்புகள் பதாகைகளுக்கு அமைக்கப்பட்டுள்ளன, எனவே அவை மறைந்து போவதற்கு முன்பு சுருக்கமாகத் தோன்றும். நீங்கள் அவற்றை நிராகரிக்கும் வரை அவற்றை திரையில் வைத்திருக்க, உங்கள் MACOS அறிவிப்பு அமைப்புகளில் எச்சரிக்கைகளுக்கு மாறவும்.";
 "shared_send_notification_disabled_tip" = "Metter சந்திப்புக்கான உங்கள் MACOS அறிவிப்பு அமைப்புகள் முடக்கப்பட்டுள்ளன. கூட்டங்களைக் கண்காணிக்க MACOS கணினி அமைப்புகளில் அறிவிப்புகளை இயக்கவும்.";
 "constants_meeting_service_other" = "மற்றொன்று";

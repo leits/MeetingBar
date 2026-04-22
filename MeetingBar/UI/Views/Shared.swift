@@ -40,6 +40,7 @@ struct AutomaticEventJoinPicker: View {
 struct FullscreenNotificationPicker: View {
     @Default(.fullscreenNotification) var fullscreenNotification
     @Default(.fullscreenNotificationTime) var fullscreenNotificationTime
+    @Default(.fullscreenNotificationAllScreens) var fullscreenNotificationAllScreens
 
     var body: some View {
         HStack {
@@ -51,6 +52,9 @@ struct FullscreenNotificationPicker: View {
                 Text("general_five_minute_before".loco()).tag(TimeBeforeEvent.fiveMinuteBefore)
             }.frame(width: 220, alignment: .leading).labelsHidden().disabled(!fullscreenNotification)
         }
+        Toggle("shared_fullscreen_notification_all_screens_toggle".loco(), isOn: $fullscreenNotificationAllScreens)
+            .disabled(!fullscreenNotification)
+            .padding(.leading, 20)
     }
 }
 

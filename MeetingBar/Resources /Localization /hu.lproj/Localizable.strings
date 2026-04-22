@@ -140,3 +140,4 @@
 "status_bar_menu_dismiss_next_meeting" = "Következő találkozó elbocsátása";
 "status_bar_section_refresh_sources" = "Források frissítése";
 "status_bar_menu_dismiss_curent_meeting" = "Jelenlegi találkozó elbocsátása";
+"shared_fullscreen_notification_all_screens_toggle" = "Megjelenítés minden képernyőn";

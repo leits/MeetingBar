@@ -71,6 +71,7 @@
 
 "shared_send_notification_toggle" = "Envoyer une notification système";
 "shared_fullscreen_notification_toggle" = "Affiche une notification plein écran";
+"shared_fullscreen_notification_all_screens_toggle" = "Afficher sur tous les écrans";
 "access_screen_access_granted_click_ok_title" = "Cliquez sur « OK » dans la fenêtre popup de macOS.";
 "access_screen_access_screen_access_denied_go_to_title" = "Allez dans les";
 "access_screen_access_denied_checkbox_title" = "et sélectionnez une case à cocher près de MeetingBar.";
