@@ -119,6 +119,7 @@
 
 "preferences_services_link_meeting_title" = "Open all meeting links in";
 "preferences_services_link_service_title" = "Open %@ links in";
+"preferences_services_meet_open_notes_on_join" = "Open attached Google Doc notes when joining";
 "preferences_services_link_default_browser_value" = "Default web browser";
 "preferences_services_supported_links_list" = "Supported links for services:\n%@";
 "preferences_services_supported_links_mailback" = "If the service you use isn't supported, you can send an e-mail to the developers";

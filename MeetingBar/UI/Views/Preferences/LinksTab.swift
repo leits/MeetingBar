@@ -11,6 +11,7 @@ import SwiftUI
 
 struct LinksTab: View {
     @Default(.meetBrowser) var meetBrowser
+    @Default(.openGoogleMeetingNotesOnJoin) var openGoogleMeetingNotesOnJoin
     @Default(.browserForCreateMeeting) var browserForCreateMeeting
     @Default(.defaultBrowser) var defaultBrowser
     @Default(.zoomBrowser) var zoomBrowser
@@ -55,6 +56,9 @@ struct LinksTab: View {
                         Text(browser.name).tag(browser)
                     }
                 }
+
+                Toggle("preferences_services_meet_open_notes_on_join".loco(), isOn: $openGoogleMeetingNotesOnJoin)
+                    .frame(maxWidth: .infinity, alignment: .leading)
 
                 Picker(
                     selection: $zoomBrowser,

@@ -95,6 +95,7 @@ extension Defaults.Keys {
     static let createMeetingServiceUrl = Key<String>("createMeetingServiceUrl", default: "")
 
     static let meetBrowser = Key<Browser>("meetBrowser", default: systemDefaultBrowser)
+    static let openGoogleMeetingNotesOnJoin = Key<Bool>("openGoogleMeetingNotesOnJoin", default: false)
     static let zoomBrowser = Key<Browser>("zoomBrowser", default: systemDefaultBrowser)
     static let teamsBrowser = Key<Browser>("teamsBrowser", default: systemDefaultBrowser)
     static let jitsiBrowser = Key<Browser>("jitsiBrowser", default: systemDefaultBrowser)
