@@ -1,7 +1,7 @@
 # MeetingBar - macOS Menu-Bar Calendar App
 
 **Generated:** 2026-04-23
-**Branch:** feature/local-agents
+**Branch:** feature/spec-kit-opencode
 
 ## OVERVIEW
 Menu-bar app showing calendar meetings with 50+ meeting service integrations. Written in Swift 5.0, uses AppKit + EventKit.
@@ -64,3 +64,8 @@ xcodebuild test -project MeetingBar.xcodeproj
 - App runs as menu-bar agent (LSUIElement = true)
 - Uses macOS Calendar app data via EventKit
 - 50+ meeting service URL patterns in MeetingServices
+
+<!-- SPECKIT START -->
+For additional context about technologies to be used, project structure,
+shell commands, and other important information, read the current plan
+<!-- SPECKIT END -->
