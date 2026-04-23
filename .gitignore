@@ -12,3 +12,7 @@ MeetingBar.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/*
 
 Archive/*
 build
+
+# Agent / LLM session data (local only - never commit)
+.sisyphus/
+.opencode/
