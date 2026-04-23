@@ -1,50 +1,72 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+# MeetingBar Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Swift Quality Standards
+- **SwiftLint enforced** (`.swiftlint.yml` configured)
+- Line length: warn 200, error 250
+- Cyclomatic complexity: warn at 15
+- Identifier min length: 2 chars
+- Allow `_` for unused params
+- **No force unwrap/try/cast** (disabled rules - opt-in safety only)
+- Use optional chaining and guard statements
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### II. Architecture
+- **MVVM-lite pattern** for UI components
+- Clear separation: UI (Views) / Business Logic (Managers) / Data (Models, EventStores)
+- Single responsibility per module
+- Core services isolated in `Core/` directory
+- UI-specific code in `UI/` directory
+- Shared utilities in `Utilities/` and `Extensions/`
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### III. Menu-Bar App Constraints
+- App runs as **LSUIElement = true** (no dock icon)
+- Must be lightweight and responsive (menu-bar apps need fast launch)
+- Minimize memory footprint
+- Respect system resources (CPU, battery)
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### IV. Calendar & Privacy
+- Uses **EventKit** for calendar access (macOS Calendar app integration)
+- Respect user privacy - only request necessary calendar permissions
+- Store locally only - no external data transmission without user consent
+- Handle calendar permission denied gracefully
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### V. Meeting Service Integration
+- Support 50+ meeting services via URL pattern matching
+- MeetingServices.swift is the single source of truth for service detection
+- Follow existing URL parsing patterns for new services
+- Test new services manually before committing
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+### VI. Build & Deployment
+- Uses **direct `.xcodeproj`** (no XcodeGen)
+- Build: `xcodebuild -project MeetingBar.xcodeproj -scheme MeetingBar -configuration Debug build`
+- Test: `xcodebuild test -project MeetingBar.xcodeproj`
+- Target: macOS 10.15+ (Catalina and later)
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+## Development Workflow
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+### Code Review
+- All changes should build successfully before PR
+- Run SwiftLint locally before committing
+- Test on actual macOS (not just CI)
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+### Dependencies
+- **KeyboardShortcuts** - global hotkey management
+- **Defaults** - settings persistence
+- **SwiftyStoreKit** - in-app purchases
+- Avoid adding dependencies unless necessary
+
+### macOS-Specific Patterns
+- Use AppKit for menu-bar and status items
+- Use SwiftUI for preferences/views where appropriate
+- Respect macOS Human Interface Guidelines
+- Support both light and dark mode
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+- Constitution supersedes all other practices
+- Amendments require testing on actual macOS
+- Complexity must be justified
+- For runtime development guidance, refer to `AGENTS.md`
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2026-04-23 | **Last Amended**: 2026-04-23

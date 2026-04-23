@@ -16,3 +16,6 @@ build
 # Agent / LLM session data (local only - never commit)
 .sisyphus/
 .opencode/
+
+# Personal reference docs
+speckitflow.md
