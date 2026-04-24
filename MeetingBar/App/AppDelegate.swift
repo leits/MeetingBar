@@ -238,7 +238,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
     }
 
     func openFullscreenNotificationWindow(event: MBEvent) {
-        let screenFrame = NSScreen.main?.frame ?? NSRect(x: 0, y: 0, width: 800, height: 600)
+        let primaryScreen = NSScreen.screens.first
+        let screenFrame = primaryScreen?.frame ?? NSRect(x: 0, y: 0, width: 800, height: 600)
 
         let window = NSWindow(
             contentRect: screenFrame,
@@ -250,8 +251,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
         window.contentView = NSHostingView(
             rootView: FullscreenNotification(event: event, window: window))
         window.appearance = NSAppearance(named: .darkAqua)
-        window.collectionBehavior = .canJoinAllSpaces
-        window.collectionBehavior = .moveToActiveSpace
+        window.collectionBehavior = [.moveToActiveSpace]
 
         window.titlebarAppearsTransparent = true
         window.styleMask.insert(.fullSizeContentView)
@@ -261,6 +261,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
         let controller = NSWindowController(window: window)
         controller.showWindow(self)
 
+        window.setFrame(screenFrame, display: true)
         window.center()
         window.orderFrontRegardless()
     }
