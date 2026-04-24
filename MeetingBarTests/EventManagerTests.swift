@@ -298,3 +298,58 @@ final class RefreshTriggerTests: BaseTestCase {
         await fulfillment(of: [exp], timeout: 1)
     }
 }
+
+@MainActor
+final class ProviderHealthTests: BaseTestCase {
+    private var cancellables = Set<AnyCancellable>()
+
+    func test_successfulRefreshClearsError() async throws {
+        let store = FakeEventStore(calendars: [MBCalendar(title: "C", id: "c1", source: nil, email: nil, color: .black)])
+        let manager = EventManager(provider: store, refreshInterval: 0)
+
+        let exp = expectation(description: "health after success")
+        manager.$providerHealth
+            .drop(while: { $0.lastAttemptedRefresh == nil })
+            .first()
+            .sink { health in
+                XCTAssertNotNil(health.lastSuccessfulRefresh)
+                XCTAssertNil(health.lastErrorDescription)
+                XCTAssertFalse(health.isStale)
+                exp.fulfill()
+            }
+            .store(in: &cancellables)
+
+        await fulfillment(of: [exp], timeout: 1.0)
+    }
+
+    func test_failedRefreshSetsErrorAndPreservesLastSuccess() async throws {
+        let store = FakeEventStore(calendars: [MBCalendar(title: "C", id: "c1", source: nil, email: nil, color: .black)])
+        let manager = EventManager(provider: store, refreshInterval: 0)
+
+        let initialExp = expectation(description: "initial success")
+        manager.$providerHealth
+            .drop(while: { $0.lastSuccessfulRefresh == nil })
+            .first()
+            .sink { _ in initialExp.fulfill() }
+            .store(in: &cancellables)
+        await fulfillment(of: [initialExp], timeout: 1.0)
+
+        let lastSuccess = manager.providerHealth.lastSuccessfulRefresh
+        store.stubbedError = NSError(domain: "test", code: 42, userInfo: [NSLocalizedDescriptionKey: "network gone"])
+
+        let failExp = expectation(description: "health after failure")
+        manager.$providerHealth
+            .dropFirst()
+            .first()
+            .sink { health in
+                XCTAssertEqual(health.lastSuccessfulRefresh, lastSuccess, "prior success date must be preserved")
+                XCTAssertNotNil(health.lastErrorDescription)
+                XCTAssertTrue(health.isStale)
+                failExp.fulfill()
+            }
+            .store(in: &cancellables)
+
+        try await manager.refreshSources()
+        await fulfillment(of: [failExp], timeout: 1.0)
+    }
+}
