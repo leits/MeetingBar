@@ -81,6 +81,7 @@ enum MeetingServices: String, Codable, CaseIterable {
     case livekit = "LiveKit Meet"
     case meetecho = "Meetecho"
     case streamyard = "StreamYard"
+    case riverside = "Riverside"
     case other = "Other"
 
     var localizedValue: String {
@@ -256,6 +257,28 @@ func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?
         NSWorkspace.shared.open(URL(string: "facetime-audio://" + url.absoluteString)!)
     case .phone:
         NSWorkspace.shared.open(URL(string: "tel://" + url.absoluteString)!)
+    case .riverside:
+        let browser = browser ?? Defaults[.riversideBrowser]
+        if browser == riversideAppBrowser {
+            // Try riversidefm:// scheme first
+            var riversideAppURL = URLComponents(url: url, resolvingAgainstBaseURL: false)!
+            riversideAppURL.scheme = "riversidefm"
+            var result = riversideAppURL.url!.openInDefaultBrowser()
+
+            // If that fails, try riverside.fm:// scheme
+            if !result {
+                riversideAppURL.scheme = "riverside.fm"
+                result = riversideAppURL.url!.openInDefaultBrowser()
+            }
+
+            // If both app schemes fail, fall back to browser
+            if !result {
+                sendNotification("status_bar_error_app_link_title".loco("Riverside"), "status_bar_error_app_link_message".loco("Riverside"))
+                url.openInDefaultBrowser()
+            }
+        } else {
+            url.openIn(browser: browser)
+        }
     default:
         url.openIn(browser: browser ?? Defaults[.defaultBrowser])
     }
@@ -297,7 +320,7 @@ private let meetingLinkRegexes: [MeetingServices: NSRegularExpression] = [
     .coscreen: try! NSRegularExpression(pattern: #"https?://join\.coscreen\.co/[^\s]*"#),
     .vowel: try! NSRegularExpression(pattern: #"https?://([a-z0-9.]+)?vowel\.com/#/g/[^\s]*"#),
     .zhumu: try! NSRegularExpression(pattern: #"https://welink\.zhumu\.com/j/[0-9]+?pwd=[a-zA-Z0-9]+"#),
-    .lark: try! NSRegularExpression(pattern: #" https://vc\.larksuite\.com/j/[0-9]+"#),
+    .lark: try! NSRegularExpression(pattern: #"https://vc\.larksuite\.com/j/[0-9]+"#),
     .feishu: try! NSRegularExpression(pattern: #"https://vc\.feishu\.cn/j/[0-9]+"#),
     .vimeo: try! NSRegularExpression(pattern: #"https://vimeo\.com/(showcase|event)/[0-9]+|https://venues\.vimeo\.com/[^\s]+"#),
     .ovice: try! NSRegularExpression(pattern: #"https://([a-z0-9-.]+)?ovice\.(in|com)/[^\s]*"#),
@@ -328,7 +351,8 @@ private let meetingLinkRegexes: [MeetingServices: NSRegularExpression] = [
     .zmPage: try! NSRegularExpression(pattern: #"https?://([a-zA-Z0-9.]+)\.zm\.page"#),
     .livekit: try! NSRegularExpression(pattern: #"https?://meet[a-zA-Z0-9.]*\.livekit\.io/rooms/[a-zA-Z0-9-#]+"#),
     .meetecho: try! NSRegularExpression(pattern: #"https?://meetings\.conf\.meetecho\.com/.+"#),
-    .streamyard: try! NSRegularExpression(pattern: #"https://(?:www\.)?streamyard\.com/(?:guest/)?([a-z0-9]{8,13})(?:/|\?[^ \n]*)?"#)
+    .streamyard: try! NSRegularExpression(pattern: #"https://(?:www\.)?streamyard\.com/(?:guest/)?([a-z0-9]{8,13})(?:/|\?[^ \n]*)?"#),
+    .riverside: try! NSRegularExpression(pattern: #"https?://riverside\.(com|fm)/studio/[^\s]*"#)
 ]
 
 func regex(for service: MeetingServices) -> NSRegularExpression? {
@@ -626,6 +650,10 @@ func getIconForMeetingService(_ meetingService: MeetingServices?) -> NSImage {
 
     case .some(.streamyard):
         image = NSImage(named: "streamyard_icon")!
+        image.size = NSSize(width: 16, height: 16)
+
+    case .some(.riverside):
+        image = NSImage(named: "riverside_icon")!
         image.size = NSSize(width: 16, height: 16)
 
     // tested and verified
