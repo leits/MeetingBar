@@ -21,7 +21,7 @@ final class EventFilteringTests: BaseTestCase {
         Defaults[.showPendingEvents] = .show
     }
 
-    func test_filtered_excludesPastEvents() {
+    func test_filtered_doesNotExcludePastEvents() {
         let now = Date()
         let past = makeFakeEvent(id: "past",
                                  start: now.addingTimeInterval(-3600),
@@ -88,6 +88,68 @@ final class EventFilteringTests: BaseTestCase {
 
         let result = [pending, confirmed].filtered()
         XCTAssertEqual(result.map(\.id), ["confirmed"])
+    }
+
+    func test_filtered_showsAllDayWithLinkOnly_whenSettingEnabled() {
+        Defaults[.allDayEvents] = .show_with_meeting_link_only
+        let allDayWithLink = makeFakeEvent(
+            id: "allDayWithLink",
+            start: Date(),
+            end: Date().addingTimeInterval(86_400),
+            isAllDay: true,
+            withLink: true
+        )
+        let allDayWithoutLink = makeFakeEvent(
+            id: "allDayWithoutLink",
+            start: Date(),
+            end: Date().addingTimeInterval(86_400),
+            isAllDay: true,
+            withLink: false
+        )
+        let nonAllDay = makeFakeEvent(
+            id: "nonAllDay",
+            start: Date().addingTimeInterval(600),
+            end: Date().addingTimeInterval(1200)
+        )
+
+        let result = [allDayWithLink, allDayWithoutLink, nonAllDay].filtered()
+        XCTAssertEqual(result.map(\.id), ["allDayWithLink", "nonAllDay"])
+    }
+
+    func test_filtered_hidesTentativeEvents_whenHideEnabled() {
+        Defaults[.showTentativeEvents] = .hide
+        let tentative = makeFakeEvent(
+            id: "tentative",
+            start: Date().addingTimeInterval(600),
+            end: Date().addingTimeInterval(1200),
+            participationStatus: .tentative
+        )
+        let confirmed = makeFakeEvent(
+            id: "confirmed",
+            start: Date().addingTimeInterval(600),
+            end: Date().addingTimeInterval(1200)
+        )
+
+        let result = [tentative, confirmed].filtered()
+        XCTAssertEqual(result.map(\.id), ["confirmed"])
+    }
+
+    func test_filtered_includesCanceledEvents() {
+        // filtered() does not remove canceled events — nextEvent() handles that
+        let canceled = makeFakeEvent(
+            id: "canceled",
+            start: Date().addingTimeInterval(600),
+            end: Date().addingTimeInterval(1200),
+            status: .canceled
+        )
+        let confirmed = makeFakeEvent(
+            id: "confirmed",
+            start: Date().addingTimeInterval(600),
+            end: Date().addingTimeInterval(1200)
+        )
+
+        let result = [canceled, confirmed].filtered()
+        XCTAssertEqual(result.map(\.id), ["canceled", "confirmed"])
     }
 
     func test_filtered_excludesAllEventsMatchingRegex() {

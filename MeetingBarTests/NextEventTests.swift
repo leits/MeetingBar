@@ -8,127 +8,130 @@
 
 @testable import MeetingBar
 import XCTest
-import Defaults
 
-/// Make sure this lives in your test target, and that
-/// all your test cases subclass BaseTestCase so they
-/// don’t touch the real Defaults.
-class NextEventTests: BaseTestCase {
-    /// Shortcut to “now” so all offsets are relative.
+class NextEventTests: XCTestCase {
+    // Fixed point in time — all events are created relative to this, and the same
+    // value is passed to EventSelectionPolicy, so tests never depend on a real clock.
     private let now = Date()
 
-    override func setUp() {
-        super.setUp()
-
-        // Permissive Defaults so no event is filtered out unintentionally
-        Defaults[.allDayEvents]               = .show
-        Defaults[.nonAllDayEvents]            = .show
-        Defaults[.showPendingEvents]          = .show
-        Defaults[.showTentativeEvents]        = .show
-        Defaults[.declinedEventsAppereance]   = .show_inactive
-        Defaults[.ongoingEventVisibility]     = .showTenMinBeforeNext
-        Defaults[.personalEventsAppereance]   = .show_active
-        Defaults[.filterEventRegexes]         = []
-        Defaults[.dismissedEvents]            = []
-        Defaults[.showEventsForPeriod]        = .today_n_tomorrow
+    // Builds permissive settings with individual overrides per test.
+    private func settings(
+        showEventsForPeriod: ShowEventsForPeriod = .today_n_tomorrow,
+        personalEventsAppereance: PastEventsAppereance = .show_active,
+        dismissedEvents: [ProcessedEvent] = [],
+        nonAllDayEvents: NonAlldayEventsAppereance = .show,
+        showPendingEvents: PendingEventsAppereance = .show,
+        showTentativeEvents: TentativeEventsAppereance = .show,
+        ongoingEventVisibility: OngoingEventVisibility = .showTenMinBeforeNext
+    ) -> EventSelectionSettings {
+        EventSelectionSettings(
+            showEventsForPeriod: showEventsForPeriod,
+            personalEventsAppereance: personalEventsAppereance,
+            dismissedEvents: dismissedEvents,
+            nonAllDayEvents: nonAllDayEvents,
+            showPendingEvents: showPendingEvents,
+            showTentativeEvents: showTentativeEvents,
+            ongoingEventVisibility: ongoingEventVisibility
+        )
     }
 
-    func test_picksSoonestFutureEvent() {
-        let e1 = makeFakeEvent(
-            id: "1",
-            start: now.addingTimeInterval(300),
-            end: now.addingTimeInterval(360),
-            withLink: true
+    private func nextEvent(_ events: [MBEvent], linkRequired: Bool = false, settings: EventSelectionSettings? = nil) -> MBEvent? {
+        EventSelectionPolicy.nextEvent(
+            from: events,
+            linkRequired: linkRequired,
+            settings: settings ?? self.settings(),
+            now: now
         )
-        let e2 = makeFakeEvent(
-            id: "2",
-            start: now.addingTimeInterval(100),
-            end: now.addingTimeInterval(160),
-            withLink: true
-        )
+    }
 
-        let array = [e1, e2]
-        XCTAssertEqual(array.nextEvent(), e2)
+    // MARK: - Basic selection
+
+    func test_picksSoonestFutureEvent() {
+        let e1 = makeFakeEvent(id: "1", start: now.addingTimeInterval(300), end: now.addingTimeInterval(3600), withLink: true)
+        let e2 = makeFakeEvent(id: "2", start: now.addingTimeInterval(100), end: now.addingTimeInterval(3600), withLink: true)
+        XCTAssertEqual(nextEvent([e1, e2]), e2)
     }
 
     func test_skipsEventsWithoutLink_whenLinkRequired() {
-        let noLink = makeFakeEvent(
-            id: "A",
-            start: now.addingTimeInterval(50),
-            end: now.addingTimeInterval(100),
-            withLink: false
-        )
-        let withLink = makeFakeEvent(
-            id: "B",
-            start: now.addingTimeInterval(150),
-            end: now.addingTimeInterval(200),
-            withLink: true
-        )
-
-        let array = [noLink, withLink]
-        XCTAssertEqual(array.nextEvent(linkRequired: true), withLink)
+        let noLink  = makeFakeEvent(id: "A", start: now.addingTimeInterval(50), end: now.addingTimeInterval(3600), withLink: false)
+        let withLink = makeFakeEvent(id: "B", start: now.addingTimeInterval(150), end: now.addingTimeInterval(3600), withLink: true)
+        XCTAssertEqual(nextEvent([noLink, withLink], linkRequired: true), withLink)
     }
 
     func test_returnsNil_ifAllCandidatesLackLink_andLinkRequired() {
-        let a = makeFakeEvent(
-            id: "X",
-            start: now.addingTimeInterval(100),
-            end: now.addingTimeInterval(200),
-            withLink: false
-        )
-        let b = makeFakeEvent(
-            id: "Y",
-            start: now.addingTimeInterval(200),
-            end: now.addingTimeInterval(300),
-            withLink: false
-        )
-
-        XCTAssertNil([a, b].nextEvent(linkRequired: true))
+        let a = makeFakeEvent(id: "X", start: now.addingTimeInterval(100), end: now.addingTimeInterval(3600), withLink: false)
+        let b = makeFakeEvent(id: "Y", start: now.addingTimeInterval(200), end: now.addingTimeInterval(3600), withLink: false)
+        XCTAssertNil(nextEvent([a, b], linkRequired: true))
     }
 
-    func test_skipsCanceled_andDeclinedEvents() {
-        let good = makeFakeEvent(
-            id: "G",
-            start: now.addingTimeInterval(100),
-            end: now.addingTimeInterval(160),
-            withLink: true
-        )
-        let canceled = makeFakeEvent(
-            id: "C",
-            start: now.addingTimeInterval(50),
-            end: now.addingTimeInterval(110),
-            status: .canceled,
-            withLink: true
-        )
-        let declined = makeFakeEvent(
-            id: "D",
-            start: now.addingTimeInterval(10),
-            end: now.addingTimeInterval(70),
-            withLink: true,
-            participationStatus: .declined
-        )
+    // MARK: - Status filters
 
-        let array = [declined, canceled, good]
-        XCTAssertEqual(array.nextEvent(), good)
+    func test_skipsCanceledEvent() {
+        let canceled = makeFakeEvent(id: "C", start: now.addingTimeInterval(50), end: now.addingTimeInterval(3600), status: .canceled, withLink: true)
+        let good     = makeFakeEvent(id: "G", start: now.addingTimeInterval(100), end: now.addingTimeInterval(3600), withLink: true)
+        XCTAssertEqual(nextEvent([canceled, good]), good)
     }
 
-    func test_prefersRunningEvent_ifNowBetweenStartAndEnd() {
-        let running = makeFakeEvent(
-            id: "R",
-            start: now.addingTimeInterval(-600),
-            end: now.addingTimeInterval(600),
-            withLink: true
-        )
-        let future = makeFakeEvent(
-            id: "F",
-            start: now.addingTimeInterval(500),
-            end: now.addingTimeInterval(800),
-            withLink: true
-        )
+    func test_skipsDeclinedEvent() {
+        let declined = makeFakeEvent(id: "D", start: now.addingTimeInterval(50), end: now.addingTimeInterval(3600), withLink: true, participationStatus: .declined)
+        let good     = makeFakeEvent(id: "G", start: now.addingTimeInterval(100), end: now.addingTimeInterval(3600), withLink: true)
+        XCTAssertEqual(nextEvent([declined, good]), good)
+    }
 
-        // even though `future` is technically sooner in time,
-        // our business rule picks an event that's already started
-        let array = [future, running]
-        XCTAssertEqual(array.nextEvent(), running)
+    func test_skipsDismissedEvent() {
+        let dismissed = makeFakeEvent(id: "DISMISSED", start: now.addingTimeInterval(100), end: now.addingTimeInterval(3600), withLink: true)
+        let good      = makeFakeEvent(id: "GOOD", start: now.addingTimeInterval(200), end: now.addingTimeInterval(3600), withLink: true)
+        let dismissedSettings = settings(dismissedEvents: [ProcessedEvent(id: "DISMISSED", lastModifiedDate: nil, eventEndDate: now.addingTimeInterval(3600))])
+        XCTAssertEqual(nextEvent([dismissed, good], settings: dismissedSettings), good)
+    }
+
+    func test_skipsAllDayEvent() {
+        let allDay = makeFakeEvent(id: "ALLDAY", start: now.addingTimeInterval(100), end: now.addingTimeInterval(86_500), isAllDay: true, withLink: true)
+        let timed  = makeFakeEvent(id: "TIMED", start: now.addingTimeInterval(200), end: now.addingTimeInterval(3600), withLink: true)
+        XCTAssertEqual(nextEvent([allDay, timed]), timed)
+    }
+
+    func test_skipsPendingEvent_whenPendingSetToHide() {
+        let pending  = makeFakeEvent(id: "PENDING", start: now.addingTimeInterval(100), end: now.addingTimeInterval(3600), withLink: true, participationStatus: .pending)
+        let accepted = makeFakeEvent(id: "ACCEPTED", start: now.addingTimeInterval(200), end: now.addingTimeInterval(3600), withLink: true)
+        XCTAssertEqual(nextEvent([pending, accepted], settings: settings(showPendingEvents: .hide)), accepted)
+    }
+
+    func test_skipsTentativeEvent_whenTentativeSetToHide() {
+        let tentative = makeFakeEvent(id: "TENTATIVE", start: now.addingTimeInterval(100), end: now.addingTimeInterval(3600), withLink: true, participationStatus: .tentative)
+        let accepted  = makeFakeEvent(id: "ACCEPTED", start: now.addingTimeInterval(200), end: now.addingTimeInterval(3600), withLink: true)
+        XCTAssertEqual(nextEvent([tentative, accepted], settings: settings(showTentativeEvents: .hide)), accepted)
+    }
+
+    // MARK: - Ongoing event visibility
+
+    func test_hideImmediateAfter_skipsStartedEvent() {
+        let running = makeFakeEvent(id: "RUNNING", start: now.addingTimeInterval(-60), end: now.addingTimeInterval(3600), withLink: true)
+        let future  = makeFakeEvent(id: "FUTURE", start: now.addingTimeInterval(300), end: now.addingTimeInterval(3600), withLink: true)
+        XCTAssertEqual(nextEvent([running, future], settings: settings(ongoingEventVisibility: .hideImmediateAfter)), future)
+    }
+
+    func test_showTenMinAfter_showsEventBefore10MinMark() {
+        let running = makeFakeEvent(id: "RUNNING", start: now.addingTimeInterval(-300), end: now.addingTimeInterval(3600), withLink: true)
+        XCTAssertEqual(nextEvent([running], settings: settings(ongoingEventVisibility: .showTenMinAfter)), running)
+    }
+
+    func test_showTenMinAfter_hidesEventAfter10MinMark() {
+        let running = makeFakeEvent(id: "RUNNING", start: now.addingTimeInterval(-660), end: now.addingTimeInterval(3600), withLink: true)
+        let future  = makeFakeEvent(id: "FUTURE", start: now.addingTimeInterval(300), end: now.addingTimeInterval(3600), withLink: true)
+        XCTAssertEqual(nextEvent([running, future], settings: settings(ongoingEventVisibility: .showTenMinAfter)), future)
+    }
+
+    func test_showTenMinBeforeNext_switchesToNextEvent() {
+        // running event is the first candidate; next starts within 10 min so we switch
+        let running = makeFakeEvent(id: "RUNNING", start: now.addingTimeInterval(-300), end: now.addingTimeInterval(3600), withLink: true)
+        let next    = makeFakeEvent(id: "NEXT", start: now.addingTimeInterval(300), end: now.addingTimeInterval(3600), withLink: true)
+        XCTAssertEqual(nextEvent([running, next], settings: settings(ongoingEventVisibility: .showTenMinBeforeNext)), next)
+    }
+
+    func test_showTenMinBeforeNext_keepsRunningEvent_whenNextIsFar() {
+        let running = makeFakeEvent(id: "RUNNING", start: now.addingTimeInterval(-300), end: now.addingTimeInterval(3600), withLink: true)
+        let far     = makeFakeEvent(id: "FAR", start: now.addingTimeInterval(700), end: now.addingTimeInterval(3600), withLink: true)
+        XCTAssertEqual(nextEvent([running, far], settings: settings(ongoingEventVisibility: .showTenMinBeforeNext)), running)
     }
 }
