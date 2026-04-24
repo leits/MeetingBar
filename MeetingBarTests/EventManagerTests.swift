@@ -169,7 +169,7 @@ final class FailedRefreshTests: BaseTestCase {
         let preservedExp = expectation(description: "events preserved after failure")
         manager.$events.dropFirst().first()
             .sink { evts in
-                XCTAssertFalse(evts.isEmpty, "events must not be cleared on refresh failure")
+                XCTAssertEqual(evts, [fakeEvt], "events must be the exact preserved set after refresh failure")
                 preservedExp.fulfill()
             }
             .store(in: &cancellables)
@@ -199,7 +199,7 @@ final class RefreshCoalescingTests: BaseTestCase {
     func test_rapidTriggersResultInSingleFetch() async throws {
         let fakeCal = MBCalendar(title: "Cal", id: "calA", source: nil, email: nil, color: .black)
         let store = FakeEventStore(calendars: [fakeCal])
-        store.fetchDelay = 0.2 // slow enough to keep isRefreshing = true during rapid triggers
+        store.fetchDelay = 0.2 // slow enough that the fetch is still running when the rapid triggers arrive
 
         let manager = EventManager(provider: store, refreshInterval: 0)
 

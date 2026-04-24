@@ -27,8 +27,6 @@ public class EventManager: ObservableObject {
     private let refreshInterval: TimeInterval
     private var cancellables = Set<AnyCancellable>()
     let refreshSubject = PassthroughSubject<Void, Never>()
-    private var isRefreshing = false
-
     private var storeChangeCancellable: AnyCancellable?
 
     // MARK: - Initialization
@@ -163,25 +161,24 @@ public class EventManager: ObservableObject {
         // C) Manual trigger
         let manualPub = refreshSubject.eraseToAnyPublisher()
 
-        // D) Merge them all
+        // D) Merge all triggers; debounce collapses rapid bursts into one.
         let trigger = Publishers.Merge3(defaultsPub, timerPub, manualPub)
+            .debounce(for: .milliseconds(0), scheduler: RunLoop.main)
 
-        // E) When any fires, fetch calendars & events
+        // E) When any fires, fetch calendars & events.
+        // flatMap(maxPublishers: .max(1)) serializes fetches so at most one runs
+        // at a time; if another trigger arrives during a fetch, it queues exactly once.
         trigger
-            .flatMap { [weak self] _ -> AnyPublisher<([MBCalendar], [MBEvent]), Never> in
+            .flatMap(maxPublishers: .max(1)) { [weak self] _ -> AnyPublisher<([MBCalendar], [MBEvent]), Never> in
                 guard let self = self else {
                     return Just(([], [])).eraseToAnyPublisher()
                 }
-                guard !self.isRefreshing else {
-                    return Empty(completeImmediately: true).eraseToAnyPublisher()
-                }
-                self.isRefreshing = true
                 // Capture current state on the main thread before entering the async Task.
                 // On failure we republish these so the UI keeps showing last known data.
                 let preservedCalendars = self.calendars
                 let preservedEvents = self.events
                 return Deferred {
-                    Future<([MBCalendar], [MBEvent]), Error> { promise in
+                    Future<([MBCalendar], [MBEvent]), Never> { promise in
                         Task {
                             do {
                                 let cals = try await self.provider.fetchAllCalendars()
@@ -194,16 +191,10 @@ public class EventManager: ObservableObject {
                         }
                     }
                 }
-                .catch { error -> Empty<([MBCalendar], [MBEvent]), Never> in
-                    NSLog("EventManager refresh failed: \(error)")
-                    return Empty(completeImmediately: true)
-                }
                 .eraseToAnyPublisher()
             }
-            // **important: hop back to the main run-loop before assigning**
             .receive(on: RunLoop.main)
             .sink { [weak self] cals, evts in
-                self?.isRefreshing = false
                 self?.calendars = cals
                 self?.events = evts
             }
