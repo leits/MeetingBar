@@ -26,7 +26,8 @@ public class EventManager: ObservableObject {
     var provider: EventStore
     private let refreshInterval: TimeInterval
     private var cancellables = Set<AnyCancellable>()
-    private let refreshSubject = PassthroughSubject<Void, Never>()
+    let refreshSubject = PassthroughSubject<Void, Never>()
+    private var isRefreshing = false
 
     private var storeChangeCancellable: AnyCancellable?
 
@@ -171,6 +172,10 @@ public class EventManager: ObservableObject {
                 guard let self = self else {
                     return Just(([], [])).eraseToAnyPublisher()
                 }
+                guard !self.isRefreshing else {
+                    return Empty(completeImmediately: true).eraseToAnyPublisher()
+                }
+                self.isRefreshing = true
                 // Capture current state on the main thread before entering the async Task.
                 // On failure we republish these so the UI keeps showing last known data.
                 let preservedCalendars = self.calendars
@@ -198,7 +203,7 @@ public class EventManager: ObservableObject {
             // **important: hop back to the main run-loop before assigning**
             .receive(on: RunLoop.main)
             .sink { [weak self] cals, evts in
-                // now we’re safely on the main actor / main thread
+                self?.isRefreshing = false
                 self?.calendars = cals
                 self?.events = evts
             }

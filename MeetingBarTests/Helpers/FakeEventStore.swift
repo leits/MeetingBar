@@ -13,6 +13,8 @@ final class FakeEventStore: EventStore {
     var stubbedCalendars: [MBCalendar]
     var stubbedEvents: [MBEvent]
     var stubbedError: Error?
+    var fetchDelay: TimeInterval = 0
+    private(set) var fetchCallCount = 0
 
     init(calendars: [MBCalendar] = [], events: [MBEvent] = []) {
         stubbedCalendars = calendars
@@ -22,6 +24,10 @@ final class FakeEventStore: EventStore {
     // MARK: - EventStore
 
     func fetchAllCalendars() async throws -> [MBCalendar] {
+        fetchCallCount += 1
+        if fetchDelay > 0 {
+            try await Task.sleep(nanoseconds: UInt64(fetchDelay * 1_000_000_000))
+        }
         if let error = stubbedError { throw error }
         return stubbedCalendars
     }

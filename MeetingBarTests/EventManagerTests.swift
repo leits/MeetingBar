@@ -193,6 +193,37 @@ final class FailedRefreshTests: BaseTestCase {
 }
 
 @MainActor
+final class RefreshCoalescingTests: BaseTestCase {
+    private var cancellables = Set<AnyCancellable>()
+
+    func test_rapidTriggersResultInSingleFetch() async throws {
+        let fakeCal = MBCalendar(title: "Cal", id: "calA", source: nil, email: nil, color: .black)
+        let store = FakeEventStore(calendars: [fakeCal])
+        store.fetchDelay = 0.2 // slow enough to keep isRefreshing = true during rapid triggers
+
+        let manager = EventManager(provider: store, refreshInterval: 0)
+
+        let initialExp = expectation(description: "initial load")
+        manager.$calendars.drop(while: \.isEmpty).first()
+            .sink { _ in initialExp.fulfill() }
+            .store(in: &cancellables)
+        await fulfillment(of: [initialExp], timeout: 2.0)
+
+        let countBefore = store.fetchCallCount
+
+        // Fire three triggers in rapid succession — only the first should start a fetch
+        manager.refreshSubject.send()
+        manager.refreshSubject.send()
+        manager.refreshSubject.send()
+
+        // Wait longer than fetchDelay so the single fetch can complete
+        try await Task.sleep(nanoseconds: 400_000_000)
+
+        XCTAssertEqual(store.fetchCallCount - countBefore, 1, "only one fetch should run despite three triggers")
+    }
+}
+
+@MainActor
 final class RefreshTriggerTests: BaseTestCase {
 
     private var cancellables = Set<AnyCancellable>()
