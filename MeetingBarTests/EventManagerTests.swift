@@ -122,6 +122,77 @@ class EventManagerTests: BaseTestCase {
 }
 
 @MainActor
+final class FailedRefreshTests: BaseTestCase {
+    private var cancellables = Set<AnyCancellable>()
+
+    private let fakeCal = MBCalendar(title: "Cal", id: "calA", source: nil, email: nil, color: .black)
+
+    func test_failedRefreshPreservesExistingCalendars() async throws {
+        let store = FakeEventStore(calendars: [fakeCal])
+        let manager = EventManager(provider: store, refreshInterval: 0)
+
+        let initialExp = expectation(description: "initial calendars loaded")
+        manager.$calendars.drop(while: \.isEmpty).first()
+            .sink { _ in initialExp.fulfill() }
+            .store(in: &cancellables)
+        await fulfillment(of: [initialExp], timeout: 1.0)
+
+        store.stubbedError = NSError(domain: "test", code: 1)
+
+        let preservedExp = expectation(description: "calendars preserved after failure")
+        manager.$calendars.dropFirst().first()
+            .sink { cals in
+                XCTAssertEqual(cals, [self.fakeCal], "calendars must not be cleared on refresh failure")
+                preservedExp.fulfill()
+            }
+            .store(in: &cancellables)
+
+        try await manager.refreshSources()
+        await fulfillment(of: [preservedExp], timeout: 1.0)
+    }
+
+    func test_failedRefreshPreservesExistingEvents() async throws {
+        let fakeEvt = makeFakeEvent(id: "E1", start: Date().addingTimeInterval(60), end: Date().addingTimeInterval(3600))
+        let store = FakeEventStore(calendars: [fakeCal], events: [fakeEvt])
+
+        Defaults[.selectedCalendarIDs] = ["calA"]
+        let manager = EventManager(provider: store, refreshInterval: 0)
+
+        let initialExp = expectation(description: "initial events loaded")
+        manager.$events.drop(while: \.isEmpty).first()
+            .sink { _ in initialExp.fulfill() }
+            .store(in: &cancellables)
+        await fulfillment(of: [initialExp], timeout: 1.0)
+
+        store.stubbedError = NSError(domain: "test", code: 1)
+
+        let preservedExp = expectation(description: "events preserved after failure")
+        manager.$events.dropFirst().first()
+            .sink { evts in
+                XCTAssertFalse(evts.isEmpty, "events must not be cleared on refresh failure")
+                preservedExp.fulfill()
+            }
+            .store(in: &cancellables)
+
+        try await manager.refreshSources()
+        await fulfillment(of: [preservedExp], timeout: 1.0)
+    }
+
+    func test_failedInitialRefreshDoesNotCrash() {
+        let store = FakeEventStore()
+        store.stubbedError = NSError(domain: "test", code: 1)
+        let manager = EventManager(provider: store, refreshInterval: 0)
+
+        let exp = expectation(description: "brief wait after failed initial refresh")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { exp.fulfill() }
+        wait(for: [exp], timeout: 1.0)
+
+        XCTAssertEqual(manager.calendars, [])
+        XCTAssertEqual(manager.events, [])
+    }
+}
+
+@MainActor
 final class RefreshTriggerTests: BaseTestCase {
 
     private var cancellables = Set<AnyCancellable>()

@@ -171,6 +171,10 @@ public class EventManager: ObservableObject {
                 guard let self = self else {
                     return Just(([], [])).eraseToAnyPublisher()
                 }
+                // Capture current state on the main thread before entering the async Task.
+                // On failure we republish these so the UI keeps showing last known data.
+                let preservedCalendars = self.calendars
+                let preservedEvents = self.events
                 return Deferred {
                     Future<([MBCalendar], [MBEvent]), Error> { promise in
                         Task {
@@ -180,7 +184,7 @@ public class EventManager: ObservableObject {
                                 promise(.success((cals, evts)))
                             } catch {
                                 NSLog("EventManager refresh failed: \(error)")
-                                promise(.success(([], [])))
+                                promise(.success((preservedCalendars, preservedEvents)))
                             }
                         }
                     }
