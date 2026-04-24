@@ -320,7 +320,7 @@ private let meetingLinkRegexes: [MeetingServices: NSRegularExpression] = [
     .coscreen: try! NSRegularExpression(pattern: #"https?://join\.coscreen\.co/[^\s]*"#),
     .vowel: try! NSRegularExpression(pattern: #"https?://([a-z0-9.]+)?vowel\.com/#/g/[^\s]*"#),
     .zhumu: try! NSRegularExpression(pattern: #"https://welink\.zhumu\.com/j/[0-9]+?pwd=[a-zA-Z0-9]+"#),
-    .lark: try! NSRegularExpression(pattern: #" https://vc\.larksuite\.com/j/[0-9]+"#),
+    .lark: try! NSRegularExpression(pattern: #"https://vc\.larksuite\.com/j/[0-9]+"#),
     .feishu: try! NSRegularExpression(pattern: #"https://vc\.feishu\.cn/j/[0-9]+"#),
     .vimeo: try! NSRegularExpression(pattern: #"https://vimeo\.com/(showcase|event)/[0-9]+|https://venues\.vimeo\.com/[^\s]+"#),
     .ovice: try! NSRegularExpression(pattern: #"https://([a-z0-9-.]+)?ovice\.(in|com)/[^\s]*"#),
