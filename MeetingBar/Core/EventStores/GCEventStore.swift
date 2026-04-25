@@ -8,27 +8,65 @@
 
 import AppAuthCore
 import AppKit
+import Defaults
 import Foundation
 
-let googleClientNumber = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_CLIENT_NUMBER") as! String
-let googleClientSecret = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_CLIENT_SECRET") as! String
-let googleAuthKeychainName = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_AUTH_KEYCHAIN_NAME") as! String
+let googleClientNumber: String? = {
+    guard let value = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_CLIENT_NUMBER") as? String,
+          !value.isEmpty,
+          !value.hasPrefix("$(") else { return nil }
+    return value
+}()
+let googleClientSecret: String? = {
+    guard let value = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_CLIENT_SECRET") as? String,
+          !value.isEmpty,
+          !value.hasPrefix("$(") else { return nil }
+    return value
+}()
+let googleAuthKeychainName: String? = {
+    guard let value = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_AUTH_KEYCHAIN_NAME") as? String,
+          !value.isEmpty,
+          !value.hasPrefix("$(") else { return nil }
+    return value
+}()
+
+let isMockMode: Bool = {
+    #if DEBUG
+    if ProcessInfo.processInfo.environment["MOCK_GOOGLE_CALENDAR"] == "1" { return true }
+    return googleClientNumber == nil || googleClientSecret == nil
+    #else
+    return false
+    #endif
+}()
+
+enum MockError: Error, LocalizedError {
+    case credentialsMissing
+    case noMoreMockAccounts
+
+    var errorDescription: String? {
+        switch self {
+        case .credentialsMissing:
+            return "Google OAuth credentials not configured. Set GOOGLE_CLIENT_NUMBER and GOOGLE_CLIENT_SECRET in your Xcode scheme, or enable MOCK_GOOGLE_CALENDAR=1 for mock mode."
+        case .noMoreMockAccounts:
+            return "All mock accounts are already added."
+        }
+    }
+}
 
 extension OIDServiceConfiguration: @unchecked @retroactive Sendable {}
 
 enum AuthError: Error {
     case notSignedIn
     case refreshFailed
+    case invalidResponse
 }
 
 extension OIDAuthState {
-    /// token is considered fresh if it expires later than 300 seconds from now
     var isTokenFresh: Bool {
         guard let exp = lastTokenResponse?.accessTokenExpirationDate else { return false }
         return exp > Date().addingTimeInterval(300)
     }
 
-    /// convenience email extraction from ID token
     var userEmail: String? {
         guard let idToken = lastTokenResponse?.idToken else { return nil }
         let parts = idToken.split(separator: ".")
@@ -50,26 +88,25 @@ final class GCEventStore: NSObject,
 
     // MARK: Static constants
     private static let kIssuer       = "https://accounts.google.com"
-    private static let kClientID     = "\(googleClientNumber).apps.googleusercontent.com"
-    private static let kClientSecret = googleClientSecret
-    private static let kRedirectURI  = "com.googleusercontent.apps.\(googleClientNumber):/oauthredirect"
-    private static let kKeychainName = googleAuthKeychainName
+    private static let kClientID     = googleClientNumber.map { "\($0).apps.googleusercontent.com" } ?? ""
+    private static let kClientSecret = googleClientSecret ?? ""
+    private static let kRedirectURI  = googleClientNumber.map { "com.googleusercontent.apps.\($0):/oauthredirect" } ?? ""
+    private static let legacyKeychainName = googleAuthKeychainName ?? "MeetingBarGoogleAuth"
 
     // MARK: Stored properties
     @MainActor var currentAuthorizationFlow: OIDExternalUserAgentSession?
-    private(set) var userEmail: String?
+    @MainActor var pendingAuthAccountId: String?
 
-    private var authState: OIDAuthState? {
-        didSet {
-            // ensure delegates always set
-            authState?.stateChangeDelegate = self
-            authState?.errorDelegate       = self
-            persistAuthState()
-        }
+    private var accounts: [GoogleAccount] {
+        get { Defaults[.googleAccounts] }
+        set { Defaults[.googleAccounts] = newValue }
     }
 
-    private var signInTask: Task<Void, Error>?
-    private var refreshTask: Task<String, Error>?
+    private var authStates: [String: OIDAuthState] = [:]
+    private var mockAuthorizedAccounts: Set<String> = []
+    private var refreshTask: [String: Task<String, Error>] = [:]
+    private var mockCalendarData: [String: [[String: Any]]] = [:]
+    private var mockEventData: [String: [[String: Any]]] = [:]
 
     // Shared URLSession to leverage connection reuse
     private static let session: URLSession = {
@@ -84,59 +121,76 @@ final class GCEventStore: NSObject,
     static let shared = GCEventStore()
     private override init() {
         super.init()
-        self.authState = restoreAuthState()
-        // delegates were set in didSet, but set them again just in case restore returned nil
-        self.authState?.stateChangeDelegate = self
-        self.authState?.errorDelegate       = self
+        migrateLegacyAuthStateIfNeeded()
+        restoreAllAuthStates()
+        pruneAccountsMissingAuthState()
     }
 
     // MARK: Public API
 
-    func signIn(forcePrompt: Bool = false) async throws {
-        // if already authorised, nothing to do
-        if authState?.isAuthorized == true { return }
+    func getAccounts() -> [GoogleAccount] {
+        return accounts
+    }
 
-        // discover configuration for Google issuer
+    func addAccount() async throws -> GoogleAccount {
+        if isMockMode {
+            return try await addMockAccount()
+        }
+
+        guard let redirectURL = URL(string: Self.kRedirectURI), !Self.kClientID.isEmpty else {
+            throw MockError.credentialsMissing
+        }
+
         let config = try await withCheckedThrowingContinuation { cont in
             OIDAuthorizationService.discoverConfiguration(forIssuer: URL(string: Self.kIssuer)!) { cfg, err in
                 if let cfg { cont.resume(returning: cfg) } else { cont.resume(throwing: err ?? NSError(domain: "GoogleSignIn", code: -1)) }
             }
         }
 
-        // request scopes we need
         let scopes = [
             "email",
             "https://www.googleapis.com/auth/calendar.calendarlist.readonly",
             "https://www.googleapis.com/auth/calendar.events.readonly"
         ]
 
-        // additional parameters to be sure we get refresh_token
-        var extra = [
-            "access_type": "offline"
-        ]
-        if forcePrompt {
-            extra["prompt"] = "consent"
-        }
-
         let request = OIDAuthorizationRequest(
             configuration: config,
             clientId: Self.kClientID,
             clientSecret: Self.kClientSecret,
             scopes: scopes,
-            redirectURL: URL(string: Self.kRedirectURI)!,
+            redirectURL: redirectURL,
             responseType: OIDResponseTypeCode,
-            additionalParameters: extra
+            additionalParameters: ["access_type": "offline"]
         )
 
-        try await withCheckedThrowingContinuation { cont in
-            self.currentAuthorizationFlow = OIDAuthState.authState(byPresenting: request,
-                                                                   externalUserAgent: self) { [weak self] state, error in
+        return try await withCheckedThrowingContinuation { cont in
+            pendingAuthAccountId = UUID().uuidString
+            currentAuthorizationFlow = OIDAuthState.authState(byPresenting: request,
+                                                               externalUserAgent: self) { [weak self] state, error in
                 guard let self else { return }
-                if let state {
-                    self.authState = state    // didSet handles persistence & delegates
-                    self.userEmail = state.userEmail
-                    sendNotification("Google Account connected", "\(self.userEmail ?? "") is connected")
-                    cont.resume()
+                self.pendingAuthAccountId = nil
+                self.currentAuthorizationFlow = nil
+
+                if let state, let email = state.userEmail {
+                    if let existing = self.accounts.first(where: { $0.email == email }) {
+                        self.authStates[existing.id] = state
+                        state.stateChangeDelegate = self
+                        state.errorDelegate = self
+                        self.persistAuthState(for: existing)
+                        sendNotification("notifications_google_account_connected_title".loco(), "notifications_google_account_refreshed_body".loco(email))
+                        cont.resume(returning: existing)
+                        return
+                    }
+
+                    let accountId = UUID().uuidString
+                    let account = GoogleAccount(id: accountId, email: email)
+                    self.authStates[accountId] = state
+                    state.stateChangeDelegate = self
+                    state.errorDelegate = self
+                    self.persistAuthState(for: account)
+                    self.accounts.append(account)
+                    sendNotification("notifications_google_account_connected_title".loco(), "notifications_google_account_connected_body".loco(email))
+                    cont.resume(returning: account)
                 } else {
                     cont.resume(throwing: error ?? NSError(domain: "GoogleSignIn", code: 1))
                 }
@@ -144,56 +198,182 @@ final class GCEventStore: NSObject,
         }
     }
 
-    func signOut() async {
-        guard let state = authState else { return }
+    private func addMockAccount() async throws -> GoogleAccount {
+        let mockEmails = ["personal@example.com", "work@example.com", "dev@example.com"]
+        let existingEmails = Set(accounts.map(\.email))
+        let availableEmails = mockEmails.filter { !existingEmails.contains($0) }
 
-        if let flow = currentAuthorizationFlow {
-                currentAuthorizationFlow = nil
-                await MainActor.run { flow.cancel() }
-            } else {
-                currentAuthorizationFlow = nil
-            }
-
-        // Revoke tokens in parallel
-        let access  = state.lastTokenResponse?.accessToken
-        let refresh = state.lastTokenResponse?.refreshToken
-        await withTaskGroup(of: Void.self) { grp in
-            if let acc = access { grp.addTask { try? await self.revoke(token: acc) } }
-            if let ref = refresh { grp.addTask { try? await self.revoke(token: ref) } }
+        guard let email = availableEmails.first else {
+            throw MockError.noMoreMockAccounts
         }
 
-        clearAuthState()
+        let accountId = UUID().uuidString
+        let account = GoogleAccount(id: accountId, email: email)
+
+        let mockCalendars: [[String: Any]] = [
+            ["id": "\(accountId):primary", "summary": "Primary", "backgroundColor": "#039BE5"],
+            ["id": "\(accountId):meetings", "summary": "Meetings", "backgroundColor": "#33B679"],
+            ["id": "\(accountId):personal", "summary": "Personal", "backgroundColor": "#F4511E"],
+            ["id": "\(accountId):tasks", "summary": "Tasks", "backgroundColor": "#9E69AF"]
+        ]
+
+        mockCalendarData[accountId] = mockCalendars
+
+        let iso = ISO8601DateFormatter()
+        let today = Calendar.current.startOfDay(for: Date())
+        let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today)!
+        let now = iso.string(from: Date())
+        let mockEvents: [[String: Any]] = [
+            [
+                "id": "\(accountId)-evt-1",
+                "summary": "Team Standup",
+                "status": "confirmed",
+                "updated": now,
+                "start": ["dateTime": iso.string(from: today.addingTimeInterval(9 * 3600))],
+                "end": ["dateTime": iso.string(from: today.addingTimeInterval(9.5 * 3600))],
+                "conferenceData": [
+                    "entryPoints": [
+                        ["entryPointType": "video", "uri": "https://meet.google.com/abc-def"]
+                    ]
+                ],
+                "attendees": [
+                    ["email": email, "displayName": "You", "responseStatus": "accepted", "optional": false, "self": true]
+                ]
+            ],
+            [
+                "id": "\(accountId)-evt-2",
+                "summary": "Lunch Break",
+                "status": "confirmed",
+                "updated": now,
+                "start": ["dateTime": iso.string(from: today.addingTimeInterval(12 * 3600))],
+                "end": ["dateTime": iso.string(from: today.addingTimeInterval(13 * 3600))]
+            ],
+            [
+                "id": "\(accountId)-evt-3",
+                "summary": "Sprint Planning",
+                "status": "tentative",
+                "updated": now,
+                "start": ["dateTime": iso.string(from: tomorrow.addingTimeInterval(10 * 3600))],
+                "end": ["dateTime": iso.string(from: tomorrow.addingTimeInterval(11 * 3600))],
+                "location": "Conference Room A",
+                "description": "Plan next sprint items"
+            ]
+        ]
+
+        mockEventData[accountId] = mockEvents
+
+        mockAuthorizedAccounts.insert(accountId)
+        accounts.append(account)
+
+        sendNotification("Mock: Google Account connected", "\(email) (mock)")
+
+        return account
+    }
+
+    func removeAccount(_ account: GoogleAccount) async {
+        let state = authStates.removeValue(forKey: account.id)
+        accounts.removeAll { $0.id == account.id }
+        Keychain.delete(for: accountKeychainKey(accountId: account.id))
+
+        let prefix = "\(account.id):"
+        Defaults[.selectedCalendarIDs] = Defaults[.selectedCalendarIDs].filter { !$0.hasPrefix(prefix) }
+
+        mockCalendarData.removeValue(forKey: account.id)
+        mockEventData.removeValue(forKey: account.id)
+
+        if let state {
+            let access  = state.lastTokenResponse?.accessToken
+            let refresh = state.lastTokenResponse?.refreshToken
+            await withTaskGroup(of: Void.self) { grp in
+                if let acc = access {
+                    grp.addTask {
+                        do { try await self.revoke(token: acc) } catch { NSLog("GCEventStore: failed to revoke access token: \(error)") }
+                    }
+                }
+                if let ref = refresh {
+                    grp.addTask {
+                        do { try await self.revoke(token: ref) } catch { NSLog("GCEventStore: failed to revoke refresh token: \(error)") }
+                    }
+                }
+            }
+        }
+    }
+
+    func signIn(forcePrompt _: Bool) async throws {
+        if !accounts.isEmpty { return }
+        _ = try await addAccount()
+    }
+
+    func signOut() async {
+        for account in accounts {
+            await removeAccount(account)
+        }
     }
 
     func refreshSources() async {}
 
     func fetchAllCalendars() async throws -> [MBCalendar] {
-        try await ensureSignedIn()
+        var allCalendars: [MBCalendar] = []
 
-        let url = URL(string: "https://www.googleapis.com/calendar/v3/users/me/calendarList?maxResults=250&showHidden=true")!
-        let items = try await fetchJSON(url)
+        for account in accounts {
+            if isMockMode {
+                let calendars = (mockCalendarData[account.id] ?? []).compactMap { item -> MBCalendar? in
+                    guard let title = item["summary"] as? String,
+                          let calendarID = item["id"] as? String,
+                          let backgroundColor = item["backgroundColor"] as? String else { return nil }
+                    return MBCalendar(title: title,
+                                      id: calendarID,
+                                      source: account.email,
+                                      email: account.email,
+                                      color: hexStringToUIColor(hex: backgroundColor))
+                }
+                allCalendars.append(contentsOf: calendars)
+                continue
+            }
 
-        return items.compactMap { item -> MBCalendar? in
-            guard let title = item["summary"] as? String,
-                  let calendarID = item["id"] as? String,
-                  let backgroundColor = item["backgroundColor"] as? String else { return nil }
+            guard let state = authStates[account.id], state.isAuthorized else { continue }
 
-            return MBCalendar(title: title,
-                              id: calendarID,
-                              source: userEmail,
-                              email: userEmail,
-                              color: hexStringToUIColor(hex: backgroundColor))
+            let url = URL(string: "https://www.googleapis.com/calendar/v3/users/me/calendarList?maxResults=250&showHidden=true")!
+            let items = try await fetchJSON(url, forAccount: account.id)
+
+            let calendars = items.compactMap { item -> MBCalendar? in
+                guard let title = item["summary"] as? String,
+                      let calendarID = item["id"] as? String,
+                      let backgroundColor = item["backgroundColor"] as? String else { return nil }
+
+                let prefixedCalendarId = "\(account.id):\(calendarID)"
+                return MBCalendar(title: title,
+                                  id: prefixedCalendarId,
+                                  source: account.email,
+                                  email: account.email,
+                                  color: hexStringToUIColor(hex: backgroundColor))
+            }
+            allCalendars.append(contentsOf: calendars)
         }
+
+        return allCalendars
     }
 
     private func getCalendarEventsForDateRange(calendar: MBCalendar,
+                                               accountId: String,
                                                dateFrom: Date,
                                                dateTo: Date) async throws -> [MBEvent] {
+        if isMockMode {
+            let events = (mockEventData[accountId] ?? []).compactMap { item -> MBEvent? in
+                GCParser.event(from: item, calendar: calendar)
+            }
+            return events
+        }
+
         let iso = ISO8601DateFormatter()
         let timeMin = iso.string(from: dateFrom)
         let timeMax = iso.string(from: dateTo)
 
-        var comps = URLComponents(string: "https://www.googleapis.com/calendar/v3/calendars/\(calendar.id)/events")!
+        let prefix = "\(accountId):"
+        guard calendar.id.hasPrefix(prefix) else { return [] }
+        let originalCalendarId = String(calendar.id.dropFirst(prefix.count))
+
+        var comps = URLComponents(string: "https://www.googleapis.com/calendar/v3/calendars/\(originalCalendarId)/events")!
         comps.queryItems = [
             .init(name: "singleEvents", value: "true"),
             .init(name: "orderBy", value: "startTime"),
@@ -202,43 +382,50 @@ final class GCEventStore: NSObject,
             .init(name: "timeMin", value: timeMin)
         ]
 
-        let items = try await fetchJSON(comps.url!)
+        let items = try await fetchJSON(comps.url!, forAccount: accountId)
         return items.compactMap { GCParser.event(from: $0, calendar: calendar) }
     }
 
     func fetchEventsForDateRange(for calendars: [MBCalendar],
                                  from: Date,
                                  to: Date) async throws -> [MBEvent] {
-        try await ensureSignedIn()
         var result: [MBEvent] = []
-        for cal in calendars {
-            let ev = try await getCalendarEventsForDateRange(calendar: cal, dateFrom: from, dateTo: to)
-            result.append(contentsOf: ev)
+
+        let calendarsByAccount = Dictionary(grouping: calendars) { calendar in
+            if let idx = calendar.id.firstIndex(of: ":") {
+                return String(calendar.id[..<idx])
+            }
+            return ""
         }
+
+        for (accountId, accountCalendars) in calendarsByAccount {
+            if isMockMode {
+                for cal in accountCalendars {
+                    let ev = try await getCalendarEventsForDateRange(calendar: cal, accountId: accountId, dateFrom: from, dateTo: to)
+                    result.append(contentsOf: ev)
+                }
+                continue
+            }
+
+            guard let state = authStates[accountId], state.isAuthorized else { continue }
+
+            for cal in accountCalendars {
+                let ev = try await getCalendarEventsForDateRange(calendar: cal, accountId: accountId, dateFrom: from, dateTo: to)
+                result.append(contentsOf: ev)
+            }
+        }
+
         return result
     }
 
     // MARK: - Private helpers
-    private func ensureSignedIn() async throws {
-        if authState?.isAuthorized == true,
-           authState?.lastTokenResponse?.refreshToken != nil {
-            return
-        }
 
-        if let running = signInTask { return try await running.value }
-
-        let forceConsent = authState?.lastTokenResponse?.refreshToken == nil
-
-        let task = Task {
-            try await signIn(forcePrompt: forceConsent)
-        }
-        signInTask = task
-        defer { signInTask = nil }
-        try await task.value
+    private func accountKeychainKey(accountId: String) -> String {
+        return "\(googleAuthKeychainName ?? "MeetingBarGoogleAuth")_\(accountId)"
     }
 
-    private func validAccessToken(forceRefresh: Bool = false) async throws -> String {
-        guard let state = authState else { throw AuthError.notSignedIn }
+    private func validAccessToken(for accountId: String, forceRefresh: Bool = false) async throws -> String {
+        guard let state = authStates[accountId] else { throw AuthError.notSignedIn }
 
         if !forceRefresh,
            state.isTokenFresh,
@@ -246,21 +433,23 @@ final class GCEventStore: NSObject,
             return token
         }
 
-        if let running = refreshTask { return try await running.value }
+        if let running = refreshTask[accountId] { return try await running.value }
 
         let task = Task<String, Error> {
-            defer { refreshTask = nil }
+            defer { refreshTask[accountId] = nil }
             return try await withCheckedThrowingContinuation { cont in
                 if forceRefresh { state.setNeedsTokenRefresh() }
 
                 state.performAction { [weak self] accessToken, _, error in
                     guard let self else { return }
                     if let token = accessToken {
-                        cont.resume(returning: token) // stateChangeDelegate persists new tokens
+                        cont.resume(returning: token)
                     } else {
                         if let err = error as NSError?,
                            err.domain == OIDOAuthTokenErrorDomain {
-                            self.clearAuthState()
+                            if let account = self.accounts.first(where: { $0.id == accountId }) {
+                                Task { await self.removeAccount(account) }
+                            }
                         }
                         cont.resume(throwing: error ?? AuthError.refreshFailed)
                     }
@@ -268,46 +457,79 @@ final class GCEventStore: NSObject,
             }
         }
 
-        refreshTask = task
+        refreshTask[accountId] = task
         return try await task.value
+    }
+
+    // MARK: Legacy migration
+
+    private func migrateLegacyAuthStateIfNeeded() {
+        guard accounts.isEmpty,
+              let data = Keychain.load(for: Self.legacyKeychainName),
+              let state = try? NSKeyedUnarchiver.unarchivedObject(ofClass: OIDAuthState.self, from: data),
+              let email = state.userEmail
+        else { return }
+
+        let accountId = UUID().uuidString
+        let account = GoogleAccount(id: accountId, email: email)
+        let newKey = accountKeychainKey(accountId: accountId)
+
+        do {
+            let newData = try NSKeyedArchiver.archivedData(withRootObject: state, requiringSecureCoding: true)
+            Keychain.save(data: newData, for: newKey)
+            Keychain.delete(for: Self.legacyKeychainName)
+            accounts = [account]
+        } catch {
+            NSLog("Failed to migrate legacy auth state: \(error)")
+        }
     }
 
     // MARK: Keychain persistence
 
-    private func persistAuthState() {
-        guard let state = authState else {
-            Keychain.delete(for: Self.kKeychainName)
+    private func persistAuthState(for account: GoogleAccount) {
+        guard let state = authStates[account.id] else {
+            Keychain.delete(for: accountKeychainKey(accountId: account.id))
             return
         }
         do {
             let data = try NSKeyedArchiver.archivedData(withRootObject: state, requiringSecureCoding: true)
-            Keychain.save(data: data, for: Self.kKeychainName)
+            Keychain.save(data: data, for: accountKeychainKey(accountId: account.id))
         } catch {
             NSLog("Error archiving OIDAuthState: \(error)")
         }
     }
 
-    private func restoreAuthState() -> OIDAuthState? {
-        guard let data = Keychain.load(for: Self.kKeychainName) else { return nil }
-        do {
-            guard let state = try NSKeyedUnarchiver.unarchivedObject(ofClass: OIDAuthState.self, from: data) else { return nil }
-            userEmail = state.userEmail
-            return state
-        } catch {
-            NSLog("Error unarchiving OIDAuthState: \(error)")
-            return nil
+    private func restoreAllAuthStates() {
+        for account in accounts {
+            let key = accountKeychainKey(accountId: account.id)
+            guard let data = Keychain.load(for: key) else { continue }
+            do {
+                guard let state = try NSKeyedUnarchiver.unarchivedObject(ofClass: OIDAuthState.self, from: data) else { continue }
+                state.stateChangeDelegate = self
+                state.errorDelegate = self
+                authStates[account.id] = state
+            } catch {
+                NSLog("Error unarchiving OIDAuthState: \(error)")
+            }
         }
     }
 
-    private func clearAuthState() {
-        authState  = nil
-        userEmail  = nil
-        Keychain.delete(for: Self.kKeychainName)
+    private func pruneAccountsMissingAuthState() {
+        let validIds = Set(authStates.keys)
+        let broken = accounts.filter { !validIds.contains($0.id) }
+        guard !broken.isEmpty else { return }
+
+        for account in broken {
+            NSLog("GCEventStore: pruning account %@ with missing auth state", account.email)
+            Keychain.delete(for: accountKeychainKey(accountId: account.id))
+        }
+        accounts = accounts.filter { validIds.contains($0.id) }
     }
 
     // MARK: Networking helper
-    private func fetchJSON(_ url: URL, retrying: Bool = false) async throws -> [[String: Any]] {
-        let token = try await validAccessToken()
+
+    private func fetchJSON(_ url: URL, forAccount accountId: String, retrying: Bool = false) async throws -> [[String: Any]] {
+        let token = try await validAccessToken(for: accountId)
 
         var req = URLRequest(url: url)
         req.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
@@ -318,12 +540,12 @@ final class GCEventStore: NSObject,
             switch http.statusCode {
             case 401, 403:
                 if !retrying {
-                    // force-refresh and retry
-                    _ = try await validAccessToken(forceRefresh: true)
-                    return try await fetchJSON(url, retrying: true)
+                    _ = try await validAccessToken(for: accountId, forceRefresh: true)
+                    return try await fetchJSON(url, forAccount: accountId, retrying: true)
                 }
-                // refresh token revoked – force re‑login
-                clearAuthState()
+                if let account = accounts.first(where: { $0.id == accountId }) {
+                    Task { await self.removeAccount(account) }
+                }
                 throw AuthError.notSignedIn
             case 200...299:
                 break
@@ -332,8 +554,12 @@ final class GCEventStore: NSObject,
             }
         }
 
-        let root = try JSONSerialization.jsonObject(with: data) as? [String: Any] ?? [:]
-        return root["items"] as! [[String: Any]]
+        guard let root = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let items = root["items"] as? [[String: Any]]
+        else {
+            throw AuthError.invalidResponse
+        }
+        return items
     }
 
     private func revoke(token: String) async throws {
@@ -349,20 +575,36 @@ final class GCEventStore: NSObject,
     }
 
     // MARK: - OIDAuthState Delegates
-    func didChange(_ state: OIDAuthState) {
-        // persist every change (e.g., refreshed token)
-        persistAuthState()
+
+    nonisolated func didChange(_ state: OIDAuthState) {
+        let stateIdentity = ObjectIdentifier(state)
+        Task { @MainActor in
+            for (accountId, storedState) in self.authStates where ObjectIdentifier(storedState) == stateIdentity {
+                if let account = self.accounts.first(where: { $0.id == accountId }) {
+                    self.persistAuthState(for: account)
+                }
+                break
+            }
+        }
     }
 
-    func authState(_ state: OIDAuthState, didEncounterAuthorizationError error: Error) {
+    nonisolated func authState(_ state: OIDAuthState, didEncounterAuthorizationError error: Error) {
         let nsErr = error as NSError
         if nsErr.domain == OIDOAuthTokenErrorDomain {
-            // refresh token invalid → clean state & notify
-            clearAuthState()
+            let stateIdentity = ObjectIdentifier(state)
+            Task { @MainActor in
+                for (accountId, storedState) in self.authStates where ObjectIdentifier(storedState) == stateIdentity {
+                    if let account = self.accounts.first(where: { $0.id == accountId }) {
+                        await self.removeAccount(account)
+                    }
+                    break
+                }
+            }
         }
     }
 
     // MARK: - OIDExternalUserAgent
+
     func present(_ request: OIDExternalUserAgentRequest, session _: OIDExternalUserAgentSession) -> Bool {
         if let url = request.externalUserAgentRequestURL(), NSWorkspace.shared.open(url) {
             return true
@@ -376,84 +618,33 @@ final class GCEventStore: NSObject,
     enum GCParser {
         static func event(from item: [String: Any],
                           calendar: MBCalendar) -> MBEvent? {
-            let eventID = item["id"] as! String
-
-            let formatter = ISO8601DateFormatter()
-            let lastModifiedDate = formatter.date(from: item["updated"] as? String ?? "")
-            let title = item["summary"] as? String
-            var status: MBEventStatus
-            switch item["status"] as? String {
-            case "confirmed":
-                status = .confirmed
-            case "tentative":
-                status = .tentative
-            case "cancelled":
-                status = .canceled
-            default:
-                status = .none
+            guard let eventID = item["id"] as? String else {
+                NSLog("GCParser: missing event id")
+                return nil
             }
 
+            let lastModifiedDate = ISO8601DateFormatter().date(from: item["updated"] as? String ?? "")
+            let title = item["summary"] as? String
+            let status = parseStatus(item["status"] as? String)
             let notes = item["description"] as? String
             let location = item["location"] as? String
+            let url = parseVideoURL(item["conferenceData"] as? [String: Any])
+            let organizer = parseOrganizer(item["organizer"] as? [String: String])
+            let attendees = parseAttendees(item["attendees"] as? [[String: Any]])
 
-            var url: URL?
-            if let conferenceData = item["conferenceData"] as? [String: Any] {
-                if let entryPoints = conferenceData["entryPoints"] as? [[String: String]] {
-                    if let videoEntryPoint = entryPoints.first(where: { $0["entryPointType"] == "video" }) {
-                        url = URL(string: videoEntryPoint["uri"] ?? "")
-                    }
-                }
+            guard let itemStart = item["start"] as? [String: String],
+                  let itemEnd = item["end"] as? [String: String]
+            else {
+                NSLog("GCParser: missing start/end for event \(eventID)")
+                return nil
             }
 
-            let organizerRaw = item["organizer"] as? [String: String]
-            let organizer = MBEventOrganizer(email: organizerRaw?["email"], name: organizerRaw?["name"])
-
-            var attendees: [MBEventAttendee] = []
-            let rawAttendees = item["attendees"] as? [[String: Any]] ?? []
-            for jsonAttendee in rawAttendees {
-                let email = jsonAttendee["email"] as? String
-                let name = jsonAttendee["displayName"] as? String
-                let optional = jsonAttendee["optional"] as? Bool ?? false
-                let isCurrentUser = jsonAttendee["self"] as? Bool ?? false
-
-                var attendeeStatus: MBEventAttendeeStatus
-                switch jsonAttendee["responseStatus"] as? String {
-                case "accepted":
-                    attendeeStatus = .accepted
-                case "declined":
-                    attendeeStatus = .declined
-                case "tentative":
-                    attendeeStatus = .tentative
-                case "needsAction":
-                    attendeeStatus = .pending
-                default:
-                    attendeeStatus = .unknown
-                }
-                let attendee = MBEventAttendee(email: email, name: name, status: attendeeStatus, optional: optional, isCurrentUser: isCurrentUser)
-                attendees.append(attendee)
+            guard let dates = parseDates(itemStart, itemEnd) else {
+                NSLog("GCParser: invalid date format for event \(eventID)")
+                return nil
             }
 
-            var startDate: Date
-            var endDate: Date
-            var isAllDay: Bool
-
-            let itemStart = item["start"] as! [String: String]
-            let itemEnd = item["end"] as! [String: String]
-
-            if let startDateTime = itemStart["dateTime"], let endDateTime = itemEnd["dateTime"] {
-                let formatter = ISO8601DateFormatter()
-                startDate = formatter.date(from: startDateTime)!
-                endDate = formatter.date(from: endDateTime)!
-                isAllDay = false
-            } else {
-                let formatter = DateFormatter()
-                formatter.dateFormat = "yyyy-MM-dd"
-                startDate = formatter.date(from: itemStart["date"]!)!
-                endDate = formatter.date(from: itemEnd["date"]!)!
-                isAllDay = true
-            }
-
-            let recurrent = (item["recurringEventId"] != nil) ? true : false
+            let recurrent = item["recurringEventId"] != nil
 
             return MBEvent(
                 id: eventID,
@@ -465,12 +656,75 @@ final class GCEventStore: NSObject,
                 url: url,
                 organizer: organizer,
                 attendees: attendees,
-                startDate: startDate,
-                endDate: endDate,
-                isAllDay: isAllDay,
+                startDate: dates.start,
+                endDate: dates.end,
+                isAllDay: dates.isAllDay,
                 recurrent: recurrent,
                 calendar: calendar
             )
         }
     }
+}
+
+private func parseStatus(_ raw: String?) -> MBEventStatus {
+    switch raw {
+    case "confirmed": return .confirmed
+    case "tentative": return .tentative
+    case "cancelled": return .canceled
+    default: return .none
+    }
+}
+
+private func parseVideoURL(_ conferenceData: [String: Any]?) -> URL? {
+    guard let entryPoints = conferenceData?["entryPoints"] as? [[String: String]] else { return nil }
+    guard let video = entryPoints.first(where: { $0["entryPointType"] == "video" }) else { return nil }
+    return URL(string: video["uri"] ?? "")
+}
+
+private func parseOrganizer(_ raw: [String: String]?) -> MBEventOrganizer {
+    MBEventOrganizer(email: raw?["email"], name: raw?["name"])
+}
+
+private func parseAttendees(_ raw: [[String: Any]]?) -> [MBEventAttendee] {
+    guard let raw else { return [] }
+    return raw.compactMap { json -> MBEventAttendee? in
+        guard let email = json["email"] as? String else { return nil }
+        let name = json["displayName"] as? String
+        let optional = json["optional"] as? Bool ?? false
+        let isCurrentUser = json["self"] as? Bool ?? false
+        let status = parseAttendeeStatus(json["responseStatus"] as? String)
+        return MBEventAttendee(email: email, name: name, status: status, optional: optional, isCurrentUser: isCurrentUser)
+    }
+}
+
+private func parseAttendeeStatus(_ raw: String?) -> MBEventAttendeeStatus {
+    switch raw {
+    case "accepted": return .accepted
+    case "declined": return .declined
+    case "tentative": return .tentative
+    case "needsAction": return .pending
+    default: return .unknown
+    }
+}
+
+private struct ParsedDates {
+    let start: Date
+    let end: Date
+    let isAllDay: Bool
+}
+
+private func parseDates(_ start: [String: String], _ end: [String: String]) -> ParsedDates? {
+    if let startStr = start["dateTime"],
+       let endStr = end["dateTime"],
+       let parsedStart = ISO8601DateFormatter().date(from: startStr),
+       let parsedEnd = ISO8601DateFormatter().date(from: endStr) {
+        return ParsedDates(start: parsedStart, end: parsedEnd, isAllDay: false)
+    }
+    if let startStr = start["date"],
+       let endStr = end["date"],
+       let parsedStart = DateFormatter.yyyyMMdd.date(from: startStr),
+       let parsedEnd = DateFormatter.yyyyMMdd.date(from: endStr) {
+        return ParsedDates(start: parsedStart, end: parsedEnd, isAllDay: true)
+    }
+    return nil
 }

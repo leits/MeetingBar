@@ -19,6 +19,8 @@ extension Defaults.Keys {
     static let selectedCalendarIDs = Key<[String]>("selectedCalendarIDs", default: [])
     static let eventStoreProvider = Key<EventStoreProvider>("eventStoreProvider", default: .macOSEventKit)
 
+    static let googleAccounts = Key<[GoogleAccount]>("googleAccounts", default: [])
+
     static let onboardingCompleted = Key<Bool>("onboardingCompleted", default: false)
 
     static let showEventsForPeriod = Key<ShowEventsForPeriod>("showEventsForPeriod", default: .today)
