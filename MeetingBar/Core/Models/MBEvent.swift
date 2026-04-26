@@ -126,7 +126,7 @@ public struct MBEvent: Identifiable, Hashable, Sendable {
         for linkField in linkFields {
             if var detectedLink = detectMeetingLink(linkField) {
                 if detectedLink.service == .meet,
-                   let authAccount = calendar.email ?? attendees.first(where: { $0.isCurrentUser })?.email,
+                   let authAccount = attendees.first(where: { $0.isCurrentUser })?.email ?? calendar.email,
                    let urlEncodedAccount = authAccount.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
                     detectedLink.url = URL(string: (detectedLink.url.absoluteString) + "?authuser=\(urlEncodedAccount)")!
                 }
