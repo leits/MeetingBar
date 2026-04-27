@@ -162,9 +162,14 @@ public class EventManager: ObservableObject {
         // C) Manual trigger
         let manualPub = refreshSubject.eraseToAnyPublisher()
 
-        // D) Merge all triggers; debounce collapses rapid bursts into one.
+        // D) Merge all triggers; throttle drops bursts.
+        // Throttle (not debounce) so the first trigger in a window passes through
+        // immediately — manual refresh feels instant — while subsequent rapid
+        // triggers (e.g. several Defaults changes in one preferences update) are
+        // collapsed into a single fetch. debounce would also delay a fast periodic
+        // timer indefinitely if its interval is shorter than the debounce window.
         let trigger = Publishers.Merge3(defaultsPub, timerPub, manualPub)
-            .debounce(for: .milliseconds(0), scheduler: RunLoop.main)
+            .throttle(for: .milliseconds(200), scheduler: RunLoop.main, latest: false)
 
         // E) When any fires, fetch calendars & events.
         // flatMap(maxPublishers: .max(1)) serializes fetches so at most one runs

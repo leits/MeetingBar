@@ -72,7 +72,10 @@ extension EKEventStore: EventStore {
 
         var events: [MBEvent] = []
         for rawEvent in EKEventStore.shared.events(matching: predicate) {
-            let calendar = calendars.first { $0.id == rawEvent.calendar.calendarIdentifier }!
+            guard let calendar = calendars.first(where: { $0.id == rawEvent.calendar.calendarIdentifier }) else {
+                NSLog("Skipping EventKit event from unknown calendar id \(rawEvent.calendar.calendarIdentifier)")
+                continue
+            }
             var status: MBEventStatus
             switch rawEvent.status {
             case .confirmed:
@@ -144,11 +147,11 @@ extension EKEventStore: EventStore {
 
 func getGmailAccount(_ text: String) -> String? {
     // Hacky and likely to break, but should work until Apple changes something
-    let regex = try! NSRegularExpression(pattern: #""mailto:(.+@.+)""#)
-    let resultsIterator = regex.matches(in: text, range: NSRange(text.startIndex..., in: text))
-    let resultsMap = resultsIterator.map { String(text[Range($0.range(at: 1), in: text)!]) }
-    if !resultsMap.isEmpty {
-        return resultsMap.first
-    }
-    return nil
+    guard let regex = try? NSRegularExpression(pattern: #""mailto:(.+@.+)""#) else { return nil }
+    let range = NSRange(text.startIndex..., in: text)
+    guard let match = regex.firstMatch(in: text, range: range),
+          match.numberOfRanges > 1,
+          let captureRange = Range(match.range(at: 1), in: text)
+    else { return nil }
+    return String(text[captureRange])
 }
