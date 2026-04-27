@@ -3,7 +3,7 @@ SCHEME := MeetingBar
 XCODEBUILD ?= xcodebuild
 SWIFTLINT ?= swiftlint
 
-.PHONY: build build-release test lint lint-fix open
+.PHONY: build build-release test lint lint-fix open validate-strings
 
 build:
 	$(XCODEBUILD) -project $(PROJECT) -scheme $(SCHEME) -configuration Debug build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
@@ -33,3 +33,6 @@ lint-fix:
 
 open:
 	open $(PROJECT)
+
+validate-strings:
+	@bash Scripts/validate_localizations.sh
