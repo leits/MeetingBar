@@ -95,38 +95,19 @@ private struct DiagnosticsSection: View {
     }
 
     private func copyDiagnostics() {
+        let info = Bundle.main.infoDictionary ?? [:]
+        let context = DiagnosticsContext(
+            appVersion: info["CFBundleShortVersionString"] as? String ?? "?",
+            buildNumber: info["CFBundleVersion"] as? String ?? "?",
+            osVersion: ProcessInfo.processInfo.operatingSystemVersionString,
+            provider: Defaults[.eventStoreProvider],
+            selectedCalendarCount: Defaults[.selectedCalendarIDs].count,
+            totalCalendarCount: eventManager.calendars.count,
+            visibleEventCount: eventManager.events.count,
+            health: eventManager.providerHealth
+        )
         let pasteboard = NSPasteboard.general
         pasteboard.clearContents()
-        pasteboard.setString(buildDiagnosticsText(), forType: .string)
-    }
-
-    private func buildDiagnosticsText() -> String {
-        let info = Bundle.main.infoDictionary ?? [:]
-        let appVersion = info["CFBundleShortVersionString"] as? String ?? "?"
-        let buildNumber = info["CFBundleVersion"] as? String ?? "?"
-        let osVersion = ProcessInfo.processInfo.operatingSystemVersionString
-        let providerName: String
-        switch Defaults[.eventStoreProvider] {
-        case .macOSEventKit: providerName = "Calendar.app (EventKit)"
-        case .googleCalendar: providerName = "Google Calendar"
-        }
-        let selectedCalendarCount = Defaults[.selectedCalendarIDs].count
-        let totalCalendarCount = eventManager.calendars.count
-        let visibleEventCount = eventManager.events.count
-        let health = eventManager.providerHealth
-        let formatter = ISO8601DateFormatter()
-        let lastSuccess = health.lastSuccessfulRefresh.map(formatter.string) ?? "never"
-        let lastAttempt = health.lastAttemptedRefresh.map(formatter.string) ?? "never"
-        let lastError = health.lastErrorDescription ?? "none"
-        return """
-        MeetingBar \(appVersion) (\(buildNumber))
-        macOS: \(osVersion)
-        Provider: \(providerName)
-        Calendars: \(selectedCalendarCount) selected / \(totalCalendarCount) available
-        Visible events: \(visibleEventCount)
-        Last successful refresh: \(lastSuccess)
-        Last attempted refresh: \(lastAttempt)
-        Last error: \(lastError)
-        """
+        pasteboard.setString(DiagnosticsReport.text(from: context), forType: .string)
     }
 }

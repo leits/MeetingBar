@@ -42,11 +42,10 @@ final class MeetingLinkDetectorTests: BaseTestCase {
         XCTAssertEqual(link?.service, .teams)
     }
 
-    func testDetectsLinkFromHTMLStrippedNotes() {
-        // Notes contain only an HTML-encoded link with surrounding markup.
-        // The first pass on raw notes should pick it up because the regex does
-        // not require word boundaries; this test guards that fallback path
-        // exists for future markup variations.
+    func testDetectsLinkInsideHTMLAttributeWithoutStripping() {
+        // The raw-notes pass already matches because the link regex has no
+        // word boundaries, so `href="..."` markup around the URL does not
+        // prevent a match. Guards that change in future regex tightening.
         let link = MeetingLinkDetector.detect(
             location: nil,
             eventURL: nil,
@@ -55,6 +54,30 @@ final class MeetingLinkDetectorTests: BaseTestCase {
             currentUserEmail: nil
         )
         XCTAssertEqual(link?.service, .meet)
+    }
+
+    func testDetectsLinkOnlyAfterHTMLStripping() {
+        // The URL prefix is encoded with hex entities AND wrapped in a real
+        // HTML tag. `htmlTagsStripped()` only triggers entity-decoding when
+        // it sees a tag (containsHTML check), so we need both. Raw pass has
+        // no literal "https://" and returns nil; the stripped pass produces
+        // "https://meet.google.com/abc-defg-hij" and matches.
+        let raw = "<p>&#x68;&#x74;&#x74;&#x70;&#x73;://meet.google.com/abc-defg-hij</p>"
+
+        XCTAssertNil(
+            detectMeetingLink(raw),
+            "raw pass should not find a link before HTML decoding"
+        )
+
+        let link = MeetingLinkDetector.detect(
+            location: nil,
+            eventURL: nil,
+            notes: raw,
+            calendarEmail: nil,
+            currentUserEmail: nil
+        )
+        XCTAssertEqual(link?.service, .meet)
+        XCTAssertEqual(link?.url.absoluteString, "https://meet.google.com/abc-defg-hij")
     }
 
     func testLocationBeatsEventURL() {

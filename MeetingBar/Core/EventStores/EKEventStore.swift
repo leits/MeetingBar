@@ -146,8 +146,11 @@ extension EKEventStore: EventStore {
 }
 
 func getGmailAccount(_ text: String) -> String? {
-    // Hacky and likely to break, but should work until Apple changes something
-    guard let regex = try? NSRegularExpression(pattern: #""mailto:(.+@.+)""#) else { return nil }
+    // Hacky and likely to break, but should work until Apple changes something.
+    // Non-greedy quantifiers stop at the first closing quote, otherwise input
+    // with multiple mailto: occurrences captures everything between the first
+    // and last quote.
+    guard let regex = try? NSRegularExpression(pattern: #""mailto:([^"@]+@[^"]+)""#) else { return nil }
     let range = NSRange(text.startIndex..., in: text)
     guard let match = regex.firstMatch(in: text, range: range),
           match.numberOfRanges > 1,
