@@ -42,107 +42,120 @@ extension EKEventStore: EventStore {
     public func signOut() async {}
 
     public func refreshSources() async {
-        EKEventStore.shared.refreshSourcesIfNecessary()
+        await Task.detached(priority: .userInitiated) {
+            EKEventStore.shared.refreshSourcesIfNecessary()
+        }.value
     }
 
     public func fetchAllCalendars() async throws -> [MBCalendar] {
-        var allCalendars: [MBCalendar] = []
-
-        for calendar in EKEventStore.shared.calendars(for: .event) {
-            let calendar = MBCalendar(
-                title: calendar.title,
-                id: calendar.calendarIdentifier,
-                source: calendar.source.title,
-                email: getGmailAccount(calendar.source.description),
-                color: calendar.color
-            )
-            allCalendars.append(calendar)
-        }
-        return allCalendars
+        // Move enumeration off the main thread so a large source/calendar
+        // list does not hang the UI. EKEventStore is @unchecked Sendable
+        // (declared at the top of this file), so accessing `shared` from a
+        // detached task is safe. A future iteration can promote this into a
+        // dedicated actor that owns its own EKEventStore instance.
+        await Task.detached(priority: .userInitiated) {
+            EKEventStore.shared.calendars(for: .event).map { ekCalendar in
+                MBCalendar(
+                    title: ekCalendar.title,
+                    id: ekCalendar.calendarIdentifier,
+                    source: ekCalendar.source.title,
+                    email: getGmailAccount(ekCalendar.source.description),
+                    color: ekCalendar.color
+                )
+            }
+        }.value
     }
 
     public func fetchEventsForDateRange(for calendars: [MBCalendar], from dateFrom: Date, to dateTo: Date) async throws -> [MBEvent] {
-        let selectedCalendars = EKEventStore.shared.calendars(for: .event).filter { calendars.map(\.id).contains($0.calendarIdentifier) }
+        // events(matching:) blocks while EventKit walks the store. For users
+        // with thousands of events this hung the menu bar. Push it off main.
+        await Task.detached(priority: .userInitiated) {
+            fetchEventsOffMain(knownCalendars: calendars, dateFrom: dateFrom, dateTo: dateTo)
+        }.value
+    }
+}
 
-        if selectedCalendars.isEmpty {
-            return []
+private func fetchEventsOffMain(knownCalendars: [MBCalendar], dateFrom: Date, dateTo: Date) -> [MBEvent] {
+    let selectedCalendars = EKEventStore.shared.calendars(for: .event).filter { knownCalendars.map(\.id).contains($0.calendarIdentifier) }
+
+    if selectedCalendars.isEmpty {
+        return []
+    }
+
+    let predicate = EKEventStore.shared.predicateForEvents(withStart: dateFrom, end: dateTo, calendars: selectedCalendars)
+
+    var events: [MBEvent] = []
+    for rawEvent in EKEventStore.shared.events(matching: predicate) {
+        guard let calendar = knownCalendars.first(where: { $0.id == rawEvent.calendar.calendarIdentifier }) else {
+            NSLog("Skipping EventKit event from unknown calendar id \(rawEvent.calendar.calendarIdentifier)")
+            continue
+        }
+        var status: MBEventStatus
+        switch rawEvent.status {
+        case .confirmed:
+            status = .confirmed
+        case .tentative:
+            status = .tentative
+        case .canceled:
+            status = .canceled
+        default:
+            status = .none
         }
 
-        let predicate = predicateForEvents(withStart: dateFrom, end: dateTo, calendars: selectedCalendars)
+        let organizer = MBEventOrganizer(email: rawEvent.organizer?.url.absoluteString, name: rawEvent.organizer?.name)
 
-        var events: [MBEvent] = []
-        for rawEvent in EKEventStore.shared.events(matching: predicate) {
-            guard let calendar = calendars.first(where: { $0.id == rawEvent.calendar.calendarIdentifier }) else {
-                NSLog("Skipping EventKit event from unknown calendar id \(rawEvent.calendar.calendarIdentifier)")
+        var attendees: [MBEventAttendee] = []
+
+        for rawAttendee in rawEvent.attendees ?? [] {
+            if rawAttendee.participantType != .person {
                 continue
             }
-            var status: MBEventStatus
-            switch rawEvent.status {
-            case .confirmed:
-                status = .confirmed
+            var attendeeStatus: MBEventAttendeeStatus
+            switch rawAttendee.participantStatus {
+            case .pending:
+                attendeeStatus = .pending
+            case .accepted:
+                attendeeStatus = .accepted
+            case .declined:
+                attendeeStatus = .declined
             case .tentative:
-                status = .tentative
-            case .canceled:
-                status = .canceled
+                attendeeStatus = .tentative
+            case .delegated:
+                attendeeStatus = .delegated
+            case .completed:
+                attendeeStatus = .completed
+            case .inProcess:
+                attendeeStatus = .inProcess
             default:
-                status = .none
+                attendeeStatus = .unknown
             }
 
-            let organizer = MBEventOrganizer(email: rawEvent.organizer?.url.absoluteString, name: rawEvent.organizer?.name)
+            let optional = rawAttendee.participantRole == .optional
+            let email = rawAttendee.safeNSURL?.resourceSpecifier
+            let attendee = MBEventAttendee(email: email, name: rawAttendee.name, status: attendeeStatus, optional: optional, isCurrentUser: rawAttendee.isCurrentUser)
 
-            var attendees: [MBEventAttendee] = []
-
-            for rawAttendee in rawEvent.attendees ?? [] {
-                if rawAttendee.participantType != .person {
-                    continue
-                }
-                var attendeeStatus: MBEventAttendeeStatus
-                switch rawAttendee.participantStatus {
-                case .pending:
-                    attendeeStatus = .pending
-                case .accepted:
-                    attendeeStatus = .accepted
-                case .declined:
-                    attendeeStatus = .declined
-                case .tentative:
-                    attendeeStatus = .tentative
-                case .delegated:
-                    attendeeStatus = .delegated
-                case .completed:
-                    attendeeStatus = .completed
-                case .inProcess:
-                    attendeeStatus = .inProcess
-                default:
-                    attendeeStatus = .unknown
-                }
-
-                let optional = rawAttendee.participantRole == .optional
-                let email = rawAttendee.safeNSURL?.resourceSpecifier
-                let attendee = MBEventAttendee(email: email, name: rawAttendee.name, status: attendeeStatus, optional: optional, isCurrentUser: rawAttendee.isCurrentUser)
-
-                attendees.append(attendee)
-            }
-
-            let event = MBEvent(
-                id: rawEvent.calendarItemIdentifier,
-                lastModifiedDate: rawEvent.lastModifiedDate,
-                title: rawEvent.title,
-                status: status,
-                notes: rawEvent.notes,
-                location: rawEvent.location,
-                url: rawEvent.url,
-                organizer: organizer,
-                attendees: attendees,
-                startDate: rawEvent.startDate,
-                endDate: rawEvent.endDate,
-                isAllDay: rawEvent.isAllDay,
-                recurrent: rawEvent.hasRecurrenceRules,
-                calendar: calendar
-            )
-            events.append(event)
+            attendees.append(attendee)
         }
-        return events
+
+        let event = MBEvent(
+            id: rawEvent.calendarItemIdentifier,
+            lastModifiedDate: rawEvent.lastModifiedDate,
+            title: rawEvent.title,
+            status: status,
+            notes: rawEvent.notes,
+            location: rawEvent.location,
+            url: rawEvent.url,
+            organizer: organizer,
+            attendees: attendees,
+            startDate: rawEvent.startDate,
+            endDate: rawEvent.endDate,
+            isAllDay: rawEvent.isAllDay,
+            recurrent: rawEvent.hasRecurrenceRules,
+            calendar: calendar
+        )
+        events.append(event)
     }
+    return events
 }
 
 func getGmailAccount(_ text: String) -> String? {
