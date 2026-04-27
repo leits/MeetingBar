@@ -140,23 +140,7 @@ public struct MBEvent: Identifiable, Hashable, Sendable {
     }
 
     func openMeeting() {
-        if let meetingLink = meetingLink {
-            if Defaults[.runJoinEventScript], Defaults[.joinEventScriptLocation] != nil {
-                if let url = Defaults[.joinEventScriptLocation]?.appendingPathComponent("joinEventScript.scpt") {
-                    let task = try? NSUserAppleScriptTask(url: url)
-                    task?.execute { error in
-                        if let error = error {
-                            sendNotification("status_bar_error_apple_script_title".loco(), error.localizedDescription)
-                        }
-                    }
-                }
-            }
-            openMeetingURL(meetingLink.service, meetingLink.url, nil)
-        } else if let eventUrl = url {
-            eventUrl.openInDefaultBrowser()
-        } else {
-            sendNotification("status_bar_error_link_missed_title".loco(title), "status_bar_error_link_missed_message".loco())
-        }
+        MeetingOpener.open(event: self)
     }
 }
 
