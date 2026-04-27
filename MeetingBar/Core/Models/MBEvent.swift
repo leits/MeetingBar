@@ -112,28 +112,18 @@ public struct MBEvent: Identifiable, Hashable, Sendable {
         self.endDate = endDate
         self.recurrent = recurrent
 
-        if let currentUser = attendees.first(where: { $0.isCurrentUser }) {
+        let currentUser = attendees.first(where: { $0.isCurrentUser })
+        if let currentUser {
             participationStatus = currentUser.status
         }
 
-        let linkFields = [
-            location,
-            url?.absoluteString,
-            notes,
-            notes?.htmlTagsStripped()
-        ].compactMap { $0 }
-
-        for linkField in linkFields {
-            if var detectedLink = detectMeetingLink(linkField) {
-                if detectedLink.service == .meet,
-                   let authAccount = calendar.email ?? attendees.first(where: { $0.isCurrentUser })?.email,
-                   let urlEncodedAccount = authAccount.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
-                    detectedLink.url = URL(string: (detectedLink.url.absoluteString) + "?authuser=\(urlEncodedAccount)")!
-                }
-                meetingLink = detectedLink
-                break
-            }
-        }
+        meetingLink = MeetingLinkDetector.detect(
+            location: location,
+            eventURL: url,
+            notes: notes,
+            calendarEmail: calendar.email,
+            currentUserEmail: currentUser?.email
+        )
     }
 
     func emailAttendees() {
