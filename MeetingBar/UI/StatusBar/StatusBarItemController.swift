@@ -71,7 +71,7 @@ final class StatusBarItemController {
             .timeFormat, .bookmarks, .eventTitleFormat,
             .personalEventsAppereance, .pastEventsAppereance,
             .declinedEventsAppereance, .ongoingEventVisibility,
-            .showTimelineInMenu,
+            .showTimelineInMenu, .timeBasedStatusBarColor,
             options: []
         )
         .receive(on: DispatchQueue.main)
@@ -258,11 +258,6 @@ final class StatusBarItemController {
                 let menuTitle = NSMutableAttributedString()
 
                 if Defaults[.eventTimeFormat] != .show_under_title || Defaults[.eventTitleFormat] == .none {
-                    var eventTitle = title
-                    if Defaults[.eventTimeFormat] == .show {
-                        eventTitle += " " + time
-                    }
-
                     var styles = [NSAttributedString.Key: Any]()
                     styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: MenuStyleConstants.defaultFontSize)
 
@@ -274,7 +269,15 @@ final class StatusBarItemController {
                         styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
                     }
 
-                    menuTitle.append(NSAttributedString(string: eventTitle, attributes: styles))
+                    menuTitle.append(NSAttributedString(string: title, attributes: styles))
+
+                    if Defaults[.eventTimeFormat] == .show, !time.isEmpty {
+                        var timeStyles = styles
+                        if Defaults[.timeBasedStatusBarColor] {
+                            timeStyles[NSAttributedString.Key.foregroundColor] = countdownColor(for: nextEvent)
+                        }
+                        menuTitle.append(NSAttributedString(string: " " + time, attributes: timeStyles))
+                    }
                 } else {
                     let paragraphStyle = NSMutableParagraphStyle()
                     paragraphStyle.lineHeightMultiple = 0.7
@@ -298,9 +301,10 @@ final class StatusBarItemController {
 
                     menuTitle.append(NSAttributedString(string: title, attributes: styles))
 
-                    let timeAttributes = [
-                        NSAttributedString.Key.font: NSFont.systemFont(ofSize: 9),
-                        NSAttributedString.Key.foregroundColor: NSColor.lightGray
+                    let timeColor: NSColor = Defaults[.timeBasedStatusBarColor] ? countdownColor(for: nextEvent) : .lightGray
+                    let timeAttributes: [NSAttributedString.Key: Any] = [
+                        .font: NSFont.systemFont(ofSize: 9),
+                        .foregroundColor: timeColor
                     ]
                     menuTitle.append(NSAttributedString(string: "\n" + time, attributes: timeAttributes))
 
@@ -534,6 +538,24 @@ func shortenTitle(title: String?, offset: Int) -> String {
     }
 
     return eventTitle
+}
+
+func countdownColor(for event: MBEvent) -> NSColor {
+    let now = Date()
+    let timeRemaining: TimeInterval
+    if event.startDate <= now, event.endDate > now {
+        timeRemaining = event.endDate.timeIntervalSinceNow
+    } else {
+        timeRemaining = event.startDate.timeIntervalSinceNow
+    }
+
+    if timeRemaining >= 15 * 60 {
+        return .systemGreen
+    } else if timeRemaining >= 5 * 60 {
+        return .systemYellow
+    } else {
+        return .systemRed
+    }
 }
 
 func createEventStatusString(title: String, startDate: Date, endDate: Date) -> (String, String) {
