@@ -17,6 +17,7 @@ struct PreferencesView: View {
             LinksTab().tabItem { Text("preferences_tab_links".loco()) }
             CalendarsTab(eventManager: eventManager).tabItem { Text("preferences_tab_calendars".loco()) }
             AdvancedTab().tabItem { Text("preferences_tab_advanced".loco()) }
+            StatusTab().tabItem { Text("preferences_tab_status".loco()) }
         }.padding()
     }
 }

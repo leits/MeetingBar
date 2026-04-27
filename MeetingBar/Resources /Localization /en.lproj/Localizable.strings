@@ -35,6 +35,19 @@
 "preferences_tab_links" = "Links";
 "preferences_tab_calendars" = "Calendars";
 "preferences_tab_advanced" = "Advanced";
+"preferences_tab_status" = "Status";
+
+// MARK: - Preferences Status
+
+"preferences_status_state_ok" = "Up to date";
+"preferences_status_state_stale" = "Showing cached data";
+"preferences_status_state_error" = "Last refresh failed";
+"preferences_status_state_initializing" = "Initializing";
+"preferences_status_last_successful_refresh" = "Last successful refresh:";
+"preferences_status_last_error" = "Last error:";
+"preferences_status_refresh_now" = "Refresh now";
+"preferences_status_copy_diagnostics" = "Copy diagnostics";
+"preferences_status_diagnostics_hint" = "Copies app version, provider, refresh status and last error to the clipboard for issue reports.";
 
 // MARK: - Preferences General
 
