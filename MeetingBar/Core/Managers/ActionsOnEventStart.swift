@@ -24,130 +24,101 @@ class ActionsOnEventStart: NSObject {
         RunLoop.current.add(timer!, forMode: .common)
     }
 
-    /**
-     * we will schedule a common task to check if we have to execute the actions for event starts..
-     * -  a new meeting is started within the timeframe of the notification timebox, but not later as the beginning of the meeting.
-     * - All day events will be reported the first time when the current time is within the timeframe of the allday event (which can be several days).
-     */
+    /// Decides whether to fire the configured per-event actions for the
+    /// currently selected next event:
+    ///
+    /// - fullscreen notification (if enabled),
+    /// - auto-join meeting (if enabled),
+    /// - on-event-start AppleScript (if enabled).
+    ///
+    /// All-day events fire actions for the duration of the event. Each action
+    /// keeps its own processed-events list in `Defaults` so back-to-back
+    /// invocations of this method only fire once per (event id, lastModifiedDate)
+    /// pair.
     @objc
     private func checkNextEvent() {
-        // Only run if screen is not locked
-        if app.screenIsLocked {
-            return
+        if app.screenIsLocked { return }
+        let now = Date()
+
+        Defaults[.processedEventsForFullscreenNotification] =
+            EventActionPolicy.cleanupExpired(Defaults[.processedEventsForFullscreenNotification], now: now)
+        Defaults[.processedEventsForAutoJoin] =
+            EventActionPolicy.cleanupExpired(Defaults[.processedEventsForAutoJoin], now: now)
+        Defaults[.processedEventsForRunScriptOnEventStart] =
+            EventActionPolicy.cleanupExpired(Defaults[.processedEventsForRunScriptOnEventStart], now: now)
+
+        let fullscreenActive = Defaults[.fullscreenNotification]
+        let autoJoinActive = Defaults[.automaticEventJoin]
+        let scriptActive = Defaults[.runEventStartScript] && Defaults[.eventStartScriptLocation] != nil
+
+        guard fullscreenActive || autoJoinActive || scriptActive else { return }
+        guard let nextEvent = app.statusBarItem.events.nextEvent(linkRequired: true) else { return }
+
+        if fullscreenActive {
+            processFullscreenNotification(event: nextEvent, now: now)
         }
-
-        // Cleanup Passed Events
-        Defaults[.processedEventsForFullscreenNotification] = Defaults[.processedEventsForFullscreenNotification].filter { $0.eventEndDate.timeIntervalSinceNow > 0 }
-        Defaults[.processedEventsForAutoJoin] = Defaults[.processedEventsForAutoJoin].filter { $0.eventEndDate.timeIntervalSinceNow > 0 }
-        Defaults[.processedEventsForRunScriptOnEventStart] = Defaults[.processedEventsForRunScriptOnEventStart].filter { $0.eventEndDate.timeIntervalSinceNow > 0 }
-
-        // Only run if the user has activated it.
-        let fullscreenNotificationActive = Defaults[.fullscreenNotification]
-        let autoJoinActionActive = Defaults[.automaticEventJoin]
-        let runEventStartScriptActionActive = Defaults[.runEventStartScript] && (Defaults[.eventStartScriptLocation] != nil)
-
-        if !fullscreenNotificationActive, !autoJoinActionActive, !runEventStartScriptActionActive {
-            return
+        if autoJoinActive {
+            processAutoJoin(event: nextEvent, now: now)
         }
-        //
-
-        if let nextEvent = app.statusBarItem.events.nextEvent(linkRequired: true) {
-            let now = Date()
-
-            let startEndRange = nextEvent.startDate ... nextEvent.endDate
-
-            let timeInterval = nextEvent.startDate.timeIntervalSince(now)
-
-            let allDayCandidate = nextEvent.isAllDay && startEndRange.contains(now)
-
-            /*
-             * -----------------------
-             * MARK: Action: fullscreen notification
-             * ------------------------
-             */
-            let actionTimeForFullscreenNotification = Double(Defaults[.fullscreenNotificationTime].rawValue)
-            let nonAlldayCandidateForFullscreenNotification = (timeInterval > -15 && timeInterval < actionTimeForFullscreenNotification)
-
-            if fullscreenNotificationActive && (nonAlldayCandidateForFullscreenNotification || allDayCandidate) {
-                var events = Defaults[.processedEventsForFullscreenNotification]
-
-                let matchedEvent = events.first { $0.id == nextEvent.id }
-
-                // if a script was executed already for the event, but the start date is different,
-                // we will remove the the current event from the scheduled events, so that we can run the script again ->
-                // this is an edge case when the event was already notified for, but scheduled for a later time.
-                if matchedEvent == nil || matchedEvent?.lastModifiedDate != nextEvent.lastModifiedDate {
-                    if nextEvent.meetingLink != nil {
-                        app.openFullscreenNotificationWindow(event: nextEvent)
-                    }
-
-                    // update the executed events
-                    if matchedEvent != nil {
-                        events = events.filter { $0.id != nextEvent.id }
-                    }
-                    events.append(ProcessedEvent(id: nextEvent.id, lastModifiedDate: nextEvent.lastModifiedDate, eventEndDate: nextEvent.endDate))
-                    Defaults[.processedEventsForFullscreenNotification] = events
-                }
-            }
-
-            /*
-             * -----------------------
-             * MARK: Action: auto join event
-             * ------------------------
-             */
-            let actionTimeForEventAutoJoin = Double(Defaults[.automaticEventJoinTime].rawValue)
-            let nonAlldayCandidateForAutoJoin = (timeInterval > -15 && timeInterval < actionTimeForEventAutoJoin)
-
-            if autoJoinActionActive && (nonAlldayCandidateForAutoJoin || allDayCandidate) {
-                var events = Defaults[.processedEventsForAutoJoin]
-
-                let matchedEvent = events.first { $0.id == nextEvent.id }
-
-                // if a script was executed already for the event, but the start date is different,
-                // we will remove the the current event from the scheduled events, so that we can run the script again ->
-                // this is an edge case when the event was already notified for, but scheduled for a later time.
-                if matchedEvent == nil || matchedEvent?.lastModifiedDate != nextEvent.lastModifiedDate {
-                    if nextEvent.meetingLink != nil {
-                        nextEvent.openMeeting()
-                    }
-
-                    // update the executed events
-                    if matchedEvent != nil {
-                        events = events.filter { $0.id != nextEvent.id }
-                    }
-                    events.append(ProcessedEvent(id: nextEvent.id, lastModifiedDate: nextEvent.lastModifiedDate, eventEndDate: nextEvent.endDate))
-                    Defaults[.processedEventsForAutoJoin] = events
-                }
-            }
-
-            /*
-             * -----------------------
-             * MARK: Action: run start event script
-             * ------------------------
-             */
-            let actionTimeForScriptOnEventStart = Double(Defaults[.eventStartScriptTime].rawValue)
-            let nonAlldayCandidateForRunStartEventScript = (timeInterval > 0 && timeInterval < actionTimeForScriptOnEventStart)
-
-            if runEventStartScriptActionActive, nonAlldayCandidateForRunStartEventScript || allDayCandidate {
-                var events = Defaults[.processedEventsForRunScriptOnEventStart]
-
-                let matchedEvent = events.first { $0.id == nextEvent.id }
-
-                // if a script was executed already for the event, but the start date is different,
-                // we will remove the the current event from the scheduled events,
-                // so that we can run the script again ->
-                // this is an edge case when the event was already notified for, but scheduled for a later time.
-                if matchedEvent == nil || matchedEvent?.lastModifiedDate != nextEvent.lastModifiedDate {
-                    runMeetingStartsScript(event: nextEvent, type: ScriptType.meetingStart)
-
-                    // update the executed events
-                    if matchedEvent != nil {
-                        events = events.filter { $0.id != nextEvent.id }
-                    }
-                    events.append(ProcessedEvent(id: nextEvent.id, lastModifiedDate: nextEvent.lastModifiedDate, eventEndDate: nextEvent.endDate))
-                    Defaults[.processedEventsForRunScriptOnEventStart] = events
-                }
-            }
+        if scriptActive {
+            processStartScript(event: nextEvent, now: now)
         }
+    }
+
+    private func processFullscreenNotification(event: MBEvent, now: Date) {
+        let config = EventActionConfig(
+            actionTime: Double(Defaults[.fullscreenNotificationTime].rawValue),
+            allowsRecentlyStarted: true,
+            requiresMeetingLink: true
+        )
+        guard let decision = EventActionPolicy.evaluate(
+            event: event,
+            config: config,
+            processed: Defaults[.processedEventsForFullscreenNotification],
+            now: now
+        ) else { return }
+
+        if decision.shouldFireSideEffect {
+            app.openFullscreenNotificationWindow(event: event)
+        }
+        Defaults[.processedEventsForFullscreenNotification] = decision.updatedProcessed
+    }
+
+    private func processAutoJoin(event: MBEvent, now: Date) {
+        let config = EventActionConfig(
+            actionTime: Double(Defaults[.automaticEventJoinTime].rawValue),
+            allowsRecentlyStarted: true,
+            requiresMeetingLink: true
+        )
+        guard let decision = EventActionPolicy.evaluate(
+            event: event,
+            config: config,
+            processed: Defaults[.processedEventsForAutoJoin],
+            now: now
+        ) else { return }
+
+        if decision.shouldFireSideEffect {
+            event.openMeeting()
+        }
+        Defaults[.processedEventsForAutoJoin] = decision.updatedProcessed
+    }
+
+    private func processStartScript(event: MBEvent, now: Date) {
+        let config = EventActionConfig(
+            actionTime: Double(Defaults[.eventStartScriptTime].rawValue),
+            allowsRecentlyStarted: false,
+            requiresMeetingLink: false
+        )
+        guard let decision = EventActionPolicy.evaluate(
+            event: event,
+            config: config,
+            processed: Defaults[.processedEventsForRunScriptOnEventStart],
+            now: now
+        ) else { return }
+
+        if decision.shouldFireSideEffect {
+            runMeetingStartsScript(event: event, type: ScriptType.meetingStart)
+        }
+        Defaults[.processedEventsForRunScriptOnEventStart] = decision.updatedProcessed
     }
 }
