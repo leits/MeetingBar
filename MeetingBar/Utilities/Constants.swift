@@ -106,6 +106,12 @@ enum ShowEventsForPeriod: String, Defaults.Serializable, Codable, CaseIterable {
     case today_n_tomorrow
 }
 
+enum NextEventFlipMode: String, Defaults.Serializable, Codable, CaseIterable {
+    case disabled
+    case showAfterStart
+    case showAfterTenMin
+}
+
 enum OngoingEventVisibility: String, Defaults.Serializable, Codable, CaseIterable {
     case hideImmediateAfter
     case showTenMinAfter

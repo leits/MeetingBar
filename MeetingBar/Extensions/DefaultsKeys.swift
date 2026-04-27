@@ -46,6 +46,10 @@ extension Defaults.Keys {
 
     static let ongoingEventVisibility = Key<OngoingEventVisibility>("ongoingEventVisibility", default: .showTenMinBeforeNext)
 
+    // Next Event Flip (alternating current/upcoming in status bar)
+    static let nextEventFlipMode = Key<NextEventFlipMode>("nextEventFlipMode", default: .showAfterTenMin)
+    static let nextEventFlipIntervalSeconds = Key<Int>("nextEventFlipIntervalSeconds", default: 5)
+
     // Menu Appearance
     static let showTimelineInMenu = Key<Bool>("showTimelineInMenu", default: true)
     // if the event title in the menu should be shortened or not -> the length will be stored in field menuEventTitleLength
