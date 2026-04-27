@@ -21,6 +21,17 @@ enum AuthError: Error {
     case refreshFailed
 }
 
+enum GoogleCalendarResponseError: LocalizedError {
+    case missingItems(URL)
+
+    var errorDescription: String? {
+        switch self {
+        case let .missingItems(url):
+            return "Google Calendar response did not contain an items array: \(url.absoluteString)"
+        }
+    }
+}
+
 extension OIDAuthState {
     /// token is considered fresh if it expires later than 300 seconds from now
     var isTokenFresh: Bool {
@@ -333,7 +344,10 @@ final class GCEventStore: NSObject,
         }
 
         let root = try JSONSerialization.jsonObject(with: data) as? [String: Any] ?? [:]
-        return root["items"] as! [[String: Any]]
+        guard let items = root["items"] as? [[String: Any]] else {
+            throw GoogleCalendarResponseError.missingItems(url)
+        }
+        return items
     }
 
     private func revoke(token: String) async throws {
@@ -376,7 +390,10 @@ final class GCEventStore: NSObject,
     enum GCParser {
         static func event(from item: [String: Any],
                           calendar: MBCalendar) -> MBEvent? {
-            let eventID = item["id"] as! String
+            guard let eventID = item["id"] as? String else {
+                NSLog("Skipping Google Calendar event without a string id")
+                return nil
+            }
 
             let formatter = ISO8601DateFormatter()
             let lastModifiedDate = formatter.date(from: item["updated"] as? String ?? "")
@@ -398,15 +415,15 @@ final class GCEventStore: NSObject,
 
             var url: URL?
             if let conferenceData = item["conferenceData"] as? [String: Any] {
-                if let entryPoints = conferenceData["entryPoints"] as? [[String: String]] {
-                    if let videoEntryPoint = entryPoints.first(where: { $0["entryPointType"] == "video" }) {
-                        url = URL(string: videoEntryPoint["uri"] ?? "")
+                if let entryPoints = conferenceData["entryPoints"] as? [[String: Any]] {
+                    if let videoEntryPoint = entryPoints.first(where: { $0["entryPointType"] as? String == "video" }) {
+                        url = (videoEntryPoint["uri"] as? String).flatMap(URL.init(string:))
                     }
                 }
             }
 
-            let organizerRaw = item["organizer"] as? [String: String]
-            let organizer = MBEventOrganizer(email: organizerRaw?["email"], name: organizerRaw?["name"])
+            let organizerRaw = item["organizer"] as? [String: Any]
+            let organizer = MBEventOrganizer(email: organizerRaw?["email"] as? String, name: organizerRaw?["name"] as? String)
 
             var attendees: [MBEventAttendee] = []
             let rawAttendees = item["attendees"] as? [[String: Any]] ?? []
@@ -437,19 +454,34 @@ final class GCEventStore: NSObject,
             var endDate: Date
             var isAllDay: Bool
 
-            let itemStart = item["start"] as! [String: String]
-            let itemEnd = item["end"] as! [String: String]
+            guard let itemStart = item["start"] as? [String: String],
+                  let itemEnd = item["end"] as? [String: String] else {
+                NSLog("Skipping Google Calendar event \(eventID) without valid start/end dictionaries")
+                return nil
+            }
 
             if let startDateTime = itemStart["dateTime"], let endDateTime = itemEnd["dateTime"] {
                 let formatter = ISO8601DateFormatter()
-                startDate = formatter.date(from: startDateTime)!
-                endDate = formatter.date(from: endDateTime)!
+                guard let parsedStartDate = formatter.date(from: startDateTime),
+                      let parsedEndDate = formatter.date(from: endDateTime) else {
+                    NSLog("Skipping Google Calendar event \(eventID) with invalid dateTime values")
+                    return nil
+                }
+                startDate = parsedStartDate
+                endDate = parsedEndDate
                 isAllDay = false
             } else {
                 let formatter = DateFormatter()
                 formatter.dateFormat = "yyyy-MM-dd"
-                startDate = formatter.date(from: itemStart["date"]!)!
-                endDate = formatter.date(from: itemEnd["date"]!)!
+                guard let startDateString = itemStart["date"],
+                      let endDateString = itemEnd["date"],
+                      let parsedStartDate = formatter.date(from: startDateString),
+                      let parsedEndDate = formatter.date(from: endDateString) else {
+                    NSLog("Skipping Google Calendar event \(eventID) with invalid all-day date values")
+                    return nil
+                }
+                startDate = parsedStartDate
+                endDate = parsedEndDate
                 isAllDay = true
             }
 

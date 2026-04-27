@@ -64,4 +64,21 @@ class MeetingServicesTests: XCTestCase {
             XCTAssertEqual(result, meeting)
         }
     }
+
+    func testBuiltInRegexPatternsCompile() throws {
+        let invalidPatterns = meetingLinkRegexPatterns.compactMap { service, pattern -> String? in
+            do {
+                _ = try NSRegularExpression(pattern: pattern)
+                return nil
+            } catch {
+                return "\(service.rawValue): \(error)"
+            }
+        }
+
+        XCTAssertTrue(invalidPatterns.isEmpty, invalidPatterns.joined(separator: "\n"))
+
+        for service in meetingLinkRegexPatterns.keys {
+            XCTAssertNotNil(regex(for: service), "Expected compiled regex for \(service.rawValue)")
+        }
+    }
 }
