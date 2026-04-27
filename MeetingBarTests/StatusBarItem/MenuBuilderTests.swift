@@ -129,7 +129,11 @@ final class MenuBuilderTests: BaseTestCase {
     }
 
     func test_plainSnapshot() {
-        let today = Calendar.current.startOfDay(for: .init())
+        // Anchor on tomorrow's midnight so the constructed events are always
+        // strictly in the future relative to wall-clock `now`. Anchoring on
+        // today's midnight made the test flaky after 00:30 local time when
+        // S1 looked "ongoing" and the menu added a running-icon attachment.
+        let today = Calendar.current.startOfDay(for: Date().addingTimeInterval(86_400))
         let e1 = makeFakeEvent(id: "S1",
                                start: today.addingTimeInterval(1800),
                                end: today.addingTimeInterval(3600))
@@ -149,7 +153,7 @@ final class MenuBuilderTests: BaseTestCase {
             "Today (\(dateFormatter.string(from: today))):",
             "00:30 \t 01:00 \t Event S1",
             "02:00 \t 02:15 \t Event S2",
-            "status_bar_section_join_current_meeting".loco(),
+            "status_bar_section_join_next_meeting".loco(),
             "status_bar_section_join_create_meeting".loco(),
             "status_bar_quick_actions".loco()
         ])
