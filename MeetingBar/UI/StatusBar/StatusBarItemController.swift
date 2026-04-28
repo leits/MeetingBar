@@ -529,40 +529,58 @@ final class StatusBarItemController {
     /// Returns the named calendar icon, optionally with the current day-of-month overlaid.
     private func calendarIconWithOptionalDate(named name: String) -> NSImage {
         let baseImage = NSImage(named: name)!
-        let iconFormat = Defaults[.eventTitleIconFormat]
-        let canShowDate = iconFormat == .calendar || iconFormat == .eventtype
-        guard Defaults[.showDateOnIcon], canShowDate else { return baseImage }
-
-        let day = Calendar.current.component(.day, from: Date())
-        let dayString = String(day)
-
-        let size = MenuStyleConstants.iconSize
-        let composed = NSImage(size: size)
-        composed.lockFocus()
-
-        baseImage.draw(in: NSRect(origin: .zero, size: size),
-                       from: .zero,
-                       operation: .sourceOver,
-                       fraction: 1.0)
-
-        // Pick a font size that fits one or two digits inside the calendar body.
-        let fontSize: CGFloat = dayString.count > 1 ? 8 : 9
-        let attributes: [NSAttributedString.Key: Any] = [
-            .font: NSFont.systemFont(ofSize: fontSize, weight: .bold),
-            .foregroundColor: NSColor.labelColor
-        ]
-        let textSize = (dayString as NSString).size(withAttributes: attributes)
-        // Calendar icon has a header strip at the top; nudge text down into the body.
-        let textOrigin = NSPoint(
-            x: (size.width - textSize.width) / 2,
-            y: (size.height - textSize.height) / 2 - 1.5
+        return makeCalendarIcon(
+            baseImage: baseImage,
+            iconFormat: Defaults[.eventTitleIconFormat],
+            showDate: Defaults[.showDateOnIcon],
+            date: Date(),
+            size: MenuStyleConstants.iconSize
         )
-        (dayString as NSString).draw(at: textOrigin, withAttributes: attributes)
-
-        composed.unlockFocus()
-        composed.isTemplate = baseImage.isTemplate
-        return composed
     }
+}
+
+/// Composites the day-of-month onto a calendar icon when the user opted in.
+/// Extracted as a free function so it can be unit-tested without spinning up
+/// `StatusBarItemController` (which requires `NSStatusBar` and is `@MainActor`).
+@MainActor
+func makeCalendarIcon(
+    baseImage: NSImage,
+    iconFormat: EventTitleIconFormat,
+    showDate: Bool,
+    date: Date,
+    size: NSSize
+) -> NSImage {
+    let canShowDate = iconFormat == .calendar || iconFormat == .eventtype
+    guard showDate, canShowDate else { return baseImage }
+
+    let day = Calendar.current.component(.day, from: date)
+    let dayString = String(day)
+
+    let composed = NSImage(size: size)
+    composed.lockFocus()
+
+    baseImage.draw(in: NSRect(origin: .zero, size: size),
+                   from: .zero,
+                   operation: .sourceOver,
+                   fraction: 1.0)
+
+    // Pick a font size that fits one or two digits inside the calendar body.
+    let fontSize: CGFloat = dayString.count > 1 ? 8 : 9
+    let attributes: [NSAttributedString.Key: Any] = [
+        .font: NSFont.systemFont(ofSize: fontSize, weight: .bold),
+        .foregroundColor: NSColor.labelColor
+    ]
+    let textSize = (dayString as NSString).size(withAttributes: attributes)
+    // Calendar icon has a header strip at the top; nudge text down into the body.
+    let textOrigin = NSPoint(
+        x: (size.width - textSize.width) / 2,
+        y: (size.height - textSize.height) / 2 - 1.5
+    )
+    (dayString as NSString).draw(at: textOrigin, withAttributes: attributes)
+
+    composed.unlockFocus()
+    composed.isTemplate = baseImage.isTemplate
+    return composed
 }
 
 func shortenTitle(title: String?, offset: Int) -> String {
