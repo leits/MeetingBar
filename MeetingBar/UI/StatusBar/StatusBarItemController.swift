@@ -86,15 +86,7 @@ final class StatusBarItemController {
             .sink { [weak self] _ in
                 self?.updateMenu()
                 self?.updateTitle()
-
-                // Reschedule next notification with updated event name visibility
-                removePendingNotificationRequests(withID: notificationIDs.event_starts)
-                removePendingNotificationRequests(withID: notificationIDs.event_ends)
-                if let nextEvent = self?.events.nextEvent() {
-                    Task {
-                        await scheduleEventNotification(nextEvent)
-                    }
-                }
+                self?.reconcileNotifications()
             }
             .store(in: &cancellables)
 
@@ -110,18 +102,25 @@ final class StatusBarItemController {
 
         Defaults.publisher(.joinEventNotification, options: [])
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] change in
-                if change.newValue == true {
-                    if let nextEvent = self?.events.nextEvent() {
-                        Task {
-                            await scheduleEventNotification(nextEvent)
-                        }
-                    }
-                } else {
-                    removePendingNotificationRequests(withID: notificationIDs.event_starts)
-                }
+            .sink { [weak self] _ in
+                self?.reconcileNotifications()
             }
             .store(in: &cancellables)
+
+        Defaults.publisher(.endOfEventNotification, options: [])
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.reconcileNotifications()
+            }
+            .store(in: &cancellables)
+    }
+
+    private func reconcileNotifications() {
+        guard let scheduler = appdelegate?.notificationScheduler else { return }
+        let events = self.events
+        Task { @MainActor in
+            await scheduler.reconcile(events: events, settings: .currentForScheduler)
+        }
     }
 
     private func setupKeyboardShortcuts() {
@@ -188,25 +187,14 @@ final class StatusBarItemController {
             switch nextEventState {
             case .none:
                 if Defaults[.joinEventNotification] {
-                    removePendingNotificationRequests(withID: notificationIDs.event_starts)
                     removeDeliveredNotifications()
                 }
                 title = "🏁"
             case let .nextEvent(event):
                 (title, time) = createEventStatusString(title: event.title, startDate: event.startDate, endDate: event.endDate)
-                if Defaults[.joinEventNotification] {
-                    Task {
-                        await scheduleEventNotification(event)
-                    }
-                }
-            case let .afterThreshold(event):
+            case .afterThreshold:
                 // Not sure, what the title should be in this case.
                 title = "⏰"
-                if Defaults[.joinEventNotification] {
-                    Task {
-                        await scheduleEventNotification(event)
-                    }
-                }
             }
         } else {
             nextEventState = .none

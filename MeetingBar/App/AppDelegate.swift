@@ -17,6 +17,7 @@ import UserNotifications
 class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotificationCenterDelegate {
     var statusBarItem: StatusBarItemController!
     var eventManager: EventManager!
+    let notificationScheduler = NotificationScheduler()
 
     var screenIsLocked: Bool = false
 
@@ -78,9 +79,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
                 // 2) redraw
                 self.statusBarItem.updateTitle()
                 self.statusBarItem.updateMenu()
-                // 3) schedule next notification
-                if let next = events.nextEvent() {
-                    Task { await scheduleEventNotification(next) }
+                // 3) reconcile system notifications for the full event list
+                Task { @MainActor in
+                    await self.notificationScheduler.reconcile(
+                        events: events,
+                        settings: .currentForScheduler
+                    )
                 }
             }
 
