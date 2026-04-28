@@ -64,7 +64,7 @@ final class StatusBarItemController {
         // For all these keys, just redraw:
         Defaults.publisher(
             keys: .statusbarEventTitleLength, .eventTimeFormat,
-            .eventTitleIconFormat, .showEventMaxTimeUntilEventThreshold,
+            .eventTitleIconFormat, .showDateOnIcon, .showEventMaxTimeUntilEventThreshold,
             .showEventMaxTimeUntilEventEnabled, .showEventDetails,
             .shortenEventTitle, .menuEventTitleLength,
             .showEventEndTime, .showMeetingServiceIcon,
@@ -220,7 +220,7 @@ final class StatusBarItemController {
                 case .appicon:
                     button.image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
                 default:
-                    button.image = NSImage(named: MenuStyleConstants.calendarCheckmarkIconName)
+                    button.image = calendarIconWithOptionalDate(named: MenuStyleConstants.calendarCheckmarkIconName)
                 }
                 button.image?.size = MenuStyleConstants.iconSize
             } else if title == "MeetingBar" {
@@ -231,7 +231,7 @@ final class StatusBarItemController {
                 case .appicon:
                     button.image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
                 default:
-                    button.image = NSImage(named: MenuStyleConstants.calendarIconName)
+                    button.image = calendarIconWithOptionalDate(named: MenuStyleConstants.calendarIconName)
                 }
             }
 
@@ -240,6 +240,8 @@ final class StatusBarItemController {
                     let image: NSImage
                     if Defaults[.eventTitleIconFormat] == .eventtype {
                         image = getIconForMeetingService(nextEvent.meetingLink?.service)
+                    } else if Defaults[.eventTitleIconFormat] == .calendar {
+                        image = calendarIconWithOptionalDate(named: Defaults[.eventTitleIconFormat].rawValue)
                     } else {
                         image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
                     }
@@ -523,6 +525,62 @@ final class StatusBarItemController {
             openInFantastical(startDate: event.startDate, title: event.title)
         }
     }
+
+    /// Returns the named calendar icon, optionally with the current day-of-month overlaid.
+    private func calendarIconWithOptionalDate(named name: String) -> NSImage {
+        let baseImage = NSImage(named: name)!
+        return makeCalendarIcon(
+            baseImage: baseImage,
+            iconFormat: Defaults[.eventTitleIconFormat],
+            showDate: Defaults[.showDateOnIcon],
+            date: Date(),
+            size: MenuStyleConstants.iconSize
+        )
+    }
+}
+
+/// Composites the day-of-month onto a calendar icon when the user opted in.
+/// Extracted as a free function so it can be unit-tested without spinning up
+/// `StatusBarItemController` (which requires `NSStatusBar` and is `@MainActor`).
+@MainActor
+func makeCalendarIcon(
+    baseImage: NSImage,
+    iconFormat: EventTitleIconFormat,
+    showDate: Bool,
+    date: Date,
+    size: NSSize
+) -> NSImage {
+    let canShowDate = iconFormat == .calendar || iconFormat == .eventtype
+    guard showDate, canShowDate else { return baseImage }
+
+    let day = Calendar.current.component(.day, from: date)
+    let dayString = String(day)
+
+    let composed = NSImage(size: size)
+    composed.lockFocus()
+
+    baseImage.draw(in: NSRect(origin: .zero, size: size),
+                   from: .zero,
+                   operation: .sourceOver,
+                   fraction: 1.0)
+
+    // Pick a font size that fits one or two digits inside the calendar body.
+    let fontSize: CGFloat = dayString.count > 1 ? 8 : 9
+    let attributes: [NSAttributedString.Key: Any] = [
+        .font: NSFont.systemFont(ofSize: fontSize, weight: .bold),
+        .foregroundColor: NSColor.labelColor
+    ]
+    let textSize = (dayString as NSString).size(withAttributes: attributes)
+    // Calendar icon has a header strip at the top; nudge text down into the body.
+    let textOrigin = NSPoint(
+        x: (size.width - textSize.width) / 2,
+        y: (size.height - textSize.height) / 2 - 1.5
+    )
+    (dayString as NSString).draw(at: textOrigin, withAttributes: attributes)
+
+    composed.unlockFocus()
+    composed.isTemplate = baseImage.isTemplate
+    return composed
 }
 
 func shortenTitle(title: String?, offset: Int) -> String {

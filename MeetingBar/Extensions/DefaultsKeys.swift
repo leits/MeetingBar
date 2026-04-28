@@ -39,6 +39,7 @@ extension Defaults.Keys {
     static let eventTimeFormat = Key<EventTimeFormat>("eventTimeFormat", default: .show)
 
     static let eventTitleIconFormat = Key<EventTitleIconFormat>("eventTitleIconFormat", default: .none)
+    static let showDateOnIcon = Key<Bool>("showDateOnIcon", default: false)
     static let statusbarEventTitleLength = Key<Int>("statusbarEventTitleLength", default: statusbarEventTitleLengthLimits.max)
 
     static let hideMeetingTitle = Key<Bool>("hideMeetingTitle", default: false)

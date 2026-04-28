@@ -143,6 +143,7 @@ struct EventsSection: View {
 
 struct StatusBarSection: View {
     @Default(.eventTitleIconFormat) var eventTitleIconFormat
+    @Default(.showDateOnIcon) var showDateOnIcon
     @Default(.eventTitleFormat) var eventTitleFormat
     @Default(.eventTimeFormat) var eventTimeFormat
     @Default(.statusbarEventTitleLength) var statusbarEventTitleLength
@@ -187,6 +188,14 @@ struct StatusBarSection: View {
                         }.tag(EventTitleIconFormat.none)
                     }
                 }.frame(width: 325)
+
+                HStack {
+                    Toggle(
+                        "preferences_appearance_status_bar_show_date_on_icon".loco(),
+                        isOn: $showDateOnIcon
+                    )
+                    .disabled(eventTitleIconFormat == .appicon || eventTitleIconFormat == .none)
+                }.frame(width: 325, alignment: .leading)
 
                 HStack {
                     Picker(
