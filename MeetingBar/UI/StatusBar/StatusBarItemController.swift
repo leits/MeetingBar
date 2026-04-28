@@ -527,8 +527,8 @@ final class StatusBarItemController {
     }
 
     /// Returns the named calendar icon, optionally with the current day-of-month overlaid.
-    private func calendarIconWithOptionalDate(named name: String) -> NSImage? {
-        guard let baseImage = NSImage(named: name) else { return nil }
+    private func calendarIconWithOptionalDate(named name: String) -> NSImage {
+        let baseImage = NSImage(named: name)!
         guard Defaults[.showDateOnIcon] else { return baseImage }
 
         let day = Calendar.current.component(.day, from: Date())
