@@ -27,10 +27,15 @@ enum DiagnosticsReport {
         let lastSuccess = context.health.lastSuccessfulRefresh.map(formatter.string) ?? "never"
         let lastAttempt = context.health.lastAttemptedRefresh.map(formatter.string) ?? "never"
         let lastError = context.health.lastErrorDescription ?? "none"
+        let staleData = context.health.isStale ? "yes" : "no"
+        let authRequired = context.health.authRequired ? "yes" : "no"
         return """
         MeetingBar \(context.appVersion) (\(context.buildNumber))
         macOS: \(context.osVersion)
         Provider: \(providerLabel(context.provider))
+        Provider health: \(healthLabel(context.health))
+        Stale data: \(staleData)
+        Auth required: \(authRequired)
         Calendars: \(context.selectedCalendarCount) selected / \(context.totalCalendarCount) available
         Visible events: \(context.visibleEventCount)
         Last successful refresh: \(lastSuccess)
@@ -44,5 +49,13 @@ enum DiagnosticsReport {
         case .macOSEventKit: return "Calendar.app (EventKit)"
         case .googleCalendar: return "Google Calendar"
         }
+    }
+
+    private static func healthLabel(_ health: ProviderHealth) -> String {
+        if health.authRequired { return "auth required" }
+        if health.lastErrorDescription != nil { return "error" }
+        if health.isStale { return "stale" }
+        if health.lastSuccessfulRefresh != nil { return "ok" }
+        return "initializing"
     }
 }

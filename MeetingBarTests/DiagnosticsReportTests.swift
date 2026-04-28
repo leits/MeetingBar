@@ -48,6 +48,9 @@ final class DiagnosticsReportTests: XCTestCase {
     func testReportEmitsNeverWhenNoRefreshAttempted() {
         let report = DiagnosticsReport.text(from: context(health: ProviderHealth()))
 
+        XCTAssertTrue(report.contains("Provider health: initializing"))
+        XCTAssertTrue(report.contains("Stale data: no"))
+        XCTAssertTrue(report.contains("Auth required: no"))
         XCTAssertTrue(report.contains("Last successful refresh: never"))
         XCTAssertTrue(report.contains("Last attempted refresh: never"))
         XCTAssertTrue(report.contains("Last error: none"))
@@ -69,6 +72,21 @@ final class DiagnosticsReportTests: XCTestCase {
         XCTAssertTrue(report.contains("Last attempted refresh: \(expected)"))
     }
 
+    func testReportShowsOKHealthWhenRefreshSucceeded() {
+        let health = ProviderHealth(
+            lastSuccessfulRefresh: knownDate,
+            lastAttemptedRefresh: knownDate,
+            lastErrorDescription: nil,
+            isStale: false,
+            authRequired: false
+        )
+        let report = DiagnosticsReport.text(from: context(health: health))
+
+        XCTAssertTrue(report.contains("Provider health: ok"))
+        XCTAssertTrue(report.contains("Stale data: no"))
+        XCTAssertTrue(report.contains("Auth required: no"))
+    }
+
     func testReportShowsErrorDescriptionWhenPresent() {
         let health = ProviderHealth(
             lastSuccessfulRefresh: knownDate.addingTimeInterval(-3600),
@@ -77,6 +95,24 @@ final class DiagnosticsReportTests: XCTestCase {
             isStale: true
         )
         let report = DiagnosticsReport.text(from: context(health: health))
+        XCTAssertTrue(report.contains("Provider health: error"))
+        XCTAssertTrue(report.contains("Stale data: yes"))
+        XCTAssertTrue(report.contains("Auth required: no"))
         XCTAssertTrue(report.contains("Last error: The Internet connection appears to be offline."))
+    }
+
+    func testReportShowsAuthRequiredState() {
+        let health = ProviderHealth(
+            lastSuccessfulRefresh: knownDate.addingTimeInterval(-3600),
+            lastAttemptedRefresh: knownDate,
+            lastErrorDescription: "Google Calendar authorization is required",
+            isStale: true,
+            authRequired: true
+        )
+        let report = DiagnosticsReport.text(from: context(health: health))
+
+        XCTAssertTrue(report.contains("Provider health: auth required"))
+        XCTAssertTrue(report.contains("Stale data: yes"))
+        XCTAssertTrue(report.contains("Auth required: yes"))
     }
 }
