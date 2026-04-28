@@ -64,7 +64,7 @@ final class StatusBarItemController {
         // For all these keys, just redraw:
         Defaults.publisher(
             keys: .statusbarEventTitleLength, .eventTimeFormat,
-            .eventTitleIconFormat, .showEventMaxTimeUntilEventThreshold,
+            .eventTitleIconFormat, .showDateOnIcon, .showEventMaxTimeUntilEventThreshold,
             .showEventMaxTimeUntilEventEnabled, .showEventDetails,
             .shortenEventTitle, .menuEventTitleLength,
             .showEventEndTime, .showMeetingServiceIcon,
@@ -220,7 +220,7 @@ final class StatusBarItemController {
                 case .appicon:
                     button.image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
                 default:
-                    button.image = NSImage(named: MenuStyleConstants.calendarCheckmarkIconName)
+                    button.image = calendarIconWithOptionalDate(named: MenuStyleConstants.calendarCheckmarkIconName)
                 }
                 button.image?.size = MenuStyleConstants.iconSize
             } else if title == "MeetingBar" {
@@ -231,7 +231,7 @@ final class StatusBarItemController {
                 case .appicon:
                     button.image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
                 default:
-                    button.image = NSImage(named: MenuStyleConstants.calendarIconName)
+                    button.image = calendarIconWithOptionalDate(named: MenuStyleConstants.calendarIconName)
                 }
             }
 
@@ -240,6 +240,8 @@ final class StatusBarItemController {
                     let image: NSImage
                     if Defaults[.eventTitleIconFormat] == .eventtype {
                         image = getIconForMeetingService(nextEvent.meetingLink?.service)
+                    } else if Defaults[.eventTitleIconFormat] == .calendar {
+                        image = calendarIconWithOptionalDate(named: Defaults[.eventTitleIconFormat].rawValue)
                     } else {
                         image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
                     }
@@ -522,6 +524,42 @@ final class StatusBarItemController {
         if let event: MBEvent = sender.representedObject as? MBEvent {
             openInFantastical(startDate: event.startDate, title: event.title)
         }
+    }
+
+    /// Returns the named calendar icon, optionally with the current day-of-month overlaid.
+    private func calendarIconWithOptionalDate(named name: String) -> NSImage? {
+        guard let baseImage = NSImage(named: name) else { return nil }
+        guard Defaults[.showDateOnIcon] else { return baseImage }
+
+        let day = Calendar.current.component(.day, from: Date())
+        let dayString = String(day)
+
+        let size = MenuStyleConstants.iconSize
+        let composed = NSImage(size: size)
+        composed.lockFocus()
+
+        baseImage.draw(in: NSRect(origin: .zero, size: size),
+                       from: .zero,
+                       operation: .sourceOver,
+                       fraction: 1.0)
+
+        // Pick a font size that fits one or two digits inside the calendar body.
+        let fontSize: CGFloat = dayString.count > 1 ? 8 : 9
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: NSFont.systemFont(ofSize: fontSize, weight: .bold),
+            .foregroundColor: NSColor.labelColor
+        ]
+        let textSize = (dayString as NSString).size(withAttributes: attributes)
+        // Calendar icon has a header strip at the top; nudge text down into the body.
+        let textOrigin = NSPoint(
+            x: (size.width - textSize.width) / 2,
+            y: (size.height - textSize.height) / 2 - 1.5
+        )
+        (dayString as NSString).draw(at: textOrigin, withAttributes: attributes)
+
+        composed.unlockFocus()
+        composed.isTemplate = baseImage.isTemplate
+        return composed
     }
 }
 

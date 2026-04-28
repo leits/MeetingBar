@@ -88,6 +88,7 @@
 "preferences_appearance_status_bar_icon_calendar_icon_value" = "\U00A0Calendar";
 "preferences_appearance_status_bar_icon_specific_icon_value" = "\U00A0Event-specific icon (e.g. MS Teams)";
 "preferences_appearance_status_bar_icon_no_icon_value" = "\U00A0No icon";
+"preferences_appearance_status_bar_show_date_on_icon" = "Show today's date on icon";
 "preferences_appearance_status_bar_title_title" = "Title";
 "preferences_appearance_status_bar_title_event_title_value" = "event title";
 "preferences_appearance_status_bar_title_dot_value" = "dot (•)";
