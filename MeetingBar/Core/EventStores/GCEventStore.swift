@@ -93,8 +93,8 @@ final class GCEventStore: NSObject,
     // MARK: Public API
 
     func signIn(forcePrompt: Bool = false) async throws {
-        // if already authorised, nothing to do
-        if authState?.isAuthorized == true { return }
+        // Skip sign-in only for reusable sessions and when consent is not forced.
+        if Self.shouldSkipSignIn(forcePrompt: forcePrompt, state: authState) { return }
 
         // discover configuration for Google issuer
         let config = try await withCheckedThrowingContinuation { cont in
@@ -156,7 +156,7 @@ final class GCEventStore: NSObject,
 
         // Revoke tokens in parallel
         let access  = state.lastTokenResponse?.accessToken
-        let refresh = state.lastTokenResponse?.refreshToken
+        let refresh = state.refreshToken
         await withTaskGroup(of: Void.self) { grp in
             if let acc = access { grp.addTask { try? await self.revoke(token: acc) } }
             if let ref = refresh { grp.addTask { try? await self.revoke(token: ref) } }
@@ -221,13 +221,12 @@ final class GCEventStore: NSObject,
     // MARK: - Private helpers
     private func ensureSignedIn() async throws {
         if authState?.isAuthorized == true,
-           authState?.lastTokenResponse?.refreshToken != nil {
+           authState?.refreshToken != nil {
             return
         }
 
+        let forceConsent = authState?.refreshToken == nil
         if let running = signInTask { return try await running.value }
-
-        let forceConsent = authState?.lastTokenResponse?.refreshToken == nil
 
         let task = Task {
             try await signIn(forcePrompt: forceConsent)
@@ -236,6 +235,30 @@ final class GCEventStore: NSObject,
         defer { signInTask = nil }
         try await task.value
     }
+
+    nonisolated static func shouldSkipSignIn(forcePrompt: Bool, state: OIDAuthState?) -> Bool {
+        guard !forcePrompt, let state else { return false }
+        return state.isAuthorized && state.refreshToken != nil
+    }
+
+#if DEBUG
+    func _test_getAuthState() -> OIDAuthState? {
+        authState
+    }
+
+    func _test_setAuthState(_ state: OIDAuthState?) {
+        authState = state
+        userEmail = state?.userEmail
+    }
+
+    func _test_ensureSignedIn() async throws {
+        try await ensureSignedIn()
+    }
+
+    func _test_setSignInTask(_ task: Task<Void, Error>?) {
+        signInTask = task
+    }
+#endif
 
     private func validAccessToken(forceRefresh: Bool = false) async throws -> String {
         guard let state = authState else { throw AuthError.notSignedIn }

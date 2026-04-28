@@ -9,6 +9,7 @@ import Combine
 @testable import MeetingBar
 import XCTest
 import Defaults
+import AppAuthCore
 
 @MainActor
 class EventManagerTests: BaseTestCase {
@@ -194,5 +195,99 @@ final class RefreshTriggerTests: BaseTestCase {
         try await manager.refreshSources()
 
         await fulfillment(of: [exp], timeout: 1)
+    }
+}
+
+@MainActor
+final class GCEventStoreCoverageTests: BaseTestCase {
+    func testSignInSkipLogicHonorsForcePrompt() {
+        let authorizedWithRefresh = makeAuthState(refreshToken: "refresh-token-1")
+        XCTAssertTrue(GCEventStore.shouldSkipSignIn(forcePrompt: false, state: authorizedWithRefresh))
+        XCTAssertFalse(GCEventStore.shouldSkipSignIn(forcePrompt: true, state: authorizedWithRefresh))
+
+        let authorizedWithoutRefresh = makeAuthState(refreshToken: nil)
+        XCTAssertFalse(GCEventStore.shouldSkipSignIn(forcePrompt: false, state: authorizedWithoutRefresh))
+    }
+
+    func testEnsureSignedInUsesRefreshTokenSessionChecks() async throws {
+        let store = GCEventStore.shared
+        let originalState = store._test_getAuthState()
+        defer {
+            store._test_setAuthState(originalState)
+            store._test_setSignInTask(nil)
+        }
+
+        let precompletedTask = Task<Void, Error> {}
+        store._test_setSignInTask(precompletedTask)
+
+        store._test_setAuthState(makeAuthState(refreshToken: nil))
+        try await store._test_ensureSignedIn()
+
+        store._test_setAuthState(makeAuthState(refreshToken: "refresh-token-1"))
+        store._test_setSignInTask(nil)
+        try await store._test_ensureSignedIn()
+    }
+
+    func testSignOutReadsRefreshTokenFromAuthState() async throws {
+        let store = GCEventStore.shared
+        let originalState = store._test_getAuthState()
+        defer {
+            store._test_setAuthState(originalState)
+            store._test_setSignInTask(nil)
+        }
+
+        store._test_setAuthState(makeAuthorizationOnlyState())
+        await store.signOut()
+    }
+
+    private func makeAuthState(refreshToken: String?) -> OIDAuthState {
+        let request = authorizationRequest()
+        let response = OIDAuthorizationResponse(
+            request: request,
+            parameters: [
+                "code": "authorization-code" as NSString
+            ]
+        )
+        guard let tokenRequest = response.tokenExchangeRequest() else {
+            fatalError("Failed to build token request for GCEventStore coverage test")
+        }
+
+        var tokenParameters: [String: NSObject & NSCopying] = [
+            "access_token": "access-token-1" as NSString,
+            "token_type": "Bearer" as NSString,
+            "expires_in": 3600 as NSNumber
+        ]
+        if let refreshToken {
+            tokenParameters["refresh_token"] = refreshToken as NSString
+        }
+        let tokenResponse = OIDTokenResponse(request: tokenRequest, parameters: tokenParameters)
+        return OIDAuthState(authorizationResponse: response, tokenResponse: tokenResponse)
+    }
+
+    private func makeAuthorizationOnlyState() -> OIDAuthState {
+        let request = authorizationRequest()
+        let response = OIDAuthorizationResponse(
+            request: request,
+            parameters: [
+                "code": "authorization-code" as NSString
+            ]
+        )
+        return OIDAuthState(authorizationResponse: response)
+    }
+
+    private func authorizationRequest() -> OIDAuthorizationRequest {
+        let configuration = OIDServiceConfiguration(
+            authorizationEndpoint: URL(string: "https://accounts.google.com/o/oauth2/v2/auth")!,
+            tokenEndpoint: URL(string: "https://oauth2.googleapis.com/token")!
+        )
+        return OIDAuthorizationRequest(
+            configuration: configuration,
+            clientId: "client-id",
+            clientSecret: nil,
+            scopes: ["email"],
+            redirectURL: URL(string: "com.test.app:/oauthredirect")!,
+            responseType: OIDResponseTypeCode,
+            additionalParameters: nil
+        )
     }
 }
