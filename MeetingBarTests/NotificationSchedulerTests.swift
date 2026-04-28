@@ -5,6 +5,7 @@
 
 import XCTest
 import UserNotifications
+import Defaults
 
 @testable import MeetingBar
 
@@ -78,6 +79,17 @@ final class NotificationSchedulerTests: BaseTestCase {
             autoJoin: .disabled,
             scriptOnStart: .disabled,
             dismissedEventIDs: dismissedEventIDs
+        )
+    }
+
+    private func startOnlySettings(offset: TimeInterval = 60) -> NotificationPlanningSettings {
+        NotificationPlanningSettings(
+            eventStart: .init(enabled: true, offset: offset),
+            eventEnd: .disabled,
+            fullscreen: .disabled,
+            autoJoin: .disabled,
+            scriptOnStart: .disabled,
+            dismissedEventIDs: []
         )
     }
 
@@ -244,6 +256,48 @@ final class NotificationSchedulerTests: BaseTestCase {
 
         XCTAssertTrue(sink.currentPendingIdentifiers().isEmpty)
         XCTAssertEqual(sink.removedBatches.flatMap { $0 }.count, 2)
+    }
+
+    func testReconcileReplacesPendingRequestWhenContentIsStale() async {
+        let evt = event(id: "A", startsIn: 600)
+        let settings = startOnlySettings()
+        let startPlan = NotificationPlanningPolicy
+            .plan(events: [evt], settings: settings, now: now)
+            .first { $0.kind == .eventStart }
+        let staleID = NotificationScheduler.identifierPrefix + (startPlan?.identity ?? "")
+
+        let staleContent = UNMutableNotificationContent()
+        staleContent.title = "Old title"
+        staleContent.body = "Old body"
+        let staleRequest = UNNotificationRequest(identifier: staleID, content: staleContent, trigger: nil)
+        let sink = FakeNotificationRequestSink(initialPending: [staleRequest])
+        let scheduler = NotificationScheduler(sink: sink)
+
+        await scheduler.reconcile(events: [evt], settings: settings, now: now)
+
+        let currentRequest = sink.currentPendingRequests().first { $0.identifier == staleID }
+        XCTAssertEqual(currentRequest?.content.title, evt.title)
+        XCTAssertNotEqual(currentRequest?.content.body, "Old body")
+        XCTAssertTrue(sink.removedBatches.flatMap { $0 }.contains(staleID))
+        XCTAssertTrue(sink.addedIdentifiers.contains(staleID))
+    }
+
+    func testReconcileUpdatesPendingTitleWhenHideMeetingTitleChanges() async {
+        let sink = FakeNotificationRequestSink()
+        let scheduler = NotificationScheduler(sink: sink)
+        let evt = event(id: "A", startsIn: 600)
+        let settings = startOnlySettings()
+
+        Defaults[.hideMeetingTitle] = false
+        await scheduler.reconcile(events: [evt], settings: settings, now: now)
+        let requestID = sink.currentPendingIdentifiers().first
+        XCTAssertEqual(sink.currentPendingRequests().first?.content.title, evt.title)
+
+        Defaults[.hideMeetingTitle] = true
+        await scheduler.reconcile(events: [evt], settings: settings, now: now)
+
+        XCTAssertEqual(sink.currentPendingRequests().first?.content.title, "general_meeting".loco())
+        XCTAssertTrue(sink.removedBatches.flatMap { $0 }.contains(requestID ?? ""))
     }
 
     func testBuildRequestUsesInjectedNowForTriggerInterval() async {

@@ -70,6 +70,15 @@ extension ProviderHealth {
             }
         }
 
+        if let googleError = error as? GoogleCalendarError {
+            switch googleError {
+            case .unauthorized:
+                return true
+            case .forbiddenCalendar, .httpStatus, .missingItems:
+                return false
+            }
+        }
+
         switch error {
         case let EventManagerError.calendarAccessFailed(underlying):
             return isAuthRequired(underlying)

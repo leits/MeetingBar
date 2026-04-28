@@ -61,9 +61,9 @@ final class NotificationScheduler {
 
         let pending = await sink.pendingRequests()
         let pendingMine = pending
-            .map(\.identifier)
-            .filter { $0.hasPrefix(Self.identifierPrefix) }
-        let pendingSet = Set(pendingMine)
+            .filter { $0.identifier.hasPrefix(Self.identifierPrefix) }
+        let pendingByID = Dictionary(pendingMine.map { ($0.identifier, $0) }, uniquingKeysWith: { first, _ in first })
+        let pendingSet = Set(pendingByID.keys)
 
         let desiredIDs = Set(plans.map { Self.identifierPrefix + $0.identity })
 
@@ -72,15 +72,32 @@ final class NotificationScheduler {
             sink.removePending(identifiers: stale)
         }
 
-        for plan in plans where !pendingSet.contains(Self.identifierPrefix + plan.identity) {
+        for plan in plans {
             guard let event = eventByID[plan.eventID] else { continue }
             let request = buildRequest(for: plan, event: event, now: now)
+            let identifier = request.identifier
+
+            if let pendingRequest = pendingByID[identifier] {
+                guard !hasSameContent(pendingRequest.content, request.content) else { continue }
+                sink.removePending(identifiers: [identifier])
+            }
+
             do {
                 try await sink.add(request)
             } catch {
                 NSLog("NotificationScheduler: failed to add \(plan.identity): \(error)")
             }
         }
+    }
+
+    private func hasSameContent(_ lhs: UNNotificationContent, _ rhs: UNNotificationContent) -> Bool {
+        lhs.title == rhs.title
+            && lhs.subtitle == rhs.subtitle
+            && lhs.body == rhs.body
+            && lhs.categoryIdentifier == rhs.categoryIdentifier
+            && lhs.threadIdentifier == rhs.threadIdentifier
+            && lhs.interruptionLevel == rhs.interruptionLevel
+            && NSDictionary(dictionary: lhs.userInfo).isEqual(to: rhs.userInfo)
     }
 
     private func buildRequest(for plan: PlannedNotification, event: MBEvent, now: Date) -> UNNotificationRequest {

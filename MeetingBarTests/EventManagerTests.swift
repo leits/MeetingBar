@@ -381,6 +381,36 @@ final class ProviderHealthTests: BaseTestCase {
         XCTAssertEqual(health.lastSuccessfulRefresh, previousSuccess)
     }
 
+    func test_googleUnauthorizedErrorSetsAuthRequired() {
+        let attempted = Date()
+        let previousSuccess = attempted.addingTimeInterval(-60)
+        let url = URL(string: "https://www.googleapis.com/calendar/v3/users/me/calendarList")!
+        let health = ProviderHealth.failure(
+            previous: ProviderHealth(lastSuccessfulRefresh: previousSuccess),
+            attempted: attempted,
+            error: GoogleCalendarError.unauthorized(url)
+        )
+
+        XCTAssertTrue(health.authRequired)
+        XCTAssertTrue(health.isStale)
+        XCTAssertEqual(health.lastSuccessfulRefresh, previousSuccess)
+    }
+
+    func test_googleForbiddenCalendarDoesNotSetAuthRequired() {
+        let attempted = Date()
+        let previousSuccess = attempted.addingTimeInterval(-60)
+        let url = URL(string: "https://www.googleapis.com/calendar/v3/calendars/bad/events")!
+        let health = ProviderHealth.failure(
+            previous: ProviderHealth(lastSuccessfulRefresh: previousSuccess),
+            attempted: attempted,
+            error: GoogleCalendarError.forbiddenCalendar(calendarID: "bad", url: url)
+        )
+
+        XCTAssertFalse(health.authRequired)
+        XCTAssertTrue(health.isStale)
+        XCTAssertEqual(health.lastSuccessfulRefresh, previousSuccess)
+    }
+
     func test_genericFailureIsStaleButNotAuthRequired() {
         let attempted = Date()
         let previousSuccess = attempted.addingTimeInterval(-60)
