@@ -17,6 +17,7 @@ struct LinksTab: View {
     @Default(.teamsBrowser) var teamsBrowser
     @Default(.slackBrowser) var slackBrowser
     @Default(.jitsiBrowser) var jitsiBrowser
+    @Default(.riversideBrowser) var riversideBrowser
     @Default(.createMeetingServiceUrl) var createMeetingServiceUrl
     @Default(.createMeetingService) var createMeetingService
     @Default(.browsers) var allBrowser
@@ -95,6 +96,17 @@ struct LinksTab: View {
                 ) {
                     Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
                     Text(jitsiAppBrowser.name).tag(jitsiAppBrowser)
+                    ForEach(allBrowser, id: \.self) { (browser: Browser) in
+                        Text(browser.name).tag(browser)
+                    }
+                }
+                Picker(
+                    selection: $riversideBrowser,
+                    label: Text("preferences_services_link_service_title".loco("Riverside")).frame(
+                        width: 200, alignment: .leading)
+                ) {
+                    Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
+                    Text(riversideAppBrowser.name).tag(riversideAppBrowser)
                     ForEach(allBrowser, id: \.self) { (browser: Browser) in
                         Text(browser.name).tag(browser)
                     }

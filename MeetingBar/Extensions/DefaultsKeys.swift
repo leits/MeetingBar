@@ -100,6 +100,7 @@ extension Defaults.Keys {
     static let teamsBrowser = Key<Browser>("teamsBrowser", default: systemDefaultBrowser)
     static let jitsiBrowser = Key<Browser>("jitsiBrowser", default: systemDefaultBrowser)
     static let slackBrowser = Key<Browser>("slackBrowser", default: systemDefaultBrowser)
+    static let riversideBrowser = Key<Browser>("riversideBrowser", default: systemDefaultBrowser)
 
     /**
      * browser used for creating a new meeting

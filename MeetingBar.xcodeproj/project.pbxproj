@@ -191,6 +191,7 @@
 			knownRegions = (
 				en,
 				Base,
+				bg,
 				uk,
 				de,
 				fr,

@@ -150,8 +150,8 @@ public extension Array where Element == MBEvent {
                 continue
             }
 
-            // Skip event if past events should be skipped after 10 min
-            if event.startDate < now.addingTimeInterval(600), Defaults[.ongoingEventVisibility] == .showTenMinAfter {
+            // Skip event only after it has been running for 10 minutes.
+            if now >= event.startDate.addingTimeInterval(600), Defaults[.ongoingEventVisibility] == .showTenMinAfter {
                 continue
             }
 
