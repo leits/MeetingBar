@@ -10,10 +10,10 @@ import SwiftUI
 struct StatusTab: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
-            GroupBox(label: Label("Provider Status", systemImage: "antenna.radiowaves.left.and.right")) {
+            GroupBox(label: Label("preferences_status_provider_status_title".loco(), systemImage: "antenna.radiowaves.left.and.right")) {
                 ProviderStatusSection()
             }
-            GroupBox(label: Label("Diagnostics", systemImage: "doc.on.clipboard")) {
+            GroupBox(label: Label("preferences_status_diagnostics_title".loco(), systemImage: "doc.on.clipboard")) {
                 DiagnosticsSection()
             }
             Spacer()
@@ -62,6 +62,7 @@ private struct ProviderStatusSection: View {
 
     private var statusColor: Color {
         let health = eventManager.providerHealth
+        if health.authRequired { return .red }
         if health.lastErrorDescription != nil { return .red }
         if health.isStale { return .orange }
         if health.lastSuccessfulRefresh != nil { return .green }
@@ -70,6 +71,7 @@ private struct ProviderStatusSection: View {
 
     private var statusText: String {
         let health = eventManager.providerHealth
+        if health.authRequired { return "preferences_status_state_auth_required".loco() }
         if health.lastErrorDescription != nil { return "preferences_status_state_error".loco() }
         if health.isStale { return "preferences_status_state_stale".loco() }
         if health.lastSuccessfulRefresh != nil { return "preferences_status_state_ok".loco() }

@@ -12,10 +12,19 @@ import EventKit
 import Foundation
 import UserNotifications
 
-public enum EventManagerError: Error {
+public enum EventManagerError: LocalizedError {
     case eventStoreNotAvailable
     case calendarAccessFailed(Error)
     case eventFetchFailed(Error)
+
+    public var errorDescription: String? {
+        switch self {
+        case .eventStoreNotAvailable:
+            return "Event store is not available"
+        case let .calendarAccessFailed(error), let .eventFetchFailed(error):
+            return error.localizedDescription
+        }
+    }
 }
 
 @MainActor
@@ -191,20 +200,14 @@ public class EventManager: ObservableObject {
                             do {
                                 let cals = try await self.provider.fetchAllCalendars()
                                 let evts = try await self.fetchEvents(fromCalendars: cals)
-                                let health = ProviderHealth(
-                                    lastSuccessfulRefresh: Date(),
-                                    lastAttemptedRefresh: attempted,
-                                    lastErrorDescription: nil,
-                                    isStale: false
-                                )
+                                let health = ProviderHealth.success(attempted: attempted)
                                 promise(.success((cals, evts, health)))
                             } catch {
                                 NSLog("EventManager refresh failed: \(error)")
-                                let health = ProviderHealth(
-                                    lastSuccessfulRefresh: previousHealth.lastSuccessfulRefresh,
-                                    lastAttemptedRefresh: attempted,
-                                    lastErrorDescription: error.localizedDescription,
-                                    isStale: true
+                                let health = ProviderHealth.failure(
+                                    previous: previousHealth,
+                                    attempted: attempted,
+                                    error: error
                                 )
                                 promise(.success((preservedCalendars, preservedEvents, health)))
                             }

@@ -96,18 +96,19 @@ final class StatusBarItemController {
                 if I18N.instance.changeLanguage(to: change.newValue) {
                     self?.updateMenu()
                     self?.updateTitle()
+                    self?.reconcileNotifications()
                 }
             }
             .store(in: &cancellables)
 
-        Defaults.publisher(.joinEventNotification, options: [])
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                self?.reconcileNotifications()
-            }
-            .store(in: &cancellables)
-
-        Defaults.publisher(.endOfEventNotification, options: [])
+        Defaults.publisher(
+            keys: .joinEventNotification,
+            .joinEventNotificationTime,
+            .endOfEventNotification,
+            .endOfEventNotificationTime,
+            .dismissedEvents,
+            options: []
+        )
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 self?.reconcileNotifications()
@@ -406,6 +407,7 @@ final class StatusBarItemController {
 
             updateTitle()
             updateMenu()
+            reconcileNotifications()
         }
     }
 
@@ -416,6 +418,7 @@ final class StatusBarItemController {
 
         updateTitle()
         updateMenu()
+        reconcileNotifications()
     }
 
     @objc
@@ -474,6 +477,7 @@ final class StatusBarItemController {
 
         updateTitle()
         updateMenu()
+        reconcileNotifications()
     }
 
     @objc
@@ -483,6 +487,7 @@ final class StatusBarItemController {
 
             updateTitle()
             updateMenu()
+            reconcileNotifications()
         }
     }
 

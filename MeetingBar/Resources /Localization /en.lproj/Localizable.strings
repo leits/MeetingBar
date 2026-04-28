@@ -39,9 +39,12 @@
 
 // MARK: - Preferences Status
 
+"preferences_status_provider_status_title" = "Provider Status";
+"preferences_status_diagnostics_title" = "Diagnostics";
 "preferences_status_state_ok" = "Up to date";
 "preferences_status_state_stale" = "Showing cached data";
 "preferences_status_state_error" = "Last refresh failed";
+"preferences_status_state_auth_required" = "Authorization required";
 "preferences_status_state_initializing" = "Initializing";
 "preferences_status_last_successful_refresh" = "Last successful refresh:";
 "preferences_status_last_error" = "Last error:";

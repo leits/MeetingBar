@@ -37,6 +37,10 @@ final class FakeNotificationRequestSink: NotificationRequestSink, @unchecked Sen
     func currentPendingIdentifiers() -> [String] {
         pending.map(\.identifier)
     }
+
+    func currentPendingRequests() -> [UNNotificationRequest] {
+        pending
+    }
 }
 
 @MainActor
@@ -61,6 +65,21 @@ final class NotificationSchedulerTests: BaseTestCase {
         scriptOnStart: .disabled,
         dismissedEventIDs: []
     )
+
+    private func settings(
+        startOffset: TimeInterval = 60,
+        endOffset: TimeInterval = 60,
+        dismissedEventIDs: Set<String> = []
+    ) -> NotificationPlanningSettings {
+        NotificationPlanningSettings(
+            eventStart: .init(enabled: true, offset: startOffset),
+            eventEnd: .init(enabled: true, offset: endOffset),
+            fullscreen: .disabled,
+            autoJoin: .disabled,
+            scriptOnStart: .disabled,
+            dismissedEventIDs: dismissedEventIDs
+        )
+    }
 
     func testReconcileSchedulesStartAndEndForFutureEvent() async {
         let sink = FakeNotificationRequestSink()
@@ -175,6 +194,79 @@ final class NotificationSchedulerTests: BaseTestCase {
                           "lastModifiedDate change must produce new identities and remove old ones")
         XCTAssertFalse(sink.removedBatches.flatMap { $0 }.isEmpty,
                        "old identifiers must be removed, not left dangling")
+    }
+
+    func testChangingJoinNotificationTimeReplacesPendingStartRequest() async {
+        let sink = FakeNotificationRequestSink()
+        let scheduler = NotificationScheduler(sink: sink)
+        let evt = event(id: "A", startsIn: 600)
+
+        await scheduler.reconcile(events: [evt], settings: settings(startOffset: 60), now: now)
+        let firstStartID = sink.currentPendingIdentifiers().first { $0.contains("|eventStart|") }
+
+        await scheduler.reconcile(events: [evt], settings: settings(startOffset: 300), now: now)
+        let secondStartID = sink.currentPendingIdentifiers().first { $0.contains("|eventStart|") }
+
+        XCTAssertNotEqual(firstStartID, secondStartID)
+        XCTAssertTrue(sink.removedBatches.flatMap { $0 }.contains(firstStartID ?? ""))
+        XCTAssertTrue(sink.currentPendingIdentifiers().contains(secondStartID ?? ""))
+    }
+
+    func testChangingEndNotificationTimeReplacesPendingEndRequest() async {
+        let sink = FakeNotificationRequestSink()
+        let scheduler = NotificationScheduler(sink: sink)
+        let evt = event(id: "A", startsIn: 600)
+
+        await scheduler.reconcile(events: [evt], settings: settings(endOffset: 60), now: now)
+        let firstEndID = sink.currentPendingIdentifiers().first { $0.contains("|eventEnd|") }
+
+        await scheduler.reconcile(events: [evt], settings: settings(endOffset: 300), now: now)
+        let secondEndID = sink.currentPendingIdentifiers().first { $0.contains("|eventEnd|") }
+
+        XCTAssertNotEqual(firstEndID, secondEndID)
+        XCTAssertTrue(sink.removedBatches.flatMap { $0 }.contains(firstEndID ?? ""))
+        XCTAssertTrue(sink.currentPendingIdentifiers().contains(secondEndID ?? ""))
+    }
+
+    func testReconcileRemovesPendingRequestsAfterEventIsDismissed() async {
+        let sink = FakeNotificationRequestSink()
+        let scheduler = NotificationScheduler(sink: sink)
+        let evt = event(id: "A", startsIn: 600)
+
+        await scheduler.reconcile(events: [evt], settings: allEnabled, now: now)
+        XCTAssertEqual(sink.currentPendingIdentifiers().count, 2)
+
+        await scheduler.reconcile(
+            events: [evt],
+            settings: settings(dismissedEventIDs: ["A"]),
+            now: now
+        )
+
+        XCTAssertTrue(sink.currentPendingIdentifiers().isEmpty)
+        XCTAssertEqual(sink.removedBatches.flatMap { $0 }.count, 2)
+    }
+
+    func testBuildRequestUsesInjectedNowForTriggerInterval() async {
+        let sink = FakeNotificationRequestSink()
+        let scheduler = NotificationScheduler(sink: sink)
+        let evt = event(id: "A", startsIn: 600)
+
+        await scheduler.reconcile(
+            events: [evt],
+            settings: NotificationPlanningSettings(
+                eventStart: .init(enabled: true, offset: 60),
+                eventEnd: .disabled,
+                fullscreen: .disabled,
+                autoJoin: .disabled,
+                scriptOnStart: .disabled,
+                dismissedEventIDs: []
+            ),
+            now: now
+        )
+
+        let trigger = sink.currentPendingRequests().first?.trigger as? UNTimeIntervalNotificationTrigger
+        XCTAssertNotNil(trigger)
+        XCTAssertEqual(trigger?.timeInterval ?? 0, 540, accuracy: 0.01)
     }
 
     func testReconcileSkipsEventsAlreadyStarted() async {

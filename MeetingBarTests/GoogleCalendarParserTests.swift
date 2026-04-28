@@ -87,4 +87,74 @@ final class GoogleCalendarParserTests: XCTestCase {
             )
         )
     }
+
+    func testHTTP401AfterRetryRequiresAuthClear() {
+        let url = URL(string: "https://www.googleapis.com/calendar/v3/users/me/calendarList")!
+
+        let decision = GoogleHTTPStatusPolicy.classify(
+            statusCode: 401,
+            url: url,
+            calendarID: nil,
+            retrying: true
+        )
+
+        XCTAssertEqual(decision, .clearAuthAndThrowAuthRequired)
+    }
+
+    func testHTTP403AfterRetryIsForbiddenCalendarWithoutAuthClear() {
+        let url = URL(string: "https://www.googleapis.com/calendar/v3/calendars/holiday/events")!
+
+        let decision = GoogleHTTPStatusPolicy.classify(
+            statusCode: 403,
+            url: url,
+            calendarID: "holiday",
+            retrying: true
+        )
+
+        XCTAssertEqual(
+            decision,
+            .throwError(.forbiddenCalendar(calendarID: "holiday", url: url))
+        )
+    }
+
+    func testOneForbiddenCalendarStillReturnsSuccessfulEvents() throws {
+        let event = makeFakeEvent(
+            id: "ok",
+            start: Date().addingTimeInterval(60),
+            end: Date().addingTimeInterval(120)
+        )
+        let url = URL(string: "https://www.googleapis.com/calendar/v3/calendars/bad/events")!
+
+        let events = try GoogleCalendarBatchPolicy.finish(
+            events: [event],
+            successfulCalendars: 1,
+            forbiddenErrors: [GoogleCalendarError.forbiddenCalendar(calendarID: "bad", url: url)]
+        )
+
+        XCTAssertEqual(events, [event])
+    }
+
+    func testAllForbiddenCalendarsThrowsRepresentativeError() {
+        let url = URL(string: "https://www.googleapis.com/calendar/v3/calendars/bad/events")!
+        let error = GoogleCalendarError.forbiddenCalendar(calendarID: "bad", url: url)
+
+        XCTAssertThrowsError(
+            try GoogleCalendarBatchPolicy.finish(
+                events: [],
+                successfulCalendars: 0,
+                forbiddenErrors: [error]
+            )
+        ) { thrown in
+            XCTAssertEqual(thrown as? GoogleCalendarError, error)
+        }
+    }
+
+    func testMissingItemsErrorStillDescribesMalformedResponse() {
+        let url = URL(string: "https://www.googleapis.com/calendar/v3/users/me/calendarList")!
+
+        XCTAssertEqual(
+            GoogleCalendarError.missingItems(url).errorDescription,
+            "Google Calendar response did not contain an items array: \(url.absoluteString)"
+        )
+    }
 }

@@ -74,7 +74,7 @@ final class NotificationScheduler {
 
         for plan in plans where !pendingSet.contains(Self.identifierPrefix + plan.identity) {
             guard let event = eventByID[plan.eventID] else { continue }
-            let request = buildRequest(for: plan, event: event)
+            let request = buildRequest(for: plan, event: event, now: now)
             do {
                 try await sink.add(request)
             } catch {
@@ -83,7 +83,7 @@ final class NotificationScheduler {
         }
     }
 
-    private func buildRequest(for plan: PlannedNotification, event: MBEvent) -> UNNotificationRequest {
+    private func buildRequest(for plan: PlannedNotification, event: MBEvent, now: Date) -> UNNotificationRequest {
         let content = UNMutableNotificationContent()
         content.title = Defaults[.hideMeetingTitle] ? "general_meeting".loco() : event.title
         content.interruptionLevel = .timeSensitive
@@ -104,7 +104,7 @@ final class NotificationScheduler {
         }
 
         // Floor at 0.5s so the OS does not reject a too-immediate trigger.
-        let interval = max(plan.fireDate.timeIntervalSinceNow, 0.5)
+        let interval = max(plan.fireDate.timeIntervalSince(now), 0.5)
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: interval, repeats: false)
         return UNNotificationRequest(
             identifier: Self.identifierPrefix + plan.identity,

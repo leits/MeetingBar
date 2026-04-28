@@ -29,3 +29,54 @@ public struct ProviderHealth: Equatable {
         self.authRequired = authRequired
     }
 }
+
+extension ProviderHealth {
+    static func success(attempted: Date) -> ProviderHealth {
+        ProviderHealth(
+            lastSuccessfulRefresh: attempted,
+            lastAttemptedRefresh: attempted,
+            lastErrorDescription: nil,
+            isStale: false,
+            authRequired: false
+        )
+    }
+
+    static func failure(
+        previous: ProviderHealth,
+        attempted: Date,
+        error: Error
+    ) -> ProviderHealth {
+        ProviderHealth(
+            lastSuccessfulRefresh: previous.lastSuccessfulRefresh,
+            lastAttemptedRefresh: attempted,
+            lastErrorDescription: Self.errorDescription(error),
+            isStale: true,
+            authRequired: Self.isAuthRequired(error)
+        )
+    }
+
+    private static func errorDescription(_ error: Error) -> String {
+        if let localized = (error as? LocalizedError)?.errorDescription {
+            return localized
+        }
+        return error.localizedDescription
+    }
+
+    private static func isAuthRequired(_ error: Error) -> Bool {
+        if let authError = error as? AuthError {
+            switch authError {
+            case .notSignedIn, .refreshFailed:
+                return true
+            }
+        }
+
+        switch error {
+        case let EventManagerError.calendarAccessFailed(underlying):
+            return isAuthRequired(underlying)
+        case let EventManagerError.eventFetchFailed(underlying):
+            return isAuthRequired(underlying)
+        default:
+            return false
+        }
+    }
+}

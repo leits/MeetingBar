@@ -16,19 +16,82 @@ let googleAuthKeychainName = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_AU
 
 extension OIDServiceConfiguration: @unchecked @retroactive Sendable {}
 
-enum AuthError: Error {
+enum AuthError: LocalizedError {
     case notSignedIn
     case refreshFailed
+
+    var errorDescription: String? {
+        switch self {
+        case .notSignedIn:
+            return "Google Calendar authorization is required"
+        case .refreshFailed:
+            return "Google Calendar token refresh failed"
+        }
+    }
 }
 
-enum GoogleCalendarResponseError: LocalizedError {
+enum GoogleCalendarError: LocalizedError, Equatable {
+    case unauthorized(URL)
+    case forbiddenCalendar(calendarID: String?, url: URL)
+    case httpStatus(Int, url: URL)
     case missingItems(URL)
 
     var errorDescription: String? {
         switch self {
+        case let .unauthorized(url):
+            return "Google Calendar authorization failed: \(url.absoluteString)"
+        case let .forbiddenCalendar(calendarID, url):
+            if let calendarID {
+                return "Google Calendar is not accessible: \(calendarID)"
+            }
+            return "Google Calendar access is forbidden: \(url.absoluteString)"
+        case let .httpStatus(statusCode, url):
+            return "Google Calendar request failed with HTTP \(statusCode): \(url.absoluteString)"
         case let .missingItems(url):
             return "Google Calendar response did not contain an items array: \(url.absoluteString)"
         }
+    }
+}
+
+enum GoogleHTTPDecision: Equatable {
+    case proceed
+    case retryWithForcedTokenRefresh
+    case clearAuthAndThrowAuthRequired
+    case throwError(GoogleCalendarError)
+}
+
+enum GoogleHTTPStatusPolicy {
+    static func classify(
+        statusCode: Int,
+        url: URL,
+        calendarID: String?,
+        retrying: Bool
+    ) -> GoogleHTTPDecision {
+        switch statusCode {
+        case 200...299:
+            return .proceed
+        case 401:
+            return retrying ? .clearAuthAndThrowAuthRequired : .retryWithForcedTokenRefresh
+        case 403:
+            return retrying
+                ? .throwError(.forbiddenCalendar(calendarID: calendarID, url: url))
+                : .retryWithForcedTokenRefresh
+        default:
+            return .throwError(.httpStatus(statusCode, url: url))
+        }
+    }
+}
+
+enum GoogleCalendarBatchPolicy {
+    static func finish(
+        events: [MBEvent],
+        successfulCalendars: Int,
+        forbiddenErrors: [Error]
+    ) throws -> [MBEvent] {
+        if successfulCalendars == 0, let error = forbiddenErrors.first {
+            throw error
+        }
+        return events
     }
 }
 
@@ -213,7 +276,7 @@ final class GCEventStore: NSObject,
             .init(name: "timeMin", value: timeMin)
         ]
 
-        let items = try await fetchJSON(comps.url!)
+        let items = try await fetchJSON(comps.url!, calendarID: calendar.id)
         return items.compactMap { GCParser.event(from: $0, calendar: calendar) }
     }
 
@@ -222,11 +285,30 @@ final class GCEventStore: NSObject,
                                  to: Date) async throws -> [MBEvent] {
         try await ensureSignedIn()
         var result: [MBEvent] = []
+        var forbiddenErrors: [Error] = []
+        var successfulCalendars = 0
         for cal in calendars {
-            let ev = try await getCalendarEventsForDateRange(calendar: cal, dateFrom: from, dateTo: to)
-            result.append(contentsOf: ev)
+            do {
+                let ev = try await getCalendarEventsForDateRange(calendar: cal, dateFrom: from, dateTo: to)
+                successfulCalendars += 1
+                result.append(contentsOf: ev)
+            } catch let error as GoogleCalendarError {
+                switch error {
+                case .forbiddenCalendar:
+                    NSLog("GCEventStore: skipping inaccessible calendar \(cal.id): \(error.localizedDescription)")
+                    forbiddenErrors.append(error)
+                default:
+                    throw error
+                }
+            } catch {
+                throw error
+            }
         }
-        return result
+        return try GoogleCalendarBatchPolicy.finish(
+            events: result,
+            successfulCalendars: successfulCalendars,
+            forbiddenErrors: forbiddenErrors
+        )
     }
 
     // MARK: - Private helpers
@@ -317,7 +399,7 @@ final class GCEventStore: NSObject,
     }
 
     // MARK: Networking helper
-    private func fetchJSON(_ url: URL, retrying: Bool = false) async throws -> [[String: Any]] {
+    private func fetchJSON(_ url: URL, calendarID: String? = nil, retrying: Bool = false) async throws -> [[String: Any]] {
         let token = try await validAccessToken()
 
         var req = URLRequest(url: url)
@@ -326,26 +408,28 @@ final class GCEventStore: NSObject,
         let (data, response) = try await urlSession.data(for: req)
 
         if let http = response as? HTTPURLResponse {
-            switch http.statusCode {
-            case 401, 403:
-                if !retrying {
-                    // force-refresh and retry
-                    _ = try await validAccessToken(forceRefresh: true)
-                    return try await fetchJSON(url, retrying: true)
-                }
-                // refresh token revoked – force re‑login
+            switch GoogleHTTPStatusPolicy.classify(
+                statusCode: http.statusCode,
+                url: url,
+                calendarID: calendarID,
+                retrying: retrying
+            ) {
+            case .proceed:
+                break
+            case .retryWithForcedTokenRefresh:
+                _ = try await validAccessToken(forceRefresh: true)
+                return try await fetchJSON(url, calendarID: calendarID, retrying: true)
+            case .clearAuthAndThrowAuthRequired:
                 clearAuthState()
                 throw AuthError.notSignedIn
-            case 200...299:
-                break
-            default:
-                throw NSError(domain: "HTTP", code: http.statusCode)
+            case let .throwError(error):
+                throw error
             }
         }
 
         let root = try JSONSerialization.jsonObject(with: data) as? [String: Any] ?? [:]
         guard let items = root["items"] as? [[String: Any]] else {
-            throw GoogleCalendarResponseError.missingItems(url)
+            throw GoogleCalendarError.missingItems(url)
         }
         return items
     }

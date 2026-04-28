@@ -315,6 +315,7 @@ final class ProviderHealthTests: BaseTestCase {
                 XCTAssertNotNil(health.lastSuccessfulRefresh)
                 XCTAssertNil(health.lastErrorDescription)
                 XCTAssertFalse(health.isStale)
+                XCTAssertFalse(health.authRequired)
                 exp.fulfill()
             }
             .store(in: &cancellables)
@@ -345,11 +346,52 @@ final class ProviderHealthTests: BaseTestCase {
                 XCTAssertEqual(health.lastSuccessfulRefresh, lastSuccess, "prior success date must be preserved")
                 XCTAssertNotNil(health.lastErrorDescription)
                 XCTAssertTrue(health.isStale)
+                XCTAssertFalse(health.authRequired)
                 failExp.fulfill()
             }
             .store(in: &cancellables)
 
         try await manager.refreshSources()
         await fulfillment(of: [failExp], timeout: 1.0)
+    }
+
+    func test_authErrorSetsAuthRequired() {
+        let attempted = Date()
+        let health = ProviderHealth.failure(
+            previous: ProviderHealth(lastSuccessfulRefresh: attempted.addingTimeInterval(-60)),
+            attempted: attempted,
+            error: AuthError.notSignedIn
+        )
+
+        XCTAssertTrue(health.authRequired)
+        XCTAssertTrue(health.isStale)
+        XCTAssertEqual(health.lastErrorDescription, "Google Calendar authorization is required")
+    }
+
+    func test_wrappedAuthErrorSetsAuthRequired() {
+        let attempted = Date()
+        let previousSuccess = attempted.addingTimeInterval(-60)
+        let health = ProviderHealth.failure(
+            previous: ProviderHealth(lastSuccessfulRefresh: previousSuccess),
+            attempted: attempted,
+            error: EventManagerError.eventFetchFailed(AuthError.notSignedIn)
+        )
+
+        XCTAssertTrue(health.authRequired)
+        XCTAssertEqual(health.lastSuccessfulRefresh, previousSuccess)
+    }
+
+    func test_genericFailureIsStaleButNotAuthRequired() {
+        let attempted = Date()
+        let previousSuccess = attempted.addingTimeInterval(-60)
+        let health = ProviderHealth.failure(
+            previous: ProviderHealth(lastSuccessfulRefresh: previousSuccess),
+            attempted: attempted,
+            error: NSError(domain: "network", code: -1009)
+        )
+
+        XCTAssertFalse(health.authRequired)
+        XCTAssertTrue(health.isStale)
+        XCTAssertEqual(health.lastSuccessfulRefresh, previousSuccess)
     }
 }
