@@ -5,17 +5,44 @@
 
 import Foundation
 
+enum DiagnosticsProvider: Equatable {
+    case macOSEventKit
+    case googleCalendar
+}
+
+struct DiagnosticsHealth: Equatable {
+    let lastSuccessfulRefresh: Date?
+    let lastAttemptedRefresh: Date?
+    let lastErrorDescription: String?
+    let isStale: Bool
+    let authRequired: Bool
+
+    init(
+        lastSuccessfulRefresh: Date? = nil,
+        lastAttemptedRefresh: Date? = nil,
+        lastErrorDescription: String? = nil,
+        isStale: Bool = false,
+        authRequired: Bool = false
+    ) {
+        self.lastSuccessfulRefresh = lastSuccessfulRefresh
+        self.lastAttemptedRefresh = lastAttemptedRefresh
+        self.lastErrorDescription = lastErrorDescription
+        self.isStale = isStale
+        self.authRequired = authRequired
+    }
+}
+
 /// Inputs needed to produce a plain-text diagnostics report. All fields are
 /// captured by the caller so the formatter is pure and testable.
 struct DiagnosticsContext {
     let appVersion: String
     let buildNumber: String
     let osVersion: String
-    let provider: EventStoreProvider
+    let provider: DiagnosticsProvider
     let selectedCalendarCount: Int
     let totalCalendarCount: Int
     let visibleEventCount: Int
-    let health: ProviderHealth
+    let health: DiagnosticsHealth
 }
 
 enum DiagnosticsReport {
@@ -44,14 +71,14 @@ enum DiagnosticsReport {
         """
     }
 
-    private static func providerLabel(_ provider: EventStoreProvider) -> String {
+    private static func providerLabel(_ provider: DiagnosticsProvider) -> String {
         switch provider {
         case .macOSEventKit: return "Calendar.app (EventKit)"
         case .googleCalendar: return "Google Calendar"
         }
     }
 
-    private static func healthLabel(_ health: ProviderHealth) -> String {
+    private static func healthLabel(_ health: DiagnosticsHealth) -> String {
         if health.authRequired { return "auth required" }
         if health.lastErrorDescription != nil { return "error" }
         if health.isStale { return "stale" }

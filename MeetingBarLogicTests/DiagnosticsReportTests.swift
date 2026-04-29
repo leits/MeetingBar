@@ -1,18 +1,18 @@
 //
 //  DiagnosticsReportTests.swift
-//  MeetingBarTests
+//  MeetingBarLogicTests
 //
 
 import XCTest
 
-@testable import MeetingBar
+@testable import MeetingBarLogic
 
 final class DiagnosticsReportTests: XCTestCase {
     private let knownDate = Date(timeIntervalSince1970: 1_730_000_000)
 
     private func context(
-        provider: EventStoreProvider = .macOSEventKit,
-        health: ProviderHealth = ProviderHealth()
+        provider: DiagnosticsProvider = .macOSEventKit,
+        health: DiagnosticsHealth = DiagnosticsHealth()
     ) -> DiagnosticsContext {
         DiagnosticsContext(
             appVersion: "4.12",
@@ -46,7 +46,7 @@ final class DiagnosticsReportTests: XCTestCase {
     }
 
     func testReportEmitsNeverWhenNoRefreshAttempted() {
-        let report = DiagnosticsReport.text(from: context(health: ProviderHealth()))
+        let report = DiagnosticsReport.text(from: context(health: DiagnosticsHealth()))
 
         XCTAssertTrue(report.contains("Provider health: initializing"))
         XCTAssertTrue(report.contains("Stale data: no"))
@@ -57,7 +57,7 @@ final class DiagnosticsReportTests: XCTestCase {
     }
 
     func testReportFormatsDatesAsISO8601() {
-        let health = ProviderHealth(
+        let health = DiagnosticsHealth(
             lastSuccessfulRefresh: knownDate,
             lastAttemptedRefresh: knownDate,
             lastErrorDescription: nil,
@@ -73,7 +73,7 @@ final class DiagnosticsReportTests: XCTestCase {
     }
 
     func testReportShowsOKHealthWhenRefreshSucceeded() {
-        let health = ProviderHealth(
+        let health = DiagnosticsHealth(
             lastSuccessfulRefresh: knownDate,
             lastAttemptedRefresh: knownDate,
             lastErrorDescription: nil,
@@ -88,7 +88,7 @@ final class DiagnosticsReportTests: XCTestCase {
     }
 
     func testReportShowsErrorDescriptionWhenPresent() {
-        let health = ProviderHealth(
+        let health = DiagnosticsHealth(
             lastSuccessfulRefresh: knownDate.addingTimeInterval(-3600),
             lastAttemptedRefresh: knownDate,
             lastErrorDescription: "The Internet connection appears to be offline.",
@@ -102,7 +102,7 @@ final class DiagnosticsReportTests: XCTestCase {
     }
 
     func testReportShowsAuthRequiredState() {
-        let health = ProviderHealth(
+        let health = DiagnosticsHealth(
             lastSuccessfulRefresh: knownDate.addingTimeInterval(-3600),
             lastAttemptedRefresh: knownDate,
             lastErrorDescription: "Google Calendar authorization is required",

@@ -15,11 +15,12 @@ let package = Package(
             name: "MeetingBarLogic",
             path: "MeetingBar/Core/Policies",
             exclude: [
-                "DiagnosticsReport.swift",
+                "DiagnosticsReport+MeetingBar.swift",
                 "EventFilterPolicy+MeetingBar.swift",
                 "EventSelectionPolicy+MeetingBar.swift"
             ],
             sources: [
+                "DiagnosticsReport.swift",
                 "EventActionPolicy.swift",
                 "EventFilterPolicy.swift",
                 "EventSelectionPolicy.swift",
