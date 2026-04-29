@@ -8,6 +8,11 @@ import XCTest
 @testable import MeetingBarLogic
 
 final class MeetingLinkDetectorTests: XCTestCase {
+    private func outlookSafeLink(for url: String) -> String {
+        let encodedURL = url.addingPercentEncoding(withAllowedCharacters: .alphanumerics)
+        return "https://nam11.safelinks.protection.outlook.com/?url=\(encodedURL ?? url)"
+    }
+
     func testDetectsMeetLinkFromLocation() {
         let link = MeetingLinkDetector.detect(
             location: "https://meet.google.com/abc-defg-hij",
@@ -53,6 +58,37 @@ final class MeetingLinkDetectorTests: XCTestCase {
         )
         XCTAssertEqual(link?.service, .other)
         XCTAssertEqual(link?.url.absoluteString, "https://example.test/meeting/abc")
+    }
+
+    func testCustomRegexesContinueAfterInvalidPattern() {
+        let link = MeetingLinkDetector.detect(
+            location: nil,
+            eventURL: nil,
+            notes: "Join: https://example.test/meeting/abc",
+            calendarEmail: nil,
+            currentUserEmail: nil,
+            customRegexes: [
+                "[",
+                #"https://example\.test/meeting/[^\s]+"#
+            ]
+        )
+
+        XCTAssertEqual(link?.service, .other)
+        XCTAssertEqual(link?.url.absoluteString, "https://example.test/meeting/abc")
+    }
+
+    func testDetectsMeetingLinkInsideOutlookSafeLink() {
+        let safeLink = outlookSafeLink(for: "https://meet.google.com/abc-defg-hij")
+        let link = MeetingLinkDetector.detect(
+            location: nil,
+            eventURL: nil,
+            notes: "Join: \(safeLink)",
+            calendarEmail: nil,
+            currentUserEmail: nil
+        )
+
+        XCTAssertEqual(link?.service, .meet)
+        XCTAssertEqual(link?.url.absoluteString, "https://meet.google.com/abc-defg-hij")
     }
 
     func testDetectsLinkInsideHTMLAttributeWithoutStripping() {
@@ -179,6 +215,18 @@ final class MeetingLinkDetectorTests: XCTestCase {
         XCTAssertNil(link)
     }
 
+    func testReturnsNilWhenKnownMeetingHostHasNoScheme() {
+        let link = MeetingLinkDetector.detect(
+            location: "meet.google.com/abc-defg-hij",
+            eventURL: nil,
+            notes: nil,
+            calendarEmail: nil,
+            currentUserEmail: nil
+        )
+
+        XCTAssertNil(link)
+    }
+
     func testReturnsNilForEmptyEvent() {
         let link = MeetingLinkDetector.detect(
             location: nil,
@@ -188,5 +236,52 @@ final class MeetingLinkDetectorTests: XCTestCase {
             currentUserEmail: nil
         )
         XCTAssertNil(link)
+    }
+
+    func testCleanupOutlookSafeLinksDecodesMultipleLinks() {
+        let meetURL = "https://meet.google.com/abc-defg-hij"
+        let zoomURL = "https://us02web.zoom.us/j/12345"
+        let cleaned = cleanupOutlookSafeLinks(
+            rawText: "\(outlookSafeLink(for: meetURL)) \(outlookSafeLink(for: zoomURL))"
+        )
+
+        XCTAssertEqual(cleaned, "\(meetURL) \(zoomURL)")
+    }
+
+    func testCleanupOutlookSafeLinksLeavesPlainTextUnchanged() {
+        let text = "Join https://meet.google.com/abc-defg-hij"
+
+        XCTAssertEqual(cleanupOutlookSafeLinks(rawText: text), text)
+    }
+
+    func testGetMatchReturnsFirstMatch() throws {
+        let regex = try NSRegularExpression(pattern: #"https://example\.test/[a-z]+"#)
+        let match = getMatch(
+            text: "Join https://example.test/first then https://example.test/second",
+            regex: regex
+        )
+
+        XCTAssertEqual(match, "https://example.test/first")
+    }
+
+    func testGetMatchReturnsNilWhenPatternDoesNotMatch() throws {
+        let regex = try NSRegularExpression(pattern: #"https://example\.test/[a-z]+"#)
+
+        XCTAssertNil(getMatch(text: "No links here", regex: regex))
+    }
+
+    func testHTMLTagsStrippedReturnsPlainTextUnchanged() {
+        let text = "Join https://meet.google.com/abc-defg-hij"
+
+        XCTAssertEqual(htmlTagsStrippedForMeetingLinks(text), text)
+    }
+
+    func testHTMLTagsStrippedDecodesVisibleHTMLText() {
+        let stripped = htmlTagsStrippedForMeetingLinks(
+            "<p>&#x68;&#x74;&#x74;&#x70;&#x73;://meet.google.com/abc-defg-hij</p>"
+        )
+
+        XCTAssertTrue(stripped.contains("https://meet.google.com/abc-defg-hij"))
+        XCTAssertFalse(stripped.contains("<p>"))
     }
 }
