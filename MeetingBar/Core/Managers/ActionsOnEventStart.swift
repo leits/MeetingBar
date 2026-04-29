@@ -41,11 +41,11 @@ class ActionsOnEventStart: NSObject {
         let now = Date()
 
         Defaults[.processedEventsForFullscreenNotification] =
-            EventActionPolicy.cleanupExpired(Defaults[.processedEventsForFullscreenNotification], now: now)
+            cleanupExpiredActionRecords(Defaults[.processedEventsForFullscreenNotification], now: now)
         Defaults[.processedEventsForAutoJoin] =
-            EventActionPolicy.cleanupExpired(Defaults[.processedEventsForAutoJoin], now: now)
+            cleanupExpiredActionRecords(Defaults[.processedEventsForAutoJoin], now: now)
         Defaults[.processedEventsForRunScriptOnEventStart] =
-            EventActionPolicy.cleanupExpired(Defaults[.processedEventsForRunScriptOnEventStart], now: now)
+            cleanupExpiredActionRecords(Defaults[.processedEventsForRunScriptOnEventStart], now: now)
 
         let fullscreenActive = Defaults[.fullscreenNotification]
         let autoJoinActive = Defaults[.automaticEventJoin]
@@ -72,16 +72,16 @@ class ActionsOnEventStart: NSObject {
             requiresMeetingLink: true
         )
         guard let decision = EventActionPolicy.evaluate(
-            event: event,
+            event: EventActionEvent(event: event),
             config: config,
-            processed: Defaults[.processedEventsForFullscreenNotification],
+            processed: Defaults[.processedEventsForFullscreenNotification].actionRecords,
             now: now
         ) else { return }
 
         if decision.shouldFireSideEffect {
             app.openFullscreenNotificationWindow(event: event)
         }
-        Defaults[.processedEventsForFullscreenNotification] = decision.updatedProcessed
+        Defaults[.processedEventsForFullscreenNotification] = decision.updatedProcessed.processedEvents
     }
 
     private func processAutoJoin(event: MBEvent, now: Date) {
@@ -91,16 +91,16 @@ class ActionsOnEventStart: NSObject {
             requiresMeetingLink: true
         )
         guard let decision = EventActionPolicy.evaluate(
-            event: event,
+            event: EventActionEvent(event: event),
             config: config,
-            processed: Defaults[.processedEventsForAutoJoin],
+            processed: Defaults[.processedEventsForAutoJoin].actionRecords,
             now: now
         ) else { return }
 
         if decision.shouldFireSideEffect {
             event.openMeeting()
         }
-        Defaults[.processedEventsForAutoJoin] = decision.updatedProcessed
+        Defaults[.processedEventsForAutoJoin] = decision.updatedProcessed.processedEvents
     }
 
     private func processStartScript(event: MBEvent, now: Date) {
@@ -110,15 +110,64 @@ class ActionsOnEventStart: NSObject {
             requiresMeetingLink: false
         )
         guard let decision = EventActionPolicy.evaluate(
-            event: event,
+            event: EventActionEvent(event: event),
             config: config,
-            processed: Defaults[.processedEventsForRunScriptOnEventStart],
+            processed: Defaults[.processedEventsForRunScriptOnEventStart].actionRecords,
             now: now
         ) else { return }
 
         if decision.shouldFireSideEffect {
             runMeetingStartsScript(event: event, type: ScriptType.meetingStart)
         }
-        Defaults[.processedEventsForRunScriptOnEventStart] = decision.updatedProcessed
+        Defaults[.processedEventsForRunScriptOnEventStart] = decision.updatedProcessed.processedEvents
+    }
+}
+
+private func cleanupExpiredActionRecords(_ processed: [ProcessedEvent], now: Date) -> [ProcessedEvent] {
+    EventActionPolicy
+        .cleanupExpired(processed.actionRecords, now: now)
+        .processedEvents
+}
+
+private extension EventActionEvent {
+    init(event: MBEvent) {
+        self.init(
+            id: event.id,
+            lastModifiedDate: event.lastModifiedDate,
+            startDate: event.startDate,
+            endDate: event.endDate,
+            isAllDay: event.isAllDay,
+            hasMeetingLink: event.meetingLink != nil
+        )
+    }
+}
+
+private extension EventActionProcessedEvent {
+    init(processedEvent: ProcessedEvent) {
+        self.init(
+            id: processedEvent.id,
+            lastModifiedDate: processedEvent.lastModifiedDate,
+            eventEndDate: processedEvent.eventEndDate
+        )
+    }
+
+    var processedEvent: ProcessedEvent {
+        ProcessedEvent(
+            id: id,
+            lastModifiedDate: lastModifiedDate,
+            eventEndDate: eventEndDate
+        )
+    }
+}
+
+private extension Array where Element == ProcessedEvent {
+    var actionRecords: [EventActionProcessedEvent] {
+        map(EventActionProcessedEvent.init(processedEvent:))
+    }
+}
+
+private extension Array where Element == EventActionProcessedEvent {
+    var processedEvents: [ProcessedEvent] {
+        map(\.processedEvent)
     }
 }

@@ -23,9 +23,24 @@ struct EventActionConfig {
     let requiresMeetingLink: Bool
 }
 
+struct EventActionEvent: Equatable {
+    let id: String
+    let lastModifiedDate: Date?
+    let startDate: Date
+    let endDate: Date
+    let isAllDay: Bool
+    let hasMeetingLink: Bool
+}
+
+struct EventActionProcessedEvent: Equatable {
+    let id: String
+    let lastModifiedDate: Date?
+    let eventEndDate: Date
+}
+
 enum EventActionPolicy {
     struct Decision: Equatable {
-        let updatedProcessed: [ProcessedEvent]
+        let updatedProcessed: [EventActionProcessedEvent]
         let shouldFireSideEffect: Bool
     }
 
@@ -33,9 +48,9 @@ enum EventActionPolicy {
     /// outside the action window, or it has already been processed at the
     /// current `lastModifiedDate`.
     static func evaluate(
-        event: MBEvent,
+        event: EventActionEvent,
         config: EventActionConfig,
-        processed: [ProcessedEvent],
+        processed: [EventActionProcessedEvent],
         now: Date
     ) -> Decision? {
         let timeInterval = event.startDate.timeIntervalSince(now)
@@ -53,18 +68,18 @@ enum EventActionPolicy {
         if matched != nil {
             updated.removeAll { $0.id == event.id }
         }
-        updated.append(ProcessedEvent(
+        updated.append(EventActionProcessedEvent(
             id: event.id,
             lastModifiedDate: event.lastModifiedDate,
             eventEndDate: event.endDate
         ))
 
-        let shouldFire = !config.requiresMeetingLink || event.meetingLink != nil
+        let shouldFire = !config.requiresMeetingLink || event.hasMeetingLink
         return Decision(updatedProcessed: updated, shouldFireSideEffect: shouldFire)
     }
 
     /// Drops processed-event entries whose underlying event has already ended.
-    static func cleanupExpired(_ processed: [ProcessedEvent], now: Date) -> [ProcessedEvent] {
+    static func cleanupExpired(_ processed: [EventActionProcessedEvent], now: Date) -> [EventActionProcessedEvent] {
         processed.filter { $0.eventEndDate.timeIntervalSince(now) > 0 }
     }
 }

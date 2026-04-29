@@ -1,22 +1,28 @@
 //
 //  EventActionPolicyTests.swift
-//  MeetingBarTests
+//  MeetingBarLogicTests
 //
 
 import XCTest
 
-@testable import MeetingBar
+@testable import MeetingBarLogic
 
-final class EventActionPolicyTests: BaseTestCase {
+final class EventActionPolicyTests: XCTestCase {
     private let now = Date(timeIntervalSinceReferenceDate: 800_000_000)
 
-    private func eventStartingIn(_ secondsFromNow: TimeInterval, withLink: Bool = true, allDay: Bool = false) -> MBEvent {
-        makeFakeEvent(
+    private func eventStartingIn(
+        _ secondsFromNow: TimeInterval,
+        withLink: Bool = true,
+        allDay: Bool = false,
+        lastModifiedDate: Date? = Date(timeIntervalSinceReferenceDate: 700_000_000)
+    ) -> EventActionEvent {
+        EventActionEvent(
             id: "evt-1",
-            start: now.addingTimeInterval(secondsFromNow),
-            end: now.addingTimeInterval(secondsFromNow + 1800),
+            lastModifiedDate: lastModifiedDate,
+            startDate: now.addingTimeInterval(secondsFromNow),
+            endDate: now.addingTimeInterval(secondsFromNow + 1800),
             isAllDay: allDay,
-            withLink: withLink
+            hasMeetingLink: withLink
         )
     }
 
@@ -34,8 +40,8 @@ final class EventActionPolicyTests: BaseTestCase {
 
     func testCleanupExpiredDropsEndedEntries() {
         let processed = [
-            ProcessedEvent(id: "ended", lastModifiedDate: nil, eventEndDate: now.addingTimeInterval(-1)),
-            ProcessedEvent(id: "active", lastModifiedDate: nil, eventEndDate: now.addingTimeInterval(60))
+            EventActionProcessedEvent(id: "ended", lastModifiedDate: nil, eventEndDate: now.addingTimeInterval(-1)),
+            EventActionProcessedEvent(id: "active", lastModifiedDate: nil, eventEndDate: now.addingTimeInterval(60))
         ]
         let kept = EventActionPolicy.cleanupExpired(processed, now: now)
         XCTAssertEqual(kept.map(\.id), ["active"])
@@ -64,7 +70,7 @@ final class EventActionPolicyTests: BaseTestCase {
         let decision = EventActionPolicy.evaluate(
             event: event, config: fullscreenLikeConfig, processed: [], now: now
         )
-        XCTAssertNotNil(decision, "fullscreen-like config should still fire 10s after start")
+        XCTAssertNotNil(decision)
     }
 
     func testEvaluateRejectsRecentlyStartedForScriptConfig() {
@@ -72,16 +78,17 @@ final class EventActionPolicyTests: BaseTestCase {
         let decision = EventActionPolicy.evaluate(
             event: event, config: scriptLikeConfig, processed: [], now: now
         )
-        XCTAssertNil(decision, "script-like config does not fire after the event has started")
+        XCTAssertNil(decision)
     }
 
     func testEvaluateAllDayEventActiveDuringRange() {
-        let allDay = makeFakeEvent(
+        let allDay = EventActionEvent(
             id: "all-day",
-            start: now.addingTimeInterval(-3600),
-            end: now.addingTimeInterval(3600),
+            lastModifiedDate: nil,
+            startDate: now.addingTimeInterval(-3600),
+            endDate: now.addingTimeInterval(3600),
             isAllDay: true,
-            withLink: true
+            hasMeetingLink: true
         )
         let decision = EventActionPolicy.evaluate(
             event: allDay, config: fullscreenLikeConfig, processed: [], now: now
@@ -91,7 +98,13 @@ final class EventActionPolicyTests: BaseTestCase {
 
     func testEvaluateSkipsAlreadyProcessedEvent() {
         let event = eventStartingIn(30)
-        let processed = [ProcessedEvent(id: event.id, lastModifiedDate: event.lastModifiedDate, eventEndDate: event.endDate)]
+        let processed = [
+            EventActionProcessedEvent(
+                id: event.id,
+                lastModifiedDate: event.lastModifiedDate,
+                eventEndDate: event.endDate
+            )
+        ]
         let decision = EventActionPolicy.evaluate(
             event: event, config: fullscreenLikeConfig, processed: processed, now: now
         )
@@ -100,7 +113,7 @@ final class EventActionPolicyTests: BaseTestCase {
 
     func testEvaluateReprocessesAfterReschedule() {
         let event = eventStartingIn(30)
-        let stale = ProcessedEvent(
+        let stale = EventActionProcessedEvent(
             id: event.id,
             lastModifiedDate: event.lastModifiedDate?.addingTimeInterval(-3600),
             eventEndDate: event.endDate
@@ -109,7 +122,7 @@ final class EventActionPolicyTests: BaseTestCase {
             event: event, config: fullscreenLikeConfig, processed: [stale], now: now
         )
         XCTAssertNotNil(decision)
-        XCTAssertEqual(decision?.updatedProcessed.count, 1, "stale entry replaced, not duplicated")
+        XCTAssertEqual(decision?.updatedProcessed.count, 1)
         XCTAssertEqual(decision?.updatedProcessed.first?.lastModifiedDate, event.lastModifiedDate)
     }
 
@@ -119,10 +132,8 @@ final class EventActionPolicyTests: BaseTestCase {
             event: event, config: fullscreenLikeConfig, processed: [], now: now
         )
         XCTAssertNotNil(decision)
-        XCTAssertFalse(decision?.shouldFireSideEffect ?? true,
-                       "no meeting link → side effect skipped")
-        XCTAssertEqual(decision?.updatedProcessed.map(\.id), ["evt-1"],
-                       "entry still recorded so the event is not retried each tick")
+        XCTAssertFalse(decision?.shouldFireSideEffect ?? true)
+        XCTAssertEqual(decision?.updatedProcessed.map(\.id), ["evt-1"])
     }
 
     func testEvaluateScriptConfigFiresWithoutLink() {
