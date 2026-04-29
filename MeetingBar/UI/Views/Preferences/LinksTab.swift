@@ -11,6 +11,8 @@ import SwiftUI
 
 struct LinksTab: View {
     @Default(.meetBrowser) var meetBrowser
+    @Default(.openGoogleMeetingNotesOnJoin) var openGoogleMeetingNotesOnJoin
+    @Default(.eventStoreProvider) var eventStoreProvider
     @Default(.browserForCreateMeeting) var browserForCreateMeeting
     @Default(.defaultBrowser) var defaultBrowser
     @Default(.zoomBrowser) var zoomBrowser
@@ -55,6 +57,14 @@ struct LinksTab: View {
                         Text(browser.name).tag(browser)
                     }
                 }
+
+                Toggle("preferences_services_meet_open_notes_on_join".loco(), isOn: Binding(
+                    get: { eventStoreProvider == .googleCalendar && openGoogleMeetingNotesOnJoin },
+                    set: { openGoogleMeetingNotesOnJoin = $0 }
+                ))
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .disabled(eventStoreProvider != .googleCalendar)
+                .help("preferences_services_meet_open_notes_on_join_help".loco())
 
                 Picker(
                     selection: $zoomBrowser,

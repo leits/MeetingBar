@@ -405,6 +405,15 @@ final class GCEventStore: NSObject,
                 }
             }
 
+            var meetingNotesDocLink: URL?
+            if let attachments = item["attachments"] as? [[String: Any]],
+               let docAttachment = attachments.first(where: {
+                   ($0["mimeType"] as? String) == "application/vnd.google-apps.document"
+               }),
+               let fileUrl = docAttachment["fileUrl"] as? String {
+                meetingNotesDocLink = URL(string: fileUrl)
+            }
+
             let organizerRaw = item["organizer"] as? [String: String]
             let organizer = MBEventOrganizer(email: organizerRaw?["email"], name: organizerRaw?["name"])
 
@@ -463,6 +472,7 @@ final class GCEventStore: NSObject,
                 notes: notes,
                 location: location,
                 url: url,
+                meetingNotesDocLink: meetingNotesDocLink,
                 organizer: organizer,
                 attendees: attendees,
                 startDate: startDate,

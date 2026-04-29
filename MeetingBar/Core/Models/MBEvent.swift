@@ -62,6 +62,7 @@ public struct MBEvent: Identifiable, Hashable, Sendable {
     public var status: MBEventStatus
     public var participationStatus: MBEventAttendeeStatus = .unknown
     public var meetingLink: MeetingLink?
+    public var meetingNotesDocLink: URL?
     public var organizer: MBEventOrganizer?
     public let url: URL?
     public let notes: String?
@@ -79,6 +80,7 @@ public struct MBEvent: Identifiable, Hashable, Sendable {
          notes: String?,
          location: String?,
          url: URL?,
+         meetingNotesDocLink: URL? = nil,
          organizer: MBEventOrganizer?,
          attendees: [MBEventAttendee] = [],
          startDate: Date,
@@ -105,6 +107,7 @@ public struct MBEvent: Identifiable, Hashable, Sendable {
         self.notes = notes
         self.location = location
         self.url = url
+        self.meetingNotesDocLink = meetingNotesDocLink
 
         self.organizer = organizer
         self.attendees = attendees
@@ -162,6 +165,11 @@ public struct MBEvent: Identifiable, Hashable, Sendable {
                 }
             }
             openMeetingURL(meetingLink.service, meetingLink.url, nil)
+            if Defaults[.openGoogleMeetingNotesOnJoin],
+               meetingLink.service == .meet,
+               let notesURL = meetingNotesDocLink {
+                notesURL.openInDefaultBrowser()
+            }
         } else if let eventUrl = url {
             eventUrl.openInDefaultBrowser()
         } else {
