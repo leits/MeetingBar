@@ -58,6 +58,31 @@ final class GoogleCalendarPolicyTests: XCTestCase {
         )
     }
 
+    func testHTTP401AfterRetryClearsAuthAndThrowsAuthRequired() {
+        let decision = GoogleHTTPStatusPolicy.classify(
+            statusCode: 401,
+            url: calendarListURL,
+            calendarID: nil,
+            retrying: true
+        )
+
+        XCTAssertEqual(decision, .clearAuthAndThrowAuthRequired)
+    }
+
+    func testHTTP403AfterRetryWithCalendarIDIsForbiddenCalendar() {
+        let decision = GoogleHTTPStatusPolicy.classify(
+            statusCode: 403,
+            url: calendarEventsURL,
+            calendarID: "work",
+            retrying: true
+        )
+
+        XCTAssertEqual(
+            decision,
+            .throwError(.forbiddenCalendar(calendarID: "work", url: calendarEventsURL))
+        )
+    }
+
     func testHTTP500ThrowsStatusError() {
         let decision = GoogleHTTPStatusPolicy.classify(
             statusCode: 500,
@@ -105,5 +130,47 @@ final class GoogleCalendarPolicyTests: XCTestCase {
         )
 
         XCTAssertEqual(events, [event])
+    }
+
+    func testAllForbiddenCalendarsThrowsRepresentativeError() {
+        let forbidden = GoogleCalendarError.forbiddenCalendar(calendarID: "work", url: calendarEventsURL)
+
+        XCTAssertThrowsError(
+            try GoogleCalendarBatchPolicy.finish(
+                events: [],
+                successfulCalendars: 0,
+                forbiddenErrors: [forbidden]
+            ) as [String]
+        ) { error in
+            XCTAssertEqual(error as? GoogleCalendarError, forbidden)
+        }
+    }
+
+    func testAuthErrorDescriptionsExplainRequiredAction() {
+        XCTAssertEqual(AuthError.notSignedIn.errorDescription, "Google Calendar authorization is required")
+        XCTAssertEqual(AuthError.refreshFailed.errorDescription, "Google Calendar token refresh failed")
+    }
+
+    func testGoogleCalendarErrorDescriptionsIncludeUsefulContext() {
+        XCTAssertEqual(
+            GoogleCalendarError.unauthorized(calendarListURL).errorDescription,
+            "Google Calendar authorization failed: \(calendarListURL.absoluteString)"
+        )
+        XCTAssertEqual(
+            GoogleCalendarError.forbiddenCalendar(calendarID: "work", url: calendarEventsURL).errorDescription,
+            "Google Calendar is not accessible: work"
+        )
+        XCTAssertEqual(
+            GoogleCalendarError.forbiddenCalendar(calendarID: nil, url: calendarListURL).errorDescription,
+            "Google Calendar access is forbidden: \(calendarListURL.absoluteString)"
+        )
+        XCTAssertEqual(
+            GoogleCalendarError.httpStatus(500, url: calendarEventsURL).errorDescription,
+            "Google Calendar request failed with HTTP 500: \(calendarEventsURL.absoluteString)"
+        )
+        XCTAssertEqual(
+            GoogleCalendarError.missingItems(calendarListURL).errorDescription,
+            "Google Calendar response did not contain an items array: \(calendarListURL.absoluteString)"
+        )
     }
 }
