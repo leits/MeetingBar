@@ -1,6 +1,6 @@
 //
 //  MeetingServicesTests.swift
-//  MeetingBarTests
+//  MeetingBarLogicTests
 //
 //  Created by Andrii Leitsius on 28.02.2021.
 //  Copyright © 2021 Andrii Leitsius. All rights reserved.
@@ -8,7 +8,7 @@
 
 import XCTest
 
-@testable import MeetingBar
+@testable import MeetingBarLogic
 
 let meetings = [
     MeetingLink(service: .zoom, url: URL(string: "https://zoom.us/j/5551112222")!),
@@ -63,6 +63,26 @@ class MeetingServicesTests: XCTestCase {
             XCTAssertNotNil(result)
             XCTAssertEqual(result, meeting)
         }
+    }
+
+    func testDetectMeetingLinkUsesCustomRegexesFirst() throws {
+        let result = detectMeetingLink(
+            "Join https://example.test/rooms/weekly",
+            customRegexes: [#"https://example\.test/rooms/[^\s]+"#]
+        )
+
+        XCTAssertEqual(result?.service, .other)
+        XCTAssertEqual(result?.url.absoluteString, "https://example.test/rooms/weekly")
+    }
+
+    func testDetectMeetingLinkIgnoresInvalidCustomRegexes() throws {
+        let result = detectMeetingLink(
+            "Join https://meet.google.com/abc-defg-hij",
+            customRegexes: ["["]
+        )
+
+        XCTAssertEqual(result?.service, .meet)
+        XCTAssertEqual(result?.url.absoluteString, "https://meet.google.com/abc-defg-hij")
     }
 
     func testBuiltInRegexPatternsCompile() throws {

@@ -17,17 +17,18 @@ enum MeetingLinkDetector {
         eventURL: URL?,
         notes: String?,
         calendarEmail: String?,
-        currentUserEmail: String?
+        currentUserEmail: String?,
+        customRegexes: [String] = []
     ) -> MeetingLink? {
         let candidateFields: [String?] = [
             location,
             eventURL?.absoluteString,
             notes,
-            notes?.htmlTagsStripped()
+            notes.map(htmlTagsStrippedForMeetingLinks)
         ]
 
         for field in candidateFields {
-            guard let field, var detected = detectMeetingLink(field) else { continue }
+            guard let field, var detected = detectMeetingLink(field, customRegexes: customRegexes) else { continue }
             applyMeetAuthuserIfNeeded(
                 link: &detected,
                 calendarEmail: calendarEmail,

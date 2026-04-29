@@ -23,53 +23,6 @@ struct ProcessedEvent: Codable, Defaults.Serializable, Hashable {
     var eventEndDate: Date
 }
 
-/**
- * this method will extract m365 safe links if any of these links are found in the given text..
- * The method will extract the real url from safe links and decode it, so that the following regex logic can detect the meeting service.
- *
- * The original link looks like this
- *https://nam12.safelinks.protection.outlook.com/ap/t-59584e83/?url=https%3A%2F%2Fteams.microsoft.com%2Fl%2Fmeetup-join%2F19%253ameeting_[obfuscated]&data=[obfuscated]
- *
- * and the method will extract it to https://teams.microsoft.com/l/meetup-join/19%3ameeting_[obfuscated]
- * If no m365 links are found, the original text is returned.
- *
- */
-func cleanupOutlookSafeLinks(rawText: String) -> String {
-    var text = rawText
-    autoreleasepool {
-        var links = UtilsRegex.outlookSafeLinkRegex.matches(in: text, range: NSRange(text.startIndex..., in: text))
-        if !links.isEmpty {
-            repeat {
-                let urlRange = links[0].range(at: 1)
-                let safeLinks = links.map { String(text[Range($0.range, in: text)!]) }
-                if !safeLinks.isEmpty {
-                    let serviceUrl = (text as NSString).substring(with: urlRange)
-                    if let decodedServiceURL = serviceUrl.decodeUrl() {
-                        text = text.replacingOccurrences(of: safeLinks[0], with: decodedServiceURL)
-                    }
-                }
-                links = UtilsRegex.outlookSafeLinkRegex.matches(in: text, range: NSRange(text.startIndex..., in: text))
-            } while !links.isEmpty
-        }
-    }
-    return text
-}
-
-func getMatch(text: String, regex: NSRegularExpression) -> String? {
-    var match: String?
-
-    autoreleasepool {
-        let resultsIterator = regex.matches(in: text, range: NSRange(text.startIndex..., in: text))
-        let resultsMap = resultsIterator.map { String(text[Range($0.range, in: text)!]) }
-
-        if !resultsMap.isEmpty {
-            match = resultsMap[0]
-        }
-    }
-
-    return match
-}
-
 func cleanUpNotes(_ notes: String) -> String {
     let zoomSeparator = "\n──────────"
     let meetSeparator = "-::~:~::~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~::~:~::-"
@@ -203,7 +156,7 @@ func openLinkFromClipboard() {
     let clipboardContent = pasteboard.string(forType: .string) ?? ""
 
     if !clipboardContent.isEmpty {
-        let meetingLink = detectMeetingLink(clipboardContent)
+        let meetingLink = detectMeetingLink(clipboardContent, customRegexes: Defaults[.customRegexes])
 
         if let meetingLink = meetingLink {
             openMeetingURL(meetingLink.service, meetingLink.url, nil)

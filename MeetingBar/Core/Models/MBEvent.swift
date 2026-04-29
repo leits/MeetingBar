@@ -122,7 +122,8 @@ public struct MBEvent: Identifiable, Hashable, Sendable {
             eventURL: url,
             notes: notes,
             calendarEmail: calendar.email,
-            currentUserEmail: currentUser?.email
+            currentUserEmail: currentUser?.email,
+            customRegexes: Defaults[.customRegexes]
         )
     }
 

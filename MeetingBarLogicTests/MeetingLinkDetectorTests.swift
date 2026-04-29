@@ -1,13 +1,13 @@
 //
 //  MeetingLinkDetectorTests.swift
-//  MeetingBarTests
+//  MeetingBarLogicTests
 //
 
 import XCTest
 
-@testable import MeetingBar
+@testable import MeetingBarLogic
 
-final class MeetingLinkDetectorTests: BaseTestCase {
+final class MeetingLinkDetectorTests: XCTestCase {
     func testDetectsMeetLinkFromLocation() {
         let link = MeetingLinkDetector.detect(
             location: "https://meet.google.com/abc-defg-hij",
@@ -42,6 +42,19 @@ final class MeetingLinkDetectorTests: BaseTestCase {
         XCTAssertEqual(link?.service, .teams)
     }
 
+    func testDetectsCustomRegexLinkFromNotes() {
+        let link = MeetingLinkDetector.detect(
+            location: nil,
+            eventURL: nil,
+            notes: "Join: https://example.test/meeting/abc",
+            calendarEmail: nil,
+            currentUserEmail: nil,
+            customRegexes: [#"https://example\.test/meeting/[^\s]+"#]
+        )
+        XCTAssertEqual(link?.service, .other)
+        XCTAssertEqual(link?.url.absoluteString, "https://example.test/meeting/abc")
+    }
+
     func testDetectsLinkInsideHTMLAttributeWithoutStripping() {
         // The raw-notes pass already matches because the link regex has no
         // word boundaries, so `href="..."` markup around the URL does not
@@ -58,7 +71,7 @@ final class MeetingLinkDetectorTests: BaseTestCase {
 
     func testDetectsLinkOnlyAfterHTMLStripping() {
         // The URL prefix is encoded with hex entities AND wrapped in a real
-        // HTML tag. `htmlTagsStripped()` only triggers entity-decoding when
+        // HTML tag. HTML stripping only triggers entity-decoding when
         // it sees a tag (containsHTML check), so we need both. Raw pass has
         // no literal "https://" and returns nil; the stripped pass produces
         // "https://meet.google.com/abc-defg-hij" and matches.
