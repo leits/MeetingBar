@@ -196,4 +196,11 @@ final class NotificationPlanningPolicyTests: XCTestCase {
         let identities = plans.map(\.identity)
         XCTAssertEqual(Set(identities).count, identities.count)
     }
+
+    func testIdentityUsesZeroWhenLastModifiedDateIsMissing() {
+        let evt = event(startsIn: 600, lastModifiedDate: nil)
+        let plans = NotificationPlanningPolicy.plan(events: [evt], settings: allEnabled, now: now)
+
+        XCTAssertTrue(plans.allSatisfy { $0.identity.contains("evt|0|") })
+    }
 }
