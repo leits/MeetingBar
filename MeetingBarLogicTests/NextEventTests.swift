@@ -54,6 +54,26 @@ final class NextEventTests: XCTestCase {
         )
     }
 
+    private func event(
+        id: String,
+        startDate: Date,
+        duration: TimeInterval = 3600,
+        hasMeetingLink: Bool = true,
+        hasAttendees: Bool = true
+    ) -> EventSelectionEvent {
+        EventSelectionEvent(
+            sourceIndex: 0,
+            id: id,
+            startDate: startDate,
+            endDate: startDate.addingTimeInterval(duration),
+            isAllDay: false,
+            hasMeetingLink: hasMeetingLink,
+            hasAttendees: hasAttendees,
+            status: .active,
+            participationStatus: .active
+        )
+    }
+
     private func nextEvent(
         _ events: [EventSelectionEvent],
         linkRequired: Bool = false,
@@ -73,10 +93,43 @@ final class NextEventTests: XCTestCase {
         XCTAssertEqual(nextEvent([e1, e2]), e2)
     }
 
+    func testTodayPeriodExcludesTomorrowEvents() throws {
+        let startOfToday = Calendar.current.startOfDay(for: now)
+        let startOfTomorrow = try XCTUnwrap(Calendar.current.date(byAdding: .day, value: 1, to: startOfToday))
+        let tomorrow = event(id: "TOMORROW", startDate: startOfTomorrow.addingTimeInterval(3600))
+
+        XCTAssertNil(nextEvent([tomorrow], settings: settings(period: .today)))
+        XCTAssertEqual(nextEvent([tomorrow], settings: settings(period: .todayAndTomorrow)), tomorrow)
+    }
+
+    func testSkipsEventsEndingInsideRefreshGraceWindow() {
+        let almostEnded = event(id: "ALMOST_DONE", startsIn: -300, duration: 330)
+        let future = event(id: "FUTURE", startsIn: 300)
+
+        XCTAssertEqual(nextEvent([almostEnded, future]), future)
+    }
+
+    func testSkipsPersonalEventsWhenDisabled() {
+        let personal = event(id: "PERSONAL", startsIn: 100, hasAttendees: false)
+        let meeting = event(id: "MEETING", startsIn: 200, hasAttendees: true)
+
+        XCTAssertEqual(nextEvent([personal, meeting], settings: settings(includesPersonalEvents: false)), meeting)
+    }
+
     func testSkipsEventsWithoutLinkWhenLinkRequired() {
         let noLink = event(id: "A", startsIn: 50, hasMeetingLink: false)
         let withLink = event(id: "B", startsIn: 150, hasMeetingLink: true)
         XCTAssertEqual(nextEvent([noLink, withLink], linkRequired: true), withLink)
+    }
+
+    func testSkipsEventsWithoutLinkWhenRequiredBySettings() {
+        let noLink = event(id: "A", startsIn: 50, hasMeetingLink: false)
+        let withLink = event(id: "B", startsIn: 150, hasMeetingLink: true)
+
+        XCTAssertEqual(
+            nextEvent([noLink, withLink], settings: settings(requiresMeetingLinkForNonAllDayEvents: true)),
+            withLink
+        )
     }
 
     func testReturnsNilIfAllCandidatesLackLinkAndLinkRequired() {
@@ -115,10 +168,22 @@ final class NextEventTests: XCTestCase {
         XCTAssertEqual(nextEvent([pending, accepted], settings: settings(hidesPendingEvents: true)), accepted)
     }
 
+    func testKeepsPendingEventWhenSettingAllowsPending() {
+        let pending = event(id: "PENDING", startsIn: 100, participationStatus: .pending)
+
+        XCTAssertEqual(nextEvent([pending], settings: settings(hidesPendingEvents: false)), pending)
+    }
+
     func testSkipsTentativeEventWhenTentativeSetToHide() {
         let tentative = event(id: "TENTATIVE", startsIn: 100, participationStatus: .tentative)
         let accepted = event(id: "ACCEPTED", startsIn: 200)
         XCTAssertEqual(nextEvent([tentative, accepted], settings: settings(hidesTentativeEvents: true)), accepted)
+    }
+
+    func testKeepsTentativeEventWhenSettingAllowsTentative() {
+        let tentative = event(id: "TENTATIVE", startsIn: 100, participationStatus: .tentative)
+
+        XCTAssertEqual(nextEvent([tentative], settings: settings(hidesTentativeEvents: false)), tentative)
     }
 
     func testHideImmediateAfterSkipsStartedEvent() {
