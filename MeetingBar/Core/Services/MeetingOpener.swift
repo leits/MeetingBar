@@ -18,21 +18,33 @@ import Defaults
 /// in isolation and `MBEvent` moves toward a data-only struct.
 enum MeetingOpener {
     static func open(event: MBEvent) {
-        if let meetingLink = event.meetingLink {
-            runJoinEventScriptIfConfigured()
-            openMeetingURL(meetingLink.service, meetingLink.url, nil)
-            return
-        }
-
-        if let eventUrl = event.url {
-            eventUrl.openInDefaultBrowser()
-            return
-        }
-
-        sendNotification(
-            "status_bar_error_link_missed_title".loco(event.title),
-            "status_bar_error_link_missed_message".loco()
+        let action = MeetingOpeningPolicy.action(
+            for: MeetingOpeningEvent(
+                title: event.title,
+                meetingLink: event.meetingLink,
+                eventURL: event.url
+            ),
+            runJoinEventScript: Defaults[.runJoinEventScript]
         )
+
+        perform(action)
+    }
+
+    private static func perform(_ action: MeetingOpeningAction) {
+        switch action {
+        case let .openMeetingLink(meetingLink, runJoinScript):
+            if runJoinScript {
+                runJoinEventScriptIfConfigured()
+            }
+            openMeetingURL(meetingLink.service, meetingLink.url, nil)
+        case let .openEventURL(eventURL):
+            eventURL.openInDefaultBrowser()
+        case let .notifyMissingLink(title):
+            sendNotification(
+                "status_bar_error_link_missed_title".loco(title),
+                "status_bar_error_link_missed_message".loco()
+            )
+        }
     }
 
     private static func runJoinEventScriptIfConfigured() {
