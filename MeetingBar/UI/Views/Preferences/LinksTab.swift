@@ -58,10 +58,13 @@ struct LinksTab: View {
                     }
                 }
 
-                Toggle("preferences_services_meet_open_notes_on_join".loco(), isOn: $openGoogleMeetingNotesOnJoin)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .disabled(eventStoreProvider != .googleCalendar)
-                    .help("preferences_services_meet_open_notes_on_join_help".loco())
+                Toggle("preferences_services_meet_open_notes_on_join".loco(), isOn: Binding(
+                    get: { eventStoreProvider == .googleCalendar && openGoogleMeetingNotesOnJoin },
+                    set: { openGoogleMeetingNotesOnJoin = $0 }
+                ))
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .disabled(eventStoreProvider != .googleCalendar)
+                .help("preferences_services_meet_open_notes_on_join_help".loco())
 
                 Picker(
                     selection: $zoomBrowser,

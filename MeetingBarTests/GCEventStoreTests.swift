@@ -35,7 +35,7 @@ final class GCEventStoreTests: XCTestCase {
                        "https://docs.google.com/document/d/abc123/edit")
     }
 
-    func testIgnoresNonDocumentAttachment() {
+    func testIgnoresNonDocumentAttachment() throws {
         var item = baseItem()
         item["attachments"] = [
             [
@@ -46,14 +46,14 @@ final class GCEventStoreTests: XCTestCase {
             ]
         ]
 
-        let event = GCEventStore.GCParser.event(from: item, calendar: calendar)
+        let event = try XCTUnwrap(GCEventStore.GCParser.event(from: item, calendar: calendar))
 
-        XCTAssertNil(event?.meetingNotesDocLink)
+        XCTAssertNil(event.meetingNotesDocLink)
     }
 
-    func testNoAttachmentsLeavesMeetingNotesNil() {
-        let event = GCEventStore.GCParser.event(from: baseItem(), calendar: calendar)
+    func testNoAttachmentsLeavesMeetingNotesNil() throws {
+        let event = try XCTUnwrap(GCEventStore.GCParser.event(from: baseItem(), calendar: calendar))
 
-        XCTAssertNil(event?.meetingNotesDocLink)
+        XCTAssertNil(event.meetingNotesDocLink)
     }
 }
