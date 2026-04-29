@@ -3,32 +3,47 @@
 //  MeetingBar
 //
 
-import Defaults
 import Foundation
+
+enum EventFilterAllDayMode {
+    case show
+    case showWithMeetingLinkOnly
+    case hide
+}
+
+enum EventFilterNonAllDayMode {
+    case show
+    case hideWithoutMeetingLink
+}
 
 struct EventFilterSettings {
     let filterEventRegexes: [String]
-    let allDayEvents: AlldayEventsAppereance
-    let nonAllDayEvents: NonAlldayEventsAppereance
-    let showPendingEvents: PendingEventsAppereance
-    let showTentativeEvents: TentativeEventsAppereance
-    let declinedEventsAppereance: DeclinedEventsAppereance
+    let allDayEvents: EventFilterAllDayMode
+    let nonAllDayEvents: EventFilterNonAllDayMode
+    let hidesPendingEvents: Bool
+    let hidesTentativeEvents: Bool
+    let hidesDeclinedEvents: Bool
+}
 
-    static var current: EventFilterSettings {
-        EventFilterSettings(
-            filterEventRegexes: Defaults[.filterEventRegexes],
-            allDayEvents: Defaults[.allDayEvents],
-            nonAllDayEvents: Defaults[.nonAllDayEvents],
-            showPendingEvents: Defaults[.showPendingEvents],
-            showTentativeEvents: Defaults[.showTentativeEvents],
-            declinedEventsAppereance: Defaults[.declinedEventsAppereance]
-        )
+struct EventFilterEvent: Equatable {
+    enum ParticipationStatus {
+        case active
+        case pending
+        case tentative
+        case declined
     }
+
+    let sourceIndex: Int
+    let id: String
+    let title: String
+    let isAllDay: Bool
+    let hasMeetingLink: Bool
+    let participationStatus: ParticipationStatus
 }
 
 enum EventFilterPolicy {
-    static func filter(_ events: [MBEvent], settings: EventFilterSettings) -> [MBEvent] {
-        var result: [MBEvent] = []
+    static func filter(_ events: [EventFilterEvent], settings: EventFilterSettings) -> [EventFilterEvent] {
+        var result: [EventFilterEvent] = []
         outerloop: for event in events {
             for pattern in settings.filterEventRegexes {
                 if let regex = try? NSRegularExpression(pattern: pattern) {
@@ -43,8 +58,8 @@ enum EventFilterPolicy {
                 switch settings.allDayEvents {
                 case .show:
                     break
-                case .show_with_meeting_link_only:
-                    if event.meetingLink?.url == nil {
+                case .showWithMeetingLinkOnly:
+                    if !event.hasMeetingLink {
                         continue
                     }
                 case .hide:
@@ -52,40 +67,25 @@ enum EventFilterPolicy {
                 }
             } else {
                 switch settings.nonAllDayEvents {
-                case .show, .show_inactive_without_meeting_link:
+                case .show:
                     break
-                case .hide_without_meeting_link:
-                    if event.meetingLink?.url == nil {
+                case .hideWithoutMeetingLink:
+                    if !event.hasMeetingLink {
                         continue
                     }
                 }
             }
 
-            switch settings.showPendingEvents {
-            case .show, .show_inactive, .show_underlined:
-                break
-            case .hide:
-                if event.participationStatus == .pending {
-                    continue
-                }
+            if settings.hidesPendingEvents, event.participationStatus == .pending {
+                continue
             }
 
-            switch settings.showTentativeEvents {
-            case .show, .show_inactive, .show_underlined:
-                break
-            case .hide:
-                if event.participationStatus == .tentative {
-                    continue
-                }
+            if settings.hidesTentativeEvents, event.participationStatus == .tentative {
+                continue
             }
 
-            switch settings.declinedEventsAppereance {
-            case .show_inactive, .strikethrough:
-                break
-            case .hide:
-                if event.participationStatus == .declined {
-                    continue
-                }
+            if settings.hidesDeclinedEvents, event.participationStatus == .declined {
+                continue
             }
 
             result.append(event)

@@ -12,7 +12,12 @@ import Foundation
 public extension Array where Element == MBEvent {
     /// Returns only those events that pass all the user’s Defaults filters.
     func filtered() -> [MBEvent] {
-        EventFilterPolicy.filter(self, settings: .current)
+        let candidates = enumerated().map { index, event in
+            EventFilterEvent(event: event, sourceIndex: index)
+        }
+        return EventFilterPolicy
+            .filter(candidates, settings: .current)
+            .map { self[$0.sourceIndex] }
     }
 
     /// From a pre-filtered, sorted array, find the nearest upcoming MBEvent.
