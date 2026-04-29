@@ -27,6 +27,26 @@ struct PlannedNotification: Equatable {
     let identity: String
 }
 
+struct NotificationPlanningEvent: Equatable {
+    enum Status: Equatable {
+        case active
+        case canceled
+    }
+
+    enum ParticipationStatus: Equatable {
+        case active
+        case declined
+    }
+
+    let id: String
+    let lastModifiedDate: Date?
+    let startDate: Date
+    let endDate: Date
+    let status: Status
+    let participationStatus: ParticipationStatus
+    let isAllDay: Bool
+}
+
 struct NotificationPlanningSettings: Equatable {
     struct Action: Equatable {
         let enabled: Bool
@@ -54,7 +74,7 @@ enum NotificationPlanningPolicy {
     /// inside the event range. The runtime layer can read the same `events`
     /// list directly for that case.
     static func plan(
-        events: [MBEvent],
+        events: [NotificationPlanningEvent],
         settings: NotificationPlanningSettings,
         now: Date
     ) -> [PlannedNotification] {
@@ -71,7 +91,7 @@ enum NotificationPlanningPolicy {
         return planned.sorted { $0.fireDate < $1.fireDate }
     }
 
-    private static func shouldConsider(event: MBEvent, dismissed: Set<String>) -> Bool {
+    private static func shouldConsider(event: NotificationPlanningEvent, dismissed: Set<String>) -> Bool {
         if dismissed.contains(event.id) { return false }
         if event.status == .canceled { return false }
         if event.participationStatus == .declined { return false }
@@ -83,7 +103,7 @@ enum NotificationPlanningPolicy {
         _ kind: NotificationKind,
         anchor: Date,
         action: NotificationPlanningSettings.Action,
-        event: MBEvent,
+        event: NotificationPlanningEvent,
         now: Date,
         into planned: inout [PlannedNotification]
     ) {

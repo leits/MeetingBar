@@ -1,11 +1,11 @@
 //
 //  NotificationPlanningPolicyTests.swift
-//  MeetingBarTests
+//  MeetingBarLogicTests
 //
 
 import XCTest
 
-@testable import MeetingBar
+@testable import MeetingBarLogic
 
 final class NotificationPlanningPolicyTests: XCTestCase {
     private let now = Date(timeIntervalSinceReferenceDate: 800_000_000)
@@ -14,27 +14,28 @@ final class NotificationPlanningPolicyTests: XCTestCase {
         id: String = "evt",
         startsIn: TimeInterval,
         duration: TimeInterval = 1800,
-        status: MBEventStatus = .confirmed,
-        participation: MBEventAttendeeStatus = .accepted,
-        allDay: Bool = false
-    ) -> MBEvent {
-        makeFakeEvent(
+        status: NotificationPlanningEvent.Status = .active,
+        participation: NotificationPlanningEvent.ParticipationStatus = .active,
+        allDay: Bool = false,
+        lastModifiedDate: Date? = Date(timeIntervalSince1970: 1_000_000)
+    ) -> NotificationPlanningEvent {
+        NotificationPlanningEvent(
             id: id,
-            start: now.addingTimeInterval(startsIn),
-            end: now.addingTimeInterval(startsIn + duration),
-            isAllDay: allDay,
+            lastModifiedDate: lastModifiedDate,
+            startDate: now.addingTimeInterval(startsIn),
+            endDate: now.addingTimeInterval(startsIn + duration),
             status: status,
-            withLink: true,
-            participationStatus: participation
+            participationStatus: participation,
+            isAllDay: allDay
         )
     }
 
     private let allEnabled = NotificationPlanningSettings(
-        eventStart: .init(enabled: true, offset: 60),       // 1 min before start
-        eventEnd: .init(enabled: true, offset: 300),        // 5 min before end
-        fullscreen: .init(enabled: true, offset: 5),        // at start
-        autoJoin: .init(enabled: true, offset: 5),          // at start
-        scriptOnStart: .init(enabled: true, offset: 60),    // 1 min before start
+        eventStart: .init(enabled: true, offset: 60),
+        eventEnd: .init(enabled: true, offset: 300),
+        fullscreen: .init(enabled: true, offset: 5),
+        autoJoin: .init(enabled: true, offset: 5),
+        scriptOnStart: .init(enabled: true, offset: 60),
         dismissedEventIDs: []
     )
 
@@ -130,16 +131,12 @@ final class NotificationPlanningPolicyTests: XCTestCase {
     }
 
     func testFireDateInPastIsSkipped() {
-        // Event started 30 s ago; eventStart offset 60 s would fire 90 s ago.
         let plans = NotificationPlanningPolicy.plan(
             events: [event(startsIn: -30, duration: 600)],
             settings: allEnabled,
             now: now
         )
-        // eventStart, fullscreen (offset 5), autoJoin (offset 5), scriptOnStart
-        // all anchor at startDate which is in the past — every plan target is
-        // earlier than now. Only eventEnd remains (5 min before endDate = 270 s
-        // from now).
+
         XCTAssertEqual(plans.map(\.kind), [.eventEnd])
     }
 
@@ -152,8 +149,7 @@ final class NotificationPlanningPolicyTests: XCTestCase {
             now: now
         )
         let eventIDs = Set(plans.map(\.eventID))
-        XCTAssertEqual(eventIDs, Set(["A", "B"]),
-                       "scheduler must plan for every visible event, not only the next one")
+        XCTAssertEqual(eventIDs, Set(["A", "B"]))
     }
 
     func testOutputSortedAscendingByFireDate() {
@@ -176,22 +172,13 @@ final class NotificationPlanningPolicyTests: XCTestCase {
     }
 
     func testIdentityChangesWhenEventLastModifiedChanges() {
-        let originalModified = Date(timeIntervalSince1970: 1_000_000)
-        let rescheduledModified = Date(timeIntervalSince1970: 1_000_060) // one minute later
-
-        let original = makeFakeEvent(
-            id: "evt",
-            start: now.addingTimeInterval(600),
-            end: now.addingTimeInterval(2400),
-            withLink: true,
-            lastModifiedDate: originalModified
+        let original = event(
+            startsIn: 600,
+            lastModifiedDate: Date(timeIntervalSince1970: 1_000_000)
         )
-        let rescheduled = makeFakeEvent(
-            id: "evt",
-            start: now.addingTimeInterval(600),
-            end: now.addingTimeInterval(2400),
-            withLink: true,
-            lastModifiedDate: rescheduledModified
+        let rescheduled = event(
+            startsIn: 600,
+            lastModifiedDate: Date(timeIntervalSince1970: 1_000_060)
         )
 
         let plansBefore = NotificationPlanningPolicy.plan(
@@ -207,7 +194,6 @@ final class NotificationPlanningPolicyTests: XCTestCase {
         let evt = event(startsIn: 600)
         let plans = NotificationPlanningPolicy.plan(events: [evt], settings: allEnabled, now: now)
         let identities = plans.map(\.identity)
-        XCTAssertEqual(Set(identities).count, identities.count,
-                       "every (kind, offset) pair must produce a distinct identity")
+        XCTAssertEqual(Set(identities).count, identities.count)
     }
 }

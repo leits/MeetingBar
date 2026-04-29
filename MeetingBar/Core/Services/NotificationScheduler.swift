@@ -53,8 +53,9 @@ final class NotificationScheduler {
         settings: NotificationPlanningSettings,
         now: Date = Date()
     ) async {
+        let planningEvents = events.map(NotificationPlanningEvent.init(event:))
         let plans = NotificationPlanningPolicy
-            .plan(events: events, settings: settings, now: now)
+            .plan(events: planningEvents, settings: settings, now: now)
             .filter { $0.kind == .eventStart || $0.kind == .eventEnd }
 
         let eventByID = Dictionary(events.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
@@ -146,6 +147,20 @@ final class NotificationScheduler {
         case .threeMinuteBefore: return "notifications_event_ends_three_minutes_body".loco()
         case .fiveMinuteBefore: return "notifications_event_ends_five_minutes_body".loco()
         }
+    }
+}
+
+extension NotificationPlanningEvent {
+    init(event: MBEvent) {
+        self.init(
+            id: event.id,
+            lastModifiedDate: event.lastModifiedDate,
+            startDate: event.startDate,
+            endDate: event.endDate,
+            status: event.status == .canceled ? .canceled : .active,
+            participationStatus: event.participationStatus == .declined ? .declined : .active,
+            isAllDay: event.isAllDay
+        )
     }
 }
 

@@ -262,7 +262,7 @@ final class NotificationSchedulerTests: BaseTestCase {
         let evt = event(id: "A", startsIn: 600)
         let settings = startOnlySettings()
         let startPlan = NotificationPlanningPolicy
-            .plan(events: [evt], settings: settings, now: now)
+            .plan(events: [NotificationPlanningEvent(event: evt)], settings: settings, now: now)
             .first { $0.kind == .eventStart }
         let staleID = NotificationScheduler.identifierPrefix + (startPlan?.identity ?? "")
 

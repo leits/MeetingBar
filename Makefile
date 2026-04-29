@@ -1,9 +1,10 @@
 PROJECT := MeetingBar.xcodeproj
 SCHEME := MeetingBar
 XCODEBUILD ?= xcodebuild
+SWIFT ?= swift
 SWIFTLINT ?= swiftlint
 
-.PHONY: build build-release test lint lint-fix open validate-strings
+.PHONY: build build-release test test-logic lint lint-fix open validate-strings
 
 build:
 	$(XCODEBUILD) -project $(PROJECT) -scheme $(SCHEME) -configuration Debug build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
@@ -11,8 +12,11 @@ build:
 build-release:
 	$(XCODEBUILD) -project $(PROJECT) -scheme $(SCHEME) -configuration Release build
 
-test:
+test: test-logic
 	$(XCODEBUILD) -project $(PROJECT) -scheme $(SCHEME) -configuration Debug -enableCodeCoverage YES build test CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+
+test-logic:
+	$(SWIFT) test --enable-code-coverage
 
 lint:
 	@if command -v $(SWIFTLINT) >/dev/null 2>&1; then \
