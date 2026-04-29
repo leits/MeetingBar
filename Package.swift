@@ -17,11 +17,12 @@ let package = Package(
             exclude: [
                 "DiagnosticsReport.swift",
                 "EventFilterPolicy.swift",
-                "EventSelectionPolicy.swift",
+                "EventSelectionPolicy+MeetingBar.swift",
                 "MeetingLinkDetector.swift"
             ],
             sources: [
                 "EventActionPolicy.swift",
+                "EventSelectionPolicy.swift",
                 "NotificationPlanningPolicy.swift"
             ]
         ),

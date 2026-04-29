@@ -17,11 +17,17 @@ public extension Array where Element == MBEvent {
 
     /// From a pre-filtered, sorted array, find the nearest upcoming MBEvent.
     func nextEvent(linkRequired: Bool = false) -> MBEvent? {
-        EventSelectionPolicy.nextEvent(
-            from: self,
+        let candidates = enumerated().map { index, event in
+            EventSelectionEvent(event: event, sourceIndex: index)
+        }
+        guard let selected = EventSelectionPolicy.nextEvent(
+            from: candidates,
             linkRequired: linkRequired,
             settings: .current,
             now: Date()
-        )
+        ) else {
+            return nil
+        }
+        return self[selected.sourceIndex]
     }
 }

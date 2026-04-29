@@ -3,58 +3,80 @@
 //  MeetingBar
 //
 
-import Defaults
 import Foundation
 
-struct EventSelectionSettings {
-    let showEventsForPeriod: ShowEventsForPeriod
-    let personalEventsAppereance: PastEventsAppereance
-    let dismissedEvents: [ProcessedEvent]
-    let nonAllDayEvents: NonAlldayEventsAppereance
-    let showPendingEvents: PendingEventsAppereance
-    let showTentativeEvents: TentativeEventsAppereance
-    let ongoingEventVisibility: OngoingEventVisibility
+enum EventSelectionPeriod {
+    case today
+    case todayAndTomorrow
+}
 
-    static var current: EventSelectionSettings {
-        EventSelectionSettings(
-            showEventsForPeriod: Defaults[.showEventsForPeriod],
-            personalEventsAppereance: Defaults[.personalEventsAppereance],
-            dismissedEvents: Defaults[.dismissedEvents],
-            nonAllDayEvents: Defaults[.nonAllDayEvents],
-            showPendingEvents: Defaults[.showPendingEvents],
-            showTentativeEvents: Defaults[.showTentativeEvents],
-            ongoingEventVisibility: Defaults[.ongoingEventVisibility]
-        )
+enum EventSelectionOngoingVisibility {
+    case hideImmediateAfter
+    case showTenMinAfter
+    case showTenMinBeforeNext
+}
+
+struct EventSelectionSettings {
+    let period: EventSelectionPeriod
+    let includesPersonalEvents: Bool
+    let dismissedEventIDs: Set<String>
+    let requiresMeetingLinkForNonAllDayEvents: Bool
+    let hidesPendingEvents: Bool
+    let hidesTentativeEvents: Bool
+    let ongoingEventVisibility: EventSelectionOngoingVisibility
+}
+
+struct EventSelectionEvent: Equatable {
+    enum Status {
+        case active
+        case canceled
     }
+
+    enum ParticipationStatus {
+        case active
+        case pending
+        case tentative
+        case declined
+    }
+
+    let sourceIndex: Int
+    let id: String
+    let startDate: Date
+    let endDate: Date
+    let isAllDay: Bool
+    let hasMeetingLink: Bool
+    let hasAttendees: Bool
+    let status: Status
+    let participationStatus: ParticipationStatus
 }
 
 enum EventSelectionPolicy {
     static func nextEvent(
-        from events: [MBEvent],
+        from events: [EventSelectionEvent],
         linkRequired: Bool,
         settings: EventSelectionSettings,
         now: Date
-    ) -> MBEvent? {
+    ) -> EventSelectionEvent? {
         let startPeriod = Calendar.current.date(byAdding: .minute, value: 1, to: now)!
         let todayMidnight = Calendar.current.startOfDay(for: now)
         let endPeriod: Date
-        switch settings.showEventsForPeriod {
+        switch settings.period {
         case .today:
             endPeriod = Calendar.current.date(byAdding: .day, value: 1, to: todayMidnight)!
-        case .today_n_tomorrow:
+        case .todayAndTomorrow:
             endPeriod = Calendar.current.date(byAdding: .day, value: 2, to: todayMidnight)!
         }
 
         var futureEvents = events.filter { $0.endDate > startPeriod && $0.startDate < endPeriod }
 
-        if settings.personalEventsAppereance != .show_active {
-            futureEvents = futureEvents.filter { !$0.attendees.isEmpty }
+        if !settings.includesPersonalEvents {
+            futureEvents = futureEvents.filter(\.hasAttendees)
         }
 
-        var result: MBEvent?
+        var result: EventSelectionEvent?
 
         for event in futureEvents {
-            if settings.dismissedEvents.contains(where: { $0.id == event.id }) {
+            if settings.dismissedEventIDs.contains(event.id) {
                 continue
             }
 
@@ -62,8 +84,7 @@ enum EventSelectionPolicy {
                 continue
             }
 
-            let nonAllDayOnlyWithLink = (settings.nonAllDayEvents == .show_inactive_without_meeting_link || settings.nonAllDayEvents == .hide_without_meeting_link)
-            if event.meetingLink == nil, linkRequired || nonAllDayOnlyWithLink {
+            if !event.hasMeetingLink, linkRequired || settings.requiresMeetingLinkForNonAllDayEvents {
                 continue
             }
 
@@ -71,11 +92,11 @@ enum EventSelectionPolicy {
                 continue
             }
 
-            if event.participationStatus == .pending, settings.showPendingEvents == .hide || settings.showPendingEvents == .show_inactive {
+            if event.participationStatus == .pending, settings.hidesPendingEvents {
                 continue
             }
 
-            if event.participationStatus == .tentative, settings.showTentativeEvents == .hide || settings.showTentativeEvents == .show_inactive {
+            if event.participationStatus == .tentative, settings.hidesTentativeEvents {
                 continue
             }
 
