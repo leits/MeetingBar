@@ -1,13 +1,12 @@
 //
 //  GoogleCalendarPolicyTests.swift
-//  MeetingBarTests
+//  MeetingBarLogicTests
 //
 
 import XCTest
 
-@testable import MeetingBar
+@testable import MeetingBarLogic
 
-@MainActor
 final class GoogleCalendarPolicyTests: XCTestCase {
     private let calendarListURL = URL(string: "https://www.googleapis.com/calendar/v3/users/me/calendarList")!
     private let calendarEventsURL = URL(string: "https://www.googleapis.com/calendar/v3/calendars/work/events")!
@@ -74,7 +73,7 @@ final class GoogleCalendarPolicyTests: XCTestCase {
     }
 
     func testNoSelectedCalendarsReturnsEmptyWithoutFailure() throws {
-        let events = try GoogleCalendarBatchPolicy.finish(
+        let events: [String] = try GoogleCalendarBatchPolicy.finish(
             events: [],
             successfulCalendars: 0,
             forbiddenErrors: []
@@ -86,7 +85,7 @@ final class GoogleCalendarPolicyTests: XCTestCase {
     func testSuccessfulEmptyCalendarWithForbiddenCalendarReturnsEmptyWithoutFailure() throws {
         let forbidden = GoogleCalendarError.forbiddenCalendar(calendarID: "work", url: calendarEventsURL)
 
-        let events = try GoogleCalendarBatchPolicy.finish(
+        let events: [String] = try GoogleCalendarBatchPolicy.finish(
             events: [],
             successfulCalendars: 1,
             forbiddenErrors: [forbidden]
@@ -96,11 +95,7 @@ final class GoogleCalendarPolicyTests: XCTestCase {
     }
 
     func testSuccessfulCalendarWithEventsIgnoresForbiddenCalendarErrors() throws {
-        let event = makeFakeEvent(
-            id: "ok",
-            start: Date().addingTimeInterval(60),
-            end: Date().addingTimeInterval(120)
-        )
+        let event = "ok"
         let forbidden = GoogleCalendarError.forbiddenCalendar(calendarID: "work", url: calendarEventsURL)
 
         let events = try GoogleCalendarBatchPolicy.finish(

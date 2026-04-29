@@ -24,6 +24,7 @@ let package = Package(
                 "EventActionPolicy.swift",
                 "EventFilterPolicy.swift",
                 "EventSelectionPolicy.swift",
+                "GoogleCalendarPolicy.swift",
                 "MeetingLinkDetection.swift",
                 "MeetingLinkDetector.swift",
                 "NotificationPlanningPolicy.swift"
