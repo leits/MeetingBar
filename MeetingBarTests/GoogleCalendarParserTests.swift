@@ -52,7 +52,21 @@ final class GoogleCalendarParserTests: XCTestCase {
         XCTAssertEqual(event?.status, .confirmed)
         XCTAssertEqual(event?.organizer?.email, "organizer@example.com")
         XCTAssertEqual(event?.attendees.first?.status, .accepted)
-        XCTAssertEqual(event?.url?.absoluteString, "https://meet.google.com/abc-defg-hij")
+        // Phase 3 PR-B: Google conferenceData URL now flows through the
+        // dedicated `conferenceURL` field instead of `url`. The plain
+        // `url` field stays nil for Google events because Google Calendar
+        // has no per-event "user URL" equivalent of EKEvent.url.
+        XCTAssertNil(event?.url)
+        XCTAssertEqual(event?.conferenceURL?.absoluteString, "https://meet.google.com/abc-defg-hij")
+        // The detector populates meetingLink from conferenceURL via the
+        // providerConferenceData source. The Meet URL gets the calendar
+        // owner appended as `authuser` so the host's Google identity is
+        // used when joining.
+        XCTAssertEqual(
+            event?.meetingLink?.url.absoluteString,
+            "https://meet.google.com/abc-defg-hij?authuser=user@example.com"
+        )
+        XCTAssertEqual(event?.meetingLink?.service, .meet)
         XCTAssertFalse(event?.isAllDay ?? true)
     }
 

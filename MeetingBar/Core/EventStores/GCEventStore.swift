@@ -418,13 +418,17 @@ final class GCEventStore: NSObject,
             let notes = item["description"] as? String
             let location = item["location"] as? String
 
-            var url: URL?
-            if let conferenceData = item["conferenceData"] as? [String: Any] {
-                if let entryPoints = conferenceData["entryPoints"] as? [[String: Any]] {
-                    if let videoEntryPoint = entryPoints.first(where: { $0["entryPointType"] as? String == "video" }) {
-                        url = (videoEntryPoint["uri"] as? String).flatMap(URL.init(string:))
-                    }
-                }
+            // Google Calendar exposes the meeting URL through structured
+            // conferenceData. Surface it as `conferenceURL` so the link
+            // detector can score it ahead of any URL accidentally pasted
+            // into notes (#847). The plain `url` field remains nil for
+            // Google events — Google Calendar has no per-event "user URL"
+            // equivalent of EKEvent.url.
+            var conferenceURL: URL?
+            if let conferenceData = item["conferenceData"] as? [String: Any],
+               let entryPoints = conferenceData["entryPoints"] as? [[String: Any]],
+               let videoEntryPoint = entryPoints.first(where: { $0["entryPointType"] as? String == "video" }) {
+                conferenceURL = (videoEntryPoint["uri"] as? String).flatMap(URL.init(string:))
             }
 
             let organizerRaw = item["organizer"] as? [String: Any]
@@ -499,7 +503,8 @@ final class GCEventStore: NSObject,
                 status: status,
                 notes: notes,
                 location: location,
-                url: url,
+                url: nil,
+                conferenceURL: conferenceURL,
                 organizer: organizer,
                 attendees: attendees,
                 startDate: startDate,

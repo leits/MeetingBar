@@ -64,6 +64,11 @@ public struct MBEvent: Identifiable, Hashable, Sendable {
     public var meetingLink: MeetingLink?
     public var organizer: MBEventOrganizer?
     public let url: URL?
+    /// Structured meeting URL exposed by the provider (e.g. Google Calendar's
+    /// `conferenceData.entryPoints[type=video]`). When set, this beats links
+    /// found in `url`, `location`, or `notes` regardless of what those fields
+    /// contain. EventKit has no equivalent, so this is `nil` for those events.
+    public let conferenceURL: URL?
     public let notes: String?
     public let location: String?
     public let startDate: Date
@@ -79,6 +84,7 @@ public struct MBEvent: Identifiable, Hashable, Sendable {
          notes: String?,
          location: String?,
          url: URL?,
+         conferenceURL: URL? = nil,
          organizer: MBEventOrganizer?,
          attendees: [MBEventAttendee] = [],
          startDate: Date,
@@ -105,6 +111,7 @@ public struct MBEvent: Identifiable, Hashable, Sendable {
         self.notes = notes
         self.location = location
         self.url = url
+        self.conferenceURL = conferenceURL
 
         self.organizer = organizer
         self.attendees = attendees
@@ -118,6 +125,7 @@ public struct MBEvent: Identifiable, Hashable, Sendable {
         }
 
         meetingLink = MeetingLinkDetector.detect(
+            conferenceURL: conferenceURL,
             location: location,
             eventURL: url,
             notes: notes,
