@@ -107,6 +107,21 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
             self, selector: #selector(AppDelegate.unlockListener),
             name: .init("com.apple.screenIsUnlocked"), object: nil
         )
+
+        // Refresh + reconcile after the system wakes from sleep so that
+        // calendar data and scheduled notifications match wall-clock time.
+        NSWorkspace.shared.notificationCenter.addObserver(
+            self, selector: #selector(AppDelegate.wakeListener),
+            name: NSWorkspace.didWakeNotification, object: nil
+        )
+
+        // Timezone changes do not move absolute event start dates but can move
+        // user-visible "starts in 5 min" interpretations and recurrence rules.
+        // Refresh defensively so the scheduler recomputes against current time.
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(AppDelegate.timeZoneDidChange),
+            name: .NSSystemTimeZoneDidChange, object: nil
+        )
     }
 
     /*
@@ -324,6 +339,21 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
     @objc
     func unlockListener(notification _: NSNotification) {
         screenIsLocked = false
+        // After unlock, calendar data may be stale (sleep/wake was suppressed)
+        // and pending notifications need to be reconciled against current time.
+        // refreshSubject.send() triggers a fetch; the existing events publisher
+        // pipeline then reconciles the NotificationScheduler.
+        eventManager?.refreshSubject.send()
+    }
+
+    @objc
+    func wakeListener(notification _: NSNotification) {
+        eventManager?.refreshSubject.send()
+    }
+
+    @objc
+    func timeZoneDidChange(notification _: NSNotification) {
+        eventManager?.refreshSubject.send()
     }
 
     /*
