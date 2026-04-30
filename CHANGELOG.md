@@ -4,6 +4,10 @@ For next releases info look here: <https://github.com/leits/MeetingBar/releases>
 
 ## Unreleased
 
+* Updated project for Xcode 26.3 / Swift 6
+* Bumped minimum macOS deployment target to 15.6
+* Migrated sandbox entitlements from .entitlements file to build settings
+* Added Chinese (Simplified) and Portuguese localisations
 * Fix typo in language list (#839)
 * Fix multiple typos in the repo (#875)
 * Fix URL in PR template (#875) 

@@ -189,6 +189,14 @@ struct ChangelogView: View {
                             Text("and a lot of bug fixes and translations updates")
                         }
                     }
+                    if compareVersions("4.12.0", lastRevisedVersionInChangelog) {
+                        Section(header: Text("Version 4.12")) {
+                            Text("• Updated project for Xcode 26.3 / Swift 6")
+                            Text("• Bumped minimum macOS deployment target to 15.6")
+                            Text("• Migrated sandbox entitlements to build settings")
+                            Text("• Added Chinese (Simplified) and Portuguese localisations")
+                        }
+                    }
                 }
             }.listStyle(SidebarListStyle())
             Button("general_close".loco(), action: close)
