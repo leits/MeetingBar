@@ -16,7 +16,7 @@ struct CalendarsTab: View {
 
     var body: some View {
         VStack(alignment: .leading) {
-            GroupBox(label: Label("Data Source", systemImage: "server.rack")) {
+            GroupBox(label: Label("preferences_section_data_source_title".loco(), systemImage: "server.rack")) {
                 ProviderPicker(eventManager: eventManager)
             }
             .padding(.bottom, 5)

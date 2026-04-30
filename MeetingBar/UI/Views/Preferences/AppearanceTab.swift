@@ -265,7 +265,7 @@ struct MenuSection: View {
     @Default(.showTimelineInMenu) var showTimelineInMenu
 
     var body: some View {
-        GroupBox(label: Label("Menu", systemImage: "filemenu.and.selection")) {
+        GroupBox(label: Label("preferences_section_menu_title".loco(), systemImage: "filemenu.and.selection")) {
             Section {
 
                 Toggle(

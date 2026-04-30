@@ -13,18 +13,18 @@ import Defaults
 struct AdvancedTab: View {
     var body: some View {
         VStack {
-            GroupBox(label: Label("Event Notifications", systemImage: "bell")) {
+            GroupBox(label: Label("preferences_section_event_notifications_title".loco(), systemImage: "bell")) {
                 VStack(spacing: 10) {
                     AutomaticEventJoinPicker()
                     EndEventNotificationPicker()
                 }.frame(maxWidth: .infinity, alignment: .leading)
             }
-            GroupBox(label: Label("AppleScript Hooks", systemImage: "applescript")) {
+            GroupBox(label: Label("preferences_section_apple_script_hooks_title".loco(), systemImage: "applescript")) {
                 VStack(spacing: 10) {
                     ScriptSection()
                 }
             }
-            GroupBox(label: Label("Regex Filters", systemImage: "line.horizontal.3.decrease.circle")) {
+            GroupBox(label: Label("preferences_section_regex_filters_title".loco(), systemImage: "line.horizontal.3.decrease.circle")) {
                 VStack(spacing: 10) {
                     FilterEventRegexesSection()
                     MeetingRegexesSection()

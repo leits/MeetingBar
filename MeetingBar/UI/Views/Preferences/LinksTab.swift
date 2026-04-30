@@ -32,7 +32,7 @@ struct LinksTab: View {
 
     var body: some View {
         VStack {
-            GroupBox(label: Label("Open", systemImage: "link")) {
+            GroupBox(label: Label("preferences_section_open_title".loco(), systemImage: "link")) {
                 Picker(
                     selection: $defaultBrowser,
                     label: Text("preferences_services_link_meeting_title".loco()).frame(
@@ -113,7 +113,7 @@ struct LinksTab: View {
                 }
             }
 
-            GroupBox(label: Label("Create", systemImage: "plus.circle")) {
+            GroupBox(label: Label("preferences_section_create_title".loco(), systemImage: "plus.circle")) {
                 HStack {
                     Text("preferences_services_create_meeting_title".loco()).frame(
                         width: 150, alignment: .leading)

@@ -37,6 +37,19 @@
 "preferences_tab_advanced" = "Advanced";
 "preferences_tab_status" = "Status";
 
+// MARK: - Preferences section titles
+
+"preferences_section_general_settings_title" = "General Settings";
+"preferences_section_event_notifications_title" = "Event Notifications";
+"preferences_section_shortcuts_title" = "Keyboard Shortcuts";
+"preferences_section_about_title" = "About & Support";
+"preferences_section_menu_title" = "Menu";
+"preferences_section_data_source_title" = "Data Source";
+"preferences_section_open_title" = "Open";
+"preferences_section_create_title" = "Create";
+"preferences_section_apple_script_hooks_title" = "AppleScript Hooks";
+"preferences_section_regex_filters_title" = "Regex Filters";
+
 // MARK: - Preferences Status
 
 "preferences_status_provider_status_title" = "Provider Status";
