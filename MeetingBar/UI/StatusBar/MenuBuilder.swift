@@ -77,10 +77,13 @@ struct MenuBuilder {
 
             let joinItem = NSMenuItem(
                 title: itemTitle,
-                action: #selector(StatusBarItemController.joinNextMeeting),
+                action: nextEvent.startDate < now
+                    ? #selector(StatusBarItemController.joinCurrentMeeting)
+                    : #selector(StatusBarItemController.joinNextMeeting),
                 keyEquivalent: ""
             )
             joinItem.target = target
+            joinItem.setShortcut(for: nextEvent.startDate < now ? .joinCurrentEventShortcut : .joinEventShortcut)
             items.append(joinItem)
         }
 

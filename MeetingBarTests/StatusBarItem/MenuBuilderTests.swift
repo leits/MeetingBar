@@ -52,7 +52,21 @@ final class MenuBuilderTests: BaseTestCase {
 
         XCTAssertEqual(MenuBuilder.plainTitles(of: items)[0],
                        "status_bar_section_join_current_meeting".loco())
+        XCTAssertEqual(items[0].action, #selector(StatusBarItemController.joinCurrentMeeting))
         XCTAssertTrue(items.contains { $0.action == #selector(StatusBarItemController.createMeetingAction) })
+    }
+
+    func test_joinSectionFutureEventUsesJoinNextAction() {
+        let future = makeFakeEvent(
+            id: "F",
+            start: Date().addingTimeInterval(300),
+            end: Date().addingTimeInterval(1_200)
+        )
+        let items = MenuBuilder(target: Dummy())
+            .buildJoinSection(nextEvent: future)
+
+        XCTAssertEqual(items[0].title, "status_bar_section_join_next_meeting".loco())
+        XCTAssertEqual(items[0].action, #selector(StatusBarItemController.joinNextMeeting))
     }
 
     func test_joinSectionWithoutEvent() {

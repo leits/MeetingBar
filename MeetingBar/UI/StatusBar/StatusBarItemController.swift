@@ -127,6 +127,10 @@ final class StatusBarItemController {
     private func setupKeyboardShortcuts() {
         KeyboardShortcuts.onKeyUp(for: .createMeetingShortcut, action: createMeeting)
 
+        KeyboardShortcuts.onKeyUp(for: .joinCurrentEventShortcut) {
+            Task { @MainActor in self.joinCurrentMeeting() }
+        }
+
         KeyboardShortcuts.onKeyUp(for: .joinEventShortcut) {
             Task { @MainActor in self.joinNextMeeting() }
         }
@@ -398,6 +402,18 @@ final class StatusBarItemController {
 
     @objc func createMeetingAction() {
         createMeeting()
+    }
+
+    @objc
+    /// Joins the meeting link for the event currently in progress.
+    ///
+    /// If there is no active event, a user-facing notification is shown.
+    func joinCurrentMeeting() {
+        if let currentEvent = events.currentEvent() {
+            currentEvent.openMeeting()
+        } else {
+            sendNotification("status_bar_section_join_current_meeting".loco(), "next_meeting_empty_message".loco())
+        }
     }
 
     @objc

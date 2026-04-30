@@ -131,4 +131,32 @@ class NextEventTests: BaseTestCase {
         let array = [future, running]
         XCTAssertEqual(array.nextEvent(), running)
     }
+
+    func test_currentEvent_returnsRunningEvent() {
+        let running = makeFakeEvent(
+            id: "RUN",
+            start: now.addingTimeInterval(-120),
+            end: now.addingTimeInterval(600),
+            withLink: true
+        )
+        let future = makeFakeEvent(
+            id: "FUT",
+            start: now.addingTimeInterval(120),
+            end: now.addingTimeInterval(600),
+            withLink: true
+        )
+
+        XCTAssertEqual([future, running].currentEvent(), running)
+    }
+
+    func test_currentEvent_respectsLinkRequirement() {
+        let runningWithoutLink = makeFakeEvent(
+            id: "NO-LINK",
+            start: now.addingTimeInterval(-120),
+            end: now.addingTimeInterval(600),
+            withLink: false
+        )
+
+        XCTAssertNil([runningWithoutLink].currentEvent(linkRequired: true))
+    }
 }
