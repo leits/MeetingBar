@@ -131,4 +131,43 @@ class NextEventTests: BaseTestCase {
         let array = [future, running]
         XCTAssertEqual(array.nextEvent(), running)
     }
+
+    func test_fiveDaysPeriod_includesEventWithinFiveDays_excludesEventAfter() {
+        Defaults[.showEventsForPeriod] = .fiveDays
+        let calendar = Calendar.current
+        let todayStart = calendar.startOfDay(for: now)
+        let oneHour: TimeInterval = 3600
+        let oneDay: TimeInterval = 24 * 3600
+
+        let withinFive = makeFakeEvent(
+            id: "within",
+            start: todayStart.addingTimeInterval(2 * oneDay + oneHour),
+            end: todayStart.addingTimeInterval(2 * oneDay + 2 * oneHour),
+            withLink: true
+        )
+        let afterFive = makeFakeEvent(
+            id: "after",
+            start: todayStart.addingTimeInterval(6 * oneDay),
+            end: todayStart.addingTimeInterval(6 * oneDay + oneHour),
+            withLink: true
+        )
+        let array = [afterFive, withinFive]
+        XCTAssertEqual(array.nextEvent(), withinFive)
+    }
+
+    func test_sevenDaysPeriod_includesEventWithinSevenDays() {
+        Defaults[.showEventsForPeriod] = .sevenDays
+        let calendar = Calendar.current
+        let todayStart = calendar.startOfDay(for: now)
+        let oneHour: TimeInterval = 3600
+        let oneDay: TimeInterval = 24 * 3600
+
+        let inSixDays = makeFakeEvent(
+            id: "six",
+            start: todayStart.addingTimeInterval(6 * oneDay + oneHour),
+            end: todayStart.addingTimeInterval(6 * oneDay + 2 * oneHour),
+            withLink: true
+        )
+        XCTAssertEqual([inSixDays].nextEvent(), inSixDays)
+    }
 }

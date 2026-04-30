@@ -42,6 +42,12 @@ struct EventsSection: View {
                     Text(
                         "preferences_appearance_events_show_events_for_today_tomorrow_value".loco()
                     ).tag(ShowEventsForPeriod.today_n_tomorrow)
+                    Text("preferences_appearance_events_show_events_for_5_days_value".loco()).tag(
+                        ShowEventsForPeriod.fiveDays)
+                    Text("preferences_appearance_events_show_events_for_7_days_value".loco()).tag(
+                        ShowEventsForPeriod.sevenDays)
+                    Text("preferences_appearance_events_show_events_for_work_week_value".loco()).tag(
+                        ShowEventsForPeriod.workWeek)
                 }
 
                 Picker(
