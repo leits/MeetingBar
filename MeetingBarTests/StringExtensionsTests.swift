@@ -4,6 +4,13 @@ import XCTest
 @testable import MeetingBar
 
 class StringExtensionsTests: XCTestCase {
+    func testLocoFallsBackToEnglishWhenSelectedLocaleMissesKey() {
+        _ = I18N.instance.changeLanguage(to: .german)
+        defer { _ = I18N.instance.changeLanguage(to: .system) }
+
+        XCTAssertEqual("preferences_status_provider_status_title".loco(), "Provider Status")
+    }
+
     // MARK: withLinksEnabled
 
     func testLinkDetectionPicksUpHttpDotComLinks() throws {

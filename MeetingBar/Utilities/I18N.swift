@@ -57,8 +57,9 @@ final class I18N {
     // MARK: - Loco
 
     func localizedString(for key: String) -> String {
-        let localized = bundle.localizedString(forKey: key, value: "$\(key)$", table: nil)
-        if localized == key {
+        let missingMarker = "$\(key)$"
+        let localized = bundle.localizedString(forKey: key, value: missingMarker, table: nil)
+        if localized == key || localized == missingMarker {
             return englishBundle.localizedString(forKey: key, value: key, table: nil)
         }
         return localized
