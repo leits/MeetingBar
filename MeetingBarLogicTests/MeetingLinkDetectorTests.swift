@@ -184,6 +184,22 @@ final class MeetingLinkDetectorTests: XCTestCase {
         XCTAssertEqual(link?.service, .zoom)
     }
 
+    func testLongerURLWinsWithinSameNotesSource() {
+        let link = MeetingLinkDetector.detect(
+            location: nil,
+            eventURL: nil,
+            notes: """
+            Short form: https://us02web.zoom.us/j/12345
+            Full form: https://us02web.zoom.us/j/12345?pwd=abcdef
+            """,
+            calendarEmail: nil,
+            currentUserEmail: nil
+        )
+
+        XCTAssertEqual(link?.service, .zoom)
+        XCTAssertEqual(link?.url.absoluteString, "https://us02web.zoom.us/j/12345?pwd=abcdef")
+    }
+
     func testGoogleMeetAppendsAuthuserFromCalendarEmail() {
         let link = MeetingLinkDetector.detect(
             location: "https://meet.google.com/abc-defg-hij",
@@ -210,6 +226,38 @@ final class MeetingLinkDetectorTests: XCTestCase {
             link?.url.absoluteString,
             "https://meet.google.com/abc-defg-hij?authuser=me@example.com"
         )
+    }
+
+    func testGoogleMeetConferenceURLPreservesExistingQueryWhenAddingAuthuser() {
+        let link = MeetingLinkDetector.detect(
+            conferenceURL: URL(string: "https://meet.google.com/abc-defg-hij?pli=1"),
+            location: nil,
+            eventURL: nil,
+            notes: nil,
+            calendarEmail: "user@example.com",
+            currentUserEmail: nil
+        )
+
+        let components = link.flatMap { URLComponents(url: $0.url, resolvingAgainstBaseURL: false) }
+        XCTAssertEqual(link?.service, .meet)
+        XCTAssertEqual(components?.queryItems?.first { $0.name == "pli" }?.value, "1")
+        XCTAssertEqual(components?.queryItems?.first { $0.name == "authuser" }?.value, "user@example.com")
+    }
+
+    func testGoogleMeetConferenceURLReplacesExistingAuthuser() {
+        let link = MeetingLinkDetector.detect(
+            conferenceURL: URL(string: "https://meet.google.com/abc-defg-hij?authuser=old@example.com"),
+            location: nil,
+            eventURL: nil,
+            notes: nil,
+            calendarEmail: "owner@example.com",
+            currentUserEmail: nil
+        )
+
+        let authuserItems = link.flatMap { URLComponents(url: $0.url, resolvingAgainstBaseURL: false) }?
+            .queryItems?
+            .filter { $0.name == "authuser" }
+        XCTAssertEqual(authuserItems?.map(\.value), ["owner@example.com"])
     }
 
     func testCalendarEmailWinsOverCurrentUserEmail() {

@@ -74,44 +74,35 @@ enum MeetingLinkDetector {
         }
 
         // 2. Event URL.
-        if let eventURL,
-           let detected = detectMeetingLink(eventURL.absoluteString) {
-            candidates.append(MeetingLinkCandidate(
-                url: detected.url,
-                service: detected.service,
+        if let eventURL {
+            candidates.append(contentsOf: builtInCandidates(
+                in: eventURL.absoluteString,
                 source: .eventURL
             ))
         }
 
         // 3. Location.
-        if let location,
-           let detected = detectMeetingLink(location) {
-            candidates.append(MeetingLinkCandidate(
-                url: detected.url,
-                service: detected.service,
+        if let location {
+            candidates.append(contentsOf: builtInCandidates(
+                in: location,
                 source: .location
             ))
         }
 
         if let notes {
             // 4. Raw notes.
-            if let detected = detectMeetingLink(notes) {
-                candidates.append(MeetingLinkCandidate(
-                    url: detected.url,
-                    service: detected.service,
-                    source: .notes
-                ))
-            }
+            candidates.append(contentsOf: builtInCandidates(
+                in: notes,
+                source: .notes
+            ))
 
             // 5. Notes after HTML tag/entity stripping. Only contributes when
             //    stripping changes the text — otherwise it would duplicate the
             //    notes candidate.
             let stripped = htmlTagsStrippedForMeetingLinks(notes)
-            if stripped != notes,
-               let detected = detectMeetingLink(stripped) {
-                candidates.append(MeetingLinkCandidate(
-                    url: detected.url,
-                    service: detected.service,
+            if stripped != notes {
+                candidates.append(contentsOf: builtInCandidates(
+                    in: stripped,
                     source: .strippedHTMLNotes
                 ))
             }
@@ -135,6 +126,29 @@ enum MeetingLinkDetector {
         return candidates
     }
 
+    private static func builtInCandidates(
+        in rawText: String,
+        source: MeetingLinkSource
+    ) -> [MeetingLinkCandidate] {
+        let text = cleanupOutlookSafeLinks(rawText: rawText)
+        guard text.contains("://") else { return [] }
+
+        let range = NSRange(text.startIndex..., in: text)
+        return MeetingServices.allCases.flatMap { service -> [MeetingLinkCandidate] in
+            guard let regex = regex(for: service) else { return [] }
+            return regex.matches(in: text, range: range).compactMap { match in
+                guard let matchRange = Range(match.range, in: text),
+                      let url = URL(string: String(text[matchRange]))
+                else { return nil }
+                return MeetingLinkCandidate(
+                    url: url,
+                    service: service,
+                    source: source
+                )
+            }
+        }
+    }
+
     private static func detectCustomRegexLink(text: String, patterns: [String]) -> MeetingLink? {
         for pattern in patterns {
             guard let regex = try? NSRegularExpression(pattern: pattern) else { continue }
@@ -155,13 +169,23 @@ enum MeetingLinkDetector {
     ) -> MeetingLinkCandidate {
         guard candidate.service == .meet,
               let authAccount = calendarEmail ?? currentUserEmail,
-              let encoded = authAccount.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
-              let urlWithAuth = URL(string: candidate.url.absoluteString + "?authuser=\(encoded)")
+              let urlWithAuth = url(candidate.url, appendingAuthuser: authAccount)
         else { return candidate }
         return MeetingLinkCandidate(
             url: urlWithAuth,
             service: candidate.service,
             source: candidate.source
         )
+    }
+
+    private static func url(_ url: URL, appendingAuthuser authAccount: String) -> URL? {
+        guard var components = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
+            return nil
+        }
+        var queryItems = components.queryItems ?? []
+        queryItems.removeAll { $0.name == "authuser" }
+        queryItems.append(URLQueryItem(name: "authuser", value: authAccount))
+        components.queryItems = queryItems
+        return components.url
     }
 }
