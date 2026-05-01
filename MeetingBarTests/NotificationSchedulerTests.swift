@@ -45,6 +45,24 @@ final class FakeNotificationRequestSink: NotificationRequestSink, @unchecked Sen
 }
 
 @MainActor
+final class FakeNotificationActionSink: NotificationActionSink {
+    private let shouldPerform: Bool
+    private(set) var attempts: [(kind: NotificationKind, eventID: String)] = []
+    private(set) var actions: [(kind: NotificationKind, eventID: String)] = []
+
+    init(shouldPerform: Bool = true) {
+        self.shouldPerform = shouldPerform
+    }
+
+    func performNotificationAction(_ kind: NotificationKind, event: MBEvent) -> Bool {
+        attempts.append((kind, event.id))
+        guard shouldPerform else { return false }
+        actions.append((kind, event.id))
+        return true
+    }
+}
+
+@MainActor
 final class NotificationSchedulerTests: BaseTestCase {
     private let now = Date(timeIntervalSinceReferenceDate: 800_000_000)
 
@@ -55,6 +73,23 @@ final class NotificationSchedulerTests: BaseTestCase {
             end: now.addingTimeInterval(startsIn + duration),
             withLink: true,
             lastModifiedDate: Date(timeIntervalSinceReferenceDate: 700_000_000)
+        )
+    }
+
+    private func wallClockEvent(
+        id: String,
+        now: Date,
+        startsIn: TimeInterval,
+        duration: TimeInterval = 1800,
+        withLink: Bool = true,
+        lastModifiedDate: Date? = Date(timeIntervalSinceReferenceDate: 700_000_000)
+    ) -> MBEvent {
+        makeFakeEvent(
+            id: id,
+            start: now.addingTimeInterval(startsIn),
+            end: now.addingTimeInterval(startsIn + duration),
+            withLink: withLink,
+            lastModifiedDate: lastModifiedDate
         )
     }
 
@@ -82,6 +117,20 @@ final class NotificationSchedulerTests: BaseTestCase {
         )
     }
 
+    private func fullscreenOnlySettings(
+        offset: TimeInterval = 0.25,
+        dismissedEventIDs: Set<String> = []
+    ) -> NotificationPlanningSettings {
+        NotificationPlanningSettings(
+            eventStart: .disabled,
+            eventEnd: .disabled,
+            fullscreen: .init(enabled: true, offset: offset),
+            autoJoin: .disabled,
+            scriptOnStart: .disabled,
+            dismissedEventIDs: dismissedEventIDs
+        )
+    }
+
     private func startOnlySettings(offset: TimeInterval = 60) -> NotificationPlanningSettings {
         NotificationPlanningSettings(
             eventStart: .init(enabled: true, offset: offset),
@@ -91,6 +140,14 @@ final class NotificationSchedulerTests: BaseTestCase {
             scriptOnStart: .disabled,
             dismissedEventIDs: []
         )
+    }
+
+    private func waitUntil(timeout: TimeInterval = 1, condition: () -> Bool) async {
+        let deadline = Date().addingTimeInterval(timeout)
+        while Date() < deadline {
+            if condition() { return }
+            try? await Task.sleep(nanoseconds: 20_000_000)
+        }
     }
 
     func testReconcileSchedulesStartAndEndForFutureEvent() async {
@@ -337,5 +394,116 @@ final class NotificationSchedulerTests: BaseTestCase {
 
         XCTAssertEqual(sink.addedIdentifiers.count, 1, "only the eventEnd reminder remains")
         XCTAssertTrue(sink.addedIdentifiers[0].contains("|eventEnd|"))
+    }
+
+    func testReconcileSchedulesFullscreenActionTask() async {
+        let requestSink = FakeNotificationRequestSink()
+        let actionSink = FakeNotificationActionSink()
+        let scheduler = NotificationScheduler(sink: requestSink, actionSink: actionSink)
+        let scheduledNow = Date()
+        let evt = wallClockEvent(id: "A", now: scheduledNow, startsIn: 0.35)
+
+        await scheduler.reconcile(
+            events: [evt],
+            settings: fullscreenOnlySettings(offset: 0.25),
+            now: scheduledNow
+        )
+
+        await waitUntil { actionSink.actions.count == 1 }
+
+        XCTAssertEqual(actionSink.actions.map(\.kind), [.fullscreen])
+        XCTAssertEqual(actionSink.actions.map(\.eventID), ["A"])
+        XCTAssertTrue(requestSink.addedIdentifiers.isEmpty, "fullscreen actions must not create system notification requests")
+    }
+
+    func testReconcileDoesNotDuplicateFullscreenActionTask() async {
+        let requestSink = FakeNotificationRequestSink()
+        let actionSink = FakeNotificationActionSink()
+        let scheduler = NotificationScheduler(sink: requestSink, actionSink: actionSink)
+        let scheduledNow = Date()
+        let evt = wallClockEvent(id: "A", now: scheduledNow, startsIn: 0.35)
+        let settings = fullscreenOnlySettings(offset: 0.25)
+
+        await scheduler.reconcile(events: [evt], settings: settings, now: scheduledNow)
+        await scheduler.reconcile(events: [evt], settings: settings, now: scheduledNow)
+
+        await waitUntil { actionSink.actions.count == 1 }
+        try? await Task.sleep(nanoseconds: 200_000_000)
+
+        XCTAssertEqual(actionSink.actions.map(\.eventID), ["A"])
+    }
+
+    func testReconcileCancelsFullscreenActionWhenEventIsDismissed() async {
+        let requestSink = FakeNotificationRequestSink()
+        let actionSink = FakeNotificationActionSink()
+        let scheduler = NotificationScheduler(sink: requestSink, actionSink: actionSink)
+        let scheduledNow = Date()
+        let evt = wallClockEvent(id: "A", now: scheduledNow, startsIn: 0.35)
+
+        await scheduler.reconcile(
+            events: [evt],
+            settings: fullscreenOnlySettings(offset: 0.25),
+            now: scheduledNow
+        )
+        await scheduler.reconcile(
+            events: [evt],
+            settings: fullscreenOnlySettings(offset: 0.25, dismissedEventIDs: ["A"]),
+            now: scheduledNow
+        )
+
+        try? await Task.sleep(nanoseconds: 350_000_000)
+
+        XCTAssertTrue(actionSink.actions.isEmpty)
+    }
+
+    func testFullscreenActionUsesProcessedListForDedup() async {
+        let requestSink = FakeNotificationRequestSink()
+        let actionSink = FakeNotificationActionSink()
+        let scheduler = NotificationScheduler(sink: requestSink, actionSink: actionSink)
+        let scheduledNow = Date()
+        let lastModifiedDate = Date(timeIntervalSinceReferenceDate: 700_000_000)
+        let evt = wallClockEvent(
+            id: "A",
+            now: scheduledNow,
+            startsIn: 0.35,
+            lastModifiedDate: lastModifiedDate
+        )
+        Defaults[.processedEventsForFullscreenNotification] = [
+            ProcessedEvent(
+                id: evt.id,
+                lastModifiedDate: lastModifiedDate,
+                eventEndDate: evt.endDate
+            )
+        ]
+
+        await scheduler.reconcile(
+            events: [evt],
+            settings: fullscreenOnlySettings(offset: 0.25),
+            now: scheduledNow
+        )
+
+        try? await Task.sleep(nanoseconds: 350_000_000)
+
+        XCTAssertTrue(actionSink.actions.isEmpty)
+    }
+
+    func testFullscreenActionDoesNotMarkProcessedWhenActionSinkRejects() async {
+        let requestSink = FakeNotificationRequestSink()
+        let actionSink = FakeNotificationActionSink(shouldPerform: false)
+        let scheduler = NotificationScheduler(sink: requestSink, actionSink: actionSink)
+        let scheduledNow = Date()
+        let evt = wallClockEvent(id: "A", now: scheduledNow, startsIn: 0.35)
+
+        await scheduler.reconcile(
+            events: [evt],
+            settings: fullscreenOnlySettings(offset: 0.25),
+            now: scheduledNow
+        )
+
+        await waitUntil { actionSink.attempts.count == 1 }
+
+        XCTAssertEqual(actionSink.attempts.map(\.eventID), ["A"])
+        XCTAssertTrue(actionSink.actions.isEmpty)
+        XCTAssertTrue(Defaults[.processedEventsForFullscreenNotification].isEmpty)
     }
 }

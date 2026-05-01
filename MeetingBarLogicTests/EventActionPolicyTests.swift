@@ -65,6 +65,14 @@ final class EventActionPolicyTests: XCTestCase {
         XCTAssertEqual(decision?.updatedProcessed.map(\.id), ["evt-1"])
     }
 
+    func testEvaluateFiresAtActionBoundary() {
+        let event = eventStartingIn(60)
+        let decision = EventActionPolicy.evaluate(
+            event: event, config: fullscreenLikeConfig, processed: [], now: now
+        )
+        XCTAssertNotNil(decision)
+    }
+
     func testEvaluateAllowsRecentlyStartedWhenConfigured() {
         let event = eventStartingIn(-10)
         let decision = EventActionPolicy.evaluate(

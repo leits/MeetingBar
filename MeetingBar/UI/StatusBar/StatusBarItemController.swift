@@ -106,6 +106,8 @@ final class StatusBarItemController {
             .joinEventNotificationTime,
             .endOfEventNotification,
             .endOfEventNotificationTime,
+            .fullscreenNotification,
+            .fullscreenNotificationTime,
             .dismissedEvents,
             options: []
         )

@@ -63,6 +63,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
 
     func setup() {
         statusBarItem.setAppDelegate(appdelegate: self)
+        notificationScheduler.setActionSink(self)
 
         UNUserNotificationCenter.current().delegate = self
         Task { @MainActor in
@@ -401,5 +402,19 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
 
     func applicationWillTerminate(_: Notification) {
         statusLoopTask?.cancel()
+    }
+}
+
+extension AppDelegate: NotificationActionSink {
+    func performNotificationAction(_ kind: NotificationKind, event: MBEvent) -> Bool {
+        guard !screenIsLocked else { return false }
+
+        switch kind {
+        case .fullscreen:
+            openFullscreenNotificationWindow(event: event)
+            return true
+        case .eventStart, .eventEnd, .autoJoin, .scriptOnStart:
+            return false
+        }
     }
 }

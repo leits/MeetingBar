@@ -55,7 +55,7 @@ enum EventActionPolicy {
     ) -> Decision? {
         let timeInterval = event.startDate.timeIntervalSince(now)
         let lowerBound = config.allowsRecentlyStarted ? -15.0 : 0.0
-        let withinWindow = timeInterval > lowerBound && timeInterval < config.actionTime
+        let withinWindow = timeInterval > lowerBound && timeInterval <= config.actionTime
         let allDayActive = event.isAllDay && (event.startDate ... event.endDate).contains(now)
         guard withinWindow || allDayActive else { return nil }
 

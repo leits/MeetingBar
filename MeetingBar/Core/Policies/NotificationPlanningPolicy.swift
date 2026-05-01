@@ -6,7 +6,7 @@
 import Foundation
 
 /// Categories of per-event reminders MeetingBar can produce.
-enum NotificationKind: String, CaseIterable, Equatable {
+enum NotificationKind: String, CaseIterable, Equatable, Sendable {
     case eventStart    // system notification before the event begins
     case eventEnd      // system notification before the event ends
     case fullscreen    // fullscreen overlay window
@@ -20,20 +20,20 @@ enum NotificationKind: String, CaseIterable, Equatable {
 /// already-pending requests. Two `PlannedNotification` values with the same
 /// `identity` are considered the same scheduled action even if `fireDate`
 /// drifts (e.g. across calendar refreshes).
-struct PlannedNotification: Equatable {
+struct PlannedNotification: Equatable, Sendable {
     let eventID: String
     let kind: NotificationKind
     let fireDate: Date
     let identity: String
 }
 
-struct NotificationPlanningEvent: Equatable {
-    enum Status: Equatable {
+struct NotificationPlanningEvent: Equatable, Sendable {
+    enum Status: Equatable, Sendable {
         case active
         case canceled
     }
 
-    enum ParticipationStatus: Equatable {
+    enum ParticipationStatus: Equatable, Sendable {
         case active
         case declined
     }
@@ -47,8 +47,8 @@ struct NotificationPlanningEvent: Equatable {
     let isAllDay: Bool
 }
 
-struct NotificationPlanningSettings: Equatable {
-    struct Action: Equatable {
+struct NotificationPlanningSettings: Equatable, Sendable {
+    struct Action: Equatable, Sendable {
         let enabled: Bool
         /// Seconds before the reference moment (start or end). 0 = at the moment.
         let offset: TimeInterval

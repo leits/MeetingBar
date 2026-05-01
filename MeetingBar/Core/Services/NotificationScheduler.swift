@@ -15,6 +15,11 @@ protocol NotificationRequestSink: AnyObject, Sendable {
     func removePending(identifiers: [String])
 }
 
+@MainActor
+protocol NotificationActionSink: AnyObject {
+    func performNotificationAction(_ kind: NotificationKind, event: MBEvent) -> Bool
+}
+
 extension UNUserNotificationCenter: @unchecked @retroactive Sendable {}
 extension UNNotificationRequest: @unchecked @retroactive Sendable {}
 
@@ -43,9 +48,19 @@ final class NotificationScheduler {
     static let identifierPrefix = "mb-plan-"
 
     private let sink: NotificationRequestSink
+    private weak var actionSink: NotificationActionSink?
+    private var actionTasks: [String: Task<Void, Never>] = [:]
 
-    init(sink: NotificationRequestSink = UNUserNotificationCenter.current()) {
+    init(
+        sink: NotificationRequestSink = UNUserNotificationCenter.current(),
+        actionSink: NotificationActionSink? = nil
+    ) {
         self.sink = sink
+        self.actionSink = actionSink
+    }
+
+    func setActionSink(_ actionSink: NotificationActionSink?) {
+        self.actionSink = actionSink
     }
 
     func reconcile(
@@ -56,9 +71,12 @@ final class NotificationScheduler {
         let planningEvents = events.map(NotificationPlanningEvent.init(event:))
         let plans = NotificationPlanningPolicy
             .plan(events: planningEvents, settings: settings, now: now)
-            .filter { $0.kind == .eventStart || $0.kind == .eventEnd }
+        let systemPlans = plans.filter { $0.kind == .eventStart || $0.kind == .eventEnd }
+        let actionPlans = plans.filter { $0.kind == .fullscreen }
 
         let eventByID = Dictionary(events.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+
+        reconcileActionTasks(actionPlans, eventByID: eventByID, settings: settings, now: now)
 
         let pending = await sink.pendingRequests()
         let pendingMine = pending
@@ -66,14 +84,14 @@ final class NotificationScheduler {
         let pendingByID = Dictionary(pendingMine.map { ($0.identifier, $0) }, uniquingKeysWith: { first, _ in first })
         let pendingSet = Set(pendingByID.keys)
 
-        let desiredIDs = Set(plans.map { Self.identifierPrefix + $0.identity })
+        let desiredIDs = Set(systemPlans.map { Self.identifierPrefix + $0.identity })
 
         let stale = Array(pendingSet.subtracting(desiredIDs))
         if !stale.isEmpty {
             sink.removePending(identifiers: stale)
         }
 
-        for plan in plans {
+        for plan in systemPlans {
             guard let event = eventByID[plan.eventID] else { continue }
             let request = buildRequest(for: plan, event: event, now: now)
             let identifier = request.identifier
@@ -88,6 +106,97 @@ final class NotificationScheduler {
             } catch {
                 NSLog("NotificationScheduler: failed to add \(plan.identity): \(error)")
             }
+        }
+    }
+
+    private func reconcileActionTasks(
+        _ plans: [PlannedNotification],
+        eventByID: [String: MBEvent],
+        settings: NotificationPlanningSettings,
+        now: Date
+    ) {
+        guard actionSink != nil else {
+            cancelAllActionTasks()
+            return
+        }
+
+        let desiredIDs = Set(plans.map { Self.identifierPrefix + $0.identity })
+        for id in Array(actionTasks.keys) where !desiredIDs.contains(id) {
+            actionTasks[id]?.cancel()
+            actionTasks[id] = nil
+        }
+
+        for plan in plans {
+            let id = Self.identifierPrefix + plan.identity
+            guard actionTasks[id] == nil,
+                  let event = eventByID[plan.eventID]
+            else { continue }
+
+            let action = actionSettings(for: plan.kind, settings: settings)
+            actionTasks[id] = Task { [weak self] in
+                let delay = max(plan.fireDate.timeIntervalSince(now), 0)
+                if delay > 0 {
+                    try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+                }
+                await MainActor.run {
+                    guard let self, !Task.isCancelled else { return }
+                    self.fireAction(plan: plan, event: event, action: action, now: Date())
+                    self.actionTasks[id] = nil
+                }
+            }
+        }
+    }
+
+    private func cancelAllActionTasks() {
+        for task in actionTasks.values {
+            task.cancel()
+        }
+        actionTasks.removeAll()
+    }
+
+    private func actionSettings(
+        for kind: NotificationKind,
+        settings: NotificationPlanningSettings
+    ) -> NotificationPlanningSettings.Action {
+        switch kind {
+        case .fullscreen:
+            return settings.fullscreen
+        case .autoJoin:
+            return settings.autoJoin
+        case .scriptOnStart:
+            return settings.scriptOnStart
+        case .eventStart, .eventEnd:
+            return .disabled
+        }
+    }
+
+    private func fireAction(
+        plan: PlannedNotification,
+        event: MBEvent,
+        action: NotificationPlanningSettings.Action,
+        now: Date
+    ) {
+        switch plan.kind {
+        case .fullscreen:
+            guard let decision = EventActionPolicy.evaluate(
+                event: EventActionEvent(event: event),
+                config: EventActionConfig(
+                    actionTime: action.offset,
+                    allowsRecentlyStarted: true,
+                    requiresMeetingLink: true
+                ),
+                processed: Defaults[.processedEventsForFullscreenNotification].actionRecords,
+                now: now
+            ) else { return }
+
+            if decision.shouldFireSideEffect {
+                guard actionSink?.performNotificationAction(.fullscreen, event: event) == true else {
+                    return
+                }
+            }
+            Defaults[.processedEventsForFullscreenNotification] = decision.updatedProcessed.processedEvents
+        case .eventStart, .eventEnd, .autoJoin, .scriptOnStart:
+            return
         }
     }
 
@@ -116,8 +225,7 @@ final class NotificationScheduler {
         case .eventEnd:
             content.body = Self.endBody(for: Defaults[.endOfEventNotificationTime])
         case .fullscreen, .autoJoin, .scriptOnStart:
-            // Not handled by NotificationScheduler yet; ActionsOnEventStart
-            // still owns these. NotificationPlanningPolicy filters them above.
+            // In-app actions are handled before request construction.
             content.body = ""
         }
 
@@ -165,22 +273,66 @@ extension NotificationPlanningEvent {
 }
 
 extension NotificationPlanningSettings {
-    /// Snapshot of the per-action settings the scheduler currently owns —
-    /// system event-start and event-end notifications. Fullscreen / auto-join
-    /// / on-start script remain on the existing `ActionsOnEventStart` timer
-    /// path until they are migrated, so they are surfaced as `.disabled` here
-    /// to keep `NotificationPlanningPolicy` from emitting plans the scheduler
-    /// would not act on.
+    /// Snapshot of the per-action settings the scheduler currently owns.
+    /// Fullscreen is reconciled as an in-app action; auto-join and on-start
+    /// script remain on the existing `ActionsOnEventStart` timer path until
+    /// they are migrated.
     static var currentForScheduler: NotificationPlanningSettings {
         let startOffset = TimeInterval(Defaults[.joinEventNotificationTime].rawValue)
         let endOffset = TimeInterval(Defaults[.endOfEventNotificationTime].rawValue)
         return NotificationPlanningSettings(
             eventStart: .init(enabled: Defaults[.joinEventNotification], offset: startOffset),
             eventEnd: .init(enabled: Defaults[.endOfEventNotification], offset: endOffset),
-            fullscreen: .disabled,
+            fullscreen: .init(
+                enabled: Defaults[.fullscreenNotification],
+                offset: TimeInterval(Defaults[.fullscreenNotificationTime].rawValue)
+            ),
             autoJoin: .disabled,
             scriptOnStart: .disabled,
             dismissedEventIDs: Set(Defaults[.dismissedEvents].map(\.id))
         )
+    }
+}
+
+private extension EventActionEvent {
+    init(event: MBEvent) {
+        self.init(
+            id: event.id,
+            lastModifiedDate: event.lastModifiedDate,
+            startDate: event.startDate,
+            endDate: event.endDate,
+            isAllDay: event.isAllDay,
+            hasMeetingLink: event.meetingLink != nil
+        )
+    }
+}
+
+private extension EventActionProcessedEvent {
+    init(processedEvent: ProcessedEvent) {
+        self.init(
+            id: processedEvent.id,
+            lastModifiedDate: processedEvent.lastModifiedDate,
+            eventEndDate: processedEvent.eventEndDate
+        )
+    }
+
+    var processedEvent: ProcessedEvent {
+        ProcessedEvent(
+            id: id,
+            lastModifiedDate: lastModifiedDate,
+            eventEndDate: eventEndDate
+        )
+    }
+}
+
+private extension Array where Element == ProcessedEvent {
+    var actionRecords: [EventActionProcessedEvent] {
+        map(EventActionProcessedEvent.init(processedEvent:))
+    }
+}
+
+private extension Array where Element == EventActionProcessedEvent {
+    var processedEvents: [ProcessedEvent] {
+        map(\.processedEvent)
     }
 }
