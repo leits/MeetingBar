@@ -11,7 +11,7 @@ import Foundation
 /// Used by `MeetingLinkCandidatePolicy.best(from:)` and `ranked(from:)`.
 /// The integration with `MBEvent` (Phase 3 PR-B) will collect candidates
 /// from each available source and pass the list to this policy.
-enum MeetingLinkSource: Equatable {
+enum MeetingLinkSource: Hashable, Sendable {
     /// Structured conference data exposed by the provider — e.g. Google
     /// Calendar's `conferenceData.entryPoints[type=video]`. Highest priority
     /// because the provider has explicitly tagged this URL as the meeting.
@@ -53,7 +53,7 @@ enum MeetingLinkSource: Equatable {
 
 /// A single meeting-link candidate extracted from one source field of an event.
 /// Multiple candidates per event are collected in Phase 3 PR-B and ranked here.
-struct MeetingLinkCandidate: Equatable {
+struct MeetingLinkCandidate: Hashable, Sendable {
     let url: URL
     let service: MeetingServices?
     let source: MeetingLinkSource
@@ -80,7 +80,7 @@ enum MeetingLinkCandidatePolicy {
     /// detection.
     static func ranked(from candidates: [MeetingLinkCandidate]) -> [MeetingLinkCandidate] {
         let unique = Dictionary(grouping: candidates, by: { $0.url.absoluteString })
-            .compactMapValues(\.first)
+            .compactMapValues { best(from: $0) }
             .values
         return Array(unique).sorted { lhs, rhs in
             if lhs.source.priority != rhs.source.priority {

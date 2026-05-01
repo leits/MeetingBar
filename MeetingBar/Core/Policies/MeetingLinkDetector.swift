@@ -35,6 +35,47 @@ enum MeetingLinkDetector {
         currentUserEmail: String?,
         customRegexes: [String] = []
     ) -> MeetingLink? {
+        guard let best = bestCandidate(
+            conferenceURL: conferenceURL,
+            location: location,
+            eventURL: eventURL,
+            notes: notes,
+            calendarEmail: calendarEmail,
+            currentUserEmail: currentUserEmail,
+            customRegexes: customRegexes
+        ) else { return nil }
+        return MeetingLink(service: best.service, url: best.url)
+    }
+
+    static func bestCandidate(
+        conferenceURL: URL? = nil,
+        location: String?,
+        eventURL: URL?,
+        notes: String?,
+        calendarEmail: String?,
+        currentUserEmail: String?,
+        customRegexes: [String] = []
+    ) -> MeetingLinkCandidate? {
+        allCandidates(
+            conferenceURL: conferenceURL,
+            location: location,
+            eventURL: eventURL,
+            notes: notes,
+            calendarEmail: calendarEmail,
+            currentUserEmail: currentUserEmail,
+            customRegexes: customRegexes
+        ).first
+    }
+
+    static func allCandidates(
+        conferenceURL: URL? = nil,
+        location: String?,
+        eventURL: URL?,
+        notes: String?,
+        calendarEmail: String?,
+        currentUserEmail: String?,
+        customRegexes: [String] = []
+    ) -> [MeetingLinkCandidate] {
         let candidates = collectCandidates(
             conferenceURL: conferenceURL,
             location: location,
@@ -42,13 +83,14 @@ enum MeetingLinkDetector {
             notes: notes,
             customRegexes: customRegexes
         )
-        guard let best = MeetingLinkCandidatePolicy.best(from: candidates) else { return nil }
-        let withAuth = applyMeetAuthuserIfNeeded(
-            candidate: best,
-            calendarEmail: calendarEmail,
-            currentUserEmail: currentUserEmail
-        )
-        return MeetingLink(service: withAuth.service, url: withAuth.url)
+        return MeetingLinkCandidatePolicy.ranked(from: candidates)
+            .map {
+                applyMeetAuthuserIfNeeded(
+                    candidate: $0,
+                    calendarEmail: calendarEmail,
+                    currentUserEmail: currentUserEmail
+                )
+            }
     }
 
     private static func collectCandidates(

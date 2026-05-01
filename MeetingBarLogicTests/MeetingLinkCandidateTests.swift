@@ -85,13 +85,15 @@ final class MeetingLinkCandidateTests: XCTestCase {
     }
 
     func testRankedDeduplicatesIdenticalURLs() {
-        // Same URL collected from two sources — dedup keeps one entry.
+        // Same URL collected from two sources — dedup keeps the highest
+        // priority candidate so source metadata remains useful for UI.
         let url = "https://meet.google.com/abc-defg-hij"
-        let confSame = make(url, service: .meet, source: .providerConferenceData)
         let notesSame = make(url, service: .meet, source: .notes)
+        let confSame = make(url, service: .meet, source: .providerConferenceData)
 
-        let ranked = MeetingLinkCandidatePolicy.ranked(from: [confSame, notesSame])
+        let ranked = MeetingLinkCandidatePolicy.ranked(from: [notesSame, confSame])
         XCTAssertEqual(ranked.count, 1, "duplicates by URL string collapse to one entry")
+        XCTAssertEqual(ranked.first?.source, .providerConferenceData)
     }
 
     func testRankedReturnsEmptyForEmptyInput() {

@@ -55,6 +55,49 @@ final class MenuBuilderTests: BaseTestCase {
         XCTAssertTrue(items.contains { $0.action == #selector(StatusBarItemController.createMeetingAction) })
     }
 
+    func test_joinSectionOffersAlternateMeetingLinks() {
+        let calendar = MBCalendar(
+            title: "Test Calendar",
+            id: "cal_alt",
+            source: nil,
+            email: nil,
+            color: .black
+        )
+        let next = MBEvent(
+            id: "ALT",
+            lastModifiedDate: Date(),
+            title: "Event ALT",
+            status: .confirmed,
+            notes: "Stale: https://us02web.zoom.us/j/99999",
+            location: "https://teams.microsoft.com/l/meetup-join/location-link",
+            url: URL(string: "https://us02web.zoom.us/j/12345?pwd=abcdef"),
+            conferenceURL: URL(string: "https://meet.google.com/abc-defg-hij"),
+            organizer: nil,
+            startDate: Date().addingTimeInterval(60),
+            endDate: Date().addingTimeInterval(600),
+            isAllDay: false,
+            recurrent: false,
+            calendar: calendar
+        )
+
+        let items = MenuBuilder(target: Dummy())
+            .buildJoinSection(nextEvent: next)
+        let alternateItem = items.first { $0.title == "status_bar_join_with_other_link".loco() }
+        let alternateTitles = alternateItem?.submenu?.items.map(\.title)
+
+        XCTAssertEqual(next.meetingLinkCandidate?.source, .providerConferenceData)
+        XCTAssertEqual(next.alternateMeetingLinkCandidates.map(\.source), [.eventURL, .location, .notes])
+        XCTAssertEqual(alternateTitles, [
+            "Zoom - us02web.zoom.us",
+            "Microsoft Teams - teams.microsoft.com",
+            "Zoom - us02web.zoom.us"
+        ])
+        XCTAssertEqual(
+            (alternateItem?.submenu?.items.first?.representedObject as? MeetingLinkCandidate)?.source,
+            .eventURL
+        )
+    }
+
     func test_joinSectionWithoutEvent() {
         let items = MenuBuilder(target: Dummy())
             .buildJoinSection(nextEvent: nil)

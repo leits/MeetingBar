@@ -30,6 +30,10 @@ enum MeetingOpener {
         perform(action)
     }
 
+    static func open(meetingLink: MeetingLink) {
+        perform(.openMeetingLink(meetingLink, runJoinScript: Defaults[.runJoinEventScript]))
+    }
+
     private static func perform(_ action: MeetingOpeningAction) {
         switch action {
         case let .openMeetingLink(meetingLink, runJoinScript):

@@ -270,24 +270,47 @@ struct MeetingRegexesSection: View {
 
     @State private var showingEditRegexModal = false
     @State private var selectedRegex = ""
+    @State private var regexTestText = ""
+    @State private var regexTestResult: String?
+    @State private var regexTestMatched = false
 
     var body: some View {
         DisclosureGroup("preferences_advanced_regex_title".loco()) {
-            List {
-                Button("preferences_advanced_regex_add_button".loco()) { openEditRegexModal("") }.buttonStyle(.borderedProminent)
-                ForEach(customRegexes, id: \.self) { regex in
-                    HStack {
-                        Text(regex)
-                        Spacer()
-                        Button("preferences_advanced_regex_edit_button".loco()) { openEditRegexModal(regex) }
-                        Button("x") { removeRegex(regex) }
+            VStack(alignment: .leading, spacing: 8) {
+                List {
+                    Button("preferences_advanced_regex_add_button".loco()) { openEditRegexModal("") }.buttonStyle(.borderedProminent)
+                    ForEach(customRegexes, id: \.self) { regex in
+                        HStack {
+                            Text(regex)
+                            Spacer()
+                            Button("preferences_advanced_regex_edit_button".loco()) { openEditRegexModal(regex) }
+                            Button("x") { removeRegex(regex) }
+                        }
                     }
                 }
-            }.frame(height: 100)
+                .frame(height: 100)
                 .listStyle(.inset(alternatesRowBackgrounds: true))
-                .sheet(isPresented: $showingEditRegexModal) {
-                    EditRegexModal(regex: selectedRegex, function: addRegex)
+
+                Divider()
+
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("preferences_advanced_regex_test_title".loco())
+                        .font(.subheadline)
+                    TextField("preferences_advanced_regex_test_placeholder".loco(), text: $regexTestText)
+                        .textFieldStyle(.roundedBorder)
+                    HStack {
+                        Button("preferences_advanced_regex_test_button".loco(), action: testRegex)
+                            .disabled(regexTestText.isEmpty || customRegexes.isEmpty)
+                        if let regexTestResult {
+                            Text(regexTestResult)
+                                .foregroundColor(regexTestMatched ? .secondary : .red)
+                        }
+                    }
                 }
+            }
+            .sheet(isPresented: $showingEditRegexModal) {
+                EditRegexModal(regex: selectedRegex, function: addRegex)
+            }
         }.padding(.leading, 19)
     }
 
@@ -306,6 +329,25 @@ struct MeetingRegexesSection: View {
     func removeRegex(_ regex: String) {
         if let index = customRegexes.firstIndex(of: regex) {
             customRegexes.remove(at: index)
+        }
+    }
+
+    func testRegex() {
+        let customCandidates = MeetingLinkDetector.allCandidates(
+            location: nil,
+            eventURL: nil,
+            notes: regexTestText,
+            calendarEmail: nil,
+            currentUserEmail: nil,
+            customRegexes: customRegexes
+        ).filter { $0.source == .customRegex }
+
+        if let candidate = customCandidates.first {
+            regexTestMatched = true
+            regexTestResult = "preferences_advanced_regex_test_match".loco(candidate.url.absoluteString)
+        } else {
+            regexTestMatched = false
+            regexTestResult = "preferences_advanced_regex_test_no_match".loco()
         }
     }
 }

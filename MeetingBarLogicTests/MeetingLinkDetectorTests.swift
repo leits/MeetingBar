@@ -158,6 +158,46 @@ final class MeetingLinkDetectorTests: XCTestCase {
         XCTAssertEqual(link?.service, .meet)
     }
 
+    func testAllCandidatesReturnsRankedAlternates() {
+        let candidates = MeetingLinkDetector.allCandidates(
+            conferenceURL: URL(string: "https://meet.google.com/abc-defg-hij"),
+            location: "https://teams.microsoft.com/l/meetup-join/location-link",
+            eventURL: URL(string: "https://us02web.zoom.us/j/12345?pwd=abcdef"),
+            notes: "Old reminder: https://us02web.zoom.us/j/99999",
+            calendarEmail: nil,
+            currentUserEmail: nil
+        )
+
+        XCTAssertEqual(candidates.map(\.source), [
+            .providerConferenceData,
+            .eventURL,
+            .location,
+            .notes
+        ])
+        XCTAssertEqual(candidates.first?.service, .meet)
+        XCTAssertEqual(candidates.dropFirst().map(\.service), [.zoom, .teams, .zoom])
+    }
+
+    func testAllCandidatesAppliesMeetAuthuserToAlternates() {
+        let candidates = MeetingLinkDetector.allCandidates(
+            conferenceURL: nil,
+            location: "https://us02web.zoom.us/j/12345",
+            eventURL: URL(string: "https://meet.google.com/event-url"),
+            notes: "Backup: https://meet.google.com/notes-link",
+            calendarEmail: "owner@example.com",
+            currentUserEmail: nil
+        )
+
+        XCTAssertEqual(
+            candidates.map(\.url.absoluteString),
+            [
+                "https://meet.google.com/event-url?authuser=owner@example.com",
+                "https://us02web.zoom.us/j/12345",
+                "https://meet.google.com/notes-link?authuser=owner@example.com"
+            ]
+        )
+    }
+
     func testCustomRegexBeatsNothingButLosesToBuiltInSources() {
         // Custom regex is the lowest priority fallback. With a built-in
         // service URL in any structured source, the custom regex must lose.
@@ -171,6 +211,20 @@ final class MeetingLinkDetectorTests: XCTestCase {
         )
         XCTAssertEqual(link?.service, .meet,
                        "eventURL conferencing service must beat a custom regex match in notes")
+    }
+
+    func testAllCandidatesExposesCustomRegexCandidate() {
+        let candidates = MeetingLinkDetector.allCandidates(
+            location: nil,
+            eventURL: nil,
+            notes: "Use internal room: https://internal.corp/room/42",
+            calendarEmail: nil,
+            currentUserEmail: nil,
+            customRegexes: [#"https://internal\.corp/room/\d+"#]
+        )
+
+        XCTAssertEqual(candidates.map(\.source), [.customRegex])
+        XCTAssertEqual(candidates.first?.url.absoluteString, "https://internal.corp/room/42")
     }
 
     func testEventURLBeatsNotes() {

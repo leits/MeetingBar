@@ -82,6 +82,10 @@ struct MenuBuilder {
             )
             joinItem.target = target
             items.append(joinItem)
+
+            if let alternateLinksItem = makeAlternateMeetingLinksMenu(for: nextEvent) {
+                items.append(alternateLinksItem)
+            }
         }
 
         // MENU ITEM: Create meeting
@@ -537,6 +541,10 @@ struct MenuBuilder {
             }
 
             // Copy meeting link
+            if let alternateLinksItem = makeAlternateMeetingLinksMenu(for: event) {
+                eventMenu.addItem(alternateLinksItem)
+            }
+
             let copyLinkItem = eventMenu.addItem(withTitle: "status_bar_submenu_copy_meeting_link".loco(), action: #selector(StatusBarItemController.copyEventMeetingLink), keyEquivalent: "")
             copyLinkItem.target = target
             copyLinkItem.representedObject = event
@@ -574,5 +582,31 @@ struct MenuBuilder {
             eventItem.toolTip = event.title
         }
         return eventItem
+    }
+
+    private func makeAlternateMeetingLinksMenu(for event: MBEvent) -> NSMenuItem? {
+        guard !event.alternateMeetingLinkCandidates.isEmpty else { return nil }
+
+        let title = "status_bar_join_with_other_link".loco()
+        let item = NSMenuItem(title: title, action: nil, keyEquivalent: "")
+        let menu = NSMenu(title: title)
+        for candidate in event.alternateMeetingLinkCandidates {
+            let alternateItem = menu.addItem(
+                withTitle: alternateMeetingLinkTitle(for: candidate),
+                action: #selector(StatusBarItemController.joinMeetingLinkCandidate),
+                keyEquivalent: ""
+            )
+            alternateItem.target = target
+            alternateItem.representedObject = candidate
+            alternateItem.toolTip = candidate.url.absoluteString
+        }
+        item.submenu = menu
+        return item
+    }
+
+    private func alternateMeetingLinkTitle(for candidate: MeetingLinkCandidate) -> String {
+        let service = candidate.service?.localizedValue ?? "constants_meeting_service_other".loco()
+        guard let host = candidate.url.host else { return service }
+        return "\(service) - \(host)"
     }
 }

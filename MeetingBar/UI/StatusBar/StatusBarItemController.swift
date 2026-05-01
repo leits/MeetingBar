@@ -477,6 +477,13 @@ final class StatusBarItemController {
     }
 
     @objc
+    func joinMeetingLinkCandidate(sender: NSMenuItem) {
+        if let candidate = sender.representedObject as? MeetingLinkCandidate {
+            MeetingOpener.open(meetingLink: MeetingLink(service: candidate.service, url: candidate.url))
+        }
+    }
+
+    @objc
     func openEventInCalendar(sender: NSMenuItem) {
         if let identifier = sender.representedObject as? String {
             let url = URL(string: "ical://ekevent/\(identifier)")!

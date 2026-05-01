@@ -62,6 +62,8 @@ public struct MBEvent: Identifiable, Hashable, Sendable {
     public var status: MBEventStatus
     public var participationStatus: MBEventAttendeeStatus = .unknown
     public var meetingLink: MeetingLink?
+    var meetingLinkCandidate: MeetingLinkCandidate?
+    var alternateMeetingLinkCandidates: [MeetingLinkCandidate] = []
     public var organizer: MBEventOrganizer?
     public let url: URL?
     /// Structured meeting URL exposed by the provider (e.g. Google Calendar's
@@ -124,7 +126,7 @@ public struct MBEvent: Identifiable, Hashable, Sendable {
             participationStatus = currentUser.status
         }
 
-        meetingLink = MeetingLinkDetector.detect(
+        let meetingLinkCandidates = MeetingLinkDetector.allCandidates(
             conferenceURL: conferenceURL,
             location: location,
             eventURL: url,
@@ -133,6 +135,11 @@ public struct MBEvent: Identifiable, Hashable, Sendable {
             currentUserEmail: currentUser?.email,
             customRegexes: Defaults[.customRegexes]
         )
+        meetingLinkCandidate = meetingLinkCandidates.first
+        alternateMeetingLinkCandidates = Array(meetingLinkCandidates.dropFirst())
+        if let meetingLinkCandidate {
+            meetingLink = MeetingLink(service: meetingLinkCandidate.service, url: meetingLinkCandidate.url)
+        }
     }
 
     func emailAttendees() {
