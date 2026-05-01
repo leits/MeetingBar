@@ -13,6 +13,8 @@ final class FakeEventStore: EventStore {
     var stubbedCalendars: [MBCalendar]
     var stubbedEvents: [MBEvent]
     var stubbedError: Error?
+    var stubbedCalendarError: Error?
+    var stubbedEventsError: Error?
     var fetchDelay: TimeInterval = 0
     private(set) var fetchCallCount = 0
 
@@ -28,6 +30,7 @@ final class FakeEventStore: EventStore {
         if fetchDelay > 0 {
             try await Task.sleep(nanoseconds: UInt64(fetchDelay * 1_000_000_000))
         }
+        if let error = stubbedCalendarError { throw error }
         if let error = stubbedError { throw error }
         return stubbedCalendars
     }
@@ -37,6 +40,7 @@ final class FakeEventStore: EventStore {
         from _: Date,
         to _: Date
     ) async throws -> [MBEvent] {
+        if let error = stubbedEventsError { throw error }
         if let error = stubbedError { throw error }
         return stubbedEvents
     }

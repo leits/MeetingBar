@@ -424,4 +424,46 @@ final class ProviderHealthTests: BaseTestCase {
         XCTAssertTrue(health.isStale)
         XCTAssertEqual(health.lastSuccessfulRefresh, previousSuccess)
     }
+
+    func test_eventFetchAuthFailurePreservesDataAndMarksAuthRequired() async throws {
+        let calendar = MBCalendar(title: "C", id: "c1", source: nil, email: nil, color: .black)
+        let event = makeFakeEvent(
+            id: "auth",
+            start: Date().addingTimeInterval(60),
+            end: Date().addingTimeInterval(3600)
+        )
+        let store = FakeEventStore(calendars: [calendar], events: [event])
+        Defaults[.selectedCalendarIDs] = [calendar.id]
+        let manager = EventManager(provider: store, refreshInterval: 0)
+
+        let initialExp = expectation(description: "initial success")
+        manager.$providerHealth
+            .drop(while: { $0.lastSuccessfulRefresh == nil })
+            .first()
+            .sink { _ in initialExp.fulfill() }
+            .store(in: &cancellables)
+        await fulfillment(of: [initialExp], timeout: 1.0)
+
+        let lastSuccess = manager.providerHealth.lastSuccessfulRefresh
+        store.stubbedEventsError = AuthError.notSignedIn
+
+        let failureExp = expectation(description: "event fetch failure health")
+        manager.$providerHealth
+            .dropFirst()
+            .first()
+            .sink { health in
+                XCTAssertEqual(health.lastSuccessfulRefresh, lastSuccess)
+                XCTAssertTrue(health.authRequired)
+                XCTAssertTrue(health.isStale)
+                XCTAssertEqual(health.lastErrorDescription, "Google Calendar authorization is required")
+                failureExp.fulfill()
+            }
+            .store(in: &cancellables)
+
+        try await manager.refreshSources()
+        await fulfillment(of: [failureExp], timeout: 1.0)
+
+        XCTAssertEqual(manager.calendars, [calendar])
+        XCTAssertEqual(manager.events, [event])
+    }
 }

@@ -87,6 +87,55 @@ final class GoogleCalendarParserTests: XCTestCase {
         XCTAssertTrue(event?.isAllDay ?? false)
     }
 
+    func testCancelledRecurringEventParsesAttendeeStatuses() {
+        let event = GCEventStore.GCParser.event(
+            from: [
+                "id": "event-3",
+                "summary": "Moved meeting",
+                "status": "cancelled",
+                "recurringEventId": "series-1",
+                "start": ["dateTime": "2026-04-24T10:00:00Z"],
+                "end": ["dateTime": "2026-04-24T10:30:00Z"],
+                "attendees": [
+                    ["email": "pending@example.com", "responseStatus": "needsAction", "optional": true],
+                    ["email": "tentative@example.com", "responseStatus": "tentative"],
+                    ["email": "declined@example.com", "responseStatus": "declined"],
+                    ["email": "unknown@example.com", "responseStatus": "unexpected"]
+                ]
+            ],
+            calendar: calendar
+        )
+
+        XCTAssertEqual(event?.status, .canceled)
+        XCTAssertTrue(event?.recurrent ?? false)
+        XCTAssertEqual(event?.attendees.map(\.status) ?? [], [.pending, .tentative, .declined, .unknown])
+        XCTAssertEqual(event?.attendees.first?.optional, true)
+    }
+
+    func testConferenceDataWithoutUsableVideoURLFallsBackToNotesLink() {
+        let event = GCEventStore.GCParser.event(
+            from: [
+                "id": "event-4",
+                "summary": "Fallback link",
+                "start": ["dateTime": "2026-04-24T10:00:00Z"],
+                "end": ["dateTime": "2026-04-24T10:30:00Z"],
+                "description": "Join backup: https://us02web.zoom.us/j/12345",
+                "conferenceData": [
+                    "entryPoints": [
+                        [
+                            "entryPointType": "video"
+                        ]
+                    ]
+                ]
+            ],
+            calendar: calendar
+        )
+
+        XCTAssertNil(event?.conferenceURL)
+        XCTAssertEqual(event?.meetingLink?.service, .zoom)
+        XCTAssertEqual(event?.meetingLink?.url.absoluteString, "https://us02web.zoom.us/j/12345")
+    }
+
     func testMalformedEventReturnsNil() {
         XCTAssertNil(GCEventStore.GCParser.event(from: ["summary": "Missing id"], calendar: calendar))
         XCTAssertNil(GCEventStore.GCParser.event(from: ["id": "missing-dates"], calendar: calendar))
@@ -96,6 +145,16 @@ final class GoogleCalendarParserTests: XCTestCase {
                     "id": "bad-date",
                     "start": ["dateTime": "not-a-date"],
                     "end": ["dateTime": "2026-04-24T10:30:00Z"]
+                ],
+                calendar: calendar
+            )
+        )
+        XCTAssertNil(
+            GCEventStore.GCParser.event(
+                from: [
+                    "id": "bad-all-day-date",
+                    "start": ["date": "not-a-date"],
+                    "end": ["date": "2026-04-25"]
                 ],
                 calendar: calendar
             )

@@ -506,4 +506,68 @@ final class NotificationSchedulerTests: BaseTestCase {
         XCTAssertTrue(actionSink.actions.isEmpty)
         XCTAssertTrue(Defaults[.processedEventsForFullscreenNotification].isEmpty)
     }
+
+    func testFullscreenActionWithoutMeetingLinkMarksProcessedWithoutOpening() async {
+        let requestSink = FakeNotificationRequestSink()
+        let actionSink = FakeNotificationActionSink()
+        let scheduler = NotificationScheduler(sink: requestSink, actionSink: actionSink)
+        let scheduledNow = Date()
+        let evt = wallClockEvent(id: "NoLink", now: scheduledNow, startsIn: 0.35, withLink: false)
+
+        await scheduler.reconcile(
+            events: [evt],
+            settings: fullscreenOnlySettings(offset: 0.25),
+            now: scheduledNow
+        )
+
+        await waitUntil {
+            Defaults[.processedEventsForFullscreenNotification].contains { $0.id == evt.id }
+        }
+
+        XCTAssertTrue(actionSink.attempts.isEmpty)
+        XCTAssertTrue(actionSink.actions.isEmpty)
+        XCTAssertEqual(Defaults[.processedEventsForFullscreenNotification].map(\.id), [evt.id])
+    }
+
+    func testRemovingActionSinkCancelsPendingFullscreenActionTask() async {
+        let requestSink = FakeNotificationRequestSink()
+        let actionSink = FakeNotificationActionSink()
+        let scheduler = NotificationScheduler(sink: requestSink, actionSink: actionSink)
+        let scheduledNow = Date()
+        let evt = wallClockEvent(id: "A", now: scheduledNow, startsIn: 0.8)
+        let settings = fullscreenOnlySettings(offset: 0.2)
+
+        await scheduler.reconcile(events: [evt], settings: settings, now: scheduledNow)
+        scheduler.setActionSink(nil)
+        await scheduler.reconcile(events: [evt], settings: settings, now: scheduledNow)
+
+        try? await Task.sleep(nanoseconds: 750_000_000)
+
+        XCTAssertTrue(actionSink.attempts.isEmpty)
+        XCTAssertTrue(actionSink.actions.isEmpty)
+    }
+
+    func testCurrentForSchedulerMapsDefaultsAndDisablesUnmigratedActions() {
+        let dismissed = ProcessedEvent(
+            id: "dismissed",
+            lastModifiedDate: Date(timeIntervalSinceReferenceDate: 700_000_000),
+            eventEndDate: now.addingTimeInterval(3600)
+        )
+        Defaults[.joinEventNotification] = true
+        Defaults[.joinEventNotificationTime] = .threeMinuteBefore
+        Defaults[.endOfEventNotification] = false
+        Defaults[.endOfEventNotificationTime] = .fiveMinuteBefore
+        Defaults[.fullscreenNotification] = true
+        Defaults[.fullscreenNotificationTime] = .minuteBefore
+        Defaults[.dismissedEvents] = [dismissed]
+
+        let settings = NotificationPlanningSettings.currentForScheduler
+
+        XCTAssertEqual(settings.eventStart, .init(enabled: true, offset: 180))
+        XCTAssertEqual(settings.eventEnd, .init(enabled: false, offset: 300))
+        XCTAssertEqual(settings.fullscreen, .init(enabled: true, offset: 60))
+        XCTAssertEqual(settings.autoJoin, .disabled)
+        XCTAssertEqual(settings.scriptOnStart, .disabled)
+        XCTAssertEqual(settings.dismissedEventIDs, Set(["dismissed"]))
+    }
 }
