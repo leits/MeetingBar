@@ -122,6 +122,11 @@ final class StatusBarItemController {
             .endOfEventNotificationTime,
             .fullscreenNotification,
             .fullscreenNotificationTime,
+            .automaticEventJoin,
+            .automaticEventJoinTime,
+            .runEventStartScript,
+            .eventStartScriptTime,
+            .eventStartScriptLocation,
             .dismissedEvents,
             options: []
         )

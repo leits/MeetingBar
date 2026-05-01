@@ -72,10 +72,14 @@ final class NotificationScheduler {
         let plans = NotificationPlanningPolicy
             .plan(events: planningEvents, settings: settings, now: now)
         let systemPlans = plans.filter { $0.kind == .eventStart || $0.kind == .eventEnd }
-        let actionPlans = plans.filter { $0.kind == .fullscreen }
+        let actionPlans = plans.filter(\.kind.isInAppAction)
 
         let eventByID = Dictionary(events.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
 
+        cleanupExpiredActionRecords(now: now)
+        if actionSink != nil {
+            fireDueActions(events: events, settings: settings, now: now)
+        }
         reconcileActionTasks(actionPlans, eventByID: eventByID, settings: settings, now: now)
 
         let pending = await sink.pendingRequests()
@@ -176,27 +180,120 @@ final class NotificationScheduler {
         action: NotificationPlanningSettings.Action,
         now: Date
     ) {
-        switch plan.kind {
-        case .fullscreen:
-            guard let decision = EventActionPolicy.evaluate(
+        guard let config = actionConfig(for: plan.kind, action: action),
+              let decision = EventActionPolicy.evaluate(
                 event: EventActionEvent(event: event),
-                config: EventActionConfig(
-                    actionTime: action.offset,
-                    allowsRecentlyStarted: true,
-                    requiresMeetingLink: true
-                ),
-                processed: Defaults[.processedEventsForFullscreenNotification].actionRecords,
+                config: config,
+                processed: processedActionRecords(for: plan.kind),
                 now: now
-            ) else { return }
+              )
+        else { return }
 
-            if decision.shouldFireSideEffect {
-                guard actionSink?.performNotificationAction(.fullscreen, event: event) == true else {
-                    return
-                }
+        if decision.shouldFireSideEffect {
+            guard actionSink?.performNotificationAction(plan.kind, event: event) == true else {
+                return
             }
-            Defaults[.processedEventsForFullscreenNotification] = decision.updatedProcessed.processedEvents
-        case .eventStart, .eventEnd, .autoJoin, .scriptOnStart:
-            return
+        }
+
+        setProcessedActionRecords(decision.updatedProcessed, for: plan.kind)
+    }
+
+    private func fireDueActions(
+        events: [MBEvent],
+        settings: NotificationPlanningSettings,
+        now: Date
+    ) {
+        for event in events where shouldConsiderActionEvent(event, settings: settings) {
+            for kind in NotificationKind.inAppActions {
+                let action = actionSettings(for: kind, settings: settings)
+                guard action.enabled else { continue }
+                let plan = PlannedNotification(
+                    eventID: event.id,
+                    kind: kind,
+                    fireDate: event.startDate.addingTimeInterval(-action.offset),
+                    identity: ""
+                )
+                fireAction(plan: plan, event: event, action: action, now: now)
+            }
+        }
+    }
+
+    private func shouldConsiderActionEvent(
+        _ event: MBEvent,
+        settings: NotificationPlanningSettings
+    ) -> Bool {
+        if settings.dismissedEventIDs.contains(event.id) { return false }
+        if event.status == .canceled { return false }
+        if event.participationStatus == .declined { return false }
+        return true
+    }
+
+    private func actionConfig(
+        for kind: NotificationKind,
+        action: NotificationPlanningSettings.Action
+    ) -> EventActionConfig? {
+        switch kind {
+        case .fullscreen, .autoJoin:
+            return EventActionConfig(
+                actionTime: action.offset,
+                allowsRecentlyStarted: true,
+                requiresMeetingLink: true
+            )
+        case .scriptOnStart:
+            return EventActionConfig(
+                actionTime: action.offset,
+                allowsRecentlyStarted: false,
+                requiresMeetingLink: false
+            )
+        case .eventStart, .eventEnd:
+            return nil
+        }
+    }
+
+    private func cleanupExpiredActionRecords(now: Date) {
+        Defaults[.processedEventsForFullscreenNotification] =
+            EventActionPolicy.cleanupExpired(
+                Defaults[.processedEventsForFullscreenNotification].actionRecords,
+                now: now
+            ).processedEvents
+        Defaults[.processedEventsForAutoJoin] =
+            EventActionPolicy.cleanupExpired(
+                Defaults[.processedEventsForAutoJoin].actionRecords,
+                now: now
+            ).processedEvents
+        Defaults[.processedEventsForRunScriptOnEventStart] =
+            EventActionPolicy.cleanupExpired(
+                Defaults[.processedEventsForRunScriptOnEventStart].actionRecords,
+                now: now
+            ).processedEvents
+    }
+
+    private func processedActionRecords(for kind: NotificationKind) -> [EventActionProcessedEvent] {
+        switch kind {
+        case .fullscreen:
+            return Defaults[.processedEventsForFullscreenNotification].actionRecords
+        case .autoJoin:
+            return Defaults[.processedEventsForAutoJoin].actionRecords
+        case .scriptOnStart:
+            return Defaults[.processedEventsForRunScriptOnEventStart].actionRecords
+        case .eventStart, .eventEnd:
+            return []
+        }
+    }
+
+    private func setProcessedActionRecords(
+        _ records: [EventActionProcessedEvent],
+        for kind: NotificationKind
+    ) {
+        switch kind {
+        case .fullscreen:
+            Defaults[.processedEventsForFullscreenNotification] = records.processedEvents
+        case .autoJoin:
+            Defaults[.processedEventsForAutoJoin] = records.processedEvents
+        case .scriptOnStart:
+            Defaults[.processedEventsForRunScriptOnEventStart] = records.processedEvents
+        case .eventStart, .eventEnd:
+            break
         }
     }
 
@@ -274,9 +371,6 @@ extension NotificationPlanningEvent {
 
 extension NotificationPlanningSettings {
     /// Snapshot of the per-action settings the scheduler currently owns.
-    /// Fullscreen is reconciled as an in-app action; auto-join and on-start
-    /// script remain on the existing `ActionsOnEventStart` timer path until
-    /// they are migrated.
     static var currentForScheduler: NotificationPlanningSettings {
         let startOffset = TimeInterval(Defaults[.joinEventNotificationTime].rawValue)
         let endOffset = TimeInterval(Defaults[.endOfEventNotificationTime].rawValue)
@@ -287,8 +381,14 @@ extension NotificationPlanningSettings {
                 enabled: Defaults[.fullscreenNotification],
                 offset: TimeInterval(Defaults[.fullscreenNotificationTime].rawValue)
             ),
-            autoJoin: .disabled,
-            scriptOnStart: .disabled,
+            autoJoin: .init(
+                enabled: Defaults[.automaticEventJoin],
+                offset: TimeInterval(Defaults[.automaticEventJoinTime].rawValue)
+            ),
+            scriptOnStart: .init(
+                enabled: Defaults[.runEventStartScript] && Defaults[.eventStartScriptLocation] != nil,
+                offset: TimeInterval(Defaults[.eventStartScriptTime].rawValue)
+            ),
             dismissedEventIDs: Set(Defaults[.dismissedEvents].map(\.id))
         )
     }
@@ -334,5 +434,13 @@ private extension Array where Element == ProcessedEvent {
 private extension Array where Element == EventActionProcessedEvent {
     var processedEvents: [ProcessedEvent] {
         map(\.processedEvent)
+    }
+}
+
+private extension NotificationKind {
+    static let inAppActions: [NotificationKind] = [.fullscreen, .autoJoin, .scriptOnStart]
+
+    var isInAppAction: Bool {
+        Self.inAppActions.contains(self)
     }
 }

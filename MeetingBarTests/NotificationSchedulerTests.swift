@@ -131,6 +131,37 @@ final class NotificationSchedulerTests: BaseTestCase {
         )
     }
 
+    private func actionOnlySettings(
+        kind: NotificationKind,
+        offset: TimeInterval = 0.25,
+        dismissedEventIDs: Set<String> = []
+    ) -> NotificationPlanningSettings {
+        NotificationPlanningSettings(
+            eventStart: .disabled,
+            eventEnd: .disabled,
+            fullscreen: kind == .fullscreen ? .init(enabled: true, offset: offset) : .disabled,
+            autoJoin: kind == .autoJoin ? .init(enabled: true, offset: offset) : .disabled,
+            scriptOnStart: kind == .scriptOnStart ? .init(enabled: true, offset: offset) : .disabled,
+            dismissedEventIDs: dismissedEventIDs
+        )
+    }
+
+    private func actionSettings(
+        fullscreen: NotificationPlanningSettings.Action = .disabled,
+        autoJoin: NotificationPlanningSettings.Action = .disabled,
+        scriptOnStart: NotificationPlanningSettings.Action = .disabled,
+        dismissedEventIDs: Set<String> = []
+    ) -> NotificationPlanningSettings {
+        NotificationPlanningSettings(
+            eventStart: .disabled,
+            eventEnd: .disabled,
+            fullscreen: fullscreen,
+            autoJoin: autoJoin,
+            scriptOnStart: scriptOnStart,
+            dismissedEventIDs: dismissedEventIDs
+        )
+    }
+
     private func startOnlySettings(offset: TimeInterval = 60) -> NotificationPlanningSettings {
         NotificationPlanningSettings(
             eventStart: .init(enabled: true, offset: offset),
@@ -547,7 +578,133 @@ final class NotificationSchedulerTests: BaseTestCase {
         XCTAssertTrue(actionSink.actions.isEmpty)
     }
 
-    func testCurrentForSchedulerMapsDefaultsAndDisablesUnmigratedActions() {
+    func testReconcileSchedulesAutoJoinAndScriptActionTasks() async {
+        let requestSink = FakeNotificationRequestSink()
+        let actionSink = FakeNotificationActionSink()
+        let scheduler = NotificationScheduler(sink: requestSink, actionSink: actionSink)
+        let scheduledNow = Date()
+        let evt = wallClockEvent(id: "A", now: scheduledNow, startsIn: 0.35)
+
+        await scheduler.reconcile(
+            events: [evt],
+            settings: actionSettings(
+                autoJoin: .init(enabled: true, offset: 0.25),
+                scriptOnStart: .init(enabled: true, offset: 0.25)
+            ),
+            now: scheduledNow
+        )
+
+        await waitUntil { actionSink.actions.count == 2 }
+
+        XCTAssertTrue(actionSink.actions.contains { $0.kind == .autoJoin && $0.eventID == "A" })
+        XCTAssertTrue(actionSink.actions.contains { $0.kind == .scriptOnStart && $0.eventID == "A" })
+        XCTAssertTrue(requestSink.addedIdentifiers.isEmpty, "in-app actions must not create system notification requests")
+    }
+
+    func testBackToBackEventsBothTriggerAutoJoin() async {
+        let requestSink = FakeNotificationRequestSink()
+        let actionSink = FakeNotificationActionSink()
+        let scheduler = NotificationScheduler(sink: requestSink, actionSink: actionSink)
+        let scheduledNow = Date()
+        let first = wallClockEvent(id: "A", now: scheduledNow, startsIn: 0.35, duration: 0.2)
+        let second = wallClockEvent(id: "B", now: scheduledNow, startsIn: 0.65, duration: 0.2)
+
+        await scheduler.reconcile(
+            events: [first, second],
+            settings: actionOnlySettings(kind: .autoJoin, offset: 0.25),
+            now: scheduledNow
+        )
+
+        await waitUntil { actionSink.actions.count == 2 }
+
+        XCTAssertEqual(actionSink.actions.map(\.kind), [.autoJoin, .autoJoin])
+        XCTAssertEqual(Set(actionSink.actions.map(\.eventID)), Set(["A", "B"]))
+    }
+
+    func testAutoJoinPastDueWithinWindowFiresImmediately() async {
+        let requestSink = FakeNotificationRequestSink()
+        let actionSink = FakeNotificationActionSink()
+        let scheduler = NotificationScheduler(sink: requestSink, actionSink: actionSink)
+        let scheduledNow = Date()
+        let evt = wallClockEvent(id: "A", now: scheduledNow, startsIn: 2)
+
+        await scheduler.reconcile(
+            events: [evt],
+            settings: actionOnlySettings(kind: .autoJoin, offset: 60),
+            now: scheduledNow
+        )
+
+        XCTAssertEqual(actionSink.actions.map(\.kind), [.autoJoin])
+        XCTAssertEqual(actionSink.actions.map(\.eventID), ["A"])
+    }
+
+    func testAllDayEventTriggersAutoJoinWhileActive() async {
+        let requestSink = FakeNotificationRequestSink()
+        let actionSink = FakeNotificationActionSink()
+        let scheduler = NotificationScheduler(sink: requestSink, actionSink: actionSink)
+        let scheduledNow = Date()
+        let evt = makeFakeEvent(
+            id: "AllDay",
+            start: scheduledNow.addingTimeInterval(-3600),
+            end: scheduledNow.addingTimeInterval(3600),
+            isAllDay: true,
+            withLink: true
+        )
+
+        await scheduler.reconcile(
+            events: [evt],
+            settings: actionOnlySettings(kind: .autoJoin, offset: 60),
+            now: scheduledNow
+        )
+
+        XCTAssertEqual(actionSink.actions.map(\.kind), [.autoJoin])
+        XCTAssertEqual(actionSink.actions.map(\.eventID), ["AllDay"])
+        XCTAssertEqual(Defaults[.processedEventsForAutoJoin].map(\.id), ["AllDay"])
+    }
+
+    func testAutoJoinWithoutMeetingLinkMarksProcessedWithoutOpening() async {
+        let requestSink = FakeNotificationRequestSink()
+        let actionSink = FakeNotificationActionSink()
+        let scheduler = NotificationScheduler(sink: requestSink, actionSink: actionSink)
+        let scheduledNow = Date()
+        let evt = wallClockEvent(id: "NoLink", now: scheduledNow, startsIn: 0.35, withLink: false)
+
+        await scheduler.reconcile(
+            events: [evt],
+            settings: actionOnlySettings(kind: .autoJoin, offset: 0.25),
+            now: scheduledNow
+        )
+
+        await waitUntil {
+            Defaults[.processedEventsForAutoJoin].contains { $0.id == evt.id }
+        }
+
+        XCTAssertTrue(actionSink.attempts.isEmpty)
+        XCTAssertTrue(actionSink.actions.isEmpty)
+        XCTAssertEqual(Defaults[.processedEventsForAutoJoin].map(\.id), [evt.id])
+    }
+
+    func testScriptActionWithoutMeetingLinkRunsAndMarksProcessed() async {
+        let requestSink = FakeNotificationRequestSink()
+        let actionSink = FakeNotificationActionSink()
+        let scheduler = NotificationScheduler(sink: requestSink, actionSink: actionSink)
+        let scheduledNow = Date()
+        let evt = wallClockEvent(id: "Script", now: scheduledNow, startsIn: 0.35, withLink: false)
+
+        await scheduler.reconcile(
+            events: [evt],
+            settings: actionOnlySettings(kind: .scriptOnStart, offset: 0.25),
+            now: scheduledNow
+        )
+
+        await waitUntil { actionSink.actions.count == 1 }
+
+        XCTAssertEqual(actionSink.actions.map(\.kind), [.scriptOnStart])
+        XCTAssertEqual(actionSink.actions.map(\.eventID), ["Script"])
+        XCTAssertEqual(Defaults[.processedEventsForRunScriptOnEventStart].map(\.id), ["Script"])
+    }
+
+    func testCurrentForSchedulerMapsDefaultsForMigratedActions() {
         let dismissed = ProcessedEvent(
             id: "dismissed",
             lastModifiedDate: Date(timeIntervalSinceReferenceDate: 700_000_000),
@@ -559,6 +716,11 @@ final class NotificationSchedulerTests: BaseTestCase {
         Defaults[.endOfEventNotificationTime] = .fiveMinuteBefore
         Defaults[.fullscreenNotification] = true
         Defaults[.fullscreenNotificationTime] = .minuteBefore
+        Defaults[.automaticEventJoin] = true
+        Defaults[.automaticEventJoinTime] = .threeMinuteBefore
+        Defaults[.runEventStartScript] = true
+        Defaults[.eventStartScriptTime] = .fiveMinuteBefore
+        Defaults[.eventStartScriptLocation] = URL(fileURLWithPath: "/tmp/eventStartScript.scpt")
         Defaults[.dismissedEvents] = [dismissed]
 
         let settings = NotificationPlanningSettings.currentForScheduler
@@ -566,8 +728,17 @@ final class NotificationSchedulerTests: BaseTestCase {
         XCTAssertEqual(settings.eventStart, .init(enabled: true, offset: 180))
         XCTAssertEqual(settings.eventEnd, .init(enabled: false, offset: 300))
         XCTAssertEqual(settings.fullscreen, .init(enabled: true, offset: 60))
-        XCTAssertEqual(settings.autoJoin, .disabled)
-        XCTAssertEqual(settings.scriptOnStart, .disabled)
+        XCTAssertEqual(settings.autoJoin, .init(enabled: true, offset: 180))
+        XCTAssertEqual(settings.scriptOnStart, .init(enabled: true, offset: 300))
         XCTAssertEqual(settings.dismissedEventIDs, Set(["dismissed"]))
+    }
+
+    func testCurrentForSchedulerDisablesScriptWhenLocationIsMissing() {
+        Defaults[.runEventStartScript] = true
+        Defaults[.eventStartScriptLocation] = nil
+
+        let settings = NotificationPlanningSettings.currentForScheduler
+
+        XCTAssertEqual(settings.scriptOnStart, .init(enabled: false, offset: 5))
     }
 }

@@ -413,7 +413,13 @@ extension AppDelegate: NotificationActionSink {
         case .fullscreen:
             openFullscreenNotificationWindow(event: event)
             return true
-        case .eventStart, .eventEnd, .autoJoin, .scriptOnStart:
+        case .autoJoin:
+            event.openMeeting()
+            return true
+        case .scriptOnStart:
+            runMeetingStartsScript(event: event, type: .meetingStart)
+            return true
+        case .eventStart, .eventEnd:
             return false
         }
     }
