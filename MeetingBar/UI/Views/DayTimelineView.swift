@@ -156,7 +156,7 @@ struct DayRelativeTimelineView: View {
             .padding(.vertical, 8)
         }
         .frame(maxWidth: .infinity)
-        .accessibilityLabel("Timeline with \(segments.count) events")
+        .accessibilityLabel("timeline_accessibility_label".loco(segments.count))
     }
 
     // Static formatter (built once)

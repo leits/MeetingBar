@@ -91,12 +91,12 @@ struct EndEventNotificationPicker: View {
 
     var body: some View {
         HStack {
-            Toggle("Send a notification when event ends", isOn: $endOfEventNotification)
+            Toggle("general_end_of_event_notification_toggle".loco(), isOn: $endOfEventNotification)
             Picker("", selection: $endOfEventNotificationTime) {
-                Text("when event ends").tag(TimeBeforeEventEnd.atEnd)
-                Text("1 minute before").tag(TimeBeforeEventEnd.minuteBefore)
-                Text("3 minute before").tag(TimeBeforeEventEnd.threeMinuteBefore)
-                Text("5 minute before").tag(TimeBeforeEventEnd.fiveMinuteBefore)
+                Text("general_when_event_ends".loco()).tag(TimeBeforeEventEnd.atEnd)
+                Text("general_one_minute_before".loco()).tag(TimeBeforeEventEnd.minuteBefore)
+                Text("general_three_minute_before".loco()).tag(TimeBeforeEventEnd.threeMinuteBefore)
+                Text("general_five_minute_before".loco()).tag(TimeBeforeEventEnd.fiveMinuteBefore)
             }.frame(width: 220, alignment: .leading).labelsHidden().disabled(!endOfEventNotification)
             Text("βeta").font(.caption).foregroundColor(.orange)
         }

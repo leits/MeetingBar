@@ -26,7 +26,7 @@ struct CalendarsTab: View {
                     if Defaults[.eventStoreProvider] == .macOSEventKit {
                         AccessDeniedBanner()
                     }
-                    Button("Refresh") {
+                    Button("general_refresh".loco()) {
                         Task { try await eventManager.refreshSources() }
                     }
 
