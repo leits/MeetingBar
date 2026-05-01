@@ -12,3 +12,12 @@ MeetingBar.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/*
 
 Archive/*
 build
+
+# SwiftPM hostless test build artifacts (created by `make test-logic`)
+.build/
+
+# AI agent local state
+.claude/
+.ignore
+AGENTS.md
+CLAUDE.md
