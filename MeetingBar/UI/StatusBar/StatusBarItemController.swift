@@ -170,21 +170,29 @@ final class StatusBarItemController {
         var time = ""
         var nextEvent: MBEvent!
         let nextEventState: NextEventState
-        if Defaults[.selectedCalendarIDs].isEmpty == false {
-            nextEvent = events.nextEvent()
-            nextEventState = {
-                guard let nextEvent = nextEvent else {
-                    return .none
-                }
-                guard Defaults[.showEventMaxTimeUntilEventEnabled] else {
-                    return .nextEvent(nextEvent)
-                }
-                // Positive, if in the future. Negative, if already started.
-                // Current or past events therefore don't get ignored.
-                let timeUntilStart = nextEvent.startDate.timeIntervalSinceNow
-                let thresholdInSeconds = TimeInterval(Defaults[.showEventMaxTimeUntilEventThreshold] * 60)
-                return timeUntilStart < thresholdInSeconds ? .nextEvent(nextEvent) : .afterThreshold(nextEvent)
-            }()
+
+        let candidate = events.nextEvent()
+        let mode = StatusBarPresentationPolicy.mode(
+            nextEventStartDate: candidate?.startDate,
+            settings: .current,
+            now: Date()
+        )
+
+        switch mode {
+        case .idle:
+            nextEventState = .none
+        case .noUpcoming:
+            nextEvent = nil
+            nextEventState = .none
+        case .nextEvent:
+            nextEvent = candidate
+            nextEventState = .nextEvent(candidate!)
+        case .afterThreshold:
+            nextEvent = candidate
+            nextEventState = .afterThreshold(candidate!)
+        }
+
+        if mode != .idle {
             switch nextEventState {
             case .none:
                 if Defaults[.joinEventNotification] {
@@ -197,8 +205,6 @@ final class StatusBarItemController {
                 // Not sure, what the title should be in this case.
                 title = "⏰"
             }
-        } else {
-            nextEventState = .none
         }
         if let button = statusItem.button {
             button.image = nil

@@ -17,7 +17,8 @@ let package = Package(
             exclude: [
                 "DiagnosticsReport+MeetingBar.swift",
                 "EventFilterPolicy+MeetingBar.swift",
-                "EventSelectionPolicy+MeetingBar.swift"
+                "EventSelectionPolicy+MeetingBar.swift",
+                "StatusBarPresentationPolicy+MeetingBar.swift"
             ],
             sources: [
                 "DiagnosticsReport.swift",
@@ -29,7 +30,8 @@ let package = Package(
                 "MeetingLinkDetection.swift",
                 "MeetingLinkDetector.swift",
                 "MeetingOpeningPolicy.swift",
-                "NotificationPlanningPolicy.swift"
+                "NotificationPlanningPolicy.swift",
+                "StatusBarPresentationPolicy.swift"
             ]
         ),
         .testTarget(
