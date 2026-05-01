@@ -20,6 +20,20 @@ enum MenuStyleConstants {
     static let calendarCheckmarkIconName = "iconCalendarCheckmark"
     static let calendarIconName = "iconCalendar"
     static let iconSize: NSSize = .init(width: 16, height: 16)
+
+    /// Loads a named asset; if the asset is missing or has been renamed,
+    /// falls back to the bundle's runtime app icon and finally to a 1x1
+    /// placeholder so the menu bar never crashes on a misconfigured Defaults
+    /// value or a renamed asset.
+    static func iconNamed(_ name: String) -> NSImage {
+        if let image = NSImage(named: name) {
+            return image
+        }
+        if let appIcon = NSImage(named: NSImage.applicationIconName) {
+            return appIcon
+        }
+        return NSImage(size: NSSize(width: 1, height: 1))
+    }
 }
 
 /**
@@ -50,7 +64,7 @@ final class StatusBarItemController {
         statusItem.button?.sendAction(on: [NSEvent.EventTypeMask.rightMouseDown, NSEvent.EventTypeMask.leftMouseUp, NSEvent.EventTypeMask.leftMouseDown])
 
         // Temporary icon and menu before app delegate setup
-        statusItem.button?.image = NSImage(named: MenuStyleConstants.appIconName)!
+        statusItem.button?.image = MenuStyleConstants.iconNamed(MenuStyleConstants.appIconName)
         statusItem.button?.image?.size = MenuStyleConstants.iconSize
         statusItem.button?.imagePosition = .imageLeft
         let menuItem = statusItemMenu.addItem(withTitle: "window_title_onboarding".loco(), action: nil, keyEquivalent: "")
@@ -215,18 +229,18 @@ final class StatusBarItemController {
             if title == "🏁" {
                 switch Defaults[.eventTitleIconFormat] {
                 case .appicon:
-                    button.image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
+                    button.image = MenuStyleConstants.iconNamed(Defaults[.eventTitleIconFormat].rawValue)
                 default:
                     button.image = NSImage(named: MenuStyleConstants.calendarCheckmarkIconName)
                 }
                 button.image?.size = MenuStyleConstants.iconSize
             } else if title == "MeetingBar" {
-                button.image = NSImage(named: MenuStyleConstants.appIconName)!
+                button.image = MenuStyleConstants.iconNamed(MenuStyleConstants.appIconName)
                 button.image?.size = MenuStyleConstants.iconSize
             } else if case .afterThreshold = nextEventState {
                 switch Defaults[.eventTitleIconFormat] {
                 case .appicon:
-                    button.image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
+                    button.image = MenuStyleConstants.iconNamed(Defaults[.eventTitleIconFormat].rawValue)
                 default:
                     button.image = NSImage(named: MenuStyleConstants.calendarIconName)
                 }
@@ -238,7 +252,7 @@ final class StatusBarItemController {
                     if Defaults[.eventTitleIconFormat] == .eventtype {
                         image = getIconForMeetingService(nextEvent.meetingLink?.service)
                     } else {
-                        image = NSImage(named: Defaults[.eventTitleIconFormat].rawValue)!
+                        image = MenuStyleConstants.iconNamed(Defaults[.eventTitleIconFormat].rawValue)
                     }
 
                     button.image = image
