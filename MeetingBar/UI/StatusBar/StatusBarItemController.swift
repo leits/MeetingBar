@@ -186,12 +186,13 @@ final class StatusBarItemController {
         var time = ""
         var nextEvent: MBEvent!
         let nextEventState: NextEventState
+        let now = Date()
 
         let candidate = events.nextEvent()
         let mode = StatusBarPresentationPolicy.mode(
             nextEventStartDate: candidate?.startDate,
             settings: .current,
-            now: Date()
+            now: now
         )
 
         switch mode {
@@ -216,7 +217,16 @@ final class StatusBarItemController {
                 }
                 title = "🏁"
             case let .nextEvent(event):
-                (title, time) = createEventStatusString(title: event.title, startDate: event.startDate, endDate: event.endDate)
+                let text = StatusBarTitlePolicy.text(
+                    eventTitle: event.title,
+                    startDate: event.startDate,
+                    endDate: event.endDate,
+                    settings: .current,
+                    now: now,
+                    calendar: statusBarCalendar()
+                )
+                title = text.title
+                time = text.time
             case .afterThreshold:
                 // Not sure, what the title should be in this case.
                 title = "⏰"
@@ -226,46 +236,37 @@ final class StatusBarItemController {
             button.image = nil
             button.title = ""
             button.toolTip = nil
-            if title == "🏁" {
-                switch Defaults[.eventTitleIconFormat] {
-                case .appicon:
-                    button.image = MenuStyleConstants.iconNamed(Defaults[.eventTitleIconFormat].rawValue)
-                default:
-                    button.image = NSImage(named: MenuStyleConstants.calendarCheckmarkIconName)
-                }
-                button.image?.size = MenuStyleConstants.iconSize
-            } else if title == "MeetingBar" {
-                button.image = MenuStyleConstants.iconNamed(MenuStyleConstants.appIconName)
-                button.image?.size = MenuStyleConstants.iconSize
-            } else if case .afterThreshold = nextEventState {
-                switch Defaults[.eventTitleIconFormat] {
-                case .appicon:
-                    button.image = MenuStyleConstants.iconNamed(Defaults[.eventTitleIconFormat].rawValue)
-                default:
-                    button.image = NSImage(named: MenuStyleConstants.calendarIconName)
-                }
+
+            let iconDecision = StatusBarIconPolicy.icon(
+                mode: mode,
+                format: StatusBarIconFormat(Defaults[.eventTitleIconFormat]),
+                formatAssetName: Defaults[.eventTitleIconFormat].rawValue,
+                meetingService: nextEvent?.meetingLink?.service,
+                assets: .production
+            )
+            switch iconDecision {
+            case let .asset(name):
+                button.image = MenuStyleConstants.iconNamed(name)
+            case let .meetingService(service):
+                button.image = getIconForMeetingService(service)
+            case .none:
+                break
             }
+            button.image?.size = MenuStyleConstants.iconSize
 
-            if button.image == nil {
-                if Defaults[.eventTitleIconFormat] != .none {
-                    let image: NSImage
-                    if Defaults[.eventTitleIconFormat] == .eventtype {
-                        image = getIconForMeetingService(nextEvent.meetingLink?.service)
-                    } else {
-                        image = MenuStyleConstants.iconNamed(Defaults[.eventTitleIconFormat].rawValue)
-                    }
-
-                    button.image = image
-                    button.image?.size = MenuStyleConstants.iconSize
-                }
-
+            // The attributed-title styling (pending/tentative emphasis,
+            // time-under-title layout) only applies when we are rendering an
+            // actual event title — i.e. mode == .nextEvent and nextEvent is
+            // non-nil. In other modes we keep the icon and skip the title
+            // styling, matching the legacy behavior where this whole block
+            // ran inside `if button.image == nil`.
+            if mode == .nextEvent, let nextEvent {
                 if button.image?.name() == "no_online_session" {
                     button.imagePosition = .noImage
                 } else {
                     button.imagePosition = .imageLeft
                 }
 
-                // create an NSMutableAttributedString that we'll append everything to
                 let menuTitle = NSMutableAttributedString()
 
                 if Defaults[.eventTimeFormat] != .show_under_title || Defaults[.eventTitleFormat] == .none {
@@ -319,9 +320,7 @@ final class StatusBarItemController {
                 }
 
                 button.attributedTitle = menuTitle
-                if nextEvent != nil {
-                    button.toolTip = nextEvent.title
-                }
+                button.toolTip = nextEvent.title
             }
         }
     }
@@ -541,61 +540,25 @@ final class StatusBarItemController {
 }
 
 func shortenTitle(title: String?, offset: Int) -> String {
-    var eventTitle = String(title ?? "status_bar_no_title".loco()).trimmingCharacters(in: TitleTruncationRules.excludeAtEnds)
-    if eventTitle.count > offset {
-        let index = eventTitle.index(eventTitle.startIndex, offsetBy: offset - 1)
-        eventTitle = String(eventTitle[...index]).trimmingCharacters(in: TitleTruncationRules.excludeAtEnds)
-        eventTitle += "..."
-    }
-
-    return eventTitle
+    StatusBarTitlePolicy.shortenTitle(title, limit: offset, noTitle: "status_bar_no_title".loco())
 }
 
 func createEventStatusString(title: String, startDate: Date, endDate: Date) -> (String, String) {
-    var eventTime: String
+    let text = StatusBarTitlePolicy.text(
+        eventTitle: title,
+        startDate: startDate,
+        endDate: endDate,
+        settings: .current,
+        now: Date(),
+        calendar: statusBarCalendar()
+    )
+    return (text.title, text.time)
+}
 
-    var eventTitle: String
-    switch Defaults[.eventTitleFormat] {
-    case .show:
-        if Defaults[.hideMeetingTitle] {
-            eventTitle = "general_meeting".loco()
-        } else {
-            eventTitle = shortenTitle(title: title, offset: Defaults[.statusbarEventTitleLength]).replacingOccurrences(of: "\n", with: " ")
-        }
-    case .dot:
-        eventTitle = "•"
-    case .none:
-        eventTitle = ""
-    }
-
-    var isActiveEvent: Bool
-
+private func statusBarCalendar() -> Calendar {
     var calendar = Calendar.current
     calendar.locale = I18N.instance.locale
-
-    let formatter = DateComponentsFormatter()
-    formatter.unitsStyle = .abbreviated
-    formatter.allowedUnits = [.minute, .hour, .day]
-    formatter.calendar = calendar
-
-    var eventDate: Date
-    let prevMinute = Date().addingTimeInterval(-60)
-    let now = Date()
-    if startDate <= now, endDate > now {
-        isActiveEvent = true
-        eventDate = endDate
-    } else {
-        isActiveEvent = false
-        eventDate = startDate
-    }
-    let formattedTimeLeft = formatter.string(from: prevMinute, to: eventDate)!
-
-    if isActiveEvent {
-        eventTime = "status_bar_event_status_now".loco(formattedTimeLeft)
-    } else {
-        eventTime = "status_bar_event_status_in".loco(formattedTimeLeft)
-    }
-    return (eventTitle, eventTime)
+    return calendar
 }
 
 enum NextEventState {

@@ -18,7 +18,9 @@ let package = Package(
                 "DiagnosticsReport+MeetingBar.swift",
                 "EventFilterPolicy+MeetingBar.swift",
                 "EventSelectionPolicy+MeetingBar.swift",
-                "StatusBarPresentationPolicy+MeetingBar.swift"
+                "StatusBarIconPolicy+MeetingBar.swift",
+                "StatusBarPresentationPolicy+MeetingBar.swift",
+                "StatusBarTitlePolicy+MeetingBar.swift"
             ],
             sources: [
                 "DiagnosticsReport.swift",
@@ -31,7 +33,9 @@ let package = Package(
                 "MeetingLinkDetector.swift",
                 "MeetingOpeningPolicy.swift",
                 "NotificationPlanningPolicy.swift",
-                "StatusBarPresentationPolicy.swift"
+                "StatusBarIconPolicy.swift",
+                "StatusBarPresentationPolicy.swift",
+                "StatusBarTitlePolicy.swift"
             ]
         ),
         .testTarget(
