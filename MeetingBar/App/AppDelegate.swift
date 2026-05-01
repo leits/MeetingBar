@@ -90,10 +90,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
             }
 
         startAsyncLoops()
-        // ActionsOnEventStart
-        ActionsOnEventStart(self).startWatching()
-        //
-
         if Defaults[.browsers].isEmpty {
             addInstalledBrowser()
         }
