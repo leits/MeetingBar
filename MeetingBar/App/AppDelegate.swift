@@ -122,6 +122,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
             self, selector: #selector(AppDelegate.timeZoneDidChange),
             name: .NSSystemTimeZoneDidChange, object: nil
         )
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(AppDelegate.calendarDayDidChange),
+            name: .NSCalendarDayChanged, object: nil
+        )
     }
 
     /*
@@ -339,20 +343,32 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
     @objc
     func unlockListener(notification _: NSNotification) {
         screenIsLocked = false
-        // After unlock, calendar data may be stale (sleep/wake was suppressed)
-        // and pending notifications need to be reconciled against current time.
-        // refreshSubject.send() triggers a fetch; the existing events publisher
-        // pipeline then reconciles the NotificationScheduler.
-        eventManager?.refreshSubject.send()
+        refreshAndReconcileAfterClockChange()
     }
 
     @objc
     func wakeListener(notification _: NSNotification) {
-        eventManager?.refreshSubject.send()
+        refreshAndReconcileAfterClockChange()
     }
 
     @objc
     func timeZoneDidChange(notification _: NSNotification) {
+        refreshAndReconcileAfterClockChange()
+    }
+
+    @objc
+    func calendarDayDidChange(notification _: NSNotification) {
+        refreshAndReconcileAfterClockChange()
+    }
+
+    private func refreshAndReconcileAfterClockChange() {
+        let currentEvents = statusBarItem.events
+        Task { @MainActor in
+            await notificationScheduler.reconcile(
+                events: currentEvents,
+                settings: .currentForScheduler
+            )
+        }
         eventManager?.refreshSubject.send()
     }
 
