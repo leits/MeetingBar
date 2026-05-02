@@ -6,8 +6,9 @@
 //  Copyright © 2025 Andrii Leitsius. All rights reserved.
 //
 
-import XCTest
+import AppKit
 import Defaults
+import XCTest
 @testable import MeetingBar
 
 @MainActor
@@ -358,4 +359,184 @@ final class MenuBuilderQuickActionsTests: BaseTestCase {
         XCTAssertTrue(titles.contains { $0.contains("status_bar_menu_remove_all_dismissals".loco()) })
     }
 
+}
+
+@MainActor
+final class StatusBarTitleRendererTests: BaseTestCase {
+
+    func test_stackedTitleCentersBothLinesAndUsesCompactFonts() {
+        let title = StatusBarTitleRenderer.attributedTitle(
+            for: makePresentation(layout: .stacked)
+        )
+
+        XCTAssertEqual(title.string, "Weekly sync\nnow")
+
+        let paragraphStyle = title.attribute(
+            .paragraphStyle,
+            at: 0,
+            effectiveRange: nil
+        ) as? NSParagraphStyle
+        XCTAssertEqual(paragraphStyle?.alignment, .center)
+        XCTAssertEqual(paragraphStyle?.lineHeightMultiple ?? 0, 0.7, accuracy: 0.001)
+
+        let titleFont = title.attribute(.font, at: 0, effectiveRange: nil) as? NSFont
+        let timeFont = title.attribute(
+            .font,
+            at: title.length - 1,
+            effectiveRange: nil
+        ) as? NSFont
+        XCTAssertEqual(titleFont?.pointSize ?? 0, 12, accuracy: 0.001)
+        XCTAssertEqual(timeFont?.pointSize ?? 0, 9, accuracy: 0.001)
+    }
+
+    func test_inlineTitleIncludesTimeAndUnderlineStyle() {
+        let title = StatusBarTitleRenderer.attributedTitle(
+            for: makePresentation(
+                layout: .inline(showTime: true),
+                titleStyle: .underlined
+            )
+        )
+
+        XCTAssertEqual(title.string, "Weekly sync now")
+        XCTAssertNotNil(title.attribute(.underlineStyle, at: 0, effectiveRange: nil))
+    }
+
+    func test_noneLayoutRendersEmptyTitle() {
+        let title = StatusBarTitleRenderer.attributedTitle(
+            for: makePresentation(layout: .none)
+        )
+
+        XCTAssertEqual(title.string, "")
+    }
+
+    private func makePresentation(
+        layout: StatusBarTitleLayout,
+        titleStyle: StatusBarTitleStyle = .normal
+    ) -> StatusBarPresentation {
+        StatusBarPresentation(
+            mode: .nextEvent,
+            title: "Weekly sync",
+            time: "now",
+            tooltip: "Weekly sync",
+            icon: .none,
+            layout: layout,
+            titleStyle: titleStyle,
+            compactFallback: false,
+            removeDeliveredNotifications: false
+        )
+    }
+}
+
+@MainActor
+final class StatusBarItemControllerPresentationTests: BaseTestCase {
+    private static let calendarID = "status_bar_test_calendar"
+
+    func test_updateTitleCompactsLongTitleAndShowsFallbackMeetingIcon() throws {
+        configureStatusBarDefaults()
+        Defaults[.eventTitleIconFormat] = .none
+        Defaults[.statusbarEventTitleLength] = statusbarEventTitleLengthLimits.max
+
+        let controller = StatusBarItemController()
+        defer { NSStatusBar.system.removeStatusItem(controller.statusItem) }
+        let longTitle = String(repeating: "Very long meeting title ", count: 5)
+
+        controller.events = [
+            makeStatusEvent(
+                title: longTitle,
+                url: URL(string: "https://zoom.us/j/5551112222")!
+            )
+        ]
+        controller.updateTitle()
+
+        let button = try XCTUnwrap(controller.statusItem.button)
+        XCTAssertNotNil(button.image)
+        XCTAssertEqual(button.imagePosition, .imageLeft)
+        XCTAssertTrue(button.attributedTitle.string.contains("..."))
+        XCTAssertLessThan(button.attributedTitle.string.count, longTitle.count)
+        XCTAssertEqual(button.alignment, .center)
+        XCTAssertEqual(button.cell?.lineBreakMode, .byTruncatingTail)
+    }
+
+    func test_updateTitleClearsStaleAttributedTitleWhenNoUpcomingEventRemains() throws {
+        configureStatusBarDefaults()
+
+        let controller = StatusBarItemController()
+        defer { NSStatusBar.system.removeStatusItem(controller.statusItem) }
+        controller.events = [makeStatusEvent()]
+        controller.updateTitle()
+
+        let button = try XCTUnwrap(controller.statusItem.button)
+        XCTAssertFalse(button.attributedTitle.string.isEmpty)
+
+        controller.events = []
+        controller.updateTitle()
+
+        XCTAssertEqual(button.title, "")
+        XCTAssertEqual(button.attributedTitle.string, "")
+        XCTAssertNotNil(button.image)
+    }
+
+    func test_updateTitleUsesCenteredStackedTimeUnderTitle() throws {
+        configureStatusBarDefaults()
+        Defaults[.eventTimeFormat] = .show_under_title
+
+        let controller = StatusBarItemController()
+        defer { NSStatusBar.system.removeStatusItem(controller.statusItem) }
+        controller.events = [makeStatusEvent()]
+        controller.updateTitle()
+
+        let button = try XCTUnwrap(controller.statusItem.button)
+        XCTAssertTrue(button.attributedTitle.string.contains("\n"))
+
+        let paragraphStyle = button.attributedTitle.attribute(
+            .paragraphStyle,
+            at: 0,
+            effectiveRange: nil
+        ) as? NSParagraphStyle
+        XCTAssertEqual(paragraphStyle?.alignment, .center)
+        XCTAssertEqual(paragraphStyle?.lineHeightMultiple ?? 0, 0.7, accuracy: 0.001)
+    }
+
+    private func configureStatusBarDefaults() {
+        Defaults[.selectedCalendarIDs] = [Self.calendarID]
+        Defaults[.showEventsForPeriod] = .today_n_tomorrow
+        Defaults[.eventTitleFormat] = .show
+        Defaults[.eventTimeFormat] = .show
+        Defaults[.eventTitleIconFormat] = .none
+        Defaults[.statusbarEventTitleLength] = statusbarEventTitleLengthLimits.max
+        Defaults[.personalEventsAppereance] = .show_active
+        Defaults[.nonAllDayEvents] = .show
+    }
+
+    private func makeStatusEvent(
+        title: String = "Weekly sync",
+        url: URL? = URL(string: "https://zoom.us/j/5551112222")!,
+        participationStatus: MBEventAttendeeStatus = .accepted
+    ) -> MBEvent {
+        let now = Date()
+        let calendar = MBCalendar(
+            title: "Status Bar Test Calendar",
+            id: Self.calendarID,
+            source: nil,
+            email: nil,
+            color: .black
+        )
+        var event = MBEvent(
+            id: UUID().uuidString,
+            lastModifiedDate: now,
+            title: title,
+            status: .confirmed,
+            notes: nil,
+            location: nil,
+            url: url,
+            organizer: nil,
+            startDate: now.addingTimeInterval(-60),
+            endDate: now.addingTimeInterval(3600),
+            isAllDay: false,
+            recurrent: false,
+            calendar: calendar
+        )
+        event.participationStatus = participationStatus
+        return event
+    }
 }

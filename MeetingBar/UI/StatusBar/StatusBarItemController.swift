@@ -207,7 +207,10 @@ final class StatusBarItemController {
 
         button.image = nil
         button.title = ""
+        button.attributedTitle = NSAttributedString(string: "")
         button.toolTip = nil
+        button.alignment = .center
+        button.cell?.lineBreakMode = .byTruncatingTail
 
         switch presentation.icon {
         case let .asset(name):
@@ -221,75 +224,8 @@ final class StatusBarItemController {
         button.imagePosition = button.image?.name() == "no_online_session" ? .noImage : .imageLeft
 
         guard presentation.mode == .nextEvent else { return }
-        button.attributedTitle = makeStatusBarTitle(presentation)
+        button.attributedTitle = StatusBarTitleRenderer.attributedTitle(for: presentation)
         button.toolTip = presentation.tooltip
-    }
-
-    private func makeStatusBarTitle(_ presentation: StatusBarPresentation) -> NSAttributedString {
-        switch presentation.layout {
-        case .none:
-            return NSAttributedString(string: "")
-        case let .inline(showTime):
-            var eventTitle = presentation.title
-            if showTime {
-                eventTitle += " " + presentation.time
-            }
-            return NSAttributedString(
-                string: eventTitle,
-                attributes: titleAttributes(
-                    style: presentation.titleStyle,
-                    font: NSFont.systemFont(ofSize: MenuStyleConstants.defaultFontSize)
-                )
-            )
-        case .stacked:
-            let title = NSMutableAttributedString(
-                string: presentation.title,
-                attributes: titleAttributes(
-                    style: presentation.titleStyle,
-                    font: NSFont.systemFont(ofSize: 12),
-                    baselineOffset: -3
-                )
-            )
-            title.append(NSAttributedString(
-                string: "\n" + presentation.time,
-                attributes: [
-                    NSAttributedString.Key.font: NSFont.systemFont(ofSize: 9),
-                    NSAttributedString.Key.foregroundColor: NSColor.lightGray
-                ]
-            ))
-            let paragraphStyle = NSMutableParagraphStyle()
-            paragraphStyle.lineHeightMultiple = 0.7
-            paragraphStyle.alignment = .center
-            title.addAttributes(
-                [NSAttributedString.Key.paragraphStyle: paragraphStyle],
-                range: NSRange(location: 0, length: title.length)
-            )
-            return title
-        }
-    }
-
-    private func titleAttributes(
-        style: StatusBarTitleStyle,
-        font: NSFont,
-        baselineOffset: CGFloat? = nil
-    ) -> [NSAttributedString.Key: Any] {
-        var attributes: [NSAttributedString.Key: Any] = [
-            .font: font
-        ]
-        if let baselineOffset {
-            attributes[.baselineOffset] = baselineOffset
-        }
-        switch style {
-        case .normal:
-            break
-        case .inactive:
-            attributes[.foregroundColor] = NSColor.disabledControlTextColor
-        case .underlined:
-            attributes[.underlineStyle] = NSUnderlineStyle.single.rawValue
-                | NSUnderlineStyle.patternDot.rawValue
-                | NSUnderlineStyle.byWord.rawValue
-        }
-        return attributes
     }
 
     /*
@@ -527,6 +463,81 @@ func createEventStatusString(title: String, startDate: Date, endDate: Date) -> (
         calendar: statusBarCalendar()
     )
     return (text.title, text.time)
+}
+
+@MainActor
+enum StatusBarTitleRenderer {
+    static func attributedTitle(for presentation: StatusBarPresentation) -> NSAttributedString {
+        switch presentation.layout {
+        case .none:
+            return NSAttributedString(string: "")
+        case let .inline(showTime):
+            var eventTitle = presentation.title
+            if showTime {
+                eventTitle += " " + presentation.time
+            }
+            return NSAttributedString(
+                string: eventTitle,
+                attributes: titleAttributes(
+                    style: presentation.titleStyle,
+                    font: NSFont.systemFont(ofSize: MenuStyleConstants.defaultFontSize)
+                )
+            )
+        case .stacked:
+            return stackedTitle(for: presentation)
+        }
+    }
+
+    private static func stackedTitle(for presentation: StatusBarPresentation) -> NSAttributedString {
+        let title = NSMutableAttributedString(
+            string: presentation.title,
+            attributes: titleAttributes(
+                style: presentation.titleStyle,
+                font: NSFont.systemFont(ofSize: 12),
+                baselineOffset: -3
+            )
+        )
+        title.append(NSAttributedString(
+            string: "\n" + presentation.time,
+            attributes: [
+                NSAttributedString.Key.font: NSFont.systemFont(ofSize: 9),
+                NSAttributedString.Key.foregroundColor: NSColor.lightGray
+            ]
+        ))
+
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineHeightMultiple = 0.7
+        paragraphStyle.alignment = .center
+        title.addAttributes(
+            [NSAttributedString.Key.paragraphStyle: paragraphStyle],
+            range: NSRange(location: 0, length: title.length)
+        )
+        return title
+    }
+
+    private static func titleAttributes(
+        style: StatusBarTitleStyle,
+        font: NSFont,
+        baselineOffset: CGFloat? = nil
+    ) -> [NSAttributedString.Key: Any] {
+        var attributes: [NSAttributedString.Key: Any] = [
+            .font: font
+        ]
+        if let baselineOffset {
+            attributes[.baselineOffset] = baselineOffset
+        }
+        switch style {
+        case .normal:
+            break
+        case .inactive:
+            attributes[.foregroundColor] = NSColor.disabledControlTextColor
+        case .underlined:
+            attributes[.underlineStyle] = NSUnderlineStyle.single.rawValue
+                | NSUnderlineStyle.patternDot.rawValue
+                | NSUnderlineStyle.byWord.rawValue
+        }
+        return attributes
+    }
 }
 
 private func statusBarCalendar() -> Calendar {
