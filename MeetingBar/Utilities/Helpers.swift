@@ -75,7 +75,11 @@ func hexStringToUIColor(hex: String) -> NSColor {
     )
 }
 
-@MainActor func createNSViewFromText(text: String) -> NSView {
+@MainActor func createNSViewFromText(
+    text: String,
+    font: NSFont = NSFont.systemFont(ofSize: 14),
+    maxWidth: CGFloat = 300.0
+) -> NSView {
     // Create views
     let paddingView = NSView()
     let textView = NSTextView()
@@ -88,9 +92,9 @@ func hexStringToUIColor(hex: String) -> NSColor {
         text.splitWithNewLineAttributedString(
             with: [
                 NSAttributedString.Key.paragraphStyle: paragraphStyle,
-                NSAttributedString.Key.font: NSFont.systemFont(ofSize: 14)
+                NSAttributedString.Key.font: font
             ],
-            maxWidth: 300.0
+            maxWidth: maxWidth
         )
         .withLinksEnabled()
     )

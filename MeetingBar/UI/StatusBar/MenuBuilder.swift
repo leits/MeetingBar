@@ -441,8 +441,12 @@ struct MenuBuilder {
             eventItem.submenu = eventMenu
 
             // Title
-            let titleItem = eventMenu.addItem(withTitle: event.title, action: nil, keyEquivalent: "")
-            titleItem.attributedTitle = NSAttributedString(string: eventTitle, attributes: [NSAttributedString.Key.font: NSFont.boldSystemFont(ofSize: 15)])
+            let titleItem = eventMenu.addItem(withTitle: "", action: nil, keyEquivalent: "")
+            titleItem.view = createNSViewFromText(
+                text: event.title,
+                font: NSFont.boldSystemFont(ofSize: 15),
+                maxWidth: 420
+            )
             eventMenu.addItem(NSMenuItem.separator())
 
             // Status
@@ -480,9 +484,10 @@ struct MenuBuilder {
             }
 
             // Location
-            if let location = event.location {
+            if let location = event.location, !location.isEmpty {
                 eventMenu.addItem(withTitle: "status_bar_submenu_location_title".loco(), action: nil, keyEquivalent: "")
-                eventMenu.addItem(withTitle: "\(location)", action: nil, keyEquivalent: "")
+                let locationItem = eventMenu.addItem(withTitle: "", action: nil, keyEquivalent: "")
+                locationItem.view = createNSViewFromText(text: location, maxWidth: 420)
                 eventMenu.addItem(NSMenuItem.separator())
             }
 
@@ -499,7 +504,7 @@ struct MenuBuilder {
                 if !notes.isEmpty {
                     eventMenu.addItem(withTitle: "status_bar_submenu_notes_title".loco(), action: nil, keyEquivalent: "")
                     let item = eventMenu.addItem(withTitle: "", action: nil, keyEquivalent: "")
-                    item.view = createNSViewFromText(text: notes)
+                    item.view = createNSViewFromText(text: notes, maxWidth: 420)
 
                     eventMenu.addItem(NSMenuItem.separator())
                 }

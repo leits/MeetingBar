@@ -278,8 +278,43 @@ final class MenuBuilderEventItemTests: BaseTestCase {
 
         let subItems = item?.submenu?.items ?? []
         XCTAssertNotNil(item?.submenu)
-        XCTAssertEqual(subItems.first?.title, "Event DET")
+        XCTAssertNotNil(subItems.first?.view)
         XCTAssertTrue(subItems.contains { $0.title.lowercased().contains("status") })
+    }
+
+    func test_eventDetailsUseTextViewsForLongFields() {
+        Defaults[.showEventDetails] = true
+        let calendar = MBCalendar(
+            title: "Test Calendar",
+            id: "cal_details",
+            source: nil,
+            email: nil,
+            color: .black
+        )
+        let event = MBEvent(
+            id: "LONG",
+            lastModifiedDate: Date(),
+            title: String(repeating: "Long event title ", count: 8),
+            status: .confirmed,
+            notes: String(repeating: "Detailed note with https://example.com/path ", count: 5),
+            location: String(repeating: "Very long location ", count: 7),
+            url: nil,
+            organizer: nil,
+            startDate: Date().addingTimeInterval(600),
+            endDate: Date().addingTimeInterval(1200),
+            isAllDay: false,
+            recurrent: false,
+            calendar: calendar
+        )
+
+        let item = buildItem(event: event)
+        let subItems = item?.submenu?.items ?? []
+        let locationIndex = subItems.firstIndex { $0.title == "status_bar_submenu_location_title".loco() }
+        let notesIndex = subItems.firstIndex { $0.title == "status_bar_submenu_notes_title".loco() }
+
+        XCTAssertNotNil(subItems.first?.view)
+        XCTAssertNotNil(locationIndex.flatMap { subItems[$0 + 1].view })
+        XCTAssertNotNil(notesIndex.flatMap { subItems[$0 + 1].view })
     }
 
     /// running event (state == .mixed) ⇒ bold font applied
