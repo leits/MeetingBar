@@ -187,147 +187,109 @@ final class StatusBarItemController {
     }
 
     func updateTitle() {
-        var title = "MeetingBar"
-        var time = ""
-        var nextEvent: MBEvent!
-        let nextEventState: NextEventState
         let now = Date()
-
-        let candidate = events.nextEvent()
-        let mode = StatusBarPresentationPolicy.mode(
-            nextEventStartDate: candidate?.startDate,
+        let presentation = StatusBarPresenter.presentation(
+            nextEvent: events.nextEvent().map(StatusBarEventPresentationInput.init),
             settings: .current,
-            now: now
+            now: now,
+            calendar: statusBarCalendar()
         )
 
-        switch mode {
-        case .idle:
-            nextEventState = .none
-        case .noUpcoming:
-            nextEvent = nil
-            nextEventState = .none
-        case .nextEvent:
-            nextEvent = candidate
-            nextEventState = .nextEvent(candidate!)
-        case .afterThreshold:
-            nextEvent = candidate
-            nextEventState = .afterThreshold(candidate!)
+        if presentation.removeDeliveredNotifications, Defaults[.joinEventNotification] {
+            removeDeliveredNotifications()
         }
 
-        if mode != .idle {
-            switch nextEventState {
-            case .none:
-                if Defaults[.joinEventNotification] {
-                    removeDeliveredNotifications()
-                }
-                title = "🏁"
-            case let .nextEvent(event):
-                let text = StatusBarTitlePolicy.text(
-                    eventTitle: event.title,
-                    startDate: event.startDate,
-                    endDate: event.endDate,
-                    settings: .current,
-                    now: now,
-                    calendar: statusBarCalendar()
+        renderStatusBar(presentation)
+    }
+
+    private func renderStatusBar(_ presentation: StatusBarPresentation) {
+        guard let button = statusItem.button else { return }
+
+        button.image = nil
+        button.title = ""
+        button.toolTip = nil
+
+        switch presentation.icon {
+        case let .asset(name):
+            button.image = MenuStyleConstants.iconNamed(name)
+        case let .meetingService(service):
+            button.image = getIconForMeetingService(service)
+        case .none:
+            break
+        }
+        button.image?.size = MenuStyleConstants.iconSize
+        button.imagePosition = button.image?.name() == "no_online_session" ? .noImage : .imageLeft
+
+        guard presentation.mode == .nextEvent else { return }
+        button.attributedTitle = makeStatusBarTitle(presentation)
+        button.toolTip = presentation.tooltip
+    }
+
+    private func makeStatusBarTitle(_ presentation: StatusBarPresentation) -> NSAttributedString {
+        switch presentation.layout {
+        case .none:
+            return NSAttributedString(string: "")
+        case let .inline(showTime):
+            var eventTitle = presentation.title
+            if showTime {
+                eventTitle += " " + presentation.time
+            }
+            return NSAttributedString(
+                string: eventTitle,
+                attributes: titleAttributes(
+                    style: presentation.titleStyle,
+                    font: NSFont.systemFont(ofSize: MenuStyleConstants.defaultFontSize)
                 )
-                title = text.title
-                time = text.time
-            case .afterThreshold:
-                // Not sure, what the title should be in this case.
-                title = "⏰"
-            }
-        }
-        if let button = statusItem.button {
-            button.image = nil
-            button.title = ""
-            button.toolTip = nil
-
-            let iconDecision = StatusBarIconPolicy.icon(
-                mode: mode,
-                format: StatusBarIconFormat(Defaults[.eventTitleIconFormat]),
-                formatAssetName: Defaults[.eventTitleIconFormat].rawValue,
-                meetingService: nextEvent?.meetingLink?.service,
-                assets: .production
             )
-            switch iconDecision {
-            case let .asset(name):
-                button.image = MenuStyleConstants.iconNamed(name)
-            case let .meetingService(service):
-                button.image = getIconForMeetingService(service)
-            case .none:
-                break
-            }
-            button.image?.size = MenuStyleConstants.iconSize
-
-            // The attributed-title styling (pending/tentative emphasis,
-            // time-under-title layout) only applies when we are rendering an
-            // actual event title — i.e. mode == .nextEvent and nextEvent is
-            // non-nil. In other modes we keep the icon and skip the title
-            // styling, matching the legacy behavior where this whole block
-            // ran inside `if button.image == nil`.
-            if mode == .nextEvent, let nextEvent {
-                if button.image?.name() == "no_online_session" {
-                    button.imagePosition = .noImage
-                } else {
-                    button.imagePosition = .imageLeft
-                }
-
-                let menuTitle = NSMutableAttributedString()
-
-                if Defaults[.eventTimeFormat] != .show_under_title || Defaults[.eventTitleFormat] == .none {
-                    var eventTitle = title
-                    if Defaults[.eventTimeFormat] == .show {
-                        eventTitle += " " + time
-                    }
-
-                    var styles = [NSAttributedString.Key: Any]()
-                    styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: MenuStyleConstants.defaultFontSize)
-
-                    if nextEvent.participationStatus == .pending, Defaults[.showPendingEvents] == .show_underlined {
-                        styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
-                    }
-
-                    if nextEvent.participationStatus == .tentative, Defaults[.showTentativeEvents] == .show_underlined {
-                        styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
-                    }
-
-                    menuTitle.append(NSAttributedString(string: eventTitle, attributes: styles))
-                } else {
-                    let paragraphStyle = NSMutableParagraphStyle()
-                    paragraphStyle.lineHeightMultiple = 0.7
-                    paragraphStyle.alignment = .center
-
-                    var styles = [NSAttributedString.Key: Any]()
-                    styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: 12)
-                    styles[NSAttributedString.Key.baselineOffset] = -3
-
-                    if nextEvent.participationStatus == .pending, Defaults[.showPendingEvents] == .show_inactive {
-                        styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
-                    } else if nextEvent.participationStatus == .pending, Defaults[.showPendingEvents] == .show_underlined {
-                        styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
-                    }
-
-                    if nextEvent.participationStatus == .tentative, Defaults[.showTentativeEvents] == .show_inactive {
-                        styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
-                    } else if nextEvent.participationStatus == .tentative, Defaults[.showTentativeEvents] == .show_underlined {
-                        styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
-                    }
-
-                    menuTitle.append(NSAttributedString(string: title, attributes: styles))
-
-                    let timeAttributes = [
-                        NSAttributedString.Key.font: NSFont.systemFont(ofSize: 9),
-                        NSAttributedString.Key.foregroundColor: NSColor.lightGray
-                    ]
-                    menuTitle.append(NSAttributedString(string: "\n" + time, attributes: timeAttributes))
-
-                    menuTitle.addAttributes([NSAttributedString.Key.paragraphStyle: paragraphStyle], range: NSRange(location: 0, length: menuTitle.length))
-                }
-
-                button.attributedTitle = menuTitle
-                button.toolTip = nextEvent.title
-            }
+        case .stacked:
+            let title = NSMutableAttributedString(
+                string: presentation.title,
+                attributes: titleAttributes(
+                    style: presentation.titleStyle,
+                    font: NSFont.systemFont(ofSize: 12),
+                    baselineOffset: -3
+                )
+            )
+            title.append(NSAttributedString(
+                string: "\n" + presentation.time,
+                attributes: [
+                    NSAttributedString.Key.font: NSFont.systemFont(ofSize: 9),
+                    NSAttributedString.Key.foregroundColor: NSColor.lightGray
+                ]
+            ))
+            let paragraphStyle = NSMutableParagraphStyle()
+            paragraphStyle.lineHeightMultiple = 0.7
+            paragraphStyle.alignment = .center
+            title.addAttributes(
+                [NSAttributedString.Key.paragraphStyle: paragraphStyle],
+                range: NSRange(location: 0, length: title.length)
+            )
+            return title
         }
+    }
+
+    private func titleAttributes(
+        style: StatusBarTitleStyle,
+        font: NSFont,
+        baselineOffset: CGFloat? = nil
+    ) -> [NSAttributedString.Key: Any] {
+        var attributes: [NSAttributedString.Key: Any] = [
+            .font: font
+        ]
+        if let baselineOffset {
+            attributes[.baselineOffset] = baselineOffset
+        }
+        switch style {
+        case .normal:
+            break
+        case .inactive:
+            attributes[.foregroundColor] = NSColor.disabledControlTextColor
+        case .underlined:
+            attributes[.underlineStyle] = NSUnderlineStyle.single.rawValue
+                | NSUnderlineStyle.patternDot.rawValue
+                | NSUnderlineStyle.byWord.rawValue
+        }
+        return attributes
     }
 
     /*

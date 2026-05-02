@@ -9,6 +9,11 @@ import XCTest
 
 final class StatusBarPresentationPolicyTests: XCTestCase {
     private let now = Date(timeIntervalSinceReferenceDate: 800_000_000)
+    private let assets = StatusBarIconAssets(
+        appIcon: "AppIcon",
+        calendarCheckmark: "iconCalendarCheckmark",
+        calendar: "iconCalendar"
+    )
 
     private func settings(
         hasSelectedCalendars: Bool = true,
@@ -20,6 +25,59 @@ final class StatusBarPresentationPolicyTests: XCTestCase {
             showEventMaxTimeUntilEventEnabled: showEventMaxTimeUntilEventEnabled,
             showEventMaxTimeUntilEventThreshold: threshold
         )
+    }
+
+    private func presenterSettings(
+        hasSelectedCalendars: Bool = true,
+        titleFormat: StatusBarEventTitleFormat = .show,
+        titleLength: Int = 55,
+        timeDisplay: StatusBarTimeDisplay = .show,
+        iconFormat: StatusBarIconFormat = .none,
+        pendingDisplay: StatusBarParticipationDisplay = .normal,
+        tentativeDisplay: StatusBarParticipationDisplay = .normal,
+        compactTitleLimit: Int = 28
+    ) -> StatusBarPresenterSettings {
+        StatusBarPresenterSettings(
+            presentation: settings(hasSelectedCalendars: hasSelectedCalendars),
+            title: StatusBarTitleSettings(
+                titleFormat: titleFormat,
+                hideMeetingTitle: false,
+                titleLength: titleLength,
+                labels: StatusBarTitleLabels(
+                    genericMeetingTitle: "Meeting",
+                    noTitle: "No title",
+                    activeEventTimeFormat: "now (%@ left)",
+                    upcomingEventTimeFormat: "in %@"
+                )
+            ),
+            timeDisplay: timeDisplay,
+            iconFormat: iconFormat,
+            iconFormatAssetName: "no_online_session",
+            iconAssets: assets,
+            pendingDisplay: pendingDisplay,
+            tentativeDisplay: tentativeDisplay,
+            compactTitleLimit: compactTitleLimit
+        )
+    }
+
+    private func event(
+        title: String? = "Weekly sync",
+        meetingService: MeetingServices? = .zoom,
+        participation: StatusBarEventParticipation = .normal
+    ) -> StatusBarEventPresentationInput {
+        StatusBarEventPresentationInput(
+            title: title,
+            startDate: now.addingTimeInterval(600),
+            endDate: now.addingTimeInterval(2400),
+            meetingService: meetingService,
+            participation: participation
+        )
+    }
+
+    private func calendar() -> Calendar {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.locale = Locale(identifier: "en_US_POSIX")
+        return calendar
     }
 
     func testIdleWhenNoCalendarsSelected() {
@@ -95,5 +153,68 @@ final class StatusBarPresentationPolicyTests: XCTestCase {
             now: now
         )
         XCTAssertEqual(mode, .afterThreshold)
+    }
+
+    func testPresenterPreservesRTLTitleWithInlineTime() {
+        let presentation = StatusBarPresenter.presentation(
+            nextEvent: event(title: "פגישת צוות"),
+            settings: presenterSettings(timeDisplay: .show),
+            now: now,
+            calendar: calendar()
+        )
+
+        XCTAssertEqual(presentation.title, "פגישת צוות")
+        XCTAssertEqual(presentation.layout, .inline(showTime: true))
+    }
+
+    func testPresenterUsesStackedLayoutForTimeUnderTitle() {
+        let presentation = StatusBarPresenter.presentation(
+            nextEvent: event(),
+            settings: presenterSettings(timeDisplay: .showUnderTitle),
+            now: now,
+            calendar: calendar()
+        )
+
+        XCTAssertEqual(presentation.layout, .stacked)
+        XCTAssertFalse(presentation.time.isEmpty)
+    }
+
+    func testPresenterCompactsLongTitleAndAddsIconFallback() {
+        let longTitle = String(repeating: "Very long meeting title ", count: 8)
+        let presentation = StatusBarPresenter.presentation(
+            nextEvent: event(title: longTitle, meetingService: .zoom),
+            settings: presenterSettings(titleLength: 200, iconFormat: .none, compactTitleLimit: 28),
+            now: now,
+            calendar: calendar()
+        )
+
+        XCTAssertEqual(presentation.icon, .meetingService(.zoom))
+        XCTAssertTrue(presentation.title.hasSuffix("..."))
+        XCTAssertTrue(presentation.compactFallback)
+    }
+
+    func testPresenterAvoidsBlankStatusWhenTitleAndIconAreDisabled() {
+        let presentation = StatusBarPresenter.presentation(
+            nextEvent: event(title: "Weekly sync", meetingService: nil),
+            settings: presenterSettings(titleFormat: .none, timeDisplay: .hide, iconFormat: .none),
+            now: now,
+            calendar: calendar()
+        )
+
+        XCTAssertEqual(presentation.title, "•")
+        XCTAssertEqual(presentation.icon, .meetingService(nil))
+        XCTAssertEqual(presentation.layout, .inline(showTime: false))
+        XCTAssertTrue(presentation.compactFallback)
+    }
+
+    func testPresenterMarksPendingStackedTitleInactive() {
+        let presentation = StatusBarPresenter.presentation(
+            nextEvent: event(participation: .pending),
+            settings: presenterSettings(timeDisplay: .showUnderTitle, pendingDisplay: .inactive),
+            now: now,
+            calendar: calendar()
+        )
+
+        XCTAssertEqual(presentation.titleStyle, .inactive)
     }
 }
