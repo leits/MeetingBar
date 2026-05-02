@@ -39,6 +39,34 @@ enum EventDetailsTypeAppEnum: String, AppEnum {
 }
 
 @available(macOS 13.0, *)
+enum EventDetailsValueFormatter {
+    static func value(for type: EventDetailsTypeAppEnum, event: MBEvent) -> String? {
+        switch type {
+        case .title:
+            return event.title
+        case .calendarTitle:
+            return event.calendar.title
+        case .meetingLink:
+            return event.meetingLink?.url.absoluteString
+        case .meetingService:
+            return event.meetingLink?.service?.localizedValue
+        case .url:
+            return event.url?.absoluteString
+        case .notes:
+            return event.notes
+        case .location:
+            return event.location
+        case .startDate:
+            return event.startDate.formatted()
+        case .endDate:
+            return event.endDate.formatted()
+        case .attendees:
+            return event.attendees.map { "\($0.name) <\($0.email ?? "unknown")>" }.joined(separator: ", ")
+        }
+    }
+}
+
+@available(macOS 13.0, *)
 struct GetNearestEventDetails: AppIntent {
     static let title: LocalizedStringResource = "Get Nearest Event Details"
     static let description = IntentDescription(
@@ -64,19 +92,7 @@ struct GetNearestEventDetails: AppIntent {
                 let nextEvent = appDelegate.statusBarItem.events.nextEvent()
             else { return nil }
 
-            switch type {
-            case .title: return nextEvent.title
-            case .calendarTitle: return nextEvent.calendar.title
-            case .meetingLink: return nextEvent.meetingLink?.url.absoluteString
-            case .meetingService: return nextEvent.meetingLink?.service?.localizedValue
-            case .url: return nextEvent.url?.absoluteString
-            case .notes: return nextEvent.notes
-            case .location: return nextEvent.location
-            case .startDate: return nextEvent.startDate.formatted()
-            case .endDate: return nextEvent.endDate.formatted()
-            case .attendees:
-                return nextEvent.attendees.map { "\($0.name) <\($0.email ?? "unknown")>" }.joined(separator: ", ")
-            }
+            return EventDetailsValueFormatter.value(for: type, event: nextEvent)
         }
         return .result(value: value)
     }

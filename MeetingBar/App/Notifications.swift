@@ -143,34 +143,51 @@ func displayAlert(title: String, text: String) {
     userAlert.runModal()
 }
 
+enum SnoozeNotificationRequestFactory {
+    static func request(
+        event: MBEvent,
+        interval: NotificationEventTimeAction,
+        hideMeetingTitle: Bool,
+        now: Date
+    ) -> UNNotificationRequest {
+        var timeInterval = Double(interval.durationInSeconds)
+        let content = UNMutableNotificationContent()
+
+        if hideMeetingTitle {
+            content.title = "general_meeting".loco()
+        } else {
+            content.title = event.title
+        }
+
+        if interval == .untilStart {
+            timeInterval = event.startDate.timeIntervalSince(now)
+        }
+
+        content.categoryIdentifier = "SNOOZE_EVENT"
+        content.sound = UNNotificationSound.default
+        content.userInfo = ["eventID": event.id]
+        content.threadIdentifier = "meetingbar"
+        content.body = "notifications_event_started_body".loco()
+        content.interruptionLevel = .timeSensitive
+
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeInterval, repeats: false)
+        return UNNotificationRequest(
+            identifier: notificationIDs.event_starts,
+            content: content,
+            trigger: trigger
+        )
+    }
+}
+
 @MainActor
 func snoozeEventNotification(_ event: MBEvent, _ interval: NotificationEventTimeAction) async {
     removePendingNotificationRequests(withID: notificationIDs.event_starts)
 
-    let now = Date()
-    var timeInterval = Double(interval.durationInSeconds)
-    let content = UNMutableNotificationContent()
-
-    if Defaults[.hideMeetingTitle] {
-        content.title = "general_meeting".loco()
-    } else {
-        content.title = event.title
-    }
-
-    if interval == .untilStart {
-        timeInterval = event.startDate.timeIntervalSince(now)
-    }
-
-    content.categoryIdentifier = "SNOOZE_EVENT"
-    content.sound = UNNotificationSound.default
-    content.userInfo = ["eventID": event.id]
-    content.threadIdentifier = "meetingbar"
-    content.body = "notifications_event_started_body".loco()
-    content.interruptionLevel = .timeSensitive
-
-    let trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeInterval, repeats: false)
-    let request = UNNotificationRequest(
-        identifier: notificationIDs.event_starts, content: content, trigger: trigger
+    let request = SnoozeNotificationRequestFactory.request(
+        event: event,
+        interval: interval,
+        hideMeetingTitle: Defaults[.hideMeetingTitle],
+        now: Date()
     )
     let center = UNUserNotificationCenter.current()
     do {

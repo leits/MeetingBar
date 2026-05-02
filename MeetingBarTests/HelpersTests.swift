@@ -7,6 +7,9 @@
 //
 
 import XCTest
+import Defaults
+import Security
+import UserNotifications
 
 @testable import MeetingBar
 
@@ -72,5 +75,303 @@ class HelpersTests: XCTestCase {
     func test_hexStringToUIColor() throws {
         let result = hexStringToUIColor(hex: "#FFFF00")
         XCTAssertEqual(result, NSColor.yellow)
+    }
+}
+
+final class DiagnosticsAdapterTests: BaseTestCase {
+    private let knownDate = Date(timeIntervalSince1970: 1_730_000_000)
+
+    func test_providerMappingUsesProductionEventStoreProvider() {
+        XCTAssertEqual(DiagnosticsProvider(provider: .macOSEventKit), .macOSEventKit)
+        XCTAssertEqual(DiagnosticsProvider(provider: .googleCalendar), .googleCalendar)
+    }
+
+    func test_healthMappingCopiesProviderHealthFields() {
+        let providerHealth = ProviderHealth(
+            lastSuccessfulRefresh: knownDate.addingTimeInterval(-600),
+            lastAttemptedRefresh: knownDate,
+            lastErrorDescription: "authorization expired",
+            isStale: true,
+            authRequired: true
+        )
+
+        let health = DiagnosticsHealth(health: providerHealth)
+
+        XCTAssertEqual(health.lastSuccessfulRefresh, providerHealth.lastSuccessfulRefresh)
+        XCTAssertEqual(health.lastAttemptedRefresh, providerHealth.lastAttemptedRefresh)
+        XCTAssertEqual(health.lastErrorDescription, providerHealth.lastErrorDescription)
+        XCTAssertTrue(health.isStale)
+        XCTAssertTrue(health.authRequired)
+    }
+
+    func test_contextMappingFeedsDiagnosticsReport() {
+        let context = DiagnosticsContext(
+            appVersion: "4.12",
+            buildNumber: "999",
+            osVersion: "Version 14.5",
+            provider: .googleCalendar,
+            selectedCalendarCount: 2,
+            totalCalendarCount: 5,
+            visibleEventCount: 3,
+            health: ProviderHealth(
+                lastSuccessfulRefresh: nil,
+                lastAttemptedRefresh: knownDate,
+                lastErrorDescription: "network gone",
+                isStale: true,
+                authRequired: false
+            )
+        )
+
+        let report = DiagnosticsReport.text(from: context)
+
+        XCTAssertTrue(report.contains("Provider: Google Calendar"))
+        XCTAssertTrue(report.contains("Calendars: 2 selected / 5 available"))
+        XCTAssertTrue(report.contains("Visible events: 3"))
+        XCTAssertTrue(report.contains("Provider health: error"))
+        XCTAssertTrue(report.contains("Last error: network gone"))
+    }
+}
+
+private final class FakeMeetingOpeningPerformer: MeetingOpeningPerforming {
+    enum Event: Equatable {
+        case script
+        case meetingLink(MeetingServices?, URL)
+        case eventURL(URL)
+        case missingLink(String)
+    }
+
+    private(set) var events: [Event] = []
+
+    func runJoinEventScriptIfConfigured() {
+        events.append(.script)
+    }
+
+    func openMeetingLink(_ service: MeetingServices?, _ url: URL) {
+        events.append(.meetingLink(service, url))
+    }
+
+    func openEventURL(_ url: URL) {
+        events.append(.eventURL(url))
+    }
+
+    func notifyMissingLink(title: String) {
+        events.append(.missingLink(title))
+    }
+}
+
+final class MeetingOpenerTests: BaseTestCase {
+    func test_performRunsJoinScriptBeforeOpeningMeetingLinkWhenRequested() {
+        let performer = FakeMeetingOpeningPerformer()
+        let link = MeetingLink(service: .zoom, url: URL(string: "https://zoom.us/j/5551112222")!)
+
+        MeetingOpener.perform(
+            .openMeetingLink(link, runJoinScript: true),
+            performer: performer
+        )
+
+        XCTAssertEqual(performer.events, [
+            .script,
+            .meetingLink(.zoom, link.url)
+        ])
+    }
+
+    func test_performSkipsJoinScriptWhenOpeningMeetingLinkWithoutScript() {
+        let performer = FakeMeetingOpeningPerformer()
+        let link = MeetingLink(service: .meet, url: URL(string: "https://meet.google.com/abc-defg-hij")!)
+
+        MeetingOpener.perform(
+            .openMeetingLink(link, runJoinScript: false),
+            performer: performer
+        )
+
+        XCTAssertEqual(performer.events, [
+            .meetingLink(.meet, link.url)
+        ])
+    }
+
+    func test_performOpensEventURLFallback() {
+        let performer = FakeMeetingOpeningPerformer()
+        let url = URL(string: "https://calendar.example.test/event")!
+
+        MeetingOpener.perform(.openEventURL(url), performer: performer)
+
+        XCTAssertEqual(performer.events, [.eventURL(url)])
+    }
+
+    func test_performNotifiesWhenMeetingLinkIsMissing() {
+        let performer = FakeMeetingOpeningPerformer()
+
+        MeetingOpener.perform(.notifyMissingLink(title: "Planning"), performer: performer)
+
+        XCTAssertEqual(performer.events, [.missingLink("Planning")])
+    }
+
+    func test_openEventBuildsActionFromEventAndDefaults() {
+        Defaults[.runJoinEventScript] = true
+        let performer = FakeMeetingOpeningPerformer()
+        let event = makeFakeEvent(
+            id: "OPEN",
+            start: Date().addingTimeInterval(60),
+            end: Date().addingTimeInterval(600),
+            withLink: true
+        )
+
+        MeetingOpener.open(event: event, performer: performer)
+
+        XCTAssertEqual(performer.events, [
+            .script,
+            .meetingLink(.zoom, URL(string: "https://zoom.us/j/5551112222")!)
+        ])
+    }
+
+    func test_openMeetingLinkUsesDefaultsForScriptFlag() {
+        Defaults[.runJoinEventScript] = false
+        let performer = FakeMeetingOpeningPerformer()
+        let link = MeetingLink(service: .teams, url: URL(string: "https://teams.microsoft.com/l/meetup-join/abc")!)
+
+        MeetingOpener.open(meetingLink: link, performer: performer)
+
+        XCTAssertEqual(performer.events, [
+            .meetingLink(.teams, link.url)
+        ])
+    }
+}
+
+final class KeychainQueryFactoryTests: XCTestCase {
+    func test_saveQueryContainsGenericPasswordServiceDataAndAccessibility() {
+        let data = Data("token".utf8)
+        let query = KeychainQueryFactory.saveQuery(data: data, service: "google")
+
+        XCTAssertEqual(query[kSecClass as String] as? String, kSecClassGenericPassword as String)
+        XCTAssertEqual(query[kSecAttrService as String] as? String, "google")
+        XCTAssertEqual(query[kSecValueData as String] as? Data, data)
+        XCTAssertEqual(
+            query[kSecAttrAccessible as String] as? String,
+            kSecAttrAccessibleAfterFirstUnlock as String
+        )
+    }
+
+    func test_loadQueryRequestsOneDataItem() {
+        let query = KeychainQueryFactory.loadQuery(service: "google")
+
+        XCTAssertEqual(query[kSecClass as String] as? String, kSecClassGenericPassword as String)
+        XCTAssertEqual(query[kSecAttrService as String] as? String, "google")
+        XCTAssertEqual(query[kSecReturnData as String] as? Bool, true)
+        XCTAssertEqual(query[kSecMatchLimit as String] as? String, kSecMatchLimitOne as String)
+    }
+
+    func test_deleteQueryTargetsOnlyTheService() {
+        let query = KeychainQueryFactory.deleteQuery(service: "google")
+
+        XCTAssertEqual(query[kSecClass as String] as? String, kSecClassGenericPassword as String)
+        XCTAssertEqual(query[kSecAttrService as String] as? String, "google")
+        XCTAssertNil(query[kSecValueData as String])
+        XCTAssertNil(query[kSecReturnData as String])
+    }
+}
+
+final class SnoozeNotificationRequestFactoryTests: BaseTestCase {
+    func test_requestUsesEventTitleAndFixedSnoozeInterval() throws {
+        let now = Date()
+        let event = makeFakeEvent(
+            id: "SNOOZE",
+            start: now.addingTimeInterval(900),
+            end: now.addingTimeInterval(1800)
+        )
+
+        let request = SnoozeNotificationRequestFactory.request(
+            event: event,
+            interval: .fiveMinuteLater,
+            hideMeetingTitle: false,
+            now: now
+        )
+
+        let trigger = try XCTUnwrap(request.trigger as? UNTimeIntervalNotificationTrigger)
+        XCTAssertEqual(request.identifier, notificationIDs.event_starts)
+        XCTAssertEqual(request.content.categoryIdentifier, "SNOOZE_EVENT")
+        XCTAssertEqual(request.content.title, event.title)
+        XCTAssertEqual(request.content.body, "notifications_event_started_body".loco())
+        XCTAssertEqual(request.content.threadIdentifier, "meetingbar")
+        XCTAssertEqual(request.content.userInfo["eventID"] as? String, event.id)
+        XCTAssertEqual(trigger.timeInterval, 300, accuracy: 0.001)
+        XCTAssertFalse(trigger.repeats)
+    }
+
+    func test_requestUsesGenericTitleAndTimeUntilStart() throws {
+        let now = Date()
+        let event = makeFakeEvent(
+            id: "SNOOZE_PRIVATE",
+            start: now.addingTimeInterval(900),
+            end: now.addingTimeInterval(1800)
+        )
+
+        let request = SnoozeNotificationRequestFactory.request(
+            event: event,
+            interval: .untilStart,
+            hideMeetingTitle: true,
+            now: now
+        )
+
+        let trigger = try XCTUnwrap(request.trigger as? UNTimeIntervalNotificationTrigger)
+        XCTAssertEqual(request.content.title, "general_meeting".loco())
+        XCTAssertEqual(trigger.timeInterval, 900, accuracy: 0.001)
+    }
+}
+
+@available(macOS 13.0, *)
+final class EventDetailsValueFormatterTests: XCTestCase {
+    private func detailedEvent() -> MBEvent {
+        let calendar = MBCalendar(
+            title: "Product Calendar",
+            id: "product",
+            source: nil,
+            email: nil,
+            color: .black
+        )
+        return MBEvent(
+            id: "DETAILS",
+            lastModifiedDate: Date(),
+            title: "Roadmap review",
+            status: .confirmed,
+            notes: "Bring launch notes",
+            location: "Room 42",
+            url: URL(string: "https://zoom.us/j/5551112222"),
+            organizer: nil,
+            attendees: [
+                MBEventAttendee(
+                    email: "alice@example.test",
+                    name: "Alice",
+                    status: .accepted
+                ),
+                MBEventAttendee(
+                    email: nil,
+                    name: "Bob",
+                    status: .tentative
+                )
+            ],
+            startDate: Date(timeIntervalSince1970: 1_730_000_000),
+            endDate: Date(timeIntervalSince1970: 1_730_003_600),
+            isAllDay: false,
+            recurrent: false,
+            calendar: calendar
+        )
+    }
+
+    func test_valueFormatsAllNearestEventDetails() {
+        let event = detailedEvent()
+
+        XCTAssertEqual(EventDetailsValueFormatter.value(for: .title, event: event), "Roadmap review")
+        XCTAssertEqual(EventDetailsValueFormatter.value(for: .calendarTitle, event: event), "Product Calendar")
+        XCTAssertEqual(EventDetailsValueFormatter.value(for: .meetingLink, event: event), "https://zoom.us/j/5551112222")
+        XCTAssertEqual(EventDetailsValueFormatter.value(for: .meetingService, event: event), "Zoom")
+        XCTAssertEqual(EventDetailsValueFormatter.value(for: .url, event: event), "https://zoom.us/j/5551112222")
+        XCTAssertEqual(EventDetailsValueFormatter.value(for: .notes, event: event), "Bring launch notes")
+        XCTAssertEqual(EventDetailsValueFormatter.value(for: .location, event: event), "Room 42")
+        XCTAssertEqual(EventDetailsValueFormatter.value(for: .startDate, event: event), event.startDate.formatted())
+        XCTAssertEqual(EventDetailsValueFormatter.value(for: .endDate, event: event), event.endDate.formatted())
+        XCTAssertEqual(
+            EventDetailsValueFormatter.value(for: .attendees, event: event),
+            "Alice <alice@example.test>, Bob <unknown>"
+        )
     }
 }
