@@ -47,9 +47,7 @@ final class NotificationScheduler {
     static let identifierPrefix = "mb-plan-"
 
     private let sink: NotificationRequestSink
-    private let actionRunner: NotificationActionRunner
-    private weak var actionSink: NotificationActionSink?
-    private var actionTasks: [String: Task<Void, Never>] = []
+    private let actionScheduler: NotificationActionScheduler
 
     init(
         sink: NotificationRequestSink = UNUserNotificationCenter.current(),
@@ -57,13 +55,12 @@ final class NotificationScheduler {
         actionSink: NotificationActionSink? = nil
     ) {
         self.sink = sink
-        self.actionRunner = NotificationActionRunner(recordStore: recordStore, actionSink: actionSink)
-        self.actionSink = actionSink
+        let runner = NotificationActionRunner(recordStore: recordStore, actionSink: actionSink)
+        self.actionScheduler = NotificationActionScheduler(runner: runner)
     }
 
     func setActionSink(_ actionSink: NotificationActionSink?) {
-        self.actionSink = actionSink
-        actionRunner.setActionSink(actionSink)
+        actionScheduler.setActionSink(actionSink)
     }
 
     func reconcile(
@@ -78,14 +75,10 @@ final class NotificationScheduler {
         let systemPlans = plans.filter { $0.kind == .eventStart || $0.kind == .eventEnd }
         let actionPlans = plans.filter(\.kind.isInAppAction)
 
+        actionScheduler.reconcile(events: events, plans: actionPlans, settings: settings, now: now)
+
         let eventByID = Dictionary(
             events.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
-
-        cleanupExpiredActionRecords(now: now)
-        if actionSink != nil {
-            actionRunner.fireDueActions(events: events, settings: settings, now: now)
-        }
-        reconcileActionTasks(actionPlans, eventByID: eventByID, settings: settings, now: now)
 
         let pending = await sink.pendingRequests()
         let pendingMine =
@@ -118,54 +111,6 @@ final class NotificationScheduler {
                 NSLog("NotificationScheduler: failed to add \(plan.identity): \(error)")
             }
         }
-    }
-
-    private func reconcileActionTasks(
-        _ plans: [PlannedNotification],
-        eventByID: [String: MBEvent],
-        settings: NotificationPlanningSettings,
-        now: Date
-    ) {
-        guard actionSink != nil else {
-            cancelAllActionTasks()
-            return
-        }
-
-        let desiredIDs = Set(plans.map { Self.identifierPrefix + $0.identity })
-        for id in Array(actionTasks.keys) where !desiredIDs.contains(id) {
-            actionTasks[id]?.cancel()
-            actionTasks[id] = nil
-        }
-
-        for plan in plans {
-            let id = Self.identifierPrefix + plan.identity
-            guard actionTasks[id] == nil,
-                let event = eventByID[plan.eventID]
-            else { continue }
-
-            actionTasks[id] = Task { [weak self] in
-                let delay = max(plan.fireDate.timeIntervalSince(now), 0)
-                if delay > 0 {
-                    try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
-                }
-                await MainActor.run {
-                    guard let self, !Task.isCancelled else { return }
-                    self.actionRunner.fire(plan: plan, event: event, settings: settings, now: Date())
-                    self.actionTasks[id] = nil
-                }
-            }
-        }
-    }
-
-    private func cancelAllActionTasks() {
-        for task in actionTasks.values {
-            task.cancel()
-        }
-        actionTasks.removeAll()
-    }
-
-    private func cleanupExpiredActionRecords(now: Date) {
-        actionRunner.cleanupExpiredRecords(now: now)
     }
 
     private func hasSameContent(_ lhs: UNNotificationContent, _ rhs: UNNotificationContent) -> Bool
