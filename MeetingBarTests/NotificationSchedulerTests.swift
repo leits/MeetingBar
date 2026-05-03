@@ -3,70 +3,18 @@
 //  MeetingBarTests
 //
 
-import XCTest
-import UserNotifications
 import Defaults
+import UserNotifications
+import XCTest
 
 @testable import MeetingBar
-
-/// In-memory `NotificationRequestSink` that records every call so reconcile
-/// behaviour can be verified without touching the real notification center.
-/// Calls are serialised by the test's `@MainActor` runner; no locking needed.
-final class FakeNotificationRequestSink: NotificationRequestSink, @unchecked Sendable {
-    private var pending: [UNNotificationRequest] = []
-    private(set) var addedIdentifiers: [String] = []
-    private(set) var removedBatches: [[String]] = []
-
-    init(initialPending: [UNNotificationRequest] = []) {
-        self.pending = initialPending
-    }
-
-    func pendingRequests() async -> [UNNotificationRequest] {
-        pending
-    }
-
-    func add(_ request: UNNotificationRequest) async throws {
-        pending.append(request)
-        addedIdentifiers.append(request.identifier)
-    }
-
-    func removePending(identifiers: [String]) {
-        pending.removeAll { identifiers.contains($0.identifier) }
-        removedBatches.append(identifiers)
-    }
-
-    func currentPendingIdentifiers() -> [String] {
-        pending.map(\.identifier)
-    }
-
-    func currentPendingRequests() -> [UNNotificationRequest] {
-        pending
-    }
-}
-
-@MainActor
-final class FakeNotificationActionSink: NotificationActionSink {
-    private let shouldPerform: Bool
-    private(set) var attempts: [(kind: NotificationKind, eventID: String)] = []
-    private(set) var actions: [(kind: NotificationKind, eventID: String)] = []
-
-    init(shouldPerform: Bool = true) {
-        self.shouldPerform = shouldPerform
-    }
-
-    func performNotificationAction(_ kind: NotificationKind, event: MBEvent) -> Bool {
-        attempts.append((kind, event.id))
-        guard shouldPerform else { return false }
-        actions.append((kind, event.id))
-        return true
-    }
-}
 
 @MainActor
 final class NotificationSchedulerTests: BaseTestCase {
     private let now = Date(timeIntervalSinceReferenceDate: 800_000_000)
 
-    private func event(id: String, startsIn: TimeInterval, duration: TimeInterval = 1800) -> MBEvent {
+    private func event(id: String, startsIn: TimeInterval, duration: TimeInterval = 1800) -> MBEvent
+    {
         makeFakeEvent(
             id: id,
             start: now.addingTimeInterval(startsIn),
@@ -141,7 +89,8 @@ final class NotificationSchedulerTests: BaseTestCase {
             eventEnd: .disabled,
             fullscreen: kind == .fullscreen ? .init(enabled: true, offset: offset) : .disabled,
             autoJoin: kind == .autoJoin ? .init(enabled: true, offset: offset) : .disabled,
-            scriptOnStart: kind == .scriptOnStart ? .init(enabled: true, offset: offset) : .disabled,
+            scriptOnStart: kind == .scriptOnStart
+                ? .init(enabled: true, offset: offset) : .disabled,
             dismissedEventIDs: dismissedEventIDs
         )
     }
@@ -185,11 +134,16 @@ final class NotificationSchedulerTests: BaseTestCase {
         let sink = FakeNotificationRequestSink()
         let scheduler = NotificationScheduler(sink: sink)
 
-        await scheduler.reconcile(events: [event(id: "A", startsIn: 600)], settings: allEnabled, now: now)
+        await scheduler.reconcile(
+            events: [event(id: "A", startsIn: 600)], settings: allEnabled, now: now)
 
-        XCTAssertEqual(sink.addedIdentifiers.count, 2,
-                       "one start + one end notification expected for one event")
-        XCTAssertTrue(sink.addedIdentifiers.allSatisfy { $0.hasPrefix(NotificationScheduler.identifierPrefix) })
+        XCTAssertEqual(
+            sink.addedIdentifiers.count, 2,
+            "one start + one end notification expected for one event")
+        XCTAssertTrue(
+            sink.addedIdentifiers.allSatisfy {
+                $0.hasPrefix(NotificationScheduler.identifierPrefix)
+            })
     }
 
     func testReconcileEmitsNothingWhenAllDisabled() async {
@@ -202,7 +156,8 @@ final class NotificationSchedulerTests: BaseTestCase {
             dismissedEventIDs: []
         )
 
-        await scheduler.reconcile(events: [event(id: "A", startsIn: 600)], settings: allDisabled, now: now)
+        await scheduler.reconcile(
+            events: [event(id: "A", startsIn: 600)], settings: allDisabled, now: now)
         XCTAssertEqual(sink.addedIdentifiers, [])
     }
 
@@ -211,7 +166,7 @@ final class NotificationSchedulerTests: BaseTestCase {
         let scheduler = NotificationScheduler(sink: sink)
 
         let first = event(id: "A", startsIn: 600, duration: 1800)
-        let second = event(id: "B", startsIn: 2400, duration: 1800) // starts where A ends
+        let second = event(id: "B", startsIn: 2400, duration: 1800)  // starts where A ends
 
         await scheduler.reconcile(events: [first, second], settings: allEnabled, now: now)
 
@@ -220,8 +175,9 @@ final class NotificationSchedulerTests: BaseTestCase {
         let prefix = NotificationScheduler.identifierPrefix
         let containsA = sink.addedIdentifiers.contains(where: { $0.hasPrefix(prefix + "A|") })
         let containsB = sink.addedIdentifiers.contains(where: { $0.hasPrefix(prefix + "B|") })
-        XCTAssertTrue(containsA && containsB,
-                      "back-to-back events both planned; legacy single-id scheduler suppressed one of them")
+        XCTAssertTrue(
+            containsA && containsB,
+            "back-to-back events both planned; legacy single-id scheduler suppressed one of them")
     }
 
     func testReconcileIsIdempotent() async {
@@ -233,8 +189,9 @@ final class NotificationSchedulerTests: BaseTestCase {
         let countAfterFirst = sink.addedIdentifiers.count
 
         await scheduler.reconcile(events: evts, settings: allEnabled, now: now)
-        XCTAssertEqual(sink.addedIdentifiers.count, countAfterFirst,
-                       "second reconcile with the same plan must not re-add anything")
+        XCTAssertEqual(
+            sink.addedIdentifiers.count, countAfterFirst,
+            "second reconcile with the same plan must not re-add anything")
     }
 
     func testReconcileRemovesStalePendingNoLongerInPlan() async {
@@ -251,8 +208,9 @@ final class NotificationSchedulerTests: BaseTestCase {
         // No events to plan for → stale should be removed.
         await scheduler.reconcile(events: [], settings: allEnabled, now: now)
 
-        XCTAssertEqual(sink.removedBatches.flatMap { $0 },
-                       [NotificationScheduler.identifierPrefix + "evt|111|eventStart|60"])
+        XCTAssertEqual(
+            sink.removedBatches.flatMap { $0 },
+            [NotificationScheduler.identifierPrefix + "evt|111|eventStart|60"])
         XCTAssertTrue(sink.currentPendingIdentifiers().isEmpty)
     }
 
@@ -267,8 +225,9 @@ final class NotificationSchedulerTests: BaseTestCase {
 
         await scheduler.reconcile(events: [], settings: allEnabled, now: now)
 
-        XCTAssertTrue(sink.currentPendingIdentifiers().contains("NEXT_EVENT"),
-                      "scheduler must not touch identifiers it does not own")
+        XCTAssertTrue(
+            sink.currentPendingIdentifiers().contains("NEXT_EVENT"),
+            "scheduler must not touch identifiers it does not own")
     }
 
     func testReconcileSwapsNotificationOnEventReschedule() async {
@@ -290,10 +249,12 @@ final class NotificationSchedulerTests: BaseTestCase {
         await scheduler.reconcile(events: [rescheduled], settings: allEnabled, now: now)
         let identifiersAfterReschedule = Set(sink.currentPendingIdentifiers())
 
-        XCTAssertNotEqual(identifiersAfterFirst, identifiersAfterReschedule,
-                          "lastModifiedDate change must produce new identities and remove old ones")
-        XCTAssertFalse(sink.removedBatches.flatMap { $0 }.isEmpty,
-                       "old identifiers must be removed, not left dangling")
+        XCTAssertNotEqual(
+            identifiersAfterFirst, identifiersAfterReschedule,
+            "lastModifiedDate change must produce new identities and remove old ones")
+        XCTAssertFalse(
+            sink.removedBatches.flatMap { $0 }.isEmpty,
+            "old identifiers must be removed, not left dangling")
     }
 
     func testChangingJoinNotificationTimeReplacesPendingStartRequest() async {
@@ -349,7 +310,8 @@ final class NotificationSchedulerTests: BaseTestCase {
     func testReconcileReplacesPendingRequestWhenContentIsStale() async {
         let evt = event(id: "A", startsIn: 600)
         let settings = startOnlySettings()
-        let startPlan = NotificationPlanningPolicy
+        let startPlan =
+            NotificationPlanningPolicy
             .plan(events: [NotificationPlanningEvent(event: evt)], settings: settings, now: now)
             .first { $0.kind == .eventStart }
         let staleID = NotificationScheduler.identifierPrefix + (startPlan?.identity ?? "")
@@ -357,7 +319,8 @@ final class NotificationSchedulerTests: BaseTestCase {
         let staleContent = UNMutableNotificationContent()
         staleContent.title = "Old title"
         staleContent.body = "Old body"
-        let staleRequest = UNNotificationRequest(identifier: staleID, content: staleContent, trigger: nil)
+        let staleRequest = UNNotificationRequest(
+            identifier: staleID, content: staleContent, trigger: nil)
         let sink = FakeNotificationRequestSink(initialPending: [staleRequest])
         let scheduler = NotificationScheduler(sink: sink)
 
@@ -406,7 +369,8 @@ final class NotificationSchedulerTests: BaseTestCase {
             now: now
         )
 
-        let trigger = sink.currentPendingRequests().first?.trigger as? UNTimeIntervalNotificationTrigger
+        let trigger =
+            sink.currentPendingRequests().first?.trigger as? UNTimeIntervalNotificationTrigger
         XCTAssertNotNil(trigger)
         XCTAssertEqual(trigger?.timeInterval ?? 0, 540, accuracy: 0.01)
     }
@@ -444,7 +408,9 @@ final class NotificationSchedulerTests: BaseTestCase {
 
         XCTAssertEqual(actionSink.actions.map(\.kind), [.fullscreen])
         XCTAssertEqual(actionSink.actions.map(\.eventID), ["A"])
-        XCTAssertTrue(requestSink.addedIdentifiers.isEmpty, "fullscreen actions must not create system notification requests")
+        XCTAssertTrue(
+            requestSink.addedIdentifiers.isEmpty,
+            "fullscreen actions must not create system notification requests")
     }
 
     func testReconcileDoesNotDuplicateFullscreenActionTask() async {
@@ -597,8 +563,11 @@ final class NotificationSchedulerTests: BaseTestCase {
         await waitUntil { actionSink.actions.count == 2 }
 
         XCTAssertTrue(actionSink.actions.contains { $0.kind == .autoJoin && $0.eventID == "A" })
-        XCTAssertTrue(actionSink.actions.contains { $0.kind == .scriptOnStart && $0.eventID == "A" })
-        XCTAssertTrue(requestSink.addedIdentifiers.isEmpty, "in-app actions must not create system notification requests")
+        XCTAssertTrue(
+            actionSink.actions.contains { $0.kind == .scriptOnStart && $0.eventID == "A" })
+        XCTAssertTrue(
+            requestSink.addedIdentifiers.isEmpty,
+            "in-app actions must not create system notification requests")
     }
 
     func testBackToBackEventsBothTriggerAutoJoin() async {
