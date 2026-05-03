@@ -10,6 +10,20 @@ import Defaults
 import EventKit
 import Foundation
 
+// MARK: - Date range helpers
+
+func calendarDateRange(for period: ShowEventsForPeriod) -> (from: Date, to: Date) {
+    let dateFrom = Calendar.current.startOfDay(for: Date())
+    let dateTo: Date
+    switch period {
+    case .today:
+        dateTo = Calendar.current.date(byAdding: .day, value: 1, to: dateFrom)!
+    case .today_n_tomorrow:
+        dateTo = Calendar.current.date(byAdding: .day, value: 2, to: dateFrom)!
+    }
+    return (dateFrom, dateTo)
+}
+
 /// Owns the active calendar provider and exposes calendar/event fetching.
 ///
 /// `EventManager` delegates to `CalendarRepository` for all provider-specific
@@ -58,6 +72,16 @@ public final class CalendarRepository {
         to dateTo: Date
     ) async throws -> [MBEvent] {
         try await activeProvider.fetchEventsForDateRange(for: calendars, from: dateFrom, to: dateTo)
+    }
+
+    /// Fetches events for the currently configured display period and selected calendars.
+    ///
+    /// This is a convenience that consolidates date-range calculation and selected-calendar
+    /// filtering so `EventManager` does not need to know about either detail.
+    public func fetchCurrentPeriodEvents(fromAllCalendars allCalendars: [MBCalendar]) async throws -> [MBEvent] {
+        let selectedCalendars = allCalendars.filter { Defaults[.selectedCalendarIDs].contains($0.id) }
+        let (dateFrom, dateTo) = calendarDateRange(for: Defaults[.showEventsForPeriod])
+        return try await activeProvider.fetchEventsForDateRange(for: selectedCalendars, from: dateFrom, to: dateTo)
     }
 
     public func refreshSources() async {

@@ -8,7 +8,6 @@
 import Cocoa
 import Combine
 import Defaults
-import EventKit
 import Foundation
 import UserNotifications
 
@@ -59,7 +58,7 @@ public class EventManager: ObservableObject {
 
         await repository.switchProvider(to: newProvider)
 
-        // re-wire EKEventStore change notifications through the new repository
+        // re-wire store change notifications through the new repository
         subscribeToRepositoryStoreChanges()
 
         // immediately reload everything
@@ -96,23 +95,9 @@ public class EventManager: ObservableObject {
 
     /// Fetches events for the selected calendars within the specified date range
     private func fetchEvents(fromCalendars: [MBCalendar]) async throws -> [MBEvent] {
-        let dateFrom = Calendar.current.startOfDay(for: Date())
-        var dateTo: Date
-
-        switch Defaults[.showEventsForPeriod] {
-        case .today:
-            dateTo = Calendar.current.date(byAdding: .day, value: 1, to: dateFrom)!
-        case .today_n_tomorrow:
-            dateTo = Calendar.current.date(byAdding: .day, value: 2, to: dateFrom)!
-        }
-
-        let selectedCalendars = fromCalendars.filter { Defaults[.selectedCalendarIDs].contains($0.id) }
-
         let rawEvents: [MBEvent]
         do {
-            rawEvents = try await repository.fetchEventsForDateRange(for: selectedCalendars,
-                                                                     from: dateFrom,
-                                                                     to: dateTo)
+            rawEvents = try await repository.fetchCurrentPeriodEvents(fromAllCalendars: fromCalendars)
         } catch {
             throw EventManagerError.eventFetchFailed(error)
         }
