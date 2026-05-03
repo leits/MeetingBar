@@ -15,7 +15,7 @@ public extension Array where Element == MBEvent {
         let candidates = enumerated().map { index, event in
             EventFilterEvent(event: event, sourceIndex: index)
         }
-        return EventFilterPolicy
+        return EventFiltering
             .filter(candidates, settings: .current)
             .map { self[$0.sourceIndex] }
     }
@@ -25,7 +25,7 @@ public extension Array where Element == MBEvent {
         let candidates = enumerated().map { index, event in
             EventSelectionEvent(event: event, sourceIndex: index)
         }
-        guard let selected = EventSelectionPolicy.nextEvent(
+        guard let selected = EventSelection.nextEvent(
             from: candidates,
             linkRequired: linkRequired,
             settings: .current,

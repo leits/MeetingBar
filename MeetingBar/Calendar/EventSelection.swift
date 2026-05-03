@@ -50,7 +50,7 @@ struct EventSelectionEvent: Equatable {
     let participationStatus: ParticipationStatus
 }
 
-enum EventSelectionPolicy {
+enum EventSelection {
     static func nextEvent(
         from events: [EventSelectionEvent],
         linkRequired: Bool,

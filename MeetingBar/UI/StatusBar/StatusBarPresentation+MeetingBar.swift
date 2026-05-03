@@ -1,5 +1,5 @@
 //
-//  StatusBarPresentationPolicy+MeetingBar.swift
+//  StatusBarPresentation+MeetingBar.swift
 //  MeetingBar
 //
 
@@ -9,7 +9,7 @@ import Foundation
 extension StatusBarPresentationSettings {
     /// Snapshot of the relevant `Defaults` keys the policy reads. The
     /// renderer (`StatusBarItemController.updateTitle`) builds this on every
-    /// title update and passes it to `StatusBarPresentationPolicy.mode`.
+    /// title update and passes it to `StatusBarPresentation.mode`.
     static var current: StatusBarPresentationSettings {
         StatusBarPresentationSettings(
             hasSelectedCalendars: !Defaults[.selectedCalendarIDs].isEmpty,

@@ -24,21 +24,24 @@ let package = Package(
                 "Preview Content",
             ],
             sources: [
-                // Core/Policies — pure hostless logic.
-                // Add paths here when pure files move out of Core/Policies in later phases.
-                "Core/Policies/DiagnosticsReport.swift",
-                "Core/Policies/EventActionPolicy.swift",
-                "Core/Policies/EventFilterPolicy.swift",
-                "Core/Policies/EventSelectionPolicy.swift",
-                "Core/Policies/GoogleCalendarPolicy.swift",
-                "Core/Policies/MeetingLinkCandidate.swift",
-                "Core/Policies/MeetingLinkDetection.swift",
-                "Core/Policies/MeetingLinkDetector.swift",
-                "Core/Policies/MeetingOpeningPolicy.swift",
-                "Core/Policies/NotificationPlanningPolicy.swift",
-                "Core/Policies/StatusBarIconPolicy.swift",
-                "Core/Policies/StatusBarPresentationPolicy.swift",
-                "Core/Policies/StatusBarTitlePolicy.swift",
+                // Utilities/Diagnostics
+                "Utilities/Diagnostics/DiagnosticsReport.swift",
+                // Notifications
+                "Notifications/EventActionPolicy.swift",
+                "Notifications/NotificationPlanner.swift",
+                // Calendar
+                "Calendar/EventFiltering.swift",
+                "Calendar/EventSelection.swift",
+                "Calendar/Providers/Google/GoogleCalendarPolicy.swift",
+                // Meetings
+                "Meetings/MeetingLinkCandidate.swift",
+                "Meetings/MeetingLinkDetection.swift",
+                "Meetings/MeetingLinkDetector.swift",
+                "Meetings/MeetingOpeningPolicy.swift",
+                // UI/StatusBar
+                "UI/StatusBar/StatusBarIconPolicy.swift",
+                "UI/StatusBar/StatusBarPresentation.swift",
+                "UI/StatusBar/StatusBarTitlePolicy.swift",
                 // Meetings/Domain — pure provider descriptors and registry.
                 "Meetings/Domain/MeetingProviderDescriptor.swift",
                 "Meetings/Domain/MeetingProviderRegistry.swift",

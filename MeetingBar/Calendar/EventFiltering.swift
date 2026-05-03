@@ -41,7 +41,7 @@ struct EventFilterEvent: Equatable {
     let participationStatus: ParticipationStatus
 }
 
-enum EventFilterPolicy {
+enum EventFiltering {
     static func filter(_ events: [EventFilterEvent], settings: EventFilterSettings) -> [EventFilterEvent] {
         var result: [EventFilterEvent] = []
         outerloop: for event in events {

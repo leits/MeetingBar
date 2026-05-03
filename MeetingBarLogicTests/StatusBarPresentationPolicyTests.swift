@@ -1,5 +1,5 @@
 //
-//  StatusBarPresentationPolicyTests.swift
+//  StatusBarPresentationTests.swift
 //  MeetingBarLogicTests
 //
 
@@ -7,7 +7,7 @@ import XCTest
 
 @testable import MeetingBarLogic
 
-final class StatusBarPresentationPolicyTests: XCTestCase {
+final class StatusBarPresentationTests: XCTestCase {
     private let now = Date(timeIntervalSinceReferenceDate: 800_000_000)
     private let assets = StatusBarIconAssets(
         appIcon: "AppIcon",

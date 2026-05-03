@@ -1,5 +1,5 @@
 //
-//  EventSelectionPolicy+MeetingBar.swift
+//  EventSelection+MeetingBar.swift
 //  MeetingBar
 //
 

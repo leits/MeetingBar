@@ -79,7 +79,7 @@ final class NextEventTests: XCTestCase {
         linkRequired: Bool = false,
         settings: EventSelectionSettings? = nil
     ) -> EventSelectionEvent? {
-        EventSelectionPolicy.nextEvent(
+        EventSelection.nextEvent(
             from: events,
             linkRequired: linkRequired,
             settings: settings ?? self.settings(),

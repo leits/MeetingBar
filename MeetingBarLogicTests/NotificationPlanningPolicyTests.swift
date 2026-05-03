@@ -1,5 +1,5 @@
 //
-//  NotificationPlanningPolicyTests.swift
+//  NotificationPlannerTests.swift
 //  MeetingBarLogicTests
 //
 
@@ -7,7 +7,7 @@ import XCTest
 
 @testable import MeetingBarLogic
 
-final class NotificationPlanningPolicyTests: XCTestCase {
+final class NotificationPlannerTests: XCTestCase {
     private let now = Date(timeIntervalSinceReferenceDate: 800_000_000)
 
     private func event(
@@ -50,13 +50,13 @@ final class NotificationPlanningPolicyTests: XCTestCase {
 
     func testEmptyEventListProducesNothing() {
         XCTAssertEqual(
-            NotificationPlanningPolicy.plan(events: [], settings: allEnabled, now: now),
+            NotificationPlanner.plan(events: [], settings: allEnabled, now: now),
             []
         )
     }
 
     func testNothingPlannedWhenAllDisabled() {
-        let plans = NotificationPlanningPolicy.plan(
+        let plans = NotificationPlanner.plan(
             events: [event(startsIn: 600)],
             settings: allDisabled,
             now: now
@@ -65,7 +65,7 @@ final class NotificationPlanningPolicyTests: XCTestCase {
     }
 
     func testAllFiveKindsForOneFutureEvent() {
-        let plans = NotificationPlanningPolicy.plan(
+        let plans = NotificationPlanner.plan(
             events: [event(startsIn: 600)],
             settings: allEnabled,
             now: now
@@ -75,7 +75,7 @@ final class NotificationPlanningPolicyTests: XCTestCase {
 
     func testFireDateIsAnchorMinusOffset() {
         let evt = event(startsIn: 600, duration: 1800)
-        let plans = NotificationPlanningPolicy.plan(events: [evt], settings: allEnabled, now: now)
+        let plans = NotificationPlanner.plan(events: [evt], settings: allEnabled, now: now)
 
         let plansByKind = Dictionary(uniqueKeysWithValues: plans.map { ($0.kind, $0) })
         XCTAssertEqual(plansByKind[.eventStart]?.fireDate, evt.startDate.addingTimeInterval(-60))
@@ -86,7 +86,7 @@ final class NotificationPlanningPolicyTests: XCTestCase {
     }
 
     func testCancelledEventProducesNothing() {
-        let plans = NotificationPlanningPolicy.plan(
+        let plans = NotificationPlanner.plan(
             events: [event(startsIn: 600, status: .canceled)],
             settings: allEnabled,
             now: now
@@ -95,7 +95,7 @@ final class NotificationPlanningPolicyTests: XCTestCase {
     }
 
     func testDeclinedEventProducesNothing() {
-        let plans = NotificationPlanningPolicy.plan(
+        let plans = NotificationPlanner.plan(
             events: [event(startsIn: 600, participation: .declined)],
             settings: allEnabled,
             now: now
@@ -113,7 +113,7 @@ final class NotificationPlanningPolicyTests: XCTestCase {
             scriptOnStart: settings.scriptOnStart,
             dismissedEventIDs: ["evt"]
         )
-        let plans = NotificationPlanningPolicy.plan(
+        let plans = NotificationPlanner.plan(
             events: [event(startsIn: 600)],
             settings: settings,
             now: now
@@ -122,7 +122,7 @@ final class NotificationPlanningPolicyTests: XCTestCase {
     }
 
     func testAllDayEventProducesNothing() {
-        let plans = NotificationPlanningPolicy.plan(
+        let plans = NotificationPlanner.plan(
             events: [event(startsIn: 600, allDay: true)],
             settings: allEnabled,
             now: now
@@ -131,7 +131,7 @@ final class NotificationPlanningPolicyTests: XCTestCase {
     }
 
     func testFireDateInPastIsSkipped() {
-        let plans = NotificationPlanningPolicy.plan(
+        let plans = NotificationPlanner.plan(
             events: [event(startsIn: -30, duration: 600)],
             settings: allEnabled,
             now: now
@@ -143,7 +143,7 @@ final class NotificationPlanningPolicyTests: XCTestCase {
     func testBackToBackEventsBothPlanned() {
         let first = event(id: "A", startsIn: 600, duration: 1800)
         let second = event(id: "B", startsIn: 2400, duration: 1800)
-        let plans = NotificationPlanningPolicy.plan(
+        let plans = NotificationPlanner.plan(
             events: [first, second],
             settings: allEnabled,
             now: now
@@ -155,7 +155,7 @@ final class NotificationPlanningPolicyTests: XCTestCase {
     func testOutputSortedAscendingByFireDate() {
         let near = event(id: "near", startsIn: 600)
         let far = event(id: "far", startsIn: 7200)
-        let plans = NotificationPlanningPolicy.plan(
+        let plans = NotificationPlanner.plan(
             events: [far, near],
             settings: allEnabled,
             now: now
@@ -166,8 +166,8 @@ final class NotificationPlanningPolicyTests: XCTestCase {
 
     func testIdentityIsStableForSameEventAndKind() {
         let evt = event(startsIn: 600)
-        let first = NotificationPlanningPolicy.plan(events: [evt], settings: allEnabled, now: now)
-        let second = NotificationPlanningPolicy.plan(events: [evt], settings: allEnabled, now: now)
+        let first = NotificationPlanner.plan(events: [evt], settings: allEnabled, now: now)
+        let second = NotificationPlanner.plan(events: [evt], settings: allEnabled, now: now)
         XCTAssertEqual(first.map(\.identity), second.map(\.identity))
     }
 
@@ -181,10 +181,10 @@ final class NotificationPlanningPolicyTests: XCTestCase {
             lastModifiedDate: Date(timeIntervalSince1970: 1_000_060)
         )
 
-        let plansBefore = NotificationPlanningPolicy.plan(
+        let plansBefore = NotificationPlanner.plan(
             events: [original], settings: allEnabled, now: now
         )
-        let plansAfter = NotificationPlanningPolicy.plan(
+        let plansAfter = NotificationPlanner.plan(
             events: [rescheduled], settings: allEnabled, now: now
         )
         XCTAssertNotEqual(plansBefore.first?.identity, plansAfter.first?.identity)
@@ -192,14 +192,14 @@ final class NotificationPlanningPolicyTests: XCTestCase {
 
     func testIdentityIncludesKindAndOffset() {
         let evt = event(startsIn: 600)
-        let plans = NotificationPlanningPolicy.plan(events: [evt], settings: allEnabled, now: now)
+        let plans = NotificationPlanner.plan(events: [evt], settings: allEnabled, now: now)
         let identities = plans.map(\.identity)
         XCTAssertEqual(Set(identities).count, identities.count)
     }
 
     func testIdentityUsesZeroWhenLastModifiedDateIsMissing() {
         let evt = event(startsIn: 600, lastModifiedDate: nil)
-        let plans = NotificationPlanningPolicy.plan(events: [evt], settings: allEnabled, now: now)
+        let plans = NotificationPlanner.plan(events: [evt], settings: allEnabled, now: now)
 
         XCTAssertTrue(plans.allSatisfy { $0.identity.contains("evt|0|") })
     }

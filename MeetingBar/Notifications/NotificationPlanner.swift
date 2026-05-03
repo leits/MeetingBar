@@ -93,7 +93,7 @@ struct NotificationPlanningSettings: Equatable, Sendable {
     }
 }
 
-enum NotificationPlanningPolicy {
+enum NotificationPlanner {
     /// Returns the list of reminders that should be live for the given events
     /// at `now`. Output is sorted ascending by `fireDate`.
     ///

@@ -48,7 +48,7 @@ final class EventFilteringTests: XCTestCase {
         _ events: [EventFilterEvent],
         settings: EventFilterSettings? = nil
     ) -> [String] {
-        EventFilterPolicy
+        EventFiltering
             .filter(events, settings: settings ?? self.settings())
             .map(\.id)
     }
