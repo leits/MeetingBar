@@ -46,6 +46,4 @@ final class FakeEventStore: EventStore {
     }
 
     func refreshSources() async { /* no-op */ }
-    func signIn(forcePrompt: Bool = false) async throws { /* no-op */ }
-    func signOut() async { /* no-op */ }
 }

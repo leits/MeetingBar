@@ -38,7 +38,7 @@ extension OIDAuthState {
 // MARK: - GCEventStore
 @MainActor
 final class GCEventStore: NSObject,
-                           EventStore,
+                           AuthenticatedEventStore,
                            @preconcurrency OIDExternalUserAgent,
                           @preconcurrency OIDAuthStateChangeDelegate,
                           @preconcurrency OIDAuthStateErrorDelegate {

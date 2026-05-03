@@ -14,13 +14,17 @@ public enum EventStoreProvider: String, Defaults.Serializable, Codable {
     case googleCalendar = "Google Calendar API"
 }
 
-@MainActor
+/// Base contract for a calendar provider. Not main-actor isolated so providers
+/// can run fetch and enumeration work off the main thread.
 public protocol EventStore: AnyObject, Sendable {
+    func refreshSources() async
+    func fetchAllCalendars() async throws -> [MBCalendar]
+    func fetchEventsForDateRange(for calendars: [MBCalendar], from: Date, to: Date) async throws -> [MBEvent]
+}
+
+/// Extended contract for providers that require explicit sign-in/sign-out flows
+/// (e.g. OAuth-based providers such as Google Calendar).
+public protocol AuthenticatedEventStore: EventStore {
     func signIn(forcePrompt: Bool) async throws
     func signOut() async
-    func refreshSources() async
-
-    func fetchAllCalendars() async throws -> [MBCalendar]
-
-    func fetchEventsForDateRange(for calendars: [MBCalendar], from: Date, to: Date) async throws -> [MBEvent]
 }

@@ -60,14 +60,14 @@ public class EventManager: ObservableObject {
         calendars = []
 
         if withSignOut {
-            await provider.signOut()
+            await (provider as? AuthenticatedEventStore)?.signOut()
         }
 
         await configureProvider(newProvider)
 
         // immediately reload everything
         do {
-            try await provider.signIn(forcePrompt: false)
+            try await (provider as? AuthenticatedEventStore)?.signIn(forcePrompt: false)
             refreshSubject.send()
         } catch {
             NSLog("Error after switching provider: \(error)")

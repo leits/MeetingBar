@@ -16,7 +16,7 @@ extension EKParticipant {
 
 extension EKEventStore: @unchecked @retroactive Sendable {}
 
-extension EKEventStore: EventStore {
+extension EKEventStore: AuthenticatedEventStore {
     nonisolated(unsafe) static var shared = EKEventStore()
 
     public func signIn(forcePrompt: Bool = false) async throws {
