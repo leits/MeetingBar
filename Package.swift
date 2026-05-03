@@ -39,6 +39,9 @@ let package = Package(
                 "Core/Policies/StatusBarIconPolicy.swift",
                 "Core/Policies/StatusBarPresentationPolicy.swift",
                 "Core/Policies/StatusBarTitlePolicy.swift",
+                // Meetings/Domain — pure provider descriptors and registry.
+                "Meetings/Domain/MeetingProviderDescriptor.swift",
+                "Meetings/Domain/MeetingProviderRegistry.swift",
             ]
         ),
         .testTarget(
