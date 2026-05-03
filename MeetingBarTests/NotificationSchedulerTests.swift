@@ -111,7 +111,9 @@ final class NotificationSchedulerTests: BaseTestCase {
         )
     }
 
-    private func startOnlySettings(offset: TimeInterval = 60, hideMeetingTitle: Bool = false) -> NotificationPlanningSettings {
+    private func startOnlySettings(offset: TimeInterval = 60, hideMeetingTitle: Bool = false)
+        -> NotificationPlanningSettings
+    {
         NotificationPlanningSettings(
             eventStart: .init(enabled: true, offset: offset),
             eventEnd: .disabled,

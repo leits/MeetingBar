@@ -7,11 +7,11 @@ import Foundation
 
 /// Categories of per-event reminders MeetingBar can produce.
 enum NotificationKind: String, CaseIterable, Equatable, Sendable {
-    case eventStart    // system notification before the event begins
-    case eventEnd      // system notification before the event ends
-    case fullscreen    // fullscreen overlay window
-    case autoJoin      // automatically open the meeting URL
-    case scriptOnStart // run the user-configured AppleScript
+    case eventStart  // system notification before the event begins
+    case eventEnd  // system notification before the event ends
+    case fullscreen  // fullscreen overlay window
+    case autoJoin  // automatically open the meeting URL
+    case scriptOnStart  // run the user-configured AppleScript
 }
 
 /// A single concrete reminder the scheduler should reconcile to the OS.
@@ -109,18 +109,31 @@ enum NotificationPlanningPolicy {
     ) -> [PlannedNotification] {
         var planned: [PlannedNotification] = []
 
-        for event in events where shouldConsider(event: event, dismissed: settings.dismissedEventIDs) {
-            appendIfDue(.eventStart, anchor: event.startDate, action: settings.eventStart, event: event, now: now, into: &planned)
-            appendIfDue(.eventEnd, anchor: event.endDate, action: settings.eventEnd, event: event, now: now, into: &planned)
-            appendIfDue(.fullscreen, anchor: event.startDate, action: settings.fullscreen, event: event, now: now, into: &planned)
-            appendIfDue(.autoJoin, anchor: event.startDate, action: settings.autoJoin, event: event, now: now, into: &planned)
-            appendIfDue(.scriptOnStart, anchor: event.startDate, action: settings.scriptOnStart, event: event, now: now, into: &planned)
+        for event in events
+        where shouldConsider(event: event, dismissed: settings.dismissedEventIDs) {
+            appendIfDue(
+                .eventStart, anchor: event.startDate, action: settings.eventStart, event: event,
+                now: now, into: &planned)
+            appendIfDue(
+                .eventEnd, anchor: event.endDate, action: settings.eventEnd, event: event, now: now,
+                into: &planned)
+            appendIfDue(
+                .fullscreen, anchor: event.startDate, action: settings.fullscreen, event: event,
+                now: now, into: &planned)
+            appendIfDue(
+                .autoJoin, anchor: event.startDate, action: settings.autoJoin, event: event,
+                now: now, into: &planned)
+            appendIfDue(
+                .scriptOnStart, anchor: event.startDate, action: settings.scriptOnStart,
+                event: event, now: now, into: &planned)
         }
 
         return planned.sorted { $0.fireDate < $1.fireDate }
     }
 
-    private static func shouldConsider(event: NotificationPlanningEvent, dismissed: Set<String>) -> Bool {
+    private static func shouldConsider(event: NotificationPlanningEvent, dismissed: Set<String>)
+        -> Bool
+    {
         if dismissed.contains(event.id) { return false }
         if event.status == .canceled { return false }
         if event.participationStatus == .declined { return false }
@@ -139,12 +152,15 @@ enum NotificationPlanningPolicy {
         guard action.enabled else { return }
         let fireDate = anchor.addingTimeInterval(-action.offset)
         guard fireDate > now else { return }
-        planned.append(PlannedNotification(
-            eventID: event.id,
-            kind: kind,
-            fireDate: fireDate,
-            identity: identity(eventID: event.id, lastModified: event.lastModifiedDate, kind: kind, offset: action.offset)
-        ))
+        planned.append(
+            PlannedNotification(
+                eventID: event.id,
+                kind: kind,
+                fireDate: fireDate,
+                identity: identity(
+                    eventID: event.id, lastModified: event.lastModifiedDate, kind: kind,
+                    offset: action.offset)
+            ))
     }
 
     private static func identity(

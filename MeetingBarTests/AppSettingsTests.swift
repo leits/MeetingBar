@@ -7,8 +7,9 @@
 //  asserts the snapshot reflects it.
 //
 
-import XCTest
 import Defaults
+import XCTest
+
 @testable import MeetingBar
 
 @MainActor
@@ -17,7 +18,8 @@ final class AppSettingsTests: BaseTestCase {
 
     func testCalendarSettings_selectedCalendarIDs() {
         Defaults[.selectedCalendarIDs] = ["cal-1", "cal-2"]
-        XCTAssertEqual(SettingsStore.shared.settings.calendar.selectedCalendarIDs, ["cal-1", "cal-2"])
+        XCTAssertEqual(
+            SettingsStore.shared.settings.calendar.selectedCalendarIDs, ["cal-1", "cal-2"])
     }
 
     func testCalendarSettings_eventStoreProvider() {
@@ -50,19 +52,24 @@ final class AppSettingsTests: BaseTestCase {
 
     func testNotificationSettings_joinEventNotificationTime() {
         Defaults[.joinEventNotificationTime] = .fiveMinuteBefore
-        XCTAssertEqual(SettingsStore.shared.settings.notifications.joinEventNotificationTime, .fiveMinuteBefore)
+        XCTAssertEqual(
+            SettingsStore.shared.settings.notifications.joinEventNotificationTime, .fiveMinuteBefore
+        )
     }
 
     func testNotificationSettings_endOfEventNotificationTime() {
         Defaults[.endOfEventNotificationTime] = .threeMinuteBefore
-        XCTAssertEqual(SettingsStore.shared.settings.notifications.endOfEventNotificationTime, .threeMinuteBefore)
+        XCTAssertEqual(
+            SettingsStore.shared.settings.notifications.endOfEventNotificationTime,
+            .threeMinuteBefore)
     }
 
     // MARK: - EventDisplaySettings
 
     func testEventDisplaySettings_filterEventRegexes() {
         Defaults[.filterEventRegexes] = ["standup", "lunch"]
-        XCTAssertEqual(SettingsStore.shared.settings.events.filterEventRegexes, ["standup", "lunch"])
+        XCTAssertEqual(
+            SettingsStore.shared.settings.events.filterEventRegexes, ["standup", "lunch"])
     }
 
     func testEventDisplaySettings_showEventsForPeriod() {

@@ -69,12 +69,14 @@ final class NotificationScheduler {
         now: Date = Date()
     ) async {
         let planningEvents = events.map(NotificationPlanningEvent.init(event:))
-        let plans = NotificationPlanningPolicy
+        let plans =
+            NotificationPlanningPolicy
             .plan(events: planningEvents, settings: settings, now: now)
         let systemPlans = plans.filter { $0.kind == .eventStart || $0.kind == .eventEnd }
         let actionPlans = plans.filter(\.kind.isInAppAction)
 
-        let eventByID = Dictionary(events.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+        let eventByID = Dictionary(
+            events.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
 
         cleanupExpiredActionRecords(now: now)
         if actionSink != nil {
@@ -83,9 +85,11 @@ final class NotificationScheduler {
         reconcileActionTasks(actionPlans, eventByID: eventByID, settings: settings, now: now)
 
         let pending = await sink.pendingRequests()
-        let pendingMine = pending
+        let pendingMine =
+            pending
             .filter { $0.identifier.hasPrefix(Self.identifierPrefix) }
-        let pendingByID = Dictionary(pendingMine.map { ($0.identifier, $0) }, uniquingKeysWith: { first, _ in first })
+        let pendingByID = Dictionary(
+            pendingMine.map { ($0.identifier, $0) }, uniquingKeysWith: { first, _ in first })
         let pendingSet = Set(pendingByID.keys)
 
         let desiredIDs = Set(systemPlans.map { Self.identifierPrefix + $0.identity })
@@ -133,7 +137,7 @@ final class NotificationScheduler {
         for plan in plans {
             let id = Self.identifierPrefix + plan.identity
             guard actionTasks[id] == nil,
-                  let event = eventByID[plan.eventID]
+                let event = eventByID[plan.eventID]
             else { continue }
 
             let action = actionSettings(for: plan.kind, settings: settings)
@@ -181,12 +185,12 @@ final class NotificationScheduler {
         now: Date
     ) {
         guard let config = actionConfig(for: plan.kind, action: action),
-              let decision = EventActionPolicy.evaluate(
+            let decision = EventActionPolicy.evaluate(
                 event: EventActionEvent(event: event),
                 config: config,
                 processed: processedActionRecords(for: plan.kind),
                 now: now
-              )
+            )
         else { return }
 
         if decision.shouldFireSideEffect {
@@ -297,7 +301,8 @@ final class NotificationScheduler {
         }
     }
 
-    private func hasSameContent(_ lhs: UNNotificationContent, _ rhs: UNNotificationContent) -> Bool {
+    private func hasSameContent(_ lhs: UNNotificationContent, _ rhs: UNNotificationContent) -> Bool
+    {
         lhs.title == rhs.title
             && lhs.subtitle == rhs.subtitle
             && lhs.body == rhs.body
@@ -307,7 +312,10 @@ final class NotificationScheduler {
             && NSDictionary(dictionary: lhs.userInfo).isEqual(to: rhs.userInfo)
     }
 
-    private func buildRequest(for plan: PlannedNotification, event: MBEvent, settings: NotificationPlanningSettings, now: Date) -> UNNotificationRequest {
+    private func buildRequest(
+        for plan: PlannedNotification, event: MBEvent, settings: NotificationPlanningSettings,
+        now: Date
+    ) -> UNNotificationRequest {
         let content = UNMutableNotificationContent()
         content.title = settings.hideMeetingTitle ? "general_meeting".loco() : event.title
         content.interruptionLevel = .timeSensitive
@@ -378,8 +386,12 @@ extension NotificationPlanningSettings {
         let statusBar = SettingsStore.shared.settings.statusBar
         let events = SettingsStore.shared.settings.events
         return NotificationPlanningSettings(
-            eventStart: .init(enabled: notif.joinEventNotification, offset: TimeInterval(notif.joinEventNotificationTime.rawValue)),
-            eventEnd: .init(enabled: notif.endOfEventNotification, offset: TimeInterval(notif.endOfEventNotificationTime.rawValue)),
+            eventStart: .init(
+                enabled: notif.joinEventNotification,
+                offset: TimeInterval(notif.joinEventNotificationTime.rawValue)),
+            eventEnd: .init(
+                enabled: notif.endOfEventNotification,
+                offset: TimeInterval(notif.endOfEventNotificationTime.rawValue)),
             fullscreen: .init(
                 enabled: notif.fullscreenNotification,
                 offset: TimeInterval(notif.fullscreenNotificationTime.rawValue)
@@ -400,8 +412,8 @@ extension NotificationPlanningSettings {
     }
 }
 
-private extension EventActionEvent {
-    init(event: MBEvent) {
+extension EventActionEvent {
+    fileprivate init(event: MBEvent) {
         self.init(
             id: event.id,
             lastModifiedDate: event.lastModifiedDate,
@@ -413,8 +425,8 @@ private extension EventActionEvent {
     }
 }
 
-private extension EventActionProcessedEvent {
-    init(processedEvent: ProcessedEvent) {
+extension EventActionProcessedEvent {
+    fileprivate init(processedEvent: ProcessedEvent) {
         self.init(
             id: processedEvent.id,
             lastModifiedDate: processedEvent.lastModifiedDate,
@@ -422,7 +434,7 @@ private extension EventActionProcessedEvent {
         )
     }
 
-    var processedEvent: ProcessedEvent {
+    fileprivate var processedEvent: ProcessedEvent {
         ProcessedEvent(
             id: id,
             lastModifiedDate: lastModifiedDate,
@@ -431,22 +443,24 @@ private extension EventActionProcessedEvent {
     }
 }
 
-private extension Array where Element == ProcessedEvent {
-    var actionRecords: [EventActionProcessedEvent] {
+extension Array where Element == ProcessedEvent {
+    fileprivate var actionRecords: [EventActionProcessedEvent] {
         map(EventActionProcessedEvent.init(processedEvent:))
     }
 }
 
-private extension Array where Element == EventActionProcessedEvent {
-    var processedEvents: [ProcessedEvent] {
+extension Array where Element == EventActionProcessedEvent {
+    fileprivate var processedEvents: [ProcessedEvent] {
         map(\.processedEvent)
     }
 }
 
-private extension NotificationKind {
-    static let inAppActions: [NotificationKind] = [.fullscreen, .autoJoin, .scriptOnStart]
+extension NotificationKind {
+    fileprivate static let inAppActions: [NotificationKind] = [
+        .fullscreen, .autoJoin, .scriptOnStart,
+    ]
 
-    var isInAppAction: Bool {
+    fileprivate var isInAppAction: Bool {
         Self.inAppActions.contains(self)
     }
 }

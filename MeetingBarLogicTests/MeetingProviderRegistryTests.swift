@@ -8,6 +8,7 @@
 //
 
 import XCTest
+
 @testable import MeetingBarLogic
 
 final class MeetingProviderRegistryTests: XCTestCase {
@@ -17,7 +18,9 @@ final class MeetingProviderRegistryTests: XCTestCase {
         let missingCases = MeetingServices.allCases.filter {
             MeetingProviderRegistry.descriptor(for: $0) == nil
         }
-        XCTAssertTrue(missingCases.isEmpty, "Registry missing descriptors for: \(missingCases.map(\.rawValue))")
+        XCTAssertTrue(
+            missingCases.isEmpty,
+            "Registry missing descriptors for: \(missingCases.map(\.rawValue))")
     }
 
     func testDescriptorIDsAreUnique() {
@@ -41,7 +44,8 @@ final class MeetingProviderRegistryTests: XCTestCase {
     func testAllDescriptorsHavePositiveIconDimensions() {
         for descriptor in MeetingProviderRegistry.all {
             XCTAssertGreaterThan(descriptor.iconWidth, 0, "\(descriptor.id) iconWidth must be > 0")
-            XCTAssertGreaterThan(descriptor.iconHeight, 0, "\(descriptor.id) iconHeight must be > 0")
+            XCTAssertGreaterThan(
+                descriptor.iconHeight, 0, "\(descriptor.id) iconHeight must be > 0")
         }
     }
 
@@ -135,7 +139,8 @@ final class MeetingProviderRegistryTests: XCTestCase {
         for service in MeetingServices.allCases {
             let byService = MeetingProviderRegistry.descriptor(for: service)
             let byString = MeetingProviderRegistry.descriptor(for: service.rawValue)
-            XCTAssertEqual(byService, byString, "String/service lookup mismatch for \(service.rawValue)")
+            XCTAssertEqual(
+                byService, byString, "String/service lookup mismatch for \(service.rawValue)")
         }
     }
 
