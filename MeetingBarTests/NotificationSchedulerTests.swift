@@ -111,14 +111,15 @@ final class NotificationSchedulerTests: BaseTestCase {
         )
     }
 
-    private func startOnlySettings(offset: TimeInterval = 60) -> NotificationPlanningSettings {
+    private func startOnlySettings(offset: TimeInterval = 60, hideMeetingTitle: Bool = false) -> NotificationPlanningSettings {
         NotificationPlanningSettings(
             eventStart: .init(enabled: true, offset: offset),
             eventEnd: .disabled,
             fullscreen: .disabled,
             autoJoin: .disabled,
             scriptOnStart: .disabled,
-            dismissedEventIDs: []
+            dismissedEventIDs: [],
+            hideMeetingTitle: hideMeetingTitle
         )
     }
 
@@ -337,15 +338,14 @@ final class NotificationSchedulerTests: BaseTestCase {
         let sink = FakeNotificationRequestSink()
         let scheduler = NotificationScheduler(sink: sink)
         let evt = event(id: "A", startsIn: 600)
-        let settings = startOnlySettings()
+        let visibleSettings = startOnlySettings(hideMeetingTitle: false)
+        let hiddenSettings = startOnlySettings(hideMeetingTitle: true)
 
-        Defaults[.hideMeetingTitle] = false
-        await scheduler.reconcile(events: [evt], settings: settings, now: now)
+        await scheduler.reconcile(events: [evt], settings: visibleSettings, now: now)
         let requestID = sink.currentPendingIdentifiers().first
         XCTAssertEqual(sink.currentPendingRequests().first?.content.title, evt.title)
 
-        Defaults[.hideMeetingTitle] = true
-        await scheduler.reconcile(events: [evt], settings: settings, now: now)
+        await scheduler.reconcile(events: [evt], settings: hiddenSettings, now: now)
 
         XCTAssertEqual(sink.currentPendingRequests().first?.content.title, "general_meeting".loco())
         XCTAssertTrue(sink.removedBatches.flatMap { $0 }.contains(requestID ?? ""))
