@@ -33,22 +33,16 @@ public class EventManager: ObservableObject {
     @Published public private(set) var events: [MBEvent] = []
     @Published public private(set) var providerHealth = ProviderHealth()
 
-    var provider: EventStore
+    var repository: CalendarRepository
     private let refreshInterval: TimeInterval
     private var cancellables = Set<AnyCancellable>()
     let refreshSubject = PassthroughSubject<Void, Never>()
-    private var storeChangeCancellable: AnyCancellable?
 
     // MARK: - Initialization
 
     public init(refreshInterval: TimeInterval = 180) async {
         self.refreshInterval = refreshInterval
-        provider = await MainActor.run {
-            switch Defaults[.eventStoreProvider] {
-            case .macOSEventKit: return EKEventStore.shared
-            case .googleCalendar: return GCEventStore.shared
-            }
-        }
+        repository = CalendarRepository(providerName: Defaults[.eventStoreProvider])
         await configureProvider(Defaults[.eventStoreProvider])
         setupPublishers()
         refreshSubject.send() // initial load
@@ -60,14 +54,17 @@ public class EventManager: ObservableObject {
         calendars = []
 
         if withSignOut {
-            await (provider as? AuthenticatedEventStore)?.signOut()
+            await repository.signOut()
         }
 
-        await configureProvider(newProvider)
+        await repository.switchProvider(to: newProvider)
+
+        // re-wire EKEventStore change notifications through the new repository
+        subscribeToRepositoryStoreChanges()
 
         // immediately reload everything
         do {
-            try await (provider as? AuthenticatedEventStore)?.signIn(forcePrompt: false)
+            try await repository.signIn(forcePrompt: false)
             refreshSubject.send()
         } catch {
             NSLog("Error after switching provider: \(error)")
@@ -75,36 +72,25 @@ public class EventManager: ObservableObject {
     }
 
     private func configureProvider(_ providerName: EventStoreProvider) async {
-        storeChangeCancellable?.cancel()
-        storeChangeCancellable = nil
+        subscribeToRepositoryStoreChanges()
+    }
 
-        switch providerName {
-        case .macOSEventKit:
-            let store = await MainActor.run { EKEventStore.shared }
-            provider = store
-
-            // observe EKEventStoreChanged
-            storeChangeCancellable = NotificationCenter.default
-                .publisher(for: .EKEventStoreChanged, object: store)
-                // we only need the notification to fire; do the actual work in Swift concurrency
-                .sink { [weak self] _ in
-                    Task {
-                        do {
-                            try await self?.refreshSources()
-                        } catch {
-                            NSLog("Failed reloading calendars: \(error)")
-                        }
+    private func subscribeToRepositoryStoreChanges() {
+        repository.storeChanged
+            .sink { [weak self] in
+                Task {
+                    do {
+                        try await self?.refreshSources()
+                    } catch {
+                        NSLog("Failed reloading calendars: \(error)")
                     }
                 }
-
-        case .googleCalendar:
-            let store = await MainActor.run { GCEventStore.shared }
-            provider = store
-        }
+            }
+            .store(in: &cancellables)
     }
 
     public func refreshSources() async throws {
-        await provider.refreshSources()
+        await repository.refreshSources()
         refreshSubject.send()
     }
 
@@ -124,9 +110,9 @@ public class EventManager: ObservableObject {
 
         let rawEvents: [MBEvent]
         do {
-            rawEvents = try await provider.fetchEventsForDateRange(for: selectedCalendars,
-                                                                   from: dateFrom,
-                                                                   to: dateTo)
+            rawEvents = try await repository.fetchEventsForDateRange(for: selectedCalendars,
+                                                                     from: dateFrom,
+                                                                     to: dateTo)
         } catch {
             throw EventManagerError.eventFetchFailed(error)
         }
@@ -198,7 +184,7 @@ public class EventManager: ObservableObject {
                         Task {
                             let attempted = Date()
                             do {
-                                let cals = try await self.provider.fetchAllCalendars()
+                                let cals = try await self.repository.fetchAllCalendars()
                                 let evts = try await self.fetchEvents(fromCalendars: cals)
                                 let health = ProviderHealth.success(attempted: attempted)
                                 promise(.success((cals, evts, health)))
@@ -231,8 +217,7 @@ public class EventManager: ObservableObject {
         public init(provider: EventStore,
                     refreshInterval: TimeInterval = 0) {
             self.refreshInterval = refreshInterval
-            self.provider = provider
-            // no storeChangeCancellable for real notifications
+            self.repository = CalendarRepository(store: provider)
             setupPublishers()
             refreshSubject.send()
         }
