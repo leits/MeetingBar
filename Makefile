@@ -6,7 +6,7 @@ SWIFTLINT ?= swiftlint
 BUILD_DIR ?= build
 COVERAGE_DIR := $(BUILD_DIR)/coverage
 XCODE_RESULT_BUNDLE := $(COVERAGE_DIR)/MeetingBar.xcresult
-LOGIC_COVERAGE_SOURCES := MeetingBar/Core/Policies
+LOGIC_COVERAGE_SOURCES := MeetingBar/Calendar MeetingBar/Meetings MeetingBar/Notifications MeetingBar/UI/StatusBar MeetingBar/Utilities/Diagnostics
 
 # Pipe xcodebuild through xcbeautify when available; otherwise grep for the lines that matter.
 XCFILTER := $(shell command -v xcbeautify >/dev/null 2>&1 && echo 'xcbeautify --quiet --renderer terminal' || echo "grep -E '(error:|warning:|FAIL|PASS|\\*\\* )'")

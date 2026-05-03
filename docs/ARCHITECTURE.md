@@ -57,55 +57,74 @@ The product principle is reliability first: **show the correct meeting, stay fre
 ```
 MeetingBar/
 ├── App/                            — process lifecycle, OS integration
-│   ├── AppDelegate.swift           — @main, window/URL/screen-lock plumbing
+│   ├── AppDelegate.swift           — @main; wires LifecycleObserver + URLHandler
 │   ├── AppIntent.swift             — Shortcuts integration
 │   ├── AppStore.swift              — IAP via SwiftyStoreKit
-│   └── Notifications.swift         — UN auth + snooze flow + low-level send
+│   ├── LifecycleObserver.swift     — screen-lock / wake / timezone / day-change notifications
+│   ├── Notifications.swift         — UN auth + snooze flow + low-level send
+│   └── URLHandler.swift            — apple-event URL dispatch (oauth, preferences)
+│
+├── Calendar/                       — calendar data: events, filtering, selection
+│   ├── EventFiltering.swift        — apply user filters (all-day, declined, etc.) [SPM]
+│   ├── EventFiltering+MeetingBar.swift
+│   ├── EventManager.swift          — refresh pipeline (Combine, @MainActor)
+│   ├── EventSelection.swift        — pick the "next" event from a list [SPM]
+│   ├── EventSelection+MeetingBar.swift
+│   └── Providers/
+│       ├── EventKit/
+│       │   └── EventKitEventStore.swift    — Apple Calendar via EventKit
+│       └── Google/
+│           ├── GoogleCalendarEventStore.swift — Google Calendar via AppAuth + REST
+│           └── GoogleCalendarPolicy.swift     — auth/error classification [SPM]
 │
 ├── Core/
 │   ├── Models/                     — pure data, no behavior
 │   │   ├── MBEvent.swift           — cross-provider event
 │   │   ├── MBCalendar.swift        — cross-provider calendar
 │   │   └── ProviderHealth.swift    — auth/stale/error/ok
-│   │
-│   ├── Policies/                   — pure decisions, NO side effects
-│   │   ├── EventSelectionPolicy    — pick the "next" event from a list
-│   │   ├── EventFilterPolicy       — apply user filters (all-day, etc.)
-│   │   ├── EventActionPolicy       — should fullscreen / auto-join / script fire?
-│   │   ├── NotificationPlanningPolicy — desired UN requests for an event
-│   │   ├── MeetingLinkDetector     — extract meeting URL from event fields
-│   │   ├── MeetingLinkCandidate    — scored URL + source priority
-│   │   ├── StatusBarPresentationPolicy — title-mode decision
-│   │   ├── StatusBarTitlePolicy    — how to format title text
-│   │   ├── StatusBarIconPolicy     — which icon for which mode
-│   │   ├── GoogleCalendarPolicy    — auth/error classification
-│   │   └── DiagnosticsReport       — issue-report formatter
-│   │
-│   ├── Services/                   — orchestration + side effects
-│   │   ├── NotificationScheduler.swift  — reconciles plans with UNUserNotificationCenter
-│   │   └── MeetingOpener.swift          — runs join script + opens meeting URL
-│   │
-│   ├── EventStores/                — provider implementations
-│   │   ├── Protocol.swift          — the EventStore protocol
-│   │   ├── EKEventStore.swift      — Apple Calendar via EventKit
-│   │   └── GCEventStore.swift      — Google Calendar via AppAuth + REST
-│   │
-│   └── Managers/
-│       ├── EventManager.swift              — refresh pipeline (above)
-│       └── ActionsOnEventStart.swift       — legacy 10s timer for actions (Phase 2 will retire)
+│   └── EventStores/
+│       ├── Protocol.swift          — the CalendarRepository protocol
+│       └── CalendarRepository.swift
+│
+├── Meetings/                       — meeting URL detection, opening, services catalog
+│   ├── MeetingLinkCandidate.swift  — scored URL + source priority [SPM]
+│   ├── MeetingLinkDetection.swift  — extraction helpers [SPM]
+│   ├── MeetingLinkDetector.swift   — orchestrates URL extraction [SPM]
+│   ├── MeetingOpener.swift         — runs join script + opens meeting URL
+│   ├── MeetingOpeningPolicy.swift  — open-in-browser vs open-in-app logic [SPM]
+│   ├── MeetingServices.swift       — regex catalog of 50+ meeting URL patterns
+│   ├── Domain/                     — provider descriptors registry
+│   └── Opening/, Creation/         — (future: opening/creation flows)
+│
+├── Notifications/                  — UN notification scheduling + actions
+│   ├── EventActionPolicy.swift     — should fullscreen / auto-join / script fire? [SPM]
+│   ├── NotificationPlanner.swift   — desired UN requests for an event [SPM]
+│   ├── NotificationScheduler.swift — reconciles plans with UNUserNotificationCenter
+│   └── … (action runner, factory, delegate, setup, record store)
 │
 ├── UI/
-│   ├── StatusBar/                  — menu bar item, menu construction
+│   ├── StatusBar/                  — menu bar item, menu construction, policies
 │   │   ├── StatusBarItemController.swift
-│   │   └── MenuBuilder.swift
+│   │   ├── MenuBuilder.swift
+│   │   ├── StatusBarPresentation.swift    — value types + StatusBarPresentationPolicy + StatusBarPresenter [SPM]
+│   │   ├── StatusBarPresentation+MeetingBar.swift
+│   │   ├── StatusBarTitlePolicy.swift     — title text formatting [SPM]
+│   │   ├── StatusBarTitlePolicy+MeetingBar.swift
+│   │   ├── StatusBarIconPolicy.swift      — icon selection [SPM]
+│   │   ├── StatusBarIconPolicy+MeetingBar.swift
+│   │   └── StatusBarMenuState.swift       — (Phase 7 WIP) menu-state value type
 │   ├── Views/Preferences/          — SwiftUI tabs (General/Appearance/…/Status)
 │   ├── Views/Onboarding/           — multi-screen onboarding
 │   ├── Views/FullscreenNotification.swift
 │   └── Views/Changelog/
 │
-├── Services/
-│   ├── MeetingServices.swift       — regex catalog of 50+ meeting URL patterns
-│   └── Scripts.swift               — AppleScript runners
+├── Utilities/
+│   ├── Constants.swift
+│   ├── Helpers.swift
+│   ├── I18N.swift
+│   ├── Keychain.swift
+│   ├── Scripts.swift               — AppleScript runners
+│   └── Diagnostics/                — issue-report formatter [SPM]
 │
 ├── Extensions/
 │   ├── DefaultsKeys.swift          — every persistent setting key
@@ -122,8 +141,8 @@ Tests live in `MeetingBarTests/` (host-app tests, AppKit-aware) and `MeetingBarL
 
 You will see pairs of files like:
 
-- `EventSelectionPolicy.swift`
-- `EventSelectionPolicy+MeetingBar.swift`
+- `EventSelection.swift`
+- `EventSelection+MeetingBar.swift`
 
 This is intentional. The pattern is:
 
@@ -141,7 +160,7 @@ This is intentional. The pattern is:
 3. Add `Foo.swift` to `Package.swift` sources (and to the Xcode target — it ships in both).
 4. Write tests against `Foo.swift` in `MeetingBarLogicTests/`.
 
-**When NOT to use this pattern:** if your code genuinely needs `NSImage`, `NSStatusItem`, `UNUserNotificationCenter`, or other AppKit/UN types, it is a **service**, not a policy. Put it in `Core/Services/` and accept that its tests will be host-app tests.
+**When NOT to use this pattern:** if your code genuinely needs `NSImage`, `NSStatusItem`, `UNUserNotificationCenter`, or other AppKit/UN types, it is a **service**. Put it alongside the feature it serves (e.g. `Notifications/NotificationScheduler.swift`) and accept that its tests will be host-app tests.
 
 ---
 
@@ -150,7 +169,7 @@ This is intentional. The pattern is:
 `EventManager` is a `@MainActor ObservableObject` and the heart of the data flow. Its refresh pipeline merges three Combine publishers:
 
 ```swift
-// Conceptual — see Core/Managers/EventManager.swift for the real thing.
+// Conceptual — see Calendar/EventManager.swift for the real thing.
 Publishers.Merge3(
     defaultsChanges,           // user toggled a setting
     Timer.publish(every: 180), // every 3 minutes
@@ -292,16 +311,15 @@ The protocol currently has OAuth-only members (`signIn(forcePrompt:)`, `signOut(
 Touching these requires extra care, tests around behavior, and a focused PR. Listed in `ROADMAP.md` and reproduced here:
 
 - `App/AppDelegate.swift`
-- `Core/Managers/EventManager.swift`
-- `Core/Managers/ActionsOnEventStart.swift`
+- `Calendar/EventManager.swift`
 - `UI/StatusBar/StatusBarItemController.swift`
 - `UI/StatusBar/MenuBuilder.swift`
 - `Core/Models/MBEvent.swift`, `MBEvent+Helpers.swift`
-- `Core/EventStores/GCEventStore.swift`
-- `Core/EventStores/EKEventStore.swift`
-- `Core/Services/NotificationScheduler.swift`
-- `Core/Policies/MeetingLinkDetector.swift`
-- `Services/MeetingServices.swift`
+- `Calendar/Providers/Google/GoogleCalendarEventStore.swift`
+- `Calendar/Providers/EventKit/EventKitEventStore.swift`
+- `Notifications/NotificationScheduler.swift`
+- `Meetings/MeetingLinkDetector.swift`
+- `Meetings/MeetingServices.swift`
 - `App/Notifications.swift`
 
 Before changing one of these, check `ROADMAP.md` to confirm your change aligns with the current phase.
@@ -312,10 +330,10 @@ Before changing one of these, check `ROADMAP.md` to confirm your change aligns w
 
 You want to add "do not notify for events shorter than 5 minutes".
 
-1. **Decide where the rule lives.** It is a per-event filter for notifications → it belongs in `NotificationPlanningPolicy`, not in the scheduler service.
+1. **Decide where the rule lives.** It is a per-event filter for notifications → it belongs in `NotificationPlanner`, not in the scheduler service.
 2. **Add the setting.** New key in `Extensions/DefaultsKeys.swift`. Read it once in `NotificationPlanSettings.current` (the adapter).
-3. **Update the policy.** Inside `NotificationPlanningPolicy.plan(for:settings:now:)`, return `[]` when `event.duration < settings.minDurationForNotifications`.
-4. **Test it hostless.** Add a case in `MeetingBarLogicTests/NotificationPlanningPolicyTests.swift`: short event → empty plan; long event → plan unchanged.
+3. **Update the policy.** Inside `NotificationPlanner.plan(for:settings:now:)`, return `[]` when `event.duration < settings.minDurationForNotifications`.
+4. **Test it hostless.** Add a case in `MeetingBarLogicTests/NotificationPlannerTests.swift`: short event → empty plan; long event → plan unchanged.
 5. **Update the UI.** Add a toggle in the relevant Preferences tab. Localize the label and add the key to `en.lproj/Localizable.strings`. Run `make validate-strings`.
 6. **Reconcile triggers.** Make sure `StatusBarItemController.setupDefaultsObservers()` (or wherever the watcher list lives) listens to your new key so flipping it triggers a notification reconcile.
 7. **Open a small PR.** Body: rule, why a default tweak alone is not enough, screenshots if UI, test names.
