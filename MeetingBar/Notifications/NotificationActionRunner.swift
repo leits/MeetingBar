@@ -70,7 +70,14 @@ final class NotificationActionRunner {
     ) {
         guard let config = actionConfig(for: plan.kind, action: action),
             let decision = EventActionPolicy.evaluate(
-                event: EventActionEvent(event: event),
+                event: EventActionEvent(
+                    id: event.id,
+                    lastModifiedDate: event.lastModifiedDate,
+                    startDate: event.startDate,
+                    endDate: event.endDate,
+                    isAllDay: event.isAllDay,
+                    hasMeetingLink: event.meetingLink != nil
+                ),
                 config: config,
                 processed: recordStore.processedRecords(for: plan.kind),
                 now: now

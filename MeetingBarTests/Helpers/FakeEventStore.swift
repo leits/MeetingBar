@@ -10,12 +10,12 @@ import Foundation
 @testable import MeetingBar
 
 final class FakeEventStore: EventStore {
-    var stubbedCalendars: [MBCalendar]
-    var stubbedEvents: [MBEvent]
-    var stubbedError: Error?
-    var stubbedCalendarError: Error?
-    var stubbedEventsError: Error?
-    var fetchDelay: TimeInterval = 0
+    nonisolated(unsafe) var stubbedCalendars: [MBCalendar]
+    nonisolated(unsafe) var stubbedEvents: [MBEvent]
+    nonisolated(unsafe) var stubbedError: Error?
+    nonisolated(unsafe) var stubbedCalendarError: Error?
+    nonisolated(unsafe) var stubbedEventsError: Error?
+    nonisolated(unsafe) var fetchDelay: TimeInterval = 0
     private(set) var fetchCallCount = 0
 
     init(calendars: [MBCalendar] = [], events: [MBEvent] = []) {

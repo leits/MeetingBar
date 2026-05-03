@@ -20,6 +20,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     let notificationScheduler = NotificationScheduler()
     private var notificationCenterDelegate: NotificationCenterDelegate?
     private(set) var appModel: AppModel?
+    private let lifecycleObserver = LifecycleObserver()
+    private let urlHandler = URLHandler()
 
     var screenIsLocked: Bool = false
 
@@ -112,34 +114,33 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         // Handle sleep and wake up events
-        let dnc = DistributedNotificationCenter.default()
-        dnc.addObserver(
-            self, selector: #selector(AppDelegate.lockListener),
-            name: .init("com.apple.screenIsLocked"), object: nil
-        )
-        dnc.addObserver(
-            self, selector: #selector(AppDelegate.unlockListener),
-            name: .init("com.apple.screenIsUnlocked"), object: nil
-        )
+        lifecycleObserver.onScreenLocked = { [weak self] in
+            self?.screenIsLocked = true
+            self?.appModel?.send(.screenLocked)
+        }
+        lifecycleObserver.onScreenUnlocked = { [weak self] in
+            self?.screenIsLocked = false
+            self?.appModel?.send(.screenUnlocked)
+            self?.refreshAndReconcileAfterClockChange()
+        }
+        lifecycleObserver.onDidWake = { [weak self] in
+            self?.appModel?.send(.didWake)
+            self?.refreshAndReconcileAfterClockChange()
+        }
+        lifecycleObserver.onTimezoneChanged = { [weak self] in
+            self?.appModel?.send(.timezoneChanged)
+            self?.refreshAndReconcileAfterClockChange()
+        }
+        lifecycleObserver.onDayChanged = { [weak self] in
+            self?.appModel?.send(.dayChanged)
+            self?.refreshAndReconcileAfterClockChange()
+        }
+        lifecycleObserver.start()
 
-        // Refresh + reconcile after the system wakes from sleep so that
-        // calendar data and scheduled notifications match wall-clock time.
-        NSWorkspace.shared.notificationCenter.addObserver(
-            self, selector: #selector(AppDelegate.wakeListener),
-            name: NSWorkspace.didWakeNotification, object: nil
-        )
-
-        // Timezone changes do not move absolute event start dates but can move
-        // user-visible "starts in 5 min" interpretations and recurrence rules.
-        // Refresh defensively so the scheduler recomputes against current time.
-        NotificationCenter.default.addObserver(
-            self, selector: #selector(AppDelegate.timeZoneDidChange),
-            name: .NSSystemTimeZoneDidChange, object: nil
-        )
-        NotificationCenter.default.addObserver(
-            self, selector: #selector(AppDelegate.calendarDayDidChange),
-            name: .NSCalendarDayChanged, object: nil
-        )
+        urlHandler.onOpenPreferences = { [weak self] in self?.openPreferencesWindow(nil) }
+        urlHandler.onOAuthCallback = { [weak self] url in
+            self?.eventManager.repository.resumeAuthorizationFlow(with: url)
+        }
     }
 
     /*
@@ -296,37 +297,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    @objc
-    func lockListener(notification _: NSNotification) {
-        screenIsLocked = true
-        appModel?.send(.screenLocked)
-    }
-
-    @objc
-    func unlockListener(notification _: NSNotification) {
-        screenIsLocked = false
-        appModel?.send(.screenUnlocked)
-        refreshAndReconcileAfterClockChange()
-    }
-
-    @objc
-    func wakeListener(notification _: NSNotification) {
-        appModel?.send(.didWake)
-        refreshAndReconcileAfterClockChange()
-    }
-
-    @objc
-    func timeZoneDidChange(notification _: NSNotification) {
-        appModel?.send(.timezoneChanged)
-        refreshAndReconcileAfterClockChange()
-    }
-
-    @objc
-    func calendarDayDidChange(notification _: NSNotification) {
-        appModel?.send(.dayChanged)
-        refreshAndReconcileAfterClockChange()
-    }
-
     private func refreshAndReconcileAfterClockChange() {
         let currentEvents = statusBarItem.events
         Task { @MainActor in
@@ -350,11 +320,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     ) {
         if let string = event.paramDescriptor(forKeyword: keyDirectObject)?.stringValue,
            let url = URL(string: string) {
-            if url == URL(string: "meetingbar://preferences") {
-                openPreferencesWindow(nil)
-            } else {
-                eventManager.repository.resumeAuthorizationFlow(with: url)
-            }
+            urlHandler.handle(url: url)
         }
     }
 

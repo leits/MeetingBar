@@ -44,7 +44,7 @@ extension UNUserNotificationCenter: NotificationRequestSink {
 /// are not touched, so the two paths can coexist.
 @MainActor
 final class NotificationScheduler {
-    static let identifierPrefix = "mb-plan-"
+    nonisolated static let identifierPrefix = "mb-plan-"
 
     private let sink: NotificationRequestSink
     private let actionScheduler: NotificationActionScheduler

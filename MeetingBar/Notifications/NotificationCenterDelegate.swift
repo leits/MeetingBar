@@ -11,7 +11,7 @@ import UserNotifications
 /// This class owns the UN delegate role so `AppDelegate` only needs to wire it
 /// up and does not implement `UNUserNotificationCenterDelegate` itself.
 @MainActor
-final class NotificationCenterDelegate: NSObject, UNUserNotificationCenterDelegate {
+final class NotificationCenterDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate {
     /// Closure that resolves an event by ID from the current status bar events.
     var eventProvider: (String) -> MBEvent?
 
