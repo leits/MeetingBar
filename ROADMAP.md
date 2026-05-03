@@ -1,6 +1,6 @@
 # MeetingBar Roadmap
 
-Last updated: 2026-04-30
+Last updated: 2026-05-02
 
 This file is the single source of truth for MeetingBar planning. Use it for AI agents and human contributors alike. If older planning notes (e.g. a `dev_plan.md`) disagree, this file wins.
 
@@ -51,10 +51,12 @@ Keep the architecture boring and incremental.
 Preferred approach:
 
 - small, reviewable PRs;
-- pure policy objects for decisions, kept in `MeetingBar/Core/Policies/`;
+- pure feature logic for decisions, kept in the current `MeetingBar/Core/Policies/`
+  during 4.x and moved to feature folders during the 5.0 architecture migration;
 - small formatters/presenters for display logic;
-- side-effect services for AppKit, EventKit, UserNotifications, Keychain, network, AppleScript, and URL opening, kept in `MeetingBar/Core/Services/` or feature folders;
-- Defaults reads at boundaries or through small settings snapshots (`Settings.current` static factory pattern);
+- side-effect services for AppKit, EventKit, UserNotifications, Keychain, network, AppleScript, and URL opening, kept behind named feature boundaries;
+- Defaults reads at boundaries or through settings snapshots; the 5.0 target is `Settings/SettingsStore` + `AppSettings`;
+- keep the SwiftPM logic package as a fast hostless test harness, not as a shipped core product;
 - existing public behavior preserved unless the roadmap explicitly calls for a behavior change;
 - add or update tests when changing risky behavior. A maintainer may ask for characterization tests around code that changes event selection, notification scheduling, refresh, or link opening.
 
@@ -87,34 +89,15 @@ Touching these requires extra care, tests around behavior, and a small focused P
 
 ### Architecture map at a glance
 
-```
-MeetingBar/
-├── App/
-│   ├── AppDelegate.swift           — lifecycle, wires EventManager + StatusBar + scheduler
-│   ├── Notifications.swift         — auth, snooze flow (legacy id), low-level send helpers
-│   └── …
-├── Core/
-│   ├── Models/                     — pure data: MBEvent, MBCalendar, ProviderHealth
-│   ├── Policies/                   — pure decisions, no side effects, easy to test
-│   │   ├── EventSelectionPolicy
-│   │   ├── EventFilterPolicy
-│   │   ├── EventActionPolicy
-│   │   ├── NotificationPlanningPolicy
-│   │   ├── MeetingLinkDetector
-│   │   ├── GoogleCalendarPolicy
-│   │   └── DiagnosticsReport
-│   ├── Services/                   — orchestration, side-effecting work
-│   │   ├── NotificationScheduler   — reconciles plans with UNUserNotificationCenter
-│   │   └── MeetingOpener           — runs join script + opens meeting URL
-│   ├── EventStores/                — provider implementations: EK, GC
-│   └── Managers/                   — EventManager (refresh pipeline), ActionsOnEventStart
-├── UI/                             — AppKit + SwiftUI surfaces
-│   ├── StatusBar/                  — menu bar item, menu builder
-│   └── Views/Preferences/          — Preferences tabs (General, Appearance, Status, …)
-└── Services/                       — meeting link regex catalog, AppleScript runners
-```
+Current architecture map: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
-For new contributors: a typical new behavior change touches one Policy file plus one Service or Manager. If a change spans across `App/`, `UI/`, and `Core/`, that is a signal the design needs an extracted seam first.
+Target architecture for 5.0: [`docs/ARCHITECTURE_UPDATE.md`](docs/ARCHITECTURE_UPDATE.md).
+
+Execution plan: [`docs/ARCHITECTURE_MIGRATION_PLAN.md`](docs/ARCHITECTURE_MIGRATION_PLAN.md).
+
+Preferences/onboarding UI migration plan: [`docs/PREFERENCES_ONBOARDING_REDESIGN_PLAN.md`](docs/PREFERENCES_ONBOARDING_REDESIGN_PLAN.md).
+
+For new contributors: a typical behavior change should touch one feature area and one side-effect boundary. If a change spans across `App/`, `UI/`, `Core/`, and root `Services/`, that is a signal the design needs an extracted boundary first.
 
 ---
 
@@ -139,19 +122,36 @@ Highlights of what is in 4.12:
 
 ### 5.0 — architecture and modernization
 
-Single major release. It folds the work that older notes called "4.13 / 4.14 / 4.15" into one consistent rework that ships alongside macOS modernization.
+Single major release. It folds the work that older notes called "4.13 / 4.14 / 4.15" into one consistent architecture rework. The architecture target is documented in `docs/ARCHITECTURE_UPDATE.md`; the execution plan is documented in `docs/ARCHITECTURE_MIGRATION_PLAN.md`.
 
 In scope:
 
 - wake / unlock / time-change reconcile in `NotificationScheduler` (Phase 1 close-out);
-- migrate fullscreen / auto-join / on-start script from `ActionsOnEventStart` timer into `NotificationPlanningPolicy` + scheduler (Phase 2 close-out);
+- migrate fullscreen / auto-join / on-start script from `ActionsOnEventStart` timer into the notification planner/action scheduler/action runner model (Phase 2 close-out);
 - candidate-based meeting link detection with explicit source priority and scoring (Phase 3);
 - localization audit so no shipped locale shows raw keys (Phase 4 close-out);
 - `StatusBarPresenter` / `StatusTitleFormatter` extraction so `StatusBarItemController.updateTitle()` becomes mostly orchestration (Phase 5);
-- `AppDelegate` → SwiftUI App lifecycle with `Settings { … }` scene; evaluate `MenuBarExtra` as a replacement for `NSStatusItem` + `MenuBuilder`;
-- adopt `Observation` (`@Observable`) for `EventManager` and `StatusBarItemController`;
-- reshape the `EventStore` protocol so OAuth-only members (`signIn(forcePrompt:)`, `signOut()`) are not part of the base protocol; EventKit stops stubbing them;
-- bump `MACOSX_DEPLOYMENT_TARGET` 12 → 13.
+- introduce `AppSettings` + `SettingsStore` so feature logic stops reading `Defaults` directly;
+- introduce a meeting provider registry so simple providers are descriptor-only additions;
+- split calendar provider code into `Calendar/Providers/EventKit` and `Calendar/Providers/Google`;
+- reshape the `EventStore` protocol so OAuth-only members (`signIn(forcePrompt:)`, `signOut()`) are not part of the base protocol and fetch APIs are not globally main-actor isolated;
+- split notification planning, system notification reconciliation, in-app action scheduling/running, content creation, and processed-record persistence;
+- introduce `AppModel`, `AppState`, `AppAction`, and `AppEnvironment` without importing AppKit/EventKit/UserNotifications/AppAuth into the model;
+- reduce `AppDelegate` to composition and OS delegate wiring through coordinators;
+- make the status bar controller render model-derived presentation/menu state instead of storing events;
+- migrate Preferences and Onboarding into a shared `Settings/` feature so they use `SettingsStore`, provider registries, and app actions instead of direct `Defaults`, `EventManager`, and `AppDelegate` reach-through;
+- preserve the test-only SwiftPM logic package for fast hostless tests and raise meaningful logic coverage toward 90-95%.
+
+Explicitly not part of the architecture target:
+
+- replacing `NSStatusItem` + `NSMenu` with SwiftUI `MenuBarExtra`;
+- adopting `@Observable` unless the app later targets macOS 14+;
+- shipping a separate `MeetingBarCore` SwiftPM product;
+- a full visual rebrand outside the Preferences/Onboarding architecture migration.
+
+Open platform decision:
+
+- decide in a separate PR whether `MACOSX_DEPLOYMENT_TARGET` bumps 12 -> 13. The architecture must not depend on macOS 13-only assumptions.
 
 Explicitly out of scope for 5.0 (deferred to 5.x):
 
@@ -176,8 +176,8 @@ Only after 5.0 ships and the new architecture has been stable in production:
 | MeetingBar version | macOS minimum | Notes |
 |---|---|---|
 | 4.x | 12.0 (Monterey) | Current shipping minimum. |
-| 5.0 | 13.0 (Ventura) | Drops Monterey. Gains stable `MenuBarExtra` and `Observation` framework. Apple no longer ships security patches for 12. |
-| 5.x | re-evaluate to 14 | Only after macOS 17 ships and adoption stabilizes. |
+| 5.0 | 12.0 or 13.0 | Open platform decision. The architecture does not require the bump. If 5.0 drops Monterey, justify it as a support/product decision, not because of `MenuBarExtra` or `@Observable`. |
+| 5.x | re-evaluate to 14 | Only after macOS 17 ships and adoption stabilizes. `@Observable` becomes a practical option only with a macOS 14+ minimum. |
 
 Rule of thumb: support the latest three macOS versions that Apple itself maintains. Bumps cost a small fraction of users (typically 2–5% on the oldest version when Apple drops it) and let the codebase use modern APIs without availability checks.
 
@@ -219,7 +219,7 @@ Tooling and tests:
 - hostless test targets so most policy tests run without launching the host app, `dbcf90a` series.
 - coverage report targets, `acc215c`.
 
-Consequence for planning: items the older roadmap had as P0.1 / P0.2 / P0.3 are now resolved or close to it. Their entries are kept below for historical context but marked done. The next active work is the close-out of Phase 1 (wake/unlock) and the start of Phase 2 (migrate `ActionsOnEventStart` into the scheduler).
+Consequence for planning: items the older roadmap had as P0.1 / P0.2 / P0.3 are now resolved or close to it. Their entries are kept below for historical context but marked done. The next active work is the close-out of Phase 1 (wake/unlock) and the start of Phase 2 (migrate `ActionsOnEventStart` into the notification plan/action architecture).
 
 ---
 
@@ -308,7 +308,7 @@ Also handle:
 
 ### Goal
 
-`NotificationScheduler` already owns start/end system notifications. Move fullscreen, auto-join, and on-start script onto the same planning model so all per-event actions share one source of truth.
+`NotificationScheduler` already owns start/end system notifications. Move fullscreen, auto-join, and on-start script onto the same planning model so all per-event actions share one source of truth, while keeping system notification reconciliation separate from in-app action scheduling/running.
 
 ### Why
 
@@ -316,14 +316,15 @@ Today `ActionsOnEventStart` is a 10-second polling timer that reads the next eve
 
 - duplicates per-event dedup state in three separate `Defaults` lists;
 - cannot plan for back-to-back events (only the current "next" gets considered);
-- has no shared idempotency model with `NotificationScheduler`.
+- has no shared idempotency model with notification planning.
 
 ### Work items
 
-1. Extend `NotificationPlanningPolicy` to emit `fullscreen`, `autoJoin`, `scriptOnStart` plans (the model already has these `NotificationKind` cases; they are filtered out by the scheduler today).
-2. Extend `NotificationScheduler` to consume those plans. Side-effects (`openFullscreenNotificationWindow`, `openMeeting`, `runMeetingStartsScript`) run from a dispatcher that is called when a plan's fire-time arrives or when `now` already passed it during a refresh.
-3. Migrate `Defaults[.processedEventsForFullscreenNotification]` etc. into `mb-plan-` identifier dedup or keep them as a side store that the scheduler reads on each reconcile.
-4. Once Phase 2 is complete, remove `ActionsOnEventStart`'s 10-second timer.
+1. Extend `NotificationPlanningPolicy` / `NotificationPlanner` to emit `fullscreen`, `autoJoin`, `scriptOnStart` plans (the model already has these `NotificationKind` cases; they are filtered out by the scheduler today).
+2. Keep `NotificationScheduler` focused on system notification requests. Add a `NotificationActionScheduler` if delayed in-app action tasks are still needed.
+3. Run side effects (`openFullscreenNotificationWindow`, `openMeeting`, `runMeetingStartsScript`) through `NotificationActionRunner` when a plan's fire-time arrives or when `now` already passed it during a refresh.
+4. Move `Defaults[.processedEventsForFullscreenNotification]` etc. behind `NotificationRecordStore`; decide there whether to keep the existing processed-event side store or migrate to plan-identity-based dedup.
+5. Once Phase 2 is complete, remove `ActionsOnEventStart`'s 10-second timer.
 
 ### Risk
 
@@ -468,7 +469,7 @@ Pure presenter takes `events`, `nextEventState`, `Defaults` snapshot, and curren
 
 ### Work items
 
-- introduce `StatusBarPresenter` next to existing policies in `Core/Policies/`;
+- introduce `StatusBarPresenter` in the current policy area as an incremental step, then move it to `StatusBar/` during the architecture migration;
 - migrate `updateTitle` to the new presenter;
 - add unit tests for status presentation decisions (long titles, RTL, time-under-title, ongoing-event indicator);
 - ensure long titles cannot make MeetingBar disappear from the menu bar — always render at least an icon fallback;
@@ -521,7 +522,9 @@ Cosmetic / setting-sprawl holds:
 
 Documentation / process:
 
-- `docs/ARCHITECTURE.md` — the architecture map at the top of this file is the lightweight version. A dedicated doc can wait until the Phase 5 presenter extraction lands and the picture stabilizes.
+- `docs/ARCHITECTURE.md` — current code map.
+- `docs/ARCHITECTURE_UPDATE.md` — target 5.0 architecture.
+- `docs/ARCHITECTURE_MIGRATION_PLAN.md` — execution plan, coverage strategy, PR sequence, and stop conditions.
 
 ---
 
@@ -567,7 +570,7 @@ Useful later. Should be built on `EventSelectionPolicy` (already extracted).
 
 ### #899 Swift 6 / Xcode 26 / macOS 15.6
 
-Treat as a separate platform decision. The macOS bump for 5.0 is to 13, not 15.6. Do not mix with reliability work.
+Treat as a separate platform decision. The 5.0 platform decision is 12 vs 13, not 15.6. Do not mix with reliability or architecture migration work.
 
 ### #911 multiple Google accounts
 
@@ -621,12 +624,12 @@ A PR is incomplete if it:
 In execution order:
 
 1. **Phase 1 close-out — wake / unlock / time-change reconcile.** Smallest remaining piece of Phase 1, unblocks Phase 2 manual QA. Touches `AppDelegate` lock listeners and adds a `NotificationScheduler.reconcile` call on wake.
-2. **Phase 2 — start migrating `ActionsOnEventStart` into `NotificationScheduler`**, beginning with fullscreen since it has the most reliability bug reports.
+2. **Phase 2 — start migrating `ActionsOnEventStart` into the notification plan/action architecture**, beginning with fullscreen since it has the most reliability bug reports.
 3. **Phase 4 — finish localization audit** in parallel with Phase 2. Small, contained, low-risk.
 4. **Phase 3 — `MeetingLinkCandidate` model.** Larger and risky; start with the candidate model and tests, leave the integration for a follow-up PR.
 5. **Phase 5 — `StatusBarPresenter` extraction.** Last because it touches the highest-traffic UI path.
 
-Modernization tasks (`AppDelegate` → SwiftUI App, `Observation`, macOS 13 bump, `MenuBarExtra` evaluation) ride alongside Phase 5; do not rush them as separate one-off PRs.
+Architecture migration tasks should follow `docs/ARCHITECTURE_MIGRATION_PLAN.md`: coverage baseline, test harnesses, settings boundary, meeting provider registry, calendar provider separation, notification split, AppModel/coordinators, status bar renderer, then file layout cleanup. Do not rush `MenuBarExtra`, `@Observable`, or a deployment target bump as architecture side effects.
 
 ---
 
