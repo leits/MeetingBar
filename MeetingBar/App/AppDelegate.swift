@@ -19,6 +19,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var eventManager: EventManager!
     let notificationScheduler = NotificationScheduler()
     private var notificationCenterDelegate: NotificationCenterDelegate?
+    private(set) var appModel: AppModel?
 
     var screenIsLocked: Bool = false
 
@@ -68,6 +69,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func setup() {
         statusBarItem.setAppDelegate(appdelegate: self)
         notificationScheduler.setActionSink(self)
+
+        // Initialize AppModel with live environment (bridges existing services)
+        let env = AppEnvironment.live(
+            eventManager: eventManager,
+            notificationScheduler: notificationScheduler
+        )
+        appModel = AppModel(environment: env)
 
         let ncDelegate = NotificationCenterDelegate(
             eventProvider: { [weak self] id in self?.statusBarItem.events.first { $0.id == id } },
@@ -291,26 +299,31 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @objc
     func lockListener(notification _: NSNotification) {
         screenIsLocked = true
+        appModel?.send(.screenLocked)
     }
 
     @objc
     func unlockListener(notification _: NSNotification) {
         screenIsLocked = false
+        appModel?.send(.screenUnlocked)
         refreshAndReconcileAfterClockChange()
     }
 
     @objc
     func wakeListener(notification _: NSNotification) {
+        appModel?.send(.didWake)
         refreshAndReconcileAfterClockChange()
     }
 
     @objc
     func timeZoneDidChange(notification _: NSNotification) {
+        appModel?.send(.timezoneChanged)
         refreshAndReconcileAfterClockChange()
     }
 
     @objc
     func calendarDayDidChange(notification _: NSNotification) {
+        appModel?.send(.dayChanged)
         refreshAndReconcileAfterClockChange()
     }
 
