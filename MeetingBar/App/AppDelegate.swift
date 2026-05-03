@@ -31,6 +31,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
         completeStoreTransactions()
         checkAppSource()
 
+        // Migrate legacy per-provider browser keys → providerBrowsers map
+        MeetingOpenPreferencesMigration.migrateDefaultsIfNeeded()
+
         // Handle windows closing closing
         NotificationCenter.default.addObserver(
             self, selector: #selector(AppDelegate.windowClosed),

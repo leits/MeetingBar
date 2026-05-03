@@ -166,7 +166,7 @@ struct LinksTab: View {
                         HStack {
                             Image(nsImage: NSImage(named: NSImage.listViewTemplateName)!).foregroundColor(.gray)
 
-                            Text("\(bookmark.name) (\(bookmark.service.rawValue)): \(bookmark.url)")
+                            Text("\(bookmark.name) (\(bookmark.service)): \(bookmark.url)")
                             Spacer()
                             Button(action: {
                                 self.bookmark = bookmark
@@ -287,7 +287,7 @@ struct AddBookmarkModal: View {
                             showingAlert = true
                             return
                         }
-                        let bookmark = Bookmark(name: name, service: service, url: bookmarkURL)
+                        let bookmark = Bookmark(name: name, service: service.rawValue, url: bookmarkURL)
                         bookmarks.append(bookmark)
                     }
                 }) {

@@ -64,12 +64,9 @@ struct MeetingSettings: Equatable {
     var browsers: [Browser]
     var defaultBrowser: Browser
     var browserForCreateMeeting: Browser
-    var meetBrowser: Browser
-    var zoomBrowser: Browser
-    var teamsBrowser: Browser
-    var jitsiBrowser: Browser
-    var slackBrowser: Browser
-    var riversideBrowser: Browser
+    /// Unified per-provider browser preferences (keyed by provider ID).
+    /// Replaces the individual meetBrowser/zoomBrowser/… fields.
+    var providerBrowsers: [String: Browser]
 }
 
 struct AdvancedSettings: Equatable {

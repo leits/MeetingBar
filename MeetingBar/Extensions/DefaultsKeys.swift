@@ -101,6 +101,11 @@ extension Defaults.Keys {
     static let slackBrowser = Key<Browser>("slackBrowser", default: systemDefaultBrowser)
     static let riversideBrowser = Key<Browser>("riversideBrowser", default: systemDefaultBrowser)
 
+    /// Unified per-provider browser preferences.
+    /// Keyed by MeetingProviderDescriptor.id (= MeetingServices.rawValue for built-in providers).
+    /// Replaces the individual meetBrowser/zoomBrowser/… keys. See MeetingOpenPreferencesMigration.
+    static let providerBrowsers = Key<[String: Browser]>("providerBrowsers", default: [:])
+
     /**
      * browser used for creating a new meeting
      */

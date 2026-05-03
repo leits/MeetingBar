@@ -13,7 +13,10 @@ import Foundation
 
 struct Bookmark: Codable, Defaults.Serializable, Hashable {
     var name: String
-    var service: MeetingServices
+    /// Provider string ID (= MeetingServices.rawValue for built-in providers).
+    /// Backward-compatible: the old Bookmark.service (MeetingServices) encoded
+    /// its rawValue as the JSON string, so existing stored bookmarks decode fine.
+    var service: String
     var url: URL
 }
 

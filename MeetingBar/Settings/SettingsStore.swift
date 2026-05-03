@@ -65,12 +65,7 @@ final class SettingsStore {
                 browsers: Defaults[.browsers],
                 defaultBrowser: Defaults[.defaultBrowser],
                 browserForCreateMeeting: Defaults[.browserForCreateMeeting],
-                meetBrowser: Defaults[.meetBrowser],
-                zoomBrowser: Defaults[.zoomBrowser],
-                teamsBrowser: Defaults[.teamsBrowser],
-                jitsiBrowser: Defaults[.jitsiBrowser],
-                slackBrowser: Defaults[.slackBrowser],
-                riversideBrowser: Defaults[.riversideBrowser]
+                providerBrowsers: Defaults[.providerBrowsers]
             ),
             advanced: AdvancedSettings(
                 automaticEventJoin: Defaults[.automaticEventJoin],
