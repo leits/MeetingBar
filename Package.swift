@@ -13,35 +13,38 @@ let package = Package(
     targets: [
         .target(
             name: "MeetingBarLogic",
-            path: "MeetingBar/Core/Policies",
+            path: "MeetingBar",
             exclude: [
-                "DiagnosticsReport+MeetingBar.swift",
-                "EventFilterPolicy+MeetingBar.swift",
-                "EventSelectionPolicy+MeetingBar.swift",
-                "StatusBarIconPolicy+MeetingBar.swift",
-                "StatusBarPresentationPolicy+MeetingBar.swift",
-                "StatusBarTitlePolicy+MeetingBar.swift"
+                // Exclude app-layer files that depend on AppKit/Defaults/EventKit.
+                // SPM scans the whole MeetingBar/ tree for resources; these paths
+                // prevent it from picking up .lproj bundles and asset catalogues.
+                "Resources ",
+                "Assets.xcassets",
+                "Base.lproj",
+                "Preview Content",
             ],
             sources: [
-                "DiagnosticsReport.swift",
-                "EventActionPolicy.swift",
-                "EventFilterPolicy.swift",
-                "EventSelectionPolicy.swift",
-                "GoogleCalendarPolicy.swift",
-                "MeetingLinkCandidate.swift",
-                "MeetingLinkDetection.swift",
-                "MeetingLinkDetector.swift",
-                "MeetingOpeningPolicy.swift",
-                "NotificationPlanningPolicy.swift",
-                "StatusBarIconPolicy.swift",
-                "StatusBarPresentationPolicy.swift",
-                "StatusBarTitlePolicy.swift"
+                // Core/Policies — pure hostless logic.
+                // Add paths here when pure files move out of Core/Policies in later phases.
+                "Core/Policies/DiagnosticsReport.swift",
+                "Core/Policies/EventActionPolicy.swift",
+                "Core/Policies/EventFilterPolicy.swift",
+                "Core/Policies/EventSelectionPolicy.swift",
+                "Core/Policies/GoogleCalendarPolicy.swift",
+                "Core/Policies/MeetingLinkCandidate.swift",
+                "Core/Policies/MeetingLinkDetection.swift",
+                "Core/Policies/MeetingLinkDetector.swift",
+                "Core/Policies/MeetingOpeningPolicy.swift",
+                "Core/Policies/NotificationPlanningPolicy.swift",
+                "Core/Policies/StatusBarIconPolicy.swift",
+                "Core/Policies/StatusBarPresentationPolicy.swift",
+                "Core/Policies/StatusBarTitlePolicy.swift",
             ]
         ),
         .testTarget(
             name: "MeetingBarLogicTests",
             dependencies: ["MeetingBarLogic"],
             path: "MeetingBarLogicTests"
-        )
+        ),
     ]
 )

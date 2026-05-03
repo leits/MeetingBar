@@ -11,7 +11,7 @@ LOGIC_COVERAGE_SOURCES := MeetingBar/Core/Policies
 # Pipe xcodebuild through xcbeautify when available; otherwise grep for the lines that matter.
 XCFILTER := $(shell command -v xcbeautify >/dev/null 2>&1 && echo 'xcbeautify --quiet --renderer terminal' || echo "grep -E '(error:|warning:|FAIL|PASS|\\*\\* )'")
 
-.PHONY: build build-quiet build-release test test-quiet test-logic test-logic-quiet coverage coverage-report coverage-logic-report coverage-app-report lint lint-fix open validate-strings
+.PHONY: build build-quiet build-release test test-quiet test-logic test-logic-quiet coverage coverage-report coverage-logic-report coverage-app-report coverage-gate lint lint-fix open validate-strings
 
 build:
 	$(XCODEBUILD) -project $(PROJECT) -scheme $(SCHEME) -configuration Debug build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
@@ -56,6 +56,18 @@ coverage-logic-report:
 	echo "" ; \
 	echo "SwiftPM hostless coverage (source files only):" ; \
 	xcrun llvm-cov report "$$TEST_BINARY" -instr-profile "$$PROFILE" $(LOGIC_COVERAGE_SOURCES)
+
+coverage-gate:
+	@PROFILE="$$(ls -d .build/*/debug/codecov/default.profdata .build/debug/codecov/default.profdata 2>/dev/null | head -n 1)" ; \
+	TEST_BINARY="$$(ls -d .build/*/debug/MeetingBarLogicPackageTests.xctest/Contents/MacOS/MeetingBarLogicPackageTests .build/debug/MeetingBarLogicPackageTests.xctest/Contents/MacOS/MeetingBarLogicPackageTests 2>/dev/null | head -n 1)" ; \
+	if [ ! -f "$$PROFILE" ] || [ ! -x "$$TEST_BINARY" ]; then \
+		echo "SwiftPM coverage data not found. Run 'make test-logic' first."; \
+		exit 1; \
+	fi ; \
+	COVERAGE=$$(xcrun llvm-cov report "$$TEST_BINARY" -instr-profile "$$PROFILE" $(LOGIC_COVERAGE_SOURCES) 2>/dev/null | tail -1 | awk '{print $$4}' | tr -d '%') ; \
+	echo "" ; \
+	echo "Logic coverage gate (threshold: 90%):" ; \
+	awk -v cov="$$COVERAGE" 'BEGIN { if (cov + 0 < 90.0) { print "  NOTE: " cov "% is below 90% target (gate is reporting-only)" } else { print "  PASS: " cov "% meets 90% target" } }'
 
 coverage-app-report:
 	@if [ ! -d "$(XCODE_RESULT_BUNDLE)" ]; then \
