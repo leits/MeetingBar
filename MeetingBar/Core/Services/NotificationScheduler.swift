@@ -101,7 +101,7 @@ final class NotificationScheduler {
 
         for plan in systemPlans {
             guard let event = eventByID[plan.eventID] else { continue }
-            let request = buildRequest(for: plan, event: event, settings: settings, now: now)
+            let request = NotificationContentFactory.request(for: plan, event: event, settings: settings, now: now)
             let identifier = request.identifier
 
             if let pendingRequest = pendingByID[identifier] {
@@ -311,56 +311,6 @@ final class NotificationScheduler {
             && lhs.interruptionLevel == rhs.interruptionLevel
             && NSDictionary(dictionary: lhs.userInfo).isEqual(to: rhs.userInfo)
     }
-
-    private func buildRequest(
-        for plan: PlannedNotification, event: MBEvent, settings: NotificationPlanningSettings,
-        now: Date
-    ) -> UNNotificationRequest {
-        let content = UNMutableNotificationContent()
-        content.title = settings.hideMeetingTitle ? "general_meeting".loco() : event.title
-        content.interruptionLevel = .timeSensitive
-        content.sound = .default
-        content.userInfo = ["eventID": event.id]
-        content.threadIdentifier = "meetingbar"
-
-        switch plan.kind {
-        case .eventStart:
-            content.categoryIdentifier = "EVENT"
-            content.body = settings.eventStartBody
-        case .eventEnd:
-            content.body = settings.eventEndBody
-        case .fullscreen, .autoJoin, .scriptOnStart:
-            // In-app actions are handled before request construction.
-            content.body = ""
-        }
-
-        // Floor at 0.5s so the OS does not reject a too-immediate trigger.
-        let interval = max(plan.fireDate.timeIntervalSince(now), 0.5)
-        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: interval, repeats: false)
-        return UNNotificationRequest(
-            identifier: Self.identifierPrefix + plan.identity,
-            content: content,
-            trigger: trigger
-        )
-    }
-
-    static func startBody(for offset: TimeBeforeEvent) -> String {
-        switch offset {
-        case .atStart: return "notifications_event_start_soon_body".loco()
-        case .minuteBefore: return "notifications_event_start_one_minute_body".loco()
-        case .threeMinuteBefore: return "notifications_event_start_three_minutes_body".loco()
-        case .fiveMinuteBefore: return "notifications_event_start_five_minutes_body".loco()
-        }
-    }
-
-    static func endBody(for offset: TimeBeforeEventEnd) -> String {
-        switch offset {
-        case .atEnd: return "notifications_event_ends_soon_body".loco()
-        case .minuteBefore: return "notifications_event_ends_one_minute_body".loco()
-        case .threeMinuteBefore: return "notifications_event_ends_three_minutes_body".loco()
-        case .fiveMinuteBefore: return "notifications_event_ends_five_minutes_body".loco()
-        }
-    }
 }
 
 extension NotificationPlanningEvent {
@@ -406,8 +356,8 @@ extension NotificationPlanningSettings {
             ),
             dismissedEventIDs: Set(events.dismissedEvents.map(\.id)),
             hideMeetingTitle: statusBar.hideMeetingTitle,
-            eventStartBody: NotificationScheduler.startBody(for: notif.joinEventNotificationTime),
-            eventEndBody: NotificationScheduler.endBody(for: notif.endOfEventNotificationTime)
+            eventStartBody: NotificationContentFactory.startBody(for: notif.joinEventNotificationTime),
+            eventEndBody: NotificationContentFactory.endBody(for: notif.endOfEventNotificationTime)
         )
     }
 }
