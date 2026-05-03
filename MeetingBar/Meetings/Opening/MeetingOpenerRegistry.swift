@@ -21,39 +21,40 @@ enum MeetingOpenerRegistry {
 
     // MARK: - Private map
 
-    private nonisolated(unsafe) static let strategies: [MeetingServices: any MeetingOpenStrategy] = [
-        // Google Meet
-        .meet: MeetInOneOpenStrategy(),
-        .meetStream: MeetInOneOpenStrategy(),
+    private nonisolated(unsafe) static let strategies: [MeetingServices: any MeetingOpenStrategy] =
+        [
+            // Google Meet
+            .meet: MeetInOneOpenStrategy(),
+            .meetStream: MeetInOneOpenStrategy(),
 
-        // Zoom web URL → app scheme
-        .zoom: ZoomWebOpenStrategy(),
-        .zoomgov: ZoomWebOpenStrategy(),
+            // Zoom web URL → app scheme
+            .zoom: ZoomWebOpenStrategy(),
+            .zoomgov: ZoomWebOpenStrategy(),
 
-        // Zoom native app scheme → browser fallback
-        .zoom_native: ZoomNativeOpenStrategy(),
+            // Zoom native app scheme → browser fallback
+            .zoom_native: ZoomNativeOpenStrategy(),
 
-        // Microsoft Teams
-        .teams: TeamsOpenStrategy(),
+            // Microsoft Teams
+            .teams: TeamsOpenStrategy(),
 
-        // Jitsi
-        .jitsi: JitsiOpenStrategy(),
+            // Jitsi
+            .jitsi: JitsiOpenStrategy(),
 
-        // Slack huddle
-        .slack: SlackHuddleOpenStrategy(),
+            // Slack huddle
+            .slack: SlackHuddleOpenStrategy(),
 
-        // Riverside
-        .riverside: RiversideOpenStrategy(),
+            // Riverside
+            .riverside: RiversideOpenStrategy(),
 
-        // FaceTime
-        .facetime: NativeSchemeOpenStrategy(schemePrefix: "facetime://"),
-        .facetimeaudio: NativeSchemeOpenStrategy(schemePrefix: "facetime-audio://"),
+            // FaceTime
+            .facetime: NativeSchemeOpenStrategy(schemePrefix: "facetime://"),
+            .facetimeaudio: NativeSchemeOpenStrategy(schemePrefix: "facetime-audio://"),
 
-        // Phone
-        .phone: NativeSchemeOpenStrategy(schemePrefix: "tel://"),
+            // Phone
+            .phone: NativeSchemeOpenStrategy(schemePrefix: "tel://"),
 
-        // Providers with per-provider browser preferences (default browser key
-        // is nil here — the per-provider key is read inside DefaultBrowserOpenStrategy
-        // once WritableKeyPath support is added; for now they fall through to default).
-    ]
+            // Providers with per-provider browser preferences (default browser key
+            // is nil here — the per-provider key is read inside DefaultBrowserOpenStrategy
+            // once WritableKeyPath support is added; for now they fall through to default).
+        ]
 }

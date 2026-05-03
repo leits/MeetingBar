@@ -58,7 +58,8 @@ func createMeeting() {
             openMeetingURL(nil, URL(string: url)!, browser)
         } else {
             if !url.isEmpty { url += " " }
-            sendNotification("create_meeting_error_title".loco(), "create_meeting_error_message".loco(url))
+            sendNotification(
+                "create_meeting_error_title".loco(), "create_meeting_error_message".loco(url))
         }
         return
     }
@@ -81,7 +82,8 @@ func getIconForMeetingService(_ meetingService: MeetingServices?) -> NSImage {
 
     var image: NSImage
     if let service = meetingService,
-       let descriptor = MeetingProviderRegistry.descriptor(for: service) {
+        let descriptor = MeetingProviderRegistry.descriptor(for: service)
+    {
         image = NSImage(named: descriptor.iconName) ?? NSImage(named: "no_online_session")!
         image.size = NSSize(width: descriptor.iconWidth, height: descriptor.iconHeight)
     } else {
