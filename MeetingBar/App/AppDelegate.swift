@@ -387,8 +387,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
             if url == URL(string: "meetingbar://preferences") {
                 openPreferencesWindow(nil)
             } else {
-                GCEventStore.shared
-                    .currentAuthorizationFlow?.resumeExternalUserAgentFlow(with: url)
+                eventManager.repository.resumeAuthorizationFlow(with: url)
             }
         }
     }

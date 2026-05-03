@@ -98,6 +98,15 @@ public final class CalendarRepository {
         await (activeProvider as? AuthenticatedEventStore)?.signOut()
     }
 
+    /// Forwards an OAuth callback URL to the active provider if it supports it.
+    ///
+    /// Returns `true` if the URL was consumed by the active provider.
+    @discardableResult
+    public func resumeAuthorizationFlow(with url: URL) -> Bool {
+        guard let store = activeProvider as? GCEventStore else { return false }
+        return store.currentAuthorizationFlow?.resumeExternalUserAgentFlow(with: url) ?? false
+    }
+
     #if DEBUG
     /// Test-only: inject a pre-built store without creating system singletons.
     public init(store: EventStore) {
