@@ -27,17 +27,6 @@ extension MeetingServices {
     }
 }
 
-enum CreateMeetingLinks {
-    static let meet = URL(string: "https://meet.google.com/new")!
-    static let zoom = URL(string: "https://zoom.us/start?confno=123456789&zc=0")!
-    static let teams = URL(string: "https://teams.microsoft.com/l/meeting/new?subject=")!
-    static let jam = URL(string: "https://jam.systems/new")!
-    static let coscreen = URL(string: "https://cs.new")!
-    static let gcalendar = URL(string: "https://calendar.google.com/calendar/u/0/r/eventedit")!
-    static let outlook_live = URL(string: "https://outlook.live.com/calendar/0/action/compose")!
-    static let outlook_office365 = URL(string: "https://outlook.office365.com/calendar/0/action/compose")!
-}
-
 enum CreateMeetingServices: String, Defaults.Serializable, Codable, CaseIterable {
     case meet = "Google Meet"
     case zoom = "Zoom"
@@ -61,37 +50,21 @@ enum CreateMeetingServices: String, Defaults.Serializable, Codable, CaseIterable
 
 func createMeeting() {
     let browser: Browser = Defaults[.browserForCreateMeeting]
+    let service = Defaults[.createMeetingService]
 
-    switch Defaults[.createMeetingService] {
-    case .meet:
-        openMeetingURL(MeetingServices.meet, CreateMeetingLinks.meet, browser)
-    case .zoom:
-        openMeetingURL(MeetingServices.zoom, CreateMeetingLinks.zoom, browser)
-    case .teams:
-        openMeetingURL(MeetingServices.teams, CreateMeetingLinks.teams, browser)
-    case .jam:
-        openMeetingURL(MeetingServices.jam, CreateMeetingLinks.jam, browser)
-    case .coscreen:
-        openMeetingURL(MeetingServices.coscreen, CreateMeetingLinks.coscreen, browser)
-    case .gcalendar:
-        openMeetingURL(nil, CreateMeetingLinks.gcalendar, browser)
-    case .outlook_office365:
-        openMeetingURL(nil, CreateMeetingLinks.outlook_office365, browser)
-    case .outlook_live:
-        openMeetingURL(nil, CreateMeetingLinks.outlook_live, browser)
-    case .url:
+    if service == .url {
         var url: String = Defaults[.createMeetingServiceUrl]
-        let checkedUrl = NSURL(string: url)
-
-        if !url.isEmpty, checkedUrl != nil {
+        if !url.isEmpty, NSURL(string: url) != nil {
             openMeetingURL(nil, URL(string: url)!, browser)
         } else {
-            if !url.isEmpty {
-                url += " "
-            }
-
+            if !url.isEmpty { url += " " }
             sendNotification("create_meeting_error_title".loco(), "create_meeting_error_message".loco(url))
         }
+        return
+    }
+
+    if let descriptor = CreateMeetingRegistry.descriptor(for: service) {
+        openMeetingURL(descriptor.meetingService, descriptor.url, browser)
     }
 }
 
