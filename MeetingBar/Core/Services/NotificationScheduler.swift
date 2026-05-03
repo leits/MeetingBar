@@ -47,9 +47,9 @@ final class NotificationScheduler {
     static let identifierPrefix = "mb-plan-"
 
     private let sink: NotificationRequestSink
-    private let recordStore: NotificationRecordStore
+    private let actionRunner: NotificationActionRunner
     private weak var actionSink: NotificationActionSink?
-    private var actionTasks: [String: Task<Void, Never>] = [:]
+    private var actionTasks: [String: Task<Void, Never>] = []
 
     init(
         sink: NotificationRequestSink = UNUserNotificationCenter.current(),
@@ -57,12 +57,13 @@ final class NotificationScheduler {
         actionSink: NotificationActionSink? = nil
     ) {
         self.sink = sink
-        self.recordStore = recordStore
+        self.actionRunner = NotificationActionRunner(recordStore: recordStore, actionSink: actionSink)
         self.actionSink = actionSink
     }
 
     func setActionSink(_ actionSink: NotificationActionSink?) {
         self.actionSink = actionSink
+        actionRunner.setActionSink(actionSink)
     }
 
     func reconcile(
@@ -80,8 +81,9 @@ final class NotificationScheduler {
         let eventByID = Dictionary(
             events.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
 
-        cleanupExpiredActionRecords(now: now)        if actionSink != nil {
-            fireDueActions(events: events, settings: settings, now: now)
+        cleanupExpiredActionRecords(now: now)
+        if actionSink != nil {
+            actionRunner.fireDueActions(events: events, settings: settings, now: now)
         }
         reconcileActionTasks(actionPlans, eventByID: eventByID, settings: settings, now: now)
 
@@ -141,7 +143,6 @@ final class NotificationScheduler {
                 let event = eventByID[plan.eventID]
             else { continue }
 
-            let action = actionSettings(for: plan.kind, settings: settings)
             actionTasks[id] = Task { [weak self] in
                 let delay = max(plan.fireDate.timeIntervalSince(now), 0)
                 if delay > 0 {
@@ -149,7 +150,7 @@ final class NotificationScheduler {
                 }
                 await MainActor.run {
                     guard let self, !Task.isCancelled else { return }
-                    self.fireAction(plan: plan, event: event, action: action, now: Date())
+                    self.actionRunner.fire(plan: plan, event: event, settings: settings, now: Date())
                     self.actionTasks[id] = nil
                 }
             }
@@ -163,100 +164,8 @@ final class NotificationScheduler {
         actionTasks.removeAll()
     }
 
-    private func actionSettings(
-        for kind: NotificationKind,
-        settings: NotificationPlanningSettings
-    ) -> NotificationPlanningSettings.Action {
-        switch kind {
-        case .fullscreen:
-            return settings.fullscreen
-        case .autoJoin:
-            return settings.autoJoin
-        case .scriptOnStart:
-            return settings.scriptOnStart
-        case .eventStart, .eventEnd:
-            return .disabled
-        }
-    }
-
-    private func fireAction(
-        plan: PlannedNotification,
-        event: MBEvent,
-        action: NotificationPlanningSettings.Action,
-        now: Date
-    ) {
-        guard let config = actionConfig(for: plan.kind, action: action),
-            let decision = EventActionPolicy.evaluate(
-                event: EventActionEvent(event: event),
-                config: config,
-                processed: recordStore.processedRecords(for: plan.kind),
-                now: now
-            )
-        else { return }
-
-        if decision.shouldFireSideEffect {
-            guard actionSink?.performNotificationAction(plan.kind, event: event) == true else {
-                return
-            }
-        }
-
-        recordStore.setProcessedRecords(decision.updatedProcessed, for: plan.kind)
-    }
-
-    private func fireDueActions(
-        events: [MBEvent],
-        settings: NotificationPlanningSettings,
-        now: Date
-    ) {
-        for event in events where shouldConsiderActionEvent(event, settings: settings) {
-            for kind in NotificationKind.inAppActions {
-                let action = actionSettings(for: kind, settings: settings)
-                guard action.enabled else { continue }
-                let plan = PlannedNotification(
-                    eventID: event.id,
-                    kind: kind,
-                    fireDate: event.startDate.addingTimeInterval(-action.offset),
-                    identity: ""
-                )
-                fireAction(plan: plan, event: event, action: action, now: now)
-            }
-        }
-    }
-
-    private func shouldConsiderActionEvent(
-        _ event: MBEvent,
-        settings: NotificationPlanningSettings
-    ) -> Bool {
-        if settings.dismissedEventIDs.contains(event.id) { return false }
-        if event.status == .canceled { return false }
-        if event.participationStatus == .declined { return false }
-        return true
-    }
-
-    private func actionConfig(
-        for kind: NotificationKind,
-        action: NotificationPlanningSettings.Action
-    ) -> EventActionConfig? {
-        switch kind {
-        case .fullscreen, .autoJoin:
-            return EventActionConfig(
-                actionTime: action.offset,
-                allowsRecentlyStarted: true,
-                requiresMeetingLink: true
-            )
-        case .scriptOnStart:
-            return EventActionConfig(
-                actionTime: action.offset,
-                allowsRecentlyStarted: false,
-                requiresMeetingLink: false
-            )
-        case .eventStart, .eventEnd:
-            return nil
-        }
-    }
-
     private func cleanupExpiredActionRecords(now: Date) {
-        recordStore.cleanupExpired(now: now)
+        actionRunner.cleanupExpiredRecords(now: now)
     }
 
     private func hasSameContent(_ lhs: UNNotificationContent, _ rhs: UNNotificationContent) -> Bool
@@ -330,15 +239,5 @@ extension EventActionEvent {
             isAllDay: event.isAllDay,
             hasMeetingLink: event.meetingLink != nil
         )
-    }
-}
-
-extension NotificationKind {
-    fileprivate static let inAppActions: [NotificationKind] = [
-        .fullscreen, .autoJoin, .scriptOnStart,
-    ]
-
-    fileprivate var isInAppAction: Bool {
-        Self.inAppActions.contains(self)
     }
 }
