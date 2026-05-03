@@ -3,7 +3,6 @@
 //  MeetingBar
 //
 
-import Defaults
 import Foundation
 import UserNotifications
 
@@ -48,14 +47,17 @@ final class NotificationScheduler {
     static let identifierPrefix = "mb-plan-"
 
     private let sink: NotificationRequestSink
+    private let recordStore: NotificationRecordStore
     private weak var actionSink: NotificationActionSink?
     private var actionTasks: [String: Task<Void, Never>] = [:]
 
     init(
         sink: NotificationRequestSink = UNUserNotificationCenter.current(),
+        recordStore: NotificationRecordStore = NotificationRecordStore(),
         actionSink: NotificationActionSink? = nil
     ) {
         self.sink = sink
+        self.recordStore = recordStore
         self.actionSink = actionSink
     }
 
@@ -78,8 +80,7 @@ final class NotificationScheduler {
         let eventByID = Dictionary(
             events.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
 
-        cleanupExpiredActionRecords(now: now)
-        if actionSink != nil {
+        cleanupExpiredActionRecords(now: now)        if actionSink != nil {
             fireDueActions(events: events, settings: settings, now: now)
         }
         reconcileActionTasks(actionPlans, eventByID: eventByID, settings: settings, now: now)
@@ -188,7 +189,7 @@ final class NotificationScheduler {
             let decision = EventActionPolicy.evaluate(
                 event: EventActionEvent(event: event),
                 config: config,
-                processed: processedActionRecords(for: plan.kind),
+                processed: recordStore.processedRecords(for: plan.kind),
                 now: now
             )
         else { return }
@@ -199,7 +200,7 @@ final class NotificationScheduler {
             }
         }
 
-        setProcessedActionRecords(decision.updatedProcessed, for: plan.kind)
+        recordStore.setProcessedRecords(decision.updatedProcessed, for: plan.kind)
     }
 
     private func fireDueActions(
@@ -255,50 +256,7 @@ final class NotificationScheduler {
     }
 
     private func cleanupExpiredActionRecords(now: Date) {
-        Defaults[.processedEventsForFullscreenNotification] =
-            EventActionPolicy.cleanupExpired(
-                Defaults[.processedEventsForFullscreenNotification].actionRecords,
-                now: now
-            ).processedEvents
-        Defaults[.processedEventsForAutoJoin] =
-            EventActionPolicy.cleanupExpired(
-                Defaults[.processedEventsForAutoJoin].actionRecords,
-                now: now
-            ).processedEvents
-        Defaults[.processedEventsForRunScriptOnEventStart] =
-            EventActionPolicy.cleanupExpired(
-                Defaults[.processedEventsForRunScriptOnEventStart].actionRecords,
-                now: now
-            ).processedEvents
-    }
-
-    private func processedActionRecords(for kind: NotificationKind) -> [EventActionProcessedEvent] {
-        switch kind {
-        case .fullscreen:
-            return Defaults[.processedEventsForFullscreenNotification].actionRecords
-        case .autoJoin:
-            return Defaults[.processedEventsForAutoJoin].actionRecords
-        case .scriptOnStart:
-            return Defaults[.processedEventsForRunScriptOnEventStart].actionRecords
-        case .eventStart, .eventEnd:
-            return []
-        }
-    }
-
-    private func setProcessedActionRecords(
-        _ records: [EventActionProcessedEvent],
-        for kind: NotificationKind
-    ) {
-        switch kind {
-        case .fullscreen:
-            Defaults[.processedEventsForFullscreenNotification] = records.processedEvents
-        case .autoJoin:
-            Defaults[.processedEventsForAutoJoin] = records.processedEvents
-        case .scriptOnStart:
-            Defaults[.processedEventsForRunScriptOnEventStart] = records.processedEvents
-        case .eventStart, .eventEnd:
-            break
-        }
+        recordStore.cleanupExpired(now: now)
     }
 
     private func hasSameContent(_ lhs: UNNotificationContent, _ rhs: UNNotificationContent) -> Bool
@@ -372,36 +330,6 @@ extension EventActionEvent {
             isAllDay: event.isAllDay,
             hasMeetingLink: event.meetingLink != nil
         )
-    }
-}
-
-extension EventActionProcessedEvent {
-    fileprivate init(processedEvent: ProcessedEvent) {
-        self.init(
-            id: processedEvent.id,
-            lastModifiedDate: processedEvent.lastModifiedDate,
-            eventEndDate: processedEvent.eventEndDate
-        )
-    }
-
-    fileprivate var processedEvent: ProcessedEvent {
-        ProcessedEvent(
-            id: id,
-            lastModifiedDate: lastModifiedDate,
-            eventEndDate: eventEndDate
-        )
-    }
-}
-
-extension Array where Element == ProcessedEvent {
-    fileprivate var actionRecords: [EventActionProcessedEvent] {
-        map(EventActionProcessedEvent.init(processedEvent:))
-    }
-}
-
-extension Array where Element == EventActionProcessedEvent {
-    fileprivate var processedEvents: [ProcessedEvent] {
-        map(\.processedEvent)
     }
 }
 
