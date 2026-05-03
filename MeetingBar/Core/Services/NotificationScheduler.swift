@@ -97,7 +97,7 @@ final class NotificationScheduler {
 
         for plan in systemPlans {
             guard let event = eventByID[plan.eventID] else { continue }
-            let request = buildRequest(for: plan, event: event, now: now)
+            let request = buildRequest(for: plan, event: event, settings: settings, now: now)
             let identifier = request.identifier
 
             if let pendingRequest = pendingByID[identifier] {
@@ -307,9 +307,9 @@ final class NotificationScheduler {
             && NSDictionary(dictionary: lhs.userInfo).isEqual(to: rhs.userInfo)
     }
 
-    private func buildRequest(for plan: PlannedNotification, event: MBEvent, now: Date) -> UNNotificationRequest {
+    private func buildRequest(for plan: PlannedNotification, event: MBEvent, settings: NotificationPlanningSettings, now: Date) -> UNNotificationRequest {
         let content = UNMutableNotificationContent()
-        content.title = Defaults[.hideMeetingTitle] ? "general_meeting".loco() : event.title
+        content.title = settings.hideMeetingTitle ? "general_meeting".loco() : event.title
         content.interruptionLevel = .timeSensitive
         content.sound = .default
         content.userInfo = ["eventID": event.id]
@@ -318,9 +318,9 @@ final class NotificationScheduler {
         switch plan.kind {
         case .eventStart:
             content.categoryIdentifier = "EVENT"
-            content.body = Self.startBody(for: Defaults[.joinEventNotificationTime])
+            content.body = settings.eventStartBody
         case .eventEnd:
-            content.body = Self.endBody(for: Defaults[.endOfEventNotificationTime])
+            content.body = settings.eventEndBody
         case .fullscreen, .autoJoin, .scriptOnStart:
             // In-app actions are handled before request construction.
             content.body = ""
@@ -336,7 +336,7 @@ final class NotificationScheduler {
         )
     }
 
-    private static func startBody(for offset: TimeBeforeEvent) -> String {
+    static func startBody(for offset: TimeBeforeEvent) -> String {
         switch offset {
         case .atStart: return "notifications_event_start_soon_body".loco()
         case .minuteBefore: return "notifications_event_start_one_minute_body".loco()
@@ -345,7 +345,7 @@ final class NotificationScheduler {
         }
     }
 
-    private static func endBody(for offset: TimeBeforeEventEnd) -> String {
+    static func endBody(for offset: TimeBeforeEventEnd) -> String {
         switch offset {
         case .atEnd: return "notifications_event_ends_soon_body".loco()
         case .minuteBefore: return "notifications_event_ends_one_minute_body".loco()
@@ -371,25 +371,31 @@ extension NotificationPlanningEvent {
 
 extension NotificationPlanningSettings {
     /// Snapshot of the per-action settings the scheduler currently owns.
+    @MainActor
     static var currentForScheduler: NotificationPlanningSettings {
-        let startOffset = TimeInterval(Defaults[.joinEventNotificationTime].rawValue)
-        let endOffset = TimeInterval(Defaults[.endOfEventNotificationTime].rawValue)
+        let notif = SettingsStore.shared.settings.notifications
+        let adv = SettingsStore.shared.settings.advanced
+        let statusBar = SettingsStore.shared.settings.statusBar
+        let events = SettingsStore.shared.settings.events
         return NotificationPlanningSettings(
-            eventStart: .init(enabled: Defaults[.joinEventNotification], offset: startOffset),
-            eventEnd: .init(enabled: Defaults[.endOfEventNotification], offset: endOffset),
+            eventStart: .init(enabled: notif.joinEventNotification, offset: TimeInterval(notif.joinEventNotificationTime.rawValue)),
+            eventEnd: .init(enabled: notif.endOfEventNotification, offset: TimeInterval(notif.endOfEventNotificationTime.rawValue)),
             fullscreen: .init(
-                enabled: Defaults[.fullscreenNotification],
-                offset: TimeInterval(Defaults[.fullscreenNotificationTime].rawValue)
+                enabled: notif.fullscreenNotification,
+                offset: TimeInterval(notif.fullscreenNotificationTime.rawValue)
             ),
             autoJoin: .init(
-                enabled: Defaults[.automaticEventJoin],
-                offset: TimeInterval(Defaults[.automaticEventJoinTime].rawValue)
+                enabled: adv.automaticEventJoin,
+                offset: TimeInterval(adv.automaticEventJoinTime.rawValue)
             ),
             scriptOnStart: .init(
-                enabled: Defaults[.runEventStartScript] && Defaults[.eventStartScriptLocation] != nil,
-                offset: TimeInterval(Defaults[.eventStartScriptTime].rawValue)
+                enabled: adv.runEventStartScript && adv.eventStartScriptLocation != nil,
+                offset: TimeInterval(adv.eventStartScriptTime.rawValue)
             ),
-            dismissedEventIDs: Set(Defaults[.dismissedEvents].map(\.id))
+            dismissedEventIDs: Set(events.dismissedEvents.map(\.id)),
+            hideMeetingTitle: statusBar.hideMeetingTitle,
+            eventStartBody: NotificationScheduler.startBody(for: notif.joinEventNotificationTime),
+            eventEndBody: NotificationScheduler.endBody(for: notif.endOfEventNotificationTime)
         )
     }
 }

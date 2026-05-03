@@ -62,6 +62,35 @@ struct NotificationPlanningSettings: Equatable, Sendable {
     let autoJoin: Action
     let scriptOnStart: Action
     let dismissedEventIDs: Set<String>
+
+    /// Whether to hide the event title in notifications (replaced with a generic label).
+    let hideMeetingTitle: Bool
+    /// Pre-computed body string for the event-start notification.
+    let eventStartBody: String
+    /// Pre-computed body string for the event-end notification.
+    let eventEndBody: String
+
+    init(
+        eventStart: Action,
+        eventEnd: Action,
+        fullscreen: Action,
+        autoJoin: Action,
+        scriptOnStart: Action,
+        dismissedEventIDs: Set<String>,
+        hideMeetingTitle: Bool = false,
+        eventStartBody: String = "",
+        eventEndBody: String = ""
+    ) {
+        self.eventStart = eventStart
+        self.eventEnd = eventEnd
+        self.fullscreen = fullscreen
+        self.autoJoin = autoJoin
+        self.scriptOnStart = scriptOnStart
+        self.dismissedEventIDs = dismissedEventIDs
+        self.hideMeetingTitle = hideMeetingTitle
+        self.eventStartBody = eventStartBody
+        self.eventEndBody = eventEndBody
+    }
 }
 
 enum NotificationPlanningPolicy {
