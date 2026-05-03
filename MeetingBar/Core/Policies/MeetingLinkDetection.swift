@@ -87,19 +87,23 @@ public struct MeetingLink: Hashable, Equatable, Sendable {
 }
 
 // All built-in regex patterns are owned by MeetingProviderRegistry.
-// This constant is kept for backward compatibility with callers and tests.
+// Deprecated: use MeetingProviderRegistry.regexPatterns directly.
+// Kept for one release cycle so external callers (e.g. existing tests) continue to compile.
+@available(*, deprecated, renamed: "MeetingProviderRegistry.regexPatterns")
 let meetingLinkRegexPatterns: [MeetingServices: String] = MeetingProviderRegistry.regexPatterns
 
-private let meetingLinkRegexes: [MeetingServices: NSRegularExpression] = meetingLinkRegexPatterns.compactMapValues { pattern in
-    do {
-        return try NSRegularExpression(pattern: pattern)
-    } catch {
-        NSLog("Ignoring invalid built-in meeting link regex '\(pattern)': \(error)")
-        return nil
+private let meetingLinkRegexes: [MeetingServices: NSRegularExpression] =
+    MeetingProviderRegistry.regexPatterns.compactMapValues { pattern in
+        do {
+            return try NSRegularExpression(pattern: pattern)
+        } catch {
+            NSLog("Ignoring invalid built-in meeting link regex '\(pattern)': \(error)")
+            return nil
+        }
     }
-}
 
-private let outlookSafeLinkRegex = try? NSRegularExpression(pattern: #"https://[\S]+\.safelinks\.protection\.outlook\.com/[\S]+url=([\S]*)"#)
+private let outlookSafeLinkRegex = try? NSRegularExpression(
+    pattern: #"https://[\S]+\.safelinks\.protection\.outlook\.com/[\S]+url=([\S]*)"#)
 
 func regex(for service: MeetingServices) -> NSRegularExpression? {
     meetingLinkRegexes[service]
@@ -110,8 +114,9 @@ func detectMeetingLink(_ rawText: String, customRegexes: [String] = []) -> Meeti
 
     for pattern in customRegexes {
         if let regex = try? NSRegularExpression(pattern: pattern),
-           let link = getMatch(text: text, regex: regex),
-           let url = URL(string: link) {
+            let link = getMatch(text: text, regex: regex),
+            let url = URL(string: link)
+        {
             return MeetingLink(service: MeetingServices.other, url: url)
         }
     }
@@ -119,8 +124,9 @@ func detectMeetingLink(_ rawText: String, customRegexes: [String] = []) -> Meeti
     if text.contains("://") {
         for (svc, regex) in meetingLinkRegexes {
             if let match = regex.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)),
-               let range = Range(match.range, in: text),
-               let url = URL(string: String(text[range])) {
+                let range = Range(match.range, in: text),
+                let url = URL(string: String(text[range]))
+            {
                 return MeetingLink(service: svc, url: url)
             }
         }
@@ -133,7 +139,8 @@ func cleanupOutlookSafeLinks(rawText: String) -> String {
 
     var text = rawText
     autoreleasepool {
-        var links = outlookSafeLinkRegex.matches(in: text, range: NSRange(text.startIndex..., in: text))
+        var links = outlookSafeLinkRegex.matches(
+            in: text, range: NSRange(text.startIndex..., in: text))
         if !links.isEmpty {
             repeat {
                 let urlRange = links[0].range(at: 1)
@@ -147,7 +154,8 @@ func cleanupOutlookSafeLinks(rawText: String) -> String {
                         text = text.replacingOccurrences(of: safeLinks[0], with: decodedServiceURL)
                     }
                 }
-                links = outlookSafeLinkRegex.matches(in: text, range: NSRange(text.startIndex..., in: text))
+                links = outlookSafeLinkRegex.matches(
+                    in: text, range: NSRange(text.startIndex..., in: text))
             } while !links.isEmpty
         }
     }
@@ -191,8 +199,8 @@ func htmlTagsStrippedForMeetingLinks(_ text: String) -> String {
     }
 }
 
-private extension String {
-    var containsHTMLTags: Bool {
+extension String {
+    fileprivate var containsHTMLTags: Bool {
         range(of: #"</?[A-z][ \t\S]*>"#, options: .regularExpression) != nil
     }
 }

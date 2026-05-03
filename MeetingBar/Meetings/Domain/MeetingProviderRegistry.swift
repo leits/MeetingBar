@@ -36,7 +36,8 @@ enum MeetingProviderRegistry {
 
     /// Bridge to the existing `meetingLinkRegexPatterns` format.
     /// Computed from descriptors so detection behaviour is identical.
-    /// Replace `meetingLinkRegexPatterns` usages with this in Phase 3 PR 2.
+    /// The `meetingLinkRegexPatterns` constant in MeetingLinkDetection.swift is
+    /// deprecated and delegates here; remove it in Phase 3 PR 7 cleanup.
     static var regexPatterns: [MeetingServices: String] {
         var result: [MeetingServices: String] = [:]
         for descriptor in builtIn {
