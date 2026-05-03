@@ -14,10 +14,11 @@ import UserNotifications
 
 @MainActor
 @main
-class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotificationCenterDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate {
     var statusBarItem: StatusBarItemController!
     var eventManager: EventManager!
     let notificationScheduler = NotificationScheduler()
+    private var notificationCenterDelegate: NotificationCenterDelegate?
 
     var screenIsLocked: Bool = false
 
@@ -68,7 +69,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
         statusBarItem.setAppDelegate(appdelegate: self)
         notificationScheduler.setActionSink(self)
 
-        UNUserNotificationCenter.current().delegate = self
+        let ncDelegate = NotificationCenterDelegate(
+            eventProvider: { [weak self] id in self?.statusBarItem.events.first { $0.id == id } },
+            dismissHandler: { [weak self] event in self?.statusBarItem.dismiss(event: event) }
+        )
+        notificationCenterDelegate = ncDelegate
+        UNUserNotificationCenter.current().delegate = ncDelegate
         Task { @MainActor in
             await ensureNotificationAuthorization()
             registerNotificationCategories()
@@ -155,59 +161,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
                     self.statusBarItem.updateTitle()
                     self.statusBarItem.updateMenu()
                 }
-            }
-        }
-    }
-
-    /*
-     * -----------------------
-     * MARK: - User Notification Center
-     * ------------------------
-     */
-
-    /// Implementation is necessary to show notifications even when the app has focus!
-    func userNotificationCenter(
-        _: UNUserNotificationCenter, willPresent _: UNNotification,
-        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) ->
-            Void
-    ) {
-        completionHandler([.list, .banner, .badge, .sound])
-    }
-
-    func userNotificationCenter(
-        _: UNUserNotificationCenter, didReceive response: UNNotificationResponse,
-        withCompletionHandler completionHandler: @escaping () -> Void
-    ) {
-        defer {
-            completionHandler()
-        }
-
-        guard
-            ["EVENT", "SNOOZE_EVENT"].contains(
-                response.notification.request.content.categoryIdentifier),
-            let eventID = response.notification.request.content.userInfo["eventID"] as? String,
-            let event = statusBarItem.events.first(where: { $0.id == eventID })
-        else {
-            return
-        }
-        Task {
-            switch response.actionIdentifier {
-            case "JOIN_ACTION", UNNotificationDefaultActionIdentifier:
-                event.openMeeting()
-            case "DISMISS_ACTION":
-                statusBarItem.dismiss(event: event)
-            case NotificationEventTimeAction.untilStart.rawValue:
-                await snoozeEventNotification(event, NotificationEventTimeAction.untilStart)
-            case NotificationEventTimeAction.fiveMinuteLater.rawValue:
-                await snoozeEventNotification(event, NotificationEventTimeAction.fiveMinuteLater)
-            case NotificationEventTimeAction.tenMinuteLater.rawValue:
-                await snoozeEventNotification(event, NotificationEventTimeAction.tenMinuteLater)
-            case NotificationEventTimeAction.fifteenMinuteLater.rawValue:
-                await snoozeEventNotification(event, NotificationEventTimeAction.fifteenMinuteLater)
-            case NotificationEventTimeAction.thirtyMinuteLater.rawValue:
-                await snoozeEventNotification(event, NotificationEventTimeAction.thirtyMinuteLater)
-            default:
-                break
             }
         }
     }
