@@ -3,6 +3,7 @@
 //  MeetingBar
 //
 
+import Combine
 import Foundation
 
 /// Injectable side-effect clients used by `AppModel`.
@@ -11,11 +12,21 @@ import Foundation
 /// `AppEnvironment` must not import AppKit, EventKit, UserNotifications, or
 /// AppAuth so that `AppModel` remains hostless-testable.
 struct AppEnvironment {
-    /// Fetch current calendars and events.
-    var refreshCalendars: @MainActor () async -> ([MBCalendar], EventStoreProvider)
-    var refreshEvents: @MainActor ([MBCalendar]) async -> [MBEvent]
+    // MARK: - Live streams
 
-    /// Reconcile system notification requests with the current plan.
+    /// Live stream of the current event list from the active provider.
+    var eventsPublisher: AnyPublisher<[MBEvent], Never>
+
+    /// Live stream of calendars paired with the active provider name.
+    var calendarsPublisher: AnyPublisher<([MBCalendar], EventStoreProvider), Never>
+
+    // MARK: - Commands
+
+    /// Trigger a fresh calendar + event fetch from the active provider.
+    /// Results flow back through `eventsPublisher` / `calendarsPublisher`.
+    var triggerRefresh: @MainActor () -> Void
+
+    /// Reconcile system notification requests with the current event plan.
     var reconcileNotifications: @MainActor ([MBEvent]) async -> Void
 
     /// Current wall-clock time (injectable for tests).
@@ -29,11 +40,14 @@ struct AppEnvironment {
         notificationScheduler: NotificationScheduler
     ) -> AppEnvironment {
         AppEnvironment(
-            refreshCalendars: {
-                (eventManager.calendars, eventManager.repository.activeProviderName)
-            },
-            refreshEvents: { _ in
-                eventManager.events
+            eventsPublisher: eventManager.$events.eraseToAnyPublisher(),
+            calendarsPublisher: eventManager.$calendars
+                .map { calendars in
+                    (calendars, eventManager.repository.activeProviderName)
+                }
+                .eraseToAnyPublisher(),
+            triggerRefresh: {
+                eventManager.refreshSubject.send()
             },
             reconcileNotifications: { events in
                 await notificationScheduler.reconcile(

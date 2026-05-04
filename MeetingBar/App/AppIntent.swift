@@ -89,7 +89,7 @@ struct GetNearestEventDetails: AppIntent {
         let value: String? = await MainActor.run {
             guard
                 let appDelegate = NSApplication.shared.delegate as? AppDelegate,
-                let nextEvent = appDelegate.statusBarItem.events.nextEvent()
+                let nextEvent = appDelegate.appModel?.state.events.nextEvent()
             else { return nil }
 
             return EventDetailsValueFormatter.value(for: type, event: nextEvent)

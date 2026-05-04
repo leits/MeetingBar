@@ -97,7 +97,8 @@ final class NotificationScheduler {
 
         for plan in systemPlans {
             guard let event = eventByID[plan.eventID] else { continue }
-            let request = NotificationContentFactory.request(for: plan, event: event, settings: settings, now: now)
+            let request = NotificationContentFactory.request(
+                for: plan, event: event, settings: settings, now: now)
             let identifier = request.identifier
 
             if let pendingRequest = pendingByID[identifier] {
@@ -168,7 +169,8 @@ extension NotificationPlanningSettings {
             ),
             dismissedEventIDs: Set(events.dismissedEvents.map(\.id)),
             hideMeetingTitle: statusBar.hideMeetingTitle,
-            eventStartBody: NotificationContentFactory.startBody(for: notif.joinEventNotificationTime),
+            eventStartBody: NotificationContentFactory.startBody(
+                for: notif.joinEventNotificationTime),
             eventEndBody: NotificationContentFactory.endBody(for: notif.endOfEventNotificationTime)
         )
     }

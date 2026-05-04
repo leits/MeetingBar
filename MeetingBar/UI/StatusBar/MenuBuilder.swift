@@ -219,7 +219,7 @@ struct MenuBuilder {
 
     // MARK: Bookmarks section -------------------------------------------------
 
-    func buildBookmarksSection() -> [NSMenuItem] {
+    func buildBookmarksSection(bookmarks: [Bookmark]) -> [NSMenuItem] {
         var items: [NSMenuItem] = []
 
         let bookmarksItem = NSMenuItem(
@@ -230,7 +230,7 @@ struct MenuBuilder {
         items.append(bookmarksItem)
 
         var bookmarksItems: [NSMenuItem] = []
-        for bookmark in Defaults[.bookmarks] {
+        for bookmark in bookmarks {
             let bookmarkItem = NSMenuItem(
                 title: bookmark.name,
                 action: #selector(StatusBarItemController.joinBookmark),
@@ -241,7 +241,7 @@ struct MenuBuilder {
             bookmarksItems.append(bookmarkItem)
         }
 
-        if Defaults[.bookmarks].count > 3 {
+        if bookmarks.count > 3 {
             let bookmarksMenu = NSMenu(title: "status_bar_section_bookmarks_menu".loco())
             bookmarksItem.submenu = bookmarksMenu
             bookmarksMenu.items = bookmarksItems
@@ -287,7 +287,7 @@ struct MenuBuilder {
         var eventTitle = event.title
 
         if Defaults[.shortenEventTitle] {
-            eventTitle = shortenTitle(title: event.title, offset: Defaults[.menuEventTitleLength])
+            eventTitle = StatusBarTitlePolicy.shortenTitle(event.title, limit: Defaults[.menuEventTitleLength], noTitle: "status_bar_no_title".loco())
         }
 
         if Defaults[.dismissedEvents].contains(where: { $0.id == event.id }) {

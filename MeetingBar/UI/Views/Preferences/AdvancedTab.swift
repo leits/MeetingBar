@@ -89,7 +89,7 @@ struct ScriptSection: View {
 
     func runSampleScript() {
         if let app = NSApplication.shared.delegate as! AppDelegate? {
-            runAppleScriptForNextEvent(events: app.statusBarItem.events)
+            runAppleScriptForNextEvent(events: app.appModel?.state.events ?? [])
         }
     }
 }

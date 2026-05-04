@@ -16,9 +16,27 @@ final class AppModel: ObservableObject {
 
     private let environment: AppEnvironment
     private var refreshTask: Task<Void, Never>?
+    private var cancellables = Set<AnyCancellable>()
 
     init(environment: AppEnvironment) {
         self.environment = environment
+
+        // Subscribe to live event and calendar streams.
+        // `@Published` delivers the current value immediately on subscription,
+        // so AppModel is up-to-date even if EventManager already fetched.
+        environment.eventsPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] events in
+                self?.send(.eventsLoaded(events))
+            }
+            .store(in: &cancellables)
+
+        environment.calendarsPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] (calendars, provider) in
+                self?.send(.calendarsLoaded(calendars, provider: provider))
+            }
+            .store(in: &cancellables)
     }
 
     // MARK: - Action dispatch
@@ -50,9 +68,10 @@ final class AppModel: ObservableObject {
 
         case .eventsLoaded(let events):
             state.events = events
+            send(.reconcileNotifications)
 
         case .calendarRefreshFailed:
-            // preserve last known events, could log/report health here
+            // preserve last known events
             break
 
         case .providerChanged(let provider):
@@ -81,15 +100,8 @@ final class AppModel: ObservableObject {
     private func scheduleRefresh() {
         refreshTask?.cancel()
         refreshTask = Task { [weak self] in
-            guard let self else { return }
-            let (calendars, provider) = await environment.refreshCalendars()
-            guard !Task.isCancelled else { return }
-            send(.calendarsLoaded(calendars, provider: provider))
-
-            let events = await environment.refreshEvents(calendars)
-            guard !Task.isCancelled else { return }
-            send(.eventsLoaded(events))
-            send(.reconcileNotifications)
+            guard let self, !Task.isCancelled else { return }
+            environment.triggerRefresh()
         }
     }
 }

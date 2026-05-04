@@ -23,12 +23,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private let lifecycleObserver = LifecycleObserver()
     private let urlHandler = URLHandler()
 
-    var screenIsLocked: Bool = false
-
     weak var preferencesWindow: NSWindow!
     private var statusLoopTask: Task<Void, Never>?
-
-    private var eventCancellable: AnyCancellable?
+    private var cancellables = Set<AnyCancellable>()
 
     func applicationDidFinishLaunching(_: Notification) {
         // AppStore sync
@@ -72,15 +69,28 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         statusBarItem.setAppDelegate(appdelegate: self)
         notificationScheduler.setActionSink(self)
 
-        // Initialize AppModel with live environment (bridges existing services)
         let env = AppEnvironment.live(
             eventManager: eventManager,
             notificationScheduler: notificationScheduler
         )
-        appModel = AppModel(environment: env)
+        let model = AppModel(environment: env)
+        appModel = model
+
+        // Drive status bar from AppModel state: update title and menu whenever
+        // events change.
+        model.$state
+            .map(\.events)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.statusBarItem.updateTitle()
+                self?.statusBarItem.updateMenu()
+            }
+            .store(in: &cancellables)
 
         let ncDelegate = NotificationCenterDelegate(
-            eventProvider: { [weak self] id in self?.statusBarItem.events.first { $0.id == id } },
+            eventProvider: { [weak self] id in
+                self?.appModel?.state.events.first { $0.id == id }
+            },
             dismissHandler: { [weak self] event in self?.statusBarItem.dismiss(event: event) }
         )
         notificationCenterDelegate = ncDelegate
@@ -90,50 +100,25 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             registerNotificationCategories()
         }
 
-        eventCancellable = eventManager.$events
-            .receive(on: DispatchQueue.main)  // ensure UI work on main thread
-            .sink { [weak self] events in
-                guard let self = self else { return }
-                // 1) update your model
-                self.statusBarItem.events = events
-                // 2) redraw
-                self.statusBarItem.updateTitle()
-                self.statusBarItem.updateMenu()
-                // 3) reconcile system notifications for the full event list
-                Task { @MainActor in
-                    await self.notificationScheduler.reconcile(
-                        events: events,
-                        settings: .currentForScheduler
-                    )
-                }
-            }
-
         startAsyncLoops()
         if Defaults[.browsers].isEmpty {
             addInstalledBrowser()
         }
 
-        // Handle sleep and wake up events
         lifecycleObserver.onScreenLocked = { [weak self] in
-            self?.screenIsLocked = true
             self?.appModel?.send(.screenLocked)
         }
         lifecycleObserver.onScreenUnlocked = { [weak self] in
-            self?.screenIsLocked = false
             self?.appModel?.send(.screenUnlocked)
-            self?.refreshAndReconcileAfterClockChange()
         }
         lifecycleObserver.onDidWake = { [weak self] in
             self?.appModel?.send(.didWake)
-            self?.refreshAndReconcileAfterClockChange()
         }
         lifecycleObserver.onTimezoneChanged = { [weak self] in
             self?.appModel?.send(.timezoneChanged)
-            self?.refreshAndReconcileAfterClockChange()
         }
         lifecycleObserver.onDayChanged = { [weak self] in
             self?.appModel?.send(.dayChanged)
-            self?.refreshAndReconcileAfterClockChange()
         }
         lifecycleObserver.start()
 
@@ -141,6 +126,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         urlHandler.onOAuthCallback = { [weak self] url in
             self?.eventManager.repository.resumeAuthorizationFlow(with: url)
         }
+
+        // Kick off the initial refresh through the model.
+        model.send(.launched)
     }
 
     /*
@@ -297,17 +285,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    private func refreshAndReconcileAfterClockChange() {
-        let currentEvents = statusBarItem.events
-        Task { @MainActor in
-            await notificationScheduler.reconcile(
-                events: currentEvents,
-                settings: .currentForScheduler
-            )
-        }
-        eventManager?.refreshSubject.send()
-    }
-
     /*
      * -----------------------
      * MARK: - Actions
@@ -333,12 +310,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationWillTerminate(_: Notification) {
         statusLoopTask?.cancel()
+        appModel?.send(.willTerminate)
     }
 }
 
 extension AppDelegate: NotificationActionSink {
     func performNotificationAction(_ kind: NotificationKind, event: MBEvent) -> Bool {
-        guard !screenIsLocked else { return false }
+        guard !(appModel?.state.screenIsLocked ?? false) else { return false }
 
         switch kind {
         case .fullscreen:

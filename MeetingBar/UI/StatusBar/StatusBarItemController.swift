@@ -41,7 +41,8 @@ final class StatusBarItemController {
     var statusItem: NSStatusItem!
     var statusItemMenu: NSMenu!
 
-    var events: [MBEvent] = []
+    /// Current event list, driven by the AppModel state.
+    var events: [MBEvent] { appdelegate?.appModel?.state.events ?? [] }
 
     let installationDate = getInstallationDate()
 
@@ -136,14 +137,9 @@ final class StatusBarItemController {
             self?.reconcileNotifications()
         }
         .store(in: &cancellables)
-    }
 
     private func reconcileNotifications() {
-        guard let scheduler = appdelegate?.notificationScheduler else { return }
-        let events = self.events
-        Task { @MainActor in
-            await scheduler.reconcile(events: events, settings: .currentForScheduler)
-        }
+        appdelegate?.appModel?.send(.reconcileNotifications)
     }
 
     private func setupKeyboardShortcuts() {
@@ -241,18 +237,18 @@ final class StatusBarItemController {
             return
         }
 
+        let menuState = StatusBarMenuStateFactory.make(from: events)
         let builder = MenuBuilder(target: self, installationDate: installationDate)
 
         statusItemMenu.autoenablesItems = false
         statusItemMenu.removeAllItems()
 
-        if Defaults[.selectedCalendarIDs].isEmpty == false {
+        if menuState.hasSelectedCalendars {
             let today = Calendar.current.startOfDay(for: Date())
             let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today)!
 
-            // VIEW
-            if Defaults[.showTimelineInMenu], events.isEmpty == false {
-                let segments = events.map {
+            if menuState.showTimeline, !menuState.todayEvents.isEmpty {
+                let segments = menuState.todayEvents.map {
                     DaySegment(
                         start: max($0.startDate, today),
                         end: min($0.endDate, tomorrow),
@@ -269,28 +265,22 @@ final class StatusBarItemController {
                 statusItemMenu.addItem(item)
                 statusItemMenu.addItem(.separator())
             }
-            //
 
-            switch Defaults[.showEventsForPeriod] {
+            switch menuState.showEventsForPeriod {
             case .today:
                 statusItemMenu.items += builder.buildDateSection(
-                    date: today, title: "status_bar_section_today".loco(), events: events)
+                    date: today, title: "status_bar_section_today".loco(),
+                    events: menuState.todayEvents)
             case .today_n_tomorrow:
-                let todayEvents = events.filter {
-                    Calendar.current.isDate($0.startDate, inSameDayAs: today)
-                }
                 statusItemMenu.items += builder.buildDateSection(
-                    date: today, title: "status_bar_section_today".loco(), events: todayEvents)
+                    date: today, title: "status_bar_section_today".loco(),
+                    events: menuState.todayEvents)
 
                 statusItemMenu.addItem(NSMenuItem.separator())
 
-                let tomorrowEvents = events.filter {
-                    Calendar.current.isDate($0.startDate, inSameDayAs: tomorrow)
-                }
                 statusItemMenu.items += builder.buildDateSection(
                     date: tomorrow, title: "status_bar_section_tomorrow".loco(),
-                    events: tomorrowEvents)
-
+                    events: menuState.tomorrowEvents)
             }
         } else {
             let text = "status_bar_empty_calendar_message".loco()
@@ -302,12 +292,11 @@ final class StatusBarItemController {
             item.isEnabled = false
         }
         statusItemMenu.addItem(NSMenuItem.separator())
-        statusItemMenu.items += builder.buildJoinSection(nextEvent: events.nextEvent())
+        statusItemMenu.items += builder.buildJoinSection(nextEvent: menuState.nextEvent)
 
-        if !Defaults[.bookmarks].isEmpty {
+        if !menuState.bookmarks.isEmpty {
             statusItemMenu.addItem(NSMenuItem.separator())
-
-            statusItemMenu.items += builder.buildBookmarksSection()
+            statusItemMenu.items += builder.buildBookmarksSection(bookmarks: menuState.bookmarks)
         }
         statusItemMenu.addItem(NSMenuItem.separator())
 
@@ -470,22 +459,6 @@ final class StatusBarItemController {
             openInFantastical(startDate: event.startDate, title: event.title)
         }
     }
-}
-
-func shortenTitle(title: String?, offset: Int) -> String {
-    StatusBarTitlePolicy.shortenTitle(title, limit: offset, noTitle: "status_bar_no_title".loco())
-}
-
-func createEventStatusString(title: String, startDate: Date, endDate: Date) -> (String, String) {
-    let text = StatusBarTitlePolicy.text(
-        eventTitle: title,
-        startDate: startDate,
-        endDate: endDate,
-        settings: .current,
-        now: Date(),
-        calendar: statusBarCalendar()
-    )
-    return (text.title, text.time)
 }
 
 @MainActor
