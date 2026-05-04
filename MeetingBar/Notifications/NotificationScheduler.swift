@@ -70,7 +70,7 @@ final class NotificationScheduler {
     ) async {
         let planningEvents = events.map(NotificationPlanningEvent.init(event:))
         let plans =
-            NotificationPlanningPolicy
+            NotificationPlanner
             .plan(events: planningEvents, settings: settings, now: now)
         let systemPlans = plans.filter { $0.kind == .eventStart || $0.kind == .eventEnd }
         let actionPlans = plans.filter(\.kind.isInAppAction)
