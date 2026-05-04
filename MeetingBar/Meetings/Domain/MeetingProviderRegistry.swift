@@ -60,7 +60,8 @@ extension MeetingProviderRegistry {
             _ service: MeetingServices,
             icon: String,
             height: Double = 16,
-            pattern: String? = nil
+            pattern: String? = nil,
+            nativeAppBrowserName: String? = nil
         ) -> MeetingProviderDescriptor {
             MeetingProviderDescriptor(
                 id: service.rawValue,
@@ -68,7 +69,8 @@ extension MeetingProviderRegistry {
                 iconName: icon,
                 iconWidth: 16,
                 iconHeight: height,
-                regexPattern: pattern
+                regexPattern: pattern,
+                nativeAppBrowserName: nativeAppBrowserName
             )
         }
 
@@ -83,7 +85,8 @@ extension MeetingProviderRegistry {
                 .meet,
                 icon: "google_meet_icon",
                 height: 13.2,
-                pattern: #"https?://meet.google.com/(_meet/)?[a-z-]+"#),
+                pattern: #"https?://meet.google.com/(_meet/)?[a-z-]+"#,
+                nativeAppBrowserName: "MeetInOne"),
 
             // Google Meet Stream
             desc(
@@ -109,7 +112,8 @@ extension MeetingProviderRegistry {
                 .zoom,
                 icon: "zoom_icon",
                 pattern:
-                    #"https:\/\/(?:[a-zA-Z0-9-.]+)?zoom(-x)?\.(?:us|com|com\.cn|de)\/(?:my|[a-z]{1,2}|webinar)\/[-a-zA-Z0-9()@:%_\+.~#?&=\/]*"#
+                    #"https:\/\/(?:[a-zA-Z0-9-.]+)?zoom(-x)?\.(?:us|com|com\.cn|de)\/(?:my|[a-z]{1,2}|webinar)\/[-a-zA-Z0-9()@:%_\+.~#?&=\/]*"#,
+                nativeAppBrowserName: "Zoom"
             ),
 
             // Zoom (native app scheme)
@@ -137,7 +141,8 @@ extension MeetingProviderRegistry {
                 .teams,
                 icon: "ms_teams_icon",
                 pattern:
-                    #"https?://(gov.)?teams\.microsoft\.(com|us)/l/meetup-join/[a-zA-Z0-9_%\/=\-\+\.?]+"#
+                    #"https?://(gov.)?teams\.microsoft\.(com|us)/l/meetup-join/[a-zA-Z0-9_%\/=\-\+\.?]+"#,
+                nativeAppBrowserName: "Teams"
             ),
 
             // Cisco Webex
@@ -152,7 +157,8 @@ extension MeetingProviderRegistry {
             desc(
                 .jitsi,
                 icon: "jitsi_icon",
-                pattern: #"https?://meet\.jit\.si/[^\s]*"#),
+                pattern: #"https?://meet\.jit\.si/[^\s]*"#,
+                nativeAppBrowserName: "Jitsi"),
 
             // Amazon Chime
             desc(
@@ -422,7 +428,8 @@ extension MeetingProviderRegistry {
             desc(
                 .slack,
                 icon: "slack_icon",
-                pattern: #"https?://app\.slack\.com/huddle/[A-Za-z0-9./]+"#),
+                pattern: #"https?://app\.slack\.com/huddle/[A-Za-z0-9./]+"#,
+                nativeAppBrowserName: "Slack"),
 
             // Gather
             desc(
@@ -516,7 +523,8 @@ extension MeetingProviderRegistry {
             desc(
                 .riverside,
                 icon: "riverside_icon",
-                pattern: #"https?://riverside\.(com|fm)/studio/[^\s]*"#),
+                pattern: #"https?://riverside\.(com|fm)/studio/[^\s]*"#,
+                nativeAppBrowserName: "Riverside"),
 
             // Other — catch-all for custom regex matches, no URL pattern
             desc(

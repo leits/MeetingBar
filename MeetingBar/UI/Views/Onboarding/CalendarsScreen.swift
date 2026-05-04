@@ -11,14 +11,12 @@ import SwiftUI
 import Defaults
 
 struct CalendarsScreen: View {
+    @EnvironmentObject var onboardingHandler: OnboardingHandler
     @Default(.selectedCalendarIDs) var selectedCalendarIDs
 
     var body: some View {
         VStack {
-            // AppModel is guaranteed to exist by the time CalendarsScreen is
-            // shown — AccessScreen's requestAccess() calls setup() before
-            // navigating here.
-            if let appModel = (NSApplication.shared.delegate as? AppDelegate)?.appModel {
+            if let appModel = onboardingHandler.appModel {
                 CalendarsTab().environmentObject(appModel)
             } else {
                 ProgressView()

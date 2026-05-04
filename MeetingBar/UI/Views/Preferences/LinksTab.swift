@@ -25,16 +25,16 @@ struct LinksTab: View {
     @State private var showingAlert = false
     @State private var bookmark: Bookmark?
 
-    /// Returns a Binding<Browser> for a specific meeting service.
+    /// Returns a Binding<Browser> for a specific meeting provider ID.
     /// Selection of `systemDefaultBrowser` removes the key from the map (fall through to default).
-    private func providerBrowserBinding(for service: MeetingServices) -> Binding<Browser> {
+    private func providerBrowserBinding(forID id: String) -> Binding<Browser> {
         Binding<Browser>(
-            get: { providerBrowsers[service.rawValue] ?? systemDefaultBrowser },
+            get: { providerBrowsers[id] ?? systemDefaultBrowser },
             set: { newBrowser in
                 if newBrowser == systemDefaultBrowser {
-                    providerBrowsers.removeValue(forKey: service.rawValue)
+                    providerBrowsers.removeValue(forKey: id)
                 } else {
-                    providerBrowsers[service.rawValue] = newBrowser
+                    providerBrowsers[id] = newBrowser
                 }
             }
         )
@@ -54,71 +54,18 @@ struct LinksTab: View {
                     }
                 }
 
-                Picker(
-                    selection: providerBrowserBinding(for: .meet),
-                    label: Text("preferences_services_link_service_title".loco("Google Meet"))
-                        .frame(width: 200, alignment: .leading)
-                ) {
-                    Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
-                    Text(meetInOneBrowser.name).tag(meetInOneBrowser)
-                    ForEach(allBrowser, id: \.self) { (browser: Browser) in
-                        Text(browser.name).tag(browser)
-                    }
-                }
-
-                Picker(
-                    selection: providerBrowserBinding(for: .zoom),
-                    label: Text("preferences_services_link_service_title".loco("Zoom")).frame(
-                        width: 200, alignment: .leading)
-                ) {
-                    Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
-                    Text(zoomAppBrowser.name).tag(zoomAppBrowser)
-                    ForEach(allBrowser, id: \.self) { (browser: Browser) in
-                        Text(browser.name).tag(browser)
-                    }
-                }
-                Picker(
-                    selection: providerBrowserBinding(for: .teams),
-                    label: Text("preferences_services_link_service_title".loco("Teams")).frame(
-                        width: 200, alignment: .leading)
-                ) {
-                    Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
-                    Text(teamsAppBrowser.name).tag(teamsAppBrowser)
-                    ForEach(allBrowser, id: \.self) { (browser: Browser) in
-                        Text(browser.name).tag(browser)
-                    }
-                }
-                Picker(
-                    selection: providerBrowserBinding(for: .slack),
-                    label: Text("preferences_services_link_service_title".loco("Slack")).frame(
-                        width: 200, alignment: .leading)
-                ) {
-                    Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
-                    Text(slackAppBrowser.name).tag(slackAppBrowser)
-                    ForEach(allBrowser, id: \.self) { (browser: Browser) in
-                        Text(browser.name).tag(browser)
-                    }
-                }
-                Picker(
-                    selection: providerBrowserBinding(for: .jitsi),
-                    label: Text("preferences_services_link_service_title".loco("Jitsi")).frame(
-                        width: 200, alignment: .leading)
-                ) {
-                    Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
-                    Text(jitsiAppBrowser.name).tag(jitsiAppBrowser)
-                    ForEach(allBrowser, id: \.self) { (browser: Browser) in
-                        Text(browser.name).tag(browser)
-                    }
-                }
-                Picker(
-                    selection: providerBrowserBinding(for: .riverside),
-                    label: Text("preferences_services_link_service_title".loco("Riverside")).frame(
-                        width: 200, alignment: .leading)
-                ) {
-                    Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
-                    Text(riversideAppBrowser.name).tag(riversideAppBrowser)
-                    ForEach(allBrowser, id: \.self) { (browser: Browser) in
-                        Text(browser.name).tag(browser)
+                ForEach(MeetingProviderRegistry.all.filter { $0.nativeAppBrowserName != nil }, id: \.id) { descriptor in
+                    let nativeBrowser = Browser(name: descriptor.nativeAppBrowserName!, path: "")
+                    Picker(
+                        selection: providerBrowserBinding(forID: descriptor.id),
+                        label: Text("preferences_services_link_service_title".loco(descriptor.displayName))
+                            .frame(width: 200, alignment: .leading)
+                    ) {
+                        Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
+                        Text(nativeBrowser.name).tag(nativeBrowser)
+                        ForEach(allBrowser, id: \.self) { (browser: Browser) in
+                            Text(browser.name).tag(browser)
+                        }
                     }
                 }
             }

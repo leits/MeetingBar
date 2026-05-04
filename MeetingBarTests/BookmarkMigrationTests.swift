@@ -22,9 +22,9 @@ final class BookmarkMigrationTests: XCTestCase {
 
     func testDecodesBookmarkFromLegacyJSON_meet() throws {
         // Old format: service key holds MeetingServices rawValue string
-        let json = """
+        let json = Data("""
             {"name":"Daily","service":"Google Meet","url":"https://meet.google.com/abc"}
-            """.data(using: .utf8)!
+            """.utf8)
         let bookmark = try decoder.decode(Bookmark.self, from: json)
         XCTAssertEqual(bookmark.name, "Daily")
         XCTAssertEqual(bookmark.service, "Google Meet")
@@ -32,26 +32,26 @@ final class BookmarkMigrationTests: XCTestCase {
     }
 
     func testDecodesBookmarkFromLegacyJSON_zoom() throws {
-        let json = """
+        let json = Data("""
             {"name":"Standup","service":"Zoom","url":"https://zoom.us/j/123"}
-            """.data(using: .utf8)!
+            """.utf8)
         let bookmark = try decoder.decode(Bookmark.self, from: json)
         XCTAssertEqual(bookmark.service, "Zoom")
     }
 
     func testDecodesBookmarkFromLegacyJSON_teams() throws {
-        let json = """
+        let json = Data("""
             {"name":"Sprint","service":"Microsoft Teams","url":"https://teams.microsoft.com/l/meetup-join/1"}
-            """.data(using: .utf8)!
+            """.utf8)
         let bookmark = try decoder.decode(Bookmark.self, from: json)
         XCTAssertEqual(bookmark.service, "Microsoft Teams")
     }
 
     func testDecodesBookmarkFromLegacyJSON_unknownService() throws {
         // A future/unknown provider should decode as-is, not throw
-        let json = """
+        let json = Data("""
             {"name":"Custom","service":"My Custom Provider","url":"https://custom.example.com"}
-            """.data(using: .utf8)!
+            """.utf8)
         let bookmark = try decoder.decode(Bookmark.self, from: json)
         XCTAssertEqual(bookmark.service, "My Custom Provider")
     }

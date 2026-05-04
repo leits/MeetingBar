@@ -136,14 +136,14 @@ final class MenuBuilderTests: BaseTestCase {
     func test_bookmarksInlineWhenCountIsThreeOrLess() {
         // --- Arrange -----------------------------------------------------------------
         Defaults[.bookmarks] = [
-            Bookmark(name: "Zoom", service: .zoom, url: URL(string: "https://zoom.us")!),
-            Bookmark(name: "Meet", service: .meet, url: URL(string: "https://meet.google.com")!)
+            Bookmark(name: "Zoom", service: MeetingServices.zoom.rawValue, url: URL(string: "https://zoom.us")!),
+            Bookmark(name: "Meet", service: MeetingServices.meet.rawValue, url: URL(string: "https://meet.google.com")!)
         ]
 
         let builder = MenuBuilder(target: Dummy())
 
         // --- Act ---------------------------------------------------------------------
-        let items   = builder.buildBookmarksSection()
+        let items   = builder.buildBookmarksSection(bookmarks: Defaults[.bookmarks])
         let titles  = MenuBuilder.plainTitles(of: items)
 
         // --- Assert ------------------------------------------------------------------
@@ -156,13 +156,13 @@ final class MenuBuilderTests: BaseTestCase {
     func test_bookmarksGoToSubmenuWhenCountGreaterThanThree() {
         // --- Arrange -----------------------------------------------------------------
         Defaults[.bookmarks] = (1...4).map {
-            Bookmark(name: "BM\($0)", service: .url, url: URL(string: "https://example.com/\($0)")!)
+            Bookmark(name: "BM\($0)", service: MeetingServices.url.rawValue, url: URL(string: "https://example.com/\($0)")!)
         }
 
         let builder = MenuBuilder(target: Dummy())
 
         // --- Act ---------------------------------------------------------------------
-        let items = builder.buildBookmarksSection()
+        let items = builder.buildBookmarksSection(bookmarks: Defaults[.bookmarks])
 
         // --- Assert ------------------------------------------------------------------
         let header = items[0]

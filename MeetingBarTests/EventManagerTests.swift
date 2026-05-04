@@ -113,7 +113,7 @@ class EventManagerTests: BaseTestCase {
             .store(in: &cancellables)
 
         // Act: replace the provider and trigger refresh
-        manager.provider = storeB
+        manager.repository = CalendarRepository(store: storeB)
         try await manager.refreshSources()              // sends refreshSubject
 
         await fulfillment(of: [switchedExp], timeout: 1.0)

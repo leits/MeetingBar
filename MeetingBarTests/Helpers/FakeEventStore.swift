@@ -17,7 +17,7 @@ final class FakeEventStore: EventStore {
     nonisolated(unsafe) var stubbedCalendarError: Error?
     nonisolated(unsafe) var stubbedEventsError: Error?
     nonisolated(unsafe) var fetchDelay: TimeInterval = 0
-    private(set) var fetchCallCount = 0
+    nonisolated(unsafe) private(set) var fetchCallCount = 0
 
     init(calendars: [MBCalendar] = [], events: [MBEvent] = []) {
         stubbedCalendars = calendars

@@ -42,7 +42,13 @@ final class StatusBarItemController {
     var statusItemMenu: NSMenu!
 
     /// Current event list, driven by the AppModel state.
-    var events: [MBEvent] { appdelegate?.appModel?.state.events ?? [] }
+    /// A non-nil `_eventsOverride` takes precedence (used by tests to inject
+    /// events without wiring up a full AppDelegate/AppModel chain).
+    private var _eventsOverride: [MBEvent]? = nil
+    var events: [MBEvent] {
+        get { _eventsOverride ?? (appdelegate?.appModel?.state.events ?? []) }
+        set { _eventsOverride = newValue }
+    }
 
     let installationDate = getInstallationDate()
 

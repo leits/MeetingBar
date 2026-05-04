@@ -32,4 +32,9 @@ struct MeetingProviderDescriptor: Equatable, Sendable {
     /// URL detection regex pattern. `nil` for providers that don't use URL matching
     /// (e.g. phone, facetimeaudio, url catch-all, other).
     let regexPattern: String?
+
+    /// Name of the per-provider native-app "browser" sentinel that appears in the
+    /// browser picker for this provider.  `nil` means only real browsers are shown.
+    /// This is a plain String so the descriptor stays free of AppKit / Defaults imports.
+    let nativeAppBrowserName: String?
 }

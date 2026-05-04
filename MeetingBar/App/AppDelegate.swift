@@ -24,6 +24,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private let urlHandler = URLHandler()
 
     weak var preferencesWindow: NSWindow!
+    private weak var onboardingHandler: OnboardingHandler?
     private var statusLoopTask: Task<Void, Never>?
     private var cancellables = Set<AnyCancellable>()
 
@@ -172,6 +173,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let handler = OnboardingHandler { [weak self] provider in
             await self?.onboardingCompleted(with: provider)
         }
+        onboardingHandler = handler
         let contentView = OnboardingView().environmentObject(handler)
         let onboardingWindow = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 660, height: 450),
@@ -194,6 +196,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         eventManager = await EventManager()
         Defaults[.onboardingCompleted] = true
         setup()
+        onboardingHandler?.appModel = appModel
         await eventManager.changeEventStoreProvider(provider)
     }
 
