@@ -52,7 +52,7 @@ final class ProviderBrowserMigrationTests: BaseTestCase {
 
     func testMigratePreservesCustomBrowserEntry() {
         let legacy: [(String, Browser)] = [
-            ("Zoom", chrome),
+            ("Zoom", chrome)
         ]
         let result = MeetingOpenPreferencesMigration.migrate(
             legacyValues: legacy,

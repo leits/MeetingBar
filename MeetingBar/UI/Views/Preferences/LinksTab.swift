@@ -113,7 +113,9 @@ struct LinksTab: View {
                 }
             }
 
-            GroupBox(label: Label("preferences_section_create_title".loco(), systemImage: "plus.circle")) {
+            GroupBox(
+                label: Label("preferences_section_create_title".loco(), systemImage: "plus.circle")
+            ) {
                 HStack {
                     Text("preferences_services_create_meeting_title".loco()).frame(
                         width: 150, alignment: .leading)
@@ -164,7 +166,8 @@ struct LinksTab: View {
                     }
                     ForEach(bookmarks, id: \.self) { bookmark in
                         HStack {
-                            Image(nsImage: NSImage(named: NSImage.listViewTemplateName)!).foregroundColor(.gray)
+                            Image(nsImage: NSImage(named: NSImage.listViewTemplateName)!)
+                                .foregroundColor(.gray)
 
                             Text("\(bookmark.name) (\(bookmark.service)): \(bookmark.url)")
                             Spacer()
@@ -172,7 +175,9 @@ struct LinksTab: View {
                                 self.bookmark = bookmark
                                 self.showingAlert = true
                             }) {
-                                Image(nsImage: NSImage(named: NSImage.stopProgressFreestandingTemplateName)!)
+                                Image(
+                                    nsImage: NSImage(
+                                        named: NSImage.stopProgressFreestandingTemplateName)!)
                             }.buttonStyle(PlainButtonStyle())
                         }.padding(3)
                     }.onMove { source, destination in
@@ -187,7 +192,9 @@ struct LinksTab: View {
                     .alert(isPresented: $showingAlert) {
                         Alert(
                             title: Text("preferences_bookmarks_delete_bookmark_title".loco()),
-                            message: Text("preferences_bookmarks_delete_bookmark_message".loco(self.bookmark!.name)),
+                            message: Text(
+                                "preferences_bookmarks_delete_bookmark_message".loco(
+                                    self.bookmark!.name)),
                             primaryButton: .default(Text("general_delete".loco())) {
                                 bookmarks.removeAll { $0.url == self.bookmark?.url }
                             },
@@ -263,7 +270,8 @@ struct AddBookmarkModal: View {
                         Text(MeetingServices.zoom.localizedValue).tag(MeetingServices.zoom)
                         Text(MeetingServices.meet.localizedValue).tag(MeetingServices.meet)
                         Text(MeetingServices.facetime.localizedValue).tag(MeetingServices.facetime)
-                        Text(MeetingServices.facetimeaudio.localizedValue).tag(MeetingServices.facetimeaudio)
+                        Text(MeetingServices.facetimeaudio.localizedValue).tag(
+                            MeetingServices.facetimeaudio)
                         Text(MeetingServices.phone.localizedValue).tag(MeetingServices.phone)
                         Text(MeetingServices.other.localizedValue).tag(MeetingServices.other)
                     }.labelsHidden()
@@ -278,16 +286,19 @@ struct AddBookmarkModal: View {
                 }
                 Button(action: {
                     if let bookmark = bookmarks.first(where: { $0.url.absoluteString == url }) {
-                        error_msg = "preferences_bookmarks_new_bookmark_already_exist".loco(bookmark.name, url)
+                        error_msg = "preferences_bookmarks_new_bookmark_already_exist".loco(
+                            bookmark.name, url)
                         showingAlert = true
                     } else {
                         self.presentationMode.wrappedValue.dismiss()
                         guard let bookmarkURL = URL(string: url) else {
-                            error_msg = "preferences_services_create_meeting_custom_url_placeholder".loco()
+                            error_msg = "preferences_services_create_meeting_custom_url_placeholder"
+                                .loco()
                             showingAlert = true
                             return
                         }
-                        let bookmark = Bookmark(name: name, service: service.rawValue, url: bookmarkURL)
+                        let bookmark = Bookmark(
+                            name: name, service: service.rawValue, url: bookmarkURL)
                         bookmarks.append(bookmark)
                     }
                 }) {
@@ -297,7 +308,9 @@ struct AddBookmarkModal: View {
         }.frame(width: 500, height: 200)
             .padding()
             .alert(isPresented: $showingAlert) {
-                Alert(title: Text("preferences_bookmarks_new_bookmark_error_title".loco()), message: Text(error_msg), dismissButton: .default(Text("general_ok".loco())))
+                Alert(
+                    title: Text("preferences_bookmarks_new_bookmark_error_title".loco()),
+                    message: Text(error_msg), dismissButton: .default(Text("general_ok".loco())))
             }
     }
 }

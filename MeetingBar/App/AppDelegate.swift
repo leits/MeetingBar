@@ -91,7 +91,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         eventCancellable = eventManager.$events
-            .receive(on: DispatchQueue.main) // ensure UI work on main thread
+            .receive(on: DispatchQueue.main)  // ensure UI work on main thread
             .sink { [weak self] events in
                 guard let self = self else { return }
                 // 1) update your model
@@ -319,7 +319,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         getURLEvent event: NSAppleEventDescriptor, replyEvent _: NSAppleEventDescriptor
     ) {
         if let string = event.paramDescriptor(forKeyword: keyDirectObject)?.stringValue,
-           let url = URL(string: string) {
+            let url = URL(string: string)
+        {
             urlHandler.handle(url: url)
         }
     }

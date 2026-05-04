@@ -8,7 +8,6 @@
 
 import Cocoa
 import Combine
-
 import Defaults
 import KeyboardShortcuts
 import SwiftUI
@@ -36,9 +35,7 @@ enum MenuStyleConstants {
     }
 }
 
-/**
- * creates the menu in the system status bar, creates the menu items and controls the whole lifecycle.
- */
+/// creates the menu in the system status bar, creates the menu items and controls the whole lifecycle.
 @MainActor
 final class StatusBarItemController {
     var statusItem: NSStatusItem!
@@ -61,13 +58,17 @@ final class StatusBarItemController {
 
         statusItem.button?.target = self
         statusItem.button?.action = #selector(statusMenuBarAction)
-        statusItem.button?.sendAction(on: [NSEvent.EventTypeMask.rightMouseDown, NSEvent.EventTypeMask.leftMouseUp, NSEvent.EventTypeMask.leftMouseDown])
+        statusItem.button?.sendAction(on: [
+            NSEvent.EventTypeMask.rightMouseDown, NSEvent.EventTypeMask.leftMouseUp,
+            NSEvent.EventTypeMask.leftMouseDown,
+        ])
 
         // Temporary icon and menu before app delegate setup
         statusItem.button?.image = MenuStyleConstants.iconNamed(MenuStyleConstants.appIconName)
         statusItem.button?.image?.size = MenuStyleConstants.iconSize
         statusItem.button?.imagePosition = .imageLeft
-        let menuItem = statusItemMenu.addItem(withTitle: "window_title_onboarding".loco(), action: nil, keyEquivalent: "")
+        let menuItem = statusItemMenu.addItem(
+            withTitle: "window_title_onboarding".loco(), action: nil, keyEquivalent: "")
         menuItem.isEnabled = false
 
         setupDefaultsObservers()
@@ -130,11 +131,11 @@ final class StatusBarItemController {
             .dismissedEvents,
             options: []
         )
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                self?.reconcileNotifications()
-            }
-            .store(in: &cancellables)
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] _ in
+            self?.reconcileNotifications()
+        }
+        .store(in: &cancellables)
     }
 
     private func reconcileNotifications() {
@@ -178,7 +179,7 @@ final class StatusBarItemController {
 
     func openMenu() {
         statusItem.menu = statusItemMenu
-        statusItem.button?.performClick(nil) // ...and click
+        statusItem.button?.performClick(nil)  // ...and click
         statusItem.menu = nil
     }
 
@@ -213,9 +214,9 @@ final class StatusBarItemController {
         button.cell?.lineBreakMode = .byTruncatingTail
 
         switch presentation.icon {
-        case let .asset(name):
+        case .asset(let name):
             button.image = MenuStyleConstants.iconNamed(name)
-        case let .meetingService(service):
+        case .meetingService(let service):
             button.image = getIconForMeetingService(service)
         case .none:
             break
@@ -252,13 +253,14 @@ final class StatusBarItemController {
             // VIEW
             if Defaults[.showTimelineInMenu], events.isEmpty == false {
                 let segments = events.map {
-                    DaySegment(start: max($0.startDate, today),
-                               end: min($0.endDate, tomorrow),
-                               color: Color($0.calendar.color))
+                    DaySegment(
+                        start: max($0.startDate, today),
+                        end: min($0.endDate, tomorrow),
+                        color: Color($0.calendar.color))
                 }
 
                 let timeline = DayRelativeTimelineView(segments: segments, currentDate: Date())
-                let hosting  = NSHostingView(rootView: timeline)
+                let hosting = NSHostingView(rootView: timeline)
                 hosting.autoresizingMask = [.width]
                 hosting.frame.size.height = timeline.preferredHeight
 
@@ -271,15 +273,23 @@ final class StatusBarItemController {
 
             switch Defaults[.showEventsForPeriod] {
             case .today:
-                statusItemMenu.items += builder.buildDateSection(date: today, title: "status_bar_section_today".loco(), events: events)
+                statusItemMenu.items += builder.buildDateSection(
+                    date: today, title: "status_bar_section_today".loco(), events: events)
             case .today_n_tomorrow:
-                let todayEvents = events.filter { Calendar.current.isDate($0.startDate, inSameDayAs: today) }
-                statusItemMenu.items += builder.buildDateSection(date: today, title: "status_bar_section_today".loco(), events: todayEvents)
+                let todayEvents = events.filter {
+                    Calendar.current.isDate($0.startDate, inSameDayAs: today)
+                }
+                statusItemMenu.items += builder.buildDateSection(
+                    date: today, title: "status_bar_section_today".loco(), events: todayEvents)
 
                 statusItemMenu.addItem(NSMenuItem.separator())
 
-                let tomorrowEvents = events.filter { Calendar.current.isDate($0.startDate, inSameDayAs: tomorrow) }
-                statusItemMenu.items += builder.buildDateSection(date: tomorrow, title: "status_bar_section_tomorrow".loco(), events: tomorrowEvents)
+                let tomorrowEvents = events.filter {
+                    Calendar.current.isDate($0.startDate, inSameDayAs: tomorrow)
+                }
+                statusItemMenu.items += builder.buildDateSection(
+                    date: tomorrow, title: "status_bar_section_tomorrow".loco(),
+                    events: tomorrowEvents)
 
             }
         } else {
@@ -287,7 +297,8 @@ final class StatusBarItemController {
             let item = statusItemMenu.addItem(withTitle: "", action: nil, keyEquivalent: "")
             let paragraphStyle = NSMutableParagraphStyle()
             paragraphStyle.lineBreakMode = NSLineBreakMode.byWordWrapping
-            item.attributedTitle = NSAttributedString(string: text, attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
+            item.attributedTitle = NSAttributedString(
+                string: text, attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
             item.isEnabled = false
         }
         statusItemMenu.addItem(NSMenuItem.separator())
@@ -325,9 +336,13 @@ final class StatusBarItemController {
     @objc
     func dismissNextMeetingAction() {
         if let nextEvent = events.nextEvent() {
-            let dismissedEvent = ProcessedEvent(id: nextEvent.id, lastModifiedDate: nextEvent.lastModifiedDate, eventEndDate: nextEvent.endDate)
+            let dismissedEvent = ProcessedEvent(
+                id: nextEvent.id, lastModifiedDate: nextEvent.lastModifiedDate,
+                eventEndDate: nextEvent.endDate)
             Defaults[.dismissedEvents].append(dismissedEvent)
-            sendNotification("notification_next_meeting_dismissed_title".loco(nextEvent.title), "notification_next_meeting_dismissed_message".loco())
+            sendNotification(
+                "notification_next_meeting_dismissed_title".loco(nextEvent.title),
+                "notification_next_meeting_dismissed_message".loco())
 
             updateTitle()
             updateMenu()
@@ -338,7 +353,9 @@ final class StatusBarItemController {
     @objc
     func undismissMeetingsActions() {
         Defaults[.dismissedEvents] = []
-        sendNotification("notification_all_dismissals_removed_title".loco(), "notification_all_dismissals_removed_message".loco())
+        sendNotification(
+            "notification_all_dismissals_removed_title".loco(),
+            "notification_all_dismissals_removed_message".loco())
 
         updateTitle()
         updateMenu()
@@ -377,7 +394,8 @@ final class StatusBarItemController {
     @objc
     func joinMeetingLinkCandidate(sender: NSMenuItem) {
         if let candidate = sender.representedObject as? MeetingLinkCandidate {
-            MeetingOpener.open(meetingLink: MeetingLink(service: candidate.service, url: candidate.url))
+            MeetingOpener.open(
+                meetingLink: MeetingLink(service: candidate.service, url: candidate.url))
         }
     }
 
@@ -391,7 +409,9 @@ final class StatusBarItemController {
 
     @objc func handleManualRefresh() {
         Task {
-            do { try await self.appdelegate.eventManager.refreshSources() } catch { NSLog("Refresh failed: \(error)") }
+            do { try await self.appdelegate.eventManager.refreshSources() } catch {
+                NSLog("Refresh failed: \(error)")
+            }
         }
     }
 
@@ -403,7 +423,8 @@ final class StatusBarItemController {
     }
 
     func dismiss(event: MBEvent) {
-        let dismissedEvent = ProcessedEvent(id: event.id, lastModifiedDate: event.lastModifiedDate, eventEndDate: event.endDate)
+        let dismissedEvent = ProcessedEvent(
+            id: event.id, lastModifiedDate: event.lastModifiedDate, eventEndDate: event.endDate)
         Defaults[.dismissedEvents].append(dismissedEvent)
 
         updateTitle()
@@ -429,7 +450,9 @@ final class StatusBarItemController {
                 NSPasteboard.general.clearContents()
                 NSPasteboard.general.setString(meetingLink.url.absoluteString, forType: .string)
             } else {
-                sendNotification("status_bar_error_link_missed_title".loco(event.title), "status_bar_error_link_missed_message".loco())
+                sendNotification(
+                    "status_bar_error_link_missed_title".loco(event.title),
+                    "status_bar_error_link_missed_message".loco())
             }
         }
     }
@@ -471,7 +494,7 @@ enum StatusBarTitleRenderer {
         switch presentation.layout {
         case .none:
             return NSAttributedString(string: "")
-        case let .inline(showTime):
+        case .inline(let showTime):
             var eventTitle = presentation.title
             if showTime {
                 eventTitle += " " + presentation.time
@@ -488,7 +511,8 @@ enum StatusBarTitleRenderer {
         }
     }
 
-    private static func stackedTitle(for presentation: StatusBarPresentation) -> NSAttributedString {
+    private static func stackedTitle(for presentation: StatusBarPresentation) -> NSAttributedString
+    {
         let title = NSMutableAttributedString(
             string: presentation.title,
             attributes: titleAttributes(
@@ -497,13 +521,14 @@ enum StatusBarTitleRenderer {
                 baselineOffset: -3
             )
         )
-        title.append(NSAttributedString(
-            string: "\n" + presentation.time,
-            attributes: [
-                NSAttributedString.Key.font: NSFont.systemFont(ofSize: 9),
-                NSAttributedString.Key.foregroundColor: NSColor.lightGray
-            ]
-        ))
+        title.append(
+            NSAttributedString(
+                string: "\n" + presentation.time,
+                attributes: [
+                    NSAttributedString.Key.font: NSFont.systemFont(ofSize: 9),
+                    NSAttributedString.Key.foregroundColor: NSColor.lightGray,
+                ]
+            ))
 
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 0.7
@@ -532,7 +557,8 @@ enum StatusBarTitleRenderer {
         case .inactive:
             attributes[.foregroundColor] = NSColor.disabledControlTextColor
         case .underlined:
-            attributes[.underlineStyle] = NSUnderlineStyle.single.rawValue
+            attributes[.underlineStyle] =
+                NSUnderlineStyle.single.rawValue
                 | NSUnderlineStyle.patternDot.rawValue
                 | NSUnderlineStyle.byWord.rawValue
         }

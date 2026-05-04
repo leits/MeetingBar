@@ -7,6 +7,7 @@
 //
 
 import Foundation
+
 @testable import MeetingBar
 
 final class FakeEventStore: EventStore {
@@ -45,5 +46,5 @@ final class FakeEventStore: EventStore {
         return stubbedEvents
     }
 
-    func refreshSources() async { /* no-op */ }
+    func refreshSources() async { /* no-op */  }
 }

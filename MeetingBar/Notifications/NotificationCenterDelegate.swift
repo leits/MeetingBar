@@ -32,7 +32,8 @@ final class NotificationCenterDelegate: NSObject, @preconcurrency UNUserNotifica
     func userNotificationCenter(
         _: UNUserNotificationCenter,
         willPresent _: UNNotification,
-        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+        withCompletionHandler completionHandler:
+            @escaping (UNNotificationPresentationOptions) -> Void
     ) {
         completionHandler([.list, .banner, .badge, .sound])
     }

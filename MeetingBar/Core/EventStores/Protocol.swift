@@ -19,7 +19,8 @@ public enum EventStoreProvider: String, Defaults.Serializable, Codable {
 public protocol EventStore: AnyObject, Sendable {
     func refreshSources() async
     func fetchAllCalendars() async throws -> [MBCalendar]
-    func fetchEventsForDateRange(for calendars: [MBCalendar], from: Date, to: Date) async throws -> [MBEvent]
+    func fetchEventsForDateRange(for calendars: [MBCalendar], from: Date, to: Date) async throws
+        -> [MBEvent]
 }
 
 /// Extended contract for providers that require explicit sign-in/sign-out flows

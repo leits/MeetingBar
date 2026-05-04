@@ -44,18 +44,18 @@ final class AppModel: ObservableObject {
         case .refreshCalendars:
             scheduleRefresh()
 
-        case let .calendarsLoaded(calendars, provider):
+        case .calendarsLoaded(let calendars, let provider):
             state.calendars = calendars
             state.activeProvider = provider
 
-        case let .eventsLoaded(events):
+        case .eventsLoaded(let events):
             state.events = events
 
         case .calendarRefreshFailed:
             // preserve last known events, could log/report health here
             break
 
-        case let .providerChanged(provider):
+        case .providerChanged(let provider):
             state.activeProvider = provider
             state.calendars = []
             state.events = []

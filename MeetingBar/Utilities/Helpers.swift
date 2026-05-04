@@ -28,8 +28,10 @@ struct ProcessedEvent: Codable, Defaults.Serializable, Hashable {
 
 func cleanUpNotes(_ notes: String) -> String {
     let zoomSeparator = "\n──────────"
-    let meetSeparator = "-::~:~::~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~::~:~::-"
-    let cleanNotes = notes
+    let meetSeparator =
+        "-::~:~::~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~::~:~::-"
+    let cleanNotes =
+        notes
         .components(separatedBy: zoomSeparator)[0]
         .components(separatedBy: meetSeparator)[0]
         .htmlTagsStripped()
@@ -43,7 +45,9 @@ func compareVersions(_ versionX: String, _ versionY: String) -> Bool {
 func addInstalledBrowser() {
     let existingBrowsers = Defaults[.browsers]
 
-    var appUrls = LSCopyApplicationURLsForURL(URL(string: "https:")! as CFURL, .all)?.takeRetainedValue() as? [URL]
+    var appUrls =
+        LSCopyApplicationURLsForURL(URL(string: "https:")! as CFURL, .all)?.takeRetainedValue()
+        as? [URL]
 
     if !appUrls!.isEmpty {
         appUrls = appUrls?.sorted { $0.path.fileName() < $1.path.fileName() }
@@ -95,7 +99,7 @@ func hexStringToUIColor(hex: String) -> NSColor {
         text.splitWithNewLineAttributedString(
             with: [
                 NSAttributedString.Key.paragraphStyle: paragraphStyle,
-                NSAttributedString.Key.font: font
+                NSAttributedString.Key.font: font,
             ],
             maxWidth: maxWidth
         )
@@ -111,7 +115,8 @@ func hexStringToUIColor(hex: String) -> NSColor {
             // There's 10pt of padding seemingly built into the left side,
             // no such thing on the right so we go 20pt to match the left side
             textView.frame = NSRect(x: 10.0, y: 0.0, width: frame.width, height: frame.height)
-            paddingView.frame = NSRect(x: 0.0, y: 0.0, width: frame.width + 20, height: frame.height)
+            paddingView.frame = NSRect(
+                x: 0.0, y: 0.0, width: frame.width + 20, height: frame.height)
         } else {
             // Backup layout if we couldn't calculate frame
             textView.autoresizingMask = [.width, .height]
@@ -124,8 +129,11 @@ func hexStringToUIColor(hex: String) -> NSColor {
 }
 
 func getInstallationDate() -> Date? {
-    let urlToDocumentsFolder: URL? = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last
-    return try? FileManager.default.attributesOfItem(atPath: (urlToDocumentsFolder?.path)!)[.creationDate] as? Date
+    let urlToDocumentsFolder: URL? = FileManager.default.urls(
+        for: .documentDirectory, in: .userDomainMask
+    ).last
+    return try? FileManager.default.attributesOfItem(atPath: (urlToDocumentsFolder?.path)!)[
+        .creationDate] as? Date
 }
 
 /*
@@ -135,14 +143,18 @@ func getInstallationDate() -> Date? {
  */
 
 func checkIsFantasticalInstalled() -> Bool {
-    NSWorkspace.shared.urlForApplication(withBundleIdentifier: "com.flexibits.fantastical2.mac") != nil
+    NSWorkspace.shared.urlForApplication(withBundleIdentifier: "com.flexibits.fantastical2.mac")
+        != nil
 }
 
 func openInFantastical(startDate: Date, title: String) {
     let dateFormatter = DateFormatter()
     dateFormatter.dateFormat = "yyyy-MM-dd"
 
-    let queryItems = [URLQueryItem(name: "date", value: dateFormatter.string(from: startDate)), URLQueryItem(name: "title", value: title)]
+    let queryItems = [
+        URLQueryItem(name: "date", value: dateFormatter.string(from: startDate)),
+        URLQueryItem(name: "title", value: title),
+    ]
     var fantasticalUrlComp = URLComponents()
     fantasticalUrlComp.scheme = "x-fantastical3"
     fantasticalUrlComp.host = "show"
@@ -163,7 +175,8 @@ func openLinkFromClipboard() {
     let clipboardContent = pasteboard.string(forType: .string) ?? ""
 
     if !clipboardContent.isEmpty {
-        let meetingLink = detectMeetingLink(clipboardContent, customRegexes: Defaults[.customRegexes])
+        let meetingLink = detectMeetingLink(
+            clipboardContent, customRegexes: Defaults[.customRegexes])
 
         if let meetingLink = meetingLink {
             openMeetingURL(meetingLink.service, meetingLink.url, nil)
@@ -172,18 +185,21 @@ func openLinkFromClipboard() {
             if validUrl != nil {
                 URL(string: clipboardContent)?.openInDefaultBrowser()
             } else {
-                sendNotification("No valid url",
-                                 "Clipboard has no meeting link, so the meeting cannot be started")
+                sendNotification(
+                    "No valid url",
+                    "Clipboard has no meeting link, so the meeting cannot be started")
             }
         }
     } else {
-        sendNotification("Clipboard is empty",
-                         "Clipboard has no content, so the meeting cannot be started...")
+        sendNotification(
+            "Clipboard is empty",
+            "Clipboard has no content, so the meeting cannot be started...")
     }
 }
 
 func generateFakeEvent() -> MBEvent {
-    let calendar = MBCalendar(title: "Fake calendar", id: "fake_cal", source: nil, email: nil, color: .black)
+    let calendar = MBCalendar(
+        title: "Fake calendar", id: "fake_cal", source: nil, email: nil, color: .black)
 
     let event = MBEvent(
         id: "test_event",
@@ -206,7 +222,7 @@ func generateFakeEvent() -> MBEvent {
 extension Data {
     init?(base64URL urlString: String) {
         var st = urlString.replacingOccurrences(of: "-", with: "+")
-                         .replacingOccurrences(of: "_", with: "/")
+            .replacingOccurrences(of: "_", with: "/")
         let pad = 4 - st.count % 4
         if pad < 4 { st.append(String(repeating: "=", count: pad)) }
         self.init(base64Encoded: st)
@@ -219,10 +235,10 @@ extension NSImage {
         let copy = self.copy() as! NSImage
         copy.lockFocus()
         NSColor.disabledControlTextColor
-                    .withAlphaComponent(0.4)
-                    .set()
+            .withAlphaComponent(0.4)
+            .set()
         let rect = NSRect(origin: .zero, size: copy.size)
-        rect.fill(using: .sourceAtop)        // keep alpha, replace colour
+        rect.fill(using: .sourceAtop)  // keep alpha, replace colour
 
         copy.unlockFocus()
         return copy

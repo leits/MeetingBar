@@ -78,10 +78,15 @@ public final class CalendarRepository {
     ///
     /// This is a convenience that consolidates date-range calculation and selected-calendar
     /// filtering so `EventManager` does not need to know about either detail.
-    public func fetchCurrentPeriodEvents(fromAllCalendars allCalendars: [MBCalendar]) async throws -> [MBEvent] {
-        let selectedCalendars = allCalendars.filter { Defaults[.selectedCalendarIDs].contains($0.id) }
+    public func fetchCurrentPeriodEvents(fromAllCalendars allCalendars: [MBCalendar]) async throws
+        -> [MBEvent]
+    {
+        let selectedCalendars = allCalendars.filter {
+            Defaults[.selectedCalendarIDs].contains($0.id)
+        }
         let (dateFrom, dateTo) = calendarDateRange(for: Defaults[.showEventsForPeriod])
-        return try await activeProvider.fetchEventsForDateRange(for: selectedCalendars, from: dateFrom, to: dateTo)
+        return try await activeProvider.fetchEventsForDateRange(
+            for: selectedCalendars, from: dateFrom, to: dateTo)
     }
 
     public func refreshSources() async {
@@ -108,11 +113,11 @@ public final class CalendarRepository {
     }
 
     #if DEBUG
-    /// Test-only: inject a pre-built store without creating system singletons.
-    public init(store: EventStore) {
-        self.activeProviderName = .macOSEventKit
-        self.activeProvider = store
-    }
+        /// Test-only: inject a pre-built store without creating system singletons.
+        public init(store: EventStore) {
+            self.activeProviderName = .macOSEventKit
+            self.activeProvider = store
+        }
     #endif
 
     // MARK: - Private helpers

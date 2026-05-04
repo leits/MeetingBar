@@ -11,10 +11,12 @@ import UserNotifications
 @MainActor private var didRequestAuth = false
 
 @MainActor func ensureNotificationAuthorization() async {
-    guard !didRequestAuth else { return } // ask once
+    guard !didRequestAuth else { return }  // ask once
     didRequestAuth = true
     do {
-        try await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound])
+        try await UNUserNotificationCenter.current().requestAuthorization(options: [
+            .alert, .badge, .sound,
+        ])
     } catch {}
 }
 

@@ -24,45 +24,50 @@ final class LifecycleObserver {
     func start() {
         let dnc = DistributedNotificationCenter.default()
 
-        observers.append(dnc.addObserver(
-            forName: .init("com.apple.screenIsLocked"),
-            object: nil,
-            queue: .main
-        ) { [weak self] _ in
-            self?.onScreenLocked()
-        })
+        observers.append(
+            dnc.addObserver(
+                forName: .init("com.apple.screenIsLocked"),
+                object: nil,
+                queue: .main
+            ) { [weak self] _ in
+                self?.onScreenLocked()
+            })
 
-        observers.append(dnc.addObserver(
-            forName: .init("com.apple.screenIsUnlocked"),
-            object: nil,
-            queue: .main
-        ) { [weak self] _ in
-            self?.onScreenUnlocked()
-        })
+        observers.append(
+            dnc.addObserver(
+                forName: .init("com.apple.screenIsUnlocked"),
+                object: nil,
+                queue: .main
+            ) { [weak self] _ in
+                self?.onScreenUnlocked()
+            })
 
-        observers.append(NSWorkspace.shared.notificationCenter.addObserver(
-            forName: NSWorkspace.didWakeNotification,
-            object: nil,
-            queue: .main
-        ) { [weak self] _ in
-            self?.onDidWake()
-        })
+        observers.append(
+            NSWorkspace.shared.notificationCenter.addObserver(
+                forName: NSWorkspace.didWakeNotification,
+                object: nil,
+                queue: .main
+            ) { [weak self] _ in
+                self?.onDidWake()
+            })
 
-        observers.append(NotificationCenter.default.addObserver(
-            forName: .NSSystemTimeZoneDidChange,
-            object: nil,
-            queue: .main
-        ) { [weak self] _ in
-            self?.onTimezoneChanged()
-        })
+        observers.append(
+            NotificationCenter.default.addObserver(
+                forName: .NSSystemTimeZoneDidChange,
+                object: nil,
+                queue: .main
+            ) { [weak self] _ in
+                self?.onTimezoneChanged()
+            })
 
-        observers.append(NotificationCenter.default.addObserver(
-            forName: .NSCalendarDayChanged,
-            object: nil,
-            queue: .main
-        ) { [weak self] _ in
-            self?.onDayChanged()
-        })
+        observers.append(
+            NotificationCenter.default.addObserver(
+                forName: .NSCalendarDayChanged,
+                object: nil,
+                queue: .main
+            ) { [weak self] _ in
+                self?.onDayChanged()
+            })
     }
 
     func stop() {

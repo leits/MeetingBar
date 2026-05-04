@@ -55,7 +55,9 @@ final class NotificationActionRunner {
 
     // MARK: - Scheduled action dispatch
 
-    func fire(plan: PlannedNotification, event: MBEvent, settings: NotificationPlanningSettings, now: Date) {
+    func fire(
+        plan: PlannedNotification, event: MBEvent, settings: NotificationPlanningSettings, now: Date
+    ) {
         let action = actionSettings(for: plan.kind, settings: settings)
         fireAction(plan: plan, event: event, action: action, now: now)
     }
