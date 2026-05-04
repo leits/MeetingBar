@@ -29,6 +29,9 @@ struct AppEnvironment {
     /// Reconcile system notification requests with the current event plan.
     var reconcileNotifications: @MainActor ([MBEvent]) async -> Void
 
+    /// Switch the active calendar provider.  `signOut = true` drops the current session first.
+    var changeProvider: @MainActor (EventStoreProvider, Bool) async -> Void
+
     /// Current wall-clock time (injectable for tests).
     var now: @Sendable () -> Date
 
@@ -54,6 +57,9 @@ struct AppEnvironment {
                     events: events,
                     settings: .currentForScheduler
                 )
+            },
+            changeProvider: { newProvider, signOut in
+                await eventManager.changeEventStoreProvider(newProvider, withSignOut: signOut)
             },
             now: { Date() }
         )

@@ -137,6 +137,7 @@ final class StatusBarItemController {
             self?.reconcileNotifications()
         }
         .store(in: &cancellables)
+    }
 
     private func reconcileNotifications() {
         appdelegate?.appModel?.send(.reconcileNotifications)

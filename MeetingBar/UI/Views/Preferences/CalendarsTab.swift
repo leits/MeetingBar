@@ -6,32 +6,31 @@
 //  Copyright © 2021 Andrii Leitsius. All rights reserved.
 //
 
-import EventKit
 import SwiftUI
 
 import Defaults
 
 struct CalendarsTab: View {
-    @ObservedObject var eventManager: EventManager
+    @EnvironmentObject var appModel: AppModel
 
     var body: some View {
         VStack(alignment: .leading) {
             GroupBox(label: Label("preferences_section_data_source_title".loco(), systemImage: "server.rack")) {
-                ProviderPicker(eventManager: eventManager)
+                ProviderPicker()
             }
             .padding(.bottom, 5)
             Label("preferences_calendars_select_calendars_title".loco(), systemImage: "calendar").padding(5)
             List {
-                if eventManager.calendars.isEmpty {
-                    if Defaults[.eventStoreProvider] == .macOSEventKit {
+                if appModel.state.calendars.isEmpty {
+                    if appModel.state.activeProvider == .macOSEventKit {
                         AccessDeniedBanner()
                     }
                     Button("general_refresh".loco()) {
-                        Task { try await eventManager.refreshSources() }
+                        appModel.send(.refreshCalendars)
                     }
 
                 } else {
-                    CalendarSectionsView(calendars: eventManager.calendars)
+                    CalendarSectionsView(calendars: appModel.state.calendars)
                 }
             }
             .listStyle(.sidebar)
@@ -63,7 +62,7 @@ struct CalendarSectionsView: View {
 }
 
 struct ProviderPicker: View {
-    @ObservedObject var eventManager: EventManager
+    @EnvironmentObject var appModel: AppModel
     @State private var picker: EventStoreProvider = Defaults[.eventStoreProvider]
 
     var body: some View {
@@ -73,14 +72,12 @@ struct ProviderPicker: View {
                 Text("Google Calendar API").tag(EventStoreProvider.googleCalendar)
             }
             .onChange(of: picker) { provider in
-                Task { await eventManager.changeEventStoreProvider(provider) }
+                appModel.send(.changeProvider(provider, signOut: false))
             }
 
-            if Defaults[.eventStoreProvider] == .googleCalendar {
+            if appModel.state.activeProvider == .googleCalendar {
                 Button("preferences_calendars_provider_gcalendar_change_account".loco()) {
-                    Task {
-                        await eventManager.changeEventStoreProvider(.googleCalendar, withSignOut: true)
-                    }
+                    appModel.send(.changeProvider(.googleCalendar, signOut: true))
                 }
             }
         }
@@ -139,3 +136,4 @@ struct CalendarRow: View {
     }.listStyle(.sidebar)
         .frame(width: 300, height: 200)
 }
+

@@ -83,6 +83,14 @@ final class AppModel: ObservableObject {
         case .settingsChanged:
             scheduleRefresh()
 
+        case .changeProvider(let provider, let signOut):
+            state.activeProvider = provider
+            state.calendars = []
+            state.events = []
+            Task {
+                await environment.changeProvider(provider, signOut)
+            }
+
         case .reconcileNotifications:
             let events = state.events
             Task {

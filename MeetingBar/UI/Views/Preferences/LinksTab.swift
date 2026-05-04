@@ -10,14 +10,9 @@ import Defaults
 import SwiftUI
 
 struct LinksTab: View {
-    @Default(.meetBrowser) var meetBrowser
+    @Default(.providerBrowsers) var providerBrowsers
     @Default(.browserForCreateMeeting) var browserForCreateMeeting
     @Default(.defaultBrowser) var defaultBrowser
-    @Default(.zoomBrowser) var zoomBrowser
-    @Default(.teamsBrowser) var teamsBrowser
-    @Default(.slackBrowser) var slackBrowser
-    @Default(.jitsiBrowser) var jitsiBrowser
-    @Default(.riversideBrowser) var riversideBrowser
     @Default(.createMeetingServiceUrl) var createMeetingServiceUrl
     @Default(.createMeetingService) var createMeetingService
     @Default(.browsers) var allBrowser
@@ -29,6 +24,21 @@ struct LinksTab: View {
     @State var showingAddBookmarkModal = false
     @State private var showingAlert = false
     @State private var bookmark: Bookmark?
+
+    /// Returns a Binding<Browser> for a specific meeting service.
+    /// Selection of `systemDefaultBrowser` removes the key from the map (fall through to default).
+    private func providerBrowserBinding(for service: MeetingServices) -> Binding<Browser> {
+        Binding<Browser>(
+            get: { providerBrowsers[service.rawValue] ?? systemDefaultBrowser },
+            set: { newBrowser in
+                if newBrowser == systemDefaultBrowser {
+                    providerBrowsers.removeValue(forKey: service.rawValue)
+                } else {
+                    providerBrowsers[service.rawValue] = newBrowser
+                }
+            }
+        )
+    }
 
     var body: some View {
         VStack {
@@ -45,7 +55,7 @@ struct LinksTab: View {
                 }
 
                 Picker(
-                    selection: $meetBrowser,
+                    selection: providerBrowserBinding(for: .meet),
                     label: Text("preferences_services_link_service_title".loco("Google Meet"))
                         .frame(width: 200, alignment: .leading)
                 ) {
@@ -57,7 +67,7 @@ struct LinksTab: View {
                 }
 
                 Picker(
-                    selection: $zoomBrowser,
+                    selection: providerBrowserBinding(for: .zoom),
                     label: Text("preferences_services_link_service_title".loco("Zoom")).frame(
                         width: 200, alignment: .leading)
                 ) {
@@ -68,7 +78,7 @@ struct LinksTab: View {
                     }
                 }
                 Picker(
-                    selection: $teamsBrowser,
+                    selection: providerBrowserBinding(for: .teams),
                     label: Text("preferences_services_link_service_title".loco("Teams")).frame(
                         width: 200, alignment: .leading)
                 ) {
@@ -79,7 +89,7 @@ struct LinksTab: View {
                     }
                 }
                 Picker(
-                    selection: $slackBrowser,
+                    selection: providerBrowserBinding(for: .slack),
                     label: Text("preferences_services_link_service_title".loco("Slack")).frame(
                         width: 200, alignment: .leading)
                 ) {
@@ -90,7 +100,7 @@ struct LinksTab: View {
                     }
                 }
                 Picker(
-                    selection: $jitsiBrowser,
+                    selection: providerBrowserBinding(for: .jitsi),
                     label: Text("preferences_services_link_service_title".loco("Jitsi")).frame(
                         width: 200, alignment: .leading)
                 ) {
@@ -101,7 +111,7 @@ struct LinksTab: View {
                     }
                 }
                 Picker(
-                    selection: $riversideBrowser,
+                    selection: providerBrowserBinding(for: .riverside),
                     label: Text("preferences_services_link_service_title".loco("Riverside")).frame(
                         width: 200, alignment: .leading)
                 ) {

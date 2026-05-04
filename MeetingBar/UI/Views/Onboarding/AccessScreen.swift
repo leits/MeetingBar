@@ -13,6 +13,7 @@ import Defaults
 
 struct AccessScreen: View {
     @ObservedObject var viewRouter: ViewRouter
+    @EnvironmentObject var onboardingHandler: OnboardingHandler
     @Default(.eventStoreProvider) var eventStoreProvider
     @State var providerSelected = false
     @State var requestFailed = false
@@ -86,14 +87,9 @@ struct AccessScreen: View {
     @MainActor
     func requestAccess(provider: EventStoreProvider) async {
         providerSelected = true
-
         Defaults[.eventStoreProvider] = provider
-        if let app = NSApplication.shared.delegate as! AppDelegate? {
-            app.eventManager = await EventManager()
-            Defaults[.onboardingCompleted] = true
-            app.setup()
-            await app.eventManager.changeEventStoreProvider(Defaults[.eventStoreProvider])
-            self.viewRouter.currentScreen = .calendars
-        }
+        await onboardingHandler.onProviderSelected(provider)
+        viewRouter.currentScreen = .calendars
     }
 }
+

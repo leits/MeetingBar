@@ -12,16 +12,17 @@ import Defaults
 
 struct CalendarsScreen: View {
     @Default(.selectedCalendarIDs) var selectedCalendarIDs
-    let eventManager: EventManager
-
-    init() {
-        let app = NSApplication.shared.delegate as! AppDelegate
-        eventManager = app.eventManager
-    }
 
     var body: some View {
         VStack {
-            CalendarsTab(eventManager: eventManager)
+            // AppModel is guaranteed to exist by the time CalendarsScreen is
+            // shown — AccessScreen's requestAccess() calls setup() before
+            // navigating here.
+            if let appModel = (NSApplication.shared.delegate as? AppDelegate)?.appModel {
+                CalendarsTab().environmentObject(appModel)
+            } else {
+                ProgressView()
+            }
             Divider()
             HStack {
                 Spacer()
@@ -40,3 +41,4 @@ struct CalendarsScreen: View {
         NSApplication.shared.keyWindow?.close()
     }
 }
+

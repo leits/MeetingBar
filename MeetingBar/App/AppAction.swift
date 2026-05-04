@@ -37,6 +37,11 @@ enum AppAction {
 
     case settingsChanged
 
+    // MARK: - Provider
+
+    /// Switch the active calendar provider.  `signOut = true` drops the current OAuth session first.
+    case changeProvider(EventStoreProvider, signOut: Bool)
+
     // MARK: - Notification responses
 
     case joinMeeting(eventID: String)

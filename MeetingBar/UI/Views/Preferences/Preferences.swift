@@ -8,14 +8,14 @@
 import SwiftUI
 
 struct PreferencesView: View {
-    @EnvironmentObject var eventManager: EventManager
+    @EnvironmentObject var appModel: AppModel
 
     var body: some View {
         TabView {
             GeneralTab().tabItem { Text("preferences_tab_general".loco()) }
             AppearanceTab().tabItem { Text("preferences_tab_appearance".loco()) }
             LinksTab().tabItem { Text("preferences_tab_links".loco()) }
-            CalendarsTab(eventManager: eventManager).tabItem { Text("preferences_tab_calendars".loco()) }
+            CalendarsTab().tabItem { Text("preferences_tab_calendars".loco()) }
             AdvancedTab().tabItem { Text("preferences_tab_advanced".loco()) }
             StatusTab().tabItem { Text("preferences_tab_status".loco()) }
         }.padding()

@@ -1,0 +1,24 @@
+//
+//  OnboardingHandler.swift
+//  MeetingBar
+//
+//  Holds the app-level callback that AccessScreen invokes when the user
+//  selects and authorises a calendar provider.  Injected as an
+//  EnvironmentObject so no view needs to reach into AppDelegate directly.
+//
+
+import Foundation
+
+/// Observable wrapper around the single onboarding completion callback.
+///
+/// AppDelegate creates one instance, stores the completion logic in it, and
+/// injects it into `OnboardingView` via `.environmentObject(handler)`.
+@MainActor
+final class OnboardingHandler: ObservableObject {
+    /// Called when the user successfully authorises a calendar provider.
+    var onProviderSelected: @MainActor (EventStoreProvider) async -> Void
+
+    init(onProviderSelected: @escaping @MainActor (EventStoreProvider) async -> Void) {
+        self.onProviderSelected = onProviderSelected
+    }
+}

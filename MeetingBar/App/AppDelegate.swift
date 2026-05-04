@@ -169,7 +169,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
      */
 
     func openOnboardingWindow() {
-        let contentView = OnboardingView()
+        let handler = OnboardingHandler { [weak self] provider in
+            await self?.onboardingCompleted(with: provider)
+        }
+        let contentView = OnboardingView().environmentObject(handler)
         let onboardingWindow = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 660, height: 450),
             styleMask: [.closable, .titled],
@@ -185,6 +188,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         onboardingWindow.level = .floating
         onboardingWindow.center()
         onboardingWindow.orderFrontRegardless()
+    }
+
+    private func onboardingCompleted(with provider: EventStoreProvider) async {
+        eventManager = await EventManager()
+        Defaults[.onboardingCompleted] = true
+        setup()
+        await eventManager.changeEventStoreProvider(provider)
     }
 
     @objc
@@ -240,7 +250,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc
     func openPreferencesWindow(_: NSStatusBarButton?) {
-        let contentView = PreferencesView().environmentObject(eventManager)
+        guard let appModel else { return }
+        let contentView = PreferencesView().environmentObject(appModel)
 
         if let preferencesWindow {
             // if a window is already open, focus on it instead of opening another one.
