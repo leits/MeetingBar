@@ -34,7 +34,7 @@ enum EventDetailsTypeAppEnum: String, AppEnum {
         .url: "URL",
         .notes: "Notes",
         .location: "Location",
-        .attendees: "Attendees"
+        .attendees: "Attendees",
     ]
 }
 
@@ -61,7 +61,8 @@ enum EventDetailsValueFormatter {
         case .endDate:
             return event.endDate.formatted()
         case .attendees:
-            return event.attendees.map { "\($0.name) <\($0.email ?? "unknown")>" }.joined(separator: ", ")
+            return event.attendees.map { "\($0.name) <\($0.email ?? "unknown")>" }.joined(
+                separator: ", ")
         }
     }
 }
@@ -84,7 +85,8 @@ struct GetNearestEventDetails: AppIntent {
     }
 
     func perform() async throws
-        -> some IntentResult & ReturnsValue<String?> {
+        -> some IntentResult & ReturnsValue<String?>
+    {
         // Hop to the main actor only for the AppKit interaction
         let value: String? = await MainActor.run {
             guard
@@ -116,7 +118,8 @@ struct JoinNearestMeetingIntent: AppIntent {
 @available(macOS 13.0, *)
 struct DismissNearestMeetingIntent: AppIntent {
     static let title: LocalizedStringResource = "Dismiss Nearest Meeting"
-    static let description = IntentDescription("Dismiss the nearest (current or next) event meeting.")
+    static let description = IntentDescription(
+        "Dismiss the nearest (current or next) event meeting.")
 
     func perform() async throws -> some IntentResult {
         await MainActor.run {
