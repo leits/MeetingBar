@@ -35,14 +35,24 @@ The product principle is reliability first: **show the correct meeting, stay fre
             │  → flatMap(maxPublishers: 1) fetch     │
             │  → publish [MBCalendar], [MBEvent],    │
             │            ProviderHealth              │
-            └────────┬───────────┬──────────┬────────┘
-                     │           │          │
-        ┌────────────▼──┐  ┌─────▼──────┐  ┌▼────────────────────┐
-        │ StatusBar     │  │ Notification│  │ ActionsOnEventStart│
-        │ ItemController│  │ Scheduler   │  │ (legacy 10s timer  │
-        │ + MenuBuilder │  │ (mb-plan-…) │  │  for fullscreen +  │
-        │               │  │             │  │  auto-join + script│
-        └───────┬───────┘  └─────────────┘  └────────────────────┘
+            └────────┬───────────────────────────────┘
+                     │ events + calendars + health
+                     ▼
+            ┌────────────────────┐
+            │      AppModel      │  @MainActor ObservableObject
+            │  AppState (value)  │  driven by AppAction via AppEnvironment
+            │  • events          │
+            │  • calendars       │
+            │  • provider health │
+            └────────┬───────────┘
+                     │
+        ┌────────────▼──────────────┬──────────────────┐
+        │ StatusBar                 │ Notification     │
+        │ ItemController            │ Scheduler        │
+        │ + MenuBuilder             │ (mb-plan-…)      │
+        │ (via StatusBarMenuState)  │ + ActionScheduler│
+        │                           │ + ActionRunner   │
+        └───────┬───────────────────┴──────────────────┘
                 │
                 ▼
          macOS menu bar
@@ -57,7 +67,11 @@ The product principle is reliability first: **show the correct meeting, stay fre
 ```
 MeetingBar/
 ├── App/                            — process lifecycle, OS integration
-│   ├── AppDelegate.swift           — @main; wires LifecycleObserver + URLHandler
+│   ├── AppDelegate.swift           — @main; wires LifecycleObserver + URLHandler + AppModel
+│   ├── AppAction.swift             — sealed enum of all user/system intents
+│   ├── AppEnvironment.swift        — side-effect commands keyed by AppAction
+│   ├── AppModel.swift              — @MainActor ObservableObject owning AppState
+│   ├── AppState.swift              — value-type snapshot of app runtime state
 │   ├── AppIntent.swift             — Shortcuts integration
 │   ├── AppStore.swift              — IAP via SwiftyStoreKit
 │   ├── LifecycleObserver.swift     — screen-lock / wake / timezone / day-change notifications
@@ -83,8 +97,8 @@ MeetingBar/
 │   │   ├── MBCalendar.swift        — cross-provider calendar
 │   │   └── ProviderHealth.swift    — auth/stale/error/ok
 │   └── EventStores/
-│       ├── Protocol.swift          — the CalendarRepository protocol
-│       └── CalendarRepository.swift
+│       ├── Protocol.swift          — EventStore protocol (provider abstraction)
+│       └── CalendarRepository.swift — owns the active store, exposes fetch + switch
 │
 ├── Meetings/                       — meeting URL detection, opening, services catalog
 │   ├── MeetingLinkCandidate.swift  — scored URL + source priority [SPM]
@@ -93,26 +107,39 @@ MeetingBar/
 │   ├── MeetingOpener.swift         — runs join script + opens meeting URL
 │   ├── MeetingOpeningPolicy.swift  — open-in-browser vs open-in-app logic [SPM]
 │   ├── MeetingServices.swift       — regex catalog of 50+ meeting URL patterns
-│   ├── Domain/                     — provider descriptors registry
-│   └── Opening/, Creation/         — (future: opening/creation flows)
+│   ├── Domain/
+│   │   ├── MeetingProviderDescriptor.swift — value type for a meeting provider [SPM]
+│   │   └── MeetingProviderRegistry.swift   — catalog of all descriptors [SPM]
+│   ├── Opening/
+│   │   ├── MeetingOpenStrategy.swift       — open-in-app vs browser logic
+│   │   ├── MeetingOpenerRegistry.swift     — maps provider ID to strategy
+│   │   └── MeetingOpenPreferencesMigration.swift — migrates old per-provider browser prefs
+│   └── Creation/
+│       └── CreateMeetingRegistry.swift     — maps CreateMeetingService to URL factory
 │
 ├── Notifications/                  — UN notification scheduling + actions
 │   ├── EventActionPolicy.swift     — should fullscreen / auto-join / script fire? [SPM]
 │   ├── NotificationPlanner.swift   — desired UN requests for an event [SPM]
 │   ├── NotificationScheduler.swift — reconciles plans with UNUserNotificationCenter
-│   └── … (action runner, factory, delegate, setup, record store)
+│   ├── NotificationActionScheduler.swift — decides when to run in-app actions
+│   ├── NotificationActionRunner.swift    — executes fullscreen / auto-join / script
+│   ├── NotificationCenterDelegate.swift  — UNUserNotificationCenterDelegate
+│   ├── NotificationContentFactory.swift  — builds UNMutableNotificationContent
+│   ├── NotificationRecordStore.swift     — persists processed event IDs
+│   └── NotificationSetup.swift           — requests UN authorization
 │
 ├── UI/
 │   ├── StatusBar/                  — menu bar item, menu construction, policies
 │   │   ├── StatusBarItemController.swift
 │   │   ├── MenuBuilder.swift
+│   │   ├── StatusBarMenuState.swift        — value type carrying all menu-building inputs
+│   │   ├── StatusBarMenuStateFactory.swift — builds StatusBarMenuState from AppModel
 │   │   ├── StatusBarPresentation.swift    — value types + StatusBarPresentationPolicy + StatusBarPresenter [SPM]
 │   │   ├── StatusBarPresentation+MeetingBar.swift
 │   │   ├── StatusBarTitlePolicy.swift     — title text formatting [SPM]
 │   │   ├── StatusBarTitlePolicy+MeetingBar.swift
 │   │   ├── StatusBarIconPolicy.swift      — icon selection [SPM]
-│   │   ├── StatusBarIconPolicy+MeetingBar.swift
-│   │   └── StatusBarMenuState.swift       — (Phase 7 WIP) menu-state value type
+│   │   └── StatusBarIconPolicy+MeetingBar.swift
 │   ├── Views/Preferences/          — SwiftUI tabs (General/Appearance/…/Status)
 │   ├── Views/Onboarding/           — multi-screen onboarding
 │   ├── Views/FullscreenNotification.swift
@@ -202,11 +229,11 @@ If you are tempted to "just trigger a refresh from over here" — call `eventMan
 events + Defaults snapshot
         │
         ▼
-NotificationPlanningPolicy.plan(for: event)   ← pure
+NotificationPlanner.plan(events:settings:now:)   ← pure [SPM]
         │  → [NotificationPlan] with kinds:
-        │       .joinReminder, .endOfEvent, (future: .fullscreen, .autoJoin, .scriptOnStart)
+        │       .eventStart, .endOfEvent
         ▼
-NotificationScheduler.reconcile(events:)      ← side-effecting service
+NotificationScheduler.reconcile(events:settings:now:)   ← side-effecting service
    • build mb-plan-<eventID>-<kind> identifiers
    • diff against UNUserNotificationCenter.pendingNotificationRequests
    • remove obsolete, add missing, replace if content changed
@@ -215,7 +242,7 @@ NotificationScheduler.reconcile(events:)      ← side-effecting service
 
 **Why "mb-plan-" identifiers matter.** They are stable per (event, kind). Reconcile is idempotent: calling it twice in a row is a no-op. Calling it after a settings change re-arms only what changed. This replaced an older "single-id" model that suppressed back-to-back events.
 
-**What is NOT yet here:** fullscreen, auto-join, and on-start script still live in `ActionsOnEventStart` (a 10-second polling timer). Phase 2 of the roadmap migrates those onto the same plan model.
+**`NotificationActionScheduler` + `NotificationActionRunner`** handle in-app actions (fullscreen, auto-join, on-start script) that are triggered at event start. They read the `NotificationRecordStore` to avoid re-firing on re-reconcile.
 
 ---
 

@@ -2,12 +2,42 @@
 
 For next releases info look here: <https://github.com/leits/MeetingBar/releases>
 
-## Unreleased
+## Unreleased (5.0 architecture)
+
+### Architecture — internal (no behavior change)
+
+* `AppModel` / `AppState` / `AppAction` / `AppEnvironment` — unidirectional state container; `AppDelegate` delegates to it instead of holding event and notification logic directly
+* `StatusBarMenuState` / `StatusBarMenuStateFactory` — `MenuBuilder` now receives a plain value type instead of reading live state
+* `CalendarRepository` — owns the active provider and isolates `EventManager` from provider-switching details
+* Calendar providers moved to `Calendar/Providers/EventKit/` and `Calendar/Providers/Google/`
+* Notification logic split into: `NotificationPlanner` (pure plan), `NotificationScheduler` (reconciler), `NotificationContentFactory`, `NotificationRecordStore`, `NotificationActionScheduler`, `NotificationActionRunner`, `NotificationCenterDelegate`
+* Meeting provider `Descriptor` + `Registry` — all 50+ providers are now descriptor-driven; adding a new provider requires no code change outside the registry
+* `MeetingOpenerRegistry` + `MeetingOpenStrategy` — opening strategies are injected, not hard-coded per service
+* `CreateMeetingRegistry` — create-meeting service also descriptor-driven
+* `OnboardingHandler` — injectable callback; `CalendarsScreen` no longer reaches into `AppDelegate` directly
+* Preferences `LinksTab` now iterates `MeetingProviderRegistry` instead of hard-coding per-provider pickers
+* Pure policies (`EventSelectionPolicy`, `EventFilterPolicy`, `EventActionPolicy`, `StatusBarPresentationPolicy`, `StatusBarTitlePolicy`, `StatusBarIconPolicy`, `MeetingLinkDetector`, `MeetingOpeningPolicy`, `NotificationPlanner`, `GoogleCalendarPolicy`, `DiagnosticsReport`) all live in the hostless `MeetingBarLogic` SPM target
+* `ProviderHealth` model surfaces auth-required / stale / error / ok state to the Status preferences tab
+* `per-event` `NotificationScheduler` with `mb-plan-<eventID>-<kind>` identifiers replaces the legacy single-id path; back-to-back events no longer suppress each other
+* EventKit calendar fetches moved off the main thread — no more menu-bar hangs on large stores
+* Failed refresh now preserves last known events and calendars instead of replacing them with empty arrays
+* Refresh coalescing via `throttle(200ms)` + `flatMap(maxPublishers: 1)`
+
+### Tests
+
+* 200+ tests across `MeetingBarLogicTests` (hostless) and `MeetingBarTests` (host)
+* Logic coverage gate: 94% (threshold 90%)
+* `make validate-strings` — verifies every `.loco()` key exists in `en.lproj/Localizable.strings`
+
+### Fixes included
 
 * Fix typo in language list (#839)
 * Fix multiple typos in the repo (#875)
-* Fix URL in PR template (#875) 
+* Fix URL in PR template (#875)
 * Add Riverside meeting service (#875)
+* crash-class force unwraps removed in `GCParser`, `MeetingServices` regex catalog, `EKEventStore` calendar lookup, `getGmailAccount`
+* per-calendar Google 403 handling — one inaccessible calendar no longer disconnects the account
+* `AuthError` / `GoogleCalendarError` conform to `LocalizedError` with localized descriptions
 
 ## Version 4.11.0
 
