@@ -99,7 +99,7 @@ func hexStringToUIColor(hex: String) -> NSColor {
         text.splitWithNewLineAttributedString(
             with: [
                 NSAttributedString.Key.paragraphStyle: paragraphStyle,
-                NSAttributedString.Key.font: font,
+                NSAttributedString.Key.font: font
             ],
             maxWidth: maxWidth
         )
@@ -153,7 +153,7 @@ func openInFantastical(startDate: Date, title: String) {
 
     let queryItems = [
         URLQueryItem(name: "date", value: dateFormatter.string(from: startDate)),
-        URLQueryItem(name: "title", value: title),
+        URLQueryItem(name: "title", value: title)
     ]
     var fantasticalUrlComp = URLComponents()
     fantasticalUrlComp.scheme = "x-fantastical3"

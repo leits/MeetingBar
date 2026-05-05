@@ -92,4 +92,3 @@ struct AccessScreen: View {
         viewRouter.currentScreen = .calendars
     }
 }
-

@@ -82,8 +82,7 @@ func getIconForMeetingService(_ meetingService: MeetingServices?) -> NSImage {
 
     var image: NSImage
     if let service = meetingService,
-        let descriptor = MeetingProviderRegistry.descriptor(for: service)
-    {
+        let descriptor = MeetingProviderRegistry.descriptor(for: service) {
         image = NSImage(named: descriptor.iconName) ?? NSImage(named: "no_online_session")!
         image.size = NSSize(width: descriptor.iconWidth, height: descriptor.iconHeight)
     } else {

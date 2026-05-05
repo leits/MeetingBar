@@ -39,4 +39,3 @@ struct CalendarsScreen: View {
         NSApplication.shared.keyWindow?.close()
     }
 }
-

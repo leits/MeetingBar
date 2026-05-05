@@ -15,7 +15,7 @@ import UserNotifications
     didRequestAuth = true
     do {
         try await UNUserNotificationCenter.current().requestAuthorization(options: [
-            .alert, .badge, .sound,
+            .alert, .badge, .sound
         ])
     } catch {}
 }
@@ -73,7 +73,7 @@ import UserNotifications
         identifier: "EVENT",
         actions: [
             acceptAction, dismissAction, snoozeUntilStartTime, snooze5Min, snooze10Min, snooze15Min,
-            snooze30Min,
+            snooze30Min
         ],
         intentIdentifiers: [],
         hiddenPreviewsBodyPlaceholder: "",

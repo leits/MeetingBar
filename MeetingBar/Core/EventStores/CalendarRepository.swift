@@ -79,8 +79,7 @@ public final class CalendarRepository {
     /// This is a convenience that consolidates date-range calculation and selected-calendar
     /// filtering so `EventManager` does not need to know about either detail.
     public func fetchCurrentPeriodEvents(fromAllCalendars allCalendars: [MBCalendar]) async throws
-        -> [MBEvent]
-    {
+        -> [MBEvent] {
         let selectedCalendars = allCalendars.filter {
             Defaults[.selectedCalendarIDs].contains($0.id)
         }

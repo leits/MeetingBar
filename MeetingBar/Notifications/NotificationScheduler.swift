@@ -114,8 +114,7 @@ final class NotificationScheduler {
         }
     }
 
-    private func hasSameContent(_ lhs: UNNotificationContent, _ rhs: UNNotificationContent) -> Bool
-    {
+    private func hasSameContent(_ lhs: UNNotificationContent, _ rhs: UNNotificationContent) -> Bool {
         lhs.title == rhs.title
             && lhs.subtitle == rhs.subtitle
             && lhs.body == rhs.body

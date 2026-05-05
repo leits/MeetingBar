@@ -34,7 +34,7 @@ enum EventDetailsTypeAppEnum: String, AppEnum {
         .url: "URL",
         .notes: "Notes",
         .location: "Location",
-        .attendees: "Attendees",
+        .attendees: "Attendees"
     ]
 }
 
@@ -85,8 +85,7 @@ struct GetNearestEventDetails: AppIntent {
     }
 
     func perform() async throws
-        -> some IntentResult & ReturnsValue<String?>
-    {
+        -> some IntentResult & ReturnsValue<String?> {
         // Hop to the main actor only for the AppKit interaction
         let value: String? = await MainActor.run {
             guard

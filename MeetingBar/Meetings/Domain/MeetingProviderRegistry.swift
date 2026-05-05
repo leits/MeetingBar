@@ -529,7 +529,7 @@ extension MeetingProviderRegistry {
             // Other — catch-all for custom regex matches, no URL pattern
             desc(
                 .other,
-                icon: "no_online_session"),
+                icon: "no_online_session")
         ]
     }()
     // swiftlint:enable function_body_length

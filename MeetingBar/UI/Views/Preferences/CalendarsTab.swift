@@ -136,4 +136,3 @@ struct CalendarRow: View {
     }.listStyle(.sidebar)
         .frame(width: 300, height: 200)
 }
-

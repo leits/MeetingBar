@@ -42,7 +42,7 @@ enum MeetingOpenPreferencesMigration {
             (MeetingServices.teams.rawValue, Defaults[.teamsBrowser]),
             (MeetingServices.jitsi.rawValue, Defaults[.jitsiBrowser]),
             (MeetingServices.slack.rawValue, Defaults[.slackBrowser]),
-            (MeetingServices.riverside.rawValue, Defaults[.riversideBrowser]),
+            (MeetingServices.riverside.rawValue, Defaults[.riversideBrowser])
         ]
         let migrated = migrate(legacyValues: legacy, systemDefault: systemDefaultBrowser)
         if !migrated.isEmpty {

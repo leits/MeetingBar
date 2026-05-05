@@ -51,7 +51,7 @@ enum MeetingOpenerRegistry {
             .facetimeaudio: NativeSchemeOpenStrategy(schemePrefix: "facetime-audio://"),
 
             // Phone
-            .phone: NativeSchemeOpenStrategy(schemePrefix: "tel://"),
+            .phone: NativeSchemeOpenStrategy(schemePrefix: "tel://")
 
             // Providers with per-provider browser preferences (default browser key
             // is nil here — the per-provider key is read inside DefaultBrowserOpenStrategy

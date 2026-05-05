@@ -132,8 +132,7 @@ enum NotificationPlanner {
     }
 
     private static func shouldConsider(event: NotificationPlanningEvent, dismissed: Set<String>)
-        -> Bool
-    {
+        -> Bool {
         if dismissed.contains(event.id) { return false }
         if event.status == .canceled { return false }
         if event.participationStatus == .declined { return false }

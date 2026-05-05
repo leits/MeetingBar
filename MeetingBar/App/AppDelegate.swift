@@ -310,8 +310,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         getURLEvent event: NSAppleEventDescriptor, replyEvent _: NSAppleEventDescriptor
     ) {
         if let string = event.paramDescriptor(forKeyword: keyDirectObject)?.stringValue,
-            let url = URL(string: string)
-        {
+            let url = URL(string: string) {
             urlHandler.handle(url: url)
         }
     }

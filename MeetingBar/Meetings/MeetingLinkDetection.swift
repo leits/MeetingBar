@@ -115,8 +115,7 @@ func detectMeetingLink(_ rawText: String, customRegexes: [String] = []) -> Meeti
     for pattern in customRegexes {
         if let regex = try? NSRegularExpression(pattern: pattern),
             let link = getMatch(text: text, regex: regex),
-            let url = URL(string: link)
-        {
+            let url = URL(string: link) {
             return MeetingLink(service: MeetingServices.other, url: url)
         }
     }
@@ -125,8 +124,7 @@ func detectMeetingLink(_ rawText: String, customRegexes: [String] = []) -> Meeti
         for (svc, regex) in meetingLinkRegexes {
             if let match = regex.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)),
                 let range = Range(match.range, in: text),
-                let url = URL(string: String(text[range]))
-            {
+                let url = URL(string: String(text[range])) {
                 return MeetingLink(service: svc, url: url)
             }
         }

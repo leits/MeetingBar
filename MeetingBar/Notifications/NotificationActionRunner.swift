@@ -146,7 +146,7 @@ final class NotificationActionRunner {
 
 extension NotificationKind {
     static let inAppActions: [NotificationKind] = [
-        .fullscreen, .autoJoin, .scriptOnStart,
+        .fullscreen, .autoJoin, .scriptOnStart
     ]
 
     var isInAppAction: Bool {

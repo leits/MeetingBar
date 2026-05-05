@@ -26,7 +26,7 @@ final class ProviderBrowserMigrationTests: BaseTestCase {
     func testMigrateReturnsEmptyMapWhenAllBrowsersAreSystemDefault() {
         let legacy: [(String, Browser)] = [
             ("Google Meet", defaultBrowser),
-            ("Zoom", defaultBrowser),
+            ("Zoom", defaultBrowser)
         ]
         let result = MeetingOpenPreferencesMigration.migrate(
             legacyValues: legacy,
@@ -39,7 +39,7 @@ final class ProviderBrowserMigrationTests: BaseTestCase {
         let legacy: [(String, Browser)] = [
             ("Google Meet", defaultBrowser),
             ("Zoom", zoomApp),
-            ("Microsoft Teams", teamsApp),
+            ("Microsoft Teams", teamsApp)
         ]
         let result = MeetingOpenPreferencesMigration.migrate(
             legacyValues: legacy,

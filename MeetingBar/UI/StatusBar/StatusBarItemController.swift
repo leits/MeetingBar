@@ -44,7 +44,7 @@ final class StatusBarItemController {
     /// Current event list, driven by the AppModel state.
     /// A non-nil `_eventsOverride` takes precedence (used by tests to inject
     /// events without wiring up a full AppDelegate/AppModel chain).
-    private var _eventsOverride: [MBEvent]? = nil
+    private var _eventsOverride: [MBEvent]?
     var events: [MBEvent] {
         get { _eventsOverride ?? (appdelegate?.appModel?.state.events ?? []) }
         set { _eventsOverride = newValue }
@@ -67,7 +67,7 @@ final class StatusBarItemController {
         statusItem.button?.action = #selector(statusMenuBarAction)
         statusItem.button?.sendAction(on: [
             NSEvent.EventTypeMask.rightMouseDown, NSEvent.EventTypeMask.leftMouseUp,
-            NSEvent.EventTypeMask.leftMouseDown,
+            NSEvent.EventTypeMask.leftMouseDown
         ])
 
         // Temporary icon and menu before app delegate setup
@@ -491,8 +491,7 @@ enum StatusBarTitleRenderer {
         }
     }
 
-    private static func stackedTitle(for presentation: StatusBarPresentation) -> NSAttributedString
-    {
+    private static func stackedTitle(for presentation: StatusBarPresentation) -> NSAttributedString {
         let title = NSMutableAttributedString(
             string: presentation.title,
             attributes: titleAttributes(
@@ -506,7 +505,7 @@ enum StatusBarTitleRenderer {
                 string: "\n" + presentation.time,
                 attributes: [
                     NSAttributedString.Key.font: NSFont.systemFont(ofSize: 9),
-                    NSAttributedString.Key.foregroundColor: NSColor.lightGray,
+                    NSAttributedString.Key.foregroundColor: NSColor.lightGray
                 ]
             ))
 

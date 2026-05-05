@@ -21,7 +21,7 @@ let package = Package(
                 "Resources ",
                 "Assets.xcassets",
                 "Base.lproj",
-                "Preview Content",
+                "Preview Content"
             ],
             sources: [
                 // Utilities/Diagnostics
@@ -44,13 +44,13 @@ let package = Package(
                 "UI/StatusBar/StatusBarTitlePolicy.swift",
                 // Meetings/Domain — pure provider descriptors and registry.
                 "Meetings/Domain/MeetingProviderDescriptor.swift",
-                "Meetings/Domain/MeetingProviderRegistry.swift",
+                "Meetings/Domain/MeetingProviderRegistry.swift"
             ]
         ),
         .testTarget(
             name: "MeetingBarLogicTests",
             dependencies: ["MeetingBarLogic"],
             path: "MeetingBarLogicTests"
-        ),
+        )
     ]
 )

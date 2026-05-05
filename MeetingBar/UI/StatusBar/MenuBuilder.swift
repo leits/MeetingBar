@@ -290,8 +290,7 @@ struct MenuBuilder {
         let now = Date()
 
         if event.participationStatus == .declined || eventStatus == .canceled,
-            Defaults[.declinedEventsAppereance] == .hide
-        {
+            Defaults[.declinedEventsAppereance] == .hide {
             return nil
         }
 
@@ -374,8 +373,7 @@ struct MenuBuilder {
         }
 
         if !event.isAllDay, Defaults[.nonAllDayEvents] == .show_inactive_without_meeting_link,
-            event.meetingLink == nil
-        {
+            event.meetingLink == nil {
             styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
         }
 
