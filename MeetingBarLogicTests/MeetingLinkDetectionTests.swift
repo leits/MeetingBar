@@ -1,9 +1,6 @@
 //
-//  MeetingServicesTests.swift
+//  MeetingLinkDetectionTests.swift
 //  MeetingBarLogicTests
-//
-//  Created by Andrii Leitsius on 28.02.2021.
-//  Copyright © 2021 Andrii Leitsius. All rights reserved.
 //
 
 import XCTest
@@ -56,7 +53,7 @@ let meetings = [
     MeetingLink(service: .streamyard, url: URL(string: "https://streamyard.com/guest/u6qes7i8cj?utm_source=test")!)
 ]
 
-class MeetingServicesTests: XCTestCase {
+class MeetingLinkDetectionTests: XCTestCase {
     func testDetectMeetingLink() throws {
         for meeting in meetings {
             let result = detectMeetingLink(meeting.url.absoluteString)
@@ -85,20 +82,4 @@ class MeetingServicesTests: XCTestCase {
         XCTAssertEqual(result?.url.absoluteString, "https://meet.google.com/abc-defg-hij")
     }
 
-    func testBuiltInRegexPatternsCompile() throws {
-        let invalidPatterns = meetingLinkRegexPatterns.compactMap { service, pattern -> String? in
-            do {
-                _ = try NSRegularExpression(pattern: pattern)
-                return nil
-            } catch {
-                return "\(service.rawValue): \(error)"
-            }
-        }
-
-        XCTAssertTrue(invalidPatterns.isEmpty, invalidPatterns.joined(separator: "\n"))
-
-        for service in meetingLinkRegexPatterns.keys {
-            XCTAssertNotNil(regex(for: service), "Expected compiled regex for \(service.rawValue)")
-        }
-    }
 }

@@ -49,41 +49,6 @@ final class MeetingProviderRegistryTests: XCTestCase {
         }
     }
 
-    // MARK: - Pattern consistency with existing dictionary
-
-    /// Every pattern in meetingLinkRegexPatterns must appear in the registry.
-    func testRegistryPatternsMatchExistingDictionary() {
-        let registryPatterns = MeetingProviderRegistry.regexPatterns
-        for (service, existingPattern) in meetingLinkRegexPatterns {
-            let registryPattern = registryPatterns[service]
-            XCTAssertEqual(
-                registryPattern, existingPattern,
-                "Pattern mismatch for \(service.rawValue): registry has \(registryPattern ?? "nil"), existing has \(existingPattern)"
-            )
-        }
-    }
-
-    /// Every pattern in the registry must also appear in meetingLinkRegexPatterns.
-    func testExistingDictionaryPatternsMatchRegistry() {
-        let registryPatterns = MeetingProviderRegistry.regexPatterns
-        for (service, registryPattern) in registryPatterns {
-            let existingPattern = meetingLinkRegexPatterns[service]
-            XCTAssertEqual(
-                existingPattern, registryPattern,
-                "Registry has extra pattern for \(service.rawValue) not in meetingLinkRegexPatterns"
-            )
-        }
-    }
-
-    /// Total count must match.
-    func testRegistryPatternCountMatchesDictionary() {
-        XCTAssertEqual(
-            MeetingProviderRegistry.regexPatterns.count,
-            meetingLinkRegexPatterns.count,
-            "Pattern count mismatch between registry and meetingLinkRegexPatterns"
-        )
-    }
-
     // MARK: - Known descriptor values
 
     func testZoomDescriptor() {
@@ -142,6 +107,10 @@ final class MeetingProviderRegistryTests: XCTestCase {
             XCTAssertEqual(
                 byService, byString, "String/service lookup mismatch for \(service.rawValue)")
         }
+    }
+
+    func testDescriptorForUnknownStringReturnsNil() {
+        XCTAssertNil(MeetingProviderRegistry.descriptor(for: "__unknown_service__"))
     }
 
     // MARK: - Regex validity

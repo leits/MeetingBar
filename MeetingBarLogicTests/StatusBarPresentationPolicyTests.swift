@@ -86,8 +86,9 @@ final class StatusBarPresentationTests: XCTestCase {
             settings: settings(hasSelectedCalendars: false),
             now: now
         )
-        XCTAssertEqual(mode, .idle,
-                       "no calendars selected → idle regardless of any next event")
+        XCTAssertEqual(
+            mode, .idle,
+            "no calendars selected → idle regardless of any next event")
     }
 
     func testNoUpcomingWhenSelectedButNoEvent() {
@@ -139,8 +140,9 @@ final class StatusBarPresentationTests: XCTestCase {
             settings: settings(showEventMaxTimeUntilEventEnabled: true, threshold: 30),
             now: now
         )
-        XCTAssertEqual(mode, .nextEvent,
-                       "negative timeUntilStart is always within any positive threshold")
+        XCTAssertEqual(
+            mode, .nextEvent,
+            "negative timeUntilStart is always within any positive threshold")
     }
 
     func testThresholdBoundaryIsExclusive() {
@@ -248,8 +250,9 @@ final class StatusBarPresentationTests: XCTestCase {
 
         XCTAssertEqual(presentation.mode, .noUpcoming)
         XCTAssertEqual(presentation.title, "")
-        XCTAssertTrue(presentation.removeDeliveredNotifications,
-                      "noUpcoming mode should trigger removal of delivered notifications")
+        XCTAssertTrue(
+            presentation.removeDeliveredNotifications,
+            "noUpcoming mode should trigger removal of delivered notifications")
     }
 
     func testPresenterReturnsEmptyPresentationForAfterThresholdMode() {
@@ -272,7 +275,7 @@ final class StatusBarPresentationTests: XCTestCase {
         )
         let farEvent = StatusBarEventPresentationInput(
             title: "Far meeting",
-            startDate: now.addingTimeInterval(3600),   // 60 min away
+            startDate: now.addingTimeInterval(3600),  // 60 min away
             endDate: now.addingTimeInterval(5400),
             meetingService: .zoom,
             participation: .normal
