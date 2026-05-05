@@ -103,4 +103,10 @@ final class StatusBarTitlePolicyTests: XCTestCase {
         XCTAssertTrue(result.time.hasPrefix("now ("))
         XCTAssertTrue(result.time.hasSuffix(" left)"))
     }
+
+    func testShortenTitleWithZeroLimitReturnsEllipsis() {
+        let result = StatusBarTitlePolicy.shortenTitle("Weekly sync", limit: 0, noTitle: "No title")
+
+        XCTAssertEqual(result, "...")
+    }
 }

@@ -217,4 +217,118 @@ final class StatusBarPresentationTests: XCTestCase {
 
         XCTAssertEqual(presentation.titleStyle, .inactive)
     }
+
+    // MARK: - Non-event modes (guard mode == .nextEvent, let nextEvent else)
+
+    func testPresenterReturnsEmptyPresentationForIdleMode() {
+        // hasSelectedCalendars: false → mode = .idle → guard fires
+        let presentation = StatusBarPresenter.presentation(
+            nextEvent: event(),
+            settings: presenterSettings(hasSelectedCalendars: false),
+            now: now,
+            calendar: calendar()
+        )
+
+        XCTAssertEqual(presentation.mode, .idle)
+        XCTAssertEqual(presentation.title, "")
+        XCTAssertEqual(presentation.time, "")
+        XCTAssertNil(presentation.tooltip)
+        XCTAssertEqual(presentation.layout, .none)
+        XCTAssertFalse(presentation.removeDeliveredNotifications)
+    }
+
+    func testPresenterReturnsEmptyPresentationForNoUpcomingMode() {
+        // nil nextEvent → mode = .noUpcoming; removeDeliveredNotifications must be true
+        let presentation = StatusBarPresenter.presentation(
+            nextEvent: nil,
+            settings: presenterSettings(),
+            now: now,
+            calendar: calendar()
+        )
+
+        XCTAssertEqual(presentation.mode, .noUpcoming)
+        XCTAssertEqual(presentation.title, "")
+        XCTAssertTrue(presentation.removeDeliveredNotifications,
+                      "noUpcoming mode should trigger removal of delivered notifications")
+    }
+
+    func testPresenterReturnsEmptyPresentationForAfterThresholdMode() {
+        // event 60 min away, threshold 30 min → mode = .afterThreshold → guard fires
+        var s = presenterSettings()
+        s = StatusBarPresenterSettings(
+            presentation: StatusBarPresentationSettings(
+                hasSelectedCalendars: true,
+                showEventMaxTimeUntilEventEnabled: true,
+                showEventMaxTimeUntilEventThreshold: 30
+            ),
+            title: s.title,
+            timeDisplay: s.timeDisplay,
+            iconFormat: s.iconFormat,
+            iconFormatAssetName: s.iconFormatAssetName,
+            iconAssets: s.iconAssets,
+            pendingDisplay: s.pendingDisplay,
+            tentativeDisplay: s.tentativeDisplay,
+            compactTitleLimit: s.compactTitleLimit
+        )
+        let farEvent = StatusBarEventPresentationInput(
+            title: "Far meeting",
+            startDate: now.addingTimeInterval(3600),   // 60 min away
+            endDate: now.addingTimeInterval(5400),
+            meetingService: .zoom,
+            participation: .normal
+        )
+        let presentation = StatusBarPresenter.presentation(
+            nextEvent: farEvent,
+            settings: s,
+            now: now,
+            calendar: calendar()
+        )
+
+        XCTAssertEqual(presentation.mode, .afterThreshold)
+        XCTAssertEqual(presentation.title, "")
+        XCTAssertFalse(presentation.removeDeliveredNotifications)
+    }
+
+    // MARK: - titleStyle: tentative + underlined
+
+    func testPresenterTentativeWithUnderlinedDisplayStyleIsUnderlined() {
+        let presentation = StatusBarPresenter.presentation(
+            nextEvent: event(participation: .tentative),
+            settings: presenterSettings(tentativeDisplay: .underlined),
+            now: now,
+            calendar: calendar()
+        )
+
+        XCTAssertEqual(presentation.titleStyle, .underlined)
+    }
+
+    // MARK: - titleLayout: titleFormat .none + timeDisplay .showUnderTitle
+
+    func testPresenterTitleFormatNoneWithTimeUnderTitleUsesInlineNoTime() {
+        // titleFormat == .none AND timeDisplay == .showUnderTitle
+        // → titleLayout exits early via guard and returns .inline(showTime: false)
+        let presentation = StatusBarPresenter.presentation(
+            nextEvent: event(),
+            settings: presenterSettings(titleFormat: .none, timeDisplay: .showUnderTitle),
+            now: now,
+            calendar: calendar()
+        )
+
+        XCTAssertEqual(presentation.layout, .inline(showTime: false))
+    }
+
+    // MARK: - titleLayout: titleFormat .show + timeDisplay .hide
+
+    func testPresenterShowTitleWithHideTimeUsesInlineNoTime() {
+        // titleFormat != .none AND timeDisplay == .hide
+        // → titleLayout switch case .hide: return .inline(showTime: false)
+        let presentation = StatusBarPresenter.presentation(
+            nextEvent: event(),
+            settings: presenterSettings(titleFormat: .show, timeDisplay: .hide),
+            now: now,
+            calendar: calendar()
+        )
+
+        XCTAssertEqual(presentation.layout, .inline(showTime: false))
+    }
 }
