@@ -40,9 +40,7 @@ let package = Package(
                 "Meetings/MeetingOpeningPolicy.swift",
                 "Meetings/MeetingProvider.swift",
                 // UI/StatusBar
-                "UI/StatusBar/StatusBarIconPolicy.swift",
-                "UI/StatusBar/StatusBarPresentation.swift",
-                "UI/StatusBar/StatusBarTitlePolicy.swift"
+                "UI/StatusBar/StatusBarPresentation.swift"
             ]
         ),
         .testTarget(
