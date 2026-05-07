@@ -257,21 +257,21 @@ final class StatusBarPresentationTests: XCTestCase {
 
     func testPresenterReturnsEmptyPresentationForAfterThresholdMode() {
         // event 60 min away, threshold 30 min → mode = .afterThreshold → guard fires
-        var s = presenterSettings()
-        s = StatusBarPresenterSettings(
+        let base = presenterSettings()
+        let settings = StatusBarPresenterSettings(
             presentation: StatusBarPresentationSettings(
                 hasSelectedCalendars: true,
                 showEventMaxTimeUntilEventEnabled: true,
                 showEventMaxTimeUntilEventThreshold: 30
             ),
-            title: s.title,
-            timeDisplay: s.timeDisplay,
-            iconFormat: s.iconFormat,
-            iconFormatAssetName: s.iconFormatAssetName,
-            iconAssets: s.iconAssets,
-            pendingDisplay: s.pendingDisplay,
-            tentativeDisplay: s.tentativeDisplay,
-            compactTitleLimit: s.compactTitleLimit
+            title: base.title,
+            timeDisplay: base.timeDisplay,
+            iconFormat: base.iconFormat,
+            iconFormatAssetName: base.iconFormatAssetName,
+            iconAssets: base.iconAssets,
+            pendingDisplay: base.pendingDisplay,
+            tentativeDisplay: base.tentativeDisplay,
+            compactTitleLimit: base.compactTitleLimit
         )
         let farEvent = StatusBarEventPresentationInput(
             title: "Far meeting",
@@ -282,7 +282,7 @@ final class StatusBarPresentationTests: XCTestCase {
         )
         let presentation = StatusBarPresenter.presentation(
             nextEvent: farEvent,
-            settings: s,
+            settings: settings,
             now: now,
             calendar: calendar()
         )
