@@ -107,19 +107,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         lifecycleObserver.onScreenLocked = { [weak self] in
-            self?.appModel?.send(.screenLocked)
+            self?.appModel?.handleScreenLock()
         }
         lifecycleObserver.onScreenUnlocked = { [weak self] in
-            self?.appModel?.send(.screenUnlocked)
+            self?.appModel?.handleScreenUnlock()
         }
         lifecycleObserver.onDidWake = { [weak self] in
-            self?.appModel?.send(.didWake)
+            self?.appModel?.handleWake()
         }
         lifecycleObserver.onTimezoneChanged = { [weak self] in
-            self?.appModel?.send(.timezoneChanged)
+            self?.appModel?.handleTimezoneChange()
         }
         lifecycleObserver.onDayChanged = { [weak self] in
-            self?.appModel?.send(.dayChanged)
+            self?.appModel?.handleDayChange()
         }
         lifecycleObserver.start()
 
@@ -129,7 +129,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         // Kick off the initial refresh through the model.
-        model.send(.launched)
+        model.handleLaunch()
     }
 
     /*
@@ -310,7 +310,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         getURLEvent event: NSAppleEventDescriptor, replyEvent _: NSAppleEventDescriptor
     ) {
         if let string = event.paramDescriptor(forKeyword: keyDirectObject)?.stringValue,
-            let url = URL(string: string) {
+            let url = URL(string: string)
+        {
             urlHandler.handle(url: url)
         }
     }
@@ -323,7 +324,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationWillTerminate(_: Notification) {
         statusLoopTask?.cancel()
-        appModel?.send(.willTerminate)
+        appModel?.handleWillTerminate()
     }
 }
 

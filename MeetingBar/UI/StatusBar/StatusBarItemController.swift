@@ -146,7 +146,7 @@ final class StatusBarItemController {
     }
 
     private func reconcileNotifications() {
-        appdelegate?.appModel?.send(.reconcileNotifications)
+        appdelegate?.appModel?.reconcileNotifications()
     }
 
     private func setupKeyboardShortcuts() {

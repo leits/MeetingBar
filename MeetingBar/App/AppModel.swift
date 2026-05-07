@@ -103,6 +103,22 @@ final class AppModel: ObservableObject {
         }
     }
 
+    // MARK: - Convenience methods for system triggers
+
+    /// Self-documenting wrappers around `send(_:)` for the most common
+    /// system-event paths. Callers don't need to import `AppAction` to
+    /// route a wake/lock/timezone change through the model.
+    func handleLaunch() { send(.launched) }
+    func handleWillTerminate() { send(.willTerminate) }
+    func handleScreenLock() { send(.screenLocked) }
+    func handleScreenUnlock() { send(.screenUnlocked) }
+    func handleWake() { send(.didWake) }
+    func handleTimezoneChange() { send(.timezoneChanged) }
+    func handleDayChange() { send(.dayChanged) }
+    func handleCalendarStoreChange() { send(.calendarStoreChanged) }
+    func requestRefresh() { send(.refreshCalendars) }
+    func reconcileNotifications() { send(.reconcileNotifications) }
+
     // MARK: - Private
 
     private func scheduleRefresh() {
