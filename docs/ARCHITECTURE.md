@@ -78,27 +78,24 @@ MeetingBar/
 │   ├── Notifications.swift         — UN auth + snooze flow + low-level send
 │   └── URLHandler.swift            — apple-event URL dispatch (oauth, preferences)
 │
-├── Calendar/                       — calendar data: events, filtering, selection
+├── Calendar/                       — calendar data: models, events, filtering, selection, providers
+│   ├── EventStore.swift            — EventStore protocol (provider abstraction)
+│   ├── CalendarRepository.swift    — owns the active store, exposes fetch + switch
+│   ├── EventManager.swift          — refresh pipeline (Combine, @MainActor)
 │   ├── EventFiltering.swift        — apply user filters (all-day, declined, etc.) [SPM]
 │   ├── EventFiltering+MeetingBar.swift
-│   ├── EventManager.swift          — refresh pipeline (Combine, @MainActor)
 │   ├── EventSelection.swift        — pick the "next" event from a list [SPM]
 │   ├── EventSelection+MeetingBar.swift
+│   ├── MBEvent.swift               — cross-provider event
+│   ├── MBEvent+Helpers.swift
+│   ├── MBCalendar.swift            — cross-provider calendar
+│   ├── ProviderHealth.swift        — auth/stale/error/ok
 │   └── Providers/
 │       ├── EventKit/
 │       │   └── EventKitEventStore.swift    — Apple Calendar via EventKit
 │       └── Google/
 │           ├── GoogleCalendarEventStore.swift — Google Calendar via AppAuth + REST
 │           └── GoogleCalendarPolicy.swift     — auth/error classification [SPM]
-│
-├── Core/
-│   ├── Models/                     — pure data, no behavior
-│   │   ├── MBEvent.swift           — cross-provider event
-│   │   ├── MBCalendar.swift        — cross-provider calendar
-│   │   └── ProviderHealth.swift    — auth/stale/error/ok
-│   └── EventStores/
-│       ├── Protocol.swift          — EventStore protocol (provider abstraction)
-│       └── CalendarRepository.swift — owns the active store, exposes fetch + switch
 │
 ├── Meetings/                       — meeting URL detection, opening, services catalog
 │   ├── MeetingLinkCandidate.swift  — scored URL + source priority [SPM]
@@ -223,7 +220,7 @@ If you are tempted to "just trigger a refresh from over here" — call `eventMan
 
 ## Notifications: the reconciler model
 
-`NotificationScheduler` (`Core/Services/NotificationScheduler.swift`) does **not** directly schedule one notification per user action. It owns a *desired plan* and reconciles it against `UNUserNotificationCenter`'s actual pending requests.
+`NotificationScheduler` (`Notifications/NotificationScheduler.swift`) does **not** directly schedule one notification per user action. It owns a *desired plan* and reconciles it against `UNUserNotificationCenter`'s actual pending requests.
 
 ```
 events + Defaults snapshot
@@ -322,7 +319,7 @@ The policy itself takes the snapshot and never imports `Defaults`. This is what 
 
 ## Provider abstraction
 
-`EventStore` (`Core/EventStores/Protocol.swift`) is the seam between the app and a calendar provider. Two implementations ship today:
+`EventStore` (`Calendar/EventStore.swift`) is the seam between the app and a calendar provider. Two implementations ship today:
 
 - **`EKEventStore`** — wraps EventKit. Always available; permission prompt the first time. No OAuth.
 - **`GCEventStore`** — wraps Google Calendar API via AppAuth-iOS. OAuth2 flow with refresh tokens persisted in Keychain. Per-calendar 403 handling so one inaccessible calendar does not disconnect the account.
@@ -341,7 +338,7 @@ Touching these requires extra care, tests around behavior, and a focused PR. Lis
 - `Calendar/EventManager.swift`
 - `UI/StatusBar/StatusBarItemController.swift`
 - `UI/StatusBar/MenuBuilder.swift`
-- `Core/Models/MBEvent.swift`, `MBEvent+Helpers.swift`
+- `Calendar/MBEvent.swift`, `MBEvent+Helpers.swift`
 - `Calendar/Providers/Google/GoogleCalendarEventStore.swift`
 - `Calendar/Providers/EventKit/EventKitEventStore.swift`
 - `Notifications/NotificationScheduler.swift`
@@ -365,7 +362,7 @@ You want to add "do not notify for events shorter than 5 minutes".
 6. **Reconcile triggers.** Make sure `StatusBarItemController.setupDefaultsObservers()` (or wherever the watcher list lives) listens to your new key so flipping it triggers a notification reconcile.
 7. **Open a small PR.** Body: rule, why a default tweak alone is not enough, screenshots if UI, test names.
 
-The whole change should be ~50 lines, no new files in `Core/`, and no changes to `EventManager` or `AppDelegate`.
+The whole change should be ~50 lines and no changes to `EventManager` or `AppDelegate`.
 
 ---
 
