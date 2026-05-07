@@ -221,3 +221,46 @@ struct JitsiOpenStrategy: MeetingOpenStrategy, Sendable {
         }
     }
 }
+
+// MARK: - Strategy lookup
+
+/// Returns the open strategy for the given service (or the default browser
+/// strategy when the service is `nil` or has no custom strategy).
+func openStrategy(for service: MeetingServices?) -> any MeetingOpenStrategy {
+    guard let service else {
+        return DefaultBrowserOpenStrategy()
+    }
+    return strategiesByService[service] ?? DefaultBrowserOpenStrategy()
+}
+
+private nonisolated(unsafe) let strategiesByService: [MeetingServices: any MeetingOpenStrategy] = [
+    // Google Meet
+    .meet: MeetInOneOpenStrategy(),
+    .meetStream: MeetInOneOpenStrategy(),
+
+    // Zoom web URL → app scheme
+    .zoom: ZoomWebOpenStrategy(),
+    .zoomgov: ZoomWebOpenStrategy(),
+
+    // Zoom native app scheme → browser fallback
+    .zoom_native: ZoomNativeOpenStrategy(),
+
+    // Microsoft Teams
+    .teams: TeamsOpenStrategy(),
+
+    // Jitsi
+    .jitsi: JitsiOpenStrategy(),
+
+    // Slack huddle
+    .slack: SlackHuddleOpenStrategy(),
+
+    // Riverside
+    .riverside: RiversideOpenStrategy(),
+
+    // FaceTime
+    .facetime: NativeSchemeOpenStrategy(schemePrefix: "facetime://"),
+    .facetimeaudio: NativeSchemeOpenStrategy(schemePrefix: "facetime-audio://"),
+
+    // Phone
+    .phone: NativeSchemeOpenStrategy(schemePrefix: "tel://")
+]

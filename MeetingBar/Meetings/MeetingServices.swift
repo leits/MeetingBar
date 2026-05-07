@@ -64,13 +64,58 @@ func createMeeting() {
         return
     }
 
-    if let descriptor = CreateMeetingRegistry.descriptor(for: service) {
+    if let descriptor = createMeetingDescriptor(for: service) {
         openMeetingURL(descriptor.meetingService, descriptor.url, browser)
     }
 }
 
 func openMeetingURL(_ service: MeetingServices?, _ url: URL, _ browser: Browser?) {
-    MeetingOpenerRegistry.strategy(for: service).open(url: url, browser: browser)
+    openStrategy(for: service).open(url: url, browser: browser)
+}
+
+// MARK: - Create-meeting descriptors
+
+/// Where to open a brand-new meeting for each create-meeting service.
+/// `.url` is handled in `createMeeting()` because it requires runtime input.
+private struct CreateMeetingDescriptor {
+    let url: URL
+    let meetingService: MeetingServices?
+}
+
+private func createMeetingDescriptor(for service: CreateMeetingServices) -> CreateMeetingDescriptor? {
+    switch service {
+    case .meet:
+        return CreateMeetingDescriptor(
+            url: URL(string: "https://meet.google.com/new")!, meetingService: .meet)
+    case .zoom:
+        return CreateMeetingDescriptor(
+            url: URL(string: "https://zoom.us/start?confno=123456789&zc=0")!,
+            meetingService: .zoom)
+    case .teams:
+        return CreateMeetingDescriptor(
+            url: URL(string: "https://teams.microsoft.com/l/meeting/new?subject=")!,
+            meetingService: .teams)
+    case .jam:
+        return CreateMeetingDescriptor(
+            url: URL(string: "https://jam.systems/new")!, meetingService: .jam)
+    case .coscreen:
+        return CreateMeetingDescriptor(
+            url: URL(string: "https://cs.new")!, meetingService: .coscreen)
+    case .gcalendar:
+        return CreateMeetingDescriptor(
+            url: URL(string: "https://calendar.google.com/calendar/u/0/r/eventedit")!,
+            meetingService: nil)
+    case .outlook_live:
+        return CreateMeetingDescriptor(
+            url: URL(string: "https://outlook.live.com/calendar/0/action/compose")!,
+            meetingService: nil)
+    case .outlook_office365:
+        return CreateMeetingDescriptor(
+            url: URL(string: "https://outlook.office365.com/calendar/0/action/compose")!,
+            meetingService: nil)
+    case .url:
+        return nil
+    }
 }
 
 private nonisolated(unsafe) var iconCache: [MeetingServices?: NSImage] = [:]
