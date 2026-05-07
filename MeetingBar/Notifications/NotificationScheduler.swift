@@ -47,19 +47,23 @@ final class NotificationScheduler {
     nonisolated static let identifierPrefix = "mb-plan-"
 
     private let sink: NotificationRequestSink
-    private let actionScheduler: NotificationActionScheduler
+    private let runner: NotificationActionRunner
+
+    /// Delayed `Task`s for in-app actions (fullscreen / autoJoin / scriptOnStart),
+    /// keyed by notification identifier. Reconciled on every refresh — stale
+    /// tasks are cancelled, missing ones are scheduled.
+    private var actionTasks: [String: Task<Void, Never>] = [:]
 
     init(
         sink: NotificationRequestSink = UNUserNotificationCenter.current(),
         actionSink: NotificationActionSink? = nil
     ) {
         self.sink = sink
-        let runner = NotificationActionRunner(actionSink: actionSink)
-        self.actionScheduler = NotificationActionScheduler(runner: runner)
+        self.runner = NotificationActionRunner(actionSink: actionSink)
     }
 
     func setActionSink(_ actionSink: NotificationActionSink?) {
-        actionScheduler.setActionSink(actionSink)
+        runner.setActionSink(actionSink)
     }
 
     func reconcile(
@@ -74,7 +78,7 @@ final class NotificationScheduler {
         let systemPlans = plans.filter { $0.kind == .eventStart || $0.kind == .eventEnd }
         let actionPlans = plans.filter(\.kind.isInAppAction)
 
-        actionScheduler.reconcile(events: events, plans: actionPlans, settings: settings, now: now)
+        reconcileActions(events: events, plans: actionPlans, settings: settings, now: now)
 
         let eventByID = Dictionary(
             events.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
@@ -121,6 +125,45 @@ final class NotificationScheduler {
             && lhs.threadIdentifier == rhs.threadIdentifier
             && lhs.interruptionLevel == rhs.interruptionLevel
             && NSDictionary(dictionary: lhs.userInfo).isEqual(to: rhs.userInfo)
+    }
+
+    // MARK: - In-app action scheduling
+
+    /// Fire any due in-app actions immediately, then reconcile delayed-`Task`s
+    /// against the desired action plan. Stale tasks are cancelled.
+    private func reconcileActions(
+        events: [MBEvent],
+        plans: [PlannedNotification],
+        settings: NotificationPlanningSettings,
+        now: Date
+    ) {
+        runner.cleanupExpiredRecords(now: now)
+        runner.fireDueActions(events: events, settings: settings, now: now)
+
+        let eventByID = Dictionary(events.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+        let desiredIDs = Set(plans.map { Self.identifierPrefix + $0.identity })
+
+        for id in Array(actionTasks.keys) where !desiredIDs.contains(id) {
+            actionTasks[id]?.cancel()
+            actionTasks[id] = nil
+        }
+
+        for plan in plans {
+            let id = Self.identifierPrefix + plan.identity
+            guard actionTasks[id] == nil, let event = eventByID[plan.eventID] else { continue }
+
+            actionTasks[id] = Task { [weak self] in
+                let delay = max(plan.fireDate.timeIntervalSince(now), 0)
+                if delay > 0 {
+                    try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+                }
+                await MainActor.run {
+                    guard let self, !Task.isCancelled else { return }
+                    self.runner.fire(plan: plan, event: event, settings: settings, now: Date())
+                    self.actionTasks[id] = nil
+                }
+            }
+        }
     }
 }
 
