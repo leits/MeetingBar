@@ -51,11 +51,10 @@ final class NotificationScheduler {
 
     init(
         sink: NotificationRequestSink = UNUserNotificationCenter.current(),
-        recordStore: NotificationRecordStore = NotificationRecordStore(),
         actionSink: NotificationActionSink? = nil
     ) {
         self.sink = sink
-        let runner = NotificationActionRunner(recordStore: recordStore, actionSink: actionSink)
+        let runner = NotificationActionRunner(actionSink: actionSink)
         self.actionScheduler = NotificationActionScheduler(runner: runner)
     }
 
@@ -97,7 +96,7 @@ final class NotificationScheduler {
 
         for plan in systemPlans {
             guard let event = eventByID[plan.eventID] else { continue }
-            let request = NotificationContentFactory.request(
+            let request = NotificationContent.request(
                 for: plan, event: event, settings: settings, now: now)
             let identifier = request.identifier
 
@@ -139,6 +138,63 @@ extension NotificationPlanningEvent {
     }
 }
 
+// MARK: - Notification content building
+
+/// Builds `UNNotificationRequest` objects from a planned notification.
+/// Internal to the scheduler — not a public API.
+fileprivate enum NotificationContent {
+    static func request(
+        for plan: PlannedNotification,
+        event: MBEvent,
+        settings: NotificationPlanningSettings,
+        now: Date
+    ) -> UNNotificationRequest {
+        let content = UNMutableNotificationContent()
+        content.title = settings.hideMeetingTitle ? "general_meeting".loco() : event.title
+        content.interruptionLevel = .timeSensitive
+        content.sound = .default
+        content.userInfo = ["eventID": event.id]
+        content.threadIdentifier = "meetingbar"
+
+        switch plan.kind {
+        case .eventStart:
+            content.categoryIdentifier = "EVENT"
+            content.body = settings.eventStartBody
+        case .eventEnd:
+            content.body = settings.eventEndBody
+        case .fullscreen, .autoJoin, .scriptOnStart:
+            content.body = ""
+        }
+
+        // Floor at 0.5s so the OS does not reject a too-immediate trigger.
+        let interval = max(plan.fireDate.timeIntervalSince(now), 0.5)
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: interval, repeats: false)
+        return UNNotificationRequest(
+            identifier: NotificationScheduler.identifierPrefix + plan.identity,
+            content: content,
+            trigger: trigger
+        )
+    }
+
+    static func startBody(for offset: TimeBeforeEvent) -> String {
+        switch offset {
+        case .atStart: return "notifications_event_start_soon_body".loco()
+        case .minuteBefore: return "notifications_event_start_one_minute_body".loco()
+        case .threeMinuteBefore: return "notifications_event_start_three_minutes_body".loco()
+        case .fiveMinuteBefore: return "notifications_event_start_five_minutes_body".loco()
+        }
+    }
+
+    static func endBody(for offset: TimeBeforeEventEnd) -> String {
+        switch offset {
+        case .atEnd: return "notifications_event_ends_soon_body".loco()
+        case .minuteBefore: return "notifications_event_ends_one_minute_body".loco()
+        case .threeMinuteBefore: return "notifications_event_ends_three_minutes_body".loco()
+        case .fiveMinuteBefore: return "notifications_event_ends_five_minutes_body".loco()
+        }
+    }
+}
+
 extension NotificationPlanningSettings {
     /// Snapshot of the per-action settings the scheduler currently owns.
     @MainActor
@@ -168,9 +224,9 @@ extension NotificationPlanningSettings {
             ),
             dismissedEventIDs: Set(events.dismissedEvents.map(\.id)),
             hideMeetingTitle: statusBar.hideMeetingTitle,
-            eventStartBody: NotificationContentFactory.startBody(
+            eventStartBody: NotificationContent.startBody(
                 for: notif.joinEventNotificationTime),
-            eventEndBody: NotificationContentFactory.endBody(for: notif.endOfEventNotificationTime)
+            eventEndBody: NotificationContent.endBody(for: notif.endOfEventNotificationTime)
         )
     }
 }
