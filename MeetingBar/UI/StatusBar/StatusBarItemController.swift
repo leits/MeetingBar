@@ -244,7 +244,7 @@ final class StatusBarItemController {
             return
         }
 
-        let menuState = StatusBarMenuStateFactory.make(from: events)
+        let menuState = StatusBarMenuState.make(from: events)
         let builder = MenuBuilder(
             target: self, state: menuState, installationDate: installationDate)
 

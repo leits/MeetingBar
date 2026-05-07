@@ -176,3 +176,33 @@ func getEventDateString(_ event: MBEvent) -> String {
     let durationTitle = "status_bar_submenu_duration_all_day".loco(eventStartTime, eventEndTime, eventDurationMinutes)
     return durationTitle
 }
+
+// MARK: - Filtering / next-event helpers
+
+public extension Array where Element == MBEvent {
+    /// Returns only those events that pass all the user's Defaults filters.
+    func filtered() -> [MBEvent] {
+        let candidates = enumerated().map { index, event in
+            EventFilterEvent(event: event, sourceIndex: index)
+        }
+        return EventFiltering
+            .filter(candidates, settings: .current)
+            .map { self[$0.sourceIndex] }
+    }
+
+    /// From a pre-filtered, sorted array, find the nearest upcoming MBEvent.
+    func nextEvent(linkRequired: Bool = false) -> MBEvent? {
+        let candidates = enumerated().map { index, event in
+            EventSelectionEvent(event: event, sourceIndex: index)
+        }
+        guard let selected = EventSelection.nextEvent(
+            from: candidates,
+            linkRequired: linkRequired,
+            settings: .current,
+            now: Date()
+        ) else {
+            return nil
+        }
+        return self[selected.sourceIndex]
+    }
+}

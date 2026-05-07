@@ -129,7 +129,7 @@ final class MenuBuilderTests: BaseTestCase {
         let distantPast = Calendar.current.date(byAdding: .day, value: -30, to: Date())!
         // State must reflect the Defaults overrides above — MenuBuilder no
         // longer reads Defaults directly.
-        let state = StatusBarMenuStateFactory.make(from: [])
+        let state = StatusBarMenuState.make(from: [])
         let builder = MenuBuilder(
             target: Dummy(), state: state, installationDate: distantPast)
 
@@ -249,7 +249,7 @@ final class MenuBuilderEventItemTests: BaseTestCase {
     private func buildItem(event: MBEvent) -> NSMenuItem? {
         // Build state via factory so `Defaults` overrides set by tests are
         // reflected in the menu output (MenuBuilder no longer reads Defaults).
-        let state = StatusBarMenuStateFactory.make(from: [event])
+        let state = StatusBarMenuState.make(from: [event])
         let items = MenuBuilder(target: Dummy(), state: state)
             .buildDateSection(
                 date: Date(),
@@ -399,7 +399,7 @@ final class MenuBuilderQuickActionsTests: BaseTestCase {
 
         // Build state via factory so the dismissedEvents override above is
         // reflected — MenuBuilder no longer reads Defaults directly.
-        let state = StatusBarMenuStateFactory.make(from: [next])
+        let state = StatusBarMenuState.make(from: [next])
         let root = MenuBuilder(target: Dummy(), state: state)
             .buildJoinSection(nextEvent: next)
 
