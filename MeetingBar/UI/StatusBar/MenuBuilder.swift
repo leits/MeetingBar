@@ -7,13 +7,17 @@
 //
 
 import Cocoa
-import Defaults
 import KeyboardShortcuts
 
 @MainActor
 struct MenuBuilder {
     /// All menu items created will forward their action to this object.
     let target: AnyObject
+    /// Snapshot of all events, settings, and pre-computed flags used while
+    /// building this menu. Replaces direct `Defaults` reads.
+    /// Defaults to a zero-state snapshot for tests that don't exercise
+    /// state-driven branches; production callers must pass a real snapshot.
+    var state: StatusBarMenuState = StatusBarMenuState()
     let isFantasticalInstalled = checkIsFantasticalInstalled()
     var installationDate: Date?
 
@@ -129,7 +133,7 @@ struct MenuBuilder {
             dismissMeetingItem.target = target
         }
 
-        if !Defaults[.dismissedEvents].isEmpty {
+        if !state.events.dismissedEvents.isEmpty {
             let undiDismissMeetingsItem = quickActionsItem.submenu!.addItem(
                 withTitle: "status_bar_menu_remove_all_dismissals".loco(),
                 action: #selector(StatusBarItemController.undismissMeetingsActions),
@@ -148,9 +152,9 @@ struct MenuBuilder {
         openLinkFromClipboardItem.setShortcut(for: .openClipboardShortcut)
 
         // MENU ITEM: QUICK ACTIONS: Toggle meeting name visibility
-        if Defaults[.eventTitleFormat] == .show {
+        if state.statusBar.eventTitleFormat == .show {
             let title =
-                Defaults[.hideMeetingTitle]
+                state.statusBar.hideMeetingTitle
                 ? "status_bar_show_meeting_names".loco()
                 : "status_bar_hide_meeting_names".loco()
 
@@ -179,10 +183,8 @@ struct MenuBuilder {
     func buildPreferencesSection() -> [NSMenuItem] {
         var items: [NSMenuItem] = []
 
-        let appMajorVersion = String(Defaults[.appVersion].dropLast(2))
-        let lastRevisedMajorVersionInChangelog = String(
-            Defaults[.lastRevisedVersionInChangelog].dropLast(2))
-        let showChangelogItem = compareVersions(appMajorVersion, lastRevisedMajorVersionInChangelog)
+        let showChangelogItem = compareVersions(
+            state.appMajorVersion, state.lastRevisedMajorVersion)
 
         if showChangelogItem {
             let changelogItem = NSMenuItem(
@@ -194,7 +196,7 @@ struct MenuBuilder {
             items.append(changelogItem)
         }
 
-        if Defaults[.isInstalledFromAppStore] || true {
+        if state.isInstalledFromAppStore || true {
             var showRateAppButton = true
 
             if let installationDate = installationDate {
@@ -290,27 +292,27 @@ struct MenuBuilder {
         let now = Date()
 
         if event.participationStatus == .declined || eventStatus == .canceled,
-            Defaults[.declinedEventsAppereance] == .hide {
+            state.events.declinedEventsAppearance == .hide {
             return nil
         }
 
-        if event.endDate < now, Defaults[.pastEventsAppereance] == .hide {
+        if event.endDate < now, state.events.pastEventsAppearance == .hide {
             return nil
         }
 
-        if event.attendees.isEmpty, Defaults[.personalEventsAppereance] == .hide {
+        if event.attendees.isEmpty, state.events.personalEventsAppearance == .hide {
             return nil
         }
 
         var eventTitle = event.title
 
-        if Defaults[.shortenEventTitle] {
+        if state.menu.shortenEventTitle {
             eventTitle = StatusBarTitlePolicy.shortenTitle(
-                event.title, limit: Defaults[.menuEventTitleLength],
+                event.title, limit: state.menu.menuEventTitleLength,
                 noTitle: "status_bar_no_title".loco())
         }
 
-        if Defaults[.dismissedEvents].contains(where: { $0.id == event.id }) {
+        if state.events.dismissedEvents.contains(where: { $0.id == event.id }) {
             let dismissedMark = "status_bar_event_dismissed_mark".loco()
             eventTitle = "[\(dismissedMark)] \(eventTitle)"
         }
@@ -318,7 +320,7 @@ struct MenuBuilder {
         let eventTimeFormatter = DateFormatter()
         eventTimeFormatter.locale = I18N.instance.locale
 
-        switch Defaults[.timeFormat] {
+        switch state.timeFormat {
         case .am_pm:
             eventTimeFormatter.dateFormat = "h:mm a  "
         case .military:
@@ -329,7 +331,7 @@ struct MenuBuilder {
         var eventEndTime = ""
         if event.isAllDay {
             eventStartTime = "status_bar_event_start_time_all_day".loco()
-            switch Defaults[.timeFormat] {
+            switch state.timeFormat {
             case .am_pm:
                 eventEndTime = "\t \t \t"
             case .military:
@@ -341,7 +343,7 @@ struct MenuBuilder {
         }
 
         let itemTitle: String
-        if Defaults[.showEventEndTime] {
+        if state.statusBar.showEventEndTime {
             itemTitle = "\(eventStartTime) \t \(eventEndTime) \t \(eventTitle)"
         } else {
             itemTitle = "\(eventStartTime) \t \(eventTitle)"
@@ -356,7 +358,7 @@ struct MenuBuilder {
         )
         eventItem.target = target
 
-        if Defaults[.showMeetingServiceIcon] {
+        if state.menu.showMeetingServiceIcon {
             eventItem.image = getIconForMeetingService(event.meetingLink?.service)
         }
 
@@ -364,7 +366,7 @@ struct MenuBuilder {
         var styles = [NSAttributedString.Key: Any]()
 
         if event.participationStatus == .declined || eventStatus == .canceled {
-            if Defaults[.declinedEventsAppereance] == .show_inactive {
+            if state.events.declinedEventsAppearance == .show_inactive {
                 styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
             } else {
                 styles[NSAttributedString.Key.strikethroughStyle] = NSUnderlineStyle.thick.rawValue
@@ -372,15 +374,15 @@ struct MenuBuilder {
             shouldShowAsActive = false
         }
 
-        if !event.isAllDay, Defaults[.nonAllDayEvents] == .show_inactive_without_meeting_link,
+        if !event.isAllDay, state.events.nonAllDayEvents == .show_inactive_without_meeting_link,
             event.meetingLink == nil {
             styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
         }
 
         if event.participationStatus == .pending {
-            if Defaults[.showPendingEvents] == .show_inactive {
+            if state.events.showPendingEvents == .show_inactive {
                 styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
-            } else if Defaults[.showPendingEvents] == .show_underlined {
+            } else if state.events.showPendingEvents == .show_underlined {
                 styles[NSAttributedString.Key.underlineStyle] =
                     NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue
                     | NSUnderlineStyle.byWord.rawValue
@@ -388,16 +390,16 @@ struct MenuBuilder {
         }
 
         if event.participationStatus == .tentative {
-            if Defaults[.showTentativeEvents] == .show_inactive {
+            if state.events.showTentativeEvents == .show_inactive {
                 styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
-            } else if Defaults[.showTentativeEvents] == .show_underlined {
+            } else if state.events.showTentativeEvents == .show_underlined {
                 styles[NSAttributedString.Key.underlineStyle] =
                     NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue
                     | NSUnderlineStyle.byWord.rawValue
             }
         }
 
-        if event.attendees.isEmpty, Defaults[.personalEventsAppereance] == .show_inactive {
+        if event.attendees.isEmpty, state.events.personalEventsAppearance == .show_inactive {
             styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
             shouldShowAsActive = false
         }
@@ -405,7 +407,7 @@ struct MenuBuilder {
         if event.endDate < now, eventStatus != .canceled {
             eventItem.state = .on
             eventItem.onStateImage = nil
-            if Defaults[.pastEventsAppereance] == .show_inactive {
+            if state.events.pastEventsAppearance == .show_inactive {
                 styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
                 styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: 14)
 
@@ -424,14 +426,14 @@ struct MenuBuilder {
             // create an NSMutableAttributedString that we'll append everything to
             let eventTitle = NSMutableAttributedString()
 
-            if shouldShowAsActive, Defaults[.showPendingEvents] != .show_underlined {
+            if shouldShowAsActive, state.events.showPendingEvents != .show_underlined {
                 // add the NSTextAttachment wrapper to our full string, then add some more text.
                 styles[NSAttributedString.Key.font] = NSFont.boldSystemFont(ofSize: 14)
             } else {
                 styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: 14)
             }
 
-            if shouldShowAsActive, Defaults[.showTentativeEvents] != .show_underlined {
+            if shouldShowAsActive, state.events.showTentativeEvents != .show_underlined {
                 // add the NSTextAttachment wrapper to our full string, then add some more text.
                 styles[NSAttributedString.Key.font] = NSFont.boldSystemFont(ofSize: 14)
             } else {
@@ -461,7 +463,7 @@ struct MenuBuilder {
 
         eventItem.representedObject = event
 
-        if Defaults[.showEventDetails] {
+        if state.menu.showEventDetails {
             let eventMenu = NSMenu(title: "Item \(eventTitle) menu")
             eventItem.submenu = eventMenu
 
@@ -508,7 +510,7 @@ struct MenuBuilder {
             }
 
             // Calendar
-            if Defaults[.selectedCalendarIDs].count > 1 {
+            if state.hasMultipleSelectedCalendars {
                 eventMenu.addItem(
                     withTitle: "status_bar_submenu_calendar_title".loco(event.calendar.title),
                     action: nil, keyEquivalent: "")
@@ -602,7 +604,7 @@ struct MenuBuilder {
             copyLinkItem.representedObject = event
 
             // Dismiss/undismiss meeting
-            if Defaults[.dismissedEvents].contains(where: { $0.id == event.id }) {
+            if state.events.dismissedEvents.contains(where: { $0.id == event.id }) {
                 let undismissItem = eventMenu.addItem(
                     withTitle: "status_bar_submenu_undismiss_meeting".loco(),
                     action: #selector(StatusBarItemController.undismissEvent), keyEquivalent: "")

@@ -9,6 +9,7 @@
 import AppKit
 import Defaults
 import XCTest
+
 @testable import MeetingBar
 
 @MainActor
@@ -26,10 +27,12 @@ final class MenuBuilderTests: BaseTestCase {
         let builder = MenuBuilder(target: Dummy())
 
         let day = Calendar.current.startOfDay(for: Date())
-        let e1  = makeFakeEvent(id: "1", start: day.addingTimeInterval(3600),
-                                end: day.addingTimeInterval(5400))
-        let e2  = makeFakeEvent(id: "2", start: day.addingTimeInterval(7200),
-                                end: day.addingTimeInterval(9000))
+        let e1 = makeFakeEvent(
+            id: "1", start: day.addingTimeInterval(3600),
+            end: day.addingTimeInterval(5400))
+        let e2 = makeFakeEvent(
+            id: "2", start: day.addingTimeInterval(7200),
+            end: day.addingTimeInterval(9000))
         let items = builder.buildDateSection(
             date: day,
             title: "Today",
@@ -42,18 +45,22 @@ final class MenuBuilderTests: BaseTestCase {
 
         // header + 2 events
         XCTAssertEqual(items.count, 3)
-        XCTAssertEqual(MenuBuilder.plainTitles(of: items)[0], "Today (\(dateFormatter.string(from: day))):")
+        XCTAssertEqual(
+            MenuBuilder.plainTitles(of: items)[0], "Today (\(dateFormatter.string(from: day))):")
     }
 
     func test_joinSectionHasCreateAndJoin() {
-        let next = makeFakeEvent(id: "J",
-                                 start: Date(), end: Date().addingTimeInterval(60))
+        let next = makeFakeEvent(
+            id: "J",
+            start: Date(), end: Date().addingTimeInterval(60))
         let items = MenuBuilder(target: Dummy())
             .buildJoinSection(nextEvent: next)
 
-        XCTAssertEqual(MenuBuilder.plainTitles(of: items)[0],
-                       "status_bar_section_join_current_meeting".loco())
-        XCTAssertTrue(items.contains { $0.action == #selector(StatusBarItemController.createMeetingAction) })
+        XCTAssertEqual(
+            MenuBuilder.plainTitles(of: items)[0],
+            "status_bar_section_join_current_meeting".loco())
+        XCTAssertTrue(
+            items.contains { $0.action == #selector(StatusBarItemController.createMeetingAction) })
     }
 
     func test_joinSectionOffersAlternateMeetingLinks() {
@@ -87,14 +94,18 @@ final class MenuBuilderTests: BaseTestCase {
         let alternateTitles = alternateItem?.submenu?.items.map(\.title)
 
         XCTAssertEqual(next.meetingLinkCandidate?.source, .providerConferenceData)
-        XCTAssertEqual(next.alternateMeetingLinkCandidates.map(\.source), [.eventURL, .location, .notes])
-        XCTAssertEqual(alternateTitles, [
-            "Zoom - us02web.zoom.us",
-            "Microsoft Teams - teams.microsoft.com",
-            "Zoom - us02web.zoom.us"
-        ])
         XCTAssertEqual(
-            (alternateItem?.submenu?.items.first?.representedObject as? MeetingLinkCandidate)?.source,
+            next.alternateMeetingLinkCandidates.map(\.source), [.eventURL, .location, .notes])
+        XCTAssertEqual(
+            alternateTitles,
+            [
+                "Zoom - us02web.zoom.us",
+                "Microsoft Teams - teams.microsoft.com",
+                "Zoom - us02web.zoom.us",
+            ])
+        XCTAssertEqual(
+            (alternateItem?.submenu?.items.first?.representedObject as? MeetingLinkCandidate)?
+                .source,
             .eventURL
         )
     }
@@ -102,9 +113,10 @@ final class MenuBuilderTests: BaseTestCase {
     func test_joinSectionWithoutEvent() {
         let items = MenuBuilder(target: Dummy())
             .buildJoinSection(nextEvent: nil)
-        XCTAssertEqual(items.count, 2) // Create meeting and quick actions
-        XCTAssertEqual(items[0].action,
-                       #selector(StatusBarItemController.createMeetingAction))
+        XCTAssertEqual(items.count, 2)  // Create meeting and quick actions
+        XCTAssertEqual(
+            items[0].action,
+            #selector(StatusBarItemController.createMeetingAction))
     }
 
     func test_preferencesSectionContainsExpectedItems() {
@@ -115,36 +127,47 @@ final class MenuBuilderTests: BaseTestCase {
 
         // Force "Rate App" to appear (installation > 14 days ago)
         let distantPast = Calendar.current.date(byAdding: .day, value: -30, to: Date())!
-        let builder     = MenuBuilder(target: Dummy(), installationDate: distantPast)
+        // State must reflect the Defaults overrides above — MenuBuilder no
+        // longer reads Defaults directly.
+        let state = StatusBarMenuStateFactory.make(from: [])
+        let builder = MenuBuilder(
+            target: Dummy(), state: state, installationDate: distantPast)
 
         // --- Act ---------------------------------------------------------------------
-        let items   = builder.buildPreferencesSection()
-        let titles  = MenuBuilder.plainTitles(of: items)
+        let items = builder.buildPreferencesSection()
+        let titles = MenuBuilder.plainTitles(of: items)
 
         // --- Assert ------------------------------------------------------------------
-        XCTAssertTrue(titles.contains(where: { $0.contains("status_bar_whats_new".loco()) }),
-                      "Should show “What's New” when appVersion > changelogVersion")
+        XCTAssertTrue(
+            titles.contains(where: { $0.contains("status_bar_whats_new".loco()) }),
+            "Should show “What's New” when appVersion > changelogVersion")
 
-        XCTAssertTrue(titles.contains(where: { $0.contains("status_bar_rate_app".loco()) }),
-                      "Should show “Rate App” button after two weeks")
+        XCTAssertTrue(
+            titles.contains(where: { $0.contains("status_bar_rate_app".loco()) }),
+            "Should show “Rate App” button after two weeks")
 
-        XCTAssertEqual(items.last?.action,
-                       #selector(AppDelegate.quit),
-                       "Last item must be Quit")
+        XCTAssertEqual(
+            items.last?.action,
+            #selector(AppDelegate.quit),
+            "Last item must be Quit")
     }
 
     func test_bookmarksInlineWhenCountIsThreeOrLess() {
         // --- Arrange -----------------------------------------------------------------
         Defaults[.bookmarks] = [
-            Bookmark(name: "Zoom", service: MeetingServices.zoom.rawValue, url: URL(string: "https://zoom.us")!),
-            Bookmark(name: "Meet", service: MeetingServices.meet.rawValue, url: URL(string: "https://meet.google.com")!)
+            Bookmark(
+                name: "Zoom", service: MeetingServices.zoom.rawValue,
+                url: URL(string: "https://zoom.us")!),
+            Bookmark(
+                name: "Meet", service: MeetingServices.meet.rawValue,
+                url: URL(string: "https://meet.google.com")!),
         ]
 
         let builder = MenuBuilder(target: Dummy())
 
         // --- Act ---------------------------------------------------------------------
-        let items   = builder.buildBookmarksSection(bookmarks: Defaults[.bookmarks])
-        let titles  = MenuBuilder.plainTitles(of: items)
+        let items = builder.buildBookmarksSection(bookmarks: Defaults[.bookmarks])
+        let titles = MenuBuilder.plainTitles(of: items)
 
         // --- Assert ------------------------------------------------------------------
         XCTAssertEqual(titles.filter { $0 == "Zoom" }.count, 1)
@@ -156,7 +179,9 @@ final class MenuBuilderTests: BaseTestCase {
     func test_bookmarksGoToSubmenuWhenCountGreaterThanThree() {
         // --- Arrange -----------------------------------------------------------------
         Defaults[.bookmarks] = (1...4).map {
-            Bookmark(name: "BM\($0)", service: MeetingServices.url.rawValue, url: URL(string: "https://example.com/\($0)")!)
+            Bookmark(
+                name: "BM\($0)", service: MeetingServices.url.rawValue,
+                url: URL(string: "https://example.com/\($0)")!)
         }
 
         let builder = MenuBuilder(target: Dummy())
@@ -168,8 +193,9 @@ final class MenuBuilderTests: BaseTestCase {
         let header = items[0]
         XCTAssertNotNil(header.submenu, "Header should have submenu when > 3 bookmarks")
         XCTAssertEqual(header.submenu!.items.count, 4)
-        XCTAssertEqual(header.submenu!.items[2].action,
-                       #selector(StatusBarItemController.joinBookmark))
+        XCTAssertEqual(
+            header.submenu!.items[2].action,
+            #selector(StatusBarItemController.joinBookmark))
     }
 
     func test_plainSnapshot() {
@@ -178,29 +204,34 @@ final class MenuBuilderTests: BaseTestCase {
         // today's midnight made the test flaky after 00:30 local time when
         // S1 looked "ongoing" and the menu added a running-icon attachment.
         let today = Calendar.current.startOfDay(for: Date().addingTimeInterval(86_400))
-        let e1 = makeFakeEvent(id: "S1",
-                               start: today.addingTimeInterval(1800),
-                               end: today.addingTimeInterval(3600))
-        let e2 = makeFakeEvent(id: "S2",
-                               start: today.addingTimeInterval(7200),
-                               end: today.addingTimeInterval(8100))
+        let e1 = makeFakeEvent(
+            id: "S1",
+            start: today.addingTimeInterval(1800),
+            end: today.addingTimeInterval(3600))
+        let e2 = makeFakeEvent(
+            id: "S2",
+            start: today.addingTimeInterval(7200),
+            end: today.addingTimeInterval(8100))
 
         var allItems: [NSMenuItem] = []
         let builder = MenuBuilder(target: Dummy())
-        allItems += builder.buildDateSection(date: today,
-                                             title: "Today", events: [e1, e2])
+        allItems += builder.buildDateSection(
+            date: today,
+            title: "Today", events: [e1, e2])
         allItems += builder.buildJoinSection(nextEvent: e1)
 
         // “Snapshot”: порівнюємо plain-titles з еталоном
         let snapshot = MenuBuilder.plainTitles(of: allItems)
-        XCTAssertEqual(snapshot, [
-            "Today (\(dateFormatter.string(from: today))):",
-            "00:30 \t 01:00 \t Event S1",
-            "02:00 \t 02:15 \t Event S2",
-            "status_bar_section_join_next_meeting".loco(),
-            "status_bar_section_join_create_meeting".loco(),
-            "status_bar_quick_actions".loco()
-        ])
+        XCTAssertEqual(
+            snapshot,
+            [
+                "Today (\(dateFormatter.string(from: today))):",
+                "00:30 \t 01:00 \t Event S1",
+                "02:00 \t 02:15 \t Event S2",
+                "status_bar_section_join_next_meeting".loco(),
+                "status_bar_section_join_create_meeting".loco(),
+                "status_bar_quick_actions".loco(),
+            ])
     }
 }
 
@@ -216,11 +247,15 @@ final class MenuBuilderEventItemTests: BaseTestCase {
 
     /// Build a single `NSMenuItem` for the given event (index 1 of Date-section)
     private func buildItem(event: MBEvent) -> NSMenuItem? {
-        let items = MenuBuilder(target: Dummy())
-            .buildDateSection(date: Date(),
-                              title: "T",
-                              events: [event])
-        return items.count > 1 ? items[1] : nil              // 0 = header
+        // Build state via factory so `Defaults` overrides set by tests are
+        // reflected in the menu output (MenuBuilder no longer reads Defaults).
+        let state = StatusBarMenuStateFactory.make(from: [event])
+        let items = MenuBuilder(target: Dummy(), state: state)
+            .buildDateSection(
+                date: Date(),
+                title: "T",
+                events: [event])
+        return items.count > 1 ? items[1] : nil  // 0 = header
     }
 
     // MARK: – Tests -----------------------------------------------------------
@@ -236,9 +271,10 @@ final class MenuBuilderEventItemTests: BaseTestCase {
     func test_declinedEventHiddenWhenAppearanceIsHide() {
         Defaults[.declinedEventsAppereance] = .hide
 
-        var event = makeFakeEvent(id: "D",
-                              start: Date().addingTimeInterval(600),
-                              end: Date().addingTimeInterval(1200))
+        var event = makeFakeEvent(
+            id: "D",
+            start: Date().addingTimeInterval(600),
+            end: Date().addingTimeInterval(1200))
         event.participationStatus = .declined
 
         let item = buildItem(event: event)
@@ -249,31 +285,38 @@ final class MenuBuilderEventItemTests: BaseTestCase {
     func test_pendingEventUnderlined() {
         Defaults[.showPendingEvents] = .show_underlined
 
-        var event = makeFakeEvent(id: "P",
-                              start: Date().addingTimeInterval(600),
-                              end: Date().addingTimeInterval(1200))
+        var event = makeFakeEvent(
+            id: "P",
+            start: Date().addingTimeInterval(600),
+            end: Date().addingTimeInterval(1200))
         event.participationStatus = .pending
 
         let item = buildItem(event: event)
 
-        let underline = item!.attributedTitle?
+        let underline =
+            item!.attributedTitle?
             .attribute(.underlineStyle, at: 0, effectiveRange: nil) as? Int
-        XCTAssertNotNil(underline,
-                        "pending event should be underlined when setting is .show_underlined")
+        XCTAssertNotNil(
+            underline,
+            "pending event should be underlined when setting is .show_underlined")
     }
 
     /// showEventDetails == true ⇒ submenu with title/status exists
     func test_submenuCreatedWhenShowEventDetailsTrue() {
         Defaults[.showEventDetails] = true
 
-        var event = makeFakeEvent(id: "DET",
-                              start: Date().addingTimeInterval(600),
-                              end: Date().addingTimeInterval(1200))
+        var event = makeFakeEvent(
+            id: "DET",
+            start: Date().addingTimeInterval(600),
+            end: Date().addingTimeInterval(1200))
         // add an attendee so Status section appears
-        event.attendees = [MBEventAttendee(email: nil, name: "Alice",
-                                       status: .accepted,
-                                       optional: false,
-                                       isCurrentUser: false)]
+        event.attendees = [
+            MBEventAttendee(
+                email: nil, name: "Alice",
+                status: .accepted,
+                optional: false,
+                isCurrentUser: false)
+        ]
 
         let item = buildItem(event: event)
 
@@ -310,7 +353,9 @@ final class MenuBuilderEventItemTests: BaseTestCase {
 
         let item = buildItem(event: event)
         let subItems = item?.submenu?.items ?? []
-        let locationIndex = subItems.firstIndex { $0.title == "status_bar_submenu_location_title".loco() }
+        let locationIndex = subItems.firstIndex {
+            $0.title == "status_bar_submenu_location_title".loco()
+        }
         let notesIndex = subItems.firstIndex { $0.title == "status_bar_submenu_notes_title".loco() }
 
         XCTAssertNotNil(subItems.first?.view)
@@ -323,17 +368,19 @@ final class MenuBuilderEventItemTests: BaseTestCase {
         let now = Date()
         let runEvent = makeFakeEvent(
             id: "RUN",
-            start: now.addingTimeInterval(-300),     // started 5 min ago
-            end: now.addingTimeInterval( 900)      // ends in 15 min
+            start: now.addingTimeInterval(-300),  // started 5 min ago
+            end: now.addingTimeInterval(900)  // ends in 15 min
         )
 
         let item = buildItem(event: runEvent)
         XCTAssertEqual(item?.state, .mixed)
 
-        let font = item!.attributedTitle?
+        let font =
+            item!.attributedTitle?
             .attribute(.font, at: 0, effectiveRange: nil) as? NSFont
-        XCTAssertTrue(font?.fontDescriptor.symbolicTraits.contains(.bold) ?? false,
-                      "running event title should be bold")
+        XCTAssertTrue(
+            font?.fontDescriptor.symbolicTraits.contains(.bold) ?? false,
+            "running event title should be bold")
     }
 }
 
@@ -343,20 +390,25 @@ final class MenuBuilderQuickActionsTests: BaseTestCase {
     private class Dummy: NSObject {}
 
     func test_quickActionsIncludesDismissRemove() {
-        let next = makeFakeEvent(id: "Q",
-                                 start: Date().addingTimeInterval(30),
-                                 end: Date().addingTimeInterval(900))
+        let next = makeFakeEvent(
+            id: "Q",
+            start: Date().addingTimeInterval(30),
+            end: Date().addingTimeInterval(900))
         // there is at least one dismissed event -> menu should add “Remove all”
         Defaults[.dismissedEvents] = [ProcessedEvent(id: "123", eventEndDate: Date())]
 
-        let root = MenuBuilder(target: Dummy())
+        // Build state via factory so the dismissedEvents override above is
+        // reflected — MenuBuilder no longer reads Defaults directly.
+        let state = StatusBarMenuStateFactory.make(from: [next])
+        let root = MenuBuilder(target: Dummy(), state: state)
             .buildJoinSection(nextEvent: next)
 
         // last element is quick actions header
         let qa = root.last!
         let titles = MenuBuilder.plainTitles(of: qa.submenu!.items)
         XCTAssertTrue(titles.contains { $0.contains("dismiss") })
-        XCTAssertTrue(titles.contains { $0.contains("status_bar_menu_remove_all_dismissals".loco()) })
+        XCTAssertTrue(
+            titles.contains { $0.contains("status_bar_menu_remove_all_dismissals".loco()) })
     }
 
 }
@@ -371,20 +423,22 @@ final class StatusBarTitleRendererTests: BaseTestCase {
 
         XCTAssertEqual(title.string, "Weekly sync\nnow")
 
-        let paragraphStyle = title.attribute(
-            .paragraphStyle,
-            at: 0,
-            effectiveRange: nil
-        ) as? NSParagraphStyle
+        let paragraphStyle =
+            title.attribute(
+                .paragraphStyle,
+                at: 0,
+                effectiveRange: nil
+            ) as? NSParagraphStyle
         XCTAssertEqual(paragraphStyle?.alignment, .center)
         XCTAssertEqual(paragraphStyle?.lineHeightMultiple ?? 0, 0.7, accuracy: 0.001)
 
         let titleFont = title.attribute(.font, at: 0, effectiveRange: nil) as? NSFont
-        let timeFont = title.attribute(
-            .font,
-            at: title.length - 1,
-            effectiveRange: nil
-        ) as? NSFont
+        let timeFont =
+            title.attribute(
+                .font,
+                at: title.length - 1,
+                effectiveRange: nil
+            ) as? NSFont
         XCTAssertEqual(titleFont?.pointSize ?? 0, 12, accuracy: 0.001)
         XCTAssertEqual(timeFont?.pointSize ?? 0, 9, accuracy: 0.001)
     }
@@ -488,11 +542,12 @@ final class StatusBarItemControllerPresentationTests: BaseTestCase {
         let button = try XCTUnwrap(controller.statusItem.button)
         XCTAssertTrue(button.attributedTitle.string.contains("\n"))
 
-        let paragraphStyle = button.attributedTitle.attribute(
-            .paragraphStyle,
-            at: 0,
-            effectiveRange: nil
-        ) as? NSParagraphStyle
+        let paragraphStyle =
+            button.attributedTitle.attribute(
+                .paragraphStyle,
+                at: 0,
+                effectiveRange: nil
+            ) as? NSParagraphStyle
         XCTAssertEqual(paragraphStyle?.alignment, .center)
         XCTAssertEqual(paragraphStyle?.lineHeightMultiple ?? 0, 0.7, accuracy: 0.001)
     }

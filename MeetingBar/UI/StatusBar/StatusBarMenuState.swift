@@ -5,11 +5,11 @@
 
 import Foundation
 
-/// A value-typed snapshot of everything the status bar menu needs to render
+/// Value-typed snapshot of everything the status bar menu needs to render
 /// without reading `Defaults` or reaching through singletons.
 ///
-/// Built by `StatusBarMenuStateFactory.make(from:)` and consumed by
-/// `MenuBuilder`.  Must not import AppKit or UserNotifications.
+/// Built by `StatusBarMenuStateFactory.make(...)` and consumed by `MenuBuilder`.
+/// Must not import AppKit or UserNotifications.
 struct StatusBarMenuState: Equatable {
     // MARK: - Events (split by day)
 
@@ -17,21 +17,118 @@ struct StatusBarMenuState: Equatable {
     var tomorrowEvents: [MBEvent] = []
     var nextEvent: MBEvent?
 
-    // MARK: - Structural switches
+    // MARK: - Settings snapshot
+
+    /// Full settings snapshot. `MenuBuilder` reads display/filter settings from
+    /// here instead of touching `Defaults` directly.
+    var settings: AppSettings = .empty
+
+    // MARK: - Pre-computed display flags
 
     /// Whether any calendars are selected (drives the "no calendars" empty state).
     var hasSelectedCalendars: Bool = false
 
-    /// Which period to show in the menu.
-    var showEventsForPeriod: ShowEventsForPeriod = .today
+    /// Whether more than one calendar is selected (controls calendar-name display
+    /// in event details).
+    var hasMultipleSelectedCalendars: Bool = false
 
     /// Whether the day-timeline bar should appear above the event list.
     var showTimeline: Bool = false
 
-    /// Whether meeting titles are hidden in the status bar title and menu.
-    var hideMeetingTitle: Bool = false
+    /// Time-format display (military vs am/pm) used when formatting event times.
+    var timeFormat: TimeFormat = .military
 
-    // MARK: - Bookmarks
+    // MARK: - Changelog / install state
 
-    var bookmarks: [Bookmark] = []
+    /// Major-version prefix of the running app (e.g. "5.0").
+    var appMajorVersion: String = ""
+
+    /// Major-version prefix of the last release the user has acknowledged in
+    /// the changelog. When this differs from `appMajorVersion`, the menu shows
+    /// an unread-changelog hint.
+    var lastRevisedMajorVersion: String = ""
+
+    /// Whether the app was installed from the Mac App Store. Hides certain
+    /// release-channel UI when true.
+    var isInstalledFromAppStore: Bool = false
+
+    // MARK: - Convenience accessors
+
+    /// Settings groups exposed for shorter call sites in MenuBuilder.
+    var events: EventDisplaySettings { settings.events }
+    var statusBar: StatusBarSettings { settings.statusBar }
+    var menu: MenuSettings { settings.menu }
+    var meetings: MeetingSettings { settings.meetings }
+}
+
+extension AppSettings {
+    /// Zero-state `AppSettings` whose values mirror the hard-coded defaults in
+    /// `Extensions/DefaultsKeys.swift`. Used as the default `state` in
+    /// `MenuBuilder` so tests that don't customise settings produce the same
+    /// menu the production app would on a clean install.
+    static var empty: AppSettings {
+        AppSettings(
+            calendar: CalendarSettings(
+                selectedCalendarIDs: [], eventStoreProvider: .macOSEventKit),
+            events: EventDisplaySettings(
+                showEventsForPeriod: .today,
+                allDayEvents: .show,
+                nonAllDayEvents: .show,
+                declinedEventsAppearance: .strikethrough,
+                pastEventsAppearance: .show_inactive,
+                personalEventsAppearance: .show_active,
+                showPendingEvents: .show,
+                showTentativeEvents: .show,
+                filterEventRegexes: [],
+                dismissedEvents: [],
+                ongoingEventVisibility: .showTenMinAfter,
+                showEventMaxTimeUntilEventEnabled: false,
+                showEventMaxTimeUntilEventThreshold: 30
+            ),
+            statusBar: StatusBarSettings(
+                eventTitleFormat: .show,
+                eventTimeFormat: .show,
+                eventTitleIconFormat: .none,
+                statusbarEventTitleLength: 50,
+                hideMeetingTitle: false,
+                showEventEndTime: true
+            ),
+            menu: MenuSettings(
+                showTimelineInMenu: true,
+                shortenEventTitle: true,
+                menuEventTitleLength: 50,
+                showEventDetails: false,
+                showMeetingServiceIcon: true
+            ),
+            notifications: NotificationSettings(
+                joinEventNotification: true,
+                joinEventNotificationTime: .atStart,
+                endOfEventNotification: true,
+                endOfEventNotificationTime: .atEnd,
+                fullscreenNotification: false,
+                fullscreenNotificationTime: .atStart
+            ),
+            meetings: MeetingSettings(
+                createMeetingService: .meet,
+                createMeetingServiceUrl: "",
+                bookmarks: [],
+                browsers: [],
+                defaultBrowser: systemDefaultBrowser,
+                browserForCreateMeeting: systemDefaultBrowser,
+                providerBrowsers: [:]
+            ),
+            advanced: AdvancedSettings(
+                automaticEventJoin: false,
+                automaticEventJoinTime: .atStart,
+                runJoinEventScript: false,
+                joinEventScriptLocation: nil,
+                joinEventScript: "",
+                runEventStartScript: false,
+                eventStartScriptLocation: nil,
+                eventStartScriptTime: .atStart,
+                eventStartScript: "",
+                customRegexes: []
+            )
+        )
+    }
 }

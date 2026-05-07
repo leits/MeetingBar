@@ -67,7 +67,7 @@ final class StatusBarItemController {
         statusItem.button?.action = #selector(statusMenuBarAction)
         statusItem.button?.sendAction(on: [
             NSEvent.EventTypeMask.rightMouseDown, NSEvent.EventTypeMask.leftMouseUp,
-            NSEvent.EventTypeMask.leftMouseDown
+            NSEvent.EventTypeMask.leftMouseDown,
         ])
 
         // Temporary icon and menu before app delegate setup
@@ -245,7 +245,8 @@ final class StatusBarItemController {
         }
 
         let menuState = StatusBarMenuStateFactory.make(from: events)
-        let builder = MenuBuilder(target: self, installationDate: installationDate)
+        let builder = MenuBuilder(
+            target: self, state: menuState, installationDate: installationDate)
 
         statusItemMenu.autoenablesItems = false
         statusItemMenu.removeAllItems()
@@ -273,7 +274,7 @@ final class StatusBarItemController {
                 statusItemMenu.addItem(.separator())
             }
 
-            switch menuState.showEventsForPeriod {
+            switch menuState.events.showEventsForPeriod {
             case .today:
                 statusItemMenu.items += builder.buildDateSection(
                     date: today, title: "status_bar_section_today".loco(),
@@ -301,9 +302,9 @@ final class StatusBarItemController {
         statusItemMenu.addItem(NSMenuItem.separator())
         statusItemMenu.items += builder.buildJoinSection(nextEvent: menuState.nextEvent)
 
-        if !menuState.bookmarks.isEmpty {
+        if !menuState.meetings.bookmarks.isEmpty {
             statusItemMenu.addItem(NSMenuItem.separator())
-            statusItemMenu.items += builder.buildBookmarksSection(bookmarks: menuState.bookmarks)
+            statusItemMenu.items += builder.buildBookmarksSection(bookmarks: menuState.meetings.bookmarks)
         }
         statusItemMenu.addItem(NSMenuItem.separator())
 
@@ -491,7 +492,8 @@ enum StatusBarTitleRenderer {
         }
     }
 
-    private static func stackedTitle(for presentation: StatusBarPresentation) -> NSAttributedString {
+    private static func stackedTitle(for presentation: StatusBarPresentation) -> NSAttributedString
+    {
         let title = NSMutableAttributedString(
             string: presentation.title,
             attributes: titleAttributes(
@@ -505,7 +507,7 @@ enum StatusBarTitleRenderer {
                 string: "\n" + presentation.time,
                 attributes: [
                     NSAttributedString.Key.font: NSFont.systemFont(ofSize: 9),
-                    NSAttributedString.Key.foregroundColor: NSColor.lightGray
+                    NSAttributedString.Key.foregroundColor: NSColor.lightGray,
                 ]
             ))
 
