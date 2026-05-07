@@ -8,7 +8,7 @@ import Foundation
 /// The complete observable state of the application at a point in time.
 ///
 /// `AppState` is value-typed and derived from lower-level sources of truth
-/// (`EventManager`, `SettingsStore`, system state).  Renderers (status bar,
+/// (`EventManager`, `AppSettings`, system state).  Renderers (status bar,
 /// menus, notifications) should read from `AppState` rather than reaching
 /// through managers directly.
 struct AppState: Equatable {

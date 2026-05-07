@@ -2,7 +2,7 @@
 //  AppSettingsTests.swift
 //  MeetingBarTests
 //
-//  Verifies that SettingsStore.settings correctly maps Defaults keys to
+//  Verifies that AppSettings.current correctly maps Defaults keys to
 //  AppSettings fields. Each test writes a non-default value to a key and
 //  asserts the snapshot reflects it.
 //
@@ -19,48 +19,48 @@ final class AppSettingsTests: BaseTestCase {
     func testCalendarSettings_selectedCalendarIDs() {
         Defaults[.selectedCalendarIDs] = ["cal-1", "cal-2"]
         XCTAssertEqual(
-            SettingsStore.shared.settings.calendar.selectedCalendarIDs, ["cal-1", "cal-2"])
+            AppSettings.current.calendar.selectedCalendarIDs, ["cal-1", "cal-2"])
     }
 
     func testCalendarSettings_eventStoreProvider() {
         Defaults[.eventStoreProvider] = .googleCalendar
-        XCTAssertEqual(SettingsStore.shared.settings.calendar.eventStoreProvider, .googleCalendar)
+        XCTAssertEqual(AppSettings.current.calendar.eventStoreProvider, .googleCalendar)
     }
 
     // MARK: - StatusBarSettings
 
     func testStatusBarSettings_hideMeetingTitle() {
         Defaults[.hideMeetingTitle] = true
-        XCTAssertTrue(SettingsStore.shared.settings.statusBar.hideMeetingTitle)
+        XCTAssertTrue(AppSettings.current.statusBar.hideMeetingTitle)
     }
 
     func testStatusBarSettings_hideMeetingTitle_default() {
-        XCTAssertFalse(SettingsStore.shared.settings.statusBar.hideMeetingTitle)
+        XCTAssertFalse(AppSettings.current.statusBar.hideMeetingTitle)
     }
 
     func testStatusBarSettings_eventTitleFormat() {
         Defaults[.eventTitleFormat] = .dot
-        XCTAssertEqual(SettingsStore.shared.settings.statusBar.eventTitleFormat, .dot)
+        XCTAssertEqual(AppSettings.current.statusBar.eventTitleFormat, .dot)
     }
 
     // MARK: - NotificationSettings
 
     func testNotificationSettings_joinEventNotification() {
         Defaults[.joinEventNotification] = false
-        XCTAssertFalse(SettingsStore.shared.settings.notifications.joinEventNotification)
+        XCTAssertFalse(AppSettings.current.notifications.joinEventNotification)
     }
 
     func testNotificationSettings_joinEventNotificationTime() {
         Defaults[.joinEventNotificationTime] = .fiveMinuteBefore
         XCTAssertEqual(
-            SettingsStore.shared.settings.notifications.joinEventNotificationTime, .fiveMinuteBefore
+            AppSettings.current.notifications.joinEventNotificationTime, .fiveMinuteBefore
         )
     }
 
     func testNotificationSettings_endOfEventNotificationTime() {
         Defaults[.endOfEventNotificationTime] = .threeMinuteBefore
         XCTAssertEqual(
-            SettingsStore.shared.settings.notifications.endOfEventNotificationTime,
+            AppSettings.current.notifications.endOfEventNotificationTime,
             .threeMinuteBefore)
     }
 
@@ -69,24 +69,24 @@ final class AppSettingsTests: BaseTestCase {
     func testEventDisplaySettings_filterEventRegexes() {
         Defaults[.filterEventRegexes] = ["standup", "lunch"]
         XCTAssertEqual(
-            SettingsStore.shared.settings.events.filterEventRegexes, ["standup", "lunch"])
+            AppSettings.current.events.filterEventRegexes, ["standup", "lunch"])
     }
 
     func testEventDisplaySettings_showEventsForPeriod() {
         Defaults[.showEventsForPeriod] = .today
-        XCTAssertEqual(SettingsStore.shared.settings.events.showEventsForPeriod, .today)
+        XCTAssertEqual(AppSettings.current.events.showEventsForPeriod, .today)
     }
 
     // MARK: - AdvancedSettings
 
     func testAdvancedSettings_automaticEventJoin() {
         Defaults[.automaticEventJoin] = true
-        XCTAssertTrue(SettingsStore.shared.settings.advanced.automaticEventJoin)
+        XCTAssertTrue(AppSettings.current.advanced.automaticEventJoin)
     }
 
     func testAdvancedSettings_runJoinEventScript() {
         Defaults[.runJoinEventScript] = true
-        XCTAssertTrue(SettingsStore.shared.settings.advanced.runJoinEventScript)
+        XCTAssertTrue(AppSettings.current.advanced.runJoinEventScript)
     }
 
     // MARK: - currentForScheduler integration

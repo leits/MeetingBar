@@ -135,6 +135,6 @@ final class ProviderBrowserMigrationTests: BaseTestCase {
 
     func testMeetingSettings_providerBrowsers_reflectsDefaults() {
         Defaults[.providerBrowsers] = ["Zoom": zoomApp]
-        XCTAssertEqual(SettingsStore.shared.settings.meetings.providerBrowsers["Zoom"], zoomApp)
+        XCTAssertEqual(AppSettings.current.meetings.providerBrowsers["Zoom"], zoomApp)
     }
 }

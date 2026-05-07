@@ -242,10 +242,10 @@ extension NotificationPlanningSettings {
     /// Snapshot of the per-action settings the scheduler currently owns.
     @MainActor
     static var currentForScheduler: NotificationPlanningSettings {
-        let notif = SettingsStore.shared.settings.notifications
-        let adv = SettingsStore.shared.settings.advanced
-        let statusBar = SettingsStore.shared.settings.statusBar
-        let events = SettingsStore.shared.settings.events
+        let notif = AppSettings.current.notifications
+        let adv = AppSettings.current.advanced
+        let statusBar = AppSettings.current.statusBar
+        let events = AppSettings.current.events
         return NotificationPlanningSettings(
             eventStart: .init(
                 enabled: notif.joinEventNotification,
