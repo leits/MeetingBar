@@ -98,31 +98,23 @@ MeetingBar/
 │           └── GoogleCalendarPolicy.swift     — auth/error classification [SPM]
 │
 ├── Meetings/                       — meeting URL detection, opening, services catalog
+│   ├── MeetingProvider.swift       — struct + static all (single source of provider metadata) [SPM]
+│   ├── MeetingServices.swift       — enum + localization + icon helpers + create-meeting URLs
 │   ├── MeetingLinkCandidate.swift  — scored URL + source priority [SPM]
-│   ├── MeetingLinkDetection.swift  — extraction helpers [SPM]
+│   ├── MeetingLinkDetection.swift  — extraction helpers + cleanup [SPM]
 │   ├── MeetingLinkDetector.swift   — orchestrates URL extraction [SPM]
 │   ├── MeetingOpener.swift         — runs join script + opens meeting URL
 │   ├── MeetingOpeningPolicy.swift  — open-in-browser vs open-in-app logic [SPM]
-│   ├── MeetingServices.swift       — regex catalog of 50+ meeting URL patterns
-│   ├── Domain/
-│   │   ├── MeetingProviderDescriptor.swift — value type for a meeting provider [SPM]
-│   │   └── MeetingProviderRegistry.swift   — catalog of all descriptors [SPM]
-│   ├── Opening/
-│   │   ├── MeetingOpenStrategy.swift       — open-in-app vs browser logic
-│   │   ├── MeetingOpenerRegistry.swift     — maps provider ID to strategy
-│   │   └── MeetingOpenPreferencesMigration.swift — migrates old per-provider browser prefs
-│   └── Creation/
-│       └── CreateMeetingRegistry.swift     — maps CreateMeetingService to URL factory
+│   └── Opening/
+│       ├── MeetingOpenStrategy.swift       — per-provider URL transforms (Zoom, Teams, Slack, …) + openStrategy(for:) lookup
+│       └── MeetingOpenPreferencesMigration.swift — migrates old per-provider browser prefs
 │
 ├── Notifications/                  — UN notification scheduling + actions
 │   ├── EventActionPolicy.swift     — should fullscreen / auto-join / script fire? [SPM]
 │   ├── NotificationPlanner.swift   — desired UN requests for an event [SPM]
-│   ├── NotificationScheduler.swift — reconciles plans with UNUserNotificationCenter
-│   ├── NotificationActionScheduler.swift — decides when to run in-app actions
-│   ├── NotificationActionRunner.swift    — executes fullscreen / auto-join / script
+│   ├── NotificationScheduler.swift — reconciles plans with UNUserNotificationCenter; owns content + action scheduling
+│   ├── NotificationActionRunner.swift    — executes fullscreen / auto-join / script; owns processed-event records
 │   ├── NotificationCenterDelegate.swift  — UNUserNotificationCenterDelegate
-│   ├── NotificationContentFactory.swift  — builds UNMutableNotificationContent
-│   ├── NotificationRecordStore.swift     — persists processed event IDs
 │   └── NotificationSetup.swift           — requests UN authorization
 │
 ├── UI/
@@ -239,7 +231,7 @@ NotificationScheduler.reconcile(events:settings:now:)   ← side-effecting servi
 
 **Why "mb-plan-" identifiers matter.** They are stable per (event, kind). Reconcile is idempotent: calling it twice in a row is a no-op. Calling it after a settings change re-arms only what changed. This replaced an older "single-id" model that suppressed back-to-back events.
 
-**`NotificationActionScheduler` + `NotificationActionRunner`** handle in-app actions (fullscreen, auto-join, on-start script) that are triggered at event start. They read the `NotificationRecordStore` to avoid re-firing on re-reconcile.
+**`NotificationActionRunner`** handles in-app actions (fullscreen, auto-join, on-start script) triggered at event start. The scheduler owns delayed `Task`s for these actions and dispatches to the runner; the runner persists processed-event records (a fileprivate `NotificationRecordStore`) to avoid re-firing on re-reconcile.
 
 ---
 
