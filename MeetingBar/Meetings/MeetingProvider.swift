@@ -1,69 +1,96 @@
 //
-//  MeetingProviderRegistry.swift
+//  MeetingProvider.swift
 //  MeetingBar
 //
-//  Static registry of all built-in meeting provider descriptors.
-//  No AppKit or Defaults imports — pure domain data.
+//  Single source of truth for meeting-provider metadata: the struct, the
+//  static catalogue of all built-in providers, and ID-based lookup.
 //
-//  Phase 3 goal: every per-provider switch in `MeetingServices.swift` and
-//  `MeetingLinkDetection.swift` is gradually replaced by a registry lookup.
-//  For PR 1, this is additive — existing switch statements remain unchanged.
+//  Replaces the earlier split of MeetingProviderDescriptor.swift +
+//  MeetingProviderRegistry.swift. Adding a new provider means adding one
+//  static property to the `Built-in providers` extension and listing it in
+//  `MeetingProvider.all` — no other file needs to change.
+//
+//  Pure domain data — no AppKit or Defaults imports.
 //
 
-/// Static registry of all built-in `MeetingProviderDescriptor` values.
+/// Per-provider metadata used by detection, opening, icon rendering, and the
+/// preferences UI.
 ///
-/// Use `descriptor(for:)` to look up a provider by ID or `MeetingServices` case.
-/// The `regexPatterns` bridge exposes the full pattern map for use in the
-/// existing detection layer until Phase 3 PR 2 migrates it to the registry.
-enum MeetingProviderRegistry {
-    /// All built-in provider descriptors.
-    static let all: [MeetingProviderDescriptor] = builtIn
+/// `id` is a stable string identity. For built-in providers it equals the
+/// `rawValue` of the corresponding `MeetingServices` case so existing
+/// persistence (bookmarks, browser preferences) continues to decode.
+struct MeetingProvider: Equatable, Sendable {
+    /// Stable string identity. For built-in providers this equals `MeetingServices.rawValue`.
+    let id: String
 
-    /// Descriptors keyed by stable string ID for O(1) lookup.
-    private static let byID: [String: MeetingProviderDescriptor] = {
-        Dictionary(builtIn.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
-    }()
+    /// Human-readable display name.
+    let displayName: String
 
-    /// Look up a descriptor by its stable string `id`.
-    static func descriptor(for id: String) -> MeetingProviderDescriptor? {
+    /// `NSImage(named:)` key for the provider icon.
+    /// System template image names (e.g. "NSTouchBarOpenInBrowserTemplate") are valid here.
+    let iconName: String
+
+    /// Rendered icon width in points. Almost always 16.
+    let iconWidth: Double
+
+    /// Rendered icon height in points. Varies by provider logo aspect ratio.
+    let iconHeight: Double
+
+    /// URL detection regex pattern. `nil` for providers that don't use URL matching
+    /// (e.g. phone, facetimeaudio, url catch-all, other).
+    let regexPattern: String?
+
+    /// Name of the per-provider native-app "browser" sentinel that appears in the
+    /// browser picker for this provider. `nil` means only real browsers are shown.
+    /// Plain String so the type stays free of AppKit / Defaults imports.
+    let nativeAppBrowserName: String?
+}
+
+// MARK: - Lookup
+
+extension MeetingProvider {
+    /// Look up a provider by its stable string `id`.
+    static func provider(for id: String) -> MeetingProvider? {
         byID[id]
     }
 
     /// Convenience lookup directly from a `MeetingServices` case.
-    static func descriptor(for service: MeetingServices) -> MeetingProviderDescriptor? {
-        descriptor(for: service.rawValue)
+    static func provider(for service: MeetingServices) -> MeetingProvider? {
+        provider(for: service.rawValue)
     }
 
-    /// Bridge to the existing `meetingLinkRegexPatterns` format.
-    /// Computed from descriptors so detection behaviour is identical.
-    /// The `meetingLinkRegexPatterns` constant in MeetingLinkDetection.swift is
-    /// deprecated and delegates here; remove it in Phase 3 PR 7 cleanup.
+    /// All built-in providers keyed by `MeetingServices` for the regex map.
+    /// Used by `MeetingLinkDetection` to compile the runtime regex catalogue.
     static var regexPatterns: [MeetingServices: String] {
         var result: [MeetingServices: String] = [:]
-        for descriptor in builtIn {
-            guard let pattern = descriptor.regexPattern,
-                let service = MeetingServices(rawValue: descriptor.id)
+        for provider in all {
+            guard let pattern = provider.regexPattern,
+                let service = MeetingServices(rawValue: provider.id)
             else { continue }
             result[service] = pattern
         }
         return result
     }
+
+    private static let byID: [String: MeetingProvider] = {
+        Dictionary(all.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+    }()
 }
 
-// MARK: - Built-in descriptors
+// MARK: - Built-in providers
 
-extension MeetingProviderRegistry {
+extension MeetingProvider {
     // swiftlint:disable function_body_length
-    fileprivate static let builtIn: [MeetingProviderDescriptor] = {
+    static let all: [MeetingProvider] = {
         // Helper — most icons are 16×16; non-default heights are explicit.
-        func desc(
+        func make(
             _ service: MeetingServices,
             icon: String,
             height: Double = 16,
             pattern: String? = nil,
             nativeAppBrowserName: String? = nil
-        ) -> MeetingProviderDescriptor {
-            MeetingProviderDescriptor(
+        ) -> MeetingProvider {
+            MeetingProvider(
                 id: service.rawValue,
                 displayName: service.rawValue,
                 iconName: icon,
@@ -76,12 +103,10 @@ extension MeetingProviderRegistry {
 
         return [
             // Phone — no URL pattern, opened via tel://
-            desc(
-                .phone,
-                icon: "NSTouchBarCommunicationAudioTemplate"),
+            make(.phone, icon: "NSTouchBarCommunicationAudioTemplate"),
 
             // Google Meet
-            desc(
+            make(
                 .meet,
                 icon: "google_meet_icon",
                 height: 13.2,
@@ -89,26 +114,26 @@ extension MeetingProviderRegistry {
                 nativeAppBrowserName: "MeetInOne"),
 
             // Google Meet Stream
-            desc(
+            make(
                 .meetStream,
                 icon: "google_meet_icon",
                 height: 13.2,
                 pattern: #"https?://stream\.meet\.google\.com/stream/[a-z0-9-]+"#),
 
             // Google Hangouts (deprecated)
-            desc(
+            make(
                 .hangouts,
                 icon: "google_hangouts_icon",
                 pattern: #"https?://hangouts\.google\.com/[^\s]*"#),
 
             // Google Duo
-            desc(
+            make(
                 .duo,
                 icon: "google_duo_icon",
                 pattern: #"https?://duo\.app\.goo\.gl/[^\s]*"#),
 
             // Zoom (web)
-            desc(
+            make(
                 .zoom,
                 icon: "zoom_icon",
                 pattern:
@@ -117,7 +142,7 @@ extension MeetingProviderRegistry {
             ),
 
             // Zoom (native app scheme)
-            desc(
+            make(
                 .zoom_native,
                 icon: "zoom_icon",
                 pattern:
@@ -125,19 +150,19 @@ extension MeetingProviderRegistry {
             ),
 
             // ZoomGov
-            desc(
+            make(
                 .zoomgov,
                 icon: "zoom_icon",
                 pattern: #"https?://([a-z0-9.]+)?zoomgov\.com/j/[a-zA-Z0-9?&=]+"#),
 
             // Reclaim.ai (uses Zoom links)
-            desc(
+            make(
                 .reclaim,
                 icon: "zoom_icon",
                 pattern: #"https?://reclaim\.ai/z/[A-Za-z0-9./]+"#),
 
             // Microsoft Teams
-            desc(
+            make(
                 .teams,
                 icon: "ms_teams_icon",
                 pattern:
@@ -146,7 +171,7 @@ extension MeetingProviderRegistry {
             ),
 
             // Cisco Webex
-            desc(
+            make(
                 .webex,
                 icon: "webex_icon",
                 pattern:
@@ -154,172 +179,170 @@ extension MeetingProviderRegistry {
             ),
 
             // Jitsi
-            desc(
+            make(
                 .jitsi,
                 icon: "jitsi_icon",
                 pattern: #"https?://meet\.jit\.si/[^\s]*"#,
                 nativeAppBrowserName: "Jitsi"),
 
             // Amazon Chime
-            desc(
+            make(
                 .chime,
                 icon: "amazon_chime_icon",
                 pattern: #"https?://([a-z0-9-.]+)?chime\.aws/[0-9]*"#),
 
             // Ring Central
-            desc(
+            make(
                 .ringcentral,
                 icon: "ringcentral_icon",
                 pattern: #"https?://([a-z0-9.]+)?ringcentral\.com/[^\s]*"#),
 
             // GoToMeeting
-            desc(
+            make(
                 .gotomeeting,
                 icon: "gotomeeting_icon",
                 pattern: #"https?://([a-z0-9.]+)?gotomeeting\.com/[^\s]*"#),
 
             // GoToWebinar
-            desc(
+            make(
                 .gotowebinar,
                 icon: "gotowebinar_icon",
                 pattern: #"https?://([a-z0-9.]+)?gotowebinar\.com/[^\s]*"#),
 
             // BlueJeans
-            desc(
+            make(
                 .bluejeans,
                 icon: "bluejeans_icon",
                 pattern: #"https?://([a-z0-9.]+)?bluejeans\.com/[^\s]*"#),
 
             // 8x8
-            desc(
+            make(
                 .eight_x_eight,
                 icon: "8x8_icon",
                 height: 8,
                 pattern: #"https?://8x8\.vc/[^\s]*"#),
 
             // Demio
-            desc(
+            make(
                 .demio,
                 icon: "demio_icon",
                 pattern: #"https?://event\.demio\.com/[^\s]*"#),
 
             // Join.me
-            desc(
+            make(
                 .join_me,
                 icon: "joinme_icon",
                 height: 10,
                 pattern: #"https?://join\.me/[^\s]*"#),
 
             // Whereby
-            desc(
+            make(
                 .whereby,
                 icon: "whereby_icon",
                 height: 18,
                 pattern: #"https?://whereby\.com/[^\s]*"#),
 
             // Uber Conference
-            desc(
+            make(
                 .uberconference,
                 icon: "uberconference_icon",
                 pattern: #"https?://uberconference\.com/[^\s]*"#),
 
             // Blizz (rebranded to TeamViewer Meeting)
-            desc(
+            make(
                 .blizz,
                 icon: "teamviewer_meeting_icon",
                 pattern: #"https?://go\.blizz\.com/[^\s]*"#),
 
             // TeamViewer Meeting
-            desc(
+            make(
                 .teamviewer_meeting,
                 icon: "teamviewer_meeting_icon",
                 pattern: #"https?://go\.teamviewer\.com/[^\s]*"#),
 
             // VSee
-            desc(
+            make(
                 .vsee,
                 icon: "vsee_icon",
                 pattern: #"https?://vsee\.com/[^\s]*"#),
 
             // StarLeaf
-            desc(
+            make(
                 .starleaf,
                 icon: "starleaf_icon",
                 pattern: #"https?://meet\.starleaf\.com/[^\s]*"#),
 
             // Tencent VooV
-            desc(
+            make(
                 .voov,
                 icon: "voov_icon",
                 pattern: #"https?://voovmeeting\.com/[^\s]*"#),
 
             // Facebook Workspace
-            desc(
+            make(
                 .facebook_workspace,
                 icon: "facebook_workplace_icon",
                 pattern: #"https?://([a-z0-9-.]+)?workplace\.com/groupcall/[^\s]+"#),
 
             // Lifesize
-            desc(
+            make(
                 .lifesize,
                 icon: "lifesize_icon",
                 pattern: #"https?://call\.lifesizecloud\.com/[^\s]*"#),
 
             // Skype
-            desc(
+            make(
                 .skype,
                 icon: "skype_icon",
                 pattern: #"https?://join\.skype\.com/[^\s]*"#),
 
             // Skype for Business
-            desc(
+            make(
                 .skype4biz,
                 icon: "skype_business_icon",
                 pattern: #"https?://meet\.lync\.com/[^\s]*"#),
 
             // Skype for Business (self-hosted)
-            desc(
+            make(
                 .skype4biz_selfhosted,
                 icon: "skype_business_icon",
                 pattern: #"https?:\/\/(meet|join)\.[^\s]*\/[a-z0-9.]+/meet\/[A-Za-z0-9./]+"#),
 
             // FaceTime (link-based)
-            desc(
+            make(
                 .facetime,
                 icon: "facetime_icon",
                 pattern: #"https://facetime\.apple\.com/join[^\s]*"#),
 
             // FaceTime Audio — no URL pattern, opened via facetime-audio://
-            desc(
-                .facetimeaudio,
-                icon: "facetime_icon"),
+            make(.facetimeaudio, icon: "facetime_icon"),
 
             // YouTube
-            desc(
+            make(
                 .youtube,
                 icon: "youtube_icon",
                 pattern: #"https?://((www|m)\.)?(youtube\.com|youtu\.be)/[^\s]*"#),
 
             // Vonage Meetings
-            desc(
+            make(
                 .vonageMeetings,
                 icon: "vonage_icon",
                 pattern: #"https?://meetings\.vonage\.com/[0-9]{9}"#),
 
             // Around (no custom icon)
-            desc(
+            make(
                 .around,
                 icon: "no_online_session",
                 pattern: #"https?://(meet\.)?around\.co/[^\s]*"#),
 
             // Jam (no custom icon)
-            desc(
+            make(
                 .jam,
                 icon: "no_online_session",
                 pattern: #"https?://jam\.systems/[^\s]*"#),
 
             // Discord (no custom icon)
-            desc(
+            make(
                 .discord,
                 icon: "no_online_session",
                 pattern:
@@ -327,48 +350,46 @@ extension MeetingProviderRegistry {
             ),
 
             // Blackboard Collaborate (no custom icon)
-            desc(
+            make(
                 .blackboard_collab,
                 icon: "no_online_session",
                 pattern: #"https?://us\.bbcollab\.com/[^\s]*"#),
 
             // Any Link — catch-all, no URL pattern
-            desc(
-                .url,
-                icon: "NSTouchBarOpenInBrowserTemplate"),
+            make(.url, icon: "NSTouchBarOpenInBrowserTemplate"),
 
             // CoScreen
-            desc(
+            make(
                 .coscreen,
                 icon: "coscreen_icon",
                 pattern: #"https?://join\.coscreen\.co/[^\s]*"#),
 
             // Vowel
-            desc(
+            make(
                 .vowel,
                 icon: "vowel_icon",
                 pattern: #"https?://([a-z0-9.]+)?vowel\.com/#/g/[^\s]*"#),
 
             // Zhumu
-            desc(
+            make(
                 .zhumu,
                 icon: "zhumu_icon",
                 pattern: #"https://welink\.zhumu\.com/j/[0-9]+?pwd=[a-zA-Z0-9]+"#),
 
             // Lark
-            desc(
+            make(
                 .lark,
                 icon: "lark_icon",
                 pattern: #"https://vc\.larksuite\.com/j/[0-9]+"#),
 
             // Feishu
-            desc(
+            make(
                 .feishu,
                 icon: "feishu_icon",
                 pattern: #"https://vc\.feishu\.cn/j/[0-9]+"#),
 
             // Vimeo
-            desc(
+            make(
                 .vimeo,
                 icon: "vimeo_icon",
                 pattern:
@@ -376,63 +397,63 @@ extension MeetingProviderRegistry {
             ),
 
             // oVice
-            desc(
+            make(
                 .ovice,
                 icon: "ovice_icon",
                 pattern: #"https://([a-z0-9-.]+)?ovice\.(in|com)/[^\s]*"#),
 
             // Luma (no custom icon)
-            desc(
+            make(
                 .luma,
                 icon: "no_online_session",
                 pattern: #"https://lu\.ma/join/[^\s]*"#),
 
             // Preply
-            desc(
+            make(
                 .preply,
                 icon: "preply_icon",
                 pattern: #"https://preply\.com/[^\s]*"#),
 
             // UserZoom
-            desc(
+            make(
                 .userzoom,
                 icon: "userzoom_icon",
                 pattern: #"https://go\.userzoom\.com/participate/[a-z0-9-]+"#),
 
             // Venue
-            desc(
+            make(
                 .venue,
                 icon: "venue_icon",
                 height: 4,
                 pattern: #"https://app\.venue\.live/app/[^\s]*"#),
 
             // Teemyco
-            desc(
+            make(
                 .teemyco,
                 icon: "teemyco_icon",
                 pattern: #"https://app\.teemyco\.com/room/[^\s]*"#),
 
             // Demodesk
-            desc(
+            make(
                 .demodesk,
                 icon: "demodesk_icon",
                 pattern: #"https://demodesk\.com/[^\s]*"#),
 
             // Zoho Cliq
-            desc(
+            make(
                 .zoho_cliq,
                 icon: "zoho_cliq_icon",
                 pattern: #"https://cliq\.zoho\.eu/meetings/[^\s]*"#),
 
             // Slack (huddle)
-            desc(
+            make(
                 .slack,
                 icon: "slack_icon",
                 pattern: #"https?://app\.slack\.com/huddle/[A-Za-z0-9./]+"#,
                 nativeAppBrowserName: "Slack"),
 
             // Gather
-            desc(
+            make(
                 .gather,
                 icon: "gather_icon",
                 pattern:
@@ -440,79 +461,79 @@ extension MeetingProviderRegistry {
             ),
 
             // Pop
-            desc(
+            make(
                 .pop,
                 icon: "pop_icon",
                 pattern: #"https?://pop\.com/j/[0-9-]+"#),
 
             // Chorus
-            desc(
+            make(
                 .chorus,
                 icon: "chorus_icon",
                 pattern: #"https?://go\.chorus\.ai/[^\s]+"#),
 
             // Gong
-            desc(
+            make(
                 .gong,
                 icon: "gong_icon",
                 pattern: #"https?://([a-z0-9-.]+)?join\.gong\.io/[^\s]+"#),
 
             // Livestorm
-            desc(
+            make(
                 .livestorm,
                 icon: "livestorm_icon",
                 pattern: #"https?://app\.livestorm\.com/p/[^\s]+"#),
 
             // Tuple
-            desc(
+            make(
                 .tuple,
                 icon: "tuple_icon",
                 pattern: #"https://tuple\.app/c/[^\s]*"#),
 
             // Pumble
-            desc(
+            make(
                 .pumble,
                 icon: "pumble_icon",
                 pattern: #"https?://meet\.pumble\.com/[a-z-]+"#),
 
             // Suit Conference
-            desc(
+            make(
                 .suitConference,
                 icon: "suit_conference_icon",
                 pattern: #"https?://([a-z0-9.]+)?conference\.istesuit\.com/[^\s]*+"#),
 
             // Doxy.me
-            desc(
+            make(
                 .doxyMe,
                 icon: "doxy_me_icon",
                 pattern: #"https://([a-z0-9.]+)?doxy\.me/[^\s]*"#),
 
             // Cal Video
-            desc(
+            make(
                 .calcom,
                 icon: "calcom_icon",
                 pattern: #"https?://app.cal\.com/video/[A-Za-z0-9./]+"#),
 
             // zm.page
-            desc(
+            make(
                 .zmPage,
                 icon: "zm_page_icon",
                 pattern: #"https?://([a-zA-Z0-9.]+)\.zm\.page"#),
 
             // LiveKit Meet
-            desc(
+            make(
                 .livekit,
                 icon: "livekit_icon",
                 pattern: #"https?://meet[a-zA-Z0-9.]*\.livekit\.io/rooms/[a-zA-Z0-9-#]+"#),
 
             // Meetecho
-            desc(
+            make(
                 .meetecho,
                 icon: "meetecho_icon",
                 pattern: #"https?://meetings\.conf\.meetecho\.com/.+"#),
 
             // StreamYard
-            desc(
+            make(
                 .streamyard,
                 icon: "streamyard_icon",
                 pattern:
@@ -520,16 +541,14 @@ extension MeetingProviderRegistry {
             ),
 
             // Riverside
-            desc(
+            make(
                 .riverside,
                 icon: "riverside_icon",
                 pattern: #"https?://riverside\.(com|fm)/studio/[^\s]*"#,
                 nativeAppBrowserName: "Riverside"),
 
             // Other — catch-all for custom regex matches, no URL pattern
-            desc(
-                .other,
-                icon: "no_online_session")
+            make(.other, icon: "no_online_session")
         ]
     }()
     // swiftlint:enable function_body_length

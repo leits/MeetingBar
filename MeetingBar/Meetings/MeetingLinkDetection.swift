@@ -86,14 +86,8 @@ public struct MeetingLink: Hashable, Equatable, Sendable {
     var url: URL
 }
 
-// All built-in regex patterns are owned by MeetingProviderRegistry.
-// Deprecated: use MeetingProviderRegistry.regexPatterns directly.
-// Kept for one release cycle so external callers (e.g. existing tests) continue to compile.
-@available(*, deprecated, renamed: "MeetingProviderRegistry.regexPatterns")
-let meetingLinkRegexPatterns: [MeetingServices: String] = MeetingProviderRegistry.regexPatterns
-
 private let meetingLinkRegexes: [MeetingServices: NSRegularExpression] =
-    MeetingProviderRegistry.regexPatterns.compactMapValues { pattern in
+    MeetingProvider.regexPatterns.compactMapValues { pattern in
         do {
             return try NSRegularExpression(pattern: pattern)
         } catch {

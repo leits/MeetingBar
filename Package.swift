@@ -38,13 +38,11 @@ let package = Package(
                 "Meetings/MeetingLinkDetection.swift",
                 "Meetings/MeetingLinkDetector.swift",
                 "Meetings/MeetingOpeningPolicy.swift",
+                "Meetings/MeetingProvider.swift",
                 // UI/StatusBar
                 "UI/StatusBar/StatusBarIconPolicy.swift",
                 "UI/StatusBar/StatusBarPresentation.swift",
-                "UI/StatusBar/StatusBarTitlePolicy.swift",
-                // Meetings/Domain — pure provider descriptors and registry.
-                "Meetings/Domain/MeetingProviderDescriptor.swift",
-                "Meetings/Domain/MeetingProviderRegistry.swift"
+                "UI/StatusBar/StatusBarTitlePolicy.swift"
             ]
         ),
         .testTarget(

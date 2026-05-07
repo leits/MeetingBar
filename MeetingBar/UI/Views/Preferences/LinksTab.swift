@@ -54,12 +54,16 @@ struct LinksTab: View {
                     }
                 }
 
-                ForEach(MeetingProviderRegistry.all.filter { $0.nativeAppBrowserName != nil }, id: \.id) { descriptor in
-                    let nativeBrowser = Browser(name: descriptor.nativeAppBrowserName!, path: "")
+                ForEach(
+                    MeetingProvider.all.filter { $0.nativeAppBrowserName != nil }, id: \.id
+                ) { provider in
+                    let nativeBrowser = Browser(name: provider.nativeAppBrowserName!, path: "")
                     Picker(
-                        selection: providerBrowserBinding(forID: descriptor.id),
-                        label: Text("preferences_services_link_service_title".loco(descriptor.displayName))
-                            .frame(width: 200, alignment: .leading)
+                        selection: providerBrowserBinding(forID: provider.id),
+                        label: Text(
+                            "preferences_services_link_service_title".loco(provider.displayName)
+                        )
+                        .frame(width: 200, alignment: .leading)
                     ) {
                         Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
                         Text(nativeBrowser.name).tag(nativeBrowser)

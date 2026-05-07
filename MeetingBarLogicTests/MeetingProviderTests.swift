@@ -1,8 +1,8 @@
 //
-//  MeetingProviderRegistryTests.swift
+//  MeetingProviderTests.swift
 //  MeetingBarLogicTests
 //
-//  Verifies that MeetingProviderRegistry is complete and consistent with
+//  Verifies that MeetingProvider catalogue is complete and consistent with
 //  the existing meetingLinkRegexPatterns dictionary so that migrating
 //  detection to the registry in Phase 3 PR 2 cannot silently regress.
 //
@@ -11,12 +11,12 @@ import XCTest
 
 @testable import MeetingBarLogic
 
-final class MeetingProviderRegistryTests: XCTestCase {
+final class MeetingProviderTests: XCTestCase {
     // MARK: - Completeness
 
     func testRegistryContainsAllMeetingServicesCases() {
         let missingCases = MeetingServices.allCases.filter {
-            MeetingProviderRegistry.descriptor(for: $0) == nil
+            MeetingProvider.provider(for: $0) == nil
         }
         XCTAssertTrue(
             missingCases.isEmpty,
@@ -24,25 +24,25 @@ final class MeetingProviderRegistryTests: XCTestCase {
     }
 
     func testDescriptorIDsAreUnique() {
-        let ids = MeetingProviderRegistry.all.map(\.id)
+        let ids = MeetingProvider.all.map(\.id)
         let uniqueIDs = Set(ids)
         XCTAssertEqual(ids.count, uniqueIDs.count, "Duplicate descriptor IDs found")
     }
 
     func testAllDescriptorsHaveNonEmptyID() {
-        for descriptor in MeetingProviderRegistry.all {
+        for descriptor in MeetingProvider.all {
             XCTAssertFalse(descriptor.id.isEmpty, "Empty ID for descriptor: \(descriptor)")
         }
     }
 
     func testAllDescriptorsHaveNonEmptyIconName() {
-        for descriptor in MeetingProviderRegistry.all {
+        for descriptor in MeetingProvider.all {
             XCTAssertFalse(descriptor.iconName.isEmpty, "Empty iconName for \(descriptor.id)")
         }
     }
 
     func testAllDescriptorsHavePositiveIconDimensions() {
-        for descriptor in MeetingProviderRegistry.all {
+        for descriptor in MeetingProvider.all {
             XCTAssertGreaterThan(descriptor.iconWidth, 0, "\(descriptor.id) iconWidth must be > 0")
             XCTAssertGreaterThan(
                 descriptor.iconHeight, 0, "\(descriptor.id) iconHeight must be > 0")
@@ -52,7 +52,7 @@ final class MeetingProviderRegistryTests: XCTestCase {
     // MARK: - Known descriptor values
 
     func testZoomDescriptor() {
-        let desc = MeetingProviderRegistry.descriptor(for: .zoom)
+        let desc = MeetingProvider.provider(for: .zoom)
         XCTAssertNotNil(desc)
         XCTAssertEqual(desc?.id, "Zoom")
         XCTAssertEqual(desc?.iconName, "zoom_icon")
@@ -61,7 +61,7 @@ final class MeetingProviderRegistryTests: XCTestCase {
     }
 
     func testGoogleMeetDescriptor() {
-        let desc = MeetingProviderRegistry.descriptor(for: .meet)
+        let desc = MeetingProvider.provider(for: .meet)
         XCTAssertNotNil(desc)
         XCTAssertEqual(desc?.iconName, "google_meet_icon")
         if let height = desc?.iconHeight {
@@ -72,51 +72,51 @@ final class MeetingProviderRegistryTests: XCTestCase {
     }
 
     func testPhoneDescriptorHasNoPattern() {
-        let desc = MeetingProviderRegistry.descriptor(for: .phone)
+        let desc = MeetingProvider.provider(for: .phone)
         XCTAssertNotNil(desc)
         XCTAssertNil(desc?.regexPattern)
     }
 
     func testFacetimeAudioDescriptorHasNoPattern() {
-        let desc = MeetingProviderRegistry.descriptor(for: .facetimeaudio)
+        let desc = MeetingProvider.provider(for: .facetimeaudio)
         XCTAssertNotNil(desc)
         XCTAssertNil(desc?.regexPattern)
     }
 
     func testUrlDescriptorHasNoPattern() {
-        let desc = MeetingProviderRegistry.descriptor(for: .url)
+        let desc = MeetingProvider.provider(for: .url)
         XCTAssertNotNil(desc)
         XCTAssertNil(desc?.regexPattern)
     }
 
     func testOtherDescriptorHasNoPattern() {
-        let desc = MeetingProviderRegistry.descriptor(for: .other)
+        let desc = MeetingProvider.provider(for: .other)
         XCTAssertNotNil(desc)
         XCTAssertNil(desc?.regexPattern)
     }
 
     func testVenueDescriptorHasSmallIconHeight() {
-        let desc = MeetingProviderRegistry.descriptor(for: .venue)
+        let desc = MeetingProvider.provider(for: .venue)
         XCTAssertEqual(desc?.iconHeight, 4)
     }
 
     func testStringLookupMatchesServiceLookup() {
         for service in MeetingServices.allCases {
-            let byService = MeetingProviderRegistry.descriptor(for: service)
-            let byString = MeetingProviderRegistry.descriptor(for: service.rawValue)
+            let byService = MeetingProvider.provider(for: service)
+            let byString = MeetingProvider.provider(for: service.rawValue)
             XCTAssertEqual(
                 byService, byString, "String/service lookup mismatch for \(service.rawValue)")
         }
     }
 
     func testDescriptorForUnknownStringReturnsNil() {
-        XCTAssertNil(MeetingProviderRegistry.descriptor(for: "__unknown_service__"))
+        XCTAssertNil(MeetingProvider.provider(for: "__unknown_service__"))
     }
 
     // MARK: - Regex validity
 
     func testAllPatternsAreValidRegexes() throws {
-        for descriptor in MeetingProviderRegistry.all {
+        for descriptor in MeetingProvider.all {
             guard let pattern = descriptor.regexPattern else { continue }
             XCTAssertNoThrow(
                 try NSRegularExpression(pattern: pattern),
