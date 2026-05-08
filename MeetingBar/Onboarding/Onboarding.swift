@@ -6,37 +6,33 @@
 //  Copyright © 2020 Andrii Leitsius. All rights reserved.
 //
 import Combine
-
 import SwiftUI
 
-enum Screens {
+/// Setup steps the onboarding flow walks through. Future steps (notification
+/// permission, post-setup recap, etc.) can be inserted without changing how
+/// individual screens drive the transition.
+enum OnboardingStep: Hashable {
     case welcome
-    case access
-    case calendars
+    case calendarAccess
+    case calendarSelection
 }
 
-class ViewRouter: ObservableObject {
-    let objectWillChange = PassthroughSubject<ViewRouter, Never>()
-
-    var currentScreen: Screens = .welcome {
-        didSet {
-            objectWillChange.send(self)
-        }
-    }
+@MainActor
+final class OnboardingRouter: ObservableObject {
+    @Published var currentStep: OnboardingStep = .welcome
 }
 
 struct OnboardingView: View {
-    @ObservedObject var viewRouter = ViewRouter()
+    @StateObject private var router = OnboardingRouter()
 
     var body: some View {
         VStack(alignment: .leading) {
-            if viewRouter.currentScreen == .welcome {
-                WelcomeScreen(viewRouter: viewRouter).padding()
-            }
-            if viewRouter.currentScreen == .access {
-                AccessScreen(viewRouter: viewRouter).padding()
-            }
-            if viewRouter.currentScreen == .calendars {
+            switch router.currentStep {
+            case .welcome:
+                WelcomeScreen(router: router).padding()
+            case .calendarAccess:
+                AccessScreen(router: router).padding()
+            case .calendarSelection:
                 CalendarsScreen().padding()
             }
         }.frame(maxWidth: .infinity, maxHeight: .infinity).padding()

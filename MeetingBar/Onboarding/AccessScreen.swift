@@ -11,7 +11,7 @@ import EventKit
 import SwiftUI
 
 struct AccessScreen: View {
-    @ObservedObject var viewRouter: ViewRouter
+    @ObservedObject var router: OnboardingRouter
     @EnvironmentObject var onboardingHandler: OnboardingHandler
     @Default(.eventStoreProvider) var eventStoreProvider
     @State var providerSelected = false
@@ -105,6 +105,6 @@ struct AccessScreen: View {
         // EventManager.changeEventStoreProvider inside onProviderSelected;
         // no separate Defaults write needed here.
         await onboardingHandler.onProviderSelected(provider)
-        viewRouter.currentScreen = .calendars
+        router.currentStep = .calendarSelection
     }
 }

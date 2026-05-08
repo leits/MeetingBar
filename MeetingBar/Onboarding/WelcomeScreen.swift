@@ -12,7 +12,7 @@ import Defaults
 import KeyboardShortcuts
 
 struct WelcomeScreen: View {
-    @ObservedObject var viewRouter: ViewRouter
+    @ObservedObject var router: OnboardingRouter
 
     var body: some View {
         VStack {
@@ -44,7 +44,7 @@ struct WelcomeScreen: View {
             Divider()
             HStack {
                 Spacer()
-                Button(action: { self.viewRouter.currentScreen = .access }) {
+                Button(action: { self.router.currentStep = .calendarAccess }) {
                     Text("welcome_screen_setup_calendar_title".loco())
                     Image(nsImage: NSImage(named: NSImage.goForwardTemplateName)!)
                 }
