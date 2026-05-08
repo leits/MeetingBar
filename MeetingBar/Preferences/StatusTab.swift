@@ -3,8 +3,6 @@
 //  MeetingBar
 //
 
-import AppKit
-import Defaults
 import SwiftUI
 
 struct StatusTab: View {
@@ -89,28 +87,10 @@ private struct DiagnosticsSection: View {
                 .foregroundStyle(.secondary)
             Spacer()
             Button("preferences_status_copy_diagnostics".loco()) {
-                copyDiagnostics()
+                DiagnosticsClipboard.copy(eventManager: eventManager)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(8)
-    }
-
-    private func copyDiagnostics() {
-        let info = Bundle.main.infoDictionary ?? [:]
-        let settings = AppSettings.current
-        let context = DiagnosticsContext(
-            appVersion: info["CFBundleShortVersionString"] as? String ?? "?",
-            buildNumber: info["CFBundleVersion"] as? String ?? "?",
-            osVersion: ProcessInfo.processInfo.operatingSystemVersionString,
-            provider: settings.calendar.eventStoreProvider,
-            selectedCalendarCount: settings.calendar.selectedCalendarIDs.count,
-            totalCalendarCount: eventManager.calendars.count,
-            visibleEventCount: eventManager.events.count,
-            health: eventManager.providerHealth
-        )
-        let pasteboard = NSPasteboard.general
-        pasteboard.clearContents()
-        pasteboard.setString(DiagnosticsReport.text(from: context), forType: .string)
     }
 }
