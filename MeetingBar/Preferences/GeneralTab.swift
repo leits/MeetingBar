@@ -139,7 +139,8 @@ struct PatronageAppSection: View {
                 VStack(alignment: .center) {
                     Image("appIconForAbout").resizable().frame(width: 120.0, height: 120.0)
                     Text("MeetingBar").font(.system(size: 20)).bold()
-                    Text(Defaults[.appVersion]).foregroundColor(.gray)
+                    Text(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "")
+                        .foregroundColor(.gray)
                 }.lineLimit(1).minimumScaleFactor(0.5).frame(minWidth: 0, maxWidth: .infinity)
                 VStack {
                     Spacer()

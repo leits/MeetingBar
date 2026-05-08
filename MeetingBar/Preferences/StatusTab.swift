@@ -98,12 +98,13 @@ private struct DiagnosticsSection: View {
 
     private func copyDiagnostics() {
         let info = Bundle.main.infoDictionary ?? [:]
+        let settings = AppSettings.current
         let context = DiagnosticsContext(
             appVersion: info["CFBundleShortVersionString"] as? String ?? "?",
             buildNumber: info["CFBundleVersion"] as? String ?? "?",
             osVersion: ProcessInfo.processInfo.operatingSystemVersionString,
-            provider: Defaults[.eventStoreProvider],
-            selectedCalendarCount: Defaults[.selectedCalendarIDs].count,
+            provider: settings.calendar.eventStoreProvider,
+            selectedCalendarCount: settings.calendar.selectedCalendarIDs.count,
             totalCalendarCount: eventManager.calendars.count,
             visibleEventCount: eventManager.events.count,
             health: eventManager.providerHealth
