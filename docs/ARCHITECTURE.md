@@ -4,7 +4,6 @@ This document is the contributor-facing map of the codebase. It complements [`RO
 
 If anything below disagrees with the actual code, the code wins — and the doc needs a fix.
 
-For the Preferences/Onboarding UI migration, see [`PREFERENCES_ONBOARDING_REDESIGN_PLAN.md`](PREFERENCES_ONBOARDING_REDESIGN_PLAN.md).
 
 ---
 

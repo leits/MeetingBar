@@ -84,7 +84,7 @@ Support it on [Patreon](https://www.patreon.com/meetingbar) or via in-app purcha
 
 ## Credits
 
-MeetingBar is **stable** and in **active development** by [leits](https://github.com/leits). Written in Swift 5.0.
+MeetingBar is **stable** and in **active development** by [leits](https://github.com/leits). Written in Swift 6.0, macOS 12+.
 
 MeetingBar also uses these resources:
 
