@@ -11,8 +11,7 @@ providers, and `AppModel` land.
 
 Related documents:
 
-- target architecture: [`ARCHITECTURE_UPDATE.md`](ARCHITECTURE_UPDATE.md);
-- execution plan: [`ARCHITECTURE_MIGRATION_PLAN.md`](ARCHITECTURE_MIGRATION_PLAN.md);
+- architecture: [`ARCHITECTURE.md`](ARCHITECTURE.md);
 - product roadmap: [`../ROADMAP.md`](../ROADMAP.md).
 
 ---

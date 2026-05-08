@@ -4,7 +4,7 @@ This document is the contributor-facing map of the codebase. It complements [`RO
 
 If anything below disagrees with the actual code, the code wins — and the doc needs a fix.
 
-For the proposed next architecture, see [`ARCHITECTURE_UPDATE.md`](ARCHITECTURE_UPDATE.md). For the Preferences/Onboarding UI migration, see [`PREFERENCES_ONBOARDING_REDESIGN_PLAN.md`](PREFERENCES_ONBOARDING_REDESIGN_PLAN.md). This file describes the current code; the update documents describe the migration target.
+For the Preferences/Onboarding UI migration, see [`PREFERENCES_ONBOARDING_REDESIGN_PLAN.md`](PREFERENCES_ONBOARDING_REDESIGN_PLAN.md).
 
 ---
 
@@ -65,13 +65,10 @@ The product principle is reliability first: **show the correct meeting, stay fre
 ## Directory map
 
 ```
-MeetingBar/
+MeetingBar/                         (~65 .swift files)
 ├── App/                            — process lifecycle, OS integration
-│   ├── AppDelegate.swift           — @main; wires LifecycleObserver + URLHandler + AppModel
-│   ├── AppAction.swift             — sealed enum of all user/system intents
-│   ├── AppEnvironment.swift        — side-effect commands keyed by AppAction
-│   ├── AppModel.swift              — @MainActor ObservableObject owning AppState
-│   ├── AppState.swift              — value-type snapshot of app runtime state
+│   ├── AppDelegate.swift           — @main; composition root; wires LifecycleObserver, URLHandler, AppModel
+│   ├── AppModel.swift              — @MainActor ObservableObject + AppState + AppAction + AppEnvironment
 │   ├── AppIntent.swift             — Shortcuts integration
 │   ├── AppStore.swift              — IAP via SwiftyStoreKit
 │   ├── LifecycleObserver.swift     — screen-lock / wake / timezone / day-change notifications
@@ -86,8 +83,7 @@ MeetingBar/
 │   ├── EventFiltering+MeetingBar.swift
 │   ├── EventSelection.swift        — pick the "next" event from a list [SPM]
 │   ├── EventSelection+MeetingBar.swift
-│   ├── MBEvent.swift               — cross-provider event
-│   ├── MBEvent+Helpers.swift
+│   ├── MBEvent.swift               — cross-provider event + filtered() / nextEvent() helpers
 │   ├── MBCalendar.swift            — cross-provider calendar
 │   ├── ProviderHealth.swift        — auth/stale/error/ok
 │   └── Providers/
@@ -99,15 +95,10 @@ MeetingBar/
 │
 ├── Meetings/                       — meeting URL detection, opening, services catalog
 │   ├── MeetingProvider.swift       — struct + static all (single source of provider metadata) [SPM]
-│   ├── MeetingServices.swift       — enum + localization + icon helpers + create-meeting URLs
-│   ├── MeetingLinkCandidate.swift  — scored URL + source priority [SPM]
-│   ├── MeetingLinkDetection.swift  — extraction helpers + cleanup [SPM]
-│   ├── MeetingLinkDetector.swift   — orchestrates URL extraction [SPM]
-│   ├── MeetingOpener.swift         — runs join script + opens meeting URL
-│   ├── MeetingOpeningPolicy.swift  — open-in-browser vs open-in-app logic [SPM]
-│   └── Opening/
-│       ├── MeetingOpenStrategy.swift       — per-provider URL transforms (Zoom, Teams, Slack, …) + openStrategy(for:) lookup
-│       └── MeetingOpenPreferencesMigration.swift — migrates old per-provider browser prefs
+│   ├── MeetingServices.swift       — enum extensions: localization, icons, opening, create-meeting URLs
+│   ├── MeetingLinkDetector.swift   — MeetingServices enum + MeetingLink + helpers + Candidate + OpeningPolicy [SPM]
+│   ├── MeetingOpener.swift         — runs join script + opens URL + per-provider OpenStrategy structs
+│   └── MeetingOpenPreferencesMigration.swift — migrates old per-provider browser prefs
 │
 ├── Notifications/                  — UN notification scheduling + actions
 │   ├── EventActionPolicy.swift     — should fullscreen / auto-join / script fire? [SPM]
@@ -117,18 +108,16 @@ MeetingBar/
 │   ├── NotificationCenterDelegate.swift  — UNUserNotificationCenterDelegate
 │   └── NotificationSetup.swift           — requests UN authorization
 │
+├── Settings/
+│   └── AppSettings.swift           — value-type settings groups + AppSettings.current factory (single Defaults boundary)
+│
 ├── UI/
-│   ├── StatusBar/                  — menu bar item, menu construction, policies
-│   │   ├── StatusBarItemController.swift
-│   │   ├── MenuBuilder.swift
-│   │   ├── StatusBarMenuState.swift        — value type carrying all menu-building inputs
-│   │   ├── StatusBarMenuStateFactory.swift — builds StatusBarMenuState from AppModel
-│   │   ├── StatusBarPresentation.swift    — value types + StatusBarPresentationPolicy + StatusBarPresenter [SPM]
-│   │   ├── StatusBarPresentation+MeetingBar.swift
-│   │   ├── StatusBarTitlePolicy.swift     — title text formatting [SPM]
-│   │   ├── StatusBarTitlePolicy+MeetingBar.swift
-│   │   ├── StatusBarIconPolicy.swift      — icon selection [SPM]
-│   │   └── StatusBarIconPolicy+MeetingBar.swift
+│   ├── StatusBar/                  — menu bar item, menu construction, presentation
+│   │   ├── StatusBarItemController.swift   — owns NSStatusItem, render only
+│   │   ├── MenuBuilder.swift               — builds NSMenu from StatusBarMenuState (zero Defaults reads)
+│   │   ├── StatusBarMenuState.swift        — value type + .make(from:) factory
+│   │   ├── StatusBarPresentation.swift     — Presentation + Title + Icon policies and Presenter [SPM]
+│   │   └── StatusBarPresentation+MeetingBar.swift — Defaults adapters for all three policies
 │   ├── Views/Preferences/          — SwiftUI tabs (General/Appearance/…/Status)
 │   ├── Views/Onboarding/           — multi-screen onboarding
 │   ├── Views/FullscreenNotification.swift

@@ -89,11 +89,7 @@ Touching these requires extra care, tests around behavior, and a small focused P
 
 ### Architecture map at a glance
 
-Current architecture map: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
-
-Target architecture for 5.0: [`docs/ARCHITECTURE_UPDATE.md`](docs/ARCHITECTURE_UPDATE.md).
-
-Execution plan: [`docs/ARCHITECTURE_MIGRATION_PLAN.md`](docs/ARCHITECTURE_MIGRATION_PLAN.md).
+Architecture map: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). The 5.0 architecture migration is complete — that document describes the current code.
 
 Preferences/onboarding UI migration plan: [`docs/PREFERENCES_ONBOARDING_REDESIGN_PLAN.md`](docs/PREFERENCES_ONBOARDING_REDESIGN_PLAN.md).
 
@@ -122,7 +118,7 @@ Highlights of what is in 4.12:
 
 ### 5.0 — architecture and modernization
 
-Single major release. It folds the work that older notes called "4.13 / 4.14 / 4.15" into one consistent architecture rework. The architecture target is documented in `docs/ARCHITECTURE_UPDATE.md`; the execution plan is documented in `docs/ARCHITECTURE_MIGRATION_PLAN.md`.
+Single major release. It folds the work that older notes called "4.13 / 4.14 / 4.15" into one consistent architecture rework. The migration is complete — see [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the resulting layout.
 
 In scope:
 
@@ -523,8 +519,7 @@ Cosmetic / setting-sprawl holds:
 Documentation / process:
 
 - `docs/ARCHITECTURE.md` — current code map.
-- `docs/ARCHITECTURE_UPDATE.md` — target 5.0 architecture.
-- `docs/ARCHITECTURE_MIGRATION_PLAN.md` — execution plan, coverage strategy, PR sequence, and stop conditions.
+- `docs/PREFERENCES_ONBOARDING_REDESIGN_PLAN.md` — Preferences/Onboarding UI migration.
 
 ---
 
@@ -629,7 +624,7 @@ In execution order:
 4. **Phase 3 — `MeetingLinkCandidate` model.** Larger and risky; start with the candidate model and tests, leave the integration for a follow-up PR.
 5. **Phase 5 — `StatusBarPresenter` extraction.** Last because it touches the highest-traffic UI path.
 
-Architecture migration tasks should follow `docs/ARCHITECTURE_MIGRATION_PLAN.md`: coverage baseline, test harnesses, settings boundary, meeting provider registry, calendar provider separation, notification split, AppModel/coordinators, status bar renderer, then file layout cleanup. Do not rush `MenuBarExtra`, `@Observable`, or a deployment target bump as architecture side effects.
+The 5.0 architecture migration is complete (`AppModel`, `AppSettings.current`, `MeetingProvider` catalogue, notification split, status-bar presenter, settings/notification/calendar/meetings consolidation). Future architecture work should preserve those boundaries and avoid rushing `MenuBarExtra`, `@Observable`, or a deployment target bump as architecture side effects.
 
 ---
 
