@@ -111,6 +111,8 @@ MeetingBar/                         (~65 .swift files)
 ├── Settings/
 │   └── AppSettings.swift           — value-type settings groups + AppSettings.current factory (single Defaults boundary)
 │
+├── Preferences/                    — SwiftUI Settings window tabs (General/Appearance/…/Status)
+├── Onboarding/                     — multi-screen first-launch flow
 ├── UI/
 │   ├── StatusBar/                  — menu bar item, menu construction, presentation
 │   │   ├── StatusBarItemController.swift   — owns NSStatusItem, render only
@@ -118,10 +120,7 @@ MeetingBar/                         (~65 .swift files)
 │   │   ├── StatusBarMenuState.swift        — value type + .make(from:) factory
 │   │   ├── StatusBarPresentation.swift     — Presentation + Title + Icon policies and Presenter [SPM]
 │   │   └── StatusBarPresentation+MeetingBar.swift — Defaults adapters for all three policies
-│   ├── Views/Preferences/          — SwiftUI tabs (General/Appearance/…/Status)
-│   ├── Views/Onboarding/           — multi-screen onboarding
-│   ├── Views/FullscreenNotification.swift
-│   └── Views/Changelog/
+│   └── Views/                      — remaining SwiftUI views (DayTimelineView, FullscreenNotification, Changelog/)
 │
 ├── Utilities/
 │   ├── Constants.swift
