@@ -284,6 +284,7 @@ struct StatusBarTitleText: Equatable {
 }
 
 enum StatusBarTitlePolicy {
+    // swiftlint:disable:next function_parameter_count
     static func text(
         eventTitle rawTitle: String?,
         startDate: Date,

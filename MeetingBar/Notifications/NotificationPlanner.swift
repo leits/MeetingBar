@@ -140,6 +140,7 @@ enum NotificationPlanner {
         return true
     }
 
+    // swiftlint:disable:next function_parameter_count
     private static func appendIfDue(
         _ kind: NotificationKind,
         anchor: Date,

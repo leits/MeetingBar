@@ -75,6 +75,7 @@ extension EKEventStore: AuthenticatedEventStore {
     }
 }
 
+// swiftlint:disable:next cyclomatic_complexity
 private func fetchEventsOffMain(knownCalendars: [MBCalendar], dateFrom: Date, dateTo: Date) -> [MBEvent] {
     let selectedCalendars = EKEventStore.shared.calendars(for: .event).filter { knownCalendars.map(\.id).contains($0.calendarIdentifier) }
 

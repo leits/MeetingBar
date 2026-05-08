@@ -155,9 +155,11 @@ public class EventManager: ObservableObject {
         // flatMap(maxPublishers: .max(1)) serializes fetches so at most one runs
         // at a time; if another trigger arrives during a fetch, it queues exactly once.
         trigger
-            .flatMap(maxPublishers: .max(1)) { [weak self] _ -> AnyPublisher<([MBCalendar], [MBEvent], ProviderHealth), Never> in
+            .flatMap(maxPublishers: .max(1)) { [weak self] _ -> AnyPublisher<RefreshResult, Never> in
                 guard let self = self else {
-                    return Just(([], [], ProviderHealth())).eraseToAnyPublisher()
+                    return Just(
+                        RefreshResult(calendars: [], events: [], health: ProviderHealth())
+                    ).eraseToAnyPublisher()
                 }
                 // Capture current state on the main thread before entering the async Task.
                 // On failure we republish these so the UI keeps showing last known data.
@@ -165,14 +167,14 @@ public class EventManager: ObservableObject {
                 let preservedEvents = self.events
                 let previousHealth = self.providerHealth
                 return Deferred {
-                    Future<([MBCalendar], [MBEvent], ProviderHealth), Never> { promise in
+                    Future<RefreshResult, Never> { promise in
                         Task {
                             let attempted = Date()
                             do {
                                 let cals = try await self.repository.fetchAllCalendars()
                                 let evts = try await self.fetchEvents(fromCalendars: cals)
                                 let health = ProviderHealth.success(attempted: attempted)
-                                promise(.success((cals, evts, health)))
+                                promise(.success(RefreshResult(calendars: cals, events: evts, health: health)))
                             } catch {
                                 NSLog("EventManager refresh failed: \(error)")
                                 let health = ProviderHealth.failure(
@@ -180,7 +182,8 @@ public class EventManager: ObservableObject {
                                     attempted: attempted,
                                     error: error
                                 )
-                                promise(.success((preservedCalendars, preservedEvents, health)))
+                                promise(.success(RefreshResult(
+                                    calendars: preservedCalendars, events: preservedEvents, health: health)))
                             }
                         }
                     }
@@ -188,12 +191,20 @@ public class EventManager: ObservableObject {
                 .eraseToAnyPublisher()
             }
             .receive(on: RunLoop.main)
-            .sink { [weak self] cals, evts, health in
-                self?.calendars = cals
-                self?.events = evts
-                self?.providerHealth = health
+            .sink { [weak self] result in
+                self?.calendars = result.calendars
+                self?.events = result.events
+                self?.providerHealth = result.health
             }
             .store(in: &cancellables)
+    }
+
+    /// Result of a single refresh cycle. On failure, `calendars` and `events`
+    /// are the preserved last-known-good values so the UI keeps showing them.
+    private struct RefreshResult {
+        let calendars: [MBCalendar]
+        let events: [MBEvent]
+        let health: ProviderHealth
     }
 
     #if DEBUG

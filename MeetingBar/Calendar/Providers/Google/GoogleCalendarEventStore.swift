@@ -393,6 +393,7 @@ final class GCEventStore: NSObject,
 
     // MARK: - Google JSON ➜ MBEvent converter
     enum GCParser {
+        // swiftlint:disable:next cyclomatic_complexity
         static func event(from item: [String: Any],
                           calendar: MBCalendar) -> MBEvent? {
             guard let eventID = item["id"] as? String else {

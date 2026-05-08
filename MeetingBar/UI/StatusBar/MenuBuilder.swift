@@ -287,6 +287,12 @@ struct MenuBuilder {
 
     // MARK: - Private helpers --------------------------------------------------
 
+    // 360-line render that combines title formatting, participation styling,
+    // past/now/future state, attendee filtering, submenu population, and the
+    // alternate-link/Fantastical hooks. Decomposing it is a worthwhile
+    // follow-up but high-risk to do speculatively — every branch is tested by
+    // MenuBuilderEventItemTests.
+    // swiftlint:disable:next cyclomatic_complexity
     private func makeEventItem(_ event: MBEvent) -> NSMenuItem? {
         let eventStatus = event.status
 

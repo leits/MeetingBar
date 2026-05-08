@@ -7,7 +7,7 @@
 //  Feature logic should consume an `AppSettings` (or sub-struct) by value.
 //
 
-@preconcurrency import Defaults
+import Defaults
 import Foundation
 
 // MARK: - Sub-structs
