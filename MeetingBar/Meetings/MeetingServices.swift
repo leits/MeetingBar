@@ -10,6 +10,10 @@ import AppKit
 import Defaults
 import Foundation
 
+// `MeetingServices` enum lives in `MeetingLinkDetector.swift` so it can be
+// reached from the hostless logic target. This file only carries the
+// production-side extensions (icons, localisation, opening, create-meeting).
+
 extension MeetingServices {
     var localizedValue: String {
         switch self {

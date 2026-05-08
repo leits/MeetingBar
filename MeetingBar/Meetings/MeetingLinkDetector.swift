@@ -2,8 +2,295 @@
 //  MeetingLinkDetector.swift
 //  MeetingBar
 //
+//  Owns everything related to extracting a meeting URL from an event:
+//  the public `MeetingLink` value type, regex catalogue compiled from
+//  `MeetingProvider.all`, helper functions for cleaning Outlook SafeLinks
+//  and stripping HTML notes, the candidate ranking policy, and the
+//  detector that orchestrates them.
+//
 
+import AppKit
 import Foundation
+
+// MARK: - Public value types
+
+/// Catalogue of meeting service identifiers used as the primary key for
+/// detection regexes, icons, browser preferences, and bookmarks. Provider
+/// metadata (regex, icon, native-app browser) lives on `MeetingProvider.all`.
+enum MeetingServices: String, Codable, CaseIterable, Sendable {
+    case phone = "Phone"
+    case meet = "Google Meet"
+    case hangouts = "Google Hangouts"
+    case zoom = "Zoom"
+    case zoom_native = "Zoom native"
+    case teams = "Microsoft Teams"
+    case webex = "Cisco Webex"
+    case jitsi = "Jitsi"
+    case chime = "Amazon Chime"
+    case ringcentral = "Ring Central"
+    case gotomeeting = "GoToMeeting"
+    case gotowebinar = "GoToWebinar"
+    case bluejeans = "BlueJeans"
+    case eight_x_eight = "8x8"
+    case demio = "Demio"
+    case join_me = "Join.me"
+    case zoomgov = "ZoomGov"
+    case whereby = "Whereby"
+    case uberconference = "Uber Conference"
+    case blizz = "Blizz"
+    case teamviewer_meeting = "Teamviewer Meeting"
+    case vsee = "VSee"
+    case starleaf = "StarLeaf"
+    case duo = "Google Duo"
+    case voov = "Tencent VooV"
+    case facebook_workspace = "Facebook Workspace"
+    case lifesize = "Lifesize"
+    case skype = "Skype"
+    case skype4biz = "Skype For Business"
+    case skype4biz_selfhosted = "Skype For Business (SH)"
+    case facetime = "Facetime"
+    case pop = "Pop"
+    case chorus = "Chorus"
+    case gong = "Gong"
+    case livestorm = "Livestorm"
+    case facetimeaudio = "Facetime Audio"
+    case youtube = "YouTube"
+    case vonageMeetings = "Vonage Meetings"
+    case meetStream = "Google Meet Stream"
+    case around = "Around"
+    case jam = "Jam"
+    case discord = "Discord"
+    case blackboard_collab = "Blackboard Collaborate"
+    case url = "Any Link"
+    case coscreen = "CoScreen"
+    case vowel = "Vowel"
+    case zhumu = "Zhumu"
+    case lark = "Lark"
+    case feishu = "Feishu"
+    case vimeo = "Vimeo"
+    case ovice = "oVice"
+    case luma = "Luma"
+    case preply = "Preply"
+    case userzoom = "UserZoom"
+    case venue = "Venue"
+    case teemyco = "Teemyco"
+    case demodesk = "Demodesk"
+    case zoho_cliq = "Zoho Cliq"
+    case slack = "Slack"
+    case gather = "Gather"
+    case reclaim = "Reclaim.ai"
+    case tuple = "Tuple"
+    case pumble = "Pumble"
+    case suitConference = "Suit Conference"
+    case doxyMe = "Doxy.me"
+    case calcom = "Cal Video"
+    case zmPage = "zm.page"
+    case livekit = "LiveKit Meet"
+    case meetecho = "Meetecho"
+    case streamyard = "StreamYard"
+    case riverside = "Riverside"
+    case other = "Other"
+}
+
+public struct MeetingLink: Hashable, Equatable, Sendable {
+    let service: MeetingServices?
+    var url: URL
+}
+
+/// Where a meeting link candidate was extracted from. Higher-priority sources
+/// are preferred when more than one candidate is found for an event.
+enum MeetingLinkSource: Hashable, Sendable {
+    /// Structured conference data exposed by the provider — e.g. Google
+    /// Calendar's `conferenceData.entryPoints[type=video]`. Highest priority
+    /// because the provider has explicitly tagged this URL as the meeting.
+    case providerConferenceData
+
+    /// The event's explicit `url` field (EventKit `EKEvent.url`, Google
+    /// Calendar `event.hangoutLink` style fields surfaced as a URL).
+    case eventURL
+
+    /// The event's location field — sometimes hosts paste the meeting URL
+    /// here when there is no structured conference data.
+    case location
+
+    /// Free-text notes / description.
+    case notes
+
+    /// Notes field after HTML tag / entity stripping. Lower priority than
+    /// raw `notes` because stripping can occasionally normalise legitimate
+    /// links into a less canonical form.
+    case strippedHTMLNotes
+
+    /// User-provided regex match. Last-resort fallback so a custom regex
+    /// cannot override a real provider conference URL.
+    case customRegex
+
+    /// Numeric priority — larger wins. Gaps allow inserting new sources
+    /// later without renumbering existing ones.
+    var priority: Int {
+        switch self {
+        case .providerConferenceData: return 60
+        case .eventURL: return 50
+        case .location: return 40
+        case .notes: return 30
+        case .strippedHTMLNotes: return 20
+        case .customRegex: return 10
+        }
+    }
+}
+
+/// A single meeting-link candidate extracted from one source field of an event.
+struct MeetingLinkCandidate: Hashable, Sendable {
+    let url: URL
+    let service: MeetingServices?
+    let source: MeetingLinkSource
+}
+
+enum MeetingLinkCandidatePolicy {
+    /// Picks the best candidate for an event:
+    ///
+    /// 1. by source priority — provider conference data beats notes;
+    /// 2. within the same source, the longer URL wins so a Zoom link that
+    ///    carries a password/token suffix beats a truncated form of the
+    ///    same URL found in another source slot.
+    static func best(from candidates: [MeetingLinkCandidate]) -> MeetingLinkCandidate? {
+        candidates.max { lhs, rhs in
+            if lhs.source.priority != rhs.source.priority {
+                return lhs.source.priority < rhs.source.priority
+            }
+            return lhs.url.absoluteString.count < rhs.url.absoluteString.count
+        }
+    }
+
+    /// Returns candidates ranked best-to-worst, deduplicated by URL string.
+    /// Useful for a "open with another link" menu without re-running detection.
+    static func ranked(from candidates: [MeetingLinkCandidate]) -> [MeetingLinkCandidate] {
+        let unique = Dictionary(grouping: candidates, by: { $0.url.absoluteString })
+            .compactMapValues { best(from: $0) }
+            .values
+        return Array(unique).sorted { lhs, rhs in
+            if lhs.source.priority != rhs.source.priority {
+                return lhs.source.priority > rhs.source.priority
+            }
+            return lhs.url.absoluteString.count > rhs.url.absoluteString.count
+        }
+    }
+}
+
+// MARK: - Regex catalogue and text helpers
+
+private let meetingLinkRegexes: [MeetingServices: NSRegularExpression] =
+    MeetingProvider.regexPatterns.compactMapValues { pattern in
+        do {
+            return try NSRegularExpression(pattern: pattern)
+        } catch {
+            NSLog("Ignoring invalid built-in meeting link regex '\(pattern)': \(error)")
+            return nil
+        }
+    }
+
+private let outlookSafeLinkRegex = try? NSRegularExpression(
+    pattern: #"https://[\S]+\.safelinks\.protection\.outlook\.com/[\S]+url=([\S]*)"#)
+
+func regex(for service: MeetingServices) -> NSRegularExpression? {
+    meetingLinkRegexes[service]
+}
+
+func detectMeetingLink(_ rawText: String, customRegexes: [String] = []) -> MeetingLink? {
+    let text = cleanupOutlookSafeLinks(rawText: rawText)
+
+    for pattern in customRegexes {
+        if let regex = try? NSRegularExpression(pattern: pattern),
+            let link = getMatch(text: text, regex: regex),
+            let url = URL(string: link) {
+            return MeetingLink(service: MeetingServices.other, url: url)
+        }
+    }
+
+    if text.contains("://") {
+        for (svc, regex) in meetingLinkRegexes {
+            if let match = regex.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)),
+                let range = Range(match.range, in: text),
+                let url = URL(string: String(text[range])) {
+                return MeetingLink(service: svc, url: url)
+            }
+        }
+    }
+    return nil
+}
+
+func cleanupOutlookSafeLinks(rawText: String) -> String {
+    guard let outlookSafeLinkRegex else { return rawText }
+
+    var text = rawText
+    autoreleasepool {
+        var links = outlookSafeLinkRegex.matches(
+            in: text, range: NSRange(text.startIndex..., in: text))
+        if !links.isEmpty {
+            repeat {
+                let urlRange = links[0].range(at: 1)
+                let safeLinks = links.compactMap { match -> String? in
+                    guard let range = Range(match.range, in: text) else { return nil }
+                    return String(text[range])
+                }
+                if !safeLinks.isEmpty {
+                    let serviceURL = (text as NSString).substring(with: urlRange)
+                    if let decodedServiceURL = serviceURL.removingPercentEncoding {
+                        text = text.replacingOccurrences(of: safeLinks[0], with: decodedServiceURL)
+                    }
+                }
+                links = outlookSafeLinkRegex.matches(
+                    in: text, range: NSRange(text.startIndex..., in: text))
+            } while !links.isEmpty
+        }
+    }
+    return text
+}
+
+func getMatch(text: String, regex: NSRegularExpression) -> String? {
+    var match: String?
+
+    autoreleasepool {
+        let resultsIterator = regex.matches(in: text, range: NSRange(text.startIndex..., in: text))
+        let resultsMap = resultsIterator.compactMap { result -> String? in
+            guard let range = Range(result.range, in: text) else { return nil }
+            return String(text[range])
+        }
+
+        if !resultsMap.isEmpty {
+            match = resultsMap[0]
+        }
+    }
+
+    return match
+}
+
+func htmlTagsStrippedForMeetingLinks(_ text: String) -> String {
+    if !text.containsHTMLTags {
+        return text
+    }
+
+    return autoreleasepool {
+        guard let dataUTF16 = text.data(using: .utf16) else {
+            return text
+        }
+
+        let attributedString = NSAttributedString(
+            html: dataUTF16,
+            options: [.documentType: NSAttributedString.DocumentType.html],
+            documentAttributes: nil
+        )
+        return attributedString?.string ?? text
+    }
+}
+
+extension String {
+    fileprivate var containsHTMLTags: Bool {
+        range(of: #"</?[A-z][ \t\S]*>"#, options: .regularExpression) != nil
+    }
+}
+
+// MARK: - Detector
 
 /// Picks the best meeting link from an event's available fields.
 ///
@@ -229,5 +516,39 @@ enum MeetingLinkDetector {
         queryItems.append(URLQueryItem(name: "authuser", value: authAccount))
         components.queryItems = queryItems
         return components.url
+    }
+}
+
+// MARK: - Opening policy
+
+/// Pure decision: given an event with optional meeting link and event URL,
+/// what should we do when the user clicks "join"? Side effects (running the
+/// script, calling NSWorkspace.open) are performed by `MeetingOpener`.
+struct MeetingOpeningEvent: Equatable {
+    let title: String
+    let meetingLink: MeetingLink?
+    let eventURL: URL?
+}
+
+enum MeetingOpeningAction: Equatable {
+    case openMeetingLink(MeetingLink, runJoinScript: Bool)
+    case openEventURL(URL)
+    case notifyMissingLink(title: String)
+}
+
+enum MeetingOpeningPolicy {
+    static func action(
+        for event: MeetingOpeningEvent,
+        runJoinEventScript: Bool
+    ) -> MeetingOpeningAction {
+        if let meetingLink = event.meetingLink {
+            return .openMeetingLink(meetingLink, runJoinScript: runJoinEventScript)
+        }
+
+        if let eventURL = event.eventURL {
+            return .openEventURL(eventURL)
+        }
+
+        return .notifyMissingLink(title: event.title)
     }
 }
