@@ -7,7 +7,6 @@
 //
 
 import SwiftUI
-import Defaults
 
 struct DaySegment: Identifiable {
     let id = UUID()
@@ -82,6 +81,7 @@ struct DayTimelineLayoutCalculator {
 struct DayRelativeTimelineView: View {
     let segments: [DaySegment]
     let currentDate: Date
+    let timeFormat: TimeFormat
 
     // Cached / pre-computed values
     private let layout   = DayTimelineLayoutCalculator()
@@ -92,9 +92,10 @@ struct DayRelativeTimelineView: View {
     var preferredHeight: CGFloat { contentHeight + 20 }   // vertical padding
 
     // MARK: Init
-    init(segments: [DaySegment], currentDate: Date) {
+    init(segments: [DaySegment], currentDate: Date, timeFormat: TimeFormat) {
         self.segments     = segments
         self.currentDate  = currentDate
+        self.timeFormat   = timeFormat
         self.eventRows    = layout.rows(for: segments)
         self.contentHeight = DayTimelineLayout.baseTrackHeight +
             DayTimelineLayout.rowHeight * CGFloat(max(eventRows.count - 1, 0))
@@ -159,17 +160,15 @@ struct DayRelativeTimelineView: View {
         .accessibilityLabel("timeline_accessibility_label".loco(segments.count))
     }
 
-    // Static formatter (built once)
-    private static let hourFormatter: DateFormatter = {
+    private var hourFormatter: DateFormatter {
         let format = DateFormatter()
         format.locale = I18N.instance.locale
-        switch Defaults[.timeFormat] {
+        switch timeFormat {
         case .am_pm:    format.dateFormat = "h a"
         case .military: format.dateFormat = "HH"
         }
         return format
-    }()
-    private var hourFormatter: DateFormatter { Self.hourFormatter }
+    }
 }
 
 // MARK: — Preview
@@ -212,7 +211,8 @@ struct DayRelativeTimelineView: View {
 
     DayRelativeTimelineView(
         segments: sampleSegments,
-        currentDate: now
+        currentDate: now,
+        timeFormat: .military
     )
     .padding()
 }

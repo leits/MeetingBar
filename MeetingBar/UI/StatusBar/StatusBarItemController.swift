@@ -263,7 +263,10 @@ final class StatusBarItemController {
                         color: Color($0.calendar.color))
                 }
 
-                let timeline = DayRelativeTimelineView(segments: segments, currentDate: Date())
+                let timeline = DayRelativeTimelineView(
+                    segments: segments,
+                    currentDate: Date(),
+                    timeFormat: menuState.timeFormat)
                 let hosting = NSHostingView(rootView: timeline)
                 hosting.autoresizingMask = [.width]
                 hosting.frame.size.height = timeline.preferredHeight
