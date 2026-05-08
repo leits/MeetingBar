@@ -6,38 +6,105 @@ For next releases info look here: <https://github.com/leits/MeetingBar/releases>
 
 ### Architecture — internal (no behavior change)
 
-* `AppModel` / `AppState` / `AppAction` / `AppEnvironment` — unidirectional state container; `AppDelegate` delegates to it instead of holding event and notification logic directly
-* `StatusBarMenuState` / `StatusBarMenuStateFactory` — `MenuBuilder` now receives a plain value type instead of reading live state
-* `CalendarRepository` — owns the active provider and isolates `EventManager` from provider-switching details
-* Calendar providers moved to `Calendar/Providers/EventKit/` and `Calendar/Providers/Google/`
-* Notification logic split into: `NotificationPlanner` (pure plan), `NotificationScheduler` (reconciler), `NotificationContentFactory`, `NotificationRecordStore`, `NotificationActionScheduler`, `NotificationActionRunner`, `NotificationCenterDelegate`
-* Meeting provider `Descriptor` + `Registry` — all 50+ providers are now descriptor-driven; adding a new provider requires no code change outside the registry
-* `MeetingOpenerRegistry` + `MeetingOpenStrategy` — opening strategies are injected, not hard-coded per service
-* `CreateMeetingRegistry` — create-meeting service also descriptor-driven
-* `OnboardingHandler` — injectable callback; `CalendarsScreen` no longer reaches into `AppDelegate` directly
-* Preferences `LinksTab` now iterates `MeetingProviderRegistry` instead of hard-coding per-provider pickers
-* Pure policies (`EventSelectionPolicy`, `EventFilterPolicy`, `EventActionPolicy`, `StatusBarPresentationPolicy`, `StatusBarTitlePolicy`, `StatusBarIconPolicy`, `MeetingLinkDetector`, `MeetingOpeningPolicy`, `NotificationPlanner`, `GoogleCalendarPolicy`, `DiagnosticsReport`) all live in the hostless `MeetingBarLogic` SPM target
-* `ProviderHealth` model surfaces auth-required / stale / error / ok state to the Status preferences tab
-* `per-event` `NotificationScheduler` with `mb-plan-<eventID>-<kind>` identifiers replaces the legacy single-id path; back-to-back events no longer suppress each other
-* EventKit calendar fetches moved off the main thread — no more menu-bar hangs on large stores
-* Failed refresh now preserves last known events and calendars instead of replacing them with empty arrays
-* Refresh coalescing via `throttle(200ms)` + `flatMap(maxPublishers: 1)`
+5.0 is an internal rework. No user-visible behavior changes; the goal is
+that future bug fixes and provider additions touch one feature folder
+instead of several.
+
+* `AppModel` is the central state owner (`AppState` + `AppAction` +
+  `AppEnvironment` all live in `AppModel.swift`). `AppDelegate` is now a
+  composition root, not a behaviour owner.
+* `LifecycleObserver` and `URLHandler` extracted from `AppDelegate` —
+  screen-lock / wake / timezone / day-change observers and URL dispatch
+  now live behind named adapters.
+* `CalendarRepository` owns the active provider and isolates
+  `EventManager` from provider-switching details.
+* Calendar providers moved into `Calendar/Providers/EventKit/` and
+  `Calendar/Providers/Google/`.
+* `Calendar/` now holds the cross-provider models (`MBEvent`, `MBCalendar`,
+  `ProviderHealth`) and the `EventStore` protocol — the old `Core/`
+  layer is gone.
+* Notifications split into six components: `NotificationPlanner` (pure
+  plan), `NotificationScheduler` (reconciler + content + delayed-action
+  task management), `NotificationActionRunner` (fullscreen / autojoin /
+  script + processed-event records), `NotificationCenterDelegate`,
+  `NotificationSetup`, and `EventActionPolicy`.
+* Meeting providers consolidated into a single `MeetingProvider` struct
+  with a static `all` array. Adding a new provider is one descriptor
+  entry plus a regex; no separate registry, descriptor, opener-registry,
+  or create-registry types remain.
+* `MeetingOpenStrategy.swift` keeps the per-provider URL-transform
+  strategies (Zoom, Teams, Slack huddle, Riverside, etc.) plus the
+  `openStrategy(for:)` lookup, all in one file.
+* `AppSettings.current` is the single Defaults boundary; pure feature
+  logic receives value-typed snapshots. The `SettingsStore` singleton
+  is gone.
+* `StatusBarPresentation.swift` consolidates the Presentation, Title,
+  and Icon policies behind one `StatusBarPresenter`. `MenuBuilder`
+  reads from a `StatusBarMenuState` value type — zero direct Defaults
+  reads in the menu rendering path.
+* Pure policies (`EventFiltering`, `EventSelection`, `EventActionPolicy`,
+  `StatusBarPresentation` family, `StatusBarTitlePolicy`,
+  `StatusBarIconPolicy`, `MeetingLinkDetector`, `MeetingOpeningPolicy`,
+  `NotificationPlanner`, `GoogleCalendarPolicy`, `DiagnosticsReport`)
+  all live in the hostless `MeetingBarLogic` SPM target so most logic
+  ships without touching the host app.
+* Per-event `NotificationScheduler` with `mb-plan-<eventID>-<kind>`
+  identifiers replaces the legacy single-id path; back-to-back events
+  no longer suppress each other.
+* `OnboardingStep` enum + `OnboardingRouter` replace the older `Screens`
+  / `ViewRouter` plumbing; `OnboardingHandler` is the injectable bridge
+  to `AppDelegate` so `CalendarsScreen` doesn't reach into the delegate
+  directly.
+* `Preferences/` and `Onboarding/` sit at the project root, alongside
+  `Calendar/`, `Meetings/`, `Notifications/`, `StatusBar/`, etc.
+* `LinksTab` iterates `MeetingProvider.all` instead of hard-coding rows.
+* `CalendarsTab` routes calendar-selection toggles through
+  `AppModel.toggleCalendarSelection`, not direct `Defaults` writes.
+* `DiagnosticsContext.current(eventManager:)` and `DiagnosticsClipboard.copy`
+  centralise issue-report assembly so future onboarding error states can
+  reuse it without re-deriving the same context.
+
+### Reliability
+
+* Failed refresh preserves last known events and calendars instead of
+  replacing them with empty arrays.
+* Refresh coalescing via `throttle(200ms)` + `flatMap(maxPublishers: 1)`.
+* EventKit calendar fetches run off the main thread — no more menu-bar
+  hangs on large stores.
+* Wake / unlock / timezone / day-change observers trigger refresh +
+  notification reconcile.
+* Per-calendar Google 403 handling — one inaccessible calendar no
+  longer disconnects the account.
+* `ProviderHealth` surfaces auth-required / stale / error / ok state to
+  the Status preferences tab.
+* Crash-class force unwraps removed in `GCParser`, `MeetingServices`
+  regex catalog, `EKEventStore` calendar lookup, `getGmailAccount`.
+* `AuthError` and `GoogleCalendarError` conform to `LocalizedError`
+  with localised descriptions.
+
+### Settings migration
+
+* Per-provider browser preferences (`meetBrowser`, `zoomBrowser`,
+  `teamsBrowser`, …) migrate to a unified `providerBrowsers: [String: Browser]`
+  map keyed by `MeetingProvider.id`. Legacy keys keep decoding for one
+  major release.
+* Bookmarks now persist provider IDs (raw strings matching
+  `MeetingServices.rawValue`) instead of raw enum cases.
 
 ### Tests
 
-* 200+ tests across `MeetingBarLogicTests` (hostless) and `MeetingBarTests` (host)
-* Logic coverage gate: 94% (threshold 90%)
-* `make validate-strings` — verifies every `.loco()` key exists in `en.lproj/Localizable.strings`
+* 181 hostless logic tests in `MeetingBarLogicTests` plus the host
+  `MeetingBarTests` suite.
+* Logic coverage 95.9%.
+* `make validate-strings` verifies every `.loco()` key exists in
+  `en.lproj/Localizable.strings`.
 
 ### Fixes included
 
-* Fix typo in language list (#839)
-* Fix multiple typos in the repo (#875)
-* Fix URL in PR template (#875)
-* Add Riverside meeting service (#875)
-* crash-class force unwraps removed in `GCParser`, `MeetingServices` regex catalog, `EKEventStore` calendar lookup, `getGmailAccount`
-* per-calendar Google 403 handling — one inaccessible calendar no longer disconnects the account
-* `AuthError` / `GoogleCalendarError` conform to `LocalizedError` with localized descriptions
+* Fix typo in language list (#839).
+* Fix multiple typos in the repo (#875).
+* Fix URL in PR template (#875).
+* Add Riverside meeting service (#875).
 
 ## Version 4.11.0
 
