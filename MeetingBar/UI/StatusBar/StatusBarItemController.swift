@@ -67,7 +67,7 @@ final class StatusBarItemController {
         statusItem.button?.action = #selector(statusMenuBarAction)
         statusItem.button?.sendAction(on: [
             NSEvent.EventTypeMask.rightMouseDown, NSEvent.EventTypeMask.leftMouseUp,
-            NSEvent.EventTypeMask.leftMouseDown,
+            NSEvent.EventTypeMask.leftMouseDown
         ])
 
         // Temporary icon and menu before app delegate setup
@@ -492,8 +492,7 @@ enum StatusBarTitleRenderer {
         }
     }
 
-    private static func stackedTitle(for presentation: StatusBarPresentation) -> NSAttributedString
-    {
+    private static func stackedTitle(for presentation: StatusBarPresentation) -> NSAttributedString {
         let title = NSMutableAttributedString(
             string: presentation.title,
             attributes: titleAttributes(
@@ -507,7 +506,7 @@ enum StatusBarTitleRenderer {
                 string: "\n" + presentation.time,
                 attributes: [
                     NSAttributedString.Key.font: NSFont.systemFont(ofSize: 9),
-                    NSAttributedString.Key.foregroundColor: NSColor.lightGray,
+                    NSAttributedString.Key.foregroundColor: NSColor.lightGray
                 ]
             ))
 

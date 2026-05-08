@@ -101,7 +101,7 @@ final class MenuBuilderTests: BaseTestCase {
             [
                 "Zoom - us02web.zoom.us",
                 "Microsoft Teams - teams.microsoft.com",
-                "Zoom - us02web.zoom.us",
+                "Zoom - us02web.zoom.us"
             ])
         XCTAssertEqual(
             (alternateItem?.submenu?.items.first?.representedObject as? MeetingLinkCandidate)?
@@ -160,7 +160,7 @@ final class MenuBuilderTests: BaseTestCase {
                 url: URL(string: "https://zoom.us")!),
             Bookmark(
                 name: "Meet", service: MeetingServices.meet.rawValue,
-                url: URL(string: "https://meet.google.com")!),
+                url: URL(string: "https://meet.google.com")!)
         ]
 
         let builder = MenuBuilder(target: Dummy())
@@ -230,7 +230,7 @@ final class MenuBuilderTests: BaseTestCase {
                 "02:00 \t 02:15 \t Event S2",
                 "status_bar_section_join_next_meeting".loco(),
                 "status_bar_section_join_create_meeting".loco(),
-                "status_bar_quick_actions".loco(),
+                "status_bar_quick_actions".loco()
             ])
     }
 }

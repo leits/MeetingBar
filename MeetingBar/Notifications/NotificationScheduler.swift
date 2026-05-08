@@ -185,7 +185,7 @@ extension NotificationPlanningEvent {
 
 /// Builds `UNNotificationRequest` objects from a planned notification.
 /// Internal to the scheduler — not a public API.
-fileprivate enum NotificationContent {
+private enum NotificationContent {
     static func request(
         for plan: PlannedNotification,
         event: MBEvent,

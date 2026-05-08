@@ -13,8 +13,8 @@ import XCTest
 final class NotificationSchedulerTests: BaseTestCase {
     private let now = Date(timeIntervalSinceReferenceDate: 800_000_000)
 
-    private func event(id: String, startsIn: TimeInterval, duration: TimeInterval = 1800) -> MBEvent
-    {
+    private func event(id: String, startsIn: TimeInterval, duration: TimeInterval = 1800)
+        -> MBEvent {
         makeFakeEvent(
             id: id,
             start: now.addingTimeInterval(startsIn),
@@ -112,8 +112,7 @@ final class NotificationSchedulerTests: BaseTestCase {
     }
 
     private func startOnlySettings(offset: TimeInterval = 60, hideMeetingTitle: Bool = false)
-        -> NotificationPlanningSettings
-    {
+        -> NotificationPlanningSettings {
         NotificationPlanningSettings(
             eventStart: .init(enabled: true, offset: offset),
             eventEnd: .disabled,
