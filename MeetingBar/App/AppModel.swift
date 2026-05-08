@@ -8,6 +8,7 @@
 //
 
 import Combine
+@preconcurrency import Defaults
 import Foundation
 
 // MARK: - State
@@ -105,6 +106,10 @@ struct AppEnvironment {
     /// Switch the active calendar provider. `signOut = true` drops the current session first.
     var changeProvider: @MainActor (EventStoreProvider, Bool) async -> Void
 
+    /// Add or remove a calendar from the user's selection. EventManager
+    /// observes the underlying setting and re-fetches automatically.
+    var toggleCalendarSelection: @MainActor (String, Bool) -> Void
+
     /// Current wall-clock time (injectable for tests).
     var now: @Sendable () -> Date
 
@@ -131,6 +136,15 @@ struct AppEnvironment {
             },
             changeProvider: { newProvider, signOut in
                 await eventManager.changeEventStoreProvider(newProvider, withSignOut: signOut)
+            },
+            toggleCalendarSelection: { id, selected in
+                if selected {
+                    if !Defaults[.selectedCalendarIDs].contains(id) {
+                        Defaults[.selectedCalendarIDs].append(id)
+                    }
+                } else {
+                    Defaults[.selectedCalendarIDs].removeAll { $0 == id }
+                }
             },
             now: { Date() }
         )
@@ -250,6 +264,12 @@ final class AppModel: ObservableObject {
     func handleCalendarStoreChange() { send(.calendarStoreChanged) }
     func requestRefresh() { send(.refreshCalendars) }
     func reconcileNotifications() { send(.reconcileNotifications) }
+
+    /// Add or remove a calendar from the user's selection. Routes through
+    /// `AppEnvironment` so the model stays free of `Defaults` writes.
+    func toggleCalendarSelection(id: String, selected: Bool) {
+        environment.toggleCalendarSelection(id, selected)
+    }
 
     // MARK: Private
 

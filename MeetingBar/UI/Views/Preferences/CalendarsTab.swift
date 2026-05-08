@@ -6,20 +6,23 @@
 //  Copyright © 2021 Andrii Leitsius. All rights reserved.
 //
 
-import SwiftUI
-
 import Defaults
+import SwiftUI
 
 struct CalendarsTab: View {
     @EnvironmentObject var appModel: AppModel
 
     var body: some View {
         VStack(alignment: .leading) {
-            GroupBox(label: Label("preferences_section_data_source_title".loco(), systemImage: "server.rack")) {
+            GroupBox(
+                label: Label(
+                    "preferences_section_data_source_title".loco(), systemImage: "server.rack")
+            ) {
                 ProviderPicker()
             }
             .padding(.bottom, 5)
-            Label("preferences_calendars_select_calendars_title".loco(), systemImage: "calendar").padding(5)
+            Label("preferences_calendars_select_calendars_title".loco(), systemImage: "calendar")
+                .padding(5)
             List {
                 if appModel.state.calendars.isEmpty {
                     if appModel.state.activeProvider == .macOSEventKit {
@@ -63,12 +66,13 @@ struct CalendarSectionsView: View {
 
 struct ProviderPicker: View {
     @EnvironmentObject var appModel: AppModel
-    @State private var picker: EventStoreProvider = Defaults[.eventStoreProvider]
+    @Default(.eventStoreProvider) private var picker
 
     var body: some View {
         HStack {
             Picker("", selection: $picker) {
-                Text("access_screen_provider_macos_title".loco()).tag(EventStoreProvider.macOSEventKit)
+                Text("access_screen_provider_macos_title".loco()).tag(
+                    EventStoreProvider.macOSEventKit)
                 Text("Google Calendar API").tag(EventStoreProvider.googleCalendar)
             }
             .onChange(of: picker) { provider in
@@ -98,41 +102,36 @@ struct AccessDeniedBanner: View {
 }
 
 struct CalendarRow: View {
-    var calendar: MBCalendar
-    @State var isSelected: Bool
-
-    init(calendar: MBCalendar) {
-        self.calendar = calendar
-        isSelected = Defaults[.selectedCalendarIDs].contains(calendar.id)
-    }
+    let calendar: MBCalendar
+    @EnvironmentObject var appModel: AppModel
+    @Default(.selectedCalendarIDs) private var selectedIDs
 
     var body: some View {
-        Toggle(isOn: $isSelected) {
+        Toggle(
+            isOn: Binding(
+                get: { selectedIDs.contains(calendar.id) },
+                set: { appModel.toggleCalendarSelection(id: calendar.id, selected: $0) }
+            )
+        ) {
             HStack {
                 Text("")
                 Circle().fill(Color(calendar.color)).frame(width: 10, height: 10)
                 Text(calendar.title)
             }
         }
-        .onAppear {
-            isSelected = Defaults[.selectedCalendarIDs].contains(calendar.id)
-        }
-        .onChange(of: isSelected) { newValue in
-            if newValue {
-                Defaults[.selectedCalendarIDs].append(calendar.id)
-            } else {
-                Defaults[.selectedCalendarIDs].removeAll { $0 == calendar.id }
-            }
-            Defaults[.selectedCalendarIDs] = Array(Set(Defaults[.selectedCalendarIDs])) // Deduplication
-        }
     }
 }
 
 #Preview {
     List {
-        CalendarSectionsView(calendars: [MBCalendar(title: "Calendar #1", id: "1", source: "Source #1", email: nil, color: .brown)])
+        CalendarSectionsView(calendars: [
+            MBCalendar(
+                title: "Calendar #1", id: "1", source: "Source #1", email: nil, color: .brown)
+        ])
 
-        CalendarSectionsView(calendars: [MBCalendar(title: "Calendar #2", id: "2", source: "Source #2", email: nil, color: .blue)])
+        CalendarSectionsView(calendars: [
+            MBCalendar(title: "Calendar #2", id: "2", source: "Source #2", email: nil, color: .blue)
+        ])
     }.listStyle(.sidebar)
         .frame(width: 300, height: 200)
 }
