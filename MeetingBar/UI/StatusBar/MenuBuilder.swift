@@ -115,7 +115,8 @@ struct MenuBuilder {
             keyEquivalent: ""
         )
         quickActionsItem.isEnabled = true
-        quickActionsItem.submenu = NSMenu(title: "status_bar_quick_actions".loco())
+        let quickActionsSubmenu = NSMenu(title: "status_bar_quick_actions".loco())
+        quickActionsItem.submenu = quickActionsSubmenu
         items.append(quickActionsItem)
 
         // MENU ITEM: QUICK ACTIONS: Dismiss meeting
@@ -125,7 +126,7 @@ struct MenuBuilder {
                 ? "status_bar_menu_dismiss_curent_meeting".loco()
                 : "status_bar_menu_dismiss_next_meeting".loco()
 
-            let dismissMeetingItem = quickActionsItem.submenu!.addItem(
+            let dismissMeetingItem = quickActionsSubmenu.addItem(
                 withTitle: itemTitle,
                 action: #selector(StatusBarItemController.dismissNextMeetingAction),
                 keyEquivalent: ""
@@ -134,7 +135,7 @@ struct MenuBuilder {
         }
 
         if !state.events.dismissedEvents.isEmpty {
-            let undiDismissMeetingsItem = quickActionsItem.submenu!.addItem(
+            let undiDismissMeetingsItem = quickActionsSubmenu.addItem(
                 withTitle: "status_bar_menu_remove_all_dismissals".loco(),
                 action: #selector(StatusBarItemController.undismissMeetingsActions),
                 keyEquivalent: ""
@@ -143,7 +144,7 @@ struct MenuBuilder {
         }
 
         // MENU ITEM: QUICK ACTIONS: Open link from clipboard
-        let openLinkFromClipboardItem = quickActionsItem.submenu!.addItem(
+        let openLinkFromClipboardItem = quickActionsSubmenu.addItem(
             withTitle: "status_bar_section_join_from_clipboard".loco(),
             action: #selector(StatusBarItemController.openLinkFromClipboardAction),
             keyEquivalent: ""
@@ -158,7 +159,7 @@ struct MenuBuilder {
                 ? "status_bar_show_meeting_names".loco()
                 : "status_bar_hide_meeting_names".loco()
 
-            let toggleMeetingTitleVisibilityItem = quickActionsItem.submenu!.addItem(
+            let toggleMeetingTitleVisibilityItem = quickActionsSubmenu.addItem(
                 withTitle: title,
                 action: #selector(StatusBarItemController.toggleMeetingTitleVisibility),
                 keyEquivalent: ""
@@ -168,7 +169,7 @@ struct MenuBuilder {
         }
 
         // MENU ITEM: QUICK ACTIONS: Refresh sources
-        let refrsehItem = quickActionsItem.submenu!.addItem(
+        let refrsehItem = quickActionsSubmenu.addItem(
             withTitle: "status_bar_section_refresh_sources".loco(),
             action: #selector(StatusBarItemController.handleManualRefresh),
             keyEquivalent: ""

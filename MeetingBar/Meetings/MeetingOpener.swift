@@ -173,7 +173,11 @@ struct SlackHuddleOpenStrategy: MeetingOpenStrategy, Sendable {
             }
             let teamID = components[2]
             let huddleID = components[3]
-            let slackURL = URL(string: "slack://join-huddle?team=\(teamID)&id=\(huddleID)")!
+            guard let slackURL = URL(string: "slack://join-huddle?team=\(teamID)&id=\(huddleID)")
+            else {
+                url.openIn(browser: Defaults[.defaultBrowser])
+                return
+            }
             let result = slackURL.openInDefaultBrowser()
             if !result {
                 sendNotification(
@@ -196,7 +200,8 @@ struct RiversideOpenStrategy: MeetingOpenStrategy, Sendable {
             ?? Defaults[.defaultBrowser]
         if resolved == riversideAppBrowser {
             for scheme in ["riversidefm", "riverside.fm"] {
-                var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
+                guard var components = URLComponents(url: url, resolvingAgainstBaseURL: false)
+                else { continue }
                 components.scheme = scheme
                 if let appURL = components.url, appURL.openInDefaultBrowser() { return }
             }
@@ -225,10 +230,14 @@ struct ZoomWebOpenStrategy: MeetingOpenStrategy, Sendable {
             let urlString = url.absoluteString
                 .replacingOccurrences(of: "?", with: "&")
                 .replacingOccurrences(of: "/j/", with: "/join?confno=")
-            var appComponents = URLComponents(
-                url: URL(string: urlString)!, resolvingAgainstBaseURL: false)!
+            guard let rewritten = URL(string: urlString),
+                var appComponents = URLComponents(url: rewritten, resolvingAgainstBaseURL: false)
+            else {
+                url.openInDefaultBrowser()
+                return
+            }
             appComponents.scheme = "zoommtg"
-            let result = appComponents.url!.openInDefaultBrowser()
+            let result = appComponents.url?.openInDefaultBrowser() ?? false
             if !result {
                 sendNotification(
                     "status_bar_error_app_link_title".loco("Zoom"),
@@ -249,9 +258,12 @@ struct TeamsOpenStrategy: MeetingOpenStrategy, Sendable {
             browser ?? Defaults[.providerBrowsers][MeetingServices.teams.rawValue]
             ?? Defaults[.defaultBrowser]
         if resolved == teamsAppBrowser {
-            var appComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)!
+            guard var appComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
+                url.openInDefaultBrowser()
+                return
+            }
             appComponents.scheme = "msteams"
-            let result = appComponents.url!.openInDefaultBrowser()
+            let result = appComponents.url?.openInDefaultBrowser() ?? false
             if !result {
                 sendNotification(
                     "status_bar_error_app_link_title".loco("Microsoft Teams"),
@@ -272,9 +284,12 @@ struct JitsiOpenStrategy: MeetingOpenStrategy, Sendable {
             browser ?? Defaults[.providerBrowsers][MeetingServices.jitsi.rawValue]
             ?? Defaults[.defaultBrowser]
         if resolved == jitsiAppBrowser {
-            var appComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)!
+            guard var appComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
+                url.openInDefaultBrowser()
+                return
+            }
             appComponents.scheme = "jitsi-meet"
-            let result = appComponents.url!.openInDefaultBrowser()
+            let result = appComponents.url?.openInDefaultBrowser() ?? false
             if !result {
                 sendNotification(
                     "status_bar_error_app_link_title".loco("Jitsi"),

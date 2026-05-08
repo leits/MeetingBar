@@ -155,7 +155,7 @@ struct LinksTab: View {
                             title: Text("preferences_bookmarks_delete_bookmark_title".loco()),
                             message: Text(
                                 "preferences_bookmarks_delete_bookmark_message".loco(
-                                    self.bookmark!.name)),
+                                    self.bookmark?.name ?? "")),
                             primaryButton: .default(Text("general_delete".loco())) {
                                 bookmarks.removeAll { $0.url == self.bookmark?.url }
                             },
