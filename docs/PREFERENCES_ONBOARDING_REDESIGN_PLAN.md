@@ -142,38 +142,49 @@ prophylactically is the kind of work the 5.0 plan deliberately avoided.
 
 Small, independent PRs. Each one ships on its own.
 
-1. **Route `CalendarsTab` selection through `AppModel`.**
-   Replace direct `Defaults[.selectedCalendarIDs]` reads/writes with an
-   `AppAction.toggleCalendarSelection(id:)` (or a method) on `AppModel`.
-   Add a test that toggling the action mutates the published list.
+1. ✅ **Route `CalendarsTab` selection through `AppModel`.** Done in
+   `836eeaf`. `AppEnvironment.toggleCalendarSelection` + `AppModel`
+   convenience method, `CalendarRow` uses `@Default` for read binding,
+   no view writes `Defaults[.selectedCalendarIDs]` directly.
 
-2. **Move `UI/Views/Preferences/` → `Preferences/`.**
-   Mechanical file move. Update Xcode project references (synchronized
-   group should pick the new location automatically).
+2. ✅ **Move `UI/Views/Preferences/` → `Preferences/`.** Done in `4b830ac`
+   alongside the Onboarding move.
 
-3. **Move `UI/Views/Onboarding/` → `Onboarding/`.**
-   Same as above.
+3. ✅ **Move `UI/Views/Onboarding/` → `Onboarding/`.** Done in `4b830ac`.
 
-4. **Replace remaining `Defaults[...]` reads with `AppSettings.current`.**
-   `StatusTab` snapshots, `GeneralTab` version display, `AccessScreen`
-   provider write.
+4. ✅ **Replace remaining `Defaults[...]` reads.** Done in `e4a22b8`.
+   `StatusTab` reads through `AppSettings.current`, `GeneralTab` reads
+   the bundle version directly, `AccessScreen` drops the redundant
+   provider write that `EventManager.changeEventStoreProvider` already
+   handles.
 
-5. **`PermissionState` and `CalendarProviderDisplayState`.**
-   Introduce in `Calendar/` (alongside `ProviderHealth`). Adopt in
-   `CalendarsTab`, `StatusTab`, and onboarding access screens.
+5. ⏸ **`PermissionState` and `CalendarProviderDisplayState`.** Deferred.
+   Auditing the code, there is barely any duplicated permission discovery
+   to consolidate yet — `AccessDeniedBanner` uses a heuristic ("calendars
+   list empty + EventKit") rather than calling `EKEventStore.authorizationStatus`,
+   `ProviderHealth.authRequired` already covers the Google-signed-out case,
+   and Google `authState` lives in `GCEventStore`. Adding the types now would
+   be infrastructure-without-need. Revisit when a real UX issue (user
+   confusion about denied permission, retry path) appears.
 
-6. **`DiagnosticsModel`.**
-   Move issue-report assembly from `StatusTab` into a small `DiagnosticsModel`
-   that `StatusTab`, onboarding error states, and the export action share.
+6. ✅ **Diagnostics shared assembly.** Done in `968811b`. Added
+   `DiagnosticsContext.current(eventManager:)` factory plus
+   `DiagnosticsClipboard.copy(...)` helper in the diagnostics adapter.
+   `StatusTab.DiagnosticsSection` now calls the helper directly; future
+   onboarding error states reuse the same factory without duplicating
+   the assembly.
 
-7. **`OnboardingStep` state machine.** Add the enum, route screens through it,
-   keep `OnboardingHandler` as the delivery mechanism.
+7. ✅ **`OnboardingStep` state machine.** Done in `415697d`. Renamed
+   `Screens` → `OnboardingStep` and `ViewRouter` → `OnboardingRouter`,
+   replaced the hand-rolled `PassthroughSubject` plumbing with `@Published`,
+   and switched `OnboardingView` to a switch-based render.
 
-8. **(Deferred) `SettingsMigration` helper.** Only when the next breaking
-   schema change actually arrives.
+8. ⏸ **`SettingsMigration` helper.** Deferred per the original plan;
+   add only when the next breaking schema change actually arrives.
 
-Manual QA after each PR: provider switch, EventKit allowed/denied, Google
-sign-in success/failure/cancel, first-launch onboarding, custom regex.
+Manual QA before release: provider switch, EventKit allowed/denied,
+Google sign-in success/failure/cancel, first-launch onboarding, custom
+regex.
 
 ---
 
