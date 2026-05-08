@@ -22,7 +22,8 @@ final class BookmarkMigrationTests: XCTestCase {
 
     func testDecodesBookmarkFromLegacyJSON_meet() throws {
         // Old format: service key holds MeetingServices rawValue string
-        let json = Data("""
+        let json = Data(
+            """
             {"name":"Daily","service":"Google Meet","url":"https://meet.google.com/abc"}
             """.utf8)
         let bookmark = try decoder.decode(Bookmark.self, from: json)
@@ -32,7 +33,8 @@ final class BookmarkMigrationTests: XCTestCase {
     }
 
     func testDecodesBookmarkFromLegacyJSON_zoom() throws {
-        let json = Data("""
+        let json = Data(
+            """
             {"name":"Standup","service":"Zoom","url":"https://zoom.us/j/123"}
             """.utf8)
         let bookmark = try decoder.decode(Bookmark.self, from: json)
@@ -40,7 +42,8 @@ final class BookmarkMigrationTests: XCTestCase {
     }
 
     func testDecodesBookmarkFromLegacyJSON_teams() throws {
-        let json = Data("""
+        let json = Data(
+            """
             {"name":"Sprint","service":"Microsoft Teams","url":"https://teams.microsoft.com/l/meetup-join/1"}
             """.utf8)
         let bookmark = try decoder.decode(Bookmark.self, from: json)
@@ -49,7 +52,8 @@ final class BookmarkMigrationTests: XCTestCase {
 
     func testDecodesBookmarkFromLegacyJSON_unknownService() throws {
         // A future/unknown provider should decode as-is, not throw
-        let json = Data("""
+        let json = Data(
+            """
             {"name":"Custom","service":"My Custom Provider","url":"https://custom.example.com"}
             """.utf8)
         let bookmark = try decoder.decode(Bookmark.self, from: json)

@@ -6,9 +6,10 @@
 //  Copyright © 2025 Andrii Leitsius. All rights reserved.
 //
 import Combine
-@testable import MeetingBar
-import XCTest
 import Defaults
+import XCTest
+
+@testable import MeetingBar
 
 @MainActor
 class EventManagerTests: BaseTestCase {
@@ -65,7 +66,7 @@ class EventManagerTests: BaseTestCase {
 
     func testSwitchProviderPublishesNewEvents() async throws {
         // Arrange: two fake stores with different events
-        let firstEvent  = makeFakeEvent(
+        let firstEvent = makeFakeEvent(
             id: "A",
             start: Date(),
             end: Date().addingTimeInterval(3600)
@@ -86,7 +87,7 @@ class EventManagerTests: BaseTestCase {
         let initialExp = expectation(description: "initial events")
         manager.$events
             .drop(while: \.isEmpty)
-            .first()                                     // Failure == Never
+            .first()  // Failure == Never
             .sink(
                 receiveCompletion: { _ in },
                 receiveValue: { events in
@@ -101,7 +102,7 @@ class EventManagerTests: BaseTestCase {
         // Prepare second expectation BEFORE switching the store
         let switchedExp = expectation(description: "events after switch")
         manager.$events
-            .dropFirst()                                // skip current value
+            .dropFirst()  // skip current value
             .first()
             .sink(
                 receiveCompletion: { _ in },
@@ -114,7 +115,7 @@ class EventManagerTests: BaseTestCase {
 
         // Act: replace the provider and trigger refresh
         manager.repository = CalendarRepository(store: storeB)
-        try await manager.refreshSources()              // sends refreshSubject
+        try await manager.refreshSources()  // sends refreshSubject
 
         await fulfillment(of: [switchedExp], timeout: 1.0)
 
@@ -125,7 +126,8 @@ class EventManagerTests: BaseTestCase {
 final class FailedRefreshTests: BaseTestCase {
     private var cancellables = Set<AnyCancellable>()
 
-    private let fakeCal = MBCalendar(title: "Cal", id: "calA", source: nil, email: nil, color: .black)
+    private let fakeCal = MBCalendar(
+        title: "Cal", id: "calA", source: nil, email: nil, color: .black)
 
     func test_failedRefreshPreservesExistingCalendars() async throws {
         let store = FakeEventStore(calendars: [fakeCal])
@@ -142,7 +144,8 @@ final class FailedRefreshTests: BaseTestCase {
         let preservedExp = expectation(description: "calendars preserved after failure")
         manager.$calendars.dropFirst().first()
             .sink { cals in
-                XCTAssertEqual(cals, [self.fakeCal], "calendars must not be cleared on refresh failure")
+                XCTAssertEqual(
+                    cals, [self.fakeCal], "calendars must not be cleared on refresh failure")
                 preservedExp.fulfill()
             }
             .store(in: &cancellables)
@@ -152,7 +155,8 @@ final class FailedRefreshTests: BaseTestCase {
     }
 
     func test_failedRefreshPreservesExistingEvents() async throws {
-        let fakeEvt = makeFakeEvent(id: "E1", start: Date().addingTimeInterval(60), end: Date().addingTimeInterval(3600))
+        let fakeEvt = makeFakeEvent(
+            id: "E1", start: Date().addingTimeInterval(60), end: Date().addingTimeInterval(3600))
         let store = FakeEventStore(calendars: [fakeCal], events: [fakeEvt])
 
         Defaults[.selectedCalendarIDs] = ["calA"]
@@ -169,7 +173,8 @@ final class FailedRefreshTests: BaseTestCase {
         let preservedExp = expectation(description: "events preserved after failure")
         manager.$events.dropFirst().first()
             .sink { evts in
-                XCTAssertEqual(evts, [fakeEvt], "events must be the exact preserved set after refresh failure")
+                XCTAssertEqual(
+                    evts, [fakeEvt], "events must be the exact preserved set after refresh failure")
                 preservedExp.fulfill()
             }
             .store(in: &cancellables)
@@ -199,7 +204,7 @@ final class RefreshCoalescingTests: BaseTestCase {
     func test_rapidTriggersResultInSingleFetch() async throws {
         let fakeCal = MBCalendar(title: "Cal", id: "calA", source: nil, email: nil, color: .black)
         let store = FakeEventStore(calendars: [fakeCal])
-        store.fetchDelay = 0.2 // slow enough that the fetch is still running when the rapid triggers arrive
+        store.fetchDelay = 0.2  // slow enough that the fetch is still running when the rapid triggers arrive
 
         let manager = EventManager(provider: store, refreshInterval: 0)
 
@@ -219,7 +224,9 @@ final class RefreshCoalescingTests: BaseTestCase {
         // Wait longer than fetchDelay so the single fetch can complete
         try await Task.sleep(nanoseconds: 400_000_000)
 
-        XCTAssertEqual(store.fetchCallCount - countBefore, 1, "only one fetch should run despite three triggers")
+        XCTAssertEqual(
+            store.fetchCallCount - countBefore, 1,
+            "only one fetch should run despite three triggers")
     }
 }
 
@@ -230,12 +237,14 @@ final class RefreshTriggerTests: BaseTestCase {
 
     func test_eventsRefreshWhenShowEventsPeriodChanges() {
         // Fake store that can swap its stubbed events on the fly
-        let first  = makeFakeEvent(id: "P-A",
-                                   start: .init(),
-                                   end: .init().addingTimeInterval(60))
-        let second = makeFakeEvent(id: "P-B",
-                                   start: .init().addingTimeInterval(120),
-                                   end: .init().addingTimeInterval(240))
+        let first = makeFakeEvent(
+            id: "P-A",
+            start: .init(),
+            end: .init().addingTimeInterval(60))
+        let second = makeFakeEvent(
+            id: "P-B",
+            start: .init().addingTimeInterval(120),
+            end: .init().addingTimeInterval(240))
 
         let store = FakeEventStore(events: [first])
 
@@ -259,7 +268,7 @@ final class RefreshTriggerTests: BaseTestCase {
         // Prepare expectation BEFORE flipping the Default
         let switchedExp = expectation(description: "events after period change")
         manager.$events
-            .dropFirst()            // skip current value
+            .dropFirst()  // skip current value
             .first()
             .sink { events in
                 XCTAssertEqual(events, [second])
@@ -275,17 +284,18 @@ final class RefreshTriggerTests: BaseTestCase {
     }
 
     func test_refreshSourcesPublishesEvents() async throws {
-        let ev = makeFakeEvent(id: "R",
-                               start: .init(),
-                               end: .init().addingTimeInterval(60))
+        let ev = makeFakeEvent(
+            id: "R",
+            start: .init(),
+            end: .init().addingTimeInterval(60))
         let store = FakeEventStore(events: [ev])
         let manager = EventManager(provider: store, refreshInterval: 0)
 
         // Expectation BEFORE calling refreshSources()
         let exp = expectation(description: "events after manual refresh")
         manager.$events
-            .dropFirst()          // skip the initial []
-            .first()              // grab only the first non-empty publish
+            .dropFirst()  // skip the initial []
+            .first()  // grab only the first non-empty publish
             .sink { events in
                 XCTAssertEqual(events, [ev])
                 exp.fulfill()
@@ -304,7 +314,9 @@ final class ProviderHealthTests: BaseTestCase {
     private var cancellables = Set<AnyCancellable>()
 
     func test_successfulRefreshClearsError() async throws {
-        let store = FakeEventStore(calendars: [MBCalendar(title: "C", id: "c1", source: nil, email: nil, color: .black)])
+        let store = FakeEventStore(calendars: [
+            MBCalendar(title: "C", id: "c1", source: nil, email: nil, color: .black)
+        ])
         let manager = EventManager(provider: store, refreshInterval: 0)
 
         let exp = expectation(description: "health after success")
@@ -324,7 +336,9 @@ final class ProviderHealthTests: BaseTestCase {
     }
 
     func test_failedRefreshSetsErrorAndPreservesLastSuccess() async throws {
-        let store = FakeEventStore(calendars: [MBCalendar(title: "C", id: "c1", source: nil, email: nil, color: .black)])
+        let store = FakeEventStore(calendars: [
+            MBCalendar(title: "C", id: "c1", source: nil, email: nil, color: .black)
+        ])
         let manager = EventManager(provider: store, refreshInterval: 0)
 
         let initialExp = expectation(description: "initial success")
@@ -336,14 +350,17 @@ final class ProviderHealthTests: BaseTestCase {
         await fulfillment(of: [initialExp], timeout: 1.0)
 
         let lastSuccess = manager.providerHealth.lastSuccessfulRefresh
-        store.stubbedError = NSError(domain: "test", code: 42, userInfo: [NSLocalizedDescriptionKey: "network gone"])
+        store.stubbedError = NSError(
+            domain: "test", code: 42, userInfo: [NSLocalizedDescriptionKey: "network gone"])
 
         let failExp = expectation(description: "health after failure")
         manager.$providerHealth
             .dropFirst()
             .first()
             .sink { health in
-                XCTAssertEqual(health.lastSuccessfulRefresh, lastSuccess, "prior success date must be preserved")
+                XCTAssertEqual(
+                    health.lastSuccessfulRefresh, lastSuccess,
+                    "prior success date must be preserved")
                 XCTAssertNotNil(health.lastErrorDescription)
                 XCTAssertTrue(health.isStale)
                 XCTAssertFalse(health.authRequired)
@@ -455,7 +472,8 @@ final class ProviderHealthTests: BaseTestCase {
                 XCTAssertEqual(health.lastSuccessfulRefresh, lastSuccess)
                 XCTAssertTrue(health.authRequired)
                 XCTAssertTrue(health.isStale)
-                XCTAssertEqual(health.lastErrorDescription, "Google Calendar authorization is required")
+                XCTAssertEqual(
+                    health.lastErrorDescription, "Google Calendar authorization is required")
                 failureExp.fulfill()
             }
             .store(in: &cancellables)

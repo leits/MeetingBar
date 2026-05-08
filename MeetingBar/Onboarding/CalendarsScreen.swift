@@ -6,9 +6,8 @@
 //  Copyright © 2021 Andrii Leitsius. All rights reserved.
 //
 
-import SwiftUI
-
 import Defaults
+import SwiftUI
 
 struct CalendarsScreen: View {
     @EnvironmentObject var onboardingHandler: OnboardingHandler
@@ -25,7 +24,8 @@ struct CalendarsScreen: View {
             HStack {
                 Spacer()
                 if self.selectedCalendarIDs.isEmpty {
-                    Text("calendars_screen_select_calendar_title".loco()).foregroundColor(Color.gray)
+                    Text("calendars_screen_select_calendar_title".loco()).foregroundColor(
+                        Color.gray)
                 }
                 Button(action: self.close) {
                     Text("calendars_screen_start_button".loco())
