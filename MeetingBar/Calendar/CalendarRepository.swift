@@ -36,6 +36,8 @@ public final class CalendarRepository {
 
     public private(set) var activeProvider: EventStore
     public private(set) var activeProviderName: EventStoreProvider
+    private let storeFactory: (EventStoreProvider) -> EventStore
+    private let observesSystemStoreChanges: Bool
 
     /// Fires when the EKEventStore changes (macOS Calendar App only).
     let storeChanged = PassthroughSubject<Void, Never>()
@@ -44,8 +46,11 @@ public final class CalendarRepository {
     // MARK: - Initialization
 
     public init(providerName: EventStoreProvider) {
+        let storeFactory = CalendarRepository.makeStore(for:)
         self.activeProviderName = providerName
-        self.activeProvider = CalendarRepository.makeStore(for: providerName)
+        self.storeFactory = storeFactory
+        self.observesSystemStoreChanges = true
+        self.activeProvider = storeFactory(providerName)
         observeStoreChanges(for: providerName)
     }
 
@@ -56,7 +61,7 @@ public final class CalendarRepository {
         storeChangeCancellable = nil
 
         activeProviderName = providerName
-        activeProvider = CalendarRepository.makeStore(for: providerName)
+        activeProvider = storeFactory(providerName)
         observeStoreChanges(for: providerName)
     }
 
@@ -112,9 +117,23 @@ public final class CalendarRepository {
     }
 
     #if DEBUG
+        /// Test-only: inject deterministic stores for provider switching without
+        /// creating EventKit/Google singletons.
+        public init(
+            providerName: EventStoreProvider,
+            storeFactory: @escaping (EventStoreProvider) -> EventStore
+        ) {
+            self.activeProviderName = providerName
+            self.storeFactory = storeFactory
+            self.observesSystemStoreChanges = false
+            self.activeProvider = storeFactory(providerName)
+        }
+
         /// Test-only: inject a pre-built store without creating system singletons.
         public init(store: EventStore) {
             self.activeProviderName = .macOSEventKit
+            self.storeFactory = { _ in store }
+            self.observesSystemStoreChanges = false
             self.activeProvider = store
         }
     #endif
@@ -129,7 +148,7 @@ public final class CalendarRepository {
     }
 
     private func observeStoreChanges(for providerName: EventStoreProvider) {
-        guard providerName == .macOSEventKit else { return }
+        guard observesSystemStoreChanges, providerName == .macOSEventKit else { return }
         let store = EKEventStore.shared
         storeChangeCancellable = NotificationCenter.default
             .publisher(for: .EKEventStoreChanged, object: store)

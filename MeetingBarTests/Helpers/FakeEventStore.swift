@@ -10,14 +10,18 @@ import Foundation
 
 @testable import MeetingBar
 
-final class FakeEventStore: EventStore {
+final class FakeEventStore: AuthenticatedEventStore {
     nonisolated(unsafe) var stubbedCalendars: [MBCalendar]
     nonisolated(unsafe) var stubbedEvents: [MBEvent]
     nonisolated(unsafe) var stubbedError: Error?
     nonisolated(unsafe) var stubbedCalendarError: Error?
     nonisolated(unsafe) var stubbedEventsError: Error?
+    nonisolated(unsafe) var stubbedSignInError: Error?
     nonisolated(unsafe) var fetchDelay: TimeInterval = 0
     nonisolated(unsafe) private(set) var fetchCallCount = 0
+    nonisolated(unsafe) private(set) var refreshSourcesCallCount = 0
+    nonisolated(unsafe) private(set) var signInCallCount = 0
+    nonisolated(unsafe) private(set) var signOutCallCount = 0
 
     init(calendars: [MBCalendar] = [], events: [MBEvent] = []) {
         stubbedCalendars = calendars
@@ -46,5 +50,16 @@ final class FakeEventStore: EventStore {
         return stubbedEvents
     }
 
-    func refreshSources() async { /* no-op */  }
+    func refreshSources() async {
+        refreshSourcesCallCount += 1
+    }
+
+    func signIn(forcePrompt _: Bool) async throws {
+        signInCallCount += 1
+        if let error = stubbedSignInError { throw error }
+    }
+
+    func signOut() async {
+        signOutCallCount += 1
+    }
 }

@@ -187,8 +187,25 @@ final class GCEventStore: NSObject,
         let iso = ISO8601DateFormatter()
         let timeMin = iso.string(from: dateFrom)
         let timeMax = iso.string(from: dateTo)
+        let url = try Self.eventsURL(
+            calendarID: calendar.id,
+            timeMin: timeMin,
+            timeMax: timeMax
+        )
 
-        var comps = URLComponents(string: "https://www.googleapis.com/calendar/v3/calendars/\(calendar.id)/events")!
+        let items = try await fetchJSON(url, calendarID: calendar.id)
+        return items.compactMap { GCParser.event(from: $0, calendar: calendar) }
+    }
+
+    static func eventsURL(calendarID: String, timeMin: String, timeMax: String) throws -> URL {
+        // Calendar IDs can contain `#`, `@`, `+`, and group-address punctuation.
+        // Path interpolation without escaping breaks for those calendars
+        // (Google returns 404). Build the path via `URLComponents.path` so
+        // encoding happens once, correctly.
+        var comps = URLComponents()
+        comps.scheme = "https"
+        comps.host = "www.googleapis.com"
+        comps.path = "/calendar/v3/calendars/\(calendarID)/events"
         comps.queryItems = [
             .init(name: "singleEvents", value: "true"),
             .init(name: "orderBy", value: "startTime"),
@@ -196,9 +213,11 @@ final class GCEventStore: NSObject,
             .init(name: "timeMax", value: timeMax),
             .init(name: "timeMin", value: timeMin)
         ]
+        guard let url = comps.url else {
+            throw URLError(.badURL)
+        }
 
-        let items = try await fetchJSON(comps.url!, calendarID: calendar.id)
-        return items.compactMap { GCParser.event(from: $0, calendar: calendar) }
+        return url
     }
 
     func fetchEventsForDateRange(for calendars: [MBCalendar],

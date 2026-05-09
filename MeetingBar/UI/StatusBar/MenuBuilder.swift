@@ -197,7 +197,7 @@ struct MenuBuilder {
             items.append(changelogItem)
         }
 
-        if state.isInstalledFromAppStore || true {
+        if state.isInstalledFromAppStore {
             var showRateAppButton = true
 
             if let installationDate = installationDate {

@@ -35,6 +35,10 @@ public class EventManager: ObservableObject {
     var repository: CalendarRepository
     private let refreshInterval: TimeInterval
     private var cancellables = Set<AnyCancellable>()
+    /// Held separately from `cancellables` so we can cancel the previous
+    /// repository-store subscription when switching providers, instead of
+    /// stacking up additional sinks on every switch.
+    private var storeChangeCancellable: AnyCancellable?
     let refreshSubject = PassthroughSubject<Void, Never>()
 
     // MARK: - Initialization
@@ -67,6 +71,16 @@ public class EventManager: ObservableObject {
             refreshSubject.send()
         } catch {
             NSLog("Error after switching provider: \(error)")
+            // Surface the auth failure to the UI instead of leaving the
+            // previous provider's "OK" state visible. Status tab now shows
+            // "Authorization required" instead of stale success.
+            providerHealth = ProviderHealth(
+                lastSuccessfulRefresh: providerHealth.lastSuccessfulRefresh,
+                lastAttemptedRefresh: Date(),
+                lastErrorDescription: error.localizedDescription,
+                isStale: true,
+                authRequired: true
+            )
         }
     }
 
@@ -75,7 +89,11 @@ public class EventManager: ObservableObject {
     }
 
     private func subscribeToRepositoryStoreChanges() {
-        repository.storeChanged
+        // Cancel any previous subscription before re-attaching to the (new)
+        // repository. Without this, switching providers would stack sinks
+        // and trigger N refreshes per store change.
+        storeChangeCancellable?.cancel()
+        storeChangeCancellable = repository.storeChanged
             .sink { [weak self] in
                 Task {
                     do {
@@ -85,7 +103,6 @@ public class EventManager: ObservableObject {
                     }
                 }
             }
-            .store(in: &cancellables)
     }
 
     public func refreshSources() async throws {
@@ -214,6 +231,17 @@ public class EventManager: ObservableObject {
                     refreshInterval: TimeInterval = 0) {
             self.refreshInterval = refreshInterval
             self.repository = CalendarRepository(store: provider)
+            setupPublishers()
+            refreshSubject.send()
+        }
+
+        /// Test-only initializer: inject a repository that can switch between
+        /// deterministic fake providers.
+        public init(repository: CalendarRepository,
+                    refreshInterval: TimeInterval = 0) {
+            self.refreshInterval = refreshInterval
+            self.repository = repository
+            subscribeToRepositoryStoreChanges()
             setupPublishers()
             refreshSubject.send()
         }

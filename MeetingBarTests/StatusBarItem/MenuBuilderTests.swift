@@ -124,6 +124,7 @@ final class MenuBuilderTests: BaseTestCase {
         // Force "What's New" to appear
         Defaults[.appVersion] = "5.0.0"
         Defaults[.lastRevisedVersionInChangelog] = "4.2.0"
+        Defaults[.isInstalledFromAppStore] = true
 
         // Force "Rate App" to appear (installation > 14 days ago)
         let distantPast = Calendar.current.date(byAdding: .day, value: -30, to: Date())!
@@ -150,6 +151,21 @@ final class MenuBuilderTests: BaseTestCase {
             items.last?.action,
             #selector(AppDelegate.quit),
             "Last item must be Quit")
+    }
+
+    func test_preferencesSectionHidesRateAppWhenNotInstalledFromAppStore() {
+        Defaults[.isInstalledFromAppStore] = false
+        let distantPast = Calendar.current.date(byAdding: .day, value: -30, to: Date())!
+        var state = StatusBarMenuState.make(from: [])
+        state.isInstalledFromAppStore = false
+        let builder = MenuBuilder(
+            target: Dummy(), state: state, installationDate: distantPast)
+
+        let titles = MenuBuilder.plainTitles(of: builder.buildPreferencesSection())
+
+        XCTAssertFalse(
+            titles.contains(where: { $0.contains("status_bar_rate_app".loco()) }),
+            "Rate App should be Mac App Store-only")
     }
 
     func test_bookmarksInlineWhenCountIsThreeOrLess() {

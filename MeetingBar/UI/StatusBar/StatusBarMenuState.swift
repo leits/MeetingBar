@@ -82,15 +82,15 @@ extension AppSettings {
                 showTentativeEvents: .show,
                 filterEventRegexes: [],
                 dismissedEvents: [],
-                ongoingEventVisibility: .showTenMinAfter,
+                ongoingEventVisibility: .showTenMinBeforeNext,
                 showEventMaxTimeUntilEventEnabled: false,
-                showEventMaxTimeUntilEventThreshold: 30
+                showEventMaxTimeUntilEventThreshold: 60
             ),
             statusBar: StatusBarSettings(
                 eventTitleFormat: .show,
                 eventTimeFormat: .show,
                 eventTitleIconFormat: .none,
-                statusbarEventTitleLength: 50,
+                statusbarEventTitleLength: statusbarEventTitleLengthLimits.max,
                 hideMeetingTitle: false,
                 showEventEndTime: true
             ),
@@ -110,11 +110,12 @@ extension AppSettings {
                 fullscreenNotificationTime: .atStart
             ),
             meetings: MeetingSettings(
-                createMeetingService: .meet,
+                createMeetingService: .zoom,
                 createMeetingServiceUrl: "",
                 bookmarks: [],
                 browsers: [],
-                defaultBrowser: systemDefaultBrowser,
+                defaultBrowser: Browser(
+                    name: "Default Browser", path: "", arguments: "", deletable: false),
                 browserForCreateMeeting: systemDefaultBrowser,
                 providerBrowsers: [:]
             ),
@@ -123,11 +124,11 @@ extension AppSettings {
                 automaticEventJoinTime: .atStart,
                 runJoinEventScript: false,
                 joinEventScriptLocation: nil,
-                joinEventScript: "",
+                joinEventScript: "preferences_advanced_apple_script_placeholder".loco(),
                 runEventStartScript: false,
                 eventStartScriptLocation: nil,
                 eventStartScriptTime: .atStart,
-                eventStartScript: "",
+                eventStartScript: eventStartScriptPlaceholder,
                 customRegexes: []
             )
         )

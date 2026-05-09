@@ -5,7 +5,7 @@
 [![Github all releases](https://img.shields.io/github/downloads/leits/MeetingBar/total.svg)](https://GitHub.com/leits/MeetingBar/releases/)
 [![Made in Ukraine](https://img.shields.io/badge/made_in-ukraine-ffd700.svg?labelColor=0057b7)](https://stand-with-ukraine.pp.ua)
 
-**MeetingBar** is a menu-bar app for your calendar meetings (macOS 10.15+).
+**MeetingBar** is a menu-bar app for your calendar meetings (macOS 12+).
 
 Integrated with 50+ meeting services so you can quickly join meetings from an event or create ad-hoc meetings.
 

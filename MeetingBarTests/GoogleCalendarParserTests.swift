@@ -230,4 +230,26 @@ final class GoogleCalendarParserTests: XCTestCase {
             "Google Calendar response did not contain an items array: \(url.absoluteString)"
         )
     }
+
+    func testEventsURLPercentEncodesSpecialCalendarIDCharacters() throws {
+        let url = try GCEventStore.eventsURL(
+            calendarID: "group.v.calendar.google.com#contacts+team@example.com",
+            timeMin: "2026-01-01T00:00:00Z",
+            timeMax: "2026-01-02T00:00:00Z"
+        )
+
+        XCTAssertNil(url.fragment)
+        XCTAssertTrue(
+            url.absoluteString.contains(
+                "/calendar/v3/calendars/group.v.calendar.google.com%23contacts+team@example.com/events"
+            )
+        )
+
+        let queryItems = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems
+        XCTAssertEqual(queryItems?.first { $0.name == "singleEvents" }?.value, "true")
+        XCTAssertEqual(queryItems?.first { $0.name == "orderBy" }?.value, "startTime")
+        XCTAssertEqual(queryItems?.first { $0.name == "eventTypes" }?.value, "default")
+        XCTAssertEqual(queryItems?.first { $0.name == "timeMin" }?.value, "2026-01-01T00:00:00Z")
+        XCTAssertEqual(queryItems?.first { $0.name == "timeMax" }?.value, "2026-01-02T00:00:00Z")
+    }
 }

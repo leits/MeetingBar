@@ -120,6 +120,33 @@ class EventManagerTests: BaseTestCase {
         await fulfillment(of: [switchedExp], timeout: 1.0)
 
     }
+
+    func testStoreChangeSubscriptionDoesNotStackAfterProviderSwitches() async throws {
+        let calendar = MBCalendar(title: "C", id: "c1", source: nil, email: nil, color: .black)
+        let store = FakeEventStore(calendars: [calendar])
+        let repository = CalendarRepository(providerName: .macOSEventKit) { _ in store }
+        let manager = EventManager(repository: repository, refreshInterval: 0)
+
+        let initialExp = expectation(description: "initial refresh completed")
+        manager.$providerHealth
+            .drop(while: { $0.lastAttemptedRefresh == nil })
+            .first()
+            .sink { _ in initialExp.fulfill() }
+            .store(in: &cancellables)
+        await fulfillment(of: [initialExp], timeout: 1.0)
+
+        await manager.changeEventStoreProvider(.googleCalendar)
+        await manager.changeEventStoreProvider(.macOSEventKit)
+
+        let countBeforeStoreChange = store.refreshSourcesCallCount
+        manager.repository.storeChanged.send()
+        try await Task.sleep(nanoseconds: 300_000_000)
+
+        XCTAssertEqual(
+            store.refreshSourcesCallCount - countBeforeStoreChange,
+            1,
+            "one store-change notification should trigger one refreshSources call")
+    }
 }
 
 @MainActor
@@ -483,5 +510,34 @@ final class ProviderHealthTests: BaseTestCase {
 
         XCTAssertEqual(manager.calendars, [calendar])
         XCTAssertEqual(manager.events, [event])
+    }
+
+    func test_providerSwitchSignInFailureMarksProviderHealthAuthRequired() async throws {
+        let calendar = MBCalendar(title: "C", id: "c1", source: nil, email: nil, color: .black)
+        let store = FakeEventStore(calendars: [calendar])
+        let repository = CalendarRepository(providerName: .macOSEventKit) { _ in store }
+        let manager = EventManager(repository: repository, refreshInterval: 0)
+
+        let initialExp = expectation(description: "initial success")
+        manager.$providerHealth
+            .drop(while: { $0.lastSuccessfulRefresh == nil })
+            .first()
+            .sink { _ in initialExp.fulfill() }
+            .store(in: &cancellables)
+        await fulfillment(of: [initialExp], timeout: 1.0)
+
+        let lastSuccess = manager.providerHealth.lastSuccessfulRefresh
+        store.stubbedSignInError = AuthError.notSignedIn
+
+        await manager.changeEventStoreProvider(.googleCalendar)
+
+        XCTAssertEqual(manager.providerHealth.lastSuccessfulRefresh, lastSuccess)
+        XCTAssertNotNil(manager.providerHealth.lastAttemptedRefresh)
+        XCTAssertEqual(
+            manager.providerHealth.lastErrorDescription,
+            "Google Calendar authorization is required"
+        )
+        XCTAssertTrue(manager.providerHealth.isStale)
+        XCTAssertTrue(manager.providerHealth.authRequired)
     }
 }

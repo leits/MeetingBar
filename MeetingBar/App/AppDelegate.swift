@@ -253,8 +253,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc
     func openPreferencesWindow(_: NSStatusBarButton?) {
-        guard let appModel else { return }
-        let contentView = PreferencesView().environmentObject(appModel)
+        guard let appModel, let eventManager else { return }
+        let contentView = PreferencesView()
+            .environmentObject(appModel)
+            .environmentObject(eventManager)
 
         if let preferencesWindow {
             // if a window is already open, focus on it instead of opening another one.

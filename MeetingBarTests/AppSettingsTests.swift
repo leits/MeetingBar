@@ -14,6 +14,10 @@ import XCTest
 
 @MainActor
 final class AppSettingsTests: BaseTestCase {
+    func testEmptyMatchesCleanInstallDefaults() {
+        XCTAssertEqual(AppSettings.empty, AppSettings.current)
+    }
+
     // MARK: - CalendarSettings
 
     func testCalendarSettings_selectedCalendarIDs() {
