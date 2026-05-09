@@ -140,6 +140,29 @@ Tests live in `MeetingBarTests/` (host-app tests, AppKit-aware) and `MeetingBarL
 
 ---
 
+## Migration rule for new architecture work
+
+The migration target is deliberately simple:
+
+```text
+UI sends actions.
+AppModel coordinates.
+Feature components own workflows.
+Policies decide.
+macOS integrations execute side effects.
+```
+
+Use MeetingBar names for new boundaries (`EventManager`, `MeetingOpener`, `NotificationScheduler`, `AppSettings`, `WindowCoordinator`) rather than generic architecture labels. A new type is useful only if it gives a workflow one obvious owner or makes a decision testable.
+
+Current PR gate for architecture changes:
+
+1. Add or update tests around the owner that receives moved behavior.
+2. Keep old production paths only when the next PR removes them explicitly.
+3. Run `make lint`, `make validate-strings`, `make test-logic-quiet`, and the app-hosted test/build path for app-target changes.
+4. If the PR touches project files, entitlements, URL schemes, dependencies, scripts, workflows, or base localization, call that out in the PR description.
+
+---
+
 ## The "policy + adapter" pattern
 
 You will see pairs of files like:
@@ -270,6 +293,23 @@ Within one source, longer URLs win when one is a prefix of another (Zoom truncat
 
 `BaseTestCase` (host suite) snapshots and restores `UserDefaults` around each test. `FakeEventStore` lets you inject controlled event lists into `EventManager`.
 
+`AppModelTestHarness` wires `AppModel` to in-memory publishers and recording closures. Use it for AppAction scenarios before moving behavior out of AppDelegate, StatusBar, AppIntent, Preferences, or notification delegates.
+
+Current logic coverage baseline, recorded when strict concurrency was made explicit: hostless source-region coverage is about 95.9%, with line coverage about 99.1%. Keep coverage visible during the migration; do not chase total percentage by testing trivial wrappers.
+
+---
+
+## Strict concurrency and CI expectations
+
+Swift 6 strict concurrency is explicit in both Xcode settings and the SwiftPM logic package. Framework interop exceptions (`@unchecked Sendable`, `nonisolated(unsafe)`) are allowed only where Apple or third-party types require them, and touched exceptions need a short owner comment.
+
+CI is split by responsibility:
+
+- `main.yml` validates localization keys, runs SwiftPM logic tests, and runs the Xcode app-hosted build/test path with coverage.
+- `swiftlint.yml` runs SwiftLint and is triggered by Swift, config, project, script, workflow, and base-localization changes.
+
+The local unsigned Debug build may print the entitlements/code-signing warning when `CODE_SIGNING_REQUIRED=NO`; that is not a Swift warning and is expected for local verification.
+
 ---
 
 ## Settings (`Defaults`) discipline
@@ -349,9 +389,12 @@ The whole change should be ~50 lines and no changes to `EventManager` or `AppDel
 
 ```bash
 make build           # Debug build
+make build-quiet     # Debug build with filtered output
 make build-release   # Release build
 make test            # Full suite with coverage (host + logic)
+make test-quiet      # Full suite with filtered output
 make test-logic      # Hostless logic tests only — fast
+make test-logic-quiet # Hostless logic tests with filtered output
 make lint            # SwiftLint
 make validate-strings # Verify every .loco() key exists in en.lproj/Localizable.strings
 make open            # Open in Xcode
@@ -360,6 +403,24 @@ make open            # Open in Xcode
 Local dev team override: create `XCConfig/DevTeamOverride.xcconfig` (git-ignored) with `DEVELOPMENT_TEAM = <id>`.
 
 SwiftLint disabled rules: `file_length`, `function_body_length`, `type_body_length`, `type_name`, `force_cast`, `force_try`, `force_unwrapping`. Line-length warning at 200, error at 250. Do not introduce new force unwraps in touched code unless the failure is impossible and a comment explains why.
+
+---
+
+## Release-sensitive files
+
+Treat these as architecture-owned, release-sensitive files. Changes should be named in PR notes and covered by CI where possible:
+
+- `MeetingBar.xcodeproj/project.pbxproj`
+- `MeetingBar.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved`
+- `Package.swift`
+- `XCConfig/**`
+- `MeetingBar/MeetingBar.entitlements`
+- `MeetingBar/Info.plist`
+- `.github/workflows/**`
+- `Scripts/**`
+- `MeetingBar/Resources /Localization /en.lproj/Localizable.strings`
+
+For dependency changes, explain why the package remains or how it is being removed. For App Store/direct-build differences, verify app-source behavior, signing assumptions, URL schemes, sandbox capabilities, and localization validation before release.
 
 ---
 

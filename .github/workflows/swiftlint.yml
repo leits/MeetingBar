@@ -6,11 +6,23 @@ on:
       - '.github/workflows/swiftlint.yml'
       - '.swiftlint.yml'
       - '**/*.swift'
+      - 'Package.swift'
+      - 'Makefile'
+      - 'MeetingBar.xcodeproj/project.pbxproj'
+      - 'XCConfig/**'
+      - 'Scripts/**'
+      - 'MeetingBar/Resources /Localization /en.lproj/Localizable.strings'
   pull_request:
     paths:
       - '.github/workflows/swiftlint.yml'
       - '.swiftlint.yml'
       - '**/*.swift'
+      - 'Package.swift'
+      - 'Makefile'
+      - 'MeetingBar.xcodeproj/project.pbxproj'
+      - 'XCConfig/**'
+      - 'Scripts/**'
+      - 'MeetingBar/Resources /Localization /en.lproj/Localizable.strings'
 
 jobs:
   SwiftLint:

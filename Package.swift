@@ -38,12 +38,18 @@ let package = Package(
                 "Meetings/MeetingProvider.swift",
                 // UI/StatusBar
                 "UI/StatusBar/StatusBarPresentation.swift"
+            ],
+            swiftSettings: [
+                .unsafeFlags(["-strict-concurrency=complete"])
             ]
         ),
         .testTarget(
             name: "MeetingBarLogicTests",
             dependencies: ["MeetingBarLogic"],
-            path: "MeetingBarLogicTests"
+            path: "MeetingBarLogicTests",
+            swiftSettings: [
+                .unsafeFlags(["-strict-concurrency=complete"])
+            ]
         )
     ]
 )

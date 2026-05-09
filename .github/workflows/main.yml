@@ -4,9 +4,29 @@ on:
   push:
     paths:
       - '**/*.swift'
+      - 'Package.swift'
+      - 'Package.resolved'
+      - 'Makefile'
+      - 'MeetingBar.xcodeproj/project.pbxproj'
+      - 'MeetingBar.xcodeproj/xcshareddata/xcschemes/**'
+      - 'MeetingBar.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved'
+      - 'XCConfig/**'
+      - 'Scripts/**'
+      - 'MeetingBar/Resources /Localization /en.lproj/Localizable.strings'
+      - '.github/workflows/main.yml'
   pull_request:
     paths:
       - '**/*.swift'
+      - 'Package.swift'
+      - 'Package.resolved'
+      - 'Makefile'
+      - 'MeetingBar.xcodeproj/project.pbxproj'
+      - 'MeetingBar.xcodeproj/xcshareddata/xcschemes/**'
+      - 'MeetingBar.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved'
+      - 'XCConfig/**'
+      - 'Scripts/**'
+      - 'MeetingBar/Resources /Localization /en.lproj/Localizable.strings'
+      - '.github/workflows/main.yml'
 
 jobs:
   Tests:
@@ -41,6 +61,12 @@ jobs:
 
       - name: Show current version of Xcode
         run: xcodebuild -version
+
+      - name: Validate localizations
+        run: make validate-strings
+
+      - name: Run SwiftPM logic tests
+        run: make test-logic-quiet
 
       - name: Install xcpretty
         run: gem install xcpretty
