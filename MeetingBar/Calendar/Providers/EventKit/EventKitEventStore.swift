@@ -21,7 +21,7 @@ extension EKEventStore: AuthenticatedEventStore {
 
     public func signIn(forcePrompt: Bool = false) async throws {
         try await withCheckedThrowingContinuation { cont in
-            let handler: EKEventStoreRequestAccessCompletionHandler = { granted, error in
+            let handler: @Sendable (Bool, (any Error)?) -> Void = { granted, error in
                 if granted {
                     var sources = EKEventStore.shared.sources
                     sources.append(contentsOf: EKEventStore.shared.delegateSources)

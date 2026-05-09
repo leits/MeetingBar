@@ -30,7 +30,9 @@ final class LifecycleObserver {
                 object: nil,
                 queue: .main
             ) { [weak self] _ in
-                self?.onScreenLocked()
+                Task { @MainActor [weak self] in
+                    self?.onScreenLocked()
+                }
             })
 
         observers.append(
@@ -39,7 +41,9 @@ final class LifecycleObserver {
                 object: nil,
                 queue: .main
             ) { [weak self] _ in
-                self?.onScreenUnlocked()
+                Task { @MainActor [weak self] in
+                    self?.onScreenUnlocked()
+                }
             })
 
         observers.append(
@@ -48,7 +52,9 @@ final class LifecycleObserver {
                 object: nil,
                 queue: .main
             ) { [weak self] _ in
-                self?.onDidWake()
+                Task { @MainActor [weak self] in
+                    self?.onDidWake()
+                }
             })
 
         observers.append(
@@ -57,7 +63,9 @@ final class LifecycleObserver {
                 object: nil,
                 queue: .main
             ) { [weak self] _ in
-                self?.onTimezoneChanged()
+                Task { @MainActor [weak self] in
+                    self?.onTimezoneChanged()
+                }
             })
 
         observers.append(
@@ -66,7 +74,9 @@ final class LifecycleObserver {
                 object: nil,
                 queue: .main
             ) { [weak self] _ in
-                self?.onDayChanged()
+                Task { @MainActor [weak self] in
+                    self?.onDayChanged()
+                }
             })
     }
 

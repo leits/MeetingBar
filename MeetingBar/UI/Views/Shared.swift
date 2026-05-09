@@ -7,6 +7,7 @@
 //
 
 import Defaults
+import Foundation
 import LaunchAtLogin
 import SwiftUI
 import UserNotifications
@@ -104,21 +105,39 @@ struct EndEventNotificationPicker: View {
 }
 
 func checkNotificationSettings() -> (Bool, Bool) {
-    var noAlertStyle = false
-    var notificationsDisabled = false
-
     let center = UNUserNotificationCenter.current()
     let group = DispatchGroup()
+    let result = NotificationSettingsResult()
     group.enter()
 
     center.getNotificationSettings { notificationSettings in
-        noAlertStyle = notificationSettings.alertStyle != .alert
-        notificationsDisabled = notificationSettings.authorizationStatus == .denied
+        result.update(
+            noAlertStyle: notificationSettings.alertStyle != .alert,
+            notificationsDisabled: notificationSettings.authorizationStatus == .denied
+        )
         group.leave()
     }
 
     group.wait()
-    return (noAlertStyle, notificationsDisabled)
+    return result.value
+}
+
+/// `UNUserNotificationCenter.getNotificationSettings` invokes a Sendable
+/// callback. This tiny holder keeps the synchronous Preferences helper
+/// warning-free while the callback writes its result.
+private final class NotificationSettingsResult: @unchecked Sendable {
+    private let lock = NSLock()
+    private var storedValue = (noAlertStyle: false, notificationsDisabled: false)
+
+    var value: (Bool, Bool) {
+        lock.withLock { storedValue }
+    }
+
+    func update(noAlertStyle: Bool, notificationsDisabled: Bool) {
+        lock.withLock {
+            storedValue = (noAlertStyle, notificationsDisabled)
+        }
+    }
 }
 
 struct LaunchAtLoginANDPreferredLanguagePicker: View {

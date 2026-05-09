@@ -314,7 +314,7 @@ func openStrategy(for service: MeetingServices?) -> any MeetingOpenStrategy {
     return strategiesByService[service] ?? DefaultBrowserOpenStrategy()
 }
 
-private nonisolated(unsafe) let strategiesByService: [MeetingServices: any MeetingOpenStrategy] = [
+private let strategiesByService: [MeetingServices: any MeetingOpenStrategy] = [
     // Google Meet
     .meet: MeetInOneOpenStrategy(),
     .meetStream: MeetInOneOpenStrategy(),
