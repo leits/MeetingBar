@@ -17,6 +17,12 @@ final class AppModelTestHarness {
     private(set) var reconciledEventIDs: [[String]] = []
     private(set) var providerChanges: [(provider: EventStoreProvider, signOut: Bool)] = []
     private(set) var calendarSelections: [(id: String, selected: Bool)] = []
+    private(set) var openedMeetingIDs: [String] = []
+    private(set) var dismissedEventIDs: [String] = []
+    private(set) var snoozedEvents: [(id: String, action: NotificationEventTimeAction)] = []
+    private(set) var completedOnboardingProviders: [EventStoreProvider] = []
+    private(set) var openPreferencesCallCount = 0
+    private(set) var resumedOAuthURLs: [URL] = []
 
     let fixedNow: Date
 
@@ -35,7 +41,25 @@ final class AppModelTestHarness {
         toggleCalendarSelection: { [weak self] id, selected in
             self?.calendarSelections.append((id, selected))
         },
-        now: { [fixedNow] in fixedNow }
+        openMeeting: { [weak self] event in
+            self?.openedMeetingIDs.append(event.id)
+        },
+        dismissEvent: { [weak self] event in
+            self?.dismissedEventIDs.append(event.id)
+        },
+        snoozeEvent: { [weak self] event, action in
+            self?.snoozedEvents.append((event.id, action))
+        },
+        completeOnboarding: { [weak self] provider in
+            self?.completedOnboardingProviders.append(provider)
+        },
+        openPreferences: { [weak self] in
+            self?.openPreferencesCallCount += 1
+        },
+        resumeOAuthFlow: { [weak self] url in
+            self?.resumedOAuthURLs.append(url)
+        },
+        clock: .fixed(fixedNow)
     )
 
     lazy var model = AppModel(environment: environment)

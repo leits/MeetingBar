@@ -11,6 +11,23 @@ import Combine
 @preconcurrency import Defaults
 import Foundation
 
+// MARK: - Clock
+
+/// One place for workflow code to ask "what time is it?"
+///
+/// The app still formats dates directly in views where that is presentation
+/// work. AppModel decisions use this clock so tests can make time-sensitive
+/// behavior deterministic.
+struct AppClock {
+    var now: @Sendable () -> Date
+
+    static let live = AppClock(now: { Date() })
+
+    static func fixed(_ date: Date) -> AppClock {
+        AppClock(now: { date })
+    }
+}
+
 // MARK: - State
 
 /// Complete observable state of the application at a point in time.
@@ -34,9 +51,17 @@ struct AppState: Equatable {
     // MARK: Derived
 
     /// Next upcoming event that has not been dismissed and is not all-day.
-    var nextEvent: MBEvent? {
-        events.first { !$0.isAllDay && $0.endDate > Date() }
+    func nextEvent(now: Date, linkRequired: Bool = false) -> MBEvent? {
+        events.nextEvent(linkRequired: linkRequired, now: now)
     }
+}
+
+// MARK: - Routing
+
+enum AppRoute: Equatable {
+    case preferences
+    case oauthCallback(URL)
+    case unknown(URL)
 }
 
 // MARK: - Action
@@ -65,6 +90,7 @@ enum AppAction {
     case eventsLoaded([MBEvent])
     case calendarRefreshFailed(Error)
     case providerChanged(EventStoreProvider)
+    case selectCalendar(id: String, selected: Bool)
 
     // Settings
     case settingsChanged
@@ -75,8 +101,14 @@ enum AppAction {
 
     // Notification responses
     case joinMeeting(eventID: String)
+    case joinNearestMeeting
     case dismissMeeting(eventID: String)
+    case dismissNearestMeeting
     case snoozeMeeting(eventID: String, action: NotificationEventTimeAction)
+
+    // Onboarding / external routes
+    case onboardingCompleted(EventStoreProvider)
+    case openRoute(AppRoute)
 
     // Notification reconcile
     case reconcileNotifications
@@ -84,9 +116,9 @@ enum AppAction {
 
 // MARK: - Environment
 
-/// Injectable side-effect clients used by `AppModel`.
+/// Injectable side-effect wiring used by `AppModel`.
 ///
-/// Production code injects the real implementations; tests inject fakes.
+/// Production code injects the real app components; tests inject fakes.
 /// `AppEnvironment` must not import AppKit, EventKit, UserNotifications, or
 /// AppAuth so that `AppModel` remains hostless-testable.
 struct AppEnvironment {
@@ -110,13 +142,34 @@ struct AppEnvironment {
     /// observes the underlying setting and re-fetches automatically.
     var toggleCalendarSelection: @MainActor (String, Bool) -> Void
 
-    /// Current wall-clock time (injectable for tests).
-    var now: @Sendable () -> Date
+    /// Open the meeting for an event. Later PRs move every entry point onto
+    /// this route; for now it lets AppModel own the action vocabulary.
+    var openMeeting: @MainActor (MBEvent) -> Void
+
+    /// Dismiss an event from next-meeting workflows.
+    var dismissEvent: @MainActor (MBEvent) -> Void
+
+    /// Snooze an event notification.
+    var snoozeEvent: @MainActor (MBEvent, NotificationEventTimeAction) async -> Void
+
+    /// Finish onboarding by persisting completion and selecting the provider.
+    var completeOnboarding: @MainActor (EventStoreProvider) async -> Void
+
+    /// Open Preferences from an app URL route.
+    var openPreferences: @MainActor () -> Void
+
+    /// Resume an OAuth callback from an app URL route.
+    var resumeOAuthFlow: @MainActor (URL) -> Void
+
+    /// Current wall-clock time for workflow decisions.
+    var clock: AppClock
 
     @MainActor
     static func live(
         eventManager: EventManager,
-        notificationScheduler: NotificationScheduler
+        notificationScheduler: NotificationScheduler,
+        openPreferences: @escaping @MainActor () -> Void = {},
+        resumeOAuthFlow: @escaping @MainActor (URL) -> Void = { _ in }
     ) -> AppEnvironment {
         AppEnvironment(
             eventsPublisher: eventManager.$events.eraseToAnyPublisher(),
@@ -146,7 +199,23 @@ struct AppEnvironment {
                     Defaults[.selectedCalendarIDs].removeAll { $0 == id }
                 }
             },
-            now: { Date() }
+            openMeeting: { event in
+                event.openMeeting()
+            },
+            dismissEvent: { _ in
+                // PR4 moves dismissal persistence into AppSettings helpers,
+                // then status bar actions switch to this AppModel route.
+            },
+            snoozeEvent: { event, action in
+                await snoozeEventNotification(event, action)
+            },
+            completeOnboarding: { provider in
+                Defaults[.onboardingCompleted] = true
+                await eventManager.changeEventStoreProvider(provider)
+            },
+            openPreferences: openPreferences,
+            resumeOAuthFlow: resumeOAuthFlow,
+            clock: .live
         )
     }
 }
@@ -189,63 +258,20 @@ final class AppModel: ObservableObject {
 
     func send(_ action: AppAction) {
         switch action {
-        case .launched:
-            scheduleRefresh()
-
-        case .willTerminate:
-            refreshTask?.cancel()
-
-        case .screenLocked:
-            state.screenIsLocked = true
-
-        case .screenUnlocked:
-            state.screenIsLocked = false
-            scheduleRefresh()
-
-        case .didWake, .timezoneChanged, .dayChanged, .calendarStoreChanged:
-            scheduleRefresh()
-
-        case .refreshCalendars:
-            scheduleRefresh()
-
-        case .calendarsLoaded(let calendars, let provider):
-            state.calendars = calendars
-            state.activeProvider = provider
-
-        case .eventsLoaded(let events):
-            state.events = events
-            send(.reconcileNotifications)
-
-        case .calendarRefreshFailed:
-            // preserve last known events
-            break
-
-        case .providerChanged(let provider):
-            state.activeProvider = provider
-            state.calendars = []
-            state.events = []
-            scheduleRefresh()
-
-        case .settingsChanged:
-            scheduleRefresh()
-
-        case .changeProvider(let provider, let signOut):
-            state.activeProvider = provider
-            state.calendars = []
-            state.events = []
-            Task {
-                await environment.changeProvider(provider, signOut)
-            }
-
+        case .launched, .willTerminate, .screenLocked, .screenUnlocked,
+             .didWake, .timezoneChanged, .dayChanged:
+            handleLifecycleAction(action)
+        case .calendarStoreChanged, .refreshCalendars, .calendarsLoaded,
+             .eventsLoaded, .calendarRefreshFailed, .providerChanged,
+             .selectCalendar, .changeProvider, .settingsChanged:
+            handleCalendarAction(action)
+        case .joinMeeting, .joinNearestMeeting, .dismissMeeting,
+             .dismissNearestMeeting, .snoozeMeeting:
+            handleMeetingAction(action)
+        case .onboardingCompleted, .openRoute:
+            handleExternalAction(action)
         case .reconcileNotifications:
-            let events = state.events
-            Task {
-                await environment.reconcileNotifications(events)
-            }
-
-        case .joinMeeting, .dismissMeeting, .snoozeMeeting:
-            // Response actions handled by NotificationCenterDelegate for now.
-            break
+            reconcileNotificationsFromState()
         }
     }
 
@@ -268,10 +294,143 @@ final class AppModel: ObservableObject {
     /// Add or remove a calendar from the user's selection. Routes through
     /// `AppEnvironment` so the model stays free of `Defaults` writes.
     func toggleCalendarSelection(id: String, selected: Bool) {
-        environment.toggleCalendarSelection(id, selected)
+        send(.selectCalendar(id: id, selected: selected))
+    }
+
+    func nextEvent(linkRequired: Bool = false) -> MBEvent? {
+        state.nextEvent(now: environment.clock.now(), linkRequired: linkRequired)
+    }
+
+    /// Onboarding is an async workflow because provider authorization can
+    /// prompt the user. The action case still exists for non-blocking routes,
+    /// while AppDelegate awaits this method before moving the onboarding UI on.
+    func completeOnboarding(with provider: EventStoreProvider) async {
+        state.activeProvider = provider
+        state.calendars = []
+        state.events = []
+        await environment.completeOnboarding(provider)
     }
 
     // MARK: Private
+
+    private func event(withID id: String) -> MBEvent? {
+        state.events.first { $0.id == id }
+    }
+
+    private func handleLifecycleAction(_ action: AppAction) {
+        switch action {
+        case .launched:
+            scheduleRefresh()
+        case .willTerminate:
+            refreshTask?.cancel()
+        case .screenLocked:
+            state.screenIsLocked = true
+        case .screenUnlocked:
+            state.screenIsLocked = false
+            scheduleRefresh()
+        case .didWake, .timezoneChanged, .dayChanged:
+            scheduleRefresh()
+        default:
+            break
+        }
+    }
+
+    private func handleCalendarAction(_ action: AppAction) {
+        switch action {
+        case .calendarStoreChanged, .refreshCalendars, .settingsChanged:
+            scheduleRefresh()
+        case .calendarsLoaded(let calendars, let provider):
+            state.calendars = calendars
+            state.activeProvider = provider
+        case .eventsLoaded(let events):
+            state.events = events
+            send(.reconcileNotifications)
+        case .calendarRefreshFailed:
+            break
+        case .providerChanged(let provider):
+            resetProviderState(to: provider)
+            scheduleRefresh()
+        case .selectCalendar(let id, let selected):
+            environment.toggleCalendarSelection(id, selected)
+        case .changeProvider(let provider, let signOut):
+            resetProviderState(to: provider)
+            Task {
+                await environment.changeProvider(provider, signOut)
+            }
+        default:
+            break
+        }
+    }
+
+    private func handleMeetingAction(_ action: AppAction) {
+        switch action {
+        case .joinMeeting(let eventID):
+            performWithEvent(id: eventID) { event in
+                environment.openMeeting(event)
+            }
+        case .joinNearestMeeting:
+            if let event = state.nextEvent(now: environment.clock.now()) {
+                environment.openMeeting(event)
+            }
+        case .dismissMeeting(let eventID):
+            performWithEvent(id: eventID) { event in
+                environment.dismissEvent(event)
+            }
+        case .dismissNearestMeeting:
+            if let event = state.nextEvent(now: environment.clock.now()) {
+                environment.dismissEvent(event)
+            }
+        case .snoozeMeeting(let eventID, let action):
+            guard let event = event(withID: eventID) else { return }
+            Task {
+                await environment.snoozeEvent(event, action)
+            }
+        default:
+            break
+        }
+    }
+
+    private func handleExternalAction(_ action: AppAction) {
+        switch action {
+        case .onboardingCompleted(let provider):
+            Task {
+                await completeOnboarding(with: provider)
+            }
+        case .openRoute(let route):
+            handleRoute(route)
+        default:
+            break
+        }
+    }
+
+    private func handleRoute(_ route: AppRoute) {
+        switch route {
+        case .preferences:
+            environment.openPreferences()
+        case .oauthCallback(let url):
+            environment.resumeOAuthFlow(url)
+        case .unknown:
+            break
+        }
+    }
+
+    private func performWithEvent(id: String, perform: (MBEvent) -> Void) {
+        guard let event = event(withID: id) else { return }
+        perform(event)
+    }
+
+    private func reconcileNotificationsFromState() {
+        let events = state.events
+        Task {
+            await environment.reconcileNotifications(events)
+        }
+    }
+
+    private func resetProviderState(to provider: EventStoreProvider) {
+        state.activeProvider = provider
+        state.calendars = []
+        state.events = []
+    }
 
     private func scheduleRefresh() {
         refreshTask?.cancel()

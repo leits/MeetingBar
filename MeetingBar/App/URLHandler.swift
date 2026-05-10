@@ -10,14 +10,15 @@ import Foundation
 /// Owned by `AppDelegate`; decouples URL dispatch logic from the app delegate.
 @MainActor
 final class URLHandler {
-    var onOpenPreferences: () -> Void = {}
-    var onOAuthCallback: (URL) -> Void = { _ in }
-
-    func handle(url: URL) {
-        if url == URL(string: "meetingbar://preferences") {
-            onOpenPreferences()
-        } else {
-            onOAuthCallback(url)
+    func route(for url: URL) -> AppRoute {
+        guard url.scheme == "meetingbar" else {
+            return .oauthCallback(url)
         }
+
+        if url.host == "preferences" {
+            return .preferences
+        }
+
+        return .unknown(url)
     }
 }

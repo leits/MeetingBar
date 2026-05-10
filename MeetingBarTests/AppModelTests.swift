@@ -24,7 +24,7 @@ final class AppModelTests: BaseTestCase {
         let event = makeFakeEvent(
             id: "event",
             start: harness.fixedNow,
-            end: harness.fixedNow.addingTimeInterval(1_800)
+            end: harness.fixedNow.addingTimeInterval(1800)
         )
         harness.model.send(.calendarsLoaded([calendar], provider: .macOSEventKit))
         harness.model.send(.eventsLoaded([event]))
@@ -42,7 +42,7 @@ final class AppModelTests: BaseTestCase {
     func testCalendarSelectionDelegatesToEnvironment() {
         let harness = AppModelTestHarness()
 
-        harness.model.toggleCalendarSelection(id: "cal", selected: true)
+        harness.model.send(.selectCalendar(id: "cal", selected: true))
         harness.model.toggleCalendarSelection(id: "cal", selected: false)
 
         XCTAssertEqual(harness.calendarSelections.map(\.id), ["cal", "cal"])
@@ -54,7 +54,7 @@ final class AppModelTests: BaseTestCase {
         let event = makeFakeEvent(
             id: "event",
             start: harness.fixedNow,
-            end: harness.fixedNow.addingTimeInterval(1_800)
+            end: harness.fixedNow.addingTimeInterval(1800)
         )
 
         harness.model.send(.eventsLoaded([event]))
@@ -62,5 +62,85 @@ final class AppModelTests: BaseTestCase {
 
         XCTAssertEqual(harness.model.state.events.map(\.id), ["event"])
         XCTAssertEqual(harness.reconciledEventIDs, [["event"]])
+    }
+
+    func testNearestEventUsesInjectedClock() {
+        let now = Date(timeIntervalSince1970: 1_700_000_000)
+        let harness = AppModelTestHarness(now: now)
+        let endedEvent = makeFakeEvent(
+            id: "ended",
+            start: now.addingTimeInterval(-3600),
+            end: now.addingTimeInterval(-1800)
+        )
+        let nextEvent = makeFakeEvent(
+            id: "next",
+            start: now.addingTimeInterval(60),
+            end: now.addingTimeInterval(1800)
+        )
+
+        harness.model.send(.eventsLoaded([endedEvent, nextEvent]))
+
+        XCTAssertEqual(harness.model.nextEvent()?.id, "next")
+    }
+
+    func testJoinDismissAndSnoozeActionsUseEventsFromState() async {
+        let harness = AppModelTestHarness()
+        let event = makeFakeEvent(
+            id: "event",
+            start: harness.fixedNow,
+            end: harness.fixedNow.addingTimeInterval(1800)
+        )
+        harness.model.send(.eventsLoaded([event]))
+
+        harness.model.send(.joinMeeting(eventID: "event"))
+        harness.model.send(.dismissMeeting(eventID: "event"))
+        harness.model.send(.snoozeMeeting(eventID: "event", action: .tenMinuteLater))
+        await harness.flushAsyncActions()
+
+        XCTAssertEqual(harness.openedMeetingIDs, ["event"])
+        XCTAssertEqual(harness.dismissedEventIDs, ["event"])
+        XCTAssertEqual(harness.snoozedEvents.map(\.id), ["event"])
+        XCTAssertEqual(harness.snoozedEvents.map(\.action.rawValue), [
+            NotificationEventTimeAction.tenMinuteLater.rawValue
+        ])
+    }
+
+    func testNearestJoinAndDismissUseInjectedClock() {
+        let now = Date(timeIntervalSince1970: 1_700_000_000)
+        let harness = AppModelTestHarness(now: now)
+        let event = makeFakeEvent(
+            id: "next",
+            start: now.addingTimeInterval(60),
+            end: now.addingTimeInterval(1800)
+        )
+        harness.model.send(.eventsLoaded([event]))
+
+        harness.model.send(.joinNearestMeeting)
+        harness.model.send(.dismissNearestMeeting)
+
+        XCTAssertEqual(harness.openedMeetingIDs, ["next"])
+        XCTAssertEqual(harness.dismissedEventIDs, ["next"])
+    }
+
+    func testOnboardingCompletionDelegatesProviderSelection() async {
+        let harness = AppModelTestHarness()
+
+        harness.model.send(.onboardingCompleted(.googleCalendar))
+        await harness.flushAsyncActions()
+
+        XCTAssertEqual(harness.model.state.activeProvider, .googleCalendar)
+        XCTAssertEqual(harness.completedOnboardingProviders, [.googleCalendar])
+    }
+
+    func testOpenRouteDelegatesToAppBoundaries() {
+        let harness = AppModelTestHarness()
+        let oauthURL = URL(string: "com.googleusercontent.apps.123:/oauthredirect?code=abc")!
+
+        harness.model.send(.openRoute(.preferences))
+        harness.model.send(.openRoute(.oauthCallback(oauthURL)))
+        harness.model.send(.openRoute(.unknown(URL(string: "meetingbar://unknown")!)))
+
+        XCTAssertEqual(harness.openPreferencesCallCount, 1)
+        XCTAssertEqual(harness.resumedOAuthURLs, [oauthURL])
     }
 }

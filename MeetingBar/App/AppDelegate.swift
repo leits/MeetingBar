@@ -72,7 +72,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         let env = AppEnvironment.live(
             eventManager: eventManager,
-            notificationScheduler: notificationScheduler
+            notificationScheduler: notificationScheduler,
+            openPreferences: { [weak self] in
+                self?.openPreferencesWindow(nil)
+            },
+            resumeOAuthFlow: { [weak self] url in
+                guard let eventManager = self?.eventManager else { return }
+                eventManager.repository.resumeAuthorizationFlow(with: url)
+            }
         )
         let model = AppModel(environment: env)
         appModel = model
@@ -122,11 +129,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             self?.appModel?.handleDayChange()
         }
         lifecycleObserver.start()
-
-        urlHandler.onOpenPreferences = { [weak self] in self?.openPreferencesWindow(nil) }
-        urlHandler.onOAuthCallback = { [weak self] url in
-            self?.eventManager.repository.resumeAuthorizationFlow(with: url)
-        }
 
         // Kick off the initial refresh through the model.
         model.handleLaunch()
@@ -194,10 +196,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func onboardingCompleted(with provider: EventStoreProvider) async {
         eventManager = await EventManager()
-        Defaults[.onboardingCompleted] = true
         setup()
         onboardingHandler?.appModel = appModel
-        await eventManager.changeEventStoreProvider(provider)
+        await appModel?.completeOnboarding(with: provider)
     }
 
     @objc
@@ -313,7 +314,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     ) {
         if let string = event.paramDescriptor(forKeyword: keyDirectObject)?.stringValue,
             let url = URL(string: string) {
-            urlHandler.handle(url: url)
+            appModel?.send(.openRoute(urlHandler.route(for: url)))
         }
     }
 
