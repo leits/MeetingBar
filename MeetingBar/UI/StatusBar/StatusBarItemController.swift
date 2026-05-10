@@ -35,6 +35,14 @@ enum MenuStyleConstants {
     }
 }
 
+struct StatusBarDependencies {
+    var events: @MainActor () -> [MBEvent] = { [] }
+    var send: @MainActor (AppAction) -> Void = { _ in }
+    var openPreferences: @MainActor () -> Void = {}
+    var openChangelog: @MainActor () -> Void = {}
+    var quit: @MainActor () -> Void = {}
+}
+
 /// creates the menu in the system status bar, creates the menu items and controls the whole lifecycle.
 @MainActor
 final class StatusBarItemController {
@@ -43,16 +51,16 @@ final class StatusBarItemController {
 
     /// Current event list, driven by the AppModel state.
     /// A non-nil `_eventsOverride` takes precedence (used by tests to inject
-    /// events without wiring up a full AppDelegate/AppModel chain).
+    /// events without wiring up the full app model chain).
     private var _eventsOverride: [MBEvent]?
     var events: [MBEvent] {
-        get { _eventsOverride ?? (appdelegate?.appModel?.state.events ?? []) }
+        get { _eventsOverride ?? dependencies.events() }
         set { _eventsOverride = newValue }
     }
 
     let installationDate = getInstallationDate()
 
-    weak var appdelegate: AppDelegate!
+    private var dependencies = StatusBarDependencies()
 
     private var cancellables = Set<AnyCancellable>()
 
@@ -146,7 +154,7 @@ final class StatusBarItemController {
     }
 
     private func reconcileNotifications() {
-        appdelegate?.appModel?.reconcileNotifications()
+        dependencies.send(.reconcileNotifications)
     }
 
     private func setupKeyboardShortcuts() {
@@ -163,7 +171,7 @@ final class StatusBarItemController {
         KeyboardShortcuts.onKeyUp(for: .openClipboardShortcut, action: openLinkFromClipboard)
 
         KeyboardShortcuts.onKeyUp(for: .toggleMeetingTitleVisibilityShortcut) {
-            Defaults[.hideMeetingTitle].toggle()
+            Task { @MainActor in self.dependencies.send(.toggleMeetingTitleVisibility) }
         }
     }
 
@@ -186,8 +194,8 @@ final class StatusBarItemController {
         statusItem.menu = nil
     }
 
-    func setAppDelegate(appdelegate: AppDelegate) {
-        self.appdelegate = appdelegate
+    func configure(dependencies: StatusBarDependencies) {
+        self.dependencies = dependencies
     }
 
     func updateTitle() {
@@ -327,7 +335,7 @@ final class StatusBarItemController {
     @objc
     func joinNextMeeting() {
         if let nextEvent = events.nextEvent() {
-            nextEvent.openMeeting()
+            dependencies.send(.joinMeeting(eventID: nextEvent.id))
         } else {
             sendNotification("next_meeting_empty_title".loco(), "next_meeting_empty_message".loco())
         }
@@ -336,7 +344,7 @@ final class StatusBarItemController {
     @objc
     func dismissNextMeetingAction() {
         if let nextEvent = events.nextEvent() {
-            AppSettings.dismissEvent(nextEvent)
+            dependencies.send(.dismissMeeting(eventID: nextEvent.id))
             sendNotification(
                 "notification_next_meeting_dismissed_title".loco(nextEvent.title),
                 "notification_next_meeting_dismissed_message".loco())
@@ -349,7 +357,7 @@ final class StatusBarItemController {
 
     @objc
     func undismissMeetingsActions() {
-        AppSettings.clearDismissedEvents()
+        dependencies.send(.clearDismissedMeetings)
         sendNotification(
             "notification_all_dismissals_removed_title".loco(),
             "notification_all_dismissals_removed_message".loco())
@@ -366,7 +374,7 @@ final class StatusBarItemController {
 
     @objc
     func toggleMeetingTitleVisibility() {
-        Defaults[.hideMeetingTitle].toggle()
+        dependencies.send(.toggleMeetingTitleVisibility)
     }
 
     @objc
@@ -384,7 +392,7 @@ final class StatusBarItemController {
     @objc
     func clickOnEvent(sender: NSMenuItem) {
         if let event: MBEvent = sender.representedObject as? MBEvent {
-            event.openMeeting()
+            dependencies.send(.joinMeeting(eventID: event.id))
         }
     }
 
@@ -405,11 +413,7 @@ final class StatusBarItemController {
     }
 
     @objc func handleManualRefresh() {
-        Task {
-            do { try await self.appdelegate.eventManager.refreshSources() } catch {
-                NSLog("Refresh failed: \(error)")
-            }
-        }
+        dependencies.send(.refreshCalendars)
     }
 
     @objc
@@ -420,7 +424,7 @@ final class StatusBarItemController {
     }
 
     func dismiss(event: MBEvent) {
-        AppSettings.dismissEvent(event)
+        dependencies.send(.dismissMeeting(eventID: event.id))
 
         updateTitle()
         updateMenu()
@@ -430,7 +434,7 @@ final class StatusBarItemController {
     @objc
     func undismissEvent(sender: NSMenuItem) {
         if let event: MBEvent = sender.representedObject as? MBEvent {
-            AppSettings.undismissEvent(id: event.id)
+            dependencies.send(.undismissMeeting(eventID: event.id))
 
             updateTitle()
             updateMenu()
@@ -464,6 +468,21 @@ final class StatusBarItemController {
         if let event: MBEvent = sender.representedObject as? MBEvent {
             openInFantastical(startDate: event.startDate, title: event.title)
         }
+    }
+
+    @objc
+    func openPreferencesAction() {
+        dependencies.openPreferences()
+    }
+
+    @objc
+    func openChangelogAction() {
+        dependencies.openChangelog()
+    }
+
+    @objc
+    func quitAction() {
+        dependencies.quit()
     }
 }
 

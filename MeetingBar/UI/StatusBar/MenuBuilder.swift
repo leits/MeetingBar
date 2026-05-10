@@ -190,10 +190,11 @@ struct MenuBuilder {
         if showChangelogItem {
             let changelogItem = NSMenuItem(
                 title: "status_bar_whats_new".loco(),
-                action: #selector(AppDelegate.openChangelogWindow),
+                action: #selector(StatusBarItemController.openChangelogAction),
                 keyEquivalent: ""
             )
             changelogItem.image = NSImage(named: NSImage.statusAvailableName)
+            changelogItem.target = target
             items.append(changelogItem)
         }
 
@@ -219,16 +220,18 @@ struct MenuBuilder {
 
         let preferencesItem = NSMenuItem(
             title: "\("status_bar_preferences".loco())…",
-            action: #selector(AppDelegate.openPreferencesWindow),
+            action: #selector(StatusBarItemController.openPreferencesAction),
             keyEquivalent: ","
         )
+        preferencesItem.target = target
         items.append(preferencesItem)
 
         let quitItem = NSMenuItem(
             title: "status_bar_quit".loco(),
-            action: #selector(AppDelegate.quit),
+            action: #selector(StatusBarItemController.quitAction),
             keyEquivalent: "q"
         )
+        quitItem.target = target
         items.append(quitItem)
 
         return items

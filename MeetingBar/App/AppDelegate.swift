@@ -67,7 +67,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func setup() {
-        statusBarItem.setAppDelegate(appdelegate: self)
         notificationScheduler.setActionSink(self)
 
         let env = AppEnvironment.live(
@@ -83,6 +82,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         )
         let model = AppModel(environment: env)
         appModel = model
+        AppRuntimeBridge.shared.install(appModel: model)
+
+        statusBarItem.configure(dependencies: StatusBarDependencies(
+            events: { [weak model] in model?.state.events ?? [] },
+            send: { [weak model] action in model?.send(action) },
+            openPreferences: { [weak self] in self?.openPreferencesWindow(nil) },
+            openChangelog: { [weak self] in self?.openChangelogWindow(nil) },
+            quit: { [weak self] in self?.quit(nil) }
+        ))
 
         // Drive status bar from AppModel state: update title and menu whenever
         // events change.
@@ -319,7 +327,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc
-    func quit(_: NSStatusBarButton) {
+    func quit(_: Any?) {
         statusLoopTask?.cancel()
         NSApplication.shared.terminate(self)
     }

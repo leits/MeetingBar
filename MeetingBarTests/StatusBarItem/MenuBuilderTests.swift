@@ -149,7 +149,7 @@ final class MenuBuilderTests: BaseTestCase {
 
         XCTAssertEqual(
             items.last?.action,
-            #selector(AppDelegate.quit),
+            #selector(StatusBarItemController.quitAction),
             "Last item must be Quit")
     }
 
@@ -566,6 +566,80 @@ final class StatusBarItemControllerPresentationTests: BaseTestCase {
             ) as? NSParagraphStyle
         XCTAssertEqual(paragraphStyle?.alignment, .center)
         XCTAssertEqual(paragraphStyle?.lineHeightMultiple ?? 0, 0.7, accuracy: 0.001)
+    }
+
+    func test_actionsUseInjectedAppActionSender() {
+        configureStatusBarDefaults()
+        let controller = StatusBarItemController()
+        defer { NSStatusBar.system.removeStatusItem(controller.statusItem) }
+        let event = makeStatusEvent()
+        var joinedEventIDs: [String] = []
+        var dismissedEventIDs: [String] = []
+        var undismissedEventIDs: [String] = []
+        var didClearDismissals = false
+        var didRefresh = false
+        var didToggleTitle = false
+
+        controller.configure(dependencies: StatusBarDependencies(
+            send: { action in
+                switch action {
+                case .joinMeeting(let eventID):
+                    joinedEventIDs.append(eventID)
+                case .dismissMeeting(let eventID):
+                    dismissedEventIDs.append(eventID)
+                case .undismissMeeting(let eventID):
+                    undismissedEventIDs.append(eventID)
+                case .clearDismissedMeetings:
+                    didClearDismissals = true
+                case .refreshCalendars:
+                    didRefresh = true
+                case .toggleMeetingTitleVisibility:
+                    didToggleTitle = true
+                default:
+                    break
+                }
+            }
+        ))
+        controller.events = [event]
+
+        controller.joinNextMeeting()
+        controller.dismissNextMeetingAction()
+        controller.dismiss(event: event)
+        let item = NSMenuItem()
+        item.representedObject = event
+        controller.undismissEvent(sender: item)
+        controller.undismissMeetingsActions()
+        controller.handleManualRefresh()
+        controller.toggleMeetingTitleVisibility()
+
+        XCTAssertEqual(joinedEventIDs, [event.id])
+        XCTAssertEqual(dismissedEventIDs, [event.id, event.id])
+        XCTAssertEqual(undismissedEventIDs, [event.id])
+        XCTAssertTrue(didClearDismissals)
+        XCTAssertTrue(didRefresh)
+        XCTAssertTrue(didToggleTitle)
+    }
+
+    func test_windowActionsUseInjectedClosures() {
+        let controller = StatusBarItemController()
+        defer { NSStatusBar.system.removeStatusItem(controller.statusItem) }
+        var didOpenPreferences = false
+        var didOpenChangelog = false
+        var didQuit = false
+
+        controller.configure(dependencies: StatusBarDependencies(
+            openPreferences: { didOpenPreferences = true },
+            openChangelog: { didOpenChangelog = true },
+            quit: { didQuit = true }
+        ))
+
+        controller.openPreferencesAction()
+        controller.openChangelogAction()
+        controller.quitAction()
+
+        XCTAssertTrue(didOpenPreferences)
+        XCTAssertTrue(didOpenChangelog)
+        XCTAssertTrue(didQuit)
     }
 
     private func configureStatusBarDefaults() {

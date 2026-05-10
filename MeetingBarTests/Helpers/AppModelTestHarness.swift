@@ -19,6 +19,9 @@ final class AppModelTestHarness {
     private(set) var calendarSelections: [(id: String, selected: Bool)] = []
     private(set) var openedMeetingIDs: [String] = []
     private(set) var dismissedEventIDs: [String] = []
+    private(set) var undismissedEventIDs: [String] = []
+    private(set) var clearDismissedEventsCallCount = 0
+    private(set) var toggleMeetingTitleVisibilityCallCount = 0
     private(set) var snoozedEvents: [(id: String, action: NotificationEventTimeAction)] = []
     private(set) var completedOnboardingProviders: [EventStoreProvider] = []
     private(set) var openPreferencesCallCount = 0
@@ -46,6 +49,15 @@ final class AppModelTestHarness {
         },
         dismissEvent: { [weak self] event in
             self?.dismissedEventIDs.append(event.id)
+        },
+        undismissEvent: { [weak self] eventID in
+            self?.undismissedEventIDs.append(eventID)
+        },
+        clearDismissedEvents: { [weak self] in
+            self?.clearDismissedEventsCallCount += 1
+        },
+        toggleMeetingTitleVisibility: { [weak self] in
+            self?.toggleMeetingTitleVisibilityCallCount += 1
         },
         snoozeEvent: { [weak self] event, action in
             self?.snoozedEvents.append((event.id, action))

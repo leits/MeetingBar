@@ -255,6 +255,11 @@ extension AppSettings {
     }
 
     @MainActor
+    static func toggleMeetingTitleVisibility() {
+        Defaults[.hideMeetingTitle].toggle()
+    }
+
+    @MainActor
     static func setCalendarSelection(id: String, selected: Bool) {
         if selected {
             if !Defaults[.selectedCalendarIDs].contains(id) {

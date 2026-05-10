@@ -94,11 +94,15 @@ final class AppModelTests: BaseTestCase {
 
         harness.model.send(.joinMeeting(eventID: "event"))
         harness.model.send(.dismissMeeting(eventID: "event"))
+        harness.model.send(.undismissMeeting(eventID: "event"))
+        harness.model.send(.clearDismissedMeetings)
         harness.model.send(.snoozeMeeting(eventID: "event", action: .tenMinuteLater))
         await harness.flushAsyncActions()
 
         XCTAssertEqual(harness.openedMeetingIDs, ["event"])
         XCTAssertEqual(harness.dismissedEventIDs, ["event"])
+        XCTAssertEqual(harness.undismissedEventIDs, ["event"])
+        XCTAssertEqual(harness.clearDismissedEventsCallCount, 1)
         XCTAssertEqual(harness.snoozedEvents.map(\.id), ["event"])
         XCTAssertEqual(harness.snoozedEvents.map(\.action.rawValue), [
             NotificationEventTimeAction.tenMinuteLater.rawValue
@@ -120,6 +124,14 @@ final class AppModelTests: BaseTestCase {
 
         XCTAssertEqual(harness.openedMeetingIDs, ["next"])
         XCTAssertEqual(harness.dismissedEventIDs, ["next"])
+    }
+
+    func testToggleMeetingTitleVisibilityDelegatesToEnvironment() {
+        let harness = AppModelTestHarness()
+
+        harness.model.send(.toggleMeetingTitleVisibility)
+
+        XCTAssertEqual(harness.toggleMeetingTitleVisibilityCallCount, 1)
     }
 
     func testOnboardingCompletionDelegatesProviderSelection() async {

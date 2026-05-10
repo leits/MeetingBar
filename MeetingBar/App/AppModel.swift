@@ -93,6 +93,7 @@ enum AppAction {
 
     // Settings
     case settingsChanged
+    case toggleMeetingTitleVisibility
 
     // Provider
     /// Switch the active calendar provider.  `signOut = true` drops the current OAuth session first.
@@ -103,6 +104,8 @@ enum AppAction {
     case joinNearestMeeting
     case dismissMeeting(eventID: String)
     case dismissNearestMeeting
+    case undismissMeeting(eventID: String)
+    case clearDismissedMeetings
     case snoozeMeeting(eventID: String, action: NotificationEventTimeAction)
 
     // Onboarding / external routes
@@ -147,6 +150,15 @@ struct AppEnvironment {
 
     /// Dismiss an event from next-meeting workflows.
     var dismissEvent: @MainActor (MBEvent) -> Void
+
+    /// Remove one event dismissal.
+    var undismissEvent: @MainActor (String) -> Void
+
+    /// Remove all event dismissals.
+    var clearDismissedEvents: @MainActor () -> Void
+
+    /// Toggle whether meeting names are hidden in status bar/menu surfaces.
+    var toggleMeetingTitleVisibility: @MainActor () -> Void
 
     /// Snooze an event notification.
     var snoozeEvent: @MainActor (MBEvent, NotificationEventTimeAction) async -> Void
@@ -197,6 +209,15 @@ struct AppEnvironment {
             },
             dismissEvent: { event in
                 AppSettings.dismissEvent(event)
+            },
+            undismissEvent: { eventID in
+                AppSettings.undismissEvent(id: eventID)
+            },
+            clearDismissedEvents: {
+                AppSettings.clearDismissedEvents()
+            },
+            toggleMeetingTitleVisibility: {
+                AppSettings.toggleMeetingTitleVisibility()
             },
             snoozeEvent: { event, action in
                 await snoozeEventNotification(event, action)
@@ -255,10 +276,12 @@ final class AppModel: ObservableObject {
             handleLifecycleAction(action)
         case .calendarStoreChanged, .refreshCalendars, .calendarsLoaded,
              .eventsLoaded, .calendarRefreshFailed, .providerChanged,
-             .selectCalendar, .changeProvider, .settingsChanged:
+             .selectCalendar, .changeProvider, .settingsChanged,
+             .toggleMeetingTitleVisibility:
             handleCalendarAction(action)
         case .joinMeeting, .joinNearestMeeting, .dismissMeeting,
-             .dismissNearestMeeting, .snoozeMeeting:
+             .dismissNearestMeeting, .undismissMeeting, .clearDismissedMeetings,
+             .snoozeMeeting:
             handleMeetingAction(action)
         case .onboardingCompleted, .openRoute:
             handleExternalAction(action)
@@ -331,6 +354,8 @@ final class AppModel: ObservableObject {
         switch action {
         case .calendarStoreChanged, .refreshCalendars, .settingsChanged:
             scheduleRefresh()
+        case .toggleMeetingTitleVisibility:
+            environment.toggleMeetingTitleVisibility()
         case .calendarsLoaded(let calendars, let provider):
             state.calendars = calendars
             state.activeProvider = provider
@@ -372,6 +397,10 @@ final class AppModel: ObservableObject {
             if let event = state.nextEvent(now: environment.clock.now()) {
                 environment.dismissEvent(event)
             }
+        case .undismissMeeting(let eventID):
+            environment.undismissEvent(eventID)
+        case .clearDismissedMeetings:
+            environment.clearDismissedEvents()
         case .snoozeMeeting(let eventID, let action):
             guard let event = event(withID: eventID) else { return }
             Task {

@@ -63,6 +63,14 @@ final class AppSettingsTests: BaseTestCase {
         XCTAssertFalse(AppSettings.current.statusBar.hideMeetingTitle)
     }
 
+    func testToggleMeetingTitleVisibilityWriteHelper() {
+        AppSettings.toggleMeetingTitleVisibility()
+        XCTAssertTrue(Defaults[.hideMeetingTitle])
+
+        AppSettings.toggleMeetingTitleVisibility()
+        XCTAssertFalse(Defaults[.hideMeetingTitle])
+    }
+
     func testStatusBarSettings_eventTitleFormat() {
         Defaults[.eventTitleFormat] = .dot
         XCTAssertEqual(AppSettings.current.statusBar.eventTitleFormat, .dot)

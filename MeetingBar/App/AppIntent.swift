@@ -7,7 +7,6 @@
 //
 
 import AppIntents
-import AppKit
 
 @available(macOS 13.0, *)
 enum EventDetailsTypeAppEnum: String, AppEnum {
@@ -86,12 +85,9 @@ struct GetNearestEventDetails: AppIntent {
 
     func perform() async throws
         -> some IntentResult & ReturnsValue<String?> {
-        // Hop to the main actor only for the AppKit interaction
+        // Hop to the main actor only for the live app model bridge.
         let value: String? = await MainActor.run {
-            guard
-                let appDelegate = NSApplication.shared.delegate as? AppDelegate,
-                let nextEvent = appDelegate.appModel?.nextEvent()
-            else { return nil }
+            guard let nextEvent = AppRuntimeBridge.shared.nearestEvent() else { return nil }
 
             return EventDetailsValueFormatter.value(for: type, event: nextEvent)
         }
@@ -106,9 +102,7 @@ struct JoinNearestMeetingIntent: AppIntent {
 
     func perform() async throws -> some IntentResult {
         await MainActor.run {
-            (NSApplication.shared.delegate as? AppDelegate)?
-                .statusBarItem
-                .joinNextMeeting()
+            AppRuntimeBridge.shared.send(.joinNearestMeeting)
         }
         return .result()
     }
@@ -122,9 +116,7 @@ struct DismissNearestMeetingIntent: AppIntent {
 
     func perform() async throws -> some IntentResult {
         await MainActor.run {
-            (NSApplication.shared.delegate as? AppDelegate)?
-                .statusBarItem
-                .dismissNextMeetingAction()
+            AppRuntimeBridge.shared.send(.dismissNearestMeeting)
         }
         return .result()
     }
