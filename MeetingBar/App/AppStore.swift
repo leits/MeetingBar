@@ -8,7 +8,6 @@
 
 import Foundation
 
-import Defaults
 import SwiftyStoreKit
 
 enum PatronageProducts {
@@ -32,11 +31,12 @@ func completeStoreTransactions() {
     }
 }
 
+@MainActor
 func checkAppSource() {
     if SwiftyStoreKit.localReceiptData == nil {
-        Defaults[.isInstalledFromAppStore] = false
+        AppSettings.setInstalledFromAppStore(false)
     } else {
-        Defaults[.isInstalledFromAppStore] = true
+        AppSettings.setInstalledFromAppStore(true)
     }
 }
 
@@ -52,30 +52,39 @@ func getPatronageDurationFromProductID(_ productID: String) -> Int {
     return patronageDuration
 }
 
+@MainActor
 func restorePatronagePurchases() {
-    Defaults[.patronageDuration] = 0
+    AppSettings.resetPatronageDuration()
     SwiftyStoreKit.restorePurchases(atomically: true) { results in
         if !results.restoreFailedPurchases.isEmpty {
             NSLog("Restore Failed: \(results.restoreFailedPurchases)")
         } else if !results.restoredPurchases.isEmpty {
-            for purchase in results.restoredPurchases {
-                let restorePatronageDuration = getPatronageDurationFromProductID(purchase.productId)
-                Defaults[.patronageDuration] += restorePatronageDuration * purchase.quantity
+            Task { @MainActor in
+                for purchase in results.restoredPurchases {
+                    let restorePatronageDuration = getPatronageDurationFromProductID(purchase.productId)
+                    AppSettings.addPatronageDuration(
+                        months: restorePatronageDuration,
+                        quantity: purchase.quantity
+                    )
+                }
+                sendNotification("store_patronage_title".loco(), "store_patronage_restore_success_message".loco())
             }
-            sendNotification("store_patronage_title".loco(), "store_patronage_restore_success_message".loco())
         } else {
             sendNotification("store_patronage_title".loco(), "store_patronage_restore_nothing_message".loco())
         }
     }
 }
 
+@MainActor
 func purchasePatronage(_ productID: String) {
     SwiftyStoreKit.purchaseProduct(productID, quantity: 1, atomically: true) { result in
         switch result {
         case .success:
-            let purchasePatronageDuration = getPatronageDurationFromProductID(productID)
-            Defaults[.patronageDuration] += purchasePatronageDuration
-            sendNotification("store_patronage_title".loco(), "store_patronage_purchase_success_message".loco())
+            Task { @MainActor in
+                let purchasePatronageDuration = getPatronageDurationFromProductID(productID)
+                AppSettings.addPatronageDuration(months: purchasePatronageDuration)
+                sendNotification("store_patronage_title".loco(), "store_patronage_purchase_success_message".loco())
+            }
         case let .error(error):
             switch error.code {
             case .unknown:

@@ -8,7 +8,6 @@
 //
 
 import Combine
-@preconcurrency import Defaults
 import Foundation
 
 // MARK: - Clock
@@ -191,26 +190,19 @@ struct AppEnvironment {
                 await eventManager.changeEventStoreProvider(newProvider, withSignOut: signOut)
             },
             toggleCalendarSelection: { id, selected in
-                if selected {
-                    if !Defaults[.selectedCalendarIDs].contains(id) {
-                        Defaults[.selectedCalendarIDs].append(id)
-                    }
-                } else {
-                    Defaults[.selectedCalendarIDs].removeAll { $0 == id }
-                }
+                AppSettings.setCalendarSelection(id: id, selected: selected)
             },
             openMeeting: { event in
                 event.openMeeting()
             },
-            dismissEvent: { _ in
-                // PR4 moves dismissal persistence into AppSettings helpers,
-                // then status bar actions switch to this AppModel route.
+            dismissEvent: { event in
+                AppSettings.dismissEvent(event)
             },
             snoozeEvent: { event, action in
                 await snoozeEventNotification(event, action)
             },
             completeOnboarding: { provider in
-                Defaults[.onboardingCompleted] = true
+                AppSettings.completeOnboarding()
                 await eventManager.changeEventStoreProvider(provider)
             },
             openPreferences: openPreferences,

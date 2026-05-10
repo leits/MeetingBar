@@ -169,4 +169,166 @@ extension AppSettings {
             )
         )
     }
+
+    /// Zero-state `AppSettings` whose values mirror the hard-coded defaults in
+    /// `Extensions/DefaultsKeys.swift`. Used by tests and value renderers that
+    /// need clean-install behavior without reading `Defaults`.
+    static var empty: AppSettings {
+        AppSettings(
+            calendar: CalendarSettings(
+                selectedCalendarIDs: [], eventStoreProvider: .macOSEventKit),
+            events: EventDisplaySettings(
+                showEventsForPeriod: .today,
+                allDayEvents: .show,
+                nonAllDayEvents: .show,
+                declinedEventsAppearance: .strikethrough,
+                pastEventsAppearance: .show_inactive,
+                personalEventsAppearance: .show_active,
+                showPendingEvents: .show,
+                showTentativeEvents: .show,
+                filterEventRegexes: [],
+                dismissedEvents: [],
+                ongoingEventVisibility: .showTenMinBeforeNext,
+                showEventMaxTimeUntilEventEnabled: false,
+                showEventMaxTimeUntilEventThreshold: 60
+            ),
+            statusBar: StatusBarSettings(
+                eventTitleFormat: .show,
+                eventTimeFormat: .show,
+                eventTitleIconFormat: .none,
+                statusbarEventTitleLength: statusbarEventTitleLengthLimits.max,
+                hideMeetingTitle: false,
+                showEventEndTime: true
+            ),
+            menu: MenuSettings(
+                showTimelineInMenu: true,
+                shortenEventTitle: true,
+                menuEventTitleLength: 50,
+                showEventDetails: false,
+                showMeetingServiceIcon: true
+            ),
+            notifications: NotificationSettings(
+                joinEventNotification: true,
+                joinEventNotificationTime: .atStart,
+                endOfEventNotification: true,
+                endOfEventNotificationTime: .atEnd,
+                fullscreenNotification: false,
+                fullscreenNotificationTime: .atStart
+            ),
+            meetings: MeetingSettings(
+                createMeetingService: .zoom,
+                createMeetingServiceUrl: "",
+                bookmarks: [],
+                browsers: [],
+                defaultBrowser: Browser(
+                    name: "Default Browser", path: "", arguments: "", deletable: false),
+                browserForCreateMeeting: systemDefaultBrowser,
+                providerBrowsers: [:]
+            ),
+            advanced: AdvancedSettings(
+                automaticEventJoin: false,
+                automaticEventJoinTime: .atStart,
+                runJoinEventScript: false,
+                joinEventScriptLocation: nil,
+                joinEventScript: "preferences_advanced_apple_script_placeholder".loco(),
+                runEventStartScript: false,
+                eventStartScriptLocation: nil,
+                eventStartScriptTime: .atStart,
+                eventStartScript: eventStartScriptPlaceholder,
+                customRegexes: []
+            )
+        )
+    }
+}
+
+// MARK: - Defaults write boundary
+
+extension AppSettings {
+    @MainActor
+    static func setEventStoreProvider(_ provider: EventStoreProvider) {
+        Defaults[.eventStoreProvider] = provider
+    }
+
+    @MainActor
+    static func clearSelectedCalendars() {
+        Defaults[.selectedCalendarIDs] = []
+    }
+
+    @MainActor
+    static func setCalendarSelection(id: String, selected: Bool) {
+        if selected {
+            if !Defaults[.selectedCalendarIDs].contains(id) {
+                Defaults[.selectedCalendarIDs].append(id)
+            }
+        } else {
+            Defaults[.selectedCalendarIDs].removeAll { $0 == id }
+        }
+    }
+
+    @MainActor
+    static func completeOnboarding() {
+        Defaults[.onboardingCompleted] = true
+    }
+
+    @MainActor
+    static func dismissEvent(_ event: MBEvent) {
+        dismissEvent(
+            ProcessedEvent(
+                id: event.id,
+                lastModifiedDate: event.lastModifiedDate,
+                eventEndDate: event.endDate
+            )
+        )
+    }
+
+    @MainActor
+    static func dismissEvent(_ event: ProcessedEvent) {
+        Defaults[.dismissedEvents].append(event)
+    }
+
+    @MainActor
+    static func undismissEvent(id: String) {
+        Defaults[.dismissedEvents].removeAll { $0.id == id }
+    }
+
+    @MainActor
+    static func clearDismissedEvents() {
+        Defaults[.dismissedEvents] = []
+    }
+
+    @MainActor
+    static func replaceDismissedEvents(_ events: [ProcessedEvent]) {
+        Defaults[.dismissedEvents] = events
+    }
+
+    @MainActor
+    static func refreshDismissedEvents(using currentEvents: [MBEvent]) {
+        let dismissedEvents: [ProcessedEvent] = Defaults[.dismissedEvents].compactMap { dismissedEvent in
+            guard
+                let event = currentEvents.first(where: { $0.id == dismissedEvent.id }),
+                event.endDate.timeIntervalSinceNow > 0
+            else {
+                return nil
+            }
+
+            return ProcessedEvent(id: event.id, eventEndDate: event.endDate)
+        }
+
+        replaceDismissedEvents(dismissedEvents)
+    }
+
+    @MainActor
+    static func setInstalledFromAppStore(_ isInstalled: Bool) {
+        Defaults[.isInstalledFromAppStore] = isInstalled
+    }
+
+    @MainActor
+    static func resetPatronageDuration() {
+        Defaults[.patronageDuration] = 0
+    }
+
+    @MainActor
+    static func addPatronageDuration(months: Int, quantity: Int = 1) {
+        Defaults[.patronageDuration] += months * quantity
+    }
 }

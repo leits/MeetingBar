@@ -31,6 +31,27 @@ final class AppSettingsTests: BaseTestCase {
         XCTAssertEqual(AppSettings.current.calendar.eventStoreProvider, .googleCalendar)
     }
 
+    func testCalendarWriteHelpersUpdateProviderAndSelection() {
+        AppSettings.setEventStoreProvider(.googleCalendar)
+        AppSettings.setCalendarSelection(id: "cal-1", selected: true)
+        AppSettings.setCalendarSelection(id: "cal-1", selected: true)
+        AppSettings.setCalendarSelection(id: "cal-2", selected: true)
+        AppSettings.setCalendarSelection(id: "cal-1", selected: false)
+
+        XCTAssertEqual(Defaults[.eventStoreProvider], .googleCalendar)
+        XCTAssertEqual(Defaults[.selectedCalendarIDs], ["cal-2"])
+
+        AppSettings.clearSelectedCalendars()
+
+        XCTAssertTrue(Defaults[.selectedCalendarIDs].isEmpty)
+    }
+
+    func testCompleteOnboardingWriteHelper() {
+        AppSettings.completeOnboarding()
+
+        XCTAssertTrue(Defaults[.onboardingCompleted])
+    }
+
     // MARK: - StatusBarSettings
 
     func testStatusBarSettings_hideMeetingTitle() {
@@ -81,6 +102,52 @@ final class AppSettingsTests: BaseTestCase {
         XCTAssertEqual(AppSettings.current.events.showEventsForPeriod, .today)
     }
 
+    func testDismissalWriteHelpers() {
+        let now = Date()
+        let event = makeFakeEvent(
+            id: "event",
+            start: now.addingTimeInterval(60),
+            end: now.addingTimeInterval(1800),
+            lastModifiedDate: now
+        )
+
+        AppSettings.dismissEvent(event)
+
+        XCTAssertEqual(Defaults[.dismissedEvents].map(\.id), ["event"])
+        XCTAssertEqual(Defaults[.dismissedEvents].first?.lastModifiedDate, now)
+
+        AppSettings.undismissEvent(id: "event")
+        XCTAssertTrue(Defaults[.dismissedEvents].isEmpty)
+
+        AppSettings.dismissEvent(event)
+        AppSettings.clearDismissedEvents()
+        XCTAssertTrue(Defaults[.dismissedEvents].isEmpty)
+    }
+
+    func testRefreshDismissedEventsDropsMissingOrExpiredDismissals() {
+        let now = Date()
+        let futureEvent = makeFakeEvent(
+            id: "future",
+            start: now.addingTimeInterval(60),
+            end: now.addingTimeInterval(1800)
+        )
+        let expiredEvent = makeFakeEvent(
+            id: "expired",
+            start: now.addingTimeInterval(-3600),
+            end: now.addingTimeInterval(-60)
+        )
+        AppSettings.replaceDismissedEvents([
+            ProcessedEvent(id: "future", eventEndDate: now.addingTimeInterval(60)),
+            ProcessedEvent(id: "missing", eventEndDate: now.addingTimeInterval(60)),
+            ProcessedEvent(id: "expired", eventEndDate: now.addingTimeInterval(60))
+        ])
+
+        AppSettings.refreshDismissedEvents(using: [futureEvent, expiredEvent])
+
+        XCTAssertEqual(Defaults[.dismissedEvents].map(\.id), ["future"])
+        XCTAssertEqual(Defaults[.dismissedEvents].first?.eventEndDate, futureEvent.endDate)
+    }
+
     // MARK: - AdvancedSettings
 
     func testAdvancedSettings_automaticEventJoin() {
@@ -91,6 +158,27 @@ final class AppSettingsTests: BaseTestCase {
     func testAdvancedSettings_runJoinEventScript() {
         Defaults[.runJoinEventScript] = true
         XCTAssertTrue(AppSettings.current.advanced.runJoinEventScript)
+    }
+
+    // MARK: - App source / Patronage writes
+
+    func testAppSourceWriteHelper() {
+        AppSettings.setInstalledFromAppStore(true)
+        XCTAssertTrue(Defaults[.isInstalledFromAppStore])
+
+        AppSettings.setInstalledFromAppStore(false)
+        XCTAssertFalse(Defaults[.isInstalledFromAppStore])
+    }
+
+    func testPatronageWriteHelpers() {
+        AppSettings.addPatronageDuration(months: 3)
+        AppSettings.addPatronageDuration(months: 6, quantity: 2)
+
+        XCTAssertEqual(Defaults[.patronageDuration], 15)
+
+        AppSettings.resetPatronageDuration()
+
+        XCTAssertEqual(Defaults[.patronageDuration], 0)
     }
 
     // MARK: - currentForScheduler integration

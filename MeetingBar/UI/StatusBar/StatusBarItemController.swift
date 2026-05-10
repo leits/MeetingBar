@@ -336,10 +336,7 @@ final class StatusBarItemController {
     @objc
     func dismissNextMeetingAction() {
         if let nextEvent = events.nextEvent() {
-            let dismissedEvent = ProcessedEvent(
-                id: nextEvent.id, lastModifiedDate: nextEvent.lastModifiedDate,
-                eventEndDate: nextEvent.endDate)
-            Defaults[.dismissedEvents].append(dismissedEvent)
+            AppSettings.dismissEvent(nextEvent)
             sendNotification(
                 "notification_next_meeting_dismissed_title".loco(nextEvent.title),
                 "notification_next_meeting_dismissed_message".loco())
@@ -352,7 +349,7 @@ final class StatusBarItemController {
 
     @objc
     func undismissMeetingsActions() {
-        Defaults[.dismissedEvents] = []
+        AppSettings.clearDismissedEvents()
         sendNotification(
             "notification_all_dismissals_removed_title".loco(),
             "notification_all_dismissals_removed_message".loco())
@@ -423,9 +420,7 @@ final class StatusBarItemController {
     }
 
     func dismiss(event: MBEvent) {
-        let dismissedEvent = ProcessedEvent(
-            id: event.id, lastModifiedDate: event.lastModifiedDate, eventEndDate: event.endDate)
-        Defaults[.dismissedEvents].append(dismissedEvent)
+        AppSettings.dismissEvent(event)
 
         updateTitle()
         updateMenu()
@@ -435,7 +430,7 @@ final class StatusBarItemController {
     @objc
     func undismissEvent(sender: NSMenuItem) {
         if let event: MBEvent = sender.representedObject as? MBEvent {
-            Defaults[.dismissedEvents] = Defaults[.dismissedEvents].filter { $0.id != event.id }
+            AppSettings.undismissEvent(id: event.id)
 
             updateTitle()
             updateMenu()

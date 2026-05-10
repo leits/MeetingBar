@@ -52,8 +52,8 @@ public class EventManager: ObservableObject {
     }
 
     public func changeEventStoreProvider(_ newProvider: EventStoreProvider, withSignOut: Bool = false) async {
-        Defaults[.eventStoreProvider] = newProvider
-        Defaults[.selectedCalendarIDs] = []
+        AppSettings.setEventStoreProvider(newProvider)
+        AppSettings.clearSelectedCalendars()
         calendars = []
 
         if withSignOut {
@@ -119,15 +119,8 @@ public class EventManager: ObservableObject {
             throw EventManagerError.eventFetchFailed(error)
         }
 
-        // Update dismissed events in case the event end date has changed.
-        if !Defaults[.dismissedEvents].isEmpty {
-            var dismissedEvents: [ProcessedEvent] = []
-            for dismissedEvent in Defaults[.dismissedEvents] {
-                if let event = rawEvents.first(where: { $0.id == dismissedEvent.id }), event.endDate.timeIntervalSinceNow > 0 {
-                    dismissedEvents.append(ProcessedEvent(id: event.id, eventEndDate: event.endDate))
-                }
-            }
-            Defaults[.dismissedEvents] = dismissedEvents
+        if !AppSettings.current.events.dismissedEvents.isEmpty {
+            AppSettings.refreshDismissedEvents(using: rawEvents)
         }
         return rawEvents.filtered().sorted { $0.startDate < $1.startDate }
     }
