@@ -255,6 +255,50 @@ final class MenuBuilderEventItemTests: BaseTestCase {
 }
 
 @MainActor
+final class CountdownColorTests: BaseTestCase {
+
+    func test_countdownColorIsGreenWhenEventStartsAtLeastFifteenMinutesFromNow() {
+        let event = makeFakeEvent(
+            id: "GREEN",
+            start: Date().addingTimeInterval(20 * 60),
+            end: Date().addingTimeInterval(50 * 60)
+        )
+
+        XCTAssertEqual(countdownColor(for: event), .systemGreen)
+    }
+
+    func test_countdownColorIsYellowWhenEventStartsAtLeastFiveMinutesFromNow() {
+        let event = makeFakeEvent(
+            id: "YELLOW",
+            start: Date().addingTimeInterval(10 * 60),
+            end: Date().addingTimeInterval(40 * 60)
+        )
+
+        XCTAssertEqual(countdownColor(for: event), .systemYellow)
+    }
+
+    func test_countdownColorIsRedWhenEventStartsInLessThanFiveMinutes() {
+        let event = makeFakeEvent(
+            id: "RED",
+            start: Date().addingTimeInterval(2 * 60),
+            end: Date().addingTimeInterval(32 * 60)
+        )
+
+        XCTAssertEqual(countdownColor(for: event), .systemRed)
+    }
+
+    func test_countdownColorUsesEndDateForOngoingEvents() {
+        let event = makeFakeEvent(
+            id: "ONGOING",
+            start: Date().addingTimeInterval(-5 * 60),
+            end: Date().addingTimeInterval(20 * 60)
+        )
+
+        XCTAssertEqual(countdownColor(for: event), .systemGreen)
+    }
+}
+
+@MainActor
 final class MenuBuilderQuickActionsTests: BaseTestCase {
 
     private class Dummy: NSObject {}
