@@ -101,6 +101,7 @@
 "preferences_appearance_status_bar_ongoing_time_immediate_value" = "hide after start";
 "preferences_appearance_status_bar_ongoing_time_ten_after_value" = "hide 10 min  after start";
 "preferences_appearance_status_bar_ongoing_time_ten_before_next_value" = "hide 10 min before next event";
+"preferences_appearance_status_bar_time_color_toggle" = "Color countdown by time remaining";
 "preferences_appearance_status_bar_next_event_toggle" = "Show only events starting within";
 "preferences_appearance_status_bar_next_event_stepper" = "%d minutes";
 "preferences_appearance_menu_title" = "Menu";

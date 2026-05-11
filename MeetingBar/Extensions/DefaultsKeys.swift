@@ -42,6 +42,7 @@ extension Defaults.Keys {
     static let statusbarEventTitleLength = Key<Int>("statusbarEventTitleLength", default: statusbarEventTitleLengthLimits.max)
 
     static let hideMeetingTitle = Key<Bool>("hideMeetingTitle", default: false)
+    static let timeBasedStatusBarColor = Key<Bool>("timeBasedStatusBarColor", default: false)
     static let dismissedEvents = Key<[ProcessedEvent]>("dismissedEvents", default: [])
 
     static let ongoingEventVisibility = Key<OngoingEventVisibility>("ongoingEventVisibility", default: .showTenMinBeforeNext)
