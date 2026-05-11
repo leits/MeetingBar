@@ -257,6 +257,28 @@ final class MenuBuilderEventItemTests: BaseTestCase {
 @MainActor
 final class CountdownColorTests: BaseTestCase {
 
+    func test_countdownColorIsGreenWhenEventStartsExactlyFifteenMinutesFromNow() {
+        let now = Date()
+        let event = makeFakeEvent(
+            id: "GREEN_BOUNDARY",
+            start: now.addingTimeInterval(15 * 60),
+            end: now.addingTimeInterval(45 * 60)
+        )
+
+        XCTAssertEqual(countdownColor(for: event, now: now), .systemGreen)
+    }
+
+    func test_countdownColorIsYellowWhenEventStartsExactlyFiveMinutesFromNow() {
+        let now = Date()
+        let event = makeFakeEvent(
+            id: "YELLOW_BOUNDARY",
+            start: now.addingTimeInterval(5 * 60),
+            end: now.addingTimeInterval(35 * 60)
+        )
+
+        XCTAssertEqual(countdownColor(for: event, now: now), .systemYellow)
+    }
+
     func test_countdownColorIsGreenWhenEventStartsAtLeastFifteenMinutesFromNow() {
         let event = makeFakeEvent(
             id: "GREEN",

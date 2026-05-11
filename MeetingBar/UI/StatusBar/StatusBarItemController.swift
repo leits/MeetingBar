@@ -540,13 +540,12 @@ func shortenTitle(title: String?, offset: Int) -> String {
     return eventTitle
 }
 
-func countdownColor(for event: MBEvent) -> NSColor {
-    let now = Date()
+func countdownColor(for event: MBEvent, now: Date = Date()) -> NSColor {
     let timeRemaining: TimeInterval
     if event.startDate <= now, event.endDate > now {
-        timeRemaining = event.endDate.timeIntervalSinceNow
+        timeRemaining = event.endDate.timeIntervalSince(now)
     } else {
-        timeRemaining = event.startDate.timeIntervalSinceNow
+        timeRemaining = event.startDate.timeIntervalSince(now)
     }
 
     if timeRemaining >= 15 * 60 {
