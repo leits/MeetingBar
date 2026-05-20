@@ -48,6 +48,10 @@ let meetings = [
     MeetingLink(service: .livekit, url: URL(string: "https://meet.livekit.io/rooms/et5r-y80t#r56ryirofs8jjfi3rnxu8ab3qhjsRn6die6mvjhwux82opmkao8bfjb9wggnr2L6")!),
     MeetingLink(service: .livekit, url: URL(string: "https://meet.staging.livekit.io/rooms/of4q-y10s")!),
     MeetingLink(service: .meetecho, url: URL(string: "https://meetings.conf.meetecho.com/ietf122/?session=34071")!),
+    // teams
+    MeetingLink(service: .teams, url: URL(string: "https://teams.microsoft.com/l/meetup-join/19%3ameeting_ABC123%40thread.v2/0?context=%7b%22Tid%22%3a%22tid-guid%22%2c%22Oid%22%3a%22oid-guid%22%7d")!),
+    MeetingLink(service: .teams, url: URL(string: "https://teams.microsoft.com/meet/1234567890123?p=Aa1Bb2Cc3Dd4Ee5")!),
+    MeetingLink(service: .teams, url: URL(string: "https://teams.microsoft.com/meet/1234567890123?p=Aa1Bb2Cc3Dd4Ee5&anon=true")!),
     // webex
     MeetingLink(service: .webex, url: URL(string: "https://yourmeetingsite.webex.com/meet/username")!),
     MeetingLink(service: .webex, url: URL(string: "https://yourmeetingsite.webex.com/yourbusinessID/j.php?MTID=aO5678eFGH")!),

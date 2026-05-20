@@ -288,7 +288,7 @@ private let meetingLinkRegexes: [MeetingServices: NSRegularExpression] = [
     .meet: try! NSRegularExpression(pattern: #"https?://meet.google.com/(_meet/)?[a-z-]+"#),
     .zoom: try! NSRegularExpression(pattern: #"https:\/\/(?:[a-zA-Z0-9-.]+)?zoom(-x)?\.(?:us|com|com\.cn|de)\/(?:my|[a-z]{1,2}|webinar)\/[-a-zA-Z0-9()@:%_\+.~#?&=\/]*"#),
     .zoom_native: try! NSRegularExpression(pattern: #"zoommtg://([a-z0-9-.]+)?zoom(-x)?\.(?:us|com|com\.cn|de)/join[-a-zA-Z0-9()@:%_\+.~#?&=\/]*"#),
-    .teams: try! NSRegularExpression(pattern: #"https?://(gov.)?teams\.microsoft\.(com|us)/l/meetup-join/[a-zA-Z0-9_%\/=\-\+\.?]+"#),
+    .teams: try! NSRegularExpression(pattern: #"https?://(gov\.)?teams\.microsoft\.(com|us)/(l/meetup-join/[a-zA-Z0-9_%\/=\-\+\.?]+|meet/\d+\?p=[A-Za-z0-9_\-]+(?:&[^\s]+)?)"#),
     .webex: try! NSRegularExpression(pattern: #"https?://(?:[A-Za-z0-9-]+\.)?webex\.com(?:(?:/[-A-Za-z0-9]+/j\.php\?MTID=[A-Za-z0-9]+(?:&\S*)?)|(?:/(?:meet|join)/[A-Za-z0-9\-._@]+(?:\?\S*)?))"#),
     .chime: try! NSRegularExpression(pattern: #"https?://([a-z0-9-.]+)?chime\.aws/[0-9]*"#),
     .jitsi: try! NSRegularExpression(pattern: #"https?://meet\.jit\.si/[^\s]*"#),
