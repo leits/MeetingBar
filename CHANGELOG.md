@@ -8,7 +8,7 @@ For next releases info look here: <https://github.com/leits/MeetingBar/releases>
 * Fix multiple typos in the repo (#875)
 * Fix URL in PR template (#875) 
 * Add Riverside meeting service (#875)
-* Detect Microsoft Teams' new short meeting URL format `teams.microsoft.com/meet/<id>?p=<hash>`
+* Detect Microsoft Teams' new short meeting URL format (#926)
 
 ## Version 4.11.0
 
