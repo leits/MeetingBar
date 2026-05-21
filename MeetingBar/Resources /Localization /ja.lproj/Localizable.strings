@@ -347,3 +347,10 @@
 "notification_all_dismissals_removed_title" = "Removed all dismissals";
 "notification_all_dismissals_removed_message" = "All dismissed meetings are back in action";
 "status_bar_section_refresh_sources" = "ソースを更新";
+"preferences_tab_links" = "リンク";
+"preferences_appearance_status_bar_ongoing_title" = "進行中のイベントの可視性:";
+"preferences_appearance_status_bar_ongoing_time_immediate_value" = "スタート後の非表示";
+"preferences_appearance_status_bar_ongoing_time_ten_after_value" = "開始10分後に非表示";
+"preferences_appearance_status_bar_ongoing_time_ten_before_next_value" = "次のイベントの10分前に非表示";
+"preferences_appearance_menu_show_timeline_toggle" = "1日のビジュアルタイムラインを表示";
+"notifications_meetingbar_dismiss_event_action" = "閉じる";
