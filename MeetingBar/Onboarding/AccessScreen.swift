@@ -11,125 +11,131 @@ import SwiftUI
 
 struct AccessScreen: View {
     @ObservedObject var router: OnboardingRouter
-    @EnvironmentObject var onboardingHandler: OnboardingHandler
-    @State var providerSelected = false
-    @State var requestFailed = false
-    @State private var selectedProvider: EventStoreProvider?
-    @State private var statusMessage: String?
-    @State private var isRequesting = false
 
     var body: some View {
-        VStack(alignment: .center) {
-            if !providerSelected {
-                Text("access_screen_provider_picker_label".loco()).font(.title).bold().padding(
-                    .bottom, 30)
-                HStack(alignment: .top) {
-                    VStack(spacing: 10) {
-                        List {
-                            Section(
-                                header:
-                                    Text("access_screen_provider_macos_title".loco()).font(
-                                        .headline)
-                            ) {
-                                Text("access_screen_provider_macos_data_source".loco())
-                                Text("access_screen_provider_macos_number_of_accounts".loco())
-                                Text("access_screen_provider_macos_recommended".loco())
-                                    .foregroundColor(.gray)
-                            }
-                        }
-                        Spacer()
-                        VStack {
-                            Button(action: {
-                                Task { await requestAccess(provider: .macOSEventKit) }
-                            }) {
-                                Text("Use macOS Calendar").font(.headline)
-                            }
-                        }.frame(width: 200, height: 50)
-                    }
-                    VStack(spacing: 10) {
-                        List {
-                            Section(header: Text("Google Calendar API").font(.headline)) {
-                                Text("access_screen_provider_gcalendar_data_source".loco())
-                                Text("access_screen_provider_gcalendar_number_of_accounts".loco())
-                            }
-                        }
-                        Spacer()
-                        VStack {
-                            Button(
-                                action: { Task { await requestAccess(provider: .googleCalendar) } },
-                                label: {
-                                    Image("googleSignInButton").resizable().aspectRatio(
-                                        contentMode: .fit
-                                    ).frame(width: 150)
-                                }
-                            ).buttonStyle(PlainButtonStyle())
-                        }.frame(width: 200, height: 50)
-                    }
-                }
-            } else {
-                Spacer()
-                if selectedProvider == .googleCalendar {
-                    VStack(spacing: 20) {
-                        Text("access_screen_provider_gcalendar_sign_in_title".loco()).bold()
-                        Text("access_screen_provider_gcalendar_sign_in_description".loco())
-                        if let statusMessage {
-                            Text(statusMessage).foregroundColor(.red)
-                        }
-                        if isRequesting {
-                            ProgressView()
-                        }
-                        Button("access_screen_try_again".loco()) {
-                            Task { await requestAccess(provider: .googleCalendar) }
-                        }.disabled(isRequesting)
-                    }
-                } else {
-                    if !requestFailed {
-                        Text("access_screen_access_granted_title".loco())
-                        Text("")
-                        Text("access_screen_access_granted_click_ok_title".loco())
-                    } else {
-                        VStack(alignment: .center, spacing: 10) {
-                            HStack {
-                                Text("access_screen_access_screen_access_denied_go_to_title".loco())
-                                Button(
-                                    "access_screen_access_denied_system_preferences_button".loco()
-                                ) { NSWorkspace.shared.open(Links.calendarPreferences) }
-                                Text("access_screen_access_denied_checkbox_title".loco())
-                            }
-                            Text("access_screen_access_denied_relaunch_title".loco())
-                            if let statusMessage {
-                                Text(statusMessage).foregroundColor(.red)
-                            }
-                        }
-                    }
-                }
-                Spacer()
+        VStack(alignment: .leading, spacing: 18) {
+            Text("onboarding_calendar_source_title".loco())
+                .font(.title2)
+                .bold()
+            Text("onboarding_calendar_source_description".loco())
+                .foregroundStyle(.secondary)
+
+            HStack(spacing: 16) {
+                ProviderChoice(
+                    title: "onboarding_apple_calendar_title".loco(),
+                    description: "onboarding_apple_calendar_description".loco(),
+                    systemImage: "calendar",
+                    action: { router.selectProvider(.macOSEventKit) }
+                )
+                ProviderChoice(
+                    title: "onboarding_google_calendar_title".loco(),
+                    description: "onboarding_google_calendar_description".loco(),
+                    systemImage: "globe",
+                    action: { router.selectProvider(.googleCalendar) }
+                )
             }
-        }.padding()
+            Spacer()
+        }
+    }
+}
+
+private struct ProviderChoice: View {
+    let title: String
+    let description: String
+    let systemImage: String
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            VStack(alignment: .leading, spacing: 12) {
+                Image(systemName: systemImage).font(.title)
+                Text(title).font(.headline)
+                Text(description)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.leading)
+                Spacer()
+                Text("onboarding_connect".loco()).fontWeight(.semibold)
+            }
+            .padding()
+            .frame(maxWidth: .infinity, minHeight: 190, alignment: .leading)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.bordered)
+    }
+}
+
+struct AuthorizationScreen: View {
+    @ObservedObject var router: OnboardingRouter
+    @EnvironmentObject var onboardingHandler: OnboardingHandler
+
+    var body: some View {
+        VStack(spacing: 18) {
+            Spacer()
+            Text("onboarding_authorization_title".loco())
+                .font(.title2)
+                .bold()
+            Text(authorizationDescription)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+
+            switch router.authorizationState {
+            case .idle, .requesting:
+                ProgressView()
+                Text("onboarding_authorization_waiting".loco())
+                    .foregroundStyle(.secondary)
+            case .failed(let message):
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .foregroundStyle(.orange)
+                    .font(.title)
+                Text(message)
+                    .foregroundStyle(.red)
+                    .multilineTextAlignment(.center)
+                HStack {
+                    if router.selectedProvider == .macOSEventKit {
+                        Button("access_screen_access_denied_system_preferences_button".loco()) {
+                            NSWorkspace.shared.open(Links.calendarPreferences)
+                        }
+                    }
+                    Button("access_screen_try_again".loco()) {
+                        Task { await authorize() }
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+            }
+            Spacer()
+        }
+        .task(id: router.selectedProvider) {
+            if router.authorizationState == .idle {
+                await authorize()
+            }
+        }
     }
 
-    @MainActor
-    func requestAccess(provider: EventStoreProvider) async {
-        providerSelected = true
-        selectedProvider = provider
-        requestFailed = false
-        statusMessage = nil
-        isRequesting = true
+    private var authorizationDescription: String {
+        router.selectedProvider == .googleCalendar
+            ? "onboarding_authorization_google_description".loco()
+            : "onboarding_authorization_apple_description".loco()
+    }
+
+    private func authorize() async {
+        guard let provider = router.selectedProvider else {
+            router.currentStep = .calendarSource
+            return
+        }
+        router.authorizationState = .requesting
         let result = await onboardingHandler.onProviderSelected(provider)
-        isRequesting = false
 
         switch result {
         case .success:
             router.currentStep = .calendarSelection
         case .cancelled:
-            requestFailed = true
-            statusMessage = "access_screen_provider_authorization_cancelled".loco()
+            router.authorizationState = .failed(
+                "access_screen_provider_authorization_cancelled".loco()
+            )
         case .authRequired(let description):
-            requestFailed = true
-            statusMessage = description
+            router.authorizationState = .failed(description)
         case .failed(let description):
-            requestFailed = true
-            statusMessage = description
+            router.authorizationState = .failed(description)
         }
     }
 }

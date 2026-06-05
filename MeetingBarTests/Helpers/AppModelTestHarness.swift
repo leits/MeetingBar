@@ -13,6 +13,7 @@ final class AppModelTestHarness {
     let eventsSubject = PassthroughSubject<[MBEvent], Never>()
     let calendarsSubject = PassthroughSubject<([MBCalendar], EventStoreProvider), Never>()
     let providerHealthSubject = PassthroughSubject<ProviderHealth, Never>()
+    let selectedCalendarIDsSubject = CurrentValueSubject<[String], Never>([])
 
     private(set) var refreshCallCount = 0
     private(set) var reconciledEventIDs: [[String]] = []
@@ -38,6 +39,7 @@ final class AppModelTestHarness {
         eventsPublisher: eventsSubject.eraseToAnyPublisher(),
         calendarsPublisher: calendarsSubject.eraseToAnyPublisher(),
         providerHealthPublisher: providerHealthSubject.eraseToAnyPublisher(),
+        selectedCalendarIDsPublisher: selectedCalendarIDsSubject.eraseToAnyPublisher(),
         triggerRefresh: { [weak self] in
             self?.refreshCallCount += 1
         },
@@ -111,6 +113,10 @@ final class AppModelTestHarness {
 
     func publishProviderHealth(_ health: ProviderHealth) {
         providerHealthSubject.send(health)
+    }
+
+    func publishSelectedCalendarIDs(_ ids: [String]) {
+        selectedCalendarIDsSubject.send(ids)
     }
 
     func flushAsyncActions() async {

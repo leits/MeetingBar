@@ -10,7 +10,6 @@ import Defaults
 import SwiftUI
 
 struct LinksTab: View {
-    @Default(.providerBrowsers) var providerBrowsers
     @Default(.browserForCreateMeeting) var browserForCreateMeeting
     @Default(.defaultBrowser) var defaultBrowser
     @Default(.createMeetingServiceUrl) var createMeetingServiceUrl
@@ -24,21 +23,6 @@ struct LinksTab: View {
     @State var showingAddBookmarkModal = false
     @State private var showingAlert = false
     @State private var bookmark: Bookmark?
-
-    /// Returns a Binding<Browser> for a specific meeting provider ID.
-    /// Selection of `systemDefaultBrowser` removes the key from the map (fall through to default).
-    private func providerBrowserBinding(forID id: String) -> Binding<Browser> {
-        Binding<Browser>(
-            get: { providerBrowsers[id] ?? systemDefaultBrowser },
-            set: { newBrowser in
-                if newBrowser == systemDefaultBrowser {
-                    providerBrowsers.removeValue(forKey: id)
-                } else {
-                    providerBrowsers[id] = newBrowser
-                }
-            }
-        )
-    }
 
     var body: some View {
         VStack {
@@ -57,20 +41,7 @@ struct LinksTab: View {
                 ForEach(
                     MeetingProvider.all.filter { $0.nativeAppBrowserName != nil }, id: \.id
                 ) { provider in
-                    let nativeBrowser = Browser(name: provider.nativeAppBrowserName!, path: "")
-                    Picker(
-                        selection: providerBrowserBinding(forID: provider.id),
-                        label: Text(
-                            "preferences_services_link_service_title".loco(provider.displayName)
-                        )
-                        .frame(width: 200, alignment: .leading)
-                    ) {
-                        Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
-                        Text(nativeBrowser.name).tag(nativeBrowser)
-                        ForEach(allBrowser, id: \.self) { (browser: Browser) in
-                            Text(browser.name).tag(browser)
-                        }
-                    }
+                    MeetingProviderBrowserPicker(provider: provider)
                 }
             }
 
@@ -169,6 +140,45 @@ struct LinksTab: View {
 
     func clickConfigureBrowser() {
         showBrowserConfiguration.toggle()
+    }
+}
+
+struct MeetingProviderBrowserPicker: View {
+    let provider: MeetingProvider
+    var labelWidth: CGFloat = 200
+
+    @Default(.providerBrowsers) private var providerBrowsers
+    @Default(.browsers) private var allBrowsers
+
+    private var selection: Binding<Browser> {
+        Binding(
+            get: { providerBrowsers[provider.id] ?? systemDefaultBrowser },
+            set: { newBrowser in
+                if newBrowser == systemDefaultBrowser {
+                    providerBrowsers.removeValue(forKey: provider.id)
+                } else {
+                    providerBrowsers[provider.id] = newBrowser
+                }
+            }
+        )
+    }
+
+    var body: some View {
+        Picker(
+            selection: selection,
+            label: Text(
+                "preferences_services_link_service_title".loco(provider.displayName)
+            )
+            .frame(width: labelWidth, alignment: .leading)
+        ) {
+            Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
+            if let nativeAppBrowserName = provider.nativeAppBrowserName {
+                Text(nativeAppBrowserName).tag(Browser(name: nativeAppBrowserName, path: ""))
+            }
+            ForEach(allBrowsers, id: \.self) { browser in
+                Text(browser.name).tag(browser)
+            }
+        }
     }
 }
 

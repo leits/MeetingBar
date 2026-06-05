@@ -120,12 +120,11 @@ struct AccessDeniedBanner: View {
 struct CalendarRow: View {
     let calendar: MBCalendar
     @EnvironmentObject var appModel: AppModel
-    @Default(.selectedCalendarIDs) private var selectedIDs
 
     var body: some View {
         Toggle(
             isOn: Binding(
-                get: { selectedIDs.contains(calendar.id) },
+                get: { appModel.state.selectedCalendarIDs.contains(calendar.id) },
                 set: { appModel.toggleCalendarSelection(id: calendar.id, selected: $0) }
             )
         ) {

@@ -8,6 +8,7 @@
 //
 
 import Combine
+import Defaults
 import Foundation
 
 // MARK: - Clock
@@ -40,6 +41,7 @@ struct AppState: Equatable {
 
     var calendars: [MBCalendar] = []
     var events: [MBEvent] = []
+    var selectedCalendarIDs: [String] = []
     var activeProvider: EventStoreProvider = .macOSEventKit
     var providerChangeInProgress = false
     var providerHealth = ProviderHealth()
@@ -89,6 +91,7 @@ enum AppAction {
     case refreshCalendars
     case calendarsLoaded([MBCalendar], provider: EventStoreProvider)
     case eventsLoaded([MBEvent])
+    case selectedCalendarsChanged([String])
     case providerHealthChanged(ProviderHealth)
     case calendarRefreshFailed(Error)
     case providerChanged(EventStoreProvider)
@@ -136,6 +139,9 @@ struct AppEnvironment {
 
     /// Live connection and refresh health for the active provider.
     var providerHealthPublisher: AnyPublisher<ProviderHealth, Never>
+
+    /// Live selected-calendar IDs for the active provider.
+    var selectedCalendarIDsPublisher: AnyPublisher<[String], Never>
 
     /// Trigger a fresh calendar + event fetch from the active provider.
     /// Results flow back through `eventsPublisher` / `calendarsPublisher`.
@@ -198,6 +204,12 @@ struct AppEnvironment {
                 }
                 .eraseToAnyPublisher(),
             providerHealthPublisher: calendarSync.$providerHealth.eraseToAnyPublisher(),
+            selectedCalendarIDsPublisher: Defaults.publisher(
+                .selectedCalendarIDs,
+                options: [.initial]
+            )
+            .map(\.newValue)
+            .eraseToAnyPublisher(),
             triggerRefresh: {
                 calendarSync.refreshSubject.send()
             },
@@ -232,11 +244,14 @@ struct AppEnvironment {
                 await snoozeService.snooze(event: event, action: action)
             },
             completeOnboarding: { provider in
-                let result = await calendarSync.changeEventStoreProvider(provider)
-                if result == .success {
-                    AppSettings.completeOnboarding()
+                guard calendarSync.repository.activeProviderName == provider else {
+                    return .failed("The selected calendar provider is not active")
                 }
-                return result
+                guard !AppSettings.selectedCalendarIDs(for: provider).isEmpty else {
+                    return .failed("Select at least one calendar")
+                }
+                AppSettings.completeOnboarding()
+                return .success
             },
             openPreferences: openPreferences,
             resumeOAuthFlow: resumeOAuthFlow,
@@ -289,6 +304,13 @@ final class AppModel: ObservableObject {
                 self?.send(.providerHealthChanged(health))
             }
             .store(in: &cancellables)
+
+        environment.selectedCalendarIDsPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] selectedCalendarIDs in
+                self?.send(.selectedCalendarsChanged(selectedCalendarIDs))
+            }
+            .store(in: &cancellables)
     }
 
     // MARK: Action dispatch
@@ -299,7 +321,8 @@ final class AppModel: ObservableObject {
              .didWake, .timezoneChanged, .dayChanged:
             handleLifecycleAction(action)
         case .calendarStoreChanged, .refreshCalendars, .calendarsLoaded,
-             .eventsLoaded, .providerHealthChanged, .calendarRefreshFailed, .providerChanged,
+             .eventsLoaded, .selectedCalendarsChanged, .providerHealthChanged,
+             .calendarRefreshFailed, .providerChanged,
              .selectCalendar, .changeProvider, .settingsChanged,
              .toggleMeetingTitleVisibility:
             handleCalendarAction(action)
@@ -341,14 +364,30 @@ final class AppModel: ObservableObject {
     }
 
     /// Onboarding is an async workflow because provider authorization can
-    /// prompt the user. The action case still exists for non-blocking routes,
-    /// while AppDelegate awaits this method before moving the onboarding UI on.
+    /// prompt the user. Provider setup happens before this method; completion
+    /// only succeeds for the active provider with at least one selected calendar.
     func completeOnboarding(with provider: EventStoreProvider) async -> ProviderSelectionResult {
-        let result = await environment.completeOnboarding(provider)
-        if result == .success {
-            resetProviderState(to: provider)
+        guard state.activeProvider == provider else {
+            return .failed("The selected calendar provider is not active")
         }
-        return result
+        guard !state.selectedCalendarIDs.isEmpty else {
+            return .failed("Select at least one calendar")
+        }
+        return await environment.completeOnboarding(provider)
+    }
+
+    /// Performs the transactional provider flow and returns its explicit result
+    /// so onboarding can decide whether it is safe to advance.
+    func changeProvider(
+        to provider: EventStoreProvider,
+        signOut: Bool = false
+    ) async -> ProviderSelectionResult {
+        let generation = beginProviderChange()
+        return await performProviderChange(
+            to: provider,
+            signOut: signOut,
+            generation: generation
+        )
     }
 
     // MARK: Private
@@ -387,6 +426,8 @@ final class AppModel: ObservableObject {
         case .eventsLoaded(let events):
             state.events = events
             send(.reconcileNotifications)
+        case .selectedCalendarsChanged(let selectedCalendarIDs):
+            state.selectedCalendarIDs = selectedCalendarIDs
         case .providerHealthChanged(let health):
             state.providerHealth = health
         case .calendarRefreshFailed:
@@ -398,17 +439,14 @@ final class AppModel: ObservableObject {
             environment.toggleCalendarSelection(id, selected)
         case .changeProvider(let provider, let signOut):
             providerChangeTask?.cancel()
-            providerChangeGeneration += 1
-            let generation = providerChangeGeneration
-            state.providerChangeInProgress = true
+            let generation = beginProviderChange()
             providerChangeTask = Task { [weak self] in
                 guard let self else { return }
-                let result = await environment.changeProvider(provider, signOut)
-                guard generation == self.providerChangeGeneration else { return }
-                if result == .success {
-                    self.resetProviderState(to: provider)
-                }
-                self.state.providerChangeInProgress = false
+                _ = await self.performProviderChange(
+                    to: provider,
+                    signOut: signOut,
+                    generation: generation
+                )
             }
         default:
             break
@@ -497,6 +535,27 @@ final class AppModel: ObservableObject {
         state.activeProvider = provider
         state.calendars = []
         state.events = []
+    }
+
+    private func beginProviderChange() -> Int {
+        providerChangeGeneration += 1
+        state.providerChangeInProgress = true
+        return providerChangeGeneration
+    }
+
+    private func performProviderChange(
+        to provider: EventStoreProvider,
+        signOut: Bool,
+        generation: Int
+    ) async -> ProviderSelectionResult {
+        let result = await environment.changeProvider(provider, signOut)
+        guard generation == providerChangeGeneration else { return .cancelled }
+
+        if result == .success {
+            resetProviderState(to: provider)
+        }
+        state.providerChangeInProgress = false
+        return result
     }
 
     private func scheduleRefresh() {

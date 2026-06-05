@@ -6,36 +6,82 @@
 //  Copyright © 2021 Andrii Leitsius. All rights reserved.
 //
 
-import Defaults
 import SwiftUI
 
 struct CalendarsScreen: View {
+    @ObservedObject var router: OnboardingRouter
     @EnvironmentObject var onboardingHandler: OnboardingHandler
-    @Default(.selectedCalendarIDs) var selectedCalendarIDs
 
     var body: some View {
-        VStack {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("onboarding_calendar_selection_title".loco())
+                .font(.title2)
+                .bold()
+            Text("onboarding_calendar_selection_description".loco())
+                .foregroundStyle(.secondary)
+
             if let appModel = onboardingHandler.appModel {
-                CalendarsTab().environmentObject(appModel)
+                CalendarSelectionContent(appModel: appModel)
             } else {
                 ProgressView()
             }
-            Divider()
+
             HStack {
                 Spacer()
-                if self.selectedCalendarIDs.isEmpty {
+                if onboardingHandler.appModel?.state.selectedCalendarIDs.isEmpty != false {
                     Text("calendars_screen_select_calendar_title".loco()).foregroundColor(
                         Color.gray)
                 }
-                Button(action: self.close) {
-                    Text("calendars_screen_start_button".loco())
-                    Image(nsImage: NSImage(named: NSImage.goForwardTemplateName)!)
-                }.disabled(self.selectedCalendarIDs.isEmpty)
-            }.padding(5)
+                Button("onboarding_continue".loco()) {
+                    router.currentStep = .meetingOpening
+                }
+                .buttonStyle(.borderedProminent)
+                .disabled(onboardingHandler.appModel?.state.selectedCalendarIDs.isEmpty != false)
+            }
         }
     }
+}
 
-    func close() {
-        NSApplication.shared.keyWindow?.close()
+private struct CalendarSelectionContent: View {
+    @ObservedObject var appModel: AppModel
+
+    var body: some View {
+        GroupBox {
+            if appModel.state.calendars.isEmpty {
+                VStack(spacing: 10) {
+                    Image(systemName: emptyStateIcon)
+                        .font(.title)
+                        .foregroundStyle(.secondary)
+                    Text(emptyStateText)
+                    Button("general_refresh".loco()) {
+                        appModel.send(.refreshCalendars)
+                    }
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                List {
+                    CalendarSectionsView(calendars: appModel.state.calendars)
+                }
+                .listStyle(.inset)
+            }
+        }
+        .environmentObject(appModel)
+    }
+
+    private var emptyStateIcon: String {
+        appModel.state.providerHealth.authRequired
+            ? "person.crop.circle.badge.exclamationmark"
+            : "calendar.badge.exclamationmark"
+    }
+
+    private var emptyStateText: String {
+        if appModel.state.providerHealth.authRequired {
+            return "onboarding_calendar_selection_reconnect".loco()
+        }
+        if appModel.state.activeProvider == .macOSEventKit,
+           appModel.state.providerHealth.lastErrorDescription != nil {
+            return "onboarding_calendar_selection_permission".loco()
+        }
+        return "onboarding_calendar_selection_empty".loco()
     }
 }

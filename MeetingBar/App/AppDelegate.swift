@@ -69,18 +69,34 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             if Defaults[.onboardingCompleted] {
                 setup()
             } else {
-                windowCoordinator.openOnboardingWindow { [weak self] provider in
-                    guard let self else {
-                        return .failed("Application state is unavailable")
+                setup(triggerInitialRefresh: false)
+                guard let appModel else { return }
+                windowCoordinator.openOnboardingWindow(
+                    appModel: appModel,
+                    onProviderSelected: { [weak appModel] provider in
+                        guard let appModel else {
+                            return .failed("Application state is unavailable")
+                        }
+                        return await appModel.changeProvider(to: provider)
+                    },
+                    onComplete: { [weak appModel] provider in
+                        guard let appModel else {
+                            return .failed("Application state is unavailable")
+                        }
+                        let result = await appModel.completeOnboarding(with: provider)
+                        if result == .success {
+                            appModel.handleLaunch()
+                        }
+                        return result
                     }
-                    return await self.onboardingCompleted(with: provider)
-                }
+                )
             }
             launchTask = nil
         }
     }
 
-    func setup() {
+    func setup(triggerInitialRefresh: Bool = true) {
+        guard appModel == nil else { return }
         let env = AppEnvironment.live(
             calendarSync: calendarSync,
             notificationScheduler: notificationScheduler,
@@ -163,8 +179,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         lifecycleObserver.start()
 
-        // Kick off the initial refresh through the model.
-        model.handleLaunch()
+        if triggerInitialRefresh {
+            model.handleLaunch()
+        }
     }
 
     /*
@@ -203,19 +220,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
      * MARK: - Windows
      * ------------------------
      */
-
-    private func onboardingCompleted(
-        with provider: EventStoreProvider
-    ) async -> ProviderSelectionResult {
-        if appModel == nil {
-            setup()
-            windowCoordinator.attachOnboardingAppModel(appModel)
-        }
-        guard let appModel else {
-            return .failed("Application state is unavailable")
-        }
-        return await appModel.completeOnboarding(with: provider)
-    }
 
     @objc
     func openChangelogWindow(_: NSStatusBarButton?) {

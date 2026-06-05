@@ -8,47 +8,31 @@
 
 import SwiftUI
 
-import Defaults
-import KeyboardShortcuts
-
 struct WelcomeScreen: View {
     @ObservedObject var router: OnboardingRouter
 
     var body: some View {
-        VStack {
-            VStack {
-                Spacer()
-                Text("welcome_screen_greeting_main_title".loco())
-                Text("welcome_screen_greeting_additional_title".loco())
-                Spacer()
-            }
-            Divider()
-            LaunchAtLoginANDPreferredLanguagePicker().padding(5)
-            Divider()
-            HStack {
-                Text("welcome_screen_shortcut_next_meeting_title".loco())
-                KeyboardShortcuts.Recorder(for: .joinEventShortcut)
-                Spacer()
-            }.padding(5)
-            HStack {
-                Text("welcome_screen_ad_hoc_meeting_title".loco())
-                HStack {
-                    CreateMeetingServicePicker()
-                }.frame(width: 145)
-                Text("welcome_screen_shortcut_ad_hoc_meeting_title".loco())
-                KeyboardShortcuts.Recorder(for: .createMeetingShortcut)
-                Spacer()
-            }.padding(5)
-            Divider()
-            JoinEventNotificationPicker().padding(5)
-            Divider()
+        VStack(spacing: 18) {
+            Spacer()
+            Image(systemName: "calendar.badge.clock")
+                .font(.system(size: 52))
+                .foregroundStyle(Color.accentColor)
+            Text("onboarding_welcome_title".loco())
+                .font(.largeTitle)
+                .bold()
+            Text("onboarding_welcome_description".loco())
+                .font(.title3)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: 480)
+            Spacer()
             HStack {
                 Spacer()
-                Button(action: { self.router.currentStep = .calendarAccess }) {
-                    Text("welcome_screen_setup_calendar_title".loco())
-                    Image(nsImage: NSImage(named: NSImage.goForwardTemplateName)!)
+                Button("onboarding_continue".loco()) {
+                    router.currentStep = .calendarSource
                 }
-            }.padding(5)
+                .buttonStyle(.borderedProminent)
+            }
         }
     }
 }

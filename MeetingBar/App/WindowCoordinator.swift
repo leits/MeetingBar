@@ -17,12 +17,17 @@ final class WindowCoordinator {
     private weak var onboardingHandler: OnboardingHandler?
 
     func openOnboardingWindow(
-        completion:
+        appModel: AppModel,
+        onProviderSelected:
+            @escaping @MainActor (EventStoreProvider) async -> ProviderSelectionResult,
+        onComplete:
             @escaping @MainActor (EventStoreProvider) async -> ProviderSelectionResult
     ) {
-        let handler = OnboardingHandler { provider in
-            await completion(provider)
-        }
+        let handler = OnboardingHandler(
+            onProviderSelected: onProviderSelected,
+            onComplete: onComplete
+        )
+        handler.appModel = appModel
         onboardingHandler = handler
         let contentView = OnboardingView().environmentObject(handler)
         let onboardingWindow = NSWindow(
@@ -40,10 +45,6 @@ final class WindowCoordinator {
         onboardingWindow.level = .floating
         onboardingWindow.center()
         onboardingWindow.orderFrontRegardless()
-    }
-
-    func attachOnboardingAppModel(_ appModel: AppModel?) {
-        onboardingHandler?.appModel = appModel
     }
 
     func openChangelogWindow() {

@@ -68,12 +68,47 @@ final class AppModelTests: BaseTestCase {
         harness.providerSelectionResult = .cancelled
         let calendar = makeFakeCalendar(id: "cal")
         harness.model.send(.calendarsLoaded([calendar], provider: .macOSEventKit))
+        harness.publishSelectedCalendarIDs([calendar.id])
 
         let result = await harness.model.completeOnboarding(with: .googleCalendar)
 
-        XCTAssertEqual(result, .cancelled)
+        XCTAssertEqual(result, .failed("The selected calendar provider is not active"))
         XCTAssertEqual(harness.model.state.activeProvider, .macOSEventKit)
         XCTAssertEqual(harness.model.state.calendars, [calendar])
+        XCTAssertTrue(harness.completedOnboardingProviders.isEmpty)
+    }
+
+    func testOnboardingCompletionRequiresSelectedCalendar() async {
+        let harness = AppModelTestHarness()
+        harness.model.send(.calendarsLoaded([], provider: .googleCalendar))
+
+        let result = await harness.model.completeOnboarding(with: .googleCalendar)
+
+        XCTAssertEqual(result, .failed("Select at least one calendar"))
+        XCTAssertTrue(harness.completedOnboardingProviders.isEmpty)
+    }
+
+    func testOnboardingCompletionSucceedsAfterProviderAndCalendarSelection() async {
+        let harness = AppModelTestHarness()
+        harness.model.send(.calendarsLoaded([], provider: .googleCalendar))
+        harness.publishSelectedCalendarIDs(["google-calendar"])
+        await harness.flushAsyncActions()
+
+        let result = await harness.model.completeOnboarding(with: .googleCalendar)
+
+        XCTAssertEqual(result, .success)
+        XCTAssertEqual(harness.completedOnboardingProviders, [.googleCalendar])
+    }
+
+    func testCancelledOnboardingProviderSelectionDoesNotComplete() async {
+        let harness = AppModelTestHarness()
+        harness.providerSelectionResult = .cancelled
+
+        let result = await harness.model.changeProvider(to: .googleCalendar)
+
+        XCTAssertEqual(result, .cancelled)
+        XCTAssertEqual(harness.model.state.activeProvider, .macOSEventKit)
+        XCTAssertTrue(harness.completedOnboardingProviders.isEmpty)
     }
 
     func testCalendarSelectionDelegatesToEnvironment() {
@@ -84,6 +119,19 @@ final class AppModelTests: BaseTestCase {
 
         XCTAssertEqual(harness.calendarSelections.map(\.id), ["cal", "cal"])
         XCTAssertEqual(harness.calendarSelections.map(\.selected), [true, false])
+    }
+
+    func testSelectedCalendarChangesUpdateState() async {
+        let harness = AppModelTestHarness()
+        _ = harness.model
+
+        harness.publishSelectedCalendarIDs(["calendar-a", "calendar-b"])
+        await harness.flushAsyncActions()
+
+        XCTAssertEqual(
+            harness.model.state.selectedCalendarIDs,
+            ["calendar-a", "calendar-b"]
+        )
     }
 
     func testEventsLoadedUpdatesStateAndReconcilesNotifications() async {
@@ -212,6 +260,9 @@ final class AppModelTests: BaseTestCase {
 
     func testOnboardingCompletionDelegatesProviderSelection() async {
         let harness = AppModelTestHarness()
+        harness.model.send(.calendarsLoaded([], provider: .googleCalendar))
+        harness.publishSelectedCalendarIDs(["google-calendar"])
+        await harness.flushAsyncActions()
 
         harness.model.send(.onboardingCompleted(.googleCalendar))
         await harness.flushAsyncActions()
@@ -239,6 +290,9 @@ final class AppModelTests: BaseTestCase {
             start: harness.fixedNow,
             end: harness.fixedNow.addingTimeInterval(1800)
         )
+        harness.model.send(.calendarsLoaded([], provider: .googleCalendar))
+        harness.publishSelectedCalendarIDs(["google-calendar"])
+        await harness.flushAsyncActions()
 
         harness.model.send(.changeProvider(.googleCalendar, signOut: true))
         harness.model.send(.eventsLoaded([event]))
