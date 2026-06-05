@@ -88,6 +88,8 @@ final class GCEventStore: NSObject,
 
     // MARK: Public API
 
+    var isAuthorized: Bool { authState?.isAuthorized == true }
+
     func signIn(forcePrompt: Bool = false) async throws {
         // if already authorised, nothing to do
         if authState?.isAuthorized == true { return }

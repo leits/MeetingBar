@@ -38,7 +38,8 @@ extension DiagnosticsContext {
         selectedCalendarCount: Int,
         totalCalendarCount: Int,
         visibleEventCount: Int,
-        health: ProviderHealth
+        health: ProviderHealth,
+        permissions: PermissionSnapshot? = nil
     ) {
         self.init(
             appVersion: appVersion,
@@ -48,7 +49,8 @@ extension DiagnosticsContext {
             selectedCalendarCount: selectedCalendarCount,
             totalCalendarCount: totalCalendarCount,
             visibleEventCount: visibleEventCount,
-            health: DiagnosticsHealth(health: health)
+            health: DiagnosticsHealth(health: health),
+            permissions: permissions
         )
     }
 
@@ -57,9 +59,10 @@ extension DiagnosticsContext {
     /// `EventManager`. Use from any view that wants to show or export
     /// diagnostics — `StatusTab`, future onboarding error states, etc.
     @MainActor
-    static func current(eventManager: EventManager) -> DiagnosticsContext {
+    static func current(eventManager: EventManager) async -> DiagnosticsContext {
         let info = Bundle.main.infoDictionary ?? [:]
         let settings = AppSettings.current
+        let permissions = await PermissionReporter.current(provider: settings.calendar.eventStoreProvider)
         return DiagnosticsContext(
             appVersion: info["CFBundleShortVersionString"] as? String ?? "?",
             buildNumber: info["CFBundleVersion"] as? String ?? "?",
@@ -68,7 +71,8 @@ extension DiagnosticsContext {
             selectedCalendarCount: settings.calendar.selectedCalendarIDs.count,
             totalCalendarCount: eventManager.calendars.count,
             visibleEventCount: eventManager.events.count,
-            health: eventManager.providerHealth
+            health: eventManager.providerHealth,
+            permissions: permissions
         )
     }
 }
@@ -78,9 +82,11 @@ enum DiagnosticsClipboard {
     /// Copies the formatted diagnostics report to the system pasteboard.
     /// Single entry point so views don't reach into NSPasteboard directly.
     static func copy(eventManager: EventManager) {
-        let context = DiagnosticsContext.current(eventManager: eventManager)
-        let pasteboard = NSPasteboard.general
-        pasteboard.clearContents()
-        pasteboard.setString(DiagnosticsReport.text(from: context), forType: .string)
+        Task { @MainActor in
+            let context = await DiagnosticsContext.current(eventManager: eventManager)
+            let pasteboard = NSPasteboard.general
+            pasteboard.clearContents()
+            pasteboard.setString(DiagnosticsReport.text(from: context), forType: .string)
+        }
     }
 }

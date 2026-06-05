@@ -68,6 +68,16 @@
 "preferences_status_refresh_now" = "Refresh now";
 "preferences_status_copy_diagnostics" = "Copy diagnostics";
 "preferences_status_diagnostics_hint" = "Copies app version, provider, refresh status and last error to the clipboard for issue reports.";
+"preferences_status_permissions_title" = "Permissions";
+"preferences_status_permission_calendar" = "Calendar";
+"preferences_status_permission_notifications" = "Notifications";
+"preferences_status_permission_google" = "Google account";
+"preferences_status_permission_authorized" = "Authorized";
+"preferences_status_permission_denied" = "Denied";
+"preferences_status_permission_restricted" = "Restricted";
+"preferences_status_permission_not_determined" = "Not requested";
+"preferences_status_permission_not_authorized" = "Not authorized";
+"preferences_status_permission_provisional" = "Provisional";
 
 // MARK: - Preferences General
 

@@ -43,6 +43,7 @@ struct DiagnosticsContext {
     let totalCalendarCount: Int
     let visibleEventCount: Int
     let health: DiagnosticsHealth
+    let permissions: PermissionSnapshot?
 }
 
 enum DiagnosticsReport {
@@ -56,7 +57,7 @@ enum DiagnosticsReport {
         let lastError = context.health.lastErrorDescription ?? "none"
         let staleData = context.health.isStale ? "yes" : "no"
         let authRequired = context.health.authRequired ? "yes" : "no"
-        return """
+        var lines = """
         MeetingBar \(context.appVersion) (\(context.buildNumber))
         macOS: \(context.osVersion)
         Provider: \(providerLabel(context.provider))
@@ -68,6 +69,45 @@ enum DiagnosticsReport {
         Last successful refresh: \(lastSuccess)
         Last attempted refresh: \(lastAttempt)
         Last error: \(lastError)
+        """
+        if let perms = context.permissions {
+            lines += "\n" + permissionsLines(perms)
+        }
+        return lines
+    }
+
+    private static func permissionsLines(_ perms: PermissionSnapshot) -> String {
+        let calendar: String
+        switch perms.calendarAccess {
+        case .authorized: calendar = "authorized"
+        case .denied: calendar = "denied"
+        case .restricted: calendar = "restricted"
+        case .notDetermined: calendar = "not determined"
+        }
+
+        let notifications: String
+        switch perms.notificationAccess {
+        case .authorized: notifications = "authorized"
+        case .denied: notifications = "denied"
+        case .provisional: notifications = "provisional"
+        case .notDetermined: notifications = "not determined"
+        }
+
+        let google: String
+        switch perms.googleAuthStatus {
+        case .notActive: google = "n/a"
+        case .authorized: google = "authorized"
+        case .notAuthorized: google = "not authorized"
+        }
+
+        let script = perms.scriptFileExists ? "found" : "not found"
+        let source = perms.isAppStoreBuild ? "App Store" : "direct"
+        return """
+        Calendar permission: \(calendar)
+        Notification permission: \(notifications)
+        Google auth: \(google)
+        Script file: \(script)
+        App source: \(source)
         """
     }
 

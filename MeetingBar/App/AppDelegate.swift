@@ -55,14 +55,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             andEventID: AEEventID(kAEGetURL)
         )
 
-        if Defaults[.onboardingCompleted] {
-            Task {
-                eventManager = await EventManager()
+        Task {
+            eventManager = await EventManager()
+            if Defaults[.onboardingCompleted] {
                 setup()
-            }
-        } else {
-            windowCoordinator.openOnboardingWindow { [weak self] provider in
-                await self?.onboardingCompleted(with: provider)
+            } else {
+                windowCoordinator.openOnboardingWindow { [weak self] provider in
+                    await self?.onboardingCompleted(with: provider)
+                }
             }
         }
     }
@@ -181,7 +181,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
      */
 
     private func onboardingCompleted(with provider: EventStoreProvider) async {
-        eventManager = await EventManager()
         setup()
         windowCoordinator.attachOnboardingAppModel(appModel)
         await appModel?.completeOnboarding(with: provider)
