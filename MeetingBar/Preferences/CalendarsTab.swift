@@ -66,7 +66,7 @@ struct CalendarSectionsView: View {
 
 struct ProviderPicker: View {
     @EnvironmentObject var appModel: AppModel
-    @Default(.eventStoreProvider) private var picker
+    @State private var picker = EventStoreProvider.macOSEventKit
 
     var body: some View {
         HStack {
@@ -76,13 +76,29 @@ struct ProviderPicker: View {
                 Text("Google Calendar API").tag(EventStoreProvider.googleCalendar)
             }
             .onChange(of: picker) { provider in
+                guard provider != appModel.state.activeProvider,
+                      !appModel.state.providerChangeInProgress
+                else { return }
                 appModel.send(.changeProvider(provider, signOut: false))
             }
+            .disabled(appModel.state.providerChangeInProgress)
 
             if appModel.state.activeProvider == .googleCalendar {
                 Button("preferences_calendars_provider_gcalendar_change_account".loco()) {
                     appModel.send(.changeProvider(.googleCalendar, signOut: true))
                 }
+                .disabled(appModel.state.providerChangeInProgress)
+            }
+        }
+        .onAppear {
+            picker = appModel.state.activeProvider
+        }
+        .onChange(of: appModel.state.activeProvider) { provider in
+            picker = provider
+        }
+        .onChange(of: appModel.state.providerChangeInProgress) { inProgress in
+            if !inProgress {
+                picker = appModel.state.activeProvider
             }
         }
     }

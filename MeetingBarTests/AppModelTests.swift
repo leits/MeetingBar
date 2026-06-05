@@ -30,9 +30,11 @@ final class AppModelTests: BaseTestCase {
         harness.model.send(.eventsLoaded([event]))
 
         harness.model.send(.changeProvider(.googleCalendar, signOut: true))
+        XCTAssertTrue(harness.model.state.providerChangeInProgress)
         await harness.flushAsyncActions()
 
         XCTAssertEqual(harness.model.state.activeProvider, .googleCalendar)
+        XCTAssertFalse(harness.model.state.providerChangeInProgress)
         XCTAssertTrue(harness.model.state.calendars.isEmpty)
         XCTAssertTrue(harness.model.state.events.isEmpty)
         XCTAssertEqual(harness.providerChanges.map(\.provider), [.googleCalendar])
@@ -52,9 +54,11 @@ final class AppModelTests: BaseTestCase {
         harness.model.send(.eventsLoaded([event]))
 
         harness.model.send(.changeProvider(.googleCalendar, signOut: false))
+        XCTAssertTrue(harness.model.state.providerChangeInProgress)
         await harness.flushAsyncActions()
 
         XCTAssertEqual(harness.model.state.activeProvider, .macOSEventKit)
+        XCTAssertFalse(harness.model.state.providerChangeInProgress)
         XCTAssertEqual(harness.model.state.calendars, [calendar])
         XCTAssertEqual(harness.model.state.events, [event])
     }

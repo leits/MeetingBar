@@ -41,6 +41,7 @@ struct AppState: Equatable {
     var calendars: [MBCalendar] = []
     var events: [MBEvent] = []
     var activeProvider: EventStoreProvider = .macOSEventKit
+    var providerChangeInProgress = false
 
     // MARK: System
 
@@ -251,6 +252,7 @@ final class AppModel: ObservableObject {
     private let environment: AppEnvironment
     private var refreshTask: Task<Void, Never>?
     private var providerChangeTask: Task<Void, Never>?
+    private var providerChangeGeneration = 0
     private var onboardingTask: Task<Void, Never>?
     private var notificationReconcileTask: Task<Void, Never>?
     private var snoozeTasks: [String: Task<Void, Never>] = [:]
@@ -381,12 +383,17 @@ final class AppModel: ObservableObject {
             environment.toggleCalendarSelection(id, selected)
         case .changeProvider(let provider, let signOut):
             providerChangeTask?.cancel()
+            providerChangeGeneration += 1
+            let generation = providerChangeGeneration
+            state.providerChangeInProgress = true
             providerChangeTask = Task { [weak self] in
                 guard let self else { return }
                 let result = await environment.changeProvider(provider, signOut)
+                guard generation == self.providerChangeGeneration else { return }
                 if result == .success {
                     self.resetProviderState(to: provider)
                 }
+                self.state.providerChangeInProgress = false
             }
         default:
             break
@@ -502,6 +509,8 @@ final class AppModel: ObservableObject {
         refreshTask = nil
         providerChangeTask?.cancel()
         providerChangeTask = nil
+        providerChangeGeneration += 1
+        state.providerChangeInProgress = false
         onboardingTask?.cancel()
         onboardingTask = nil
         notificationReconcileTask?.cancel()
