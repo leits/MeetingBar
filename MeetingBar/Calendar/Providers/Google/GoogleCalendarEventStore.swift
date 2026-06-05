@@ -8,6 +8,7 @@
 
 import AppAuthCore
 import AppKit
+import Defaults
 import Foundation
 
 let googleClientNumber = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_CLIENT_NUMBER") as! String
@@ -531,7 +532,8 @@ final class GCEventStore: NSObject,
                 endDate: endDate,
                 isAllDay: isAllDay,
                 recurrent: recurrent,
-                calendar: calendar
+                calendar: calendar,
+                customRegexes: Defaults[.customRegexes]
             )
         }
     }

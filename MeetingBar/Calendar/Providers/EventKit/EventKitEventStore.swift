@@ -5,6 +5,7 @@
 //  Created by Andrii Leitsius on 12.06.2020.
 //  Copyright © 2020 Andrii Leitsius. All rights reserved.
 //
+import Defaults
 import EventKit
 
 // Ref: https://stackoverflow.com/a/66074963
@@ -152,7 +153,8 @@ private func fetchEventsOffMain(knownCalendars: [MBCalendar], dateFrom: Date, da
             endDate: rawEvent.endDate,
             isAllDay: rawEvent.isAllDay,
             recurrent: rawEvent.hasRecurrenceRules,
-            calendar: calendar
+            calendar: calendar,
+            customRegexes: Defaults[.customRegexes]
         )
         events.append(event)
     }
