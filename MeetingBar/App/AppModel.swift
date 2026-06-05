@@ -42,6 +42,7 @@ struct AppState: Equatable {
     var events: [MBEvent] = []
     var activeProvider: EventStoreProvider = .macOSEventKit
     var providerChangeInProgress = false
+    var providerHealth = ProviderHealth()
 
     // MARK: System
 
@@ -88,6 +89,7 @@ enum AppAction {
     case refreshCalendars
     case calendarsLoaded([MBCalendar], provider: EventStoreProvider)
     case eventsLoaded([MBEvent])
+    case providerHealthChanged(ProviderHealth)
     case calendarRefreshFailed(Error)
     case providerChanged(EventStoreProvider)
     case selectCalendar(id: String, selected: Bool)
@@ -131,6 +133,9 @@ struct AppEnvironment {
 
     /// Live stream of calendars paired with the active provider name.
     var calendarsPublisher: AnyPublisher<([MBCalendar], EventStoreProvider), Never>
+
+    /// Live connection and refresh health for the active provider.
+    var providerHealthPublisher: AnyPublisher<ProviderHealth, Never>
 
     /// Trigger a fresh calendar + event fetch from the active provider.
     /// Results flow back through `eventsPublisher` / `calendarsPublisher`.
@@ -192,6 +197,7 @@ struct AppEnvironment {
                     (calendars, calendarSync.repository.activeProviderName)
                 }
                 .eraseToAnyPublisher(),
+            providerHealthPublisher: calendarSync.$providerHealth.eraseToAnyPublisher(),
             triggerRefresh: {
                 calendarSync.refreshSubject.send()
             },
@@ -276,6 +282,13 @@ final class AppModel: ObservableObject {
                 self?.send(.calendarsLoaded(calendars, provider: provider))
             }
             .store(in: &cancellables)
+
+        environment.providerHealthPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] health in
+                self?.send(.providerHealthChanged(health))
+            }
+            .store(in: &cancellables)
     }
 
     // MARK: Action dispatch
@@ -286,7 +299,7 @@ final class AppModel: ObservableObject {
              .didWake, .timezoneChanged, .dayChanged:
             handleLifecycleAction(action)
         case .calendarStoreChanged, .refreshCalendars, .calendarsLoaded,
-             .eventsLoaded, .calendarRefreshFailed, .providerChanged,
+             .eventsLoaded, .providerHealthChanged, .calendarRefreshFailed, .providerChanged,
              .selectCalendar, .changeProvider, .settingsChanged,
              .toggleMeetingTitleVisibility:
             handleCalendarAction(action)
@@ -374,6 +387,8 @@ final class AppModel: ObservableObject {
         case .eventsLoaded(let events):
             state.events = events
             send(.reconcileNotifications)
+        case .providerHealthChanged(let health):
+            state.providerHealth = health
         case .calendarRefreshFailed:
             break
         case .providerChanged(let provider):

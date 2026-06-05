@@ -101,6 +101,23 @@ final class AppModelTests: BaseTestCase {
         XCTAssertEqual(harness.reconciledEventIDs, [["event"]])
     }
 
+    func testProviderHealthUpdatesState() async {
+        let harness = AppModelTestHarness()
+        _ = harness.model
+        let health = ProviderHealth(
+            lastSuccessfulRefresh: harness.fixedNow,
+            lastAttemptedRefresh: harness.fixedNow,
+            lastErrorDescription: "Refresh failed",
+            isStale: true,
+            authRequired: true
+        )
+
+        harness.publishProviderHealth(health)
+        await harness.flushAsyncActions()
+
+        XCTAssertEqual(harness.model.state.providerHealth, health)
+    }
+
     func testNearestEventUsesInjectedClock() {
         let now = Date(timeIntervalSince1970: 1_700_000_000)
         let harness = AppModelTestHarness(now: now)

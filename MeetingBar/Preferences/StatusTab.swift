@@ -23,7 +23,7 @@ struct StatusTab: View {
 }
 
 private struct ProviderStatusSection: View {
-    @EnvironmentObject var calendarSync: CalendarSync
+    @EnvironmentObject var appModel: AppModel
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -34,11 +34,11 @@ private struct ProviderStatusSection: View {
                 Text(statusText)
                 Spacer()
                 Button("preferences_status_refresh_now".loco()) {
-                    Task { try? await calendarSync.refreshSources() }
+                    appModel.send(.refreshCalendars)
                 }
             }
 
-            if let lastSuccess = calendarSync.providerHealth.lastSuccessfulRefresh {
+            if let lastSuccess = appModel.state.providerHealth.lastSuccessfulRefresh {
                 HStack {
                     Text("preferences_status_last_successful_refresh".loco())
                         .foregroundStyle(.secondary)
@@ -46,7 +46,7 @@ private struct ProviderStatusSection: View {
                 }
             }
 
-            if let error = calendarSync.providerHealth.lastErrorDescription {
+            if let error = appModel.state.providerHealth.lastErrorDescription {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("preferences_status_last_error".loco())
                         .foregroundStyle(.secondary)
@@ -62,7 +62,7 @@ private struct ProviderStatusSection: View {
     }
 
     private var statusColor: Color {
-        let health = calendarSync.providerHealth
+        let health = appModel.state.providerHealth
         if health.authRequired { return .red }
         if health.lastErrorDescription != nil { return .red }
         if health.isStale { return .orange }
@@ -71,7 +71,7 @@ private struct ProviderStatusSection: View {
     }
 
     private var statusText: String {
-        let health = calendarSync.providerHealth
+        let health = appModel.state.providerHealth
         if health.authRequired { return "preferences_status_state_auth_required".loco() }
         if health.lastErrorDescription != nil { return "preferences_status_state_error".loco() }
         if health.isStale { return "preferences_status_state_stale".loco() }
@@ -81,6 +81,7 @@ private struct ProviderStatusSection: View {
 }
 
 private struct PermissionsSection: View {
+    @EnvironmentObject var appModel: AppModel
     @State private var snapshot: PermissionSnapshot?
 
     var body: some View {
@@ -112,9 +113,8 @@ private struct PermissionsSection: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(8)
-        .task {
-            let provider = AppSettings.current.calendar.eventStoreProvider
-            snapshot = await PermissionReporter.current(provider: provider)
+        .task(id: appModel.state.activeProvider) {
+            snapshot = await PermissionReporter.current(provider: appModel.state.activeProvider)
         }
     }
 
