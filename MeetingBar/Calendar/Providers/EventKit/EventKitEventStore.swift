@@ -149,6 +149,7 @@ private func fetchEventsOffMain(knownCalendars: [MBCalendar], dateFrom: Date, da
             notes: rawEvent.notes,
             location: rawEvent.location,
             url: rawEvent.url,
+            calendarOpenURL: URL(string: "ical://ekevent/\(rawEvent.calendarItemIdentifier)"),
             organizer: organizer,
             attendees: attendees,
             startDate: rawEvent.startDate,

@@ -403,8 +403,9 @@ final class StatusBarItemController {
 
     @objc
     func openEventInCalendar(sender: NSMenuItem) {
-        if let identifier = sender.representedObject as? String {
-            let url = URL(string: "ical://ekevent/\(identifier)")!
+        // The menu attaches the provider-specific calendar URL directly
+        // (ical://ekevent/… for EventKit, htmlLink for Google).
+        if let url = sender.representedObject as? URL {
             url.openInDefaultBrowser()
         }
     }

@@ -283,6 +283,39 @@ final class MenuBuilderEventItemTests: BaseTestCase {
         XCTAssertTrue(dateSection[1].title.contains("status_bar_section_date_nothing".loco("t")))
 
     }
+    /// "Open in Calendar" appears with the event's calendarOpenURL attached.
+    func test_openInCalendarUsesCalendarOpenURLWhenPresent() {
+        Defaults[.showEventDetails] = true
+        let calURL = URL(string: "https://www.google.com/calendar/event?eid=abc")!
+        let event = makeFakeEvent(
+            id: "G",
+            start: Date().addingTimeInterval(600),
+            end: Date().addingTimeInterval(1200),
+            calendarOpenURL: calURL)
+
+        let subItems = buildItem(event: event)?.submenu?.items ?? []
+        let openItem = subItems.first {
+            $0.title == "status_bar_submenu_open_in_calendar".loco()
+        }
+        XCTAssertNotNil(openItem, "Open in Calendar should be present when a URL exists")
+        XCTAssertEqual(openItem?.representedObject as? URL, calURL)
+    }
+
+    /// No calendarOpenURL (e.g. a Google event without htmlLink) ⇒ no action.
+    func test_openInCalendarHiddenWhenNoURL() {
+        Defaults[.showEventDetails] = true
+        let event = makeFakeEvent(
+            id: "NoURL",
+            start: Date().addingTimeInterval(600),
+            end: Date().addingTimeInterval(1200),
+            calendarOpenURL: nil)
+
+        let subItems = buildItem(event: event)?.submenu?.items ?? []
+        XCTAssertFalse(
+            subItems.contains { $0.title == "status_bar_submenu_open_in_calendar".loco() },
+            "Open in Calendar must be hidden when there is no usable URL")
+    }
+
     /// declined + `.hide` ⇒ item should be skipped completely
     func test_declinedEventHiddenWhenAppearanceIsHide() {
         Defaults[.declinedEventsAppereance] = .hide
@@ -382,11 +415,13 @@ final class MenuBuilderEventItemTests: BaseTestCase {
     func test_eventDetailsActionsKeepSelectorsAndRepresentedObjects() throws {
         Defaults[.showEventDetails] = true
         let now = Date(timeIntervalSinceReferenceDate: 800_000_000)
+        let calendarOpenURL = URL(string: "ical://ekevent/ACTIONS")!
         let event = makeFakeEvent(
             id: "ACTIONS",
             start: now.addingTimeInterval(600),
             end: now.addingTimeInterval(1200),
-            withLink: true
+            withLink: true,
+            calendarOpenURL: calendarOpenURL
         )
 
         let item = try XCTUnwrap(buildItem(event: event, now: now))
@@ -407,7 +442,7 @@ final class MenuBuilderEventItemTests: BaseTestCase {
         XCTAssertEqual((copyItem.representedObject as? MBEvent)?.id, event.id)
         XCTAssertEqual((dismissItem.representedObject as? MBEvent)?.id, event.id)
         XCTAssertEqual((emailItem.representedObject as? MBEvent)?.id, event.id)
-        XCTAssertEqual(openItem.representedObject as? String, event.id)
+        XCTAssertEqual(openItem.representedObject as? URL, calendarOpenURL)
     }
 
     func test_eventDetailsRenderAttendeeRoleAndDeclinedStyle() throws {

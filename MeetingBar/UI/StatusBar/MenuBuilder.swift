@@ -739,12 +739,17 @@ struct MenuBuilder {
             action: #selector(StatusBarItemController.emailAttendees),
             representedObject: event
         )
-        addEventAction(
-            to: menu,
-            title: "status_bar_submenu_open_in_calendar".loco(),
-            action: #selector(StatusBarItemController.openEventInCalendar),
-            representedObject: event.id
-        )
+        // Only offer "Open in Calendar" when the source provides a usable URL
+        // (EventKit: ical://ekevent/…, Google: htmlLink). Hidden otherwise so we
+        // never open a broken ical:// link for a Google event id.
+        if let calendarOpenURL = event.calendarOpenURL {
+            addEventAction(
+                to: menu,
+                title: "status_bar_submenu_open_in_calendar".loco(),
+                action: #selector(StatusBarItemController.openEventInCalendar),
+                representedObject: calendarOpenURL
+            )
+        }
 
         if isFantasticalInstalled {
             addEventAction(

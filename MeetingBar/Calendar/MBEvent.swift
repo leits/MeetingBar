@@ -70,6 +70,11 @@ public struct MBEvent: Identifiable, Hashable, Sendable {
     /// found in `url`, `location`, or `notes` regardless of what those fields
     /// contain. EventKit has no equivalent, so this is `nil` for those events.
     public let conferenceURL: URL?
+    /// Provider-specific URL that opens this event in its source calendar app.
+    /// EventKit: an `ical://ekevent/<identifier>` link. Google: the event's web
+    /// `htmlLink` when available. `nil` when the source has no usable URL, in
+    /// which case the "Open in Calendar" menu action is hidden.
+    public let calendarOpenURL: URL?
     public let notes: String?
     public let location: String?
     public let startDate: Date
@@ -86,6 +91,7 @@ public struct MBEvent: Identifiable, Hashable, Sendable {
          location: String?,
          url: URL?,
          conferenceURL: URL? = nil,
+         calendarOpenURL: URL? = nil,
          organizer: MBEventOrganizer?,
          attendees: [MBEventAttendee] = [],
          startDate: Date,
@@ -114,6 +120,7 @@ public struct MBEvent: Identifiable, Hashable, Sendable {
         self.location = location
         self.url = url
         self.conferenceURL = conferenceURL
+        self.calendarOpenURL = calendarOpenURL
 
         self.organizer = organizer
         self.attendees = attendees

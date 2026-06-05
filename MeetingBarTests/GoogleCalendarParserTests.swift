@@ -70,6 +70,40 @@ final class GoogleCalendarParserTests: XCTestCase {
         XCTAssertFalse(event?.isAllDay ?? true)
     }
 
+    func testHtmlLinkBecomesCalendarOpenURL() {
+        let event = GCEventStore.GCParser.event(
+            from: [
+                "id": "event-html",
+                "summary": "With web link",
+                "status": "confirmed",
+                "start": ["dateTime": "2026-04-24T10:00:00Z"],
+                "end": ["dateTime": "2026-04-24T10:30:00Z"],
+                "htmlLink": "https://www.google.com/calendar/event?eid=abc123"
+            ],
+            calendar: calendar
+        )
+
+        XCTAssertEqual(
+            event?.calendarOpenURL?.absoluteString,
+            "https://www.google.com/calendar/event?eid=abc123"
+        )
+    }
+
+    func testMissingHtmlLinkLeavesCalendarOpenURLNil() {
+        let event = GCEventStore.GCParser.event(
+            from: [
+                "id": "event-nolink",
+                "summary": "No web link",
+                "status": "confirmed",
+                "start": ["dateTime": "2026-04-24T10:00:00Z"],
+                "end": ["dateTime": "2026-04-24T10:30:00Z"]
+            ],
+            calendar: calendar
+        )
+
+        XCTAssertNil(event?.calendarOpenURL)
+    }
+
     func testAllDayEventParses() {
         let event = GCEventStore.GCParser.event(
             from: [

@@ -542,6 +542,10 @@ final class GCEventStore: NSObject,
 
             let recurrent = (item["recurringEventId"] != nil) ? true : false
 
+            // Web link to the event in Google Calendar; used for "Open in
+            // Calendar" since `ical://ekevent/<google-id>` is not valid.
+            let calendarOpenURL = (item["htmlLink"] as? String).flatMap(URL.init(string:))
+
             return MBEvent(
                 id: eventID,
                 lastModifiedDate: lastModifiedDate,
@@ -551,6 +555,7 @@ final class GCEventStore: NSObject,
                 location: location,
                 url: nil,
                 conferenceURL: conferenceURL,
+                calendarOpenURL: calendarOpenURL,
                 organizer: organizer,
                 attendees: attendees,
                 startDate: startDate,
