@@ -70,7 +70,10 @@ public class EventManager: ObservableObject {
             try await repository.signIn(forcePrompt: false)
             refreshSubject.send()
         } catch {
-            NSLog("Error after switching provider: \(error)")
+            let errorDescription = String(describing: error)
+            MeetingBarLogger.calendar.error(
+                "Provider switch sign-in failed: \(errorDescription, privacy: .private)"
+            )
             // Surface the auth failure to the UI instead of leaving the
             // previous provider's "OK" state visible. Status tab now shows
             // "Authorization required" instead of stale success.
@@ -99,7 +102,10 @@ public class EventManager: ObservableObject {
                     do {
                         try await self?.refreshSources()
                     } catch {
-                        NSLog("Failed reloading calendars: \(error)")
+                        let errorDescription = String(describing: error)
+                        MeetingBarLogger.calendar.error(
+                            "Calendar reload after store change failed: \(errorDescription, privacy: .private)"
+                        )
                     }
                 }
             }
@@ -186,7 +192,10 @@ public class EventManager: ObservableObject {
                                 let health = ProviderHealth.success(attempted: attempted)
                                 promise(.success(RefreshResult(calendars: cals, events: evts, health: health)))
                             } catch {
-                                NSLog("EventManager refresh failed: \(error)")
+                                let errorDescription = String(describing: error)
+                                MeetingBarLogger.calendar.error(
+                                    "Event refresh failed: \(errorDescription, privacy: .private)"
+                                )
                                 let health = ProviderHealth.failure(
                                     previous: previousHealth,
                                     attempted: attempted,

@@ -21,9 +21,9 @@ func sendUserNotification(_ title: String, _ text: String) async {
     do {
         try await center.add(request)
     } catch {
-        NSLog(
-            "%@",
-            "request \(request.identifier) could not be added because of error \(error)"
+        let errorDescription = String(describing: error)
+        MeetingBarLogger.notifications.error(
+            "Could not add request \(request.identifier, privacy: .private): \(errorDescription, privacy: .private)"
         )
     }
 }

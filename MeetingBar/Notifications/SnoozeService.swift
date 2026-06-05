@@ -94,9 +94,9 @@ final class SnoozeService {
         do {
             try await sink.add(request)
         } catch {
-            NSLog(
-                "%@",
-                "request \(request.identifier) could not be added because of error \(error)"
+            let errorDescription = String(describing: error)
+            MeetingBarLogger.notifications.error(
+                "Could not add snooze request \(request.identifier, privacy: .private): \(errorDescription, privacy: .private)"
             )
         }
     }

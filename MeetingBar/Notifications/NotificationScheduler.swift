@@ -112,7 +112,10 @@ final class NotificationScheduler {
             do {
                 try await sink.add(request)
             } catch {
-                NSLog("NotificationScheduler: failed to add \(plan.identity): \(error)")
+                let errorDescription = String(describing: error)
+                MeetingBarLogger.notifications.error(
+                    "Could not add notification plan \(plan.identity, privacy: .private): \(errorDescription, privacy: .private)"
+                )
             }
         }
     }

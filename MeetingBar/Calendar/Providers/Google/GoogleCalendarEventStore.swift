@@ -238,7 +238,9 @@ final class GCEventStore: NSObject,
             } catch let error as GoogleCalendarError {
                 switch error {
                 case .forbiddenCalendar:
-                    NSLog("GCEventStore: skipping inaccessible calendar \(cal.id): \(error.localizedDescription)")
+                    MeetingBarLogger.calendar.warning(
+                        "Skipping inaccessible Google calendar \(cal.id, privacy: .private): \(error.localizedDescription, privacy: .private)"
+                    )
                     forbiddenErrors.append(error)
                 default:
                     throw error
@@ -319,7 +321,10 @@ final class GCEventStore: NSObject,
             let data = try NSKeyedArchiver.archivedData(withRootObject: state, requiringSecureCoding: true)
             Keychain.save(data: data, for: Self.kKeychainName)
         } catch {
-            NSLog("Error archiving OIDAuthState: \(error)")
+            let errorDescription = String(describing: error)
+            MeetingBarLogger.calendar.error(
+                "Could not archive Google auth state: \(errorDescription, privacy: .private)"
+            )
         }
     }
 
@@ -330,7 +335,10 @@ final class GCEventStore: NSObject,
             userEmail = state.userEmail
             return state
         } catch {
-            NSLog("Error unarchiving OIDAuthState: \(error)")
+            let errorDescription = String(describing: error)
+            MeetingBarLogger.calendar.error(
+                "Could not restore Google auth state: \(errorDescription, privacy: .private)"
+            )
             return nil
         }
     }
@@ -419,7 +427,9 @@ final class GCEventStore: NSObject,
         static func event(from item: [String: Any],
                           calendar: MBCalendar) -> MBEvent? {
             guard let eventID = item["id"] as? String else {
-                NSLog("Skipping Google Calendar event without a string id")
+                MeetingBarLogger.calendar.warning(
+                    "Skipping Google Calendar event without a string id"
+                )
                 return nil
             }
 
@@ -488,7 +498,9 @@ final class GCEventStore: NSObject,
 
             guard let itemStart = item["start"] as? [String: String],
                   let itemEnd = item["end"] as? [String: String] else {
-                NSLog("Skipping Google Calendar event \(eventID) without valid start/end dictionaries")
+                MeetingBarLogger.calendar.warning(
+                    "Skipping Google event \(eventID, privacy: .private) without valid start/end dictionaries"
+                )
                 return nil
             }
 
@@ -496,7 +508,9 @@ final class GCEventStore: NSObject,
                 let formatter = ISO8601DateFormatter()
                 guard let parsedStartDate = formatter.date(from: startDateTime),
                       let parsedEndDate = formatter.date(from: endDateTime) else {
-                    NSLog("Skipping Google Calendar event \(eventID) with invalid dateTime values")
+                    MeetingBarLogger.calendar.warning(
+                        "Skipping Google event \(eventID, privacy: .private) with invalid dateTime values"
+                    )
                     return nil
                 }
                 startDate = parsedStartDate
@@ -509,7 +523,9 @@ final class GCEventStore: NSObject,
                       let endDateString = itemEnd["date"],
                       let parsedStartDate = formatter.date(from: startDateString),
                       let parsedEndDate = formatter.date(from: endDateString) else {
-                    NSLog("Skipping Google Calendar event \(eventID) with invalid all-day date values")
+                    MeetingBarLogger.calendar.warning(
+                        "Skipping Google event \(eventID, privacy: .private) with invalid all-day date values"
+                    )
                     return nil
                 }
                 startDate = parsedStartDate

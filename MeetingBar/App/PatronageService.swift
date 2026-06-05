@@ -294,7 +294,10 @@ final class PatronageService: ObservableObject {
             )
         } catch {
             availableProductIDs = []
-            NSLog("%@", "Could not load patronage products: \(error)")
+            let errorDescription = String(describing: error)
+            MeetingBarLogger.patronage.error(
+                "Could not load patronage products: \(errorDescription, privacy: .private)"
+            )
         }
     }
 

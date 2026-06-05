@@ -89,7 +89,9 @@ private func fetchEventsOffMain(knownCalendars: [MBCalendar], dateFrom: Date, da
     var events: [MBEvent] = []
     for rawEvent in EKEventStore.shared.events(matching: predicate) {
         guard let calendar = knownCalendars.first(where: { $0.id == rawEvent.calendar.calendarIdentifier }) else {
-            NSLog("Skipping EventKit event from unknown calendar id \(rawEvent.calendar.calendarIdentifier)")
+            MeetingBarLogger.calendar.warning(
+                "Skipping EventKit event from unknown calendar \(rawEvent.calendar.calendarIdentifier, privacy: .private)"
+            )
             continue
         }
         var status: MBEventStatus
