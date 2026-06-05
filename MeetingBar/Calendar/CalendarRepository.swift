@@ -59,10 +59,17 @@ public final class CalendarRepository {
     public func switchProvider(to providerName: EventStoreProvider) async {
         storeChangeCancellable?.cancel()
         storeChangeCancellable = nil
+        activeProvider.cancelPendingOperations()
 
         activeProviderName = providerName
         activeProvider = storeFactory(providerName)
         observeStoreChanges(for: providerName)
+    }
+
+    public func stop() {
+        storeChangeCancellable?.cancel()
+        storeChangeCancellable = nil
+        activeProvider.cancelPendingOperations()
     }
 
     // MARK: - Fetch

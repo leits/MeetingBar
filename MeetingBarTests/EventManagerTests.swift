@@ -147,6 +147,32 @@ class EventManagerTests: BaseTestCase {
             1,
             "one store-change notification should trigger one refreshSources call")
     }
+
+    func testRepositoryCancelsProviderOperationsWhenSwitchingAndStopping() async {
+        let storeA = FakeEventStore()
+        let storeB = FakeEventStore()
+        let repository = CalendarRepository(providerName: .macOSEventKit) { provider in
+            provider == .macOSEventKit ? storeA : storeB
+        }
+
+        await repository.switchProvider(to: .googleCalendar)
+
+        XCTAssertEqual(storeA.cancelPendingOperationsCallCount, 1)
+        XCTAssertEqual(storeB.cancelPendingOperationsCallCount, 0)
+
+        repository.stop()
+
+        XCTAssertEqual(storeB.cancelPendingOperationsCallCount, 1)
+    }
+
+    func testEventManagerStopCancelsActiveProviderOperations() {
+        let store = FakeEventStore()
+        let manager = EventManager(provider: store, refreshInterval: 0)
+
+        manager.stop()
+
+        XCTAssertEqual(store.cancelPendingOperationsCallCount, 1)
+    }
 }
 
 @MainActor

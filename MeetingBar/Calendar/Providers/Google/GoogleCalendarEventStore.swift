@@ -145,14 +145,8 @@ final class GCEventStore: NSObject,
     }
 
     func signOut() async {
+        cancelPendingOperations()
         guard let state = authState else { return }
-
-        if let flow = currentAuthorizationFlow {
-                currentAuthorizationFlow = nil
-                await MainActor.run { flow.cancel() }
-            } else {
-                currentAuthorizationFlow = nil
-            }
 
         // Revoke tokens in parallel
         let access  = state.lastTokenResponse?.accessToken
@@ -163,6 +157,17 @@ final class GCEventStore: NSObject,
         }
 
         clearAuthState()
+    }
+
+    func cancelPendingOperations() {
+        signInTask?.cancel()
+        signInTask = nil
+        refreshTask?.cancel()
+        refreshTask = nil
+
+        let flow = currentAuthorizationFlow
+        currentAuthorizationFlow = nil
+        flow?.cancel()
     }
 
     func refreshSources() async {}

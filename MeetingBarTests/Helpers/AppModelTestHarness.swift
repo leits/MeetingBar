@@ -26,8 +26,11 @@ final class AppModelTestHarness {
     private(set) var completedOnboardingProviders: [EventStoreProvider] = []
     private(set) var openPreferencesCallCount = 0
     private(set) var resumedOAuthURLs: [URL] = []
+    private(set) var startedAsyncOperationCount = 0
+    private(set) var cancelledAsyncOperationCount = 0
 
     let fixedNow: Date
+    private let asyncOperationDelayNanoseconds: UInt64
 
     private lazy var environment = AppEnvironment(
         eventsPublisher: eventsSubject.eraseToAnyPublisher(),
@@ -36,10 +39,14 @@ final class AppModelTestHarness {
             self?.refreshCallCount += 1
         },
         reconcileNotifications: { [weak self] events in
-            self?.reconciledEventIDs.append(events.map(\.id))
+            guard let self else { return }
+            guard await self.waitForAsyncOperationDelay() else { return }
+            self.reconciledEventIDs.append(events.map(\.id))
         },
         changeProvider: { [weak self] provider, signOut in
-            self?.providerChanges.append((provider, signOut))
+            guard let self else { return }
+            guard await self.waitForAsyncOperationDelay() else { return }
+            self.providerChanges.append((provider, signOut))
         },
         toggleCalendarSelection: { [weak self] id, selected in
             self?.calendarSelections.append((id, selected))
@@ -60,10 +67,14 @@ final class AppModelTestHarness {
             self?.toggleMeetingTitleVisibilityCallCount += 1
         },
         snoozeEvent: { [weak self] event, action in
-            self?.snoozedEvents.append((event.id, action))
+            guard let self else { return }
+            guard await self.waitForAsyncOperationDelay() else { return }
+            self.snoozedEvents.append((event.id, action))
         },
         completeOnboarding: { [weak self] provider in
-            self?.completedOnboardingProviders.append(provider)
+            guard let self else { return }
+            guard await self.waitForAsyncOperationDelay() else { return }
+            self.completedOnboardingProviders.append(provider)
         },
         openPreferences: { [weak self] in
             self?.openPreferencesCallCount += 1
@@ -76,8 +87,12 @@ final class AppModelTestHarness {
 
     lazy var model = AppModel(environment: environment)
 
-    init(now: Date = Date(timeIntervalSince1970: 1_700_000_000)) {
+    init(
+        now: Date = Date(timeIntervalSince1970: 1_700_000_000),
+        asyncOperationDelayNanoseconds: UInt64 = 0
+    ) {
         fixedNow = now
+        self.asyncOperationDelayNanoseconds = asyncOperationDelayNanoseconds
     }
 
     func publishCalendars(_ calendars: [MBCalendar],
@@ -92,5 +107,17 @@ final class AppModelTestHarness {
     func flushAsyncActions() async {
         await Task.yield()
         await Task.yield()
+    }
+
+    private func waitForAsyncOperationDelay() async -> Bool {
+        startedAsyncOperationCount += 1
+        guard asyncOperationDelayNanoseconds > 0 else { return true }
+        do {
+            try await Task.sleep(nanoseconds: asyncOperationDelayNanoseconds)
+            return true
+        } catch {
+            cancelledAsyncOperationCount += 1
+            return false
+        }
     }
 }

@@ -545,6 +545,26 @@ final class NotificationSchedulerTests: BaseTestCase {
         XCTAssertTrue(actionSink.actions.isEmpty)
     }
 
+    func testStopCancelsPendingActionTasks() async {
+        let requestSink = FakeNotificationRequestSink()
+        let actionSink = FakeNotificationActionSink()
+        let scheduler = NotificationScheduler(sink: requestSink, actionSink: actionSink)
+        let scheduledNow = Date()
+        let evt = wallClockEvent(id: "A", now: scheduledNow, startsIn: 0.8)
+
+        await scheduler.reconcile(
+            events: [evt],
+            settings: fullscreenOnlySettings(offset: 0.2),
+            now: scheduledNow
+        )
+        scheduler.stop()
+
+        try? await Task.sleep(nanoseconds: 750_000_000)
+
+        XCTAssertTrue(actionSink.attempts.isEmpty)
+        XCTAssertTrue(actionSink.actions.isEmpty)
+    }
+
     func testReconcileSchedulesAutoJoinAndScriptActionTasks() async {
         let requestSink = FakeNotificationRequestSink()
         let actionSink = FakeNotificationActionSink()

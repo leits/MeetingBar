@@ -39,6 +39,8 @@ public class EventManager: ObservableObject {
     /// repository-store subscription when switching providers, instead of
     /// stacking up additional sinks on every switch.
     private var storeChangeCancellable: AnyCancellable?
+    private var storeChangeRefreshTask: Task<Void, Never>?
+    private var refreshCycleTask: Task<Void, Never>?
     let refreshSubject = PassthroughSubject<Void, Never>()
 
     // MARK: - Initialization
@@ -98,7 +100,9 @@ public class EventManager: ObservableObject {
         storeChangeCancellable?.cancel()
         storeChangeCancellable = repository.storeChanged
             .sink { [weak self] in
-                Task {
+                guard let self else { return }
+                self.storeChangeRefreshTask?.cancel()
+                self.storeChangeRefreshTask = Task { [weak self] in
                     do {
                         try await self?.refreshSources()
                     } catch {
@@ -109,6 +113,17 @@ public class EventManager: ObservableObject {
                     }
                 }
             }
+    }
+
+    public func stop() {
+        storeChangeRefreshTask?.cancel()
+        storeChangeRefreshTask = nil
+        refreshCycleTask?.cancel()
+        refreshCycleTask = nil
+        storeChangeCancellable?.cancel()
+        storeChangeCancellable = nil
+        cancellables.removeAll()
+        repository.stop()
     }
 
     public func refreshSources() async throws {
@@ -184,7 +199,8 @@ public class EventManager: ObservableObject {
                 let previousHealth = self.providerHealth
                 return Deferred {
                     Future<RefreshResult, Never> { promise in
-                        Task {
+                        self.refreshCycleTask = Task { [weak self] in
+                            guard let self else { return }
                             let attempted = Date()
                             do {
                                 let cals = try await self.repository.fetchAllCalendars()

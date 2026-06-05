@@ -177,4 +177,35 @@ final class AppModelTests: BaseTestCase {
         XCTAssertEqual(harness.openPreferencesCallCount, 1)
         XCTAssertEqual(harness.resumedOAuthURLs, [oauthURL])
     }
+
+    func testWillTerminateCancelsOwnedAsyncOperations() async {
+        let harness = AppModelTestHarness(asyncOperationDelayNanoseconds: 1_000_000_000)
+        let event = makeFakeEvent(
+            id: "event",
+            start: harness.fixedNow,
+            end: harness.fixedNow.addingTimeInterval(1800)
+        )
+
+        harness.model.send(.changeProvider(.googleCalendar, signOut: true))
+        harness.model.send(.eventsLoaded([event]))
+        harness.model.send(.snoozeMeeting(eventID: event.id, action: .tenMinuteLater))
+        harness.model.send(.onboardingCompleted(.googleCalendar))
+        let startDeadline = Date().addingTimeInterval(1)
+        while harness.startedAsyncOperationCount < 4, Date() < startDeadline {
+            try? await Task.sleep(nanoseconds: 10_000_000)
+        }
+        XCTAssertEqual(harness.startedAsyncOperationCount, 4)
+
+        harness.model.send(.willTerminate)
+        let cancellationDeadline = Date().addingTimeInterval(1)
+        while harness.cancelledAsyncOperationCount < 4, Date() < cancellationDeadline {
+            try? await Task.sleep(nanoseconds: 10_000_000)
+        }
+
+        XCTAssertEqual(harness.cancelledAsyncOperationCount, 4)
+        XCTAssertTrue(harness.providerChanges.isEmpty)
+        XCTAssertTrue(harness.reconciledEventIDs.isEmpty)
+        XCTAssertTrue(harness.snoozedEvents.isEmpty)
+        XCTAssertTrue(harness.completedOnboardingProviders.isEmpty)
+    }
 }

@@ -247,6 +247,10 @@ final class AppModel: ObservableObject {
 
     private let environment: AppEnvironment
     private var refreshTask: Task<Void, Never>?
+    private var providerChangeTask: Task<Void, Never>?
+    private var onboardingTask: Task<Void, Never>?
+    private var notificationReconcileTask: Task<Void, Never>?
+    private var snoozeTasks: [String: Task<Void, Never>] = [:]
     private var cancellables = Set<AnyCancellable>()
 
     init(environment: AppEnvironment) {
@@ -339,7 +343,7 @@ final class AppModel: ObservableObject {
         case .launched:
             scheduleRefresh()
         case .willTerminate:
-            refreshTask?.cancel()
+            cancelPendingOperations()
         case .screenLocked:
             state.screenIsLocked = true
         case .screenUnlocked:
@@ -373,7 +377,9 @@ final class AppModel: ObservableObject {
             environment.toggleCalendarSelection(id, selected)
         case .changeProvider(let provider, let signOut):
             resetProviderState(to: provider)
-            Task {
+            providerChangeTask?.cancel()
+            providerChangeTask = Task { [weak self] in
+                guard let self else { return }
                 await environment.changeProvider(provider, signOut)
             }
         default:
@@ -413,10 +419,7 @@ final class AppModel: ObservableObject {
         case .clearDismissedMeetings:
             environment.clearDismissedEvents()
         case .snoozeMeeting(let eventID, let action):
-            guard let event = event(withID: eventID) else { return }
-            Task {
-                await environment.snoozeEvent(event, action)
-            }
+            scheduleSnooze(eventID: eventID, action: action)
         default:
             break
         }
@@ -425,7 +428,9 @@ final class AppModel: ObservableObject {
     private func handleExternalAction(_ action: AppAction) {
         switch action {
         case .onboardingCompleted(let provider):
-            Task {
+            onboardingTask?.cancel()
+            onboardingTask = Task { [weak self] in
+                guard let self else { return }
                 await completeOnboarding(with: provider)
             }
         case .openRoute(let route):
@@ -453,7 +458,9 @@ final class AppModel: ObservableObject {
 
     private func reconcileNotificationsFromState() {
         let events = state.events
-        Task {
+        notificationReconcileTask?.cancel()
+        notificationReconcileTask = Task { [weak self] in
+            guard let self else { return }
             await environment.reconcileNotifications(events)
         }
     }
@@ -470,5 +477,31 @@ final class AppModel: ObservableObject {
             guard let self, !Task.isCancelled else { return }
             environment.triggerRefresh()
         }
+    }
+
+    private func scheduleSnooze(
+        eventID: String,
+        action: NotificationEventTimeAction
+    ) {
+        guard let event = event(withID: eventID) else { return }
+        snoozeTasks[eventID]?.cancel()
+        snoozeTasks[eventID] = Task { [weak self] in
+            guard let self else { return }
+            await environment.snoozeEvent(event, action)
+        }
+    }
+
+    private func cancelPendingOperations() {
+        refreshTask?.cancel()
+        refreshTask = nil
+        providerChangeTask?.cancel()
+        providerChangeTask = nil
+        onboardingTask?.cancel()
+        onboardingTask = nil
+        notificationReconcileTask?.cancel()
+        notificationReconcileTask = nil
+        snoozeTasks.values.forEach { $0.cancel() }
+        snoozeTasks.removeAll()
+        cancellables.removeAll()
     }
 }

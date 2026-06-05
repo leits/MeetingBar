@@ -22,6 +22,7 @@ final class FakeEventStore: AuthenticatedEventStore {
     nonisolated(unsafe) private(set) var refreshSourcesCallCount = 0
     nonisolated(unsafe) private(set) var signInCallCount = 0
     nonisolated(unsafe) private(set) var signOutCallCount = 0
+    nonisolated(unsafe) private(set) var cancelPendingOperationsCallCount = 0
 
     init(calendars: [MBCalendar] = [], events: [MBEvent] = []) {
         stubbedCalendars = calendars
@@ -61,5 +62,10 @@ final class FakeEventStore: AuthenticatedEventStore {
 
     func signOut() async {
         signOutCallCount += 1
+    }
+
+    @MainActor
+    func cancelPendingOperations() {
+        cancelPendingOperationsCallCount += 1
     }
 }

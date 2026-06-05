@@ -27,6 +27,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private let urlHandler = URLHandler()
     private let windowCoordinator = WindowCoordinator()
 
+    private var launchTask: Task<Void, Never>?
+    private var notificationSetupTask: Task<Void, Never>?
     private var statusLoopTask: Task<Void, Never>?
     private var cancellables = Set<AnyCancellable>()
 
@@ -56,8 +58,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             andEventID: AEEventID(kAEGetURL)
         )
 
-        Task {
-            eventManager = await EventManager()
+        launchTask = Task { [weak self] in
+            guard let self else { return }
+            let manager = await EventManager()
+            guard !Task.isCancelled else {
+                manager.stop()
+                return
+            }
+            eventManager = manager
             if Defaults[.onboardingCompleted] {
                 setup()
             } else {
@@ -65,6 +73,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     await self?.onboardingCompleted(with: provider)
                 }
             }
+            launchTask = nil
         }
     }
 
@@ -122,9 +131,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         notificationCenterDelegate = ncDelegate
         UNUserNotificationCenter.current().delegate = ncDelegate
-        Task { @MainActor in
+        notificationSetupTask = Task { @MainActor [weak self] in
             await ensureNotificationAuthorization()
+            guard !Task.isCancelled else { return }
             registerNotificationCategories()
+            self?.notificationSetupTask = nil
         }
 
         startAsyncLoops()
@@ -250,8 +261,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationWillTerminate(_: Notification) {
+        launchTask?.cancel()
+        launchTask = nil
+        notificationSetupTask?.cancel()
+        notificationSetupTask = nil
         statusLoopTask?.cancel()
-        patronageService.stop()
+        statusLoopTask = nil
+        lifecycleObserver.stop()
         appModel?.handleWillTerminate()
+        notificationScheduler.stop()
+        eventManager?.stop()
+        patronageService.stop()
+        cancellables.removeAll()
     }
 }

@@ -21,6 +21,12 @@ public protocol EventStore: AnyObject, Sendable {
     func fetchAllCalendars() async throws -> [MBCalendar]
     func fetchEventsForDateRange(for calendars: [MBCalendar], from: Date, to: Date) async throws
         -> [MBEvent]
+    @MainActor func cancelPendingOperations()
+}
+
+public extension EventStore {
+    @MainActor
+    func cancelPendingOperations() {}
 }
 
 /// Extended contract for providers that require explicit sign-in/sign-out flows
