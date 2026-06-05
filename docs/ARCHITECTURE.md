@@ -35,21 +35,21 @@ The product principle is reliability first: **show the correct meeting, stay fre
             │  → publish [MBCalendar], [MBEvent],    │
             │            ProviderHealth              │
             └────────┬───────────────────────────────┘
-                     │ events + calendars + health
+                     │ events + calendars + active provider
                      ▼
             ┌────────────────────┐
             │      AppModel      │  @MainActor ObservableObject
             │  AppState (value)  │  driven by AppAction via AppEnvironment
             │  • events          │
             │  • calendars       │
-            │  • provider health │
+            │  • active provider │
             └────────┬───────────┘
                      │
         ┌────────────▼──────────────┬──────────────────┐
         │ StatusBar                 │ Notification     │
         │ ItemController            │ Scheduler        │
         │ + MenuBuilder             │ (mb-plan-…)      │
-        │ (via StatusBarMenuState)  │ + ActionScheduler│
+        │ (via StatusBarMenuState)  │ + delayed Tasks  │
         │                           │ + ActionRunner   │
         └───────┬───────────────────┴──────────────────┘
                 │
@@ -64,14 +64,15 @@ The product principle is reliability first: **show the correct meeting, stay fre
 ## Directory map
 
 ```
-MeetingBar/                         (~65 .swift files)
+MeetingBar/                         (~74 .swift files)
 ├── App/                            — process lifecycle, OS integration
 │   ├── AppDelegate.swift           — @main; composition root; wires LifecycleObserver, URLHandler, AppModel
+│   ├── AppMessageCenter.swift      — one adapter for user notifications and fallback alerts
 │   ├── AppModel.swift              — @MainActor ObservableObject + AppState + AppAction + AppEnvironment
 │   ├── AppIntent.swift             — Shortcuts integration
-│   ├── AppStore.swift              — IAP via SwiftyStoreKit
 │   ├── LifecycleObserver.swift     — screen-lock / wake / timezone / day-change notifications
-│   ├── Notifications.swift         — UN auth + snooze flow + low-level send
+│   ├── Notifications.swift         — shared notification identifiers and data types
+│   ├── PatronageService.swift      — StoreKit 2 purchases, restore, entitlements, transaction updates
 │   └── URLHandler.swift            — apple-event URL dispatch (oauth, preferences)
 │
 ├── Calendar/                       — calendar data: models, events, filtering, selection, providers
@@ -126,6 +127,7 @@ MeetingBar/                         (~65 .swift files)
 │   ├── Helpers.swift
 │   ├── I18N.swift
 │   ├── Keychain.swift
+│   ├── MeetingBarLogger.swift      — os.Logger categories and privacy-aware structured logging
 │   ├── Scripts.swift               — AppleScript runners
 │   └── Diagnostics/                — issue-report formatter [SPM]
 │
@@ -201,7 +203,7 @@ Publishers.Merge3(
     Timer.publish(every: 180), // every 3 minutes
     refreshSubject             // somebody called .refreshSources()
 )
-.throttle(for: .milliseconds(200), latest: true)   // collapse bursts
+.throttle(for: .milliseconds(200), latest: false)  // pass first trigger, collapse the burst
 .flatMap(maxPublishers: 1) { _ in
     fetchEverything()                              // one in flight at a time
 }
@@ -212,7 +214,7 @@ Publishers.Merge3(
 
 Three things to internalize:
 
-1. **`throttle(200ms)` collapses bursts.** When the user flips three checkboxes in Preferences within 50 ms, we do one fetch, not three. `latest: true` means we keep the *last* value, not the first.
+1. **`throttle(200ms)` collapses bursts.** When the user flips three checkboxes in Preferences within 50 ms, we do one fetch, not three. `latest: false` lets the first trigger through immediately, which keeps manual refresh responsive.
 2. **`flatMap(maxPublishers: 1)` serializes fetches.** While a fetch is in flight, new triggers wait. There is no parallel refresh and no "most recent wins" race.
 3. **Failed refresh preserves last known events and calendars.** This is enforced in the publish step: we never replace a non-empty list with an empty one because of a network failure. `ProviderHealth` is the place where errors surface, not the event list.
 
@@ -230,7 +232,7 @@ events + Defaults snapshot
         ▼
 NotificationPlanner.plan(events:settings:now:)   ← pure [SPM]
         │  → [NotificationPlan] with kinds:
-        │       .eventStart, .endOfEvent
+        │       .eventStart, .eventEnd
         ▼
 NotificationScheduler.reconcile(events:settings:now:)   ← side-effecting service
    • build mb-plan-<eventID>-<kind> identifiers
@@ -312,6 +314,29 @@ The local unsigned Debug build may print the entitlements/code-signing warning w
 
 ---
 
+## Async task ownership
+
+Long-running or delayed work must have one stored owner and an explicit cancellation path. Short UI callback hops may remain untracked only when they do not loop, sleep for workflow timing, or retain feature state.
+
+| Work | Owner | Cancellation path |
+|---|---|---|
+| App launch setup and notification authorization | `AppDelegate` | `applicationWillTerminate` |
+| Minute-boundary status refresh loop | `AppDelegate` | `applicationWillTerminate` / quit |
+| Provider change, snooze, onboarding, notification reconcile, refresh actions | `AppModel` | `.willTerminate`; replacement cancels superseded work |
+| Calendar refresh cycle and store-change refresh | `EventManager` | `stop()` |
+| Active provider operations | `CalendarRepository` / `EventStore` | provider switch and `stop()` call `cancelPendingOperations()` |
+| Google OAuth sign-in, token refresh, external authorization session | `GCEventStore` | sign-out, provider switch, app termination |
+| Delayed fullscreen, auto-join, and event-start script actions | `NotificationScheduler` | reconcile removes stale plans; `stop()` cancels all |
+| StoreKit transaction update listener | `PatronageService` | `stop()` |
+| Lifecycle notification registrations | `LifecycleObserver` | `stop()` |
+
+Deliberate bounded exceptions:
+
+- EventKit uses `Task.detached` for blocking EventKit enumeration/fetch calls. Every detached task is immediately awaited, so ownership remains with the calling refresh cycle.
+- `AppMessageCenter.post`, lifecycle callback hops, diagnostics clipboard copy, and SwiftUI button tasks are short-lived adapters. They must not grow loops or delayed workflow scheduling; promote them to a stored owner if that changes.
+
+---
+
 ## Settings (`Defaults`) discipline
 
 All persistent settings keys live in `Extensions/DefaultsKeys.swift` and are read via the `Defaults` library.
@@ -343,7 +368,7 @@ The policy itself takes the snapshot and never imports `Defaults`. This is what 
 - **`EKEventStore`** — wraps EventKit. Always available; permission prompt the first time. No OAuth.
 - **`GCEventStore`** — wraps Google Calendar API via AppAuth-iOS. OAuth2 flow with refresh tokens persisted in Keychain. Per-calendar 403 handling so one inaccessible calendar does not disconnect the account.
 
-The protocol currently has OAuth-only members (`signIn(forcePrompt:)`, `signOut()`) that EventKit stubs out. The 5.0 plan reshapes the protocol so OAuth is its own sub-protocol — see ROADMAP Phase "5.0".
+`EventStore` contains provider-neutral fetch and cancellation operations. `AuthenticatedEventStore` extends it with explicit authorization/sign-out. Google uses that boundary for OAuth; EventKit uses it for calendar permission.
 
 **Adding a third provider** (e.g. Microsoft Graph in 5.x): implement `EventStore`, map provider events into `MBEvent`, expose calendars as `MBCalendar`. Do not push provider-specific types past the store boundary — the rest of the app must remain provider-agnostic.
 
@@ -374,7 +399,7 @@ Before changing one of these, check `ROADMAP.md` to confirm your change aligns w
 You want to add "do not notify for events shorter than 5 minutes".
 
 1. **Decide where the rule lives.** It is a per-event filter for notifications → it belongs in `NotificationPlanner`, not in the scheduler service.
-2. **Add the setting.** New key in `Extensions/DefaultsKeys.swift`. Read it once in `NotificationPlanSettings.current` (the adapter).
+2. **Add the setting.** New key in `Extensions/DefaultsKeys.swift`. Read it once in `NotificationPlanningSettings.currentForScheduler` (the adapter).
 3. **Update the policy.** Inside `NotificationPlanner.plan(for:settings:now:)`, return `[]` when `event.duration < settings.minDurationForNotifications`.
 4. **Test it hostless.** Add a case in `MeetingBarLogicTests/NotificationPlannerTests.swift`: short event → empty plan; long event → plan unchanged.
 5. **Update the UI.** Add a toggle in the relevant Preferences tab. Localize the label and add the key to `en.lproj/Localizable.strings`. Run `make validate-strings`.
@@ -422,12 +447,15 @@ Treat these as architecture-owned, release-sensitive files. Changes should be na
 
 For dependency changes, explain why the package remains or how it is being removed. For App Store/direct-build differences, verify app-source behavior, signing assumptions, URL schemes, sandbox capabilities, and localization validation before release.
 
+The concrete dependency policy and release procedure live in [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md).
+
 ---
 
 ## Pointers
 
 - Planning, release scope, open issues triage: [`ROADMAP.md`](../ROADMAP.md)
+- Dependencies, signing, capabilities, StoreKit, and release verification: [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md)
 - AI agent operating instructions: [`CLAUDE.md`](../CLAUDE.md), [`AGENTS.md`](../AGENTS.md)
 - Localization: `MeetingBar/Resources /Localization /` (note the spaces in the path — historical)
-- Meeting service URL patterns: [`MeetingBar/Services/MeetingServices.swift`](../MeetingBar/Services/MeetingServices.swift)
+- Meeting service URL patterns: [`MeetingBar/Meetings/MeetingServices.swift`](../MeetingBar/Meetings/MeetingServices.swift)
 - All persistent settings keys: [`MeetingBar/Extensions/DefaultsKeys.swift`](../MeetingBar/Extensions/DefaultsKeys.swift)
