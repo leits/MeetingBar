@@ -77,7 +77,7 @@ struct DiagnosticsContext {
     let totalCalendarCount: Int
     let visibleEventCount: Int
     let health: DiagnosticsHealth
-    var permissions: PermissionSnapshot? = nil
+    var permissions: PermissionSnapshot?
 }
 
 enum DiagnosticsReport {
