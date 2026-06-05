@@ -86,13 +86,14 @@ func createAppleScriptParametersForEvent(event: MBEvent) -> NSAppleEventDescript
         let appleScript = try! NSUserAppleScriptTask(url: url)
         appleScript.execute(withAppleEvent: appleEvent) { _, error in
             if let error = error {
-                DispatchQueue.main.async {
-                    displayAlert(title: "Apple Script execution failed", text: "Following error occured while executing the script \(scriptPath.path): \n \(error)")
-                }
+                AppMessageCenter.shared.post(.eventScriptExecutionFailed(
+                    path: scriptPath.path,
+                    description: error.localizedDescription
+                ))
             }
         }
     } else {
-        displayAlert(title: "Apple Script file not found", text: "Apple script could not be executed. Please check that your script eventStartScript.scpt exists in \(scriptPath.path).")
+        AppMessageCenter.shared.post(.eventScriptFileMissing(path: scriptPath.path))
     }
 }
 
@@ -104,6 +105,6 @@ func createAppleScriptParametersForEvent(event: MBEvent) -> NSAppleEventDescript
     if let nextEvent = events.nextEvent() {
         runMeetingStartsScript(event: nextEvent, type: .meetingStart)
     } else {
-        sendNotification("next_meeting_empty_title".loco(), "next_meeting_empty_message".loco())
+        AppMessageCenter.shared.post(.nextMeetingMissing)
     }
 }

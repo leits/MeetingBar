@@ -54,9 +54,9 @@ final class PatronageServiceTests: BaseTestCase {
         XCTAssertEqual(AppSettings.patronageDuration, 12)
         XCTAssertEqual(AppSettings.processedPatronageTransactionIDs, ["101"])
         XCTAssertEqual(store.finishedTransactionIDs, [101, 101])
-        XCTAssertEqual(messages.map(\.1), [
-            "store_patronage_purchase_success_message".loco(),
-            "store_patronage_purchase_success_message".loco()
+        XCTAssertEqual(messages, [
+            .patronagePurchaseSucceeded,
+            .patronagePurchaseSucceeded
         ])
     }
 
@@ -115,10 +115,7 @@ final class PatronageServiceTests: BaseTestCase {
 
         XCTAssertEqual(store.syncCallCount, 1)
         XCTAssertEqual(AppSettings.patronageDuration, 12)
-        XCTAssertEqual(
-            messages.last?.1,
-            "store_patronage_restore_success_message".loco()
-        )
+        XCTAssertEqual(messages.last, .patronageRestoreSucceeded)
     }
 
     func testStartPersistsAppSourceAndProcessesTransactionUpdates() async {
@@ -159,7 +156,7 @@ final class PatronageServiceTests: BaseTestCase {
         XCTAssertTrue(store.finishedTransactionIDs.isEmpty)
     }
 
-    private var messages: [(String, String)] = []
+    private var messages: [AppMessage] = []
 
     private func makeService(
         store: FakePatronageStore,
@@ -168,8 +165,8 @@ final class PatronageServiceTests: BaseTestCase {
         PatronageService(
             store: store,
             isAppStoreBuild: { isAppStoreBuild },
-            presentMessage: { [weak self] title, message in
-                self?.messages.append((title, message))
+            presentMessage: { [weak self] message in
+                self?.messages.append(message)
             }
         )
     }

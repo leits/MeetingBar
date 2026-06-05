@@ -62,8 +62,7 @@ func createMeeting() {
             openMeetingURL(nil, URL(string: url)!, browser)
         } else {
             if !url.isEmpty { url += " " }
-            sendNotification(
-                "create_meeting_error_title".loco(), "create_meeting_error_message".loco(url))
+            AppMessageCenter.shared.post(.createMeetingInvalidURL(value: url))
         }
         return
     }

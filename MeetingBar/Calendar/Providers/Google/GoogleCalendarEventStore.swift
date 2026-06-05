@@ -133,7 +133,9 @@ final class GCEventStore: NSObject,
                 if let state {
                     self.authState = state    // didSet handles persistence & delegates
                     self.userEmail = state.userEmail
-                    sendNotification("Google Account connected", "\(self.userEmail ?? "") is connected")
+                    AppMessageCenter.shared.post(
+                        .googleAccountConnected(email: self.userEmail ?? "")
+                    )
                     cont.resume()
                 } else {
                     cont.resume(throwing: error ?? NSError(domain: "GoogleSignIn", code: 1))

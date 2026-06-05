@@ -26,7 +26,7 @@ extension URL {
             if browserPath.hasSuffix(".app") {
                 NSWorkspace.shared.open([self], withApplicationAt: URL(fileURLWithPath: browserPath), configuration: configuration) { app, _ in
                     guard app != nil else {
-                        sendNotification("link_url_cant_open_title".loco(browserName), "link_url_cant_open_message".loco(browserName))
+                        AppMessageCenter.shared.post(.browserUnavailable(name: browserName))
                         self.openInDefaultBrowser()
                         return
                     }
@@ -39,7 +39,7 @@ extension URL {
                 do {
                     try process.run()
                 } catch {
-                    sendNotification("link_url_cant_open_title".loco(browserName), "link_url_cant_open_message".loco(browserName))
+                    AppMessageCenter.shared.post(.browserUnavailable(name: browserName))
                     openInDefaultBrowser()
                 }
                 return
@@ -52,7 +52,7 @@ extension URL {
     func openInDefaultBrowser() -> Bool {
         let result = NSWorkspace.shared.open(self)
         if !result {
-            sendNotification("link_url_cant_open_title".loco("preferences_services_link_default_browser_value".loco()), "preferences_services_create_meeting_custom_url_placeholder".loco())
+            AppMessageCenter.shared.post(.defaultBrowserUnavailable)
         }
         return result
     }

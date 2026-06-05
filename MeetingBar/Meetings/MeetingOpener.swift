@@ -22,9 +22,8 @@ struct SystemMeetingOpeningPerformer: MeetingOpeningPerforming {
         let task = try? NSUserAppleScriptTask(url: scriptURL)
         task?.execute { error in
             if let error {
-                sendNotification(
-                    "status_bar_error_apple_script_title".loco(),
-                    error.localizedDescription
+                AppMessageCenter.shared.post(
+                    .joinScriptFailed(description: error.localizedDescription)
                 )
             }
         }
@@ -39,10 +38,7 @@ struct SystemMeetingOpeningPerformer: MeetingOpeningPerforming {
     }
 
     func notifyMissingLink(title: String) {
-        sendNotification(
-            "status_bar_error_link_missed_title".loco(title),
-            "status_bar_error_link_missed_message".loco()
-        )
+        AppMessageCenter.shared.post(.meetingLinkMissing(title: title))
     }
 }
 
@@ -133,10 +129,7 @@ struct ZoomNativeOpenStrategy: MeetingOpenStrategy, Sendable {
     func open(url: URL, browser _: Browser?) {
         let result = url.openInDefaultBrowser()
         if !result {
-            sendNotification(
-                "status_bar_error_app_link_title".loco("Zoom"),
-                "status_bar_error_app_link_message".loco("Zoom")
-            )
+            AppMessageCenter.shared.post(.meetingAppUnavailable(name: "Zoom"))
             let urlString = url.absoluteString
                 .replacingFirstOccurrence(of: "&", with: "?")
                 .replacingOccurrences(of: "/join?confno=", with: "/j/")
@@ -185,10 +178,7 @@ struct SlackHuddleOpenStrategy: MeetingOpenStrategy, Sendable {
             }
             let result = slackURL.openInDefaultBrowser()
             if !result {
-                sendNotification(
-                    "status_bar_error_app_link_title".loco("Slack"),
-                    "status_bar_error_app_link_message".loco("Slack")
-                )
+                AppMessageCenter.shared.post(.meetingAppUnavailable(name: "Slack"))
                 url.openIn(browser: Defaults[.defaultBrowser])
             }
         } else {
@@ -210,10 +200,7 @@ struct RiversideOpenStrategy: MeetingOpenStrategy, Sendable {
                 components.scheme = scheme
                 if let appURL = components.url, appURL.openInDefaultBrowser() { return }
             }
-            sendNotification(
-                "status_bar_error_app_link_title".loco("Riverside"),
-                "status_bar_error_app_link_message".loco("Riverside")
-            )
+            AppMessageCenter.shared.post(.meetingAppUnavailable(name: "Riverside"))
             url.openIn(browser: Defaults[.defaultBrowser])
         } else {
             url.openIn(browser: resolved)
@@ -244,10 +231,7 @@ struct ZoomWebOpenStrategy: MeetingOpenStrategy, Sendable {
             appComponents.scheme = "zoommtg"
             let result = appComponents.url?.openInDefaultBrowser() ?? false
             if !result {
-                sendNotification(
-                    "status_bar_error_app_link_title".loco("Zoom"),
-                    "status_bar_error_app_link_message".loco("Zoom")
-                )
+                AppMessageCenter.shared.post(.meetingAppUnavailable(name: "Zoom"))
                 url.openInDefaultBrowser()
             }
         } else {
@@ -270,9 +254,8 @@ struct TeamsOpenStrategy: MeetingOpenStrategy, Sendable {
             appComponents.scheme = "msteams"
             let result = appComponents.url?.openInDefaultBrowser() ?? false
             if !result {
-                sendNotification(
-                    "status_bar_error_app_link_title".loco("Microsoft Teams"),
-                    "status_bar_error_app_link_message".loco("Microsoft Teams")
+                AppMessageCenter.shared.post(
+                    .meetingAppUnavailable(name: "Microsoft Teams")
                 )
                 url.openInDefaultBrowser()
             }
@@ -296,10 +279,7 @@ struct JitsiOpenStrategy: MeetingOpenStrategy, Sendable {
             appComponents.scheme = "jitsi-meet"
             let result = appComponents.url?.openInDefaultBrowser() ?? false
             if !result {
-                sendNotification(
-                    "status_bar_error_app_link_title".loco("Jitsi"),
-                    "status_bar_error_app_link_message".loco("Jitsi")
-                )
+                AppMessageCenter.shared.post(.meetingAppUnavailable(name: "Jitsi"))
                 url.openInDefaultBrowser()
             }
         } else {

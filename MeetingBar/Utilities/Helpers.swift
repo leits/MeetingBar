@@ -185,15 +185,11 @@ func openLinkFromClipboard() {
             if validUrl != nil {
                 URL(string: clipboardContent)?.openInDefaultBrowser()
             } else {
-                sendNotification(
-                    "No valid url",
-                    "Clipboard has no meeting link, so the meeting cannot be started")
+                AppMessageCenter.shared.post(.clipboardInvalid)
             }
         }
     } else {
-        sendNotification(
-            "Clipboard is empty",
-            "Clipboard has no content, so the meeting cannot be started...")
+        AppMessageCenter.shared.post(.clipboardEmpty)
     }
 }
 

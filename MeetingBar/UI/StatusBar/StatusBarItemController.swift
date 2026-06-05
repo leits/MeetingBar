@@ -337,7 +337,7 @@ final class StatusBarItemController {
         if let nextEvent = events.nextEvent() {
             dependencies.send(.joinMeeting(eventID: nextEvent.id))
         } else {
-            sendNotification("next_meeting_empty_title".loco(), "next_meeting_empty_message".loco())
+            AppMessageCenter.shared.post(.nextMeetingMissing)
         }
     }
 
@@ -345,9 +345,7 @@ final class StatusBarItemController {
     func dismissNextMeetingAction() {
         if let nextEvent = events.nextEvent() {
             dependencies.send(.dismissMeeting(eventID: nextEvent.id))
-            sendNotification(
-                "notification_next_meeting_dismissed_title".loco(nextEvent.title),
-                "notification_next_meeting_dismissed_message".loco())
+            AppMessageCenter.shared.post(.meetingDismissed(title: nextEvent.title))
 
             updateTitle()
             updateMenu()
@@ -358,9 +356,7 @@ final class StatusBarItemController {
     @objc
     func undismissMeetingsActions() {
         dependencies.send(.clearDismissedMeetings)
-        sendNotification(
-            "notification_all_dismissals_removed_title".loco(),
-            "notification_all_dismissals_removed_message".loco())
+        AppMessageCenter.shared.post(.allDismissalsRemoved)
 
         updateTitle()
         updateMenu()
@@ -450,9 +446,7 @@ final class StatusBarItemController {
                 NSPasteboard.general.clearContents()
                 NSPasteboard.general.setString(meetingLink.url.absoluteString, forType: .string)
             } else {
-                sendNotification(
-                    "status_bar_error_link_missed_title".loco(event.title),
-                    "status_bar_error_link_missed_message".loco())
+                AppMessageCenter.shared.post(.meetingLinkMissing(title: event.title))
             }
         }
     }

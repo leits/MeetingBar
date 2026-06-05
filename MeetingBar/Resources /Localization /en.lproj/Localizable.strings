@@ -24,6 +24,16 @@
 "create_meeting_error_message" = "Custom URL \"%@\" missing or invalid. ";
 "next_meeting_empty_title" = "There are no upcoming meetings today";
 "next_meeting_empty_message" = "Woohoo! It's time to make cocoa";
+"message_clipboard_invalid_title" = "No valid URL";
+"message_clipboard_invalid_text" = "Clipboard has no meeting link, so the meeting cannot be started.";
+"message_clipboard_empty_title" = "Clipboard is empty";
+"message_clipboard_empty_text" = "Clipboard has no content, so the meeting cannot be started.";
+"message_event_script_execution_failed_title" = "AppleScript execution failed";
+"message_event_script_execution_failed_text" = "The script in %@ failed: %@";
+"message_event_script_file_missing_title" = "AppleScript file not found";
+"message_event_script_file_missing_text" = "The eventStartScript.scpt file does not exist in %@.";
+"message_google_account_connected_title" = "Google Account connected";
+"message_google_account_connected_text" = "%@ is connected";
 
 // MARK: - Window titles
 

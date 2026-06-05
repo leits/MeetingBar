@@ -180,7 +180,7 @@ final class PatronageService: ObservableObject {
 
     private let store: PatronageStore
     private let isAppStoreBuild: () -> Bool
-    private let presentMessage: (String, String) -> Void
+    private let presentMessage: (AppMessage) -> Void
     private var updatesTask: Task<Void, Never>?
 
     init(
@@ -188,7 +188,7 @@ final class PatronageService: ObservableObject {
         isAppStoreBuild: @escaping () -> Bool = {
             AppSourceDetector.isAppStoreBuild()
         },
-        presentMessage: @escaping (String, String) -> Void = sendNotification
+        presentMessage: @escaping (AppMessage) -> Void = AppMessageCenter.shared.post
     ) {
         self.store = store
         self.isAppStoreBuild = isAppStoreBuild
@@ -238,7 +238,7 @@ final class PatronageService: ObservableObject {
             switch try await store.purchase(productID: productID) {
             case .purchased(let transaction):
                 await process(transaction)
-                showMessage("store_patronage_purchase_success_message")
+                presentMessage(.patronagePurchaseSucceeded)
             case .pending, .cancelled:
                 break
             }
@@ -255,10 +255,8 @@ final class PatronageService: ObservableObject {
         do {
             try await store.sync()
             let entitlementCount = await refreshEntitlements()
-            showMessage(
-                entitlementCount > 0
-                    ? "store_patronage_restore_success_message"
-                    : "store_patronage_restore_nothing_message"
+            presentMessage(
+                entitlementCount > 0 ? .patronageRestoreSucceeded : .patronageRestoreEmpty
             )
         } catch {
             showPurchaseError(error)
@@ -318,11 +316,11 @@ final class PatronageService: ObservableObject {
         if let purchaseError = error as? Product.PurchaseError {
             switch purchaseError {
             case .purchaseNotAllowed:
-                showMessage("store_patronage_purchase_payment_not_allowed_message")
+                presentMessage(.patronagePaymentNotAllowed)
             case .productUnavailable:
-                showMessage("store_patronage_purchase_store_product_not_available_message")
+                presentMessage(.patronageProductUnavailable)
             default:
-                showMessage("store_patronage_purchase_unknown_message")
+                presentMessage(.patronageUnknownError)
             }
             return
         }
@@ -332,13 +330,11 @@ final class PatronageService: ObservableObject {
             case .userCancelled:
                 return
             case .networkError:
-                showMessage(
-                    "store_patronage_purchase_cloud_service_network_connection_failed"
-                )
+                presentMessage(.patronageNetworkFailed)
             case .notAvailableInStorefront:
-                showMessage("store_patronage_purchase_store_product_not_available_message")
+                presentMessage(.patronageProductUnavailable)
             default:
-                showMessage("store_patronage_purchase_unknown_message")
+                presentMessage(.patronageUnknownError)
             }
             return
         }
@@ -346,16 +342,12 @@ final class PatronageService: ObservableObject {
         if let patronageError = error as? PatronageStoreError {
             switch patronageError {
             case .productUnavailable:
-                showMessage("store_patronage_purchase_store_product_not_available_message")
+                presentMessage(.patronageProductUnavailable)
             case .failedVerification:
-                showMessage("store_patronage_purchase_unknown_message")
+                presentMessage(.patronageUnknownError)
             }
         } else {
-            presentMessage("store_patronage_title".loco(), error.localizedDescription)
+            presentMessage(.patronageFailure(description: error.localizedDescription))
         }
-    }
-
-    private func showMessage(_ key: String) {
-        presentMessage("store_patronage_title".loco(), key.loco())
     }
 }
