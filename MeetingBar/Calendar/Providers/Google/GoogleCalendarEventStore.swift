@@ -138,10 +138,24 @@ final class GCEventStore: NSObject,
                     )
                     cont.resume()
                 } else {
-                    cont.resume(throwing: error ?? NSError(domain: "GoogleSignIn", code: 1))
+                    cont.resume(throwing: Self.authorizationError(error))
                 }
             }
         }
+    }
+
+    private static func authorizationError(_ error: Error?) -> Error {
+        guard let error else {
+            return NSError(domain: "GoogleSignIn", code: 1)
+        }
+
+        let nsError = error as NSError
+        let cancellationCodes = [-3, -4]
+        if nsError.domain == OIDGeneralErrorDomain,
+           cancellationCodes.contains(nsError.code) {
+            return AuthError.cancelled
+        }
+        return error
     }
 
     func signOut() async {

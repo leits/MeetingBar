@@ -17,7 +17,8 @@ final class WindowCoordinator {
     private weak var onboardingHandler: OnboardingHandler?
 
     func openOnboardingWindow(
-        completion: @escaping @MainActor (EventStoreProvider) async -> Void
+        completion:
+            @escaping @MainActor (EventStoreProvider) async -> ProviderSelectionResult
     ) {
         let handler = OnboardingHandler { provider in
             await completion(provider)

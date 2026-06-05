@@ -70,7 +70,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 setup()
             } else {
                 windowCoordinator.openOnboardingWindow { [weak self] provider in
-                    await self?.onboardingCompleted(with: provider)
+                    guard let self else {
+                        return .failed("Application state is unavailable")
+                    }
+                    return await self.onboardingCompleted(with: provider)
                 }
             }
             launchTask = nil
@@ -201,10 +204,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
      * ------------------------
      */
 
-    private func onboardingCompleted(with provider: EventStoreProvider) async {
-        setup()
-        windowCoordinator.attachOnboardingAppModel(appModel)
-        await appModel?.completeOnboarding(with: provider)
+    private func onboardingCompleted(
+        with provider: EventStoreProvider
+    ) async -> ProviderSelectionResult {
+        if appModel == nil {
+            setup()
+            windowCoordinator.attachOnboardingAppModel(appModel)
+        }
+        guard let appModel else {
+            return .failed("Application state is unavailable")
+        }
+        return await appModel.completeOnboarding(with: provider)
     }
 
     @objc

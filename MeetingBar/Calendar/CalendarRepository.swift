@@ -24,6 +24,19 @@ func calendarDateRange(for period: ShowEventsForPeriod) -> (from: Date, to: Date
     return (dateFrom, dateTo)
 }
 
+enum CalendarRepositoryError: LocalizedError {
+    case noCalendars(EventStoreProvider)
+
+    var errorDescription: String? {
+        switch self {
+        case .noCalendars(.googleCalendar):
+            return "Google Calendar did not return any calendars"
+        case .noCalendars(.macOSEventKit):
+            return "macOS Calendar did not return any calendars"
+        }
+    }
+}
+
 /// Owns the active calendar provider and exposes calendar/event fetching.
 ///
 /// `CalendarSync` delegates to `CalendarRepository` for all provider-specific
@@ -38,6 +51,7 @@ public final class CalendarRepository {
     public private(set) var activeProviderName: EventStoreProvider
     private let storeFactory: (EventStoreProvider) -> EventStore
     private let observesSystemStoreChanges: Bool
+    private var pendingProvider: EventStore?
 
     /// Fires when the EKEventStore changes (macOS Calendar App only).
     let storeChanged = PassthroughSubject<Void, Never>()
@@ -56,19 +70,48 @@ public final class CalendarRepository {
 
     // MARK: - Provider management
 
-    public func switchProvider(to providerName: EventStoreProvider) async {
+    public func switchProvider(
+        to providerName: EventStoreProvider,
+        signOutCurrent: Bool = false
+    ) async throws -> [MBCalendar] {
+        let previousProvider = activeProvider
+        let candidate = storeFactory(providerName)
+        let reauthorizingCurrentProvider = candidate === previousProvider
+        pendingProvider = candidate
+        defer { pendingProvider = nil }
+
+        if signOutCurrent, reauthorizingCurrentProvider {
+            await (previousProvider as? AuthenticatedEventStore)?.signOut()
+        }
+
+        try await (candidate as? AuthenticatedEventStore)?.signIn(forcePrompt: false)
+        let calendars = try await candidate.fetchAllCalendars()
+        if providerName == .googleCalendar, calendars.isEmpty {
+            throw CalendarRepositoryError.noCalendars(providerName)
+        }
+
+        if signOutCurrent, !reauthorizingCurrentProvider {
+            await (previousProvider as? AuthenticatedEventStore)?.signOut()
+        } else if !reauthorizingCurrentProvider {
+            previousProvider.cancelPendingOperations()
+        }
+
         storeChangeCancellable?.cancel()
         storeChangeCancellable = nil
-        activeProvider.cancelPendingOperations()
 
         activeProviderName = providerName
-        activeProvider = storeFactory(providerName)
+        activeProvider = candidate
         observeStoreChanges(for: providerName)
+        return calendars
     }
 
     public func stop() {
         storeChangeCancellable?.cancel()
         storeChangeCancellable = nil
+        if let pendingProvider, pendingProvider !== activeProvider {
+            pendingProvider.cancelPendingOperations()
+        }
+        pendingProvider = nil
         activeProvider.cancelPendingOperations()
     }
 
@@ -92,8 +135,9 @@ public final class CalendarRepository {
     /// filtering so `CalendarSync` does not need to know about either detail.
     public func fetchCurrentPeriodEvents(fromAllCalendars allCalendars: [MBCalendar]) async throws
         -> [MBEvent] {
+        let selectedCalendarIDs = AppSettings.selectedCalendarIDs(for: activeProviderName)
         let selectedCalendars = allCalendars.filter {
-            Defaults[.selectedCalendarIDs].contains($0.id)
+            selectedCalendarIDs.contains($0.id)
         }
         let (dateFrom, dateTo) = calendarDateRange(for: Defaults[.showEventsForPeriod])
         return try await activeProvider.fetchEventsForDateRange(
@@ -119,7 +163,9 @@ public final class CalendarRepository {
     /// Returns `true` if the URL was consumed by the active provider.
     @discardableResult
     public func resumeAuthorizationFlow(with url: URL) -> Bool {
-        guard let store = activeProvider as? GCEventStore else { return false }
+        guard let store = (pendingProvider ?? activeProvider) as? GCEventStore else {
+            return false
+        }
         return store.currentAuthorizationFlow?.resumeExternalUserAgentFlow(with: url) ?? false
     }
 

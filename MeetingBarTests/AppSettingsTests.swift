@@ -46,6 +46,19 @@ final class AppSettingsTests: BaseTestCase {
         XCTAssertTrue(Defaults[.selectedCalendarIDs].isEmpty)
     }
 
+    func testLegacyCalendarSelectionMigratesToActiveProvider() {
+        Defaults[.eventStoreProvider] = .macOSEventKit
+        Defaults[.selectedCalendarIDs] = ["legacy-calendar"]
+
+        AppSettings.migrateSelectedCalendarsByProviderIfNeeded()
+
+        XCTAssertEqual(
+            AppSettings.selectedCalendarIDs(for: .macOSEventKit),
+            ["legacy-calendar"]
+        )
+        XCTAssertTrue(Defaults[.selectedCalendarIDsByProviderMigrated])
+    }
+
     func testCompleteOnboardingWriteHelper() {
         AppSettings.completeOnboarding()
 

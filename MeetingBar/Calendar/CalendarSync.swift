@@ -26,6 +26,13 @@ public enum CalendarSyncError: LocalizedError {
     }
 }
 
+public enum ProviderSelectionResult: Equatable {
+    case success
+    case cancelled
+    case authRequired(String)
+    case failed(String)
+}
+
 @MainActor
 public class CalendarSync: ObservableObject {
     @Published public private(set) var calendars: [MBCalendar] = []
@@ -41,52 +48,66 @@ public class CalendarSync: ObservableObject {
     private var storeChangeCancellable: AnyCancellable?
     private var storeChangeRefreshTask: Task<Void, Never>?
     private var refreshCycleTask: Task<Void, Never>?
+    private var providerGeneration = 0
     let refreshSubject = PassthroughSubject<Void, Never>()
 
     // MARK: - Initialization
 
     public init(refreshInterval: TimeInterval = 180) async {
         self.refreshInterval = refreshInterval
+        AppSettings.migrateSelectedCalendarsByProviderIfNeeded()
         repository = CalendarRepository(providerName: Defaults[.eventStoreProvider])
         await configureProvider(Defaults[.eventStoreProvider])
         setupPublishers()
         refreshSubject.send() // initial load
     }
 
-    public func changeEventStoreProvider(_ newProvider: EventStoreProvider, withSignOut: Bool = false) async {
-        AppSettings.setEventStoreProvider(newProvider)
-        AppSettings.clearSelectedCalendars()
-        calendars = []
-
-        if withSignOut {
-            await repository.signOut()
-        }
-
-        await repository.switchProvider(to: newProvider)
-
-        // re-wire store change notifications through the new repository
-        subscribeToRepositoryStoreChanges()
-
-        // immediately reload everything
+    public func changeEventStoreProvider(
+        _ newProvider: EventStoreProvider,
+        withSignOut: Bool = false
+    ) async -> ProviderSelectionResult {
         do {
-            try await repository.signIn(forcePrompt: false)
+            let newCalendars = try await repository.switchProvider(
+                to: newProvider,
+                signOutCurrent: withSignOut
+            )
+            refreshCycleTask?.cancel()
+            refreshCycleTask = nil
+            AppSettings.setEventStoreProvider(newProvider)
+            providerGeneration += 1
+            calendars = newCalendars
+            events = []
+            subscribeToRepositoryStoreChanges()
             refreshSubject.send()
+            return .success
         } catch {
+            let attempted = Date()
             let errorDescription = String(describing: error)
             MeetingBarLogger.calendar.error(
                 "Provider switch sign-in failed: \(errorDescription, privacy: .private)"
             )
-            // Surface the auth failure to the UI instead of leaving the
-            // previous provider's "OK" state visible. Status tab now shows
-            // "Authorization required" instead of stale success.
-            providerHealth = ProviderHealth(
-                lastSuccessfulRefresh: providerHealth.lastSuccessfulRefresh,
-                lastAttemptedRefresh: Date(),
-                lastErrorDescription: error.localizedDescription,
-                isStale: true,
-                authRequired: true
+            providerHealth = ProviderHealth.failure(
+                previous: providerHealth,
+                attempted: attempted,
+                error: error
             )
+            return providerSelectionResult(for: error)
         }
+    }
+
+    private func providerSelectionResult(for error: Error) -> ProviderSelectionResult {
+        if let authError = error as? AuthError {
+            switch authError {
+            case .cancelled:
+                return .cancelled
+            case .notSignedIn, .refreshFailed:
+                return .authRequired(error.localizedDescription)
+            }
+        }
+        if case .unauthorized = error as? GoogleCalendarError {
+            return .authRequired(error.localizedDescription)
+        }
+        return .failed(error.localizedDescription)
     }
 
     private func configureProvider(_ providerName: EventStoreProvider) async {
@@ -189,7 +210,12 @@ public class CalendarSync: ObservableObject {
             .flatMap(maxPublishers: .max(1)) { [weak self] _ -> AnyPublisher<RefreshResult, Never> in
                 guard let self = self else {
                     return Just(
-                        RefreshResult(calendars: [], events: [], health: ProviderHealth())
+                        RefreshResult(
+                            calendars: [],
+                            events: [],
+                            health: ProviderHealth(),
+                            providerGeneration: -1
+                        )
                     ).eraseToAnyPublisher()
                 }
                 // Capture current state on the main thread before entering the async Task.
@@ -197,6 +223,7 @@ public class CalendarSync: ObservableObject {
                 let preservedCalendars = self.calendars
                 let preservedEvents = self.events
                 let previousHealth = self.providerHealth
+                let providerGeneration = self.providerGeneration
                 return Deferred {
                     Future<RefreshResult, Never> { promise in
                         self.refreshCycleTask = Task { [weak self] in
@@ -204,9 +231,15 @@ public class CalendarSync: ObservableObject {
                             let attempted = Date()
                             do {
                                 let cals = try await self.repository.fetchAllCalendars()
+                                try Task.checkCancellation()
                                 let evts = try await self.fetchEvents(fromCalendars: cals)
                                 let health = ProviderHealth.success(attempted: attempted)
-                                promise(.success(RefreshResult(calendars: cals, events: evts, health: health)))
+                                promise(.success(RefreshResult(
+                                    calendars: cals,
+                                    events: evts,
+                                    health: health,
+                                    providerGeneration: providerGeneration
+                                )))
                             } catch {
                                 let errorDescription = String(describing: error)
                                 MeetingBarLogger.calendar.error(
@@ -218,7 +251,11 @@ public class CalendarSync: ObservableObject {
                                     error: error
                                 )
                                 promise(.success(RefreshResult(
-                                    calendars: preservedCalendars, events: preservedEvents, health: health)))
+                                    calendars: preservedCalendars,
+                                    events: preservedEvents,
+                                    health: health,
+                                    providerGeneration: providerGeneration
+                                )))
                             }
                         }
                     }
@@ -227,9 +264,13 @@ public class CalendarSync: ObservableObject {
             }
             .receive(on: RunLoop.main)
             .sink { [weak self] result in
-                self?.calendars = result.calendars
-                self?.events = result.events
-                self?.providerHealth = result.health
+                guard let self,
+                      result.providerGeneration == self.providerGeneration else {
+                    return
+                }
+                self.calendars = result.calendars
+                self.events = result.events
+                self.providerHealth = result.health
             }
             .store(in: &cancellables)
     }
@@ -240,6 +281,7 @@ public class CalendarSync: ObservableObject {
         let calendars: [MBCalendar]
         let events: [MBEvent]
         let health: ProviderHealth
+        let providerGeneration: Int
     }
 
     #if DEBUG

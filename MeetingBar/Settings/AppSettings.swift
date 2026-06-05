@@ -246,11 +246,17 @@ extension AppSettings {
 extension AppSettings {
     @MainActor
     static func setEventStoreProvider(_ provider: EventStoreProvider) {
+        migrateSelectedCalendarsByProviderIfNeeded()
         Defaults[.eventStoreProvider] = provider
+        Defaults[.selectedCalendarIDs] = selectedCalendarIDs(for: provider)
     }
 
     @MainActor
     static func clearSelectedCalendars() {
+        migrateSelectedCalendarsByProviderIfNeeded()
+        var selections = Defaults[.selectedCalendarIDsByProvider]
+        selections[Defaults[.eventStoreProvider].rawValue] = []
+        Defaults[.selectedCalendarIDsByProvider] = selections
         Defaults[.selectedCalendarIDs] = []
     }
 
@@ -261,13 +267,42 @@ extension AppSettings {
 
     @MainActor
     static func setCalendarSelection(id: String, selected: Bool) {
+        migrateSelectedCalendarsByProviderIfNeeded()
+        let providerKey = Defaults[.eventStoreProvider].rawValue
+        var selections = Defaults[.selectedCalendarIDsByProvider]
+        var selectedIDs = selections[providerKey] ?? []
+
         if selected {
-            if !Defaults[.selectedCalendarIDs].contains(id) {
-                Defaults[.selectedCalendarIDs].append(id)
+            if !selectedIDs.contains(id) {
+                selectedIDs.append(id)
             }
         } else {
-            Defaults[.selectedCalendarIDs].removeAll { $0 == id }
+            selectedIDs.removeAll { $0 == id }
         }
+
+        selections[providerKey] = selectedIDs
+        Defaults[.selectedCalendarIDsByProvider] = selections
+        Defaults[.selectedCalendarIDs] = selectedIDs
+    }
+
+    @MainActor
+    static func selectedCalendarIDs(for provider: EventStoreProvider) -> [String] {
+        migrateSelectedCalendarsByProviderIfNeeded()
+        return Defaults[.selectedCalendarIDsByProvider][provider.rawValue] ?? []
+    }
+
+    @MainActor
+    static func migrateSelectedCalendarsByProviderIfNeeded() {
+        guard !Defaults[.selectedCalendarIDsByProviderMigrated] else { return }
+
+        let providerKey = Defaults[.eventStoreProvider].rawValue
+        var selections = Defaults[.selectedCalendarIDsByProvider]
+        if selections[providerKey] == nil {
+            selections[providerKey] = Defaults[.selectedCalendarIDs]
+        }
+
+        Defaults[.selectedCalendarIDsByProvider] = selections
+        Defaults[.selectedCalendarIDsByProviderMigrated] = true
     }
 
     @MainActor

@@ -135,8 +135,8 @@ class CalendarSyncTests: BaseTestCase {
             .store(in: &cancellables)
         await fulfillment(of: [initialExp], timeout: 1.0)
 
-        await manager.changeEventStoreProvider(.googleCalendar)
-        await manager.changeEventStoreProvider(.macOSEventKit)
+        _ = await manager.changeEventStoreProvider(.googleCalendar)
+        _ = await manager.changeEventStoreProvider(.macOSEventKit)
 
         let countBeforeStoreChange = store.refreshSourcesCallCount
         manager.repository.storeChanged.send()
@@ -148,14 +148,22 @@ class CalendarSyncTests: BaseTestCase {
             "one store-change notification should trigger one refreshSources call")
     }
 
-    func testRepositoryCancelsProviderOperationsWhenSwitchingAndStopping() async {
+    func testRepositoryCancelsProviderOperationsWhenSwitchingAndStopping() async throws {
         let storeA = FakeEventStore()
-        let storeB = FakeEventStore()
+        let storeB = FakeEventStore(calendars: [
+            MBCalendar(
+                title: "Google",
+                id: "google",
+                source: nil,
+                email: nil,
+                color: .black
+            )
+        ])
         let repository = CalendarRepository(providerName: .macOSEventKit) { provider in
             provider == .macOSEventKit ? storeA : storeB
         }
 
-        await repository.switchProvider(to: .googleCalendar)
+        _ = try await repository.switchProvider(to: .googleCalendar)
 
         XCTAssertEqual(storeA.cancelPendingOperationsCallCount, 1)
         XCTAssertEqual(storeB.cancelPendingOperationsCallCount, 0)
@@ -163,6 +171,103 @@ class CalendarSyncTests: BaseTestCase {
         repository.stop()
 
         XCTAssertEqual(storeB.cancelPendingOperationsCallCount, 1)
+    }
+
+    func testCancelledSwitchPreservesProviderAndSelectedCalendars() async {
+        let eventKitCalendar = MBCalendar(
+            title: "EventKit",
+            id: "eventkit",
+            source: nil,
+            email: nil,
+            color: .black
+        )
+        Defaults[.eventStoreProvider] = .macOSEventKit
+        Defaults[.selectedCalendarIDs] = [eventKitCalendar.id]
+
+        let eventKitStore = FakeEventStore(calendars: [eventKitCalendar])
+        let googleStore = FakeEventStore()
+        googleStore.stubbedSignInError = AuthError.cancelled
+        let repository = CalendarRepository(providerName: .macOSEventKit) { provider in
+            provider == .macOSEventKit ? eventKitStore : googleStore
+        }
+        let manager = CalendarSync(repository: repository, refreshInterval: 0)
+
+        let result = await manager.changeEventStoreProvider(.googleCalendar)
+
+        XCTAssertEqual(result, .cancelled)
+        XCTAssertEqual(repository.activeProviderName, .macOSEventKit)
+        XCTAssertEqual(Defaults[.eventStoreProvider], .macOSEventKit)
+        XCTAssertEqual(Defaults[.selectedCalendarIDs], [eventKitCalendar.id])
+        XCTAssertEqual(
+            AppSettings.selectedCalendarIDs(for: .macOSEventKit),
+            [eventKitCalendar.id]
+        )
+        XCTAssertEqual(eventKitStore.cancelPendingOperationsCallCount, 0)
+    }
+
+    func testSuccessfulSwitchRestoresProviderScopedCalendarSelections() async {
+        let eventKitCalendar = MBCalendar(
+            title: "EventKit",
+            id: "eventkit",
+            source: nil,
+            email: nil,
+            color: .black
+        )
+        let googleCalendar = MBCalendar(
+            title: "Google",
+            id: "google",
+            source: nil,
+            email: nil,
+            color: .black
+        )
+        Defaults[.eventStoreProvider] = .macOSEventKit
+        Defaults[.selectedCalendarIDs] = [eventKitCalendar.id]
+
+        let eventKitStore = FakeEventStore(calendars: [eventKitCalendar])
+        let googleStore = FakeEventStore(calendars: [googleCalendar])
+        let repository = CalendarRepository(providerName: .macOSEventKit) { provider in
+            provider == .macOSEventKit ? eventKitStore : googleStore
+        }
+        let manager = CalendarSync(repository: repository, refreshInterval: 0)
+
+        let googleResult = await manager.changeEventStoreProvider(.googleCalendar)
+        XCTAssertEqual(googleResult, .success)
+        XCTAssertTrue(Defaults[.selectedCalendarIDs].isEmpty)
+        AppSettings.setCalendarSelection(id: googleCalendar.id, selected: true)
+
+        let eventKitResult = await manager.changeEventStoreProvider(.macOSEventKit)
+        XCTAssertEqual(eventKitResult, .success)
+        XCTAssertEqual(Defaults[.selectedCalendarIDs], [eventKitCalendar.id])
+        XCTAssertEqual(
+            AppSettings.selectedCalendarIDs(for: .googleCalendar),
+            [googleCalendar.id]
+        )
+    }
+
+    func testGoogleSwitchWithNoCalendarsPreservesCurrentProvider() async {
+        let eventKitCalendar = MBCalendar(
+            title: "EventKit",
+            id: "eventkit",
+            source: nil,
+            email: nil,
+            color: .black
+        )
+        Defaults[.eventStoreProvider] = .macOSEventKit
+        Defaults[.selectedCalendarIDs] = [eventKitCalendar.id]
+
+        let eventKitStore = FakeEventStore(calendars: [eventKitCalendar])
+        let googleStore = FakeEventStore(calendars: [])
+        let repository = CalendarRepository(providerName: .macOSEventKit) { provider in
+            provider == .macOSEventKit ? eventKitStore : googleStore
+        }
+        let manager = CalendarSync(repository: repository, refreshInterval: 0)
+
+        let result = await manager.changeEventStoreProvider(.googleCalendar)
+
+        XCTAssertEqual(result, .failed("Google Calendar did not return any calendars"))
+        XCTAssertEqual(repository.activeProviderName, .macOSEventKit)
+        XCTAssertEqual(Defaults[.eventStoreProvider], .macOSEventKit)
+        XCTAssertEqual(Defaults[.selectedCalendarIDs], [eventKitCalendar.id])
     }
 
     func testCalendarSyncStopCancelsActiveProviderOperations() {
@@ -555,8 +660,12 @@ final class ProviderHealthTests: BaseTestCase {
         let lastSuccess = manager.providerHealth.lastSuccessfulRefresh
         store.stubbedSignInError = AuthError.notSignedIn
 
-        await manager.changeEventStoreProvider(.googleCalendar)
+        let result = await manager.changeEventStoreProvider(.googleCalendar)
 
+        XCTAssertEqual(
+            result,
+            .authRequired("Google Calendar authorization is required")
+        )
         XCTAssertEqual(manager.providerHealth.lastSuccessfulRefresh, lastSuccess)
         XCTAssertNotNil(manager.providerHealth.lastAttemptedRefresh)
         XCTAssertEqual(

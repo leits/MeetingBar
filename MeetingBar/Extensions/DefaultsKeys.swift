@@ -22,6 +22,14 @@ extension Defaults.Keys {
     )
 
     static let selectedCalendarIDs = Key<[String]>("selectedCalendarIDs", default: [])
+    static let selectedCalendarIDsByProvider = Key<[String: [String]]>(
+        "selectedCalendarIDsByProvider",
+        default: [:]
+    )
+    static let selectedCalendarIDsByProviderMigrated = Key<Bool>(
+        "selectedCalendarIDsByProviderMigrated",
+        default: false
+    )
     static let eventStoreProvider = Key<EventStoreProvider>(
         "eventStoreProvider", default: .macOSEventKit)
 

@@ -28,6 +28,7 @@ final class AppModelTestHarness {
     private(set) var resumedOAuthURLs: [URL] = []
     private(set) var startedAsyncOperationCount = 0
     private(set) var cancelledAsyncOperationCount = 0
+    var providerSelectionResult: ProviderSelectionResult = .success
 
     let fixedNow: Date
     private let asyncOperationDelayNanoseconds: UInt64
@@ -44,9 +45,10 @@ final class AppModelTestHarness {
             self.reconciledEventIDs.append(events.map(\.id))
         },
         changeProvider: { [weak self] provider, signOut in
-            guard let self else { return }
-            guard await self.waitForAsyncOperationDelay() else { return }
+            guard let self else { return .failed("Harness unavailable") }
+            guard await self.waitForAsyncOperationDelay() else { return .cancelled }
             self.providerChanges.append((provider, signOut))
+            return self.providerSelectionResult
         },
         toggleCalendarSelection: { [weak self] id, selected in
             self?.calendarSelections.append((id, selected))
@@ -72,9 +74,10 @@ final class AppModelTestHarness {
             self.snoozedEvents.append((event.id, action))
         },
         completeOnboarding: { [weak self] provider in
-            guard let self else { return }
-            guard await self.waitForAsyncOperationDelay() else { return }
+            guard let self else { return .failed("Harness unavailable") }
+            guard await self.waitForAsyncOperationDelay() else { return .cancelled }
             self.completedOnboardingProviders.append(provider)
+            return self.providerSelectionResult
         },
         openPreferences: { [weak self] in
             self?.openPreferencesCallCount += 1

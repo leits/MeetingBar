@@ -139,7 +139,7 @@ struct AppEnvironment {
     var reconcileNotifications: @MainActor ([MBEvent]) async -> Void
 
     /// Switch the active calendar provider. `signOut = true` drops the current session first.
-    var changeProvider: @MainActor (EventStoreProvider, Bool) async -> Void
+    var changeProvider: @MainActor (EventStoreProvider, Bool) async -> ProviderSelectionResult
 
     /// Add or remove a calendar from the user's selection. CalendarSync
     /// observes the underlying setting and re-fetches automatically.
@@ -165,7 +165,7 @@ struct AppEnvironment {
     var snoozeEvent: @MainActor (MBEvent, NotificationEventTimeAction) async -> Void
 
     /// Finish onboarding by persisting completion and selecting the provider.
-    var completeOnboarding: @MainActor (EventStoreProvider) async -> Void
+    var completeOnboarding: @MainActor (EventStoreProvider) async -> ProviderSelectionResult
 
     /// Open Preferences from an app URL route.
     var openPreferences: @MainActor () -> Void
@@ -225,8 +225,11 @@ struct AppEnvironment {
                 await snoozeService.snooze(event: event, action: action)
             },
             completeOnboarding: { provider in
-                AppSettings.completeOnboarding()
-                await calendarSync.changeEventStoreProvider(provider)
+                let result = await calendarSync.changeEventStoreProvider(provider)
+                if result == .success {
+                    AppSettings.completeOnboarding()
+                }
+                return result
             },
             openPreferences: openPreferences,
             resumeOAuthFlow: resumeOAuthFlow,
@@ -325,11 +328,12 @@ final class AppModel: ObservableObject {
     /// Onboarding is an async workflow because provider authorization can
     /// prompt the user. The action case still exists for non-blocking routes,
     /// while AppDelegate awaits this method before moving the onboarding UI on.
-    func completeOnboarding(with provider: EventStoreProvider) async {
-        state.activeProvider = provider
-        state.calendars = []
-        state.events = []
-        await environment.completeOnboarding(provider)
+    func completeOnboarding(with provider: EventStoreProvider) async -> ProviderSelectionResult {
+        let result = await environment.completeOnboarding(provider)
+        if result == .success {
+            resetProviderState(to: provider)
+        }
+        return result
     }
 
     // MARK: Private
@@ -376,11 +380,13 @@ final class AppModel: ObservableObject {
         case .selectCalendar(let id, let selected):
             environment.toggleCalendarSelection(id, selected)
         case .changeProvider(let provider, let signOut):
-            resetProviderState(to: provider)
             providerChangeTask?.cancel()
             providerChangeTask = Task { [weak self] in
                 guard let self else { return }
-                await environment.changeProvider(provider, signOut)
+                let result = await environment.changeProvider(provider, signOut)
+                if result == .success {
+                    self.resetProviderState(to: provider)
+                }
             }
         default:
             break
@@ -431,7 +437,7 @@ final class AppModel: ObservableObject {
             onboardingTask?.cancel()
             onboardingTask = Task { [weak self] in
                 guard let self else { return }
-                await completeOnboarding(with: provider)
+                _ = await completeOnboarding(with: provider)
             }
         case .openRoute(let route):
             handleRoute(route)

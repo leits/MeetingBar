@@ -6,11 +6,14 @@
 import Foundation
 
 enum AuthError: LocalizedError {
+    case cancelled
     case notSignedIn
     case refreshFailed
 
     var errorDescription: String? {
         switch self {
+        case .cancelled:
+            return "Google Calendar authorization was cancelled"
         case .notSignedIn:
             return "Google Calendar authorization is required"
         case .refreshFailed:

@@ -18,13 +18,17 @@ import Foundation
 @MainActor
 final class OnboardingHandler: ObservableObject {
     /// Called when the user successfully authorises a calendar provider.
-    var onProviderSelected: @MainActor (EventStoreProvider) async -> Void
+    var onProviderSelected:
+        @MainActor (EventStoreProvider) async -> ProviderSelectionResult
 
     /// Set by AppDelegate after `setup()` completes during onboarding.
     /// `CalendarsScreen` observes this to obtain the live `AppModel`.
     @Published var appModel: AppModel?
 
-    init(onProviderSelected: @escaping @MainActor (EventStoreProvider) async -> Void) {
+    init(
+        onProviderSelected:
+            @escaping @MainActor (EventStoreProvider) async -> ProviderSelectionResult
+    ) {
         self.onProviderSelected = onProviderSelected
     }
 }

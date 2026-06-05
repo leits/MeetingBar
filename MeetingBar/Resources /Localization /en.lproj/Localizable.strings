@@ -342,6 +342,7 @@
 "access_screen_provider_gcalendar_sign_in_title" = "Google Sign In";
 "access_screen_provider_gcalendar_sign_in_description" = "Allow MeetingBar access to your calendar in browser window";
 "access_screen_try_again" = "Try again";
+"access_screen_provider_authorization_cancelled" = "Authorization was cancelled. Try again to connect your calendar.";
 
 // MARK: - Shared
 

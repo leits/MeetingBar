@@ -6,16 +6,17 @@
 //  Copyright © 2021 Andrii Leitsius. All rights reserved.
 //
 
-import Defaults
-import EventKit
+import AppKit
 import SwiftUI
 
 struct AccessScreen: View {
     @ObservedObject var router: OnboardingRouter
     @EnvironmentObject var onboardingHandler: OnboardingHandler
-    @Default(.eventStoreProvider) var eventStoreProvider
     @State var providerSelected = false
     @State var requestFailed = false
+    @State private var selectedProvider: EventStoreProvider?
+    @State private var statusMessage: String?
+    @State private var isRequesting = false
 
     var body: some View {
         VStack(alignment: .center) {
@@ -67,13 +68,19 @@ struct AccessScreen: View {
                 }
             } else {
                 Spacer()
-                if eventStoreProvider == .googleCalendar {
+                if selectedProvider == .googleCalendar {
                     VStack(spacing: 20) {
                         Text("access_screen_provider_gcalendar_sign_in_title".loco()).bold()
                         Text("access_screen_provider_gcalendar_sign_in_description".loco())
+                        if let statusMessage {
+                            Text(statusMessage).foregroundColor(.red)
+                        }
+                        if isRequesting {
+                            ProgressView()
+                        }
                         Button("access_screen_try_again".loco()) {
                             Task { await requestAccess(provider: .googleCalendar) }
-                        }
+                        }.disabled(isRequesting)
                     }
                 } else {
                     if !requestFailed {
@@ -90,6 +97,9 @@ struct AccessScreen: View {
                                 Text("access_screen_access_denied_checkbox_title".loco())
                             }
                             Text("access_screen_access_denied_relaunch_title".loco())
+                            if let statusMessage {
+                                Text(statusMessage).foregroundColor(.red)
+                            }
                         }
                     }
                 }
@@ -101,10 +111,25 @@ struct AccessScreen: View {
     @MainActor
     func requestAccess(provider: EventStoreProvider) async {
         providerSelected = true
-        // Provider is persisted by the eventual call to
-        // CalendarSync.changeEventStoreProvider inside onProviderSelected;
-        // no separate Defaults write needed here.
-        await onboardingHandler.onProviderSelected(provider)
-        router.currentStep = .calendarSelection
+        selectedProvider = provider
+        requestFailed = false
+        statusMessage = nil
+        isRequesting = true
+        let result = await onboardingHandler.onProviderSelected(provider)
+        isRequesting = false
+
+        switch result {
+        case .success:
+            router.currentStep = .calendarSelection
+        case .cancelled:
+            requestFailed = true
+            statusMessage = "access_screen_provider_authorization_cancelled".loco()
+        case .authRequired(let description):
+            requestFailed = true
+            statusMessage = description
+        case .failed(let description):
+            requestFailed = true
+            statusMessage = description
+        }
     }
 }

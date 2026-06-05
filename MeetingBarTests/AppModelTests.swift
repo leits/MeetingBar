@@ -39,6 +39,39 @@ final class AppModelTests: BaseTestCase {
         XCTAssertEqual(harness.providerChanges.map(\.signOut), [true])
     }
 
+    func testFailedProviderChangePreservesCurrentState() async {
+        let harness = AppModelTestHarness()
+        harness.providerSelectionResult = .cancelled
+        let calendar = makeFakeCalendar(id: "cal")
+        let event = makeFakeEvent(
+            id: "event",
+            start: harness.fixedNow,
+            end: harness.fixedNow.addingTimeInterval(1800)
+        )
+        harness.model.send(.calendarsLoaded([calendar], provider: .macOSEventKit))
+        harness.model.send(.eventsLoaded([event]))
+
+        harness.model.send(.changeProvider(.googleCalendar, signOut: false))
+        await harness.flushAsyncActions()
+
+        XCTAssertEqual(harness.model.state.activeProvider, .macOSEventKit)
+        XCTAssertEqual(harness.model.state.calendars, [calendar])
+        XCTAssertEqual(harness.model.state.events, [event])
+    }
+
+    func testCancelledOnboardingPreservesCurrentState() async {
+        let harness = AppModelTestHarness()
+        harness.providerSelectionResult = .cancelled
+        let calendar = makeFakeCalendar(id: "cal")
+        harness.model.send(.calendarsLoaded([calendar], provider: .macOSEventKit))
+
+        let result = await harness.model.completeOnboarding(with: .googleCalendar)
+
+        XCTAssertEqual(result, .cancelled)
+        XCTAssertEqual(harness.model.state.activeProvider, .macOSEventKit)
+        XCTAssertEqual(harness.model.state.calendars, [calendar])
+    }
+
     func testCalendarSelectionDelegatesToEnvironment() {
         let harness = AppModelTestHarness()
 
