@@ -6,6 +6,37 @@
 import AppKit
 import Defaults
 
+/// Value snapshot of the settings the opening path needs: per-provider browser
+/// preferences and the join-event script configuration.
+///
+/// `current` is the single place opening-related `Defaults` are read; the
+/// strategies, performer, and `MeetingOpener.open` all receive this snapshot
+/// instead of reaching into `Defaults` themselves. This collapses what used to
+/// be ~20 scattered `Defaults[…]` reads into one boundary.
+struct MeetingOpenSettings {
+    var defaultBrowser: Browser
+    var providerBrowsers: [String: Browser]
+    var runJoinEventScript: Bool
+    var joinEventScriptLocation: URL?
+
+    /// Resolves which browser to use for a service: an explicit override wins,
+    /// then the per-provider preference, then the app-wide default browser.
+    func resolvedBrowser(for service: MeetingServices?, explicit: Browser?) -> Browser {
+        if let explicit { return explicit }
+        if let service, let preferred = providerBrowsers[service.rawValue] { return preferred }
+        return defaultBrowser
+    }
+
+    static var current: MeetingOpenSettings {
+        MeetingOpenSettings(
+            defaultBrowser: Defaults[.defaultBrowser],
+            providerBrowsers: Defaults[.providerBrowsers],
+            runJoinEventScript: Defaults[.runJoinEventScript],
+            joinEventScriptLocation: Defaults[.joinEventScriptLocation]
+        )
+    }
+}
+
 protocol MeetingOpeningPerforming {
     func runJoinEventScriptIfConfigured()
     func openMeetingLink(_ service: MeetingServices?, _ url: URL)
@@ -14,9 +45,11 @@ protocol MeetingOpeningPerforming {
 }
 
 struct SystemMeetingOpeningPerformer: MeetingOpeningPerforming {
+    var settings: MeetingOpenSettings
+
     func runJoinEventScriptIfConfigured() {
-        guard Defaults[.runJoinEventScript],
-              let scriptLocation = Defaults[.joinEventScriptLocation]
+        guard settings.runJoinEventScript,
+              let scriptLocation = settings.joinEventScriptLocation
         else { return }
         let scriptURL = scriptLocation.appendingPathComponent("joinEventScript.scpt")
         let task = try? NSUserAppleScriptTask(url: scriptURL)
@@ -30,7 +63,7 @@ struct SystemMeetingOpeningPerformer: MeetingOpeningPerforming {
     }
 
     func openMeetingLink(_ service: MeetingServices?, _ url: URL) {
-        openMeetingURL(service, url, nil)
+        openMeetingURL(service, url, nil, settings: settings)
     }
 
     func openEventURL(_ url: URL) {
@@ -47,7 +80,8 @@ struct SystemMeetingOpeningPerformer: MeetingOpeningPerforming {
 enum MeetingOpener {
     static func open(
         event: MBEvent,
-        performer: any MeetingOpeningPerforming = SystemMeetingOpeningPerformer()
+        settings: MeetingOpenSettings = .current,
+        performer: (any MeetingOpeningPerforming)? = nil
     ) {
         let action = MeetingOpeningPolicy.action(
             for: MeetingOpeningEvent(
@@ -55,19 +89,20 @@ enum MeetingOpener {
                 meetingLink: event.meetingLink,
                 eventURL: event.url
             ),
-            runJoinEventScript: Defaults[.runJoinEventScript]
+            runJoinEventScript: settings.runJoinEventScript
         )
 
-        perform(action, performer: performer)
+        perform(action, performer: performer ?? SystemMeetingOpeningPerformer(settings: settings))
     }
 
     static func open(
         meetingLink: MeetingLink,
-        performer: any MeetingOpeningPerforming = SystemMeetingOpeningPerformer()
+        settings: MeetingOpenSettings = .current,
+        performer: (any MeetingOpeningPerforming)? = nil
     ) {
         perform(
-            .openMeetingLink(meetingLink, runJoinScript: Defaults[.runJoinEventScript]),
-            performer: performer
+            .openMeetingLink(meetingLink, runJoinScript: settings.runJoinEventScript),
+            performer: performer ?? SystemMeetingOpeningPerformer(settings: settings)
         )
     }
 
@@ -102,14 +137,19 @@ enum MeetingOpener {
 // MARK: - Open strategies (per-provider URL transforms)
 
 /// Encapsulates how a meeting provider URL should be opened.
+///
+/// `browser` is the already-resolved target (explicit override, per-provider
+/// preference, or app default — resolved by the caller from
+/// `MeetingOpenSettings`). `defaultBrowser` is the app-wide default used as a
+/// fallback when an app deep-link cannot be built.
 protocol MeetingOpenStrategy: Sendable {
-    func open(url: URL, browser: Browser?)
+    func open(url: URL, browser: Browser, defaultBrowser: Browser)
 }
 
-/// Opens the URL in the app-wide default browser (or the explicitly passed browser).
+/// Opens the URL in the resolved browser.
 struct DefaultBrowserOpenStrategy: MeetingOpenStrategy, Sendable {
-    func open(url: URL, browser: Browser?) {
-        url.openIn(browser: browser ?? Defaults[.defaultBrowser])
+    func open(url: URL, browser: Browser, defaultBrowser _: Browser) {
+        url.openIn(browser: browser)
     }
 }
 
@@ -117,7 +157,7 @@ struct DefaultBrowserOpenStrategy: MeetingOpenStrategy, Sendable {
 struct NativeSchemeOpenStrategy: MeetingOpenStrategy, Sendable {
     let schemePrefix: String
 
-    func open(url: URL, browser _: Browser?) {
+    func open(url: URL, browser _: Browser, defaultBrowser _: Browser) {
         guard let nativeURL = URL(string: schemePrefix + url.absoluteString) else { return }
         NSWorkspace.shared.open(nativeURL)
     }
@@ -126,7 +166,7 @@ struct NativeSchemeOpenStrategy: MeetingOpenStrategy, Sendable {
 /// Handles `zoommtg://` links: tries the app, falls back to an https URL if
 /// the app is missing.
 struct ZoomNativeOpenStrategy: MeetingOpenStrategy, Sendable {
-    func open(url: URL, browser _: Browser?) {
+    func open(url: URL, browser _: Browser, defaultBrowser _: Browser) {
         let result = url.openInDefaultBrowser()
         if !result {
             AppMessageCenter.shared.post(.meetingAppUnavailable(name: "Zoom"))
@@ -143,15 +183,12 @@ struct ZoomNativeOpenStrategy: MeetingOpenStrategy, Sendable {
 
 /// Opens Google Meet links in the MeetInOne app when configured.
 struct MeetInOneOpenStrategy: MeetingOpenStrategy, Sendable {
-    func open(url: URL, browser: Browser?) {
-        let resolved =
-            browser ?? Defaults[.providerBrowsers][MeetingServices.meet.rawValue]
-            ?? Defaults[.defaultBrowser]
-        if resolved == meetInOneBrowser {
+    func open(url: URL, browser: Browser, defaultBrowser _: Browser) {
+        if browser == meetInOneBrowser {
             let meetInOneURL = URL(string: "meetinone://url=" + url.absoluteString)!
             meetInOneURL.openInDefaultBrowser()
         } else {
-            url.openIn(browser: resolved)
+            url.openIn(browser: browser)
         }
     }
 }
@@ -159,41 +196,35 @@ struct MeetInOneOpenStrategy: MeetingOpenStrategy, Sendable {
 /// Extracts the Slack team/huddle IDs from the https URL and opens the
 /// native `slack://join-huddle` deep link, falling back to browser.
 struct SlackHuddleOpenStrategy: MeetingOpenStrategy, Sendable {
-    func open(url: URL, browser: Browser?) {
-        let resolved =
-            browser ?? Defaults[.providerBrowsers][MeetingServices.slack.rawValue]
-            ?? Defaults[.defaultBrowser]
-        if resolved == slackAppBrowser {
+    func open(url: URL, browser: Browser, defaultBrowser: Browser) {
+        if browser == slackAppBrowser {
             let components = url.pathComponents
             guard components.count >= 4 else {
-                url.openIn(browser: Defaults[.defaultBrowser])
+                url.openIn(browser: defaultBrowser)
                 return
             }
             let teamID = components[2]
             let huddleID = components[3]
             guard let slackURL = URL(string: "slack://join-huddle?team=\(teamID)&id=\(huddleID)")
             else {
-                url.openIn(browser: Defaults[.defaultBrowser])
+                url.openIn(browser: defaultBrowser)
                 return
             }
             let result = slackURL.openInDefaultBrowser()
             if !result {
                 AppMessageCenter.shared.post(.meetingAppUnavailable(name: "Slack"))
-                url.openIn(browser: Defaults[.defaultBrowser])
+                url.openIn(browser: defaultBrowser)
             }
         } else {
-            url.openIn(browser: resolved)
+            url.openIn(browser: browser)
         }
     }
 }
 
 /// Tries `riversidefm://` then `riverside.fm://` before falling back to browser.
 struct RiversideOpenStrategy: MeetingOpenStrategy, Sendable {
-    func open(url: URL, browser: Browser?) {
-        let resolved =
-            browser ?? Defaults[.providerBrowsers][MeetingServices.riverside.rawValue]
-            ?? Defaults[.defaultBrowser]
-        if resolved == riversideAppBrowser {
+    func open(url: URL, browser: Browser, defaultBrowser: Browser) {
+        if browser == riversideAppBrowser {
             for scheme in ["riversidefm", "riverside.fm"] {
                 guard var components = URLComponents(url: url, resolvingAgainstBaseURL: false)
                 else { continue }
@@ -201,9 +232,9 @@ struct RiversideOpenStrategy: MeetingOpenStrategy, Sendable {
                 if let appURL = components.url, appURL.openInDefaultBrowser() { return }
             }
             AppMessageCenter.shared.post(.meetingAppUnavailable(name: "Riverside"))
-            url.openIn(browser: Defaults[.defaultBrowser])
+            url.openIn(browser: defaultBrowser)
         } else {
-            url.openIn(browser: resolved)
+            url.openIn(browser: browser)
         }
     }
 }
@@ -211,11 +242,8 @@ struct RiversideOpenStrategy: MeetingOpenStrategy, Sendable {
 /// Converts the https Zoom URL to a `zoommtg://` app URL, falling back to browser.
 /// Personal room links (`/my/`) are always opened in the browser first.
 struct ZoomWebOpenStrategy: MeetingOpenStrategy, Sendable {
-    func open(url: URL, browser: Browser?) {
-        let resolved =
-            browser ?? Defaults[.providerBrowsers][MeetingServices.zoom.rawValue]
-            ?? Defaults[.defaultBrowser]
-        if resolved == zoomAppBrowser {
+    func open(url: URL, browser: Browser, defaultBrowser _: Browser) {
+        if browser == zoomAppBrowser {
             if url.absoluteString.contains("/my/") {
                 url.openIn(browser: systemDefaultBrowser)
             }
@@ -235,18 +263,15 @@ struct ZoomWebOpenStrategy: MeetingOpenStrategy, Sendable {
                 url.openInDefaultBrowser()
             }
         } else {
-            url.openIn(browser: resolved)
+            url.openIn(browser: browser)
         }
     }
 }
 
 /// Converts the https Teams URL to an `msteams://` app URL, falling back to browser.
 struct TeamsOpenStrategy: MeetingOpenStrategy, Sendable {
-    func open(url: URL, browser: Browser?) {
-        let resolved =
-            browser ?? Defaults[.providerBrowsers][MeetingServices.teams.rawValue]
-            ?? Defaults[.defaultBrowser]
-        if resolved == teamsAppBrowser {
+    func open(url: URL, browser: Browser, defaultBrowser _: Browser) {
+        if browser == teamsAppBrowser {
             guard var appComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
                 url.openInDefaultBrowser()
                 return
@@ -260,18 +285,15 @@ struct TeamsOpenStrategy: MeetingOpenStrategy, Sendable {
                 url.openInDefaultBrowser()
             }
         } else {
-            url.openIn(browser: resolved)
+            url.openIn(browser: browser)
         }
     }
 }
 
 /// Opens Jitsi via `jitsi-meet://` app scheme, falling back to browser.
 struct JitsiOpenStrategy: MeetingOpenStrategy, Sendable {
-    func open(url: URL, browser: Browser?) {
-        let resolved =
-            browser ?? Defaults[.providerBrowsers][MeetingServices.jitsi.rawValue]
-            ?? Defaults[.defaultBrowser]
-        if resolved == jitsiAppBrowser {
+    func open(url: URL, browser: Browser, defaultBrowser _: Browser) {
+        if browser == jitsiAppBrowser {
             guard var appComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
                 url.openInDefaultBrowser()
                 return
@@ -283,7 +305,7 @@ struct JitsiOpenStrategy: MeetingOpenStrategy, Sendable {
                 url.openInDefaultBrowser()
             }
         } else {
-            url.openIn(browser: resolved)
+            url.openIn(browser: browser)
         }
     }
 }

@@ -268,6 +268,59 @@ final class MeetingOpenerTests: BaseTestCase {
     }
 }
 
+final class MeetingOpenSettingsTests: BaseTestCase {
+    private let zoom = Browser(name: "Zoom", path: "")
+    private let chrome = Browser(name: "Chrome", path: "/Applications/Google Chrome.app")
+    private let safari = Browser(name: "Safari", path: "/Applications/Safari.app")
+
+    private func settings(providerBrowsers: [String: Browser], defaultBrowser: Browser)
+        -> MeetingOpenSettings {
+        MeetingOpenSettings(
+            defaultBrowser: defaultBrowser,
+            providerBrowsers: providerBrowsers,
+            runJoinEventScript: false,
+            joinEventScriptLocation: nil
+        )
+    }
+
+    func test_resolvedBrowserPrefersExplicitOverride() {
+        let snapshot = settings(
+            providerBrowsers: [MeetingServices.zoom.rawValue: zoom], defaultBrowser: safari)
+        // Explicit choice wins over both the per-provider preference and the default.
+        XCTAssertEqual(snapshot.resolvedBrowser(for: .zoom, explicit: chrome), chrome)
+    }
+
+    func test_resolvedBrowserUsesPerProviderPreferenceWhenNoExplicit() {
+        let snapshot = settings(
+            providerBrowsers: [MeetingServices.zoom.rawValue: zoom], defaultBrowser: safari)
+        XCTAssertEqual(snapshot.resolvedBrowser(for: .zoom, explicit: nil), zoom)
+    }
+
+    func test_resolvedBrowserFallsBackToDefaultWhenNoProviderPreference() {
+        let snapshot = settings(providerBrowsers: [:], defaultBrowser: safari)
+        XCTAssertEqual(snapshot.resolvedBrowser(for: .teams, explicit: nil), safari)
+    }
+
+    func test_resolvedBrowserFallsBackToDefaultForNilService() {
+        let snapshot = settings(
+            providerBrowsers: [MeetingServices.zoom.rawValue: zoom], defaultBrowser: safari)
+        XCTAssertEqual(snapshot.resolvedBrowser(for: nil, explicit: nil), safari)
+    }
+
+    func test_currentMapsDefaults() {
+        Defaults[.defaultBrowser] = chrome
+        Defaults[.providerBrowsers] = [MeetingServices.zoom.rawValue: zoom]
+        Defaults[.runJoinEventScript] = true
+
+        let snapshot = MeetingOpenSettings.current
+        XCTAssertEqual(snapshot.defaultBrowser, chrome)
+        XCTAssertEqual(snapshot.providerBrowsers[MeetingServices.zoom.rawValue], zoom)
+        XCTAssertTrue(snapshot.runJoinEventScript)
+        // The per-provider preference still resolves through the snapshot.
+        XCTAssertEqual(snapshot.resolvedBrowser(for: .zoom, explicit: nil), zoom)
+    }
+}
+
 final class ScriptParameterTests: BaseTestCase {
     func test_scriptParametersContainExpectedFieldCount() {
         let event = makeFakeEvent(
