@@ -239,13 +239,24 @@ struct RiversideOpenStrategy: MeetingOpenStrategy, Sendable {
     }
 }
 
+/// True for Zoom personal-room links (e.g. `https://zoom.us/my/username` or
+/// `https://company.zoom.us/my/username`). Personal rooms cannot be launched
+/// through the `zoommtg://` deep link, so they must open in the browser.
+func isZoomPersonalRoomURL(_ url: URL) -> Bool {
+    guard let host = url.host, host.contains("zoom") else { return false }
+    return url.path.contains("/my/")
+}
+
 /// Converts the https Zoom URL to a `zoommtg://` app URL, falling back to browser.
-/// Personal room links (`/my/`) are always opened in the browser first.
+/// Personal room links (`/my/`) open in the browser and never go through the app.
 struct ZoomWebOpenStrategy: MeetingOpenStrategy, Sendable {
     func open(url: URL, browser: Browser, defaultBrowser _: Browser) {
         if browser == zoomAppBrowser {
-            if url.absoluteString.contains("/my/") {
+            // Personal room: open in browser and stop — building a zoommtg://
+            // link for /my/ would open the meeting a second time.
+            if isZoomPersonalRoomURL(url) {
                 url.openIn(browser: systemDefaultBrowser)
+                return
             }
             let urlString = url.absoluteString
                 .replacingOccurrences(of: "?", with: "&")

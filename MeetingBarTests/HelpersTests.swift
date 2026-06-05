@@ -321,6 +321,28 @@ final class MeetingOpenSettingsTests: BaseTestCase {
     }
 }
 
+final class ZoomPersonalRoomTests: BaseTestCase {
+    private func isPersonal(_ string: String) -> Bool {
+        isZoomPersonalRoomURL(URL(string: string)!)
+    }
+
+    func test_personalRoomLinksAreDetected() {
+        XCTAssertTrue(isPersonal("https://zoom.us/my/username"))
+        XCTAssertTrue(isPersonal("https://company.zoom.us/my/username"))
+        XCTAssertTrue(isPersonal("https://zoomgov.com/my/person"))
+    }
+
+    func test_regularMeetingLinksAreNotPersonalRooms() {
+        XCTAssertFalse(isPersonal("https://zoom.us/j/5551112222"))
+        XCTAssertFalse(isPersonal("https://company.zoom.us/j/123?pwd=abc"))
+    }
+
+    func test_nonZoomLinksAreNotPersonalRooms() {
+        XCTAssertFalse(isPersonal("https://meet.google.com/abc-defg-hij"))
+        XCTAssertFalse(isPersonal("https://example.com/my/room"))
+    }
+}
+
 final class ScriptParameterTests: BaseTestCase {
     func test_scriptParametersContainExpectedFieldCount() {
         let event = makeFakeEvent(
