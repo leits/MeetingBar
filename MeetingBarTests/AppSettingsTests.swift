@@ -164,6 +164,34 @@ final class AppSettingsTests: BaseTestCase {
         XCTAssertEqual(Defaults[.dismissedEvents].first?.eventEndDate, futureEvent.endDate)
     }
 
+    func testRefreshDismissedEventsPreservesOriginalLastModifiedDate() {
+        let now = Date()
+        let dismissedAt = now.addingTimeInterval(-1000) // modified date captured at dismissal
+        let changedAt = now.addingTimeInterval(-10) // the event was changed afterwards
+
+        // Current event carries a newer lastModifiedDate than the stored dismissal.
+        let currentEvent = makeFakeEvent(
+            id: "evt",
+            start: now.addingTimeInterval(60),
+            end: now.addingTimeInterval(1800),
+            lastModifiedDate: changedAt
+        )
+        AppSettings.replaceDismissedEvents([
+            ProcessedEvent(
+                id: "evt", lastModifiedDate: dismissedAt, eventEndDate: now.addingTimeInterval(600))
+        ])
+
+        AppSettings.refreshDismissedEvents(using: [currentEvent])
+
+        let refreshed = Defaults[.dismissedEvents].first
+        XCTAssertEqual(refreshed?.id, "evt")
+        // Original dismissal modified-date is preserved, not overwritten by the
+        // current (changed) event's modified-date.
+        XCTAssertEqual(refreshed?.lastModifiedDate, dismissedAt)
+        // End date is refreshed from the current event.
+        XCTAssertEqual(refreshed?.eventEndDate, currentEvent.endDate)
+    }
+
     // MARK: - AdvancedSettings
 
     func testAdvancedSettings_automaticEventJoin() {

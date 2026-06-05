@@ -321,7 +321,15 @@ extension AppSettings {
                 return nil
             }
 
-            return ProcessedEvent(id: event.id, eventEndDate: event.endDate)
+            // Preserve the lastModifiedDate captured at dismissal time. Refreshing
+            // only prunes ended events and refreshes the end date; it must not
+            // strip the modified-date metadata, otherwise a dismissed event could
+            // never be re-surfaced when the underlying event changes.
+            return ProcessedEvent(
+                id: dismissedEvent.id,
+                lastModifiedDate: dismissedEvent.lastModifiedDate,
+                eventEndDate: event.endDate
+            )
         }
 
         replaceDismissedEvents(dismissedEvents)
