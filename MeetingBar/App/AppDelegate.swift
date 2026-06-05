@@ -127,6 +127,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         notificationScheduler.setActionSink(actionHandler)
 
         statusBarItem.configure(dependencies: StatusBarDependencies(
+            appState: { [weak model] in model?.state ?? AppState() },
             events: { [weak model] in model?.state.events ?? [] },
             send: { [weak model] action in model?.send(action) },
             openPreferences: { [weak self] in self?.openPreferencesWindow(nil) },
@@ -137,7 +138,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Drive status bar from AppModel state: update title and menu whenever
         // events change.
         model.$state
-            .map(\.events)
+            .removeDuplicates()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 self?.statusBarItem.updateTitle()

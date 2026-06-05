@@ -36,6 +36,7 @@ enum MenuStyleConstants {
 }
 
 struct StatusBarDependencies {
+    var appState: @MainActor () -> AppState = { AppState() }
     var events: @MainActor () -> [MBEvent] = { [] }
     var send: @MainActor (AppAction) -> Void = { _ in }
     var openPreferences: @MainActor () -> Void = {}
@@ -252,7 +253,9 @@ final class StatusBarItemController {
             return
         }
 
-        let menuState = StatusBarMenuState.make(from: events)
+        var appState = dependencies.appState()
+        appState.events = events
+        let menuState = StatusBarMenuState.make(from: appState)
         let builder = MenuBuilder(
             target: self, state: menuState, installationDate: installationDate)
 

@@ -23,6 +23,119 @@ final class MenuBuilderTests: BaseTestCase {
         return formatter
     }
 
+    func testMenuStateMapsHealthyConnectedProvider() {
+        let now = Date(timeIntervalSinceReferenceDate: 800_000_000)
+        let event = makeFakeEvent(
+            id: "next",
+            start: now.addingTimeInterval(300),
+            end: now.addingTimeInterval(1800),
+            withLink: true
+        )
+        var appState = AppState()
+        appState.events = [event]
+        appState.selectedCalendarIDs = ["calendar"]
+        appState.activeProvider = .googleCalendar
+        appState.providerHealth = .success(attempted: now)
+
+        let state = StatusBarMenuState.make(
+            from: appState,
+            settings: .empty,
+            now: now
+        )
+
+        XCTAssertEqual(state.nextEvent, event)
+        XCTAssertEqual(state.activeProvider, .googleCalendar)
+        XCTAssertEqual(state.providerStatus, .connected(lastRefresh: now))
+        XCTAssertNil(state.emptyStateReason)
+    }
+
+    func testMenuStateMapsGoogleAuthRequired() {
+        var appState = AppState()
+        appState.activeProvider = .googleCalendar
+        appState.providerHealth = ProviderHealth(
+            lastErrorDescription: "Reconnect Google Calendar",
+            isStale: true,
+            authRequired: true
+        )
+
+        let state = StatusBarMenuState.make(from: appState, settings: .empty)
+
+        XCTAssertEqual(
+            state.providerStatus,
+            .authRequired(message: "Reconnect Google Calendar")
+        )
+        XCTAssertEqual(state.emptyStateReason, .authRequired)
+    }
+
+    func testMenuStateMapsApplePermissionRequired() {
+        var appState = AppState()
+        appState.activeProvider = .macOSEventKit
+        appState.providerHealth = ProviderHealth(
+            lastErrorDescription: "Calendar access denied"
+        )
+
+        let state = StatusBarMenuState.make(from: appState, settings: .empty)
+
+        XCTAssertEqual(
+            state.providerStatus,
+            .permissionRequired(message: "Calendar access denied")
+        )
+        XCTAssertEqual(state.emptyStateReason, .permissionRequired)
+    }
+
+    func testMenuStateMapsNoCalendarsSelected() {
+        var appState = AppState()
+        appState.providerHealth = .success(attempted: Date())
+
+        let state = StatusBarMenuState.make(from: appState, settings: .empty)
+
+        XCTAssertEqual(state.emptyStateReason, .noCalendarsSelected)
+    }
+
+    func testMenuStateMapsNoUpcomingMeetings() {
+        var appState = AppState()
+        appState.selectedCalendarIDs = ["calendar"]
+        appState.providerHealth = .success(attempted: Date())
+
+        let state = StatusBarMenuState.make(from: appState, settings: .empty)
+
+        XCTAssertEqual(state.emptyStateReason, .noUpcomingMeetings)
+    }
+
+    func testMenuStateMapsStaleRefreshWithoutHidingKnownEvent() {
+        let now = Date(timeIntervalSinceReferenceDate: 800_000_000)
+        let event = makeFakeEvent(
+            id: "cached",
+            start: now.addingTimeInterval(300),
+            end: now.addingTimeInterval(1800)
+        )
+        var appState = AppState()
+        appState.events = [event]
+        appState.selectedCalendarIDs = ["calendar"]
+        appState.providerHealth = ProviderHealth(
+            lastSuccessfulRefresh: now.addingTimeInterval(-300),
+            lastAttemptedRefresh: now,
+            lastErrorDescription: "Network unavailable",
+            isStale: true
+        )
+
+        let state = StatusBarMenuState.make(
+            from: appState,
+            settings: .empty,
+            now: now
+        )
+
+        XCTAssertEqual(
+            state.providerStatus,
+            .stale(
+                lastRefresh: now.addingTimeInterval(-300),
+                message: "Network unavailable"
+            )
+        )
+        XCTAssertNil(state.emptyStateReason)
+        XCTAssertEqual(state.nextEvent, event)
+    }
+
     func testDateSectionBuildsExpectedItems() {
         let builder = MenuBuilder(target: Dummy())
 
