@@ -6,10 +6,10 @@
 //  Copyright © 2020 Andrii Leitsius. All rights reserved.
 //
 
+import AppKit
 import Combine
 import Defaults
 import KeyboardShortcuts
-import SwiftUI
 import UserNotifications
 
 @MainActor
@@ -22,9 +22,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private(set) var appModel: AppModel?
     private let lifecycleObserver = LifecycleObserver()
     private let urlHandler = URLHandler()
+    private let windowCoordinator = WindowCoordinator()
 
-    weak var preferencesWindow: NSWindow!
-    private weak var onboardingHandler: OnboardingHandler?
     private var statusLoopTask: Task<Void, Never>?
     private var cancellables = Set<AnyCancellable>()
 
@@ -62,7 +61,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 setup()
             }
         } else {
-            openOnboardingWindow()
+            windowCoordinator.openOnboardingWindow { [weak self] provider in
+                await self?.onboardingCompleted(with: provider)
+            }
         }
     }
 
@@ -179,135 +180,42 @@ class AppDelegate: NSObject, NSApplicationDelegate {
      * ------------------------
      */
 
-    func openOnboardingWindow() {
-        let handler = OnboardingHandler { [weak self] provider in
-            await self?.onboardingCompleted(with: provider)
-        }
-        onboardingHandler = handler
-        let contentView = OnboardingView().environmentObject(handler)
-        let onboardingWindow = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 660, height: 450),
-            styleMask: [.closable, .titled],
-            backing: .buffered,
-            defer: false
-        )
-
-        onboardingWindow.title = WindowTitles.onboarding
-        onboardingWindow.contentView = NSHostingView(rootView: contentView)
-        let controller = NSWindowController(window: onboardingWindow)
-        controller.showWindow(self)
-
-        onboardingWindow.level = .floating
-        onboardingWindow.center()
-        onboardingWindow.orderFrontRegardless()
-    }
-
     private func onboardingCompleted(with provider: EventStoreProvider) async {
         eventManager = await EventManager()
         setup()
-        onboardingHandler?.appModel = appModel
+        windowCoordinator.attachOnboardingAppModel(appModel)
         await appModel?.completeOnboarding(with: provider)
     }
 
     @objc
     func openChangelogWindow(_: NSStatusBarButton?) {
-        let contentView = ChangelogView()
-        let changelogWindow = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 600, height: 400),
-            styleMask: [.closable, .titled, .resizable],
-            backing: .buffered,
-            defer: false
-        )
-        changelogWindow.title = WindowTitles.changelog
-        changelogWindow.level = .floating
-        changelogWindow.contentView = NSHostingView(rootView: contentView)
-        changelogWindow.makeKeyAndOrderFront(nil)
-        // allow the changelof window can be focused automatically when opened
-        NSApplication.shared.activate(ignoringOtherApps: true)
-
-        let controller = NSWindowController(window: changelogWindow)
-        controller.showWindow(self)
-
-        changelogWindow.center()
-        changelogWindow.orderFrontRegardless()
+        windowCoordinator.openChangelogWindow()
     }
 
     func openFullscreenNotificationWindow(event: MBEvent) {
-        let screenFrame = NSScreen.main?.frame ?? NSRect(x: 0, y: 0, width: 800, height: 600)
-
-        let window = NSWindow(
-            contentRect: screenFrame,
-            styleMask: [.borderless],
-            backing: .buffered,
-            defer: false
-        )
-
-        window.contentView = NSHostingView(
-            rootView: FullscreenNotification(event: event, window: window))
-        window.appearance = NSAppearance(named: .darkAqua)
-        window.collectionBehavior = .canJoinAllSpaces
-        window.collectionBehavior = .moveToActiveSpace
-
-        window.titlebarAppearsTransparent = true
-        window.styleMask.insert(.fullSizeContentView)
-        window.title = "Meetingbar Fullscreen Notification"
-        window.level = .screenSaver
-
-        let controller = NSWindowController(window: window)
-        controller.showWindow(self)
-
-        window.center()
-        window.orderFrontRegardless()
+        windowCoordinator.openFullscreenNotificationWindow(event: event)
     }
 
     @objc
     func openPreferencesWindow(_: NSStatusBarButton?) {
-        guard let appModel, let eventManager else { return }
-        let contentView = PreferencesView()
-            .environmentObject(appModel)
-            .environmentObject(eventManager)
-
-        if let preferencesWindow {
-            // if a window is already open, focus on it instead of opening another one.
-            NSApplication.shared.activate(ignoringOtherApps: true)
-            preferencesWindow.makeKeyAndOrderFront(nil)
-            return
-        } else {
-            let window = NSWindow(
-                contentRect: NSRect(x: 0, y: 0, width: 700, height: 620),
-                styleMask: [.closable, .titled, .resizable],
-                backing: .buffered,
-                defer: false
-            )
-
-            window.title = WindowTitles.preferences
-            window.contentView = NSHostingView(rootView: contentView)
-            window.makeKeyAndOrderFront(nil)
-            window.level = .floating
-            // allow the preference window can be focused automatically when opened
-            NSApplication.shared.activate(ignoringOtherApps: true)
-
-            let controller = NSWindowController(window: window)
-            controller.showWindow(self)
-
-            window.center()
-            window.orderFrontRegardless()
-
-            preferencesWindow = window
-        }
+        windowCoordinator.openPreferencesWindow(appModel: appModel, eventManager: eventManager)
     }
 
     @objc
     func windowClosed(notification: NSNotification) {
         let window = notification.object as? NSWindow
-        if let windowTitle = window?.title {
-            if windowTitle == WindowTitles.onboarding, !Defaults[.onboardingCompleted] {
+        windowCoordinator.handleWindowClosed(
+            window,
+            onboardingCompleted: Defaults[.onboardingCompleted],
+            onIncompleteOnboardingClosed: { [weak self] in
+                guard let self else { return }
                 NSApplication.shared.terminate(self)
-            } else if windowTitle == WindowTitles.changelog {
-                Defaults[.lastRevisedVersionInChangelog] = Defaults[.appVersion]
-                statusBarItem.updateMenu()
+            },
+            onChangelogClosed: { [weak self] in
+                AppSettings.acknowledgeCurrentChangelog()
+                self?.statusBarItem.updateMenu()
             }
-        }
+        )
     }
 
     /*
@@ -347,7 +255,7 @@ extension AppDelegate: NotificationActionSink {
             openFullscreenNotificationWindow(event: event)
             return true
         case .autoJoin:
-            event.openMeeting()
+            MeetingOpener.open(event: event)
             return true
         case .scriptOnStart:
             runMeetingStartsScript(event: event, type: .meetingStart)

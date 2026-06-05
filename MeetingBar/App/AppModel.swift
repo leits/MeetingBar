@@ -205,7 +205,7 @@ struct AppEnvironment {
                 AppSettings.setCalendarSelection(id: id, selected: selected)
             },
             openMeeting: { event in
-                event.openMeeting()
+                MeetingOpener.open(event: event)
             },
             dismissEvent: { event in
                 AppSettings.dismissEvent(event)

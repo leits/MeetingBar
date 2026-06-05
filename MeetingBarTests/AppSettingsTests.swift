@@ -52,6 +52,14 @@ final class AppSettingsTests: BaseTestCase {
         XCTAssertTrue(Defaults[.onboardingCompleted])
     }
 
+    func testAcknowledgeCurrentChangelogWriteHelper() {
+        Defaults[.appVersion] = "5.1.0"
+
+        AppSettings.acknowledgeCurrentChangelog()
+
+        XCTAssertEqual(Defaults[.lastRevisedVersionInChangelog], "5.1.0")
+    }
+
     // MARK: - StatusBarSettings
 
     func testStatusBarSettings_hideMeetingTitle() {

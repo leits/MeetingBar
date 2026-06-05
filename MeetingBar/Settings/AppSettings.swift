@@ -276,6 +276,11 @@ extension AppSettings {
     }
 
     @MainActor
+    static func acknowledgeCurrentChangelog() {
+        Defaults[.lastRevisedVersionInChangelog] = Defaults[.appVersion]
+    }
+
+    @MainActor
     static func dismissEvent(_ event: MBEvent) {
         dismissEvent(
             ProcessedEvent(

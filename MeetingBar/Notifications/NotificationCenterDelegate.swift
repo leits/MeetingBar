@@ -57,7 +57,7 @@ final class NotificationCenterDelegate: NSObject, @preconcurrency UNUserNotifica
         Task {
             switch response.actionIdentifier {
             case "JOIN_ACTION", UNNotificationDefaultActionIdentifier:
-                event.openMeeting()
+                MeetingOpener.open(event: event)
             case "DISMISS_ACTION":
                 dismissHandler(event)
             case NotificationEventTimeAction.untilStart.rawValue:

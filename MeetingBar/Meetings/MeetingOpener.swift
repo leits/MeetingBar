@@ -46,16 +46,8 @@ struct SystemMeetingOpeningPerformer: MeetingOpeningPerforming {
     }
 }
 
-/// Opens a meeting for a given event:
-///
-/// 1. If a meeting link was detected — runs the user's join AppleScript hook
-///    (when configured), then opens the URL with `openMeetingURL`.
-/// 2. Otherwise falls back to the event's plain URL, opened in the default
-///    browser.
-/// 3. Otherwise shows the user a "link missing" notification.
-///
-/// Extracted from `MBEvent.openMeeting()` so opening behaviour is testable
-/// in isolation and `MBEvent` moves toward a data-only struct.
+/// Opens a meeting for a given event or performs email-attendees actions.
+/// `MBEvent` is now a data-only struct; all opening side effects live here.
 enum MeetingOpener {
     static func open(
         event: MBEvent,
@@ -81,6 +73,19 @@ enum MeetingOpener {
             .openMeetingLink(meetingLink, runJoinScript: Defaults[.runJoinEventScript]),
             performer: performer
         )
+    }
+
+    static func emailAttendees(for event: MBEvent) {
+        let service = NSSharingService(named: NSSharingService.Name.composeEmail)!
+        var recipients: [String] = []
+        for attendee in event.attendees {
+            if let email = attendee.email {
+                recipients.append(email)
+            }
+        }
+        service.recipients = recipients
+        service.subject = event.title
+        service.perform(withItems: [])
     }
 
     static func perform(_ action: MeetingOpeningAction, performer: any MeetingOpeningPerforming) {

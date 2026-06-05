@@ -459,7 +459,7 @@ final class StatusBarItemController {
     @objc
     func emailAttendees(sender: NSMenuItem) {
         if let event: MBEvent = sender.representedObject as? MBEvent {
-            event.emailAttendees()
+            MeetingOpener.emailAttendees(for: event)
         }
     }
 

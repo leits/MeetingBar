@@ -55,7 +55,7 @@ struct FullscreenNotification: View {
     }
 
     func joinEvent() {
-        event.openMeeting()
+        MeetingOpener.open(event: event)
         window?.close()
     }
 }

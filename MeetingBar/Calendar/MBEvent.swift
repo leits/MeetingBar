@@ -142,22 +142,6 @@ public struct MBEvent: Identifiable, Hashable, Sendable {
         }
     }
 
-    func emailAttendees() {
-        let service = NSSharingService(named: NSSharingService.Name.composeEmail)!
-        var recipients: [String] = []
-        for attendee in attendees {
-            if let email = attendee.email {
-                recipients.append(email)
-            }
-        }
-        service.recipients = recipients
-        service.subject = title
-        service.perform(withItems: [])
-    }
-
-    func openMeeting() {
-        MeetingOpener.open(event: self)
-    }
 }
 
 func getEventDateString(_ event: MBEvent) -> String {
