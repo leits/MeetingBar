@@ -262,11 +262,11 @@ final class MenuBuilderEventItemTests: BaseTestCase {
     // MARK: – Helper ----------------------------------------------------------
 
     /// Build a single `NSMenuItem` for the given event (index 1 of Date-section)
-    private func buildItem(event: MBEvent) -> NSMenuItem? {
+    private func buildItem(event: MBEvent, now: Date = Date()) -> NSMenuItem? {
         // Build state via factory so `Defaults` overrides set by tests are
         // reflected in the menu output (MenuBuilder no longer reads Defaults).
         let state = StatusBarMenuState.make(from: [event])
-        let items = MenuBuilder(target: Dummy(), state: state)
+        let items = MenuBuilder(target: Dummy(), state: state, now: now)
             .buildDateSection(
                 date: Date(),
                 title: "T",
@@ -379,16 +379,77 @@ final class MenuBuilderEventItemTests: BaseTestCase {
         XCTAssertNotNil(notesIndex.flatMap { subItems[$0 + 1].view })
     }
 
+    func test_eventDetailsActionsKeepSelectorsAndRepresentedObjects() throws {
+        Defaults[.showEventDetails] = true
+        let now = Date(timeIntervalSinceReferenceDate: 800_000_000)
+        let event = makeFakeEvent(
+            id: "ACTIONS",
+            start: now.addingTimeInterval(600),
+            end: now.addingTimeInterval(1200),
+            withLink: true
+        )
+
+        let item = try XCTUnwrap(buildItem(event: event, now: now))
+        let subItems = try XCTUnwrap(item.submenu?.items)
+        let copyItem = try XCTUnwrap(subItems.first {
+            $0.action == #selector(StatusBarItemController.copyEventMeetingLink)
+        })
+        let dismissItem = try XCTUnwrap(subItems.first {
+            $0.action == #selector(StatusBarItemController.dismissEvent)
+        })
+        let emailItem = try XCTUnwrap(subItems.first {
+            $0.action == #selector(StatusBarItemController.emailAttendees)
+        })
+        let openItem = try XCTUnwrap(subItems.first {
+            $0.action == #selector(StatusBarItemController.openEventInCalendar)
+        })
+
+        XCTAssertEqual((copyItem.representedObject as? MBEvent)?.id, event.id)
+        XCTAssertEqual((dismissItem.representedObject as? MBEvent)?.id, event.id)
+        XCTAssertEqual((emailItem.representedObject as? MBEvent)?.id, event.id)
+        XCTAssertEqual(openItem.representedObject as? String, event.id)
+    }
+
+    func test_eventDetailsRenderAttendeeRoleAndDeclinedStyle() throws {
+        Defaults[.showEventDetails] = true
+        let now = Date(timeIntervalSinceReferenceDate: 800_000_000)
+        var event = makeFakeEvent(
+            id: "ATTENDEES",
+            start: now.addingTimeInterval(600),
+            end: now.addingTimeInterval(1200)
+        )
+        event.attendees = [
+            MBEventAttendee(
+                email: nil,
+                name: "Declined",
+                status: .declined,
+                optional: true,
+                isCurrentUser: false
+            )
+        ]
+
+        let item = try XCTUnwrap(buildItem(event: event, now: now))
+        let attendeeItem = try XCTUnwrap(item.submenu?.items.first {
+            $0.title.contains("Declined*")
+        })
+
+        XCTAssertNotNil(attendeeItem.attributedTitle?.attribute(
+            .strikethroughStyle,
+            at: 0,
+            effectiveRange: nil
+        ))
+    }
+
     /// running event (state == .mixed) ⇒ bold font applied
     func test_runningEventGetsBoldFont() {
-        let now = Date()
+        let now = Date(timeIntervalSinceReferenceDate: 800_000_000)
         let runEvent = makeFakeEvent(
             id: "RUN",
             start: now.addingTimeInterval(-300),  // started 5 min ago
             end: now.addingTimeInterval(900)  // ends in 15 min
         )
 
-        let item = buildItem(event: runEvent)
+        let item = buildItem(event: runEvent, now: now)
         XCTAssertEqual(item?.state, .mixed)
 
         let font =
@@ -397,6 +458,35 @@ final class MenuBuilderEventItemTests: BaseTestCase {
         XCTAssertTrue(
             font?.fontDescriptor.symbolicTraits.contains(.bold) ?? false,
             "running event title should be bold")
+    }
+
+    func test_upcomingEventUsesOffStateWithoutRunningIcon() throws {
+        let now = Date(timeIntervalSinceReferenceDate: 800_000_000)
+        let event = makeFakeEvent(
+            id: "UPCOMING",
+            start: now.addingTimeInterval(600),
+            end: now.addingTimeInterval(1200)
+        )
+
+        let item = try XCTUnwrap(buildItem(event: event, now: now))
+
+        XCTAssertEqual(item.state, .off)
+        XCTAssertNil(item.offStateImage)
+        XCTAssertFalse(item.attributedTitle?.string.contains("\u{fffc}") ?? true)
+    }
+
+    func test_pastEventUsesOnState() throws {
+        let now = Date(timeIntervalSinceReferenceDate: 800_000_000)
+        let event = makeFakeEvent(
+            id: "PAST",
+            start: now.addingTimeInterval(-1200),
+            end: now.addingTimeInterval(-600)
+        )
+
+        let item = try XCTUnwrap(buildItem(event: event, now: now))
+
+        XCTAssertEqual(item.state, .on)
+        XCTAssertNil(item.onStateImage)
     }
 }
 

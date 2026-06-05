@@ -20,6 +20,7 @@ struct MenuBuilder {
     var state: StatusBarMenuState = StatusBarMenuState()
     let isFantasticalInstalled = checkIsFantasticalInstalled()
     var installationDate: Date?
+    var now: Date = Date()
 
     // MARK: Date section ------------------------------------------------------
 
@@ -77,7 +78,7 @@ struct MenuBuilder {
         var items: [NSMenuItem] = []
 
         // MENU ITEM: Join the meeting
-        let now = Date()
+        let now = self.now
 
         if let nextEvent = nextEvent {
             let itemTitle =
@@ -290,371 +291,484 @@ struct MenuBuilder {
 
     // MARK: - Private helpers --------------------------------------------------
 
-    // 360-line render that combines title formatting, participation styling,
-    // past/now/future state, attendee filtering, submenu population, and the
-    // alternate-link/Fantastical hooks. Decomposing it is a worthwhile
-    // follow-up but high-risk to do speculatively — every branch is tested by
-    // MenuBuilderEventItemTests.
-    // swiftlint:disable:next cyclomatic_complexity
     private func makeEventItem(_ event: MBEvent) -> NSMenuItem? {
-        let eventStatus = event.status
+        guard shouldRenderEvent(event) else { return nil }
 
-        let now = Date()
+        let menuTitle = eventMenuTitle(for: event)
+        let time = eventTimePresentation(for: event)
+        let itemTitle = eventItemTitle(
+            eventTitle: menuTitle,
+            startTime: time.start,
+            endTime: time.end
+        )
+        let eventItem = makeBaseEventItem(event: event, title: itemTitle)
 
-        if event.participationStatus == .declined || eventStatus == .canceled,
+        applyEventItemAppearance(eventItem, event: event, title: itemTitle)
+        eventItem.representedObject = event
+        configureEventDetails(
+            for: eventItem,
+            event: event,
+            menuTitle: menuTitle,
+            time: time
+        )
+
+        return eventItem
+    }
+
+    private struct EventTimePresentation {
+        let formatter: DateFormatter
+        let start: String
+        let end: String
+    }
+
+    private struct EventItemStyle {
+        var attributes: [NSAttributedString.Key: Any] = [:]
+        var shouldShowAsActive = true
+    }
+
+    private func shouldRenderEvent(_ event: MBEvent) -> Bool {
+        if event.participationStatus == .declined || event.status == .canceled,
             state.events.declinedEventsAppearance == .hide {
-            return nil
+            return false
         }
-
         if event.endDate < now, state.events.pastEventsAppearance == .hide {
-            return nil
+            return false
         }
-
         if event.attendees.isEmpty, state.events.personalEventsAppearance == .hide {
-            return nil
+            return false
         }
+        return true
+    }
 
-        var eventTitle = event.title
-
+    private func eventMenuTitle(for event: MBEvent) -> String {
+        var title = event.title
         if state.menu.shortenEventTitle {
-            eventTitle = StatusBarTitlePolicy.shortenTitle(
-                event.title, limit: state.menu.menuEventTitleLength,
-                noTitle: "status_bar_no_title".loco())
+            title = StatusBarTitlePolicy.shortenTitle(
+                event.title,
+                limit: state.menu.menuEventTitleLength,
+                noTitle: "status_bar_no_title".loco()
+            )
         }
-
-        if state.events.dismissedEvents.contains(where: { $0.id == event.id }) {
-            let dismissedMark = "status_bar_event_dismissed_mark".loco()
-            eventTitle = "[\(dismissedMark)] \(eventTitle)"
+        if isDismissed(event) {
+            title = "[\("status_bar_event_dismissed_mark".loco())] \(title)"
         }
+        return title
+    }
 
-        let eventTimeFormatter = DateFormatter()
-        eventTimeFormatter.locale = I18N.instance.locale
+    private func eventTimePresentation(for event: MBEvent) -> EventTimePresentation {
+        let formatter = DateFormatter()
+        formatter.locale = I18N.instance.locale
 
         switch state.timeFormat {
         case .am_pm:
-            eventTimeFormatter.dateFormat = "h:mm a  "
+            formatter.dateFormat = "h:mm a  "
         case .military:
-            eventTimeFormatter.dateFormat = "HH:mm"
+            formatter.dateFormat = "HH:mm"
         }
 
-        var eventStartTime = ""
-        var eventEndTime = ""
-        if event.isAllDay {
-            eventStartTime = "status_bar_event_start_time_all_day".loco()
-            switch state.timeFormat {
-            case .am_pm:
-                eventEndTime = "\t \t \t"
-            case .military:
-                eventEndTime = "\t"
-            }
-        } else {
-            eventStartTime = eventTimeFormatter.string(from: event.startDate)
-            eventEndTime = eventTimeFormatter.string(from: event.endDate)
+        guard event.isAllDay else {
+            return EventTimePresentation(
+                formatter: formatter,
+                start: formatter.string(from: event.startDate),
+                end: formatter.string(from: event.endDate)
+            )
         }
 
-        let itemTitle: String
+        let end = state.timeFormat == .am_pm ? "\t \t \t" : "\t"
+        return EventTimePresentation(
+            formatter: formatter,
+            start: "status_bar_event_start_time_all_day".loco(),
+            end: end
+        )
+    }
+
+    private func eventItemTitle(
+        eventTitle: String,
+        startTime: String,
+        endTime: String
+    ) -> String {
         if state.statusBar.showEventEndTime {
-            itemTitle = "\(eventStartTime) \t \(eventEndTime) \t \(eventTitle)"
-        } else {
-            itemTitle = "\(eventStartTime) \t \(eventTitle)"
+            return "\(startTime) \t \(endTime) \t \(eventTitle)"
         }
+        return "\(startTime) \t \(eventTitle)"
+    }
 
-        // Event Item
-
-        let eventItem = NSMenuItem(
-            title: itemTitle,
+    private func makeBaseEventItem(event: MBEvent, title: String) -> NSMenuItem {
+        let item = NSMenuItem(
+            title: title,
             action: #selector(StatusBarItemController.clickOnEvent(sender:)),
             keyEquivalent: ""
         )
-        eventItem.target = target
-
+        item.target = target
         if state.menu.showMeetingServiceIcon {
-            eventItem.image = getIconForMeetingService(event.meetingLink?.service)
+            item.image = getIconForMeetingService(event.meetingLink?.service)
         }
+        return item
+    }
 
-        var shouldShowAsActive = true
-        var styles = [NSAttributedString.Key: Any]()
+    private func applyEventItemAppearance(
+        _ item: NSMenuItem,
+        event: MBEvent,
+        title: String
+    ) {
+        var style = baseEventItemStyle(for: event)
 
-        if event.participationStatus == .declined || eventStatus == .canceled {
+        if event.endDate < now, event.status != .canceled {
+            applyPastEventAppearance(item, title: title, style: &style)
+        } else if event.startDate < now, event.endDate > now, event.status != .canceled {
+            applyRunningEventAppearance(item, title: title, style: style)
+        } else {
+            applyUpcomingEventAppearance(item, title: title, style: style)
+        }
+    }
+
+    private func baseEventItemStyle(for event: MBEvent) -> EventItemStyle {
+        var style = EventItemStyle()
+
+        if event.participationStatus == .declined || event.status == .canceled {
             if state.events.declinedEventsAppearance == .show_inactive {
-                styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
+                style.attributes[.foregroundColor] = NSColor.disabledControlTextColor
             } else {
-                styles[NSAttributedString.Key.strikethroughStyle] = NSUnderlineStyle.thick.rawValue
+                style.attributes[.strikethroughStyle] = NSUnderlineStyle.thick.rawValue
             }
-            shouldShowAsActive = false
+            style.shouldShowAsActive = false
         }
 
-        if !event.isAllDay, state.events.nonAllDayEvents == .show_inactive_without_meeting_link,
+        if !event.isAllDay,
+            state.events.nonAllDayEvents == .show_inactive_without_meeting_link,
             event.meetingLink == nil {
-            styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
+            style.attributes[.foregroundColor] = NSColor.disabledControlTextColor
         }
 
-        if event.participationStatus == .pending {
-            if state.events.showPendingEvents == .show_inactive {
-                styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
-            } else if state.events.showPendingEvents == .show_underlined {
-                styles[NSAttributedString.Key.underlineStyle] =
-                    NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue
-                    | NSUnderlineStyle.byWord.rawValue
-            }
-        }
-
-        if event.participationStatus == .tentative {
-            if state.events.showTentativeEvents == .show_inactive {
-                styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
-            } else if state.events.showTentativeEvents == .show_underlined {
-                styles[NSAttributedString.Key.underlineStyle] =
-                    NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue
-                    | NSUnderlineStyle.byWord.rawValue
-            }
-        }
+        applyParticipationStyle(
+            statusMatches: event.participationStatus == .pending,
+            showInactive: state.events.showPendingEvents == .show_inactive,
+            showUnderlined: state.events.showPendingEvents == .show_underlined,
+            to: &style.attributes
+        )
+        applyParticipationStyle(
+            statusMatches: event.participationStatus == .tentative,
+            showInactive: state.events.showTentativeEvents == .show_inactive,
+            showUnderlined: state.events.showTentativeEvents == .show_underlined,
+            to: &style.attributes
+        )
 
         if event.attendees.isEmpty, state.events.personalEventsAppearance == .show_inactive {
-            styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
-            shouldShowAsActive = false
+            style.attributes[.foregroundColor] = NSColor.disabledControlTextColor
+            style.shouldShowAsActive = false
         }
 
-        if event.endDate < now, eventStatus != .canceled {
-            eventItem.state = .on
-            eventItem.onStateImage = nil
-            if state.events.pastEventsAppearance == .show_inactive {
-                styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
-                styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: 14)
+        return style
+    }
 
-                eventItem.attributedTitle = NSAttributedString(
-                    string: itemTitle,
-                    attributes: styles
-                )
-                eventItem.image = eventItem.image?.tintedDisabled()
-            }
-        } else if event.startDate < now, event.endDate > now, eventStatus != .canceled {
-            eventItem.state = .mixed
+    private func applyParticipationStyle(
+        statusMatches: Bool,
+        showInactive: Bool,
+        showUnderlined: Bool,
+        to attributes: inout [NSAttributedString.Key: Any]
+    ) {
+        guard statusMatches else { return }
 
-            // if highlightRunningEvent
-            eventItem.mixedStateImage = nil
+        if showInactive {
+            attributes[.foregroundColor] = NSColor.disabledControlTextColor
+        } else if showUnderlined {
+            attributes[.underlineStyle] =
+                NSUnderlineStyle.single.rawValue
+                | NSUnderlineStyle.patternDot.rawValue
+                | NSUnderlineStyle.byWord.rawValue
+        }
+    }
 
-            // create an NSMutableAttributedString that we'll append everything to
-            let eventTitle = NSMutableAttributedString()
+    private func applyPastEventAppearance(
+        _ item: NSMenuItem,
+        title: String,
+        style: inout EventItemStyle
+    ) {
+        item.state = .on
+        item.onStateImage = nil
 
-            if shouldShowAsActive, state.events.showPendingEvents != .show_underlined {
-                // add the NSTextAttachment wrapper to our full string, then add some more text.
-                styles[NSAttributedString.Key.font] = NSFont.boldSystemFont(ofSize: 14)
-            } else {
-                styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: 14)
-            }
+        guard state.events.pastEventsAppearance == .show_inactive else { return }
+        style.attributes[.foregroundColor] = NSColor.disabledControlTextColor
+        style.attributes[.font] = NSFont.systemFont(ofSize: 14)
+        item.attributedTitle = NSAttributedString(string: title, attributes: style.attributes)
+        item.image = item.image?.tintedDisabled()
+    }
 
-            if shouldShowAsActive, state.events.showTentativeEvents != .show_underlined {
-                // add the NSTextAttachment wrapper to our full string, then add some more text.
-                styles[NSAttributedString.Key.font] = NSFont.boldSystemFont(ofSize: 14)
-            } else {
-                styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: 14)
-            }
+    private func applyRunningEventAppearance(
+        _ item: NSMenuItem,
+        title: String,
+        style: EventItemStyle
+    ) {
+        item.state = .mixed
+        item.mixedStateImage = nil
 
-            eventTitle.append(NSAttributedString(string: itemTitle, attributes: styles))
+        var attributes = style.attributes
+        attributes[.font] = runningEventFont(shouldShowAsActive: style.shouldShowAsActive)
 
-            if shouldShowAsActive {
-                // create our NSTextAttachment
-                let runningImage = NSTextAttachment()
-                runningImage.image = NSImage(named: MenuStyleConstants.runningIconName)
-                runningImage.image?.size = MenuStyleConstants.iconSize
+        let attributedTitle = NSMutableAttributedString(
+            string: title,
+            attributes: attributes
+        )
+        if style.shouldShowAsActive {
+            let runningImage = NSTextAttachment()
+            runningImage.image = NSImage(named: MenuStyleConstants.runningIconName)
+            runningImage.image?.size = MenuStyleConstants.iconSize
+            attributedTitle.append(NSAttributedString(string: " "))
+            attributedTitle.append(NSAttributedString(attachment: runningImage))
+        }
+        item.attributedTitle = attributedTitle
+    }
 
-                // wrap the attachment in its own attributed string so we can append it
-                let runningIcon = NSAttributedString(attachment: runningImage)
-                eventTitle.append(NSAttributedString(string: " "))
-                eventTitle.append(runningIcon)
-            }
+    private func runningEventFont(shouldShowAsActive: Bool) -> NSFont {
+        if shouldShowAsActive, state.events.showTentativeEvents != .show_underlined {
+            return NSFont.boldSystemFont(ofSize: 14)
+        }
+        return NSFont.systemFont(ofSize: 14)
+    }
 
-            eventItem.attributedTitle = eventTitle
-        } else {
-            eventItem.state = .off
-            eventItem.offStateImage = nil
-            eventItem.attributedTitle = NSAttributedString(string: itemTitle, attributes: styles)
+    private func applyUpcomingEventAppearance(
+        _ item: NSMenuItem,
+        title: String,
+        style: EventItemStyle
+    ) {
+        item.state = .off
+        item.offStateImage = nil
+        item.attributedTitle = NSAttributedString(string: title, attributes: style.attributes)
+    }
+
+    private func configureEventDetails(
+        for item: NSMenuItem,
+        event: MBEvent,
+        menuTitle: String,
+        time: EventTimePresentation
+    ) {
+        guard state.menu.showEventDetails else {
+            item.toolTip = event.title
+            return
         }
 
-        eventItem.representedObject = event
+        let menu = NSMenu(title: "Item \(menuTitle) menu")
+        item.submenu = menu
 
-        if state.menu.showEventDetails {
-            let eventMenu = NSMenu(title: "Item \(eventTitle) menu")
-            eventItem.submenu = eventMenu
+        addEventTitle(to: menu, event: event)
+        addEventStatus(to: menu, event: event)
+        addEventDuration(to: menu, event: event, time: time)
+        addEventCalendar(to: menu, event: event)
+        addEventLocation(to: menu, event: event)
+        addEventOrganizer(to: menu, event: event)
+        addEventNotes(to: menu, event: event)
+        addEventAttendees(to: menu, event: event)
+        addEventActions(to: menu, event: event)
+    }
 
-            // Title
-            let titleItem = eventMenu.addItem(withTitle: "", action: nil, keyEquivalent: "")
-            titleItem.view = createNSViewFromText(
-                text: event.title,
-                font: NSFont.boldSystemFont(ofSize: 15),
-                maxWidth: 420
+    private func addEventTitle(to menu: NSMenu, event: MBEvent) {
+        let titleItem = menu.addItem(withTitle: "", action: nil, keyEquivalent: "")
+        titleItem.view = createNSViewFromText(
+            text: event.title,
+            font: NSFont.boldSystemFont(ofSize: 15),
+            maxWidth: 420
+        )
+        menu.addItem(NSMenuItem.separator())
+    }
+
+    private func addEventStatus(to menu: NSMenu, event: MBEvent) {
+        let status: String
+        switch event.participationStatus {
+        case .accepted:
+            status = "status_bar_submenu_status_accepted".loco()
+        case .declined:
+            status = "status_bar_submenu_status_declined".loco()
+        case .tentative:
+            status = "status_bar_submenu_status_tentative".loco()
+        case .pending:
+            status = "status_bar_submenu_status_pending".loco()
+        case .unknown:
+            status = "status_bar_submenu_status_unknown".loco()
+        default:
+            status = "status_bar_submenu_status_default_extended".loco(
+                String(describing: event.status)
             )
-            eventMenu.addItem(NSMenuItem.separator())
-
-            // Status
-            var status: String
-            switch event.participationStatus {
-            case .accepted:
-                status = "status_bar_submenu_status_accepted".loco()
-            case .declined:
-                status = "status_bar_submenu_status_declined".loco()
-            case .tentative:
-                status = "status_bar_submenu_status_tentative".loco()
-            case .pending:
-                status = "status_bar_submenu_status_pending".loco()
-            case .unknown:
-                status = "status_bar_submenu_status_unknown".loco()
-            default:
-                status = "status_bar_submenu_status_default_extended".loco(
-                    String(describing: eventStatus))
-            }
-            eventMenu.addItem(
-                withTitle: "status_bar_submenu_status_title".loco(status), action: nil,
-                keyEquivalent: "")
-            eventMenu.addItem(NSMenuItem.separator())
-
-            // Duration
-            if !event.isAllDay {
-                let eventEndTime = eventTimeFormatter.string(from: event.endDate)
-                let eventDurationMinutes = String(
-                    Int(event.endDate.timeIntervalSince(event.startDate) / 60))
-                let durationTitle = "status_bar_submenu_duration_all_day".loco(
-                    eventStartTime, eventEndTime, eventDurationMinutes)
-                eventMenu.addItem(withTitle: durationTitle, action: nil, keyEquivalent: "")
-                eventMenu.addItem(NSMenuItem.separator())
-            }
-
-            // Calendar
-            if state.hasMultipleSelectedCalendars {
-                eventMenu.addItem(
-                    withTitle: "status_bar_submenu_calendar_title".loco(event.calendar.title),
-                    action: nil, keyEquivalent: "")
-                eventMenu.addItem(NSMenuItem.separator())
-            }
-
-            // Location
-            if let location = event.location, !location.isEmpty {
-                eventMenu.addItem(
-                    withTitle: "status_bar_submenu_location_title".loco(), action: nil,
-                    keyEquivalent: "")
-                let locationItem = eventMenu.addItem(withTitle: "", action: nil, keyEquivalent: "")
-                locationItem.view = createNSViewFromText(text: location, maxWidth: 420)
-                eventMenu.addItem(NSMenuItem.separator())
-            }
-
-            // Organizer
-            if let eventOrganizer = event.organizer {
-                let organizerName = eventOrganizer.name
-                eventMenu.addItem(
-                    withTitle: "status_bar_submenu_organizer_title".loco(organizerName),
-                    action: nil, keyEquivalent: "")
-                eventMenu.addItem(NSMenuItem.separator())
-            }
-
-            // Notes
-            if var notes = event.notes {
-                notes = cleanUpNotes(notes)
-                if !notes.isEmpty {
-                    eventMenu.addItem(
-                        withTitle: "status_bar_submenu_notes_title".loco(), action: nil,
-                        keyEquivalent: "")
-                    let item = eventMenu.addItem(withTitle: "", action: nil, keyEquivalent: "")
-                    item.view = createNSViewFromText(text: notes, maxWidth: 420)
-
-                    eventMenu.addItem(NSMenuItem.separator())
-                }
-            }
-
-            // Attendees
-            if !event.attendees.isEmpty {
-                let sortedAttendees = event.attendees.sorted {
-                    $0.status.rawValue < $1.status.rawValue
-                }
-                eventMenu.addItem(
-                    withTitle: "status_bar_submenu_attendees_title".loco(sortedAttendees.count),
-                    action: nil, keyEquivalent: "")
-                for attendee in sortedAttendees {
-                    var attributes: [NSAttributedString.Key: Any] = [:]
-
-                    var name = attendee.name
-
-                    if attendee.isCurrentUser {
-                        name = "status_bar_submenu_attendees_you".loco(name)
-                    }
-
-                    let roleMark = attendee.optional ? "*" : ""
-
-                    var status: String
-                    switch attendee.status {
-                    case .declined:
-                        status = ""
-                        attributes[NSAttributedString.Key.strikethroughStyle] =
-                            NSUnderlineStyle.thick.rawValue
-                    case .tentative:
-                        status = "status_bar_submenu_attendees_status_tentative".loco()
-                    case .pending:
-                        status = "status_bar_submenu_attendees_status_unknown".loco()
-                    default:
-                        status = ""
-                    }
-
-                    let itemTitle = "- \(name)\(roleMark) \(status)"
-                    let item = eventMenu.addItem(
-                        withTitle: itemTitle, action: nil, keyEquivalent: "")
-                    item.attributedTitle = NSAttributedString(
-                        string: itemTitle, attributes: attributes)
-                }
-                eventMenu.addItem(NSMenuItem.separator())
-            }
-
-            // Copy meeting link
-            if let alternateLinksItem = makeAlternateMeetingLinksMenu(for: event) {
-                eventMenu.addItem(alternateLinksItem)
-            }
-
-            let copyLinkItem = eventMenu.addItem(
-                withTitle: "status_bar_submenu_copy_meeting_link".loco(),
-                action: #selector(StatusBarItemController.copyEventMeetingLink), keyEquivalent: "")
-            copyLinkItem.target = target
-            copyLinkItem.representedObject = event
-
-            // Dismiss/undismiss meeting
-            if state.events.dismissedEvents.contains(where: { $0.id == event.id }) {
-                let undismissItem = eventMenu.addItem(
-                    withTitle: "status_bar_submenu_undismiss_meeting".loco(),
-                    action: #selector(StatusBarItemController.undismissEvent), keyEquivalent: "")
-                undismissItem.target = target
-                undismissItem.representedObject = event
-            } else {
-                let dismissItem = eventMenu.addItem(
-                    withTitle: "status_bar_submenu_dismiss_meeting".loco(),
-                    action: #selector(StatusBarItemController.dismissEvent), keyEquivalent: "")
-                dismissItem.target = target
-                dismissItem.representedObject = event
-            }
-
-            // Send email
-            let emailItem = eventMenu.addItem(
-                withTitle: "status_bar_submenu_email_attendees".loco(),
-                action: #selector(StatusBarItemController.emailAttendees), keyEquivalent: "")
-            emailItem.target = target
-            emailItem.representedObject = event
-
-            // Open in App
-            let openItem = eventMenu.addItem(
-                withTitle: "status_bar_submenu_open_in_calendar".loco(),
-                action: #selector(StatusBarItemController.openEventInCalendar), keyEquivalent: "")
-            openItem.target = target
-            openItem.representedObject = event.id
-
-            // Open in fanctastical if fantastical is installed
-            if isFantasticalInstalled {
-                let fantasticalItem = eventMenu.addItem(
-                    withTitle: "status_bar_submenu_open_in_fantastical".loco(),
-                    action: #selector(StatusBarItemController.openEventInFantastical),
-                    keyEquivalent: "")
-                fantasticalItem.target = target
-                fantasticalItem.representedObject = event
-            }
-        } else {
-            eventItem.toolTip = event.title
         }
-        return eventItem
+        menu.addItem(
+            withTitle: "status_bar_submenu_status_title".loco(status),
+            action: nil,
+            keyEquivalent: ""
+        )
+        menu.addItem(NSMenuItem.separator())
+    }
+
+    private func addEventDuration(
+        to menu: NSMenu,
+        event: MBEvent,
+        time: EventTimePresentation
+    ) {
+        guard !event.isAllDay else { return }
+
+        let durationMinutes = String(Int(event.endDate.timeIntervalSince(event.startDate) / 60))
+        let title = "status_bar_submenu_duration_all_day".loco(
+            time.start,
+            time.formatter.string(from: event.endDate),
+            durationMinutes
+        )
+        menu.addItem(withTitle: title, action: nil, keyEquivalent: "")
+        menu.addItem(NSMenuItem.separator())
+    }
+
+    private func addEventCalendar(to menu: NSMenu, event: MBEvent) {
+        guard state.hasMultipleSelectedCalendars else { return }
+
+        menu.addItem(
+            withTitle: "status_bar_submenu_calendar_title".loco(event.calendar.title),
+            action: nil,
+            keyEquivalent: ""
+        )
+        menu.addItem(NSMenuItem.separator())
+    }
+
+    private func addEventLocation(to menu: NSMenu, event: MBEvent) {
+        guard let location = event.location, !location.isEmpty else { return }
+
+        menu.addItem(
+            withTitle: "status_bar_submenu_location_title".loco(),
+            action: nil,
+            keyEquivalent: ""
+        )
+        let locationItem = menu.addItem(withTitle: "", action: nil, keyEquivalent: "")
+        locationItem.view = createNSViewFromText(text: location, maxWidth: 420)
+        menu.addItem(NSMenuItem.separator())
+    }
+
+    private func addEventOrganizer(to menu: NSMenu, event: MBEvent) {
+        guard let organizer = event.organizer else { return }
+
+        menu.addItem(
+            withTitle: "status_bar_submenu_organizer_title".loco(organizer.name),
+            action: nil,
+            keyEquivalent: ""
+        )
+        menu.addItem(NSMenuItem.separator())
+    }
+
+    private func addEventNotes(to menu: NSMenu, event: MBEvent) {
+        guard let rawNotes = event.notes else { return }
+        let notes = cleanUpNotes(rawNotes)
+        guard !notes.isEmpty else { return }
+
+        menu.addItem(
+            withTitle: "status_bar_submenu_notes_title".loco(),
+            action: nil,
+            keyEquivalent: ""
+        )
+        let notesItem = menu.addItem(withTitle: "", action: nil, keyEquivalent: "")
+        notesItem.view = createNSViewFromText(text: notes, maxWidth: 420)
+        menu.addItem(NSMenuItem.separator())
+    }
+
+    private func addEventAttendees(to menu: NSMenu, event: MBEvent) {
+        guard !event.attendees.isEmpty else { return }
+
+        let attendees = event.attendees.sorted { $0.status.rawValue < $1.status.rawValue }
+        menu.addItem(
+            withTitle: "status_bar_submenu_attendees_title".loco(attendees.count),
+            action: nil,
+            keyEquivalent: ""
+        )
+        for attendee in attendees {
+            menu.addItem(makeAttendeeItem(attendee))
+        }
+        menu.addItem(NSMenuItem.separator())
+    }
+
+    private func makeAttendeeItem(_ attendee: MBEventAttendee) -> NSMenuItem {
+        var attributes: [NSAttributedString.Key: Any] = [:]
+        let name = attendee.isCurrentUser
+            ? "status_bar_submenu_attendees_you".loco(attendee.name)
+            : attendee.name
+        let roleMark = attendee.optional ? "*" : ""
+
+        let status: String
+        switch attendee.status {
+        case .declined:
+            status = ""
+            attributes[.strikethroughStyle] = NSUnderlineStyle.thick.rawValue
+        case .tentative:
+            status = "status_bar_submenu_attendees_status_tentative".loco()
+        case .pending:
+            status = "status_bar_submenu_attendees_status_unknown".loco()
+        default:
+            status = ""
+        }
+
+        let title = "- \(name)\(roleMark) \(status)"
+        let item = NSMenuItem(title: title, action: nil, keyEquivalent: "")
+        item.attributedTitle = NSAttributedString(string: title, attributes: attributes)
+        return item
+    }
+
+    private func addEventActions(to menu: NSMenu, event: MBEvent) {
+        if let alternateLinksItem = makeAlternateMeetingLinksMenu(for: event) {
+            menu.addItem(alternateLinksItem)
+        }
+
+        addEventAction(
+            to: menu,
+            title: "status_bar_submenu_copy_meeting_link".loco(),
+            action: #selector(StatusBarItemController.copyEventMeetingLink),
+            representedObject: event
+        )
+
+        if isDismissed(event) {
+            addEventAction(
+                to: menu,
+                title: "status_bar_submenu_undismiss_meeting".loco(),
+                action: #selector(StatusBarItemController.undismissEvent),
+                representedObject: event
+            )
+        } else {
+            addEventAction(
+                to: menu,
+                title: "status_bar_submenu_dismiss_meeting".loco(),
+                action: #selector(StatusBarItemController.dismissEvent),
+                representedObject: event
+            )
+        }
+
+        addEventAction(
+            to: menu,
+            title: "status_bar_submenu_email_attendees".loco(),
+            action: #selector(StatusBarItemController.emailAttendees),
+            representedObject: event
+        )
+        addEventAction(
+            to: menu,
+            title: "status_bar_submenu_open_in_calendar".loco(),
+            action: #selector(StatusBarItemController.openEventInCalendar),
+            representedObject: event.id
+        )
+
+        if isFantasticalInstalled {
+            addEventAction(
+                to: menu,
+                title: "status_bar_submenu_open_in_fantastical".loco(),
+                action: #selector(StatusBarItemController.openEventInFantastical),
+                representedObject: event
+            )
+        }
+    }
+
+    private func addEventAction(
+        to menu: NSMenu,
+        title: String,
+        action: Selector,
+        representedObject: Any
+    ) {
+        let item = menu.addItem(withTitle: title, action: action, keyEquivalent: "")
+        item.target = target
+        item.representedObject = representedObject
+    }
+
+    private func isDismissed(_ event: MBEvent) -> Bool {
+        state.events.dismissedEvents.contains { $0.id == event.id }
     }
 
     private func makeAlternateMeetingLinksMenu(for event: MBEvent) -> NSMenuItem? {
