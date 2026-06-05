@@ -78,22 +78,43 @@ func createAppleScriptParametersForEvent(event: MBEvent) -> NSAppleEventDescript
     appleEvent.setDescriptor(NSAppleEventDescriptor(string: type.rawValue), forKeyword: AEKeyword(keyASSubroutineName))
     appleEvent.setDescriptor(parameters, forKeyword: AEKeyword(keyDirectObject))
 
-    let scriptPath = try! FileManager.default.url(for: .applicationScriptsDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+    let scriptPath: URL
+    do {
+        scriptPath = try FileManager.default.url(
+            for: .applicationScriptsDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+    } catch {
+        AppMessageCenter.shared.post(.eventScriptExecutionFailed(
+            path: "applicationScriptsDirectory",
+            description: error.localizedDescription
+        ))
+        return
+    }
 
     let url = scriptPath.appendingPathComponent("eventStartScript.scpt")
 
-    if FileManager.default.fileExists(atPath: url.path) {
-        let appleScript = try! NSUserAppleScriptTask(url: url)
-        appleScript.execute(withAppleEvent: appleEvent) { _, error in
-            if let error = error {
-                AppMessageCenter.shared.post(.eventScriptExecutionFailed(
-                    path: scriptPath.path,
-                    description: error.localizedDescription
-                ))
-            }
-        }
-    } else {
+    guard FileManager.default.fileExists(atPath: url.path) else {
         AppMessageCenter.shared.post(.eventScriptFileMissing(path: scriptPath.path))
+        return
+    }
+
+    let appleScript: NSUserAppleScriptTask
+    do {
+        appleScript = try NSUserAppleScriptTask(url: url)
+    } catch {
+        AppMessageCenter.shared.post(.eventScriptExecutionFailed(
+            path: url.path,
+            description: error.localizedDescription
+        ))
+        return
+    }
+
+    appleScript.execute(withAppleEvent: appleEvent) { _, error in
+        if let error = error {
+            AppMessageCenter.shared.post(.eventScriptExecutionFailed(
+                path: scriptPath.path,
+                description: error.localizedDescription
+            ))
+        }
     }
 }
 
