@@ -94,9 +94,13 @@ final class WindowCoordinator {
         window.orderFrontRegardless()
     }
 
-    func openPreferencesWindow(appModel: AppModel?, eventManager: EventManager?) {
+    func openPreferencesWindow(
+        appModel: AppModel?,
+        eventManager: EventManager?,
+        patronageService: PatronageService
+    ) {
         guard let appModel, let eventManager else { return }
-        let contentView = PreferencesView()
+        let contentView = PreferencesView(patronageService: patronageService)
             .environmentObject(appModel)
             .environmentObject(eventManager)
 

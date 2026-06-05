@@ -9,10 +9,12 @@ import SwiftUI
 
 struct PreferencesView: View {
     @EnvironmentObject var appModel: AppModel
+    @ObservedObject var patronageService: PatronageService
 
     var body: some View {
         TabView {
-            GeneralTab().tabItem { Text("preferences_tab_general".loco()) }
+            GeneralTab(patronageService: patronageService)
+                .tabItem { Text("preferences_tab_general".loco()) }
             AppearanceTab().tabItem { Text("preferences_tab_appearance".loco()) }
             LinksTab().tabItem { Text("preferences_tab_links".loco()) }
             CalendarsTab().tabItem { Text("preferences_tab_calendars".loco()) }

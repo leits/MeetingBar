@@ -197,6 +197,31 @@ final class AppSettingsTests: BaseTestCase {
         XCTAssertEqual(Defaults[.patronageDuration], 0)
     }
 
+    func testPatronageTransactionsAreRecordedOnlyOnce() {
+        XCTAssertTrue(AppSettings.recordPatronageTransaction(
+            id: 42,
+            months: 3,
+            quantity: 2
+        ))
+        XCTAssertFalse(AppSettings.recordPatronageTransaction(
+            id: 42,
+            months: 3,
+            quantity: 2
+        ))
+
+        XCTAssertEqual(AppSettings.patronageDuration, 6)
+        XCTAssertEqual(AppSettings.processedPatronageTransactionIDs, ["42"])
+    }
+
+    func testResetPatronageClearsProcessedTransactions() {
+        AppSettings.recordPatronageTransaction(id: 42, months: 3, quantity: 1)
+
+        AppSettings.resetPatronageDuration()
+
+        XCTAssertEqual(AppSettings.patronageDuration, 0)
+        XCTAssertTrue(AppSettings.processedPatronageTransactionIDs.isEmpty)
+    }
+
     // MARK: - currentForScheduler integration
 
     func testCurrentForScheduler_hideMeetingTitle_propagates() {

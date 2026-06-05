@@ -12,6 +12,8 @@ import Defaults
 import KeyboardShortcuts
 
 struct GeneralTab: View {
+    @ObservedObject var patronageService: PatronageService
+
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
             GroupBox(label: Label("preferences_section_general_settings_title".loco(), systemImage: "gearshape")) {
@@ -29,7 +31,7 @@ struct GeneralTab: View {
                 ShortcutsSection()
             }.padding(.top, 8)
             GroupBox(label: Label("preferences_section_about_title".loco(), systemImage: "person.crop.circle")) {
-                PatronageAppSection()
+                PatronageAppSection(patronageService: patronageService)
             }.padding(.top, 8)
         }
     }
@@ -106,6 +108,7 @@ struct PatronageAppSection: View {
     @State var showingContactModal = false
     @Default(.patronageDuration) var patronageDuration
     @Default(.isInstalledFromAppStore) var isInstalledFromAppStore
+    @ObservedObject var patronageService: PatronageService
 
     var body: some View {
         VStack(alignment: .center, spacing: 15) {
@@ -116,18 +119,39 @@ struct PatronageAppSection: View {
                     Text("preferences_general_patron_description".loco()).font(.system(size: 10))
                 }
                 HStack {
-                    Button(action: { purchasePatronage(PatronageProducts.threeMonth) }) {
+                    Button(action: {
+                        Task { await patronageService.purchase(PatronageProducts.threeMonth) }
+                    }) {
                         Text("preferences_general_patron_three_months".loco())
                     }
-                    Button(action: { purchasePatronage(PatronageProducts.sixMonth) }) {
+                    .disabled(
+                        patronageService.isProcessing
+                            || !patronageService.isProductAvailable(PatronageProducts.threeMonth)
+                    )
+                    Button(action: {
+                        Task { await patronageService.purchase(PatronageProducts.sixMonth) }
+                    }) {
                         Text("preferences_general_patron_six_months".loco())
                     }
-                    Button(action: { purchasePatronage(PatronageProducts.twelveMonth) }) {
+                    .disabled(
+                        patronageService.isProcessing
+                            || !patronageService.isProductAvailable(PatronageProducts.sixMonth)
+                    )
+                    Button(action: {
+                        Task { await patronageService.purchase(PatronageProducts.twelveMonth) }
+                    }) {
                         Text("preferences_general_patron_twelve_months".loco())
                     }
-//                    Button(action: restorePatronagePurchases) {
-//                        Text("preferences_general_patron_restore_purchases".loco())
-//                    }
+                    .disabled(
+                        patronageService.isProcessing
+                            || !patronageService.isProductAvailable(PatronageProducts.twelveMonth)
+                    )
+                    Button(action: {
+                        Task { await patronageService.restore() }
+                    }) {
+                        Text("preferences_general_patron_restore_purchases".loco())
+                    }
+                    .disabled(patronageService.isProcessing)
                 }
                 if patronageDuration > 0 {
                     Text("preferences_general_patron_thank_for_purchase".loco(patronageDuration))
@@ -207,5 +231,7 @@ struct ContactModal: View {
 }
 
 #Preview() {
-    GeneralTab().padding().frame(width: 700, height: 620)
+    GeneralTab(patronageService: PatronageService())
+        .padding()
+        .frame(width: 700, height: 620)
 }

@@ -19,6 +19,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var eventManager: EventManager!
     let notificationScheduler = NotificationScheduler()
     let snoozeService = SnoozeService()
+    let patronageService = PatronageService()
     private var notificationCenterDelegate: NotificationCenterDelegate?
     private var notificationActionHandler: NotificationActionHandler?
     private(set) var appModel: AppModel?
@@ -30,9 +31,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private var cancellables = Set<AnyCancellable>()
 
     func applicationDidFinishLaunching(_: Notification) {
-        // AppStore sync
-        completeStoreTransactions()
-        checkAppSource()
+        patronageService.start()
 
         // Migrate legacy per-provider browser keys → providerBrowsers map
         MeetingOpenPreferencesMigration.migrateDefaultsIfNeeded()
@@ -204,7 +203,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc
     func openPreferencesWindow(_: NSStatusBarButton?) {
-        windowCoordinator.openPreferencesWindow(appModel: appModel, eventManager: eventManager)
+        windowCoordinator.openPreferencesWindow(
+            appModel: appModel,
+            eventManager: eventManager,
+            patronageService: patronageService
+        )
     }
 
     @objc
@@ -248,6 +251,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationWillTerminate(_: Notification) {
         statusLoopTask?.cancel()
+        patronageService.stop()
         appModel?.handleWillTerminate()
     }
 }

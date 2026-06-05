@@ -20,7 +20,7 @@ enum PermissionReporter {
             ? (GCEventStore.shared.isAuthorized ? .authorized : .notAuthorized)
             : .notActive
         let scriptFileExists = scriptExists()
-        let isAppStoreBuild = Bundle.main.appStoreReceiptURL?.lastPathComponent == "receipt"
+        let isAppStoreBuild = AppSourceDetector.isAppStoreBuild()
         return PermissionSnapshot(
             calendarAccess: calendarAccess,
             notificationAccess: notificationAccess,
@@ -44,7 +44,7 @@ enum PermissionReporter {
             case .notDetermined: return .notDetermined
             case .restricted: return .restricted
             case .denied: return .denied
-            case .authorized: return .authorized
+            case .authorized, .fullAccess, .writeOnly: return .authorized
             @unknown default: return .notDetermined
             }
         }
