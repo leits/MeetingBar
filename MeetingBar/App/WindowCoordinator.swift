@@ -96,13 +96,13 @@ final class WindowCoordinator {
 
     func openPreferencesWindow(
         appModel: AppModel?,
-        eventManager: EventManager?,
+        calendarSync: CalendarSync?,
         patronageService: PatronageService
     ) {
-        guard let appModel, let eventManager else { return }
+        guard let appModel, let calendarSync else { return }
         let contentView = PreferencesView(patronageService: patronageService)
             .environmentObject(appModel)
-            .environmentObject(eventManager)
+            .environmentObject(calendarSync)
 
         if let preferencesWindow {
             NSApplication.shared.activate(ignoringOtherApps: true)

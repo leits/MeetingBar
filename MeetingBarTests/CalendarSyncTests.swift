@@ -1,5 +1,5 @@
 //
-//  EventManagerTests.swift
+//  CalendarSyncTests.swift
 //  MeetingBar
 //
 //  Created by Andrii Leitsius on 12.05.2025.
@@ -12,7 +12,7 @@ import XCTest
 @testable import MeetingBar
 
 @MainActor
-class EventManagerTests: BaseTestCase {
+class CalendarSyncTests: BaseTestCase {
     private var cancellables = Set<AnyCancellable>()
 
     func testInjectedStorePublishesCalendarsAndEvents() {
@@ -29,7 +29,7 @@ class EventManagerTests: BaseTestCase {
         )
 
         // 2) Create manager with test initializer
-        let manager = EventManager(
+        let manager = CalendarSync(
             provider: fakeStore,
             refreshInterval: 0.05
         )
@@ -60,7 +60,7 @@ class EventManagerTests: BaseTestCase {
     }
 }
 
-@MainActor class EventManagerSwitchProviderTests: BaseTestCase {
+@MainActor class CalendarSyncSwitchProviderTests: BaseTestCase {
 
     private var cancellables = Set<AnyCancellable>()
 
@@ -80,8 +80,8 @@ class EventManagerTests: BaseTestCase {
         let storeA = FakeEventStore(events: [firstEvent])
         let storeB = FakeEventStore(events: [secondEvent])
 
-        // Start EventManager with Store A
-        let manager = EventManager(provider: storeA, refreshInterval: 0)
+        // Start CalendarSync with Store A
+        let manager = CalendarSync(provider: storeA, refreshInterval: 0)
 
         // Expect the first publication to contain [firstEvent]
         let initialExp = expectation(description: "initial events")
@@ -125,7 +125,7 @@ class EventManagerTests: BaseTestCase {
         let calendar = MBCalendar(title: "C", id: "c1", source: nil, email: nil, color: .black)
         let store = FakeEventStore(calendars: [calendar])
         let repository = CalendarRepository(providerName: .macOSEventKit) { _ in store }
-        let manager = EventManager(repository: repository, refreshInterval: 0)
+        let manager = CalendarSync(repository: repository, refreshInterval: 0)
 
         let initialExp = expectation(description: "initial refresh completed")
         manager.$providerHealth
@@ -165,9 +165,9 @@ class EventManagerTests: BaseTestCase {
         XCTAssertEqual(storeB.cancelPendingOperationsCallCount, 1)
     }
 
-    func testEventManagerStopCancelsActiveProviderOperations() {
+    func testCalendarSyncStopCancelsActiveProviderOperations() {
         let store = FakeEventStore()
-        let manager = EventManager(provider: store, refreshInterval: 0)
+        let manager = CalendarSync(provider: store, refreshInterval: 0)
 
         manager.stop()
 
@@ -184,7 +184,7 @@ final class FailedRefreshTests: BaseTestCase {
 
     func test_failedRefreshPreservesExistingCalendars() async throws {
         let store = FakeEventStore(calendars: [fakeCal])
-        let manager = EventManager(provider: store, refreshInterval: 0)
+        let manager = CalendarSync(provider: store, refreshInterval: 0)
 
         let initialExp = expectation(description: "initial calendars loaded")
         manager.$calendars.drop(while: \.isEmpty).first()
@@ -213,7 +213,7 @@ final class FailedRefreshTests: BaseTestCase {
         let store = FakeEventStore(calendars: [fakeCal], events: [fakeEvt])
 
         Defaults[.selectedCalendarIDs] = ["calA"]
-        let manager = EventManager(provider: store, refreshInterval: 0)
+        let manager = CalendarSync(provider: store, refreshInterval: 0)
 
         let initialExp = expectation(description: "initial events loaded")
         manager.$events.drop(while: \.isEmpty).first()
@@ -239,7 +239,7 @@ final class FailedRefreshTests: BaseTestCase {
     func test_failedInitialRefreshDoesNotCrash() {
         let store = FakeEventStore()
         store.stubbedError = NSError(domain: "test", code: 1)
-        let manager = EventManager(provider: store, refreshInterval: 0)
+        let manager = CalendarSync(provider: store, refreshInterval: 0)
 
         let exp = expectation(description: "brief wait after failed initial refresh")
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { exp.fulfill() }
@@ -259,7 +259,7 @@ final class RefreshCoalescingTests: BaseTestCase {
         let store = FakeEventStore(calendars: [fakeCal])
         store.fetchDelay = 0.2  // slow enough that the fetch is still running when the rapid triggers arrive
 
-        let manager = EventManager(provider: store, refreshInterval: 0)
+        let manager = CalendarSync(provider: store, refreshInterval: 0)
 
         let initialExp = expectation(description: "initial load")
         manager.$calendars.drop(while: \.isEmpty).first()
@@ -303,7 +303,7 @@ final class RefreshTriggerTests: BaseTestCase {
 
         // Start with `.today`
         Defaults[.showEventsForPeriod] = .today
-        let manager = EventManager(provider: store, refreshInterval: 0)
+        let manager = CalendarSync(provider: store, refreshInterval: 0)
 
         // Expect initial publication with [first]
         let initialExp = expectation(description: "initial events")
@@ -342,7 +342,7 @@ final class RefreshTriggerTests: BaseTestCase {
             start: .init(),
             end: .init().addingTimeInterval(60))
         let store = FakeEventStore(events: [ev])
-        let manager = EventManager(provider: store, refreshInterval: 0)
+        let manager = CalendarSync(provider: store, refreshInterval: 0)
 
         // Expectation BEFORE calling refreshSources()
         let exp = expectation(description: "events after manual refresh")
@@ -370,7 +370,7 @@ final class ProviderHealthTests: BaseTestCase {
         let store = FakeEventStore(calendars: [
             MBCalendar(title: "C", id: "c1", source: nil, email: nil, color: .black)
         ])
-        let manager = EventManager(provider: store, refreshInterval: 0)
+        let manager = CalendarSync(provider: store, refreshInterval: 0)
 
         let exp = expectation(description: "health after success")
         manager.$providerHealth
@@ -392,7 +392,7 @@ final class ProviderHealthTests: BaseTestCase {
         let store = FakeEventStore(calendars: [
             MBCalendar(title: "C", id: "c1", source: nil, email: nil, color: .black)
         ])
-        let manager = EventManager(provider: store, refreshInterval: 0)
+        let manager = CalendarSync(provider: store, refreshInterval: 0)
 
         let initialExp = expectation(description: "initial success")
         manager.$providerHealth
@@ -444,7 +444,7 @@ final class ProviderHealthTests: BaseTestCase {
         let health = ProviderHealth.failure(
             previous: ProviderHealth(lastSuccessfulRefresh: previousSuccess),
             attempted: attempted,
-            error: EventManagerError.eventFetchFailed(AuthError.notSignedIn)
+            error: CalendarSyncError.eventFetchFailed(AuthError.notSignedIn)
         )
 
         XCTAssertTrue(health.authRequired)
@@ -504,7 +504,7 @@ final class ProviderHealthTests: BaseTestCase {
         )
         let store = FakeEventStore(calendars: [calendar], events: [event])
         Defaults[.selectedCalendarIDs] = [calendar.id]
-        let manager = EventManager(provider: store, refreshInterval: 0)
+        let manager = CalendarSync(provider: store, refreshInterval: 0)
 
         let initialExp = expectation(description: "initial success")
         manager.$providerHealth
@@ -542,7 +542,7 @@ final class ProviderHealthTests: BaseTestCase {
         let calendar = MBCalendar(title: "C", id: "c1", source: nil, email: nil, color: .black)
         let store = FakeEventStore(calendars: [calendar])
         let repository = CalendarRepository(providerName: .macOSEventKit) { _ in store }
-        let manager = EventManager(repository: repository, refreshInterval: 0)
+        let manager = CalendarSync(repository: repository, refreshInterval: 0)
 
         let initialExp = expectation(description: "initial success")
         manager.$providerHealth

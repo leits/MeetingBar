@@ -1,5 +1,5 @@
 //
-//  EventManager.swift
+//  CalendarSync.swift
 //  MeetingBar
 //
 //  Created by Andrii Leitsius on 12.05.2025.
@@ -11,7 +11,7 @@ import Defaults
 import Foundation
 import UserNotifications
 
-public enum EventManagerError: LocalizedError {
+public enum CalendarSyncError: LocalizedError {
     case eventStoreNotAvailable
     case calendarAccessFailed(Error)
     case eventFetchFailed(Error)
@@ -27,7 +27,7 @@ public enum EventManagerError: LocalizedError {
 }
 
 @MainActor
-public class EventManager: ObservableObject {
+public class CalendarSync: ObservableObject {
     @Published public private(set) var calendars: [MBCalendar] = []
     @Published public private(set) var events: [MBEvent] = []
     @Published public private(set) var providerHealth = ProviderHealth()
@@ -137,7 +137,7 @@ public class EventManager: ObservableObject {
         do {
             rawEvents = try await repository.fetchCurrentPeriodEvents(fromAllCalendars: fromCalendars)
         } catch {
-            throw EventManagerError.eventFetchFailed(error)
+            throw CalendarSyncError.eventFetchFailed(error)
         }
 
         if !AppSettings.current.events.dismissedEvents.isEmpty {

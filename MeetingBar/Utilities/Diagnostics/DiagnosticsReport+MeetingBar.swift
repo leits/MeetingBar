@@ -56,10 +56,10 @@ extension DiagnosticsContext {
 
     /// Snapshot of everything the issue-report formatter needs, drawn from
     /// the bundle, the running OS, the current settings, and the live
-    /// `EventManager`. Use from any view that wants to show or export
+    /// `CalendarSync`. Use from any view that wants to show or export
     /// diagnostics — `StatusTab`, future onboarding error states, etc.
     @MainActor
-    static func current(eventManager: EventManager) async -> DiagnosticsContext {
+    static func current(calendarSync: CalendarSync) async -> DiagnosticsContext {
         let info = Bundle.main.infoDictionary ?? [:]
         let settings = AppSettings.current
         let permissions = await PermissionReporter.current(provider: settings.calendar.eventStoreProvider)
@@ -69,9 +69,9 @@ extension DiagnosticsContext {
             osVersion: ProcessInfo.processInfo.operatingSystemVersionString,
             provider: settings.calendar.eventStoreProvider,
             selectedCalendarCount: settings.calendar.selectedCalendarIDs.count,
-            totalCalendarCount: eventManager.calendars.count,
-            visibleEventCount: eventManager.events.count,
-            health: eventManager.providerHealth,
+            totalCalendarCount: calendarSync.calendars.count,
+            visibleEventCount: calendarSync.events.count,
+            health: calendarSync.providerHealth,
             permissions: permissions
         )
     }
@@ -81,9 +81,9 @@ extension DiagnosticsContext {
 enum DiagnosticsClipboard {
     /// Copies the formatted diagnostics report to the system pasteboard.
     /// Single entry point so views don't reach into NSPasteboard directly.
-    static func copy(eventManager: EventManager) {
+    static func copy(calendarSync: CalendarSync) {
         Task { @MainActor in
-            let context = await DiagnosticsContext.current(eventManager: eventManager)
+            let context = await DiagnosticsContext.current(calendarSync: calendarSync)
             let pasteboard = NSPasteboard.general
             pasteboard.clearContents()
             pasteboard.setString(DiagnosticsReport.text(from: context), forType: .string)

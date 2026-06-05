@@ -102,7 +102,7 @@ struct AccessScreen: View {
     func requestAccess(provider: EventStoreProvider) async {
         providerSelected = true
         // Provider is persisted by the eventual call to
-        // EventManager.changeEventStoreProvider inside onProviderSelected;
+        // CalendarSync.changeEventStoreProvider inside onProviderSelected;
         // no separate Defaults write needed here.
         await onboardingHandler.onProviderSelected(provider)
         router.currentStep = .calendarSelection

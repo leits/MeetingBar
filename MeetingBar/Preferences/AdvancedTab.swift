@@ -51,7 +51,7 @@ struct AdvancedTab: View {
 }
 
 struct ScriptSection: View {
-    @EnvironmentObject var eventManager: EventManager
+    @EnvironmentObject var calendarSync: CalendarSync
     @Default(.runEventStartScript) var runEventStartScript
     @Default(.eventStartScriptLocation) var eventStartScriptLocation
     @Default(.eventStartScript) var eventStartScript
@@ -112,7 +112,7 @@ struct ScriptSection: View {
     }
 
     func runSampleScript() {
-        runAppleScriptForNextEvent(events: eventManager.events)
+        runAppleScriptForNextEvent(events: calendarSync.events)
     }
 }
 

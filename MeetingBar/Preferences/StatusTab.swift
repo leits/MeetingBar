@@ -23,7 +23,7 @@ struct StatusTab: View {
 }
 
 private struct ProviderStatusSection: View {
-    @EnvironmentObject var eventManager: EventManager
+    @EnvironmentObject var calendarSync: CalendarSync
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -34,11 +34,11 @@ private struct ProviderStatusSection: View {
                 Text(statusText)
                 Spacer()
                 Button("preferences_status_refresh_now".loco()) {
-                    Task { try? await eventManager.refreshSources() }
+                    Task { try? await calendarSync.refreshSources() }
                 }
             }
 
-            if let lastSuccess = eventManager.providerHealth.lastSuccessfulRefresh {
+            if let lastSuccess = calendarSync.providerHealth.lastSuccessfulRefresh {
                 HStack {
                     Text("preferences_status_last_successful_refresh".loco())
                         .foregroundStyle(.secondary)
@@ -46,7 +46,7 @@ private struct ProviderStatusSection: View {
                 }
             }
 
-            if let error = eventManager.providerHealth.lastErrorDescription {
+            if let error = calendarSync.providerHealth.lastErrorDescription {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("preferences_status_last_error".loco())
                         .foregroundStyle(.secondary)
@@ -62,7 +62,7 @@ private struct ProviderStatusSection: View {
     }
 
     private var statusColor: Color {
-        let health = eventManager.providerHealth
+        let health = calendarSync.providerHealth
         if health.authRequired { return .red }
         if health.lastErrorDescription != nil { return .red }
         if health.isStale { return .orange }
@@ -71,7 +71,7 @@ private struct ProviderStatusSection: View {
     }
 
     private var statusText: String {
-        let health = eventManager.providerHealth
+        let health = calendarSync.providerHealth
         if health.authRequired { return "preferences_status_state_auth_required".loco() }
         if health.lastErrorDescription != nil { return "preferences_status_state_error".loco() }
         if health.isStale { return "preferences_status_state_stale".loco() }
@@ -156,7 +156,7 @@ private struct PermissionRow: View {
 }
 
 private struct DiagnosticsSection: View {
-    @EnvironmentObject var eventManager: EventManager
+    @EnvironmentObject var calendarSync: CalendarSync
 
     var body: some View {
         HStack(alignment: .top) {
@@ -165,7 +165,7 @@ private struct DiagnosticsSection: View {
                 .foregroundStyle(.secondary)
             Spacer()
             Button("preferences_status_copy_diagnostics".loco()) {
-                DiagnosticsClipboard.copy(eventManager: eventManager)
+                DiagnosticsClipboard.copy(calendarSync: calendarSync)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)

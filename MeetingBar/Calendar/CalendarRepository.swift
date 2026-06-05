@@ -26,9 +26,9 @@ func calendarDateRange(for period: ShowEventsForPeriod) -> (from: Date, to: Date
 
 /// Owns the active calendar provider and exposes calendar/event fetching.
 ///
-/// `EventManager` delegates to `CalendarRepository` for all provider-specific
+/// `CalendarSync` delegates to `CalendarRepository` for all provider-specific
 /// work so that provider selection is in one place. Future phases will move the
-/// `EventManager` publishers into this type and have `AppModel` consume it
+/// `CalendarSync` publishers into this type and have `AppModel` consume it
 /// directly.
 @MainActor
 public final class CalendarRepository {
@@ -89,7 +89,7 @@ public final class CalendarRepository {
     /// Fetches events for the currently configured display period and selected calendars.
     ///
     /// This is a convenience that consolidates date-range calculation and selected-calendar
-    /// filtering so `EventManager` does not need to know about either detail.
+    /// filtering so `CalendarSync` does not need to know about either detail.
     public func fetchCurrentPeriodEvents(fromAllCalendars allCalendars: [MBCalendar]) async throws
         -> [MBEvent] {
         let selectedCalendars = allCalendars.filter {

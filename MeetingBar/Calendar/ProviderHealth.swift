@@ -80,9 +80,9 @@ extension ProviderHealth {
         }
 
         switch error {
-        case let EventManagerError.calendarAccessFailed(underlying):
+        case let CalendarSyncError.calendarAccessFailed(underlying):
             return isAuthRequired(underlying)
-        case let EventManagerError.eventFetchFailed(underlying):
+        case let CalendarSyncError.eventFetchFailed(underlying):
             return isAuthRequired(underlying)
         default:
             return false

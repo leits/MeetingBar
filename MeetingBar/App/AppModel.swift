@@ -32,7 +32,7 @@ struct AppClock {
 /// Complete observable state of the application at a point in time.
 ///
 /// `AppState` is value-typed and derived from lower-level sources of truth
-/// (`EventManager`, `AppSettings`, system state). Renderers (status bar,
+/// (`CalendarSync`, `AppSettings`, system state). Renderers (status bar,
 /// menus, notifications) read from `AppState` rather than reaching through
 /// managers directly.
 struct AppState: Equatable {
@@ -141,7 +141,7 @@ struct AppEnvironment {
     /// Switch the active calendar provider. `signOut = true` drops the current session first.
     var changeProvider: @MainActor (EventStoreProvider, Bool) async -> Void
 
-    /// Add or remove a calendar from the user's selection. EventManager
+    /// Add or remove a calendar from the user's selection. CalendarSync
     /// observes the underlying setting and re-fetches automatically.
     var toggleCalendarSelection: @MainActor (String, Bool) -> Void
 
@@ -178,21 +178,21 @@ struct AppEnvironment {
 
     @MainActor
     static func live(
-        eventManager: EventManager,
+        calendarSync: CalendarSync,
         notificationScheduler: NotificationScheduler,
         snoozeService: SnoozeService,
         openPreferences: @escaping @MainActor () -> Void = {},
         resumeOAuthFlow: @escaping @MainActor (URL) -> Void = { _ in }
     ) -> AppEnvironment {
         AppEnvironment(
-            eventsPublisher: eventManager.$events.eraseToAnyPublisher(),
-            calendarsPublisher: eventManager.$calendars
+            eventsPublisher: calendarSync.$events.eraseToAnyPublisher(),
+            calendarsPublisher: calendarSync.$calendars
                 .map { calendars in
-                    (calendars, eventManager.repository.activeProviderName)
+                    (calendars, calendarSync.repository.activeProviderName)
                 }
                 .eraseToAnyPublisher(),
             triggerRefresh: {
-                eventManager.refreshSubject.send()
+                calendarSync.refreshSubject.send()
             },
             reconcileNotifications: { events in
                 await notificationScheduler.reconcile(
@@ -201,7 +201,7 @@ struct AppEnvironment {
                 )
             },
             changeProvider: { newProvider, signOut in
-                await eventManager.changeEventStoreProvider(newProvider, withSignOut: signOut)
+                await calendarSync.changeEventStoreProvider(newProvider, withSignOut: signOut)
             },
             toggleCalendarSelection: { id, selected in
                 AppSettings.setCalendarSelection(id: id, selected: selected)
@@ -226,7 +226,7 @@ struct AppEnvironment {
             },
             completeOnboarding: { provider in
                 AppSettings.completeOnboarding()
-                await eventManager.changeEventStoreProvider(provider)
+                await calendarSync.changeEventStoreProvider(provider)
             },
             openPreferences: openPreferences,
             resumeOAuthFlow: resumeOAuthFlow,
@@ -257,7 +257,7 @@ final class AppModel: ObservableObject {
         self.environment = environment
 
         // `@Published` delivers the current value immediately on subscription,
-        // so AppModel is up-to-date even if EventManager already fetched.
+        // so AppModel is up-to-date even if CalendarSync already fetched.
         environment.eventsPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] events in

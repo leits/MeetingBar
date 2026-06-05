@@ -16,7 +16,7 @@ import UserNotifications
 @main
 class AppDelegate: NSObject, NSApplicationDelegate {
     var statusBarItem: StatusBarItemController!
-    var eventManager: EventManager!
+    var calendarSync: CalendarSync!
     let notificationScheduler = NotificationScheduler()
     let snoozeService = SnoozeService()
     let patronageService = PatronageService()
@@ -60,12 +60,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         launchTask = Task { [weak self] in
             guard let self else { return }
-            let manager = await EventManager()
+            let manager = await CalendarSync()
             guard !Task.isCancelled else {
                 manager.stop()
                 return
             }
-            eventManager = manager
+            calendarSync = manager
             if Defaults[.onboardingCompleted] {
                 setup()
             } else {
@@ -79,15 +79,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func setup() {
         let env = AppEnvironment.live(
-            eventManager: eventManager,
+            calendarSync: calendarSync,
             notificationScheduler: notificationScheduler,
             snoozeService: snoozeService,
             openPreferences: { [weak self] in
                 self?.openPreferencesWindow(nil)
             },
             resumeOAuthFlow: { [weak self] url in
-                guard let eventManager = self?.eventManager else { return }
-                eventManager.repository.resumeAuthorizationFlow(with: url)
+                guard let calendarSync = self?.calendarSync else { return }
+                calendarSync.repository.resumeAuthorizationFlow(with: url)
             }
         )
         let model = AppModel(environment: env)
@@ -216,7 +216,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func openPreferencesWindow(_: NSStatusBarButton?) {
         windowCoordinator.openPreferencesWindow(
             appModel: appModel,
-            eventManager: eventManager,
+            calendarSync: calendarSync,
             patronageService: patronageService
         )
     }
@@ -270,7 +270,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         lifecycleObserver.stop()
         appModel?.handleWillTerminate()
         notificationScheduler.stop()
-        eventManager?.stop()
+        calendarSync?.stop()
         patronageService.stop()
         cancellables.removeAll()
     }
