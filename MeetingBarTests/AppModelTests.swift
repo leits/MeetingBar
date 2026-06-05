@@ -109,6 +109,28 @@ final class AppModelTests: BaseTestCase {
         ])
     }
 
+    func testNotificationResponsesRouteThroughMeetingActions() async {
+        let harness = AppModelTestHarness()
+        let event = makeFakeEvent(
+            id: "notification-event",
+            start: harness.fixedNow,
+            end: harness.fixedNow.addingTimeInterval(1800)
+        )
+        harness.model.send(.eventsLoaded([event]))
+
+        harness.model.send(.notificationResponse(.join(eventID: event.id)))
+        harness.model.send(.notificationResponse(.dismiss(eventID: event.id)))
+        harness.model.send(.notificationResponse(
+            .snooze(eventID: event.id, action: .fifteenMinuteLater)
+        ))
+        await harness.flushAsyncActions()
+
+        XCTAssertEqual(harness.openedMeetingIDs, [event.id])
+        XCTAssertEqual(harness.dismissedEventIDs, [event.id])
+        XCTAssertEqual(harness.snoozedEvents.map(\.id), [event.id])
+        XCTAssertEqual(harness.snoozedEvents.map(\.action), [.fifteenMinuteLater])
+    }
+
     func testNearestJoinAndDismissUseInjectedClock() {
         let now = Date(timeIntervalSince1970: 1_700_000_000)
         let harness = AppModelTestHarness(now: now)

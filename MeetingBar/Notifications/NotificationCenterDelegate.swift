@@ -6,24 +6,16 @@
 import UserNotifications
 
 /// Handles `UNUserNotificationCenter` delegate callbacks and translates them
-/// into higher-level actions (open meeting, dismiss, snooze).
+/// into app-level response actions.
 ///
 /// This class owns the UN delegate role so `AppDelegate` only needs to wire it
 /// up and does not implement `UNUserNotificationCenterDelegate` itself.
 @MainActor
 final class NotificationCenterDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate {
-    /// Closure that resolves an event by ID from the current status bar events.
-    var eventProvider: (String) -> MBEvent?
+    private let actionHandler: (NotificationResponseAction) -> Void
 
-    /// Closure that dismisses an event.
-    var dismissHandler: (MBEvent) -> Void
-
-    init(
-        eventProvider: @escaping (String) -> MBEvent?,
-        dismissHandler: @escaping (MBEvent) -> Void
-    ) {
-        self.eventProvider = eventProvider
-        self.dismissHandler = dismissHandler
+    init(actionHandler: @escaping (NotificationResponseAction) -> Void) {
+        self.actionHandler = actionHandler
     }
 
     // MARK: - UNUserNotificationCenterDelegate
@@ -45,34 +37,16 @@ final class NotificationCenterDelegate: NSObject, @preconcurrency UNUserNotifica
     ) {
         defer { completionHandler() }
 
-        guard
-            ["EVENT", "SNOOZE_EVENT"].contains(
-                response.notification.request.content.categoryIdentifier),
-            let eventID = response.notification.request.content.userInfo["eventID"] as? String,
-            let event = eventProvider(eventID)
-        else {
+        let content = response.notification.request.content
+        guard let action = NotificationResponseAction(
+            categoryIdentifier: content.categoryIdentifier,
+            actionIdentifier: response.actionIdentifier,
+            eventID: content.userInfo["eventID"] as? String,
+            defaultActionIdentifier: UNNotificationDefaultActionIdentifier
+        ) else {
             return
         }
 
-        Task {
-            switch response.actionIdentifier {
-            case "JOIN_ACTION", UNNotificationDefaultActionIdentifier:
-                MeetingOpener.open(event: event)
-            case "DISMISS_ACTION":
-                dismissHandler(event)
-            case NotificationEventTimeAction.untilStart.rawValue:
-                await snoozeEventNotification(event, NotificationEventTimeAction.untilStart)
-            case NotificationEventTimeAction.fiveMinuteLater.rawValue:
-                await snoozeEventNotification(event, NotificationEventTimeAction.fiveMinuteLater)
-            case NotificationEventTimeAction.tenMinuteLater.rawValue:
-                await snoozeEventNotification(event, NotificationEventTimeAction.tenMinuteLater)
-            case NotificationEventTimeAction.fifteenMinuteLater.rawValue:
-                await snoozeEventNotification(event, NotificationEventTimeAction.fifteenMinuteLater)
-            case NotificationEventTimeAction.thirtyMinuteLater.rawValue:
-                await snoozeEventNotification(event, NotificationEventTimeAction.thirtyMinuteLater)
-            default:
-                break
-            }
-        }
+        actionHandler(action)
     }
 }

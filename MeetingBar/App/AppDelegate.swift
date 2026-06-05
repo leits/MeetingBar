@@ -18,7 +18,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var statusBarItem: StatusBarItemController!
     var eventManager: EventManager!
     let notificationScheduler = NotificationScheduler()
+    let snoozeService = SnoozeService()
     private var notificationCenterDelegate: NotificationCenterDelegate?
+    private var notificationActionHandler: NotificationActionHandler?
     private(set) var appModel: AppModel?
     private let lifecycleObserver = LifecycleObserver()
     private let urlHandler = URLHandler()
@@ -68,11 +70,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func setup() {
-        notificationScheduler.setActionSink(self)
-
         let env = AppEnvironment.live(
             eventManager: eventManager,
             notificationScheduler: notificationScheduler,
+            snoozeService: snoozeService,
             openPreferences: { [weak self] in
                 self?.openPreferencesWindow(nil)
             },
@@ -84,6 +85,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let model = AppModel(environment: env)
         appModel = model
         AppRuntimeBridge.shared.install(appModel: model)
+
+        let actionHandler = NotificationActionHandler(
+            isScreenLocked: { [weak model] in model?.state.screenIsLocked ?? false },
+            send: { [weak model] action in model?.send(action) },
+            showFullscreen: { [weak self] event in
+                self?.windowCoordinator.openFullscreenNotificationWindow(event: event)
+            },
+            runEventStartScript: { event in
+                runMeetingStartsScript(event: event, type: .meetingStart)
+            }
+        )
+        notificationActionHandler = actionHandler
+        notificationScheduler.setActionSink(actionHandler)
 
         statusBarItem.configure(dependencies: StatusBarDependencies(
             events: { [weak model] in model?.state.events ?? [] },
@@ -104,12 +118,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
             .store(in: &cancellables)
 
-        let ncDelegate = NotificationCenterDelegate(
-            eventProvider: { [weak self] id in
-                self?.appModel?.state.events.first { $0.id == id }
-            },
-            dismissHandler: { [weak self] event in self?.statusBarItem.dismiss(event: event) }
-        )
+        let ncDelegate = NotificationCenterDelegate { [weak model] response in
+            model?.send(.notificationResponse(response))
+        }
         notificationCenterDelegate = ncDelegate
         UNUserNotificationCenter.current().delegate = ncDelegate
         Task { @MainActor in
@@ -191,10 +202,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         windowCoordinator.openChangelogWindow()
     }
 
-    func openFullscreenNotificationWindow(event: MBEvent) {
-        windowCoordinator.openFullscreenNotificationWindow(event: event)
-    }
-
     @objc
     func openPreferencesWindow(_: NSStatusBarButton?) {
         windowCoordinator.openPreferencesWindow(appModel: appModel, eventManager: eventManager)
@@ -242,25 +249,5 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationWillTerminate(_: Notification) {
         statusLoopTask?.cancel()
         appModel?.handleWillTerminate()
-    }
-}
-
-extension AppDelegate: NotificationActionSink {
-    func performNotificationAction(_ kind: NotificationKind, event: MBEvent) -> Bool {
-        guard !(appModel?.state.screenIsLocked ?? false) else { return false }
-
-        switch kind {
-        case .fullscreen:
-            openFullscreenNotificationWindow(event: event)
-            return true
-        case .autoJoin:
-            MeetingOpener.open(event: event)
-            return true
-        case .scriptOnStart:
-            runMeetingStartsScript(event: event, type: .meetingStart)
-            return true
-        case .eventStart, .eventEnd:
-            return false
-        }
     }
 }

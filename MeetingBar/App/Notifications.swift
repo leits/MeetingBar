@@ -61,10 +61,6 @@ func displayAlert(title: String, text: String) {
     userAlert.runModal()
 }
 
-func removePendingNotificationRequests(withID: String) {
-    UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [withID])
-}
-
 func removeDeliveredNotifications() {
     UNUserNotificationCenter.current().removeAllDeliveredNotifications()
 }

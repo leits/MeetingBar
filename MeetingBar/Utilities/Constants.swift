@@ -112,7 +112,7 @@ enum OngoingEventVisibility: String, Defaults.Serializable, Codable, CaseIterabl
     case showTenMinBeforeNext
 }
 
-enum NotificationEventTimeAction: String, Codable {
+enum NotificationEventTimeAction: String, Codable, Equatable {
     case untilStart = "SNOOZE_UNTIL_START_TIME"
     case fiveMinuteLater = "SNOOZE_FOR_5_MIN"
     case tenMinuteLater = "SNOOZE_FOR_10_MIN"

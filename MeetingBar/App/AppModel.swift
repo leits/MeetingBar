@@ -100,6 +100,7 @@ enum AppAction {
     case changeProvider(EventStoreProvider, signOut: Bool)
 
     // Notification responses
+    case notificationResponse(NotificationResponseAction)
     case joinMeeting(eventID: String)
     case joinNearestMeeting
     case dismissMeeting(eventID: String)
@@ -179,6 +180,7 @@ struct AppEnvironment {
     static func live(
         eventManager: EventManager,
         notificationScheduler: NotificationScheduler,
+        snoozeService: SnoozeService,
         openPreferences: @escaping @MainActor () -> Void = {},
         resumeOAuthFlow: @escaping @MainActor (URL) -> Void = { _ in }
     ) -> AppEnvironment {
@@ -220,7 +222,7 @@ struct AppEnvironment {
                 AppSettings.toggleMeetingTitleVisibility()
             },
             snoozeEvent: { event, action in
-                await snoozeEventNotification(event, action)
+                await snoozeService.snooze(event: event, action: action)
             },
             completeOnboarding: { provider in
                 AppSettings.completeOnboarding()
@@ -279,7 +281,7 @@ final class AppModel: ObservableObject {
              .selectCalendar, .changeProvider, .settingsChanged,
              .toggleMeetingTitleVisibility:
             handleCalendarAction(action)
-        case .joinMeeting, .joinNearestMeeting, .dismissMeeting,
+        case .notificationResponse, .joinMeeting, .joinNearestMeeting, .dismissMeeting,
              .dismissNearestMeeting, .undismissMeeting, .clearDismissedMeetings,
              .snoozeMeeting:
             handleMeetingAction(action)
@@ -381,6 +383,15 @@ final class AppModel: ObservableObject {
 
     private func handleMeetingAction(_ action: AppAction) {
         switch action {
+        case .notificationResponse(let response):
+            switch response {
+            case .join(let eventID):
+                send(.joinMeeting(eventID: eventID))
+            case .dismiss(let eventID):
+                send(.dismissMeeting(eventID: eventID))
+            case .snooze(let eventID, let action):
+                send(.snoozeMeeting(eventID: eventID, action: action))
+            }
         case .joinMeeting(let eventID):
             performWithEvent(id: eventID) { event in
                 environment.openMeeting(event)

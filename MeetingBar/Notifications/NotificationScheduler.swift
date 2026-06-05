@@ -201,7 +201,7 @@ private enum NotificationContent {
 
         switch plan.kind {
         case .eventStart:
-            content.categoryIdentifier = "EVENT"
+            content.categoryIdentifier = EventNotificationIdentifiers.eventCategory
             content.body = settings.eventStartBody
         case .eventEnd:
             content.body = settings.eventEndBody
