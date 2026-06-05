@@ -2,38 +2,14 @@
 //  PermissionReporter.swift
 //  MeetingBar
 //
+//  Populates `PermissionSnapshot` (defined in `DiagnosticsReport.swift`) from
+//  the real EventKit / UserNotifications APIs. Lives in the host target so
+//  the hostless logic package can still depend on the snapshot type.
+//
 
 import EventKit
 import Foundation
 import UserNotifications
-
-struct PermissionSnapshot: Equatable {
-    enum CalendarAccess: Equatable {
-        case notDetermined
-        case restricted
-        case denied
-        case authorized
-    }
-
-    enum NotificationAccess: Equatable {
-        case notDetermined
-        case denied
-        case authorized
-        case provisional
-    }
-
-    enum GoogleAuthStatus: Equatable {
-        case notActive
-        case notAuthorized
-        case authorized
-    }
-
-    let calendarAccess: CalendarAccess
-    let notificationAccess: NotificationAccess
-    let googleAuthStatus: GoogleAuthStatus
-    let scriptFileExists: Bool
-    let isAppStoreBuild: Bool
-}
 
 enum PermissionReporter {
     @MainActor

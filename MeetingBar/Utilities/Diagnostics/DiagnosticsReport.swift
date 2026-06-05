@@ -5,6 +5,40 @@
 
 import Foundation
 
+/// Permission/auth snapshot consumed by the diagnostics formatter.
+///
+/// Lives here (not next to `PermissionReporter`) so the hostless logic target
+/// can compile the report writer without pulling in `EventKit` /
+/// `UserNotifications`. The host-target `PermissionReporter` populates this
+/// struct from the real OS APIs.
+struct PermissionSnapshot: Equatable {
+    enum CalendarAccess: Equatable {
+        case notDetermined
+        case restricted
+        case denied
+        case authorized
+    }
+
+    enum NotificationAccess: Equatable {
+        case notDetermined
+        case denied
+        case authorized
+        case provisional
+    }
+
+    enum GoogleAuthStatus: Equatable {
+        case notActive
+        case notAuthorized
+        case authorized
+    }
+
+    let calendarAccess: CalendarAccess
+    let notificationAccess: NotificationAccess
+    let googleAuthStatus: GoogleAuthStatus
+    let scriptFileExists: Bool
+    let isAppStoreBuild: Bool
+}
+
 enum DiagnosticsProvider: Equatable {
     case macOSEventKit
     case googleCalendar
@@ -43,7 +77,7 @@ struct DiagnosticsContext {
     let totalCalendarCount: Int
     let visibleEventCount: Int
     let health: DiagnosticsHealth
-    let permissions: PermissionSnapshot?
+    var permissions: PermissionSnapshot? = nil
 }
 
 enum DiagnosticsReport {
