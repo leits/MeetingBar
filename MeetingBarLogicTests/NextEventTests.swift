@@ -13,7 +13,7 @@ final class NextEventTests: XCTestCase {
     private func settings(
         period: EventSelectionPeriod = .todayAndTomorrow,
         includesPersonalEvents: Bool = true,
-        dismissedEventIDs: Set<String> = [],
+        dismissedEvents: Set<EventSelectionDismissal> = [],
         requiresMeetingLinkForNonAllDayEvents: Bool = false,
         hidesPendingEvents: Bool = false,
         hidesTentativeEvents: Bool = false,
@@ -22,7 +22,7 @@ final class NextEventTests: XCTestCase {
         EventSelectionSettings(
             period: period,
             includesPersonalEvents: includesPersonalEvents,
-            dismissedEventIDs: dismissedEventIDs,
+            dismissedEvents: dismissedEvents,
             requiresMeetingLinkForNonAllDayEvents: requiresMeetingLinkForNonAllDayEvents,
             hidesPendingEvents: hidesPendingEvents,
             hidesTentativeEvents: hidesTentativeEvents,
@@ -35,6 +35,7 @@ final class NextEventTests: XCTestCase {
         startsIn: TimeInterval,
         duration: TimeInterval = 3600,
         sourceIndex: Int = 0,
+        lastModifiedDate: Date? = nil,
         isAllDay: Bool = false,
         hasMeetingLink: Bool = true,
         hasAttendees: Bool = true,
@@ -44,6 +45,7 @@ final class NextEventTests: XCTestCase {
         EventSelectionEvent(
             sourceIndex: sourceIndex,
             id: id,
+            lastModifiedDate: lastModifiedDate,
             startDate: now.addingTimeInterval(startsIn),
             endDate: now.addingTimeInterval(startsIn + duration),
             isAllDay: isAllDay,
@@ -64,6 +66,7 @@ final class NextEventTests: XCTestCase {
         EventSelectionEvent(
             sourceIndex: 0,
             id: id,
+            lastModifiedDate: nil,
             startDate: startDate,
             endDate: startDate.addingTimeInterval(duration),
             isAllDay: false,
@@ -151,9 +154,39 @@ final class NextEventTests: XCTestCase {
     }
 
     func testSkipsDismissedEvent() {
-        let dismissed = event(id: "DISMISSED", startsIn: 100)
+        let lastModifiedDate = now.addingTimeInterval(-60)
+        let dismissed = event(
+            id: "DISMISSED",
+            startsIn: 100,
+            lastModifiedDate: lastModifiedDate
+        )
         let good = event(id: "GOOD", startsIn: 200)
-        XCTAssertEqual(nextEvent([dismissed, good], settings: settings(dismissedEventIDs: ["DISMISSED"])), good)
+        let dismissal = EventSelectionDismissal(
+            id: dismissed.id,
+            lastModifiedDate: lastModifiedDate
+        )
+
+        XCTAssertEqual(
+            nextEvent([dismissed, good], settings: settings(dismissedEvents: [dismissal])),
+            good
+        )
+    }
+
+    func testModifiedDismissedEventBecomesVisibleAgain() {
+        let dismissal = EventSelectionDismissal(
+            id: "DISMISSED",
+            lastModifiedDate: now.addingTimeInterval(-120)
+        )
+        let modified = event(
+            id: dismissal.id,
+            startsIn: 100,
+            lastModifiedDate: now.addingTimeInterval(-60)
+        )
+
+        XCTAssertEqual(
+            nextEvent([modified], settings: settings(dismissedEvents: [dismissal])),
+            modified
+        )
     }
 
     func testSkipsAllDayEvent() {

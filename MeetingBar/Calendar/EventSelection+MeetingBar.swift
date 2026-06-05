@@ -11,7 +11,9 @@ extension EventSelectionSettings {
         EventSelectionSettings(
             period: EventSelectionPeriod(Defaults[.showEventsForPeriod]),
             includesPersonalEvents: Defaults[.personalEventsAppereance] == .show_active,
-            dismissedEventIDs: Set(Defaults[.dismissedEvents].map(\.id)),
+            dismissedEvents: Set(Defaults[.dismissedEvents].map {
+                EventSelectionDismissal(id: $0.id, lastModifiedDate: $0.lastModifiedDate)
+            }),
             requiresMeetingLinkForNonAllDayEvents: Defaults[.nonAllDayEvents].requiresMeetingLink,
             hidesPendingEvents: Defaults[.showPendingEvents].hidesFromNextEvent,
             hidesTentativeEvents: Defaults[.showTentativeEvents].hidesFromNextEvent,
@@ -25,6 +27,7 @@ extension EventSelectionEvent {
         self.init(
             sourceIndex: sourceIndex,
             id: event.id,
+            lastModifiedDate: event.lastModifiedDate,
             startDate: event.startDate,
             endDate: event.endDate,
             isAllDay: event.isAllDay,

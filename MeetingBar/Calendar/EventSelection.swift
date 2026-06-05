@@ -19,11 +19,16 @@ enum EventSelectionOngoingVisibility {
 struct EventSelectionSettings {
     let period: EventSelectionPeriod
     let includesPersonalEvents: Bool
-    let dismissedEventIDs: Set<String>
+    let dismissedEvents: Set<EventSelectionDismissal>
     let requiresMeetingLinkForNonAllDayEvents: Bool
     let hidesPendingEvents: Bool
     let hidesTentativeEvents: Bool
     let ongoingEventVisibility: EventSelectionOngoingVisibility
+}
+
+struct EventSelectionDismissal: Hashable {
+    let id: String
+    let lastModifiedDate: Date?
 }
 
 struct EventSelectionEvent: Equatable {
@@ -41,6 +46,7 @@ struct EventSelectionEvent: Equatable {
 
     let sourceIndex: Int
     let id: String
+    let lastModifiedDate: Date?
     let startDate: Date
     let endDate: Date
     let isAllDay: Bool
@@ -76,7 +82,11 @@ enum EventSelection {
         var result: EventSelectionEvent?
 
         for event in futureEvents {
-            if settings.dismissedEventIDs.contains(event.id) {
+            let dismissal = EventSelectionDismissal(
+                id: event.id,
+                lastModifiedDate: event.lastModifiedDate
+            )
+            if settings.dismissedEvents.contains(dismissal) {
                 continue
             }
 
