@@ -184,10 +184,7 @@ private let meetingLinkRegexes: [MeetingServices: NSRegularExpression] =
         do {
             return try NSRegularExpression(pattern: pattern)
         } catch {
-            let errorDescription = String(describing: error)
-            MeetingBarLogger.meetingOpening.error(
-                "Ignoring invalid built-in meeting link regex \(pattern, privacy: .private): \(errorDescription, privacy: .private)"
-            )
+            assertionFailure("Invalid built-in meeting link regex: \(pattern)")
             return nil
         }
     }
