@@ -179,7 +179,7 @@ func openLinkFromClipboard() {
             clipboardContent, customRegexes: Defaults[.customRegexes])
 
         if let meetingLink = meetingLink {
-            openMeetingURL(meetingLink.service, meetingLink.url, nil)
+            MeetingOpener.open(meetingLink: meetingLink)
         } else {
             let validUrl = NSURL(string: clipboardContent)
             if validUrl != nil {

@@ -17,7 +17,8 @@ func makeFakeEvent(
     status: MBEventStatus = .confirmed,
     withLink: Bool = false,
     participationStatus: MBEventAttendeeStatus = .accepted,
-    lastModifiedDate: Date? = nil
+    lastModifiedDate: Date? = nil,
+    attendees: [MBEventAttendee] = []
 ) -> MBEvent {
     let calendar = MBCalendar(
         title: "Test Calendar",
@@ -40,6 +41,7 @@ func makeFakeEvent(
         location: nil,
         url: link,
         organizer: nil,
+        attendees: attendees,
         startDate: start,
         endDate: end,
         isAllDay: isAllDay,

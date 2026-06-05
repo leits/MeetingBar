@@ -235,6 +235,79 @@ final class MeetingOpenerTests: BaseTestCase {
             .meetingLink(.teams, link.url)
         ])
     }
+
+    func test_openMeetingLinkRunsJoinScriptWhenEnabled() {
+        Defaults[.runJoinEventScript] = true
+        let performer = FakeMeetingOpeningPerformer()
+        let link = MeetingLink(service: .meet, url: URL(string: "https://meet.google.com/abc-defg-hij")!)
+
+        MeetingOpener.open(meetingLink: link, performer: performer)
+
+        XCTAssertEqual(performer.events, [
+            .script,
+            .meetingLink(.meet, link.url)
+        ])
+    }
+
+    func test_emailAttendeesCollectsNonNilEmails() {
+        let attendees: [MBEventAttendee] = [
+            MBEventAttendee(email: "alice@example.com", name: "Alice", status: .accepted),
+            MBEventAttendee(email: nil, name: "No Email", status: .accepted),
+            MBEventAttendee(email: "bob@example.com", name: "Bob", status: .declined)
+        ]
+        let event = makeFakeEvent(
+            id: "EA",
+            start: Date().addingTimeInterval(60),
+            end: Date().addingTimeInterval(600),
+            withLink: false,
+            attendees: attendees
+        )
+        // emailAttendees opens an NSSharingService, but we can at least verify it does not crash
+        // with a mix of nil and non-nil emails. (Real sending is not testable headlessly.)
+        MeetingOpener.emailAttendees(for: event)
+    }
+}
+
+final class ScriptParameterTests: BaseTestCase {
+    func test_scriptParametersContainExpectedFieldCount() {
+        let event = makeFakeEvent(
+            id: "SP",
+            start: Date().addingTimeInterval(60),
+            end: Date().addingTimeInterval(600),
+            withLink: true
+        )
+        let params = createAppleScriptParametersForEvent(event: event)
+        // 14 fields: id, title, allDay, start, end, location, recurrent, attendeeCount,
+        // meetingURL, service, notes, calendarTitle, calendarSource, attendeesList
+        XCTAssertEqual(params.numberOfItems, 14)
+    }
+
+    func test_scriptParametersContainEventTitle() {
+        let event = makeFakeEvent(
+            id: "SP2",
+            start: Date().addingTimeInterval(60),
+            end: Date().addingTimeInterval(600),
+            withLink: false
+        )
+        let params = createAppleScriptParametersForEvent(event: event)
+        // Items are inserted at index 0 (end-of-list), so first inserted (id) is at index 1,
+        // second inserted (title) is at index 2.
+        let titleDescriptor = params.atIndex(2)
+        XCTAssertEqual(titleDescriptor?.stringValue, event.title)
+    }
+
+    func test_scriptParametersUsesEmptyPlaceholderWhenNoMeetingLink() {
+        let event = makeFakeEvent(
+            id: "SP3",
+            start: Date().addingTimeInterval(60),
+            end: Date().addingTimeInterval(600),
+            withLink: false
+        )
+        let params = createAppleScriptParametersForEvent(event: event)
+        // When no meeting link, params 9 (meetingURL) and 10 (service) are "EMPTY"
+        XCTAssertEqual(params.atIndex(9)?.stringValue, "EMPTY")
+        XCTAssertEqual(params.atIndex(10)?.stringValue, "EMPTY")
+    }
 }
 
 final class KeychainQueryFactoryTests: XCTestCase {

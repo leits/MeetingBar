@@ -51,6 +51,7 @@ struct AdvancedTab: View {
 }
 
 struct ScriptSection: View {
+    @EnvironmentObject var eventManager: EventManager
     @Default(.runEventStartScript) var runEventStartScript
     @Default(.eventStartScriptLocation) var eventStartScriptLocation
     @Default(.eventStartScript) var eventStartScript
@@ -111,9 +112,7 @@ struct ScriptSection: View {
     }
 
     func runSampleScript() {
-        if let app = NSApplication.shared.delegate as! AppDelegate? {
-            runAppleScriptForNextEvent(events: app.appModel?.state.events ?? [])
-        }
+        runAppleScriptForNextEvent(events: eventManager.events)
     }
 }
 

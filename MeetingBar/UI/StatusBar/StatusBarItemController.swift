@@ -385,7 +385,8 @@ final class StatusBarItemController {
     @objc
     func joinBookmark(sender: NSMenuItem) {
         if let bookmark: Bookmark = sender.representedObject as? Bookmark {
-            openMeetingURL(MeetingServices(rawValue: bookmark.service), bookmark.url, nil)
+            MeetingOpener.open(
+                meetingLink: MeetingLink(service: MeetingServices(rawValue: bookmark.service), url: bookmark.url))
         }
     }
 
