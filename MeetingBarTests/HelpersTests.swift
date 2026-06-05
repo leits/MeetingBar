@@ -341,6 +341,33 @@ final class ZoomPersonalRoomTests: BaseTestCase {
         XCTAssertFalse(isPersonal("https://meet.google.com/abc-defg-hij"))
         XCTAssertFalse(isPersonal("https://example.com/my/room"))
     }
+
+    func test_personalRoomUsesSingleBrowserDestination() {
+        let url = URL(string: "https://company.zoom.us/my/username")!
+
+        XCTAssertEqual(
+            zoomWebOpenDestination(for: url, browser: zoomAppBrowser),
+            .systemBrowser
+        )
+    }
+
+    func test_regularMeetingUsesZoomAppDestination() {
+        let url = URL(string: "https://zoom.us/j/5551112222?pwd=abc")!
+
+        XCTAssertEqual(
+            zoomWebOpenDestination(for: url, browser: zoomAppBrowser),
+            .zoomApp(URL(string: "zoommtg://zoom.us/join?confno=5551112222&pwd=abc")!)
+        )
+    }
+}
+
+final class CalendarOpenURLTests: BaseTestCase {
+    func test_eventKitEventUsesAppleCalendarURL() {
+        XCTAssertEqual(
+            eventKitCalendarOpenURL(for: "EVENT-ID"),
+            URL(string: "ical://ekevent/EVENT-ID")
+        )
+    }
 }
 
 final class ScriptParameterTests: BaseTestCase {

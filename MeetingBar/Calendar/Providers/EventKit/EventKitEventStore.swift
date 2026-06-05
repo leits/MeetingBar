@@ -149,7 +149,7 @@ private func fetchEventsOffMain(knownCalendars: [MBCalendar], dateFrom: Date, da
             notes: rawEvent.notes,
             location: rawEvent.location,
             url: rawEvent.url,
-            calendarOpenURL: URL(string: "ical://ekevent/\(rawEvent.calendarItemIdentifier)"),
+            calendarOpenURL: eventKitCalendarOpenURL(for: rawEvent.calendarItemIdentifier),
             organizer: organizer,
             attendees: attendees,
             startDate: rawEvent.startDate,
@@ -162,6 +162,10 @@ private func fetchEventsOffMain(knownCalendars: [MBCalendar], dateFrom: Date, da
         events.append(event)
     }
     return events
+}
+
+func eventKitCalendarOpenURL(for identifier: String) -> URL? {
+    URL(string: "ical://ekevent/\(identifier)")
 }
 
 func getGmailAccount(_ text: String) -> String? {

@@ -247,34 +247,47 @@ func isZoomPersonalRoomURL(_ url: URL) -> Bool {
     return url.path.contains("/my/")
 }
 
+enum ZoomWebOpenDestination: Equatable {
+    case selectedBrowser
+    case systemBrowser
+    case zoomApp(URL)
+    case defaultBrowser
+}
+
+func zoomWebOpenDestination(for url: URL, browser: Browser) -> ZoomWebOpenDestination {
+    guard browser == zoomAppBrowser else { return .selectedBrowser }
+    guard !isZoomPersonalRoomURL(url) else { return .systemBrowser }
+
+    let urlString = url.absoluteString
+        .replacingOccurrences(of: "?", with: "&")
+        .replacingOccurrences(of: "/j/", with: "/join?confno=")
+    guard let rewritten = URL(string: urlString),
+          var appComponents = URLComponents(url: rewritten, resolvingAgainstBaseURL: false)
+    else {
+        return .defaultBrowser
+    }
+    appComponents.scheme = "zoommtg"
+    guard let appURL = appComponents.url else { return .defaultBrowser }
+    return .zoomApp(appURL)
+}
+
 /// Converts the https Zoom URL to a `zoommtg://` app URL, falling back to browser.
 /// Personal room links (`/my/`) open in the browser and never go through the app.
 struct ZoomWebOpenStrategy: MeetingOpenStrategy, Sendable {
     func open(url: URL, browser: Browser, defaultBrowser _: Browser) {
-        if browser == zoomAppBrowser {
-            // Personal room: open in browser and stop — building a zoommtg://
-            // link for /my/ would open the meeting a second time.
-            if isZoomPersonalRoomURL(url) {
-                url.openIn(browser: systemDefaultBrowser)
-                return
-            }
-            let urlString = url.absoluteString
-                .replacingOccurrences(of: "?", with: "&")
-                .replacingOccurrences(of: "/j/", with: "/join?confno=")
-            guard let rewritten = URL(string: urlString),
-                var appComponents = URLComponents(url: rewritten, resolvingAgainstBaseURL: false)
-            else {
-                url.openInDefaultBrowser()
-                return
-            }
-            appComponents.scheme = "zoommtg"
-            let result = appComponents.url?.openInDefaultBrowser() ?? false
+        switch zoomWebOpenDestination(for: url, browser: browser) {
+        case .selectedBrowser:
+            url.openIn(browser: browser)
+        case .systemBrowser:
+            url.openIn(browser: systemDefaultBrowser)
+        case .zoomApp(let appURL):
+            let result = appURL.openInDefaultBrowser()
             if !result {
                 AppMessageCenter.shared.post(.meetingAppUnavailable(name: "Zoom"))
                 url.openInDefaultBrowser()
             }
-        } else {
-            url.openIn(browser: browser)
+        case .defaultBrowser:
+            url.openInDefaultBrowser()
         }
     }
 }
