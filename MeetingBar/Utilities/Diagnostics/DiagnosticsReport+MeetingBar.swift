@@ -29,6 +29,22 @@ extension DiagnosticsHealth {
     }
 }
 
+struct DiagnosticsSnapshot: Equatable {
+    let provider: EventStoreProvider
+    let selectedCalendarCount: Int
+    let totalCalendarCount: Int
+    let visibleEventCount: Int
+    let health: ProviderHealth
+
+    init(appState: AppState) {
+        provider = appState.activeProvider
+        selectedCalendarCount = appState.selectedCalendarIDs.count
+        totalCalendarCount = appState.calendars.count
+        visibleEventCount = appState.events.count
+        health = appState.providerHealth
+    }
+}
+
 extension DiagnosticsContext {
     init(
         appVersion: String,
@@ -54,24 +70,21 @@ extension DiagnosticsContext {
         )
     }
 
-    /// Snapshot of everything the issue-report formatter needs, drawn from
-    /// the bundle, the running OS, the current settings, and the live
-    /// `CalendarSync`. Use from any view that wants to show or export
-    /// diagnostics — `StatusTab`, future onboarding error states, etc.
+    /// Adds platform metadata and permissions to the application-state
+    /// snapshot used by the issue-report formatter.
     @MainActor
-    static func current(calendarSync: CalendarSync) async -> DiagnosticsContext {
+    static func current(snapshot: DiagnosticsSnapshot) async -> DiagnosticsContext {
         let info = Bundle.main.infoDictionary ?? [:]
-        let settings = AppSettings.current
-        let permissions = await PermissionReporter.current(provider: settings.calendar.eventStoreProvider)
+        let permissions = await PermissionReporter.current(provider: snapshot.provider)
         return DiagnosticsContext(
             appVersion: info["CFBundleShortVersionString"] as? String ?? "?",
             buildNumber: info["CFBundleVersion"] as? String ?? "?",
             osVersion: ProcessInfo.processInfo.operatingSystemVersionString,
-            provider: settings.calendar.eventStoreProvider,
-            selectedCalendarCount: settings.calendar.selectedCalendarIDs.count,
-            totalCalendarCount: calendarSync.calendars.count,
-            visibleEventCount: calendarSync.events.count,
-            health: calendarSync.providerHealth,
+            provider: snapshot.provider,
+            selectedCalendarCount: snapshot.selectedCalendarCount,
+            totalCalendarCount: snapshot.totalCalendarCount,
+            visibleEventCount: snapshot.visibleEventCount,
+            health: snapshot.health,
             permissions: permissions
         )
     }
@@ -81,9 +94,9 @@ extension DiagnosticsContext {
 enum DiagnosticsClipboard {
     /// Copies the formatted diagnostics report to the system pasteboard.
     /// Single entry point so views don't reach into NSPasteboard directly.
-    static func copy(calendarSync: CalendarSync) {
+    static func copy(snapshot: DiagnosticsSnapshot) {
         Task { @MainActor in
-            let context = await DiagnosticsContext.current(calendarSync: calendarSync)
+            let context = await DiagnosticsContext.current(snapshot: snapshot)
             let pasteboard = NSPasteboard.general
             pasteboard.clearContents()
             pasteboard.setString(DiagnosticsReport.text(from: context), forType: .string)

@@ -130,6 +130,36 @@ final class DiagnosticsAdapterTests: BaseTestCase {
         XCTAssertTrue(report.contains("Provider health: error"))
         XCTAssertTrue(report.contains("Last error: network gone"))
     }
+
+    func test_diagnosticsSnapshotUsesAppStateAsItsOnlyRuntimeSource() {
+        let event = makeFakeEvent(
+            id: "event",
+            start: knownDate,
+            end: knownDate.addingTimeInterval(1800)
+        )
+        let health = ProviderHealth(
+            lastSuccessfulRefresh: knownDate,
+            lastAttemptedRefresh: knownDate,
+            isStale: false
+        )
+        var state = AppState()
+        state.activeProvider = .googleCalendar
+        state.calendars = [
+            makeFakeCalendar(id: "work"),
+            makeFakeCalendar(id: "shared")
+        ]
+        state.selectedCalendarIDs = ["shared"]
+        state.events = [event]
+        state.providerHealth = health
+
+        let snapshot = DiagnosticsSnapshot(appState: state)
+
+        XCTAssertEqual(snapshot.provider, .googleCalendar)
+        XCTAssertEqual(snapshot.selectedCalendarCount, 1)
+        XCTAssertEqual(snapshot.totalCalendarCount, 2)
+        XCTAssertEqual(snapshot.visibleEventCount, 1)
+        XCTAssertEqual(snapshot.health, health)
+    }
 }
 
 private final class FakeMeetingOpeningPerformer: MeetingOpeningPerforming {

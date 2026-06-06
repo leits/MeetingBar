@@ -166,7 +166,7 @@ private struct PermissionRow: View {
 }
 
 private struct DiagnosticsSection: View {
-    @EnvironmentObject var calendarSync: CalendarSync
+    @EnvironmentObject var appModel: AppModel
 
     var body: some View {
         HStack(alignment: .top) {
@@ -175,7 +175,9 @@ private struct DiagnosticsSection: View {
                 .foregroundStyle(.secondary)
             Spacer()
             Button("preferences_status_copy_diagnostics".loco()) {
-                DiagnosticsClipboard.copy(calendarSync: calendarSync)
+                DiagnosticsClipboard.copy(
+                    snapshot: DiagnosticsSnapshot(appState: appModel.state)
+                )
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
