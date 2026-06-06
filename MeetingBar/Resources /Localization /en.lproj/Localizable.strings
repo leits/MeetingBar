@@ -224,14 +224,14 @@
 
 // MARK: - Preferences Calendars
 
-"preferences_calendars_select_calendars_title" = "Select calendars to show events in status bar";
+"preferences_calendars_select_calendars_title" = "Select calendars to show meetings in the menu bar";
 "preferences_calendars_add_account_description" = "Can't find the calendar you need?";
 "preferences_calendars_add_account_button" = "Add calendar account";
 "preferences_calendars_add_account_modal" = "To add external calendars:\n1. Open the default calendar app\n2. Click 'Add Account' in the menu\n3. Choose and connect your account";
-"preferences_calendars_provider_section_title" = "Calendars provider";
+"preferences_calendars_provider_section_title" = "Calendar provider";
 "preferences_calendars_provider_gcalendar_change_account" = "Change Google Account";
-"preferences_calendars_provider_macos_switch" = "Switch to macOS Calendar";
-"preferences_calendars_provider_gcalendar_switch" = "Switch to Google Calendar API";
+"preferences_calendars_provider_macos_switch" = "Switch to Apple Calendar";
+"preferences_calendars_provider_gcalendar_switch" = "Switch to Google Calendar";
 
 // MARK: - Preferences Advanced
 
@@ -382,15 +382,15 @@
 "access_screen_access_denied_relaunch_title" = "Then launch the app manually to continue the setup.";
 "access_screen_access_granted_title" = "Requesting access to calendars…";
 "access_screen_access_granted_click_ok_title" = "Click \"OK\" in the macOS popup.";
-"access_screen_provider_picker_label" = "Select calendars provider";
-"access_screen_provider_macos_title" = "MacOS Calendar app";
+"access_screen_provider_picker_label" = "Select calendar provider";
+"access_screen_provider_macos_title" = "Apple Calendar";
 "access_screen_provider_macos_recommended" = "(recommended)";
-"access_screen_provider_macos_data_source" = "Get data from MacOS Calendar app";
-"access_screen_provider_macos_number_of_accounts" = "Any number of any connected accounts";
+"access_screen_provider_macos_data_source" = "Get data from Apple Calendar";
+"access_screen_provider_macos_number_of_accounts" = "Any number of connected accounts";
 "access_screen_provider_gcalendar_data_source" = "Get data directly from Google Calendar";
 "access_screen_provider_gcalendar_number_of_accounts" = "Only one Google account";
-"access_screen_provider_gcalendar_sign_in_title" = "Google Sign In";
-"access_screen_provider_gcalendar_sign_in_description" = "Allow MeetingBar access to your calendar in browser window";
+"access_screen_provider_gcalendar_sign_in_title" = "Sign in with Google";
+"access_screen_provider_gcalendar_sign_in_description" = "Allow MeetingBar to access your calendar in a browser window.";
 "access_screen_try_again" = "Try again";
 "access_screen_provider_authorization_cancelled" = "Authorization was cancelled. Try again to connect your calendar.";
 
