@@ -81,10 +81,39 @@ struct MenuBuilder {
         }
 
         items.append(makeMeetingActionsItem(for: event))
-        if case .stale = state.providerStatus {
-            items.append(statusItem(title: "status_bar_control_stale".loco()))
-        }
+        items.append(contentsOf: buildProviderWarningItems())
         return items
+    }
+
+    private func buildProviderWarningItems() -> [NSMenuItem] {
+        guard let warning = state.providerWarning else { return [] }
+
+        let title: String
+        let actionTitle: String
+        let action: Selector
+
+        switch warning {
+        case .authRequired:
+            title = "status_bar_control_auth_required".loco()
+            actionTitle = "status_bar_control_reconnect".loco()
+            action = #selector(StatusBarItemController.reconnectProviderAction)
+        case .permissionRequired:
+            title = "status_bar_control_permission_required".loco()
+            actionTitle = "status_bar_control_grant_permission".loco()
+            action = #selector(StatusBarItemController.openCalendarPermissionsAction)
+        case .stale:
+            title = "status_bar_control_stale".loco()
+            actionTitle = "status_bar_section_refresh_sources".loco()
+            action = #selector(StatusBarItemController.handleManualRefresh)
+        case .refreshFailed:
+            title = "status_bar_control_refresh_failed".loco()
+            actionTitle = "status_bar_section_refresh_sources".loco()
+            action = #selector(StatusBarItemController.handleManualRefresh)
+        }
+
+        let actionItem = NSMenuItem(title: actionTitle, action: action, keyEquivalent: "")
+        actionItem.target = target
+        return [statusItem(title: title), actionItem]
     }
 
     private func makeMeetingActionsItem(for event: MBEvent) -> NSMenuItem {

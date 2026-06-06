@@ -23,6 +23,13 @@ enum StatusBarEmptyStateReason: Equatable {
     case noUpcomingMeetings
 }
 
+enum StatusBarProviderWarning: Equatable {
+    case authRequired
+    case permissionRequired
+    case stale
+    case refreshFailed
+}
+
 /// Value-typed snapshot of everything the status bar menu needs to render
 /// without reading `Defaults` or reaching through singletons.
 ///
@@ -40,6 +47,7 @@ struct StatusBarMenuState: Equatable {
     var activeProvider: EventStoreProvider = .macOSEventKit
     var providerHealth = ProviderHealth()
     var providerStatus: StatusBarProviderStatus = .initializing
+    var providerWarning: StatusBarProviderWarning?
     var emptyStateReason: StatusBarEmptyStateReason?
     var selectedCalendarIDs: [String] = []
 
@@ -153,6 +161,7 @@ extension StatusBarMenuState {
             activeProvider: activeProvider,
             providerHealth: providerHealth,
             providerStatus: providerStatus,
+            providerWarning: providerWarning(for: providerStatus),
             emptyStateReason: emptyStateReason(
                 providerStatus: providerStatus,
                 hasSelectedCalendars: selectedCount > 0,
@@ -218,5 +227,22 @@ extension StatusBarMenuState {
             return .noUpcomingMeetings
         }
         return nil
+    }
+
+    private static func providerWarning(
+        for providerStatus: StatusBarProviderStatus
+    ) -> StatusBarProviderWarning? {
+        switch providerStatus {
+        case .authRequired:
+            .authRequired
+        case .permissionRequired:
+            .permissionRequired
+        case .stale:
+            .stale
+        case .refreshFailed:
+            .refreshFailed
+        case .initializing, .connected:
+            nil
+        }
     }
 }

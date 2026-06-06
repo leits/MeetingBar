@@ -64,6 +64,7 @@ final class MenuBuilderTests: BaseTestCase {
             state.providerStatus,
             .authRequired(message: "Reconnect Google Calendar")
         )
+        XCTAssertEqual(state.providerWarning, .authRequired)
         XCTAssertEqual(state.emptyStateReason, .authRequired)
     }
 
@@ -172,6 +173,45 @@ final class MenuBuilderTests: BaseTestCase {
         )
         XCTAssertNotNil(actions.first {
             $0.action == #selector(StatusBarItemController.dismissEvent)
+        })
+    }
+
+    func testMeetingControlShowsAuthWarningAlongsideCachedNextEvent() {
+        let now = Date(timeIntervalSinceReferenceDate: 800_000_000)
+        let event = makeFakeEvent(
+            id: "cached",
+            start: now.addingTimeInterval(300),
+            end: now.addingTimeInterval(1800),
+            withLink: true
+        )
+        var appState = AppState()
+        appState.events = [event]
+        appState.selectedCalendarIDs = ["calendar"]
+        appState.activeProvider = .googleCalendar
+        appState.providerHealth = ProviderHealth(
+            lastSuccessfulRefresh: now.addingTimeInterval(-300),
+            lastAttemptedRefresh: now,
+            lastErrorDescription: "Reconnect Google Calendar",
+            isStale: true,
+            authRequired: true
+        )
+        let state = StatusBarMenuState.make(
+            from: appState,
+            settings: .empty,
+            now: now
+        )
+
+        let items = MenuBuilder(target: Dummy(), state: state, now: now)
+            .buildMeetingControlSection()
+
+        XCTAssertTrue(items.contains {
+            $0.title == "status_bar_control_auth_required".loco()
+        })
+        XCTAssertTrue(items.contains {
+            $0.action == #selector(StatusBarItemController.reconnectProviderAction)
+        })
+        XCTAssertTrue(items.contains {
+            $0.action == #selector(StatusBarItemController.joinNextMeeting)
         })
     }
 
