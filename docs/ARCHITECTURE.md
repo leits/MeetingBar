@@ -25,7 +25,7 @@ The product principle is reliability first: **show the correct meeting, stay fre
                                 │ fetchAllCalendars / fetchEventsForDateRange
                                 │
             ┌───────────────────┴────────────────────┐
-            │             EventManager               │  @MainActor ObservableObject
+            │             CalendarSync               │  @MainActor ObservableObject
             │  Combine pipeline merges 3 triggers:   │
             │   1. Defaults changes                  │
             │   2. 3-minute timer                    │
@@ -64,26 +64,29 @@ The product principle is reliability first: **show the correct meeting, stay fre
 ## Directory map
 
 ```
-MeetingBar/                         (~74 .swift files)
+MeetingBar/                         (~76 .swift files)
 ├── App/                            — process lifecycle, OS integration
 │   ├── AppDelegate.swift           — @main; composition root; wires LifecycleObserver, URLHandler, AppModel
 │   ├── AppMessageCenter.swift      — one adapter for user notifications and fallback alerts
 │   ├── AppModel.swift              — @MainActor ObservableObject + AppState + AppAction + AppEnvironment
 │   ├── AppIntent.swift             — Shortcuts integration
+│   ├── AppRuntimeBridge.swift      — AppKit/SwiftUI bridge helpers used at the composition root
 │   ├── LifecycleObserver.swift     — screen-lock / wake / timezone / day-change notifications
 │   ├── Notifications.swift         — shared notification identifiers and data types
 │   ├── PatronageService.swift      — StoreKit 2 purchases, restore, entitlements, transaction updates
-│   └── URLHandler.swift            — apple-event URL dispatch (oauth, preferences)
+│   ├── URLHandler.swift            — apple-event URL dispatch (oauth, preferences)
+│   └── WindowCoordinator.swift     — window lifecycle for Onboarding, Preferences, Changelog, Fullscreen
 │
 ├── Calendar/                       — calendar data: models, events, filtering, selection, providers
 │   ├── EventStore.swift            — EventStore protocol (provider abstraction)
 │   ├── CalendarRepository.swift    — owns the active store, exposes fetch + switch
-│   ├── EventManager.swift          — refresh pipeline (Combine, @MainActor)
+│   ├── CalendarSync.swift          — refresh pipeline (Combine, @MainActor); replaced EventManager in V5
 │   ├── EventFiltering.swift        — apply user filters (all-day, declined, etc.) [SPM]
 │   ├── EventFiltering+MeetingBar.swift
 │   ├── EventSelection.swift        — pick the "next" event from a list [SPM]
 │   ├── EventSelection+MeetingBar.swift
 │   ├── MBEvent.swift               — cross-provider event + filtered() / nextEvent() helpers
+│   ├── MBEvent+MeetingBar.swift    — MBEvent adapter for app-specific helpers
 │   ├── MBCalendar.swift            — cross-provider calendar
 │   ├── ProviderHealth.swift        — auth/stale/error/ok
 │   └── Providers/
@@ -105,8 +108,11 @@ MeetingBar/                         (~74 .swift files)
 │   ├── NotificationPlanner.swift   — desired UN requests for an event [SPM]
 │   ├── NotificationScheduler.swift — reconciles plans with UNUserNotificationCenter; owns content + action scheduling
 │   ├── NotificationActionRunner.swift    — executes fullscreen / auto-join / script; owns processed-event records
+│   ├── NotificationActionHandler.swift   — maps UNNotificationResponse to NotificationResponseAction
+│   ├── NotificationResponseAction.swift  — enum of possible user actions from a delivered notification
 │   ├── NotificationCenterDelegate.swift  — UNUserNotificationCenterDelegate
-│   └── NotificationSetup.swift           — requests UN authorization
+│   ├── NotificationSetup.swift           — requests UN authorization
+│   └── SnoozeService.swift               — schedules and cancels event-snooze reminders
 │
 ├── Settings/
 │   └── AppSettings.swift           — value-type settings groups + AppSettings.current factory (single Defaults boundary)
@@ -154,7 +160,7 @@ Policies decide.
 macOS integrations execute side effects.
 ```
 
-Use MeetingBar names for new boundaries (`EventManager`, `MeetingOpener`, `NotificationScheduler`, `AppSettings`, `WindowCoordinator`) rather than generic architecture labels. A new type is useful only if it gives a workflow one obvious owner or makes a decision testable.
+Use MeetingBar names for new boundaries (`CalendarSync`, `MeetingOpener`, `NotificationScheduler`, `AppSettings`, `WindowCoordinator`) rather than generic architecture labels. A new type is useful only if it gives a workflow one obvious owner or makes a decision testable.
 
 Current PR gate for architecture changes:
 
@@ -192,12 +198,12 @@ This is intentional. The pattern is:
 
 ---
 
-## How EventManager refreshes (the part that confuses everyone)
+## How CalendarSync refreshes (the part that confuses everyone)
 
-`EventManager` is a `@MainActor ObservableObject` and the heart of the data flow. Its refresh pipeline merges three Combine publishers:
+`CalendarSync` is a `@MainActor ObservableObject` and the heart of the data flow. Its refresh pipeline merges three Combine publishers:
 
 ```swift
-// Conceptual — see Calendar/EventManager.swift for the real thing.
+// Conceptual — see Calendar/CalendarSync.swift for the real thing.
 Publishers.Merge3(
     defaultsChanges,           // user toggled a setting
     Timer.publish(every: 180), // every 3 minutes
@@ -218,7 +224,7 @@ Three things to internalize:
 2. **`flatMap(maxPublishers: 1)` serializes fetches.** While a fetch is in flight, new triggers wait. There is no parallel refresh and no "most recent wins" race.
 3. **Failed refresh preserves last known events and calendars.** This is enforced in the publish step: we never replace a non-empty list with an empty one because of a network failure. `ProviderHealth` is the place where errors surface, not the event list.
 
-If you are tempted to "just trigger a refresh from over here" — call `eventManager.refreshSources()` (or send to `refreshSubject`). Do not duplicate the fetch logic.
+If you are tempted to "just trigger a refresh from over here" — call `calendarSync.refreshSources()` (or send to `refreshSubject`). Do not duplicate the fetch logic.
 
 ---
 
@@ -293,7 +299,7 @@ Within one source, longer URLs win when one is a prefix of another (Zoom truncat
 
 **Default to hostless.** A test that needs to launch the app is a signal that you are testing a service, not a policy. That is fine — but write it consciously. Hostless tests run on every PR and contribute the bulk of the 200+ test count.
 
-`BaseTestCase` (host suite) snapshots and restores `UserDefaults` around each test. `FakeEventStore` lets you inject controlled event lists into `EventManager`.
+`BaseTestCase` (host suite) snapshots and restores `UserDefaults` around each test. `FakeEventStore` lets you inject controlled event lists into `CalendarSync`.
 
 `AppModelTestHarness` wires `AppModel` to in-memory publishers and recording closures. Use it for AppAction scenarios before moving behavior out of AppDelegate, StatusBar, AppIntent, Preferences, or notification delegates.
 
@@ -323,7 +329,7 @@ Long-running or delayed work must have one stored owner and an explicit cancella
 | App launch setup and notification authorization | `AppDelegate` | `applicationWillTerminate` |
 | Minute-boundary status refresh loop | `AppDelegate` | `applicationWillTerminate` / quit |
 | Provider change, snooze, onboarding, notification reconcile, refresh actions | `AppModel` | `.willTerminate`; replacement cancels superseded work |
-| Calendar refresh cycle and store-change refresh | `EventManager` | `stop()` |
+| Calendar refresh cycle and store-change refresh | `CalendarSync` | `stop()` |
 | Active provider operations | `CalendarRepository` / `EventStore` | provider switch and `stop()` call `cancelPendingOperations()` |
 | Google OAuth sign-in, token refresh, external authorization session | `GCEventStore` | sign-out, provider switch, app termination |
 | Delayed fullscreen, auto-join, and event-start script actions | `NotificationScheduler` | reconcile removes stale plans; `stop()` cancels all |
@@ -379,10 +385,10 @@ The policy itself takes the snapshot and never imports `Defaults`. This is what 
 Touching these requires extra care, tests around behavior, and a focused PR. Listed in `ROADMAP.md` and reproduced here:
 
 - `App/AppDelegate.swift`
-- `Calendar/EventManager.swift`
+- `Calendar/CalendarSync.swift`
 - `UI/StatusBar/StatusBarItemController.swift`
 - `UI/StatusBar/MenuBuilder.swift`
-- `Calendar/MBEvent.swift`, `MBEvent+Helpers.swift`
+- `Calendar/MBEvent.swift`, `MBEvent+MeetingBar.swift`
 - `Calendar/Providers/Google/GoogleCalendarEventStore.swift`
 - `Calendar/Providers/EventKit/EventKitEventStore.swift`
 - `Notifications/NotificationScheduler.swift`
@@ -406,7 +412,7 @@ You want to add "do not notify for events shorter than 5 minutes".
 6. **Reconcile triggers.** Make sure `StatusBarItemController.setupDefaultsObservers()` (or wherever the watcher list lives) listens to your new key so flipping it triggers a notification reconcile.
 7. **Open a small PR.** Body: rule, why a default tweak alone is not enough, screenshots if UI, test names.
 
-The whole change should be ~50 lines and no changes to `EventManager` or `AppDelegate`.
+The whole change should be ~50 lines and no changes to `CalendarSync` or `AppDelegate`.
 
 ---
 
