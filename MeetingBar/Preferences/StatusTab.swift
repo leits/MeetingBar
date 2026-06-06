@@ -43,7 +43,7 @@ private struct ProviderStatusSection: View {
                 Spacer()
                 if presentation.canReconnect {
                     Button("preferences_status_reconnect".loco()) {
-                        appModel.send(.changeProvider(.googleCalendar, signOut: true))
+                        appModel.send(.changeProvider(presentation.activeProvider, signOut: true))
                     }
                     .disabled(appModel.state.providerChangeInProgress)
                 }

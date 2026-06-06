@@ -48,8 +48,10 @@ struct CalendarsTab: View {
                     HStack {
                         if presentation.canReconnect {
                             Button("preferences_status_reconnect".loco()) {
-                                appModel.send(.changeProvider(.googleCalendar, signOut: true))
+                                appModel.send(
+                                    .changeProvider(presentation.activeProvider, signOut: true))
                             }
+                            .disabled(appModel.state.providerChangeInProgress)
                         }
                         if presentation.canOpenCalendarSettings {
                             Button("preferences_status_open_calendar_settings".loco()) {
