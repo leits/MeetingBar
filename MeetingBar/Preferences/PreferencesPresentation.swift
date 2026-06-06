@@ -160,12 +160,18 @@ struct PreferencesCalendarPresentation: Equatable {
             "onboarding_calendar_selection_empty"
         }
 
+        let availableCalendarCount = state.calendars.count
+        let availableIDs = Set(state.calendars.map(\.id))
+        let selectedCalendarCount = state.selectedCalendarIDs.filter {
+            availableIDs.contains($0)
+        }.count
+
         return PreferencesCalendarPresentation(
             activeProvider: state.activeProvider,
             connectionState: connectionState,
             statusTone: statusTone,
-            selectedCalendarCount: state.selectedCalendarIDs.count,
-            availableCalendarCount: state.calendars.count,
+            selectedCalendarCount: selectedCalendarCount,
+            availableCalendarCount: availableCalendarCount,
             canReconnect: state.activeProvider == .googleCalendar
                 && connectionState == .authRequired,
             canOpenCalendarSettings: state.activeProvider == .macOSEventKit
