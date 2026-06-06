@@ -2,109 +2,79 @@
 
 For next releases info look here: <https://github.com/leits/MeetingBar/releases>
 
-## Unreleased (5.0 architecture)
+## Unreleased (5.0)
 
-### Architecture — internal (no behavior change)
+MeetingBar 5 is an architecture and product refresh. It improves the
+first-run experience and day-to-day meeting controls while establishing
+a safer foundation for calendar providers and future integrations.
 
-5.0 is an internal rework. No user-visible behavior changes; the goal is
-that future bug fixes and provider additions touch one feature folder
-instead of several.
+### Product refresh
 
-* `AppModel` is the central state owner (`AppState` + `AppAction` +
-  `AppEnvironment` all live in `AppModel.swift`). `AppDelegate` is now a
-  composition root, not a behaviour owner.
-* `LifecycleObserver` and `URLHandler` extracted from `AppDelegate` —
-  screen-lock / wake / timezone / day-change observers and URL dispatch
-  now live behind named adapters.
-* `CalendarRepository` owns the active provider and isolates
-  `EventManager` from provider-switching details.
-* Calendar providers moved into `Calendar/Providers/EventKit/` and
-  `Calendar/Providers/Google/`.
-* `Calendar/` now holds the cross-provider models (`MBEvent`, `MBCalendar`,
-  `ProviderHealth`) and the `EventStore` protocol — the old `Core/`
-  layer is gone.
-* Notifications split into six components: `NotificationPlanner` (pure
-  plan), `NotificationScheduler` (reconciler + content + delayed-action
-  task management), `NotificationActionRunner` (fullscreen / autojoin /
-  script + processed-event records), `NotificationCenterDelegate`,
-  `NotificationSetup`, and `EventActionPolicy`.
-* Meeting providers consolidated into a single `MeetingProvider` struct
-  with a static `all` array. Adding a new provider is one descriptor
-  entry plus a regex; no separate registry, descriptor, opener-registry,
-  or create-registry types remain.
-* `MeetingOpenStrategy.swift` keeps the per-provider URL-transform
-  strategies (Zoom, Teams, Slack huddle, Riverside, etc.) plus the
-  `openStrategy(for:)` lookup, all in one file.
-* `AppSettings.current` is the single Defaults boundary; pure feature
-  logic receives value-typed snapshots. The `SettingsStore` singleton
-  is gone.
-* `StatusBarPresentation.swift` consolidates the Presentation, Title,
-  and Icon policies behind one `StatusBarPresenter`. `MenuBuilder`
-  reads from a `StatusBarMenuState` value type — zero direct Defaults
-  reads in the menu rendering path.
-* Pure policies (`EventFiltering`, `EventSelection`, `EventActionPolicy`,
-  `StatusBarPresentation` family, `StatusBarTitlePolicy`,
-  `StatusBarIconPolicy`, `MeetingLinkDetector`, `MeetingOpeningPolicy`,
-  `NotificationPlanner`, `GoogleCalendarPolicy`, `DiagnosticsReport`)
-  all live in the hostless `MeetingBarLogic` SPM target so most logic
-  ships without touching the host app.
-* Per-event `NotificationScheduler` with `mb-plan-<eventID>-<kind>`
-  identifiers replaces the legacy single-id path; back-to-back events
-  no longer suppress each other.
-* `OnboardingStep` enum + `OnboardingRouter` replace the older `Screens`
-  / `ViewRouter` plumbing; `OnboardingHandler` is the injectable bridge
-  to `AppDelegate` so `CalendarsScreen` doesn't reach into the delegate
-  directly.
-* `Preferences/` and `Onboarding/` sit at the project root, alongside
-  `Calendar/`, `Meetings/`, `Notifications/`, `StatusBar/`, etc.
-* `LinksTab` iterates `MeetingProvider.all` instead of hard-coding rows.
-* `CalendarsTab` routes calendar-selection toggles through
-  `AppModel.toggleCalendarSelection`, not direct `Defaults` writes.
-* `DiagnosticsContext.current(eventManager:)` and `DiagnosticsClipboard.copy`
-  centralise issue-report assembly so future onboarding error states can
-  reuse it without re-deriving the same context.
+* Added a clearer onboarding flow for calendar source selection,
+  authorization, calendar selection, meeting-opening preferences, and
+  final setup confirmation.
+* Improved the meeting menu around the current or next meeting, with a
+  clear Join action, source-aware secondary actions, and actionable
+  empty and error states.
+* Reorganized Preferences around Calendar Source, Meeting Opening,
+  Menu Bar Display, Notifications, and Status/Diagnostics.
+* Added provider health and refresh information to application state so
+  onboarding, the menu, and Preferences show consistent status.
 
-### Reliability
+### Calendar reliability
 
-* Failed refresh preserves last known events and calendars instead of
-  replacing them with empty arrays.
-* Refresh coalescing via `throttle(200ms)` + `flatMap(maxPublishers: 1)`.
-* EventKit calendar fetches run off the main thread — no more menu-bar
-  hangs on large stores.
-* Wake / unlock / timezone / day-change observers trigger refresh +
-  notification reconcile.
-* Per-calendar Google 403 handling — one inaccessible calendar no
-  longer disconnects the account.
-* `ProviderHealth` surfaces auth-required / stale / error / ok state to
-  the Status preferences tab.
-* Crash-class force unwraps removed in `GCParser`, `MeetingServices`
-  regex catalog, `EKEventStore` calendar lookup, `getGmailAccount`.
-* `AuthError` and `GoogleCalendarError` conform to `LocalizedError`
-  with localised descriptions.
+* Calendar provider setup and switching are transactional. Cancelling or
+  failing Google authorization keeps the previous provider and calendar
+  selection active.
+* Selected calendars are stored per provider, so Apple Calendar and
+  Google Calendar selections are preserved when switching.
+* Successful provider setup keeps already-fetched calendars available
+  for onboarding instead of briefly showing an empty selection state.
+* Google sessions use the persisted OAuth refresh token rather than only
+  the latest token response, preventing unnecessary reauthorization.
+* Refresh failures preserve last-known calendars and events and surface
+  stale or reconnect warnings instead of silently showing empty data.
+* Provider warnings remain visible in the menu even when a cached next
+  meeting is available.
 
-### Settings migration
+### Meeting reliability
 
-* Per-provider browser preferences (`meetBrowser`, `zoomBrowser`,
-  `teamsBrowser`, …) migrate to a unified `providerBrowsers: [String: Browser]`
-  map keyed by `MeetingProvider.id`. Legacy keys keep decoding for one
-  major release.
-* Bookmarks now persist provider IDs (raw strings matching
-  `MeetingServices.rawValue`) instead of raw enum cases.
+* Open in Calendar is source-aware: Apple Calendar events use their
+  EventKit identifier, while Google events use the Google Calendar web
+  link when available.
+* Native conference data is preferred over unrelated links in event
+  notes, with custom meeting-link regexes retained as a fallback.
+* Microsoft Teams short meeting links such as
+  `teams.microsoft.com/meet/...?...` are detected alongside legacy
+  `meetup-join` links, including supported government hosts.
+* Zoom personal-room `/my/` links open once in the browser instead of
+  also attempting a native Zoom deep link.
+* Dismissed meetings remain hidden until their modification date changes,
+  allowing updated meetings to appear again.
 
-### Tests
+### Architecture
 
-* 181 hostless logic tests in `MeetingBarLogicTests` plus the host
-  `MeetingBarTests` suite.
-* Logic coverage 95.9%.
-* `make validate-strings` verifies every `.loco()` key exists in
-  `en.lproj/Localizable.strings`.
+* `AppModel`, `AppState`, `AppAction`, and `AppEnvironment` now provide
+  the central application-state boundary.
+* Calendar providers are isolated behind `CalendarRepository`,
+  `CalendarSync`, and provider health state.
+* Meeting providers and link detection use a shared descriptor registry.
+* Testable policies for event selection, meeting links, notifications,
+  status presentation, and Google Calendar behavior live in the
+  hostless `MeetingBarLogic` package.
+* Notification planning and delayed actions are managed per event, so
+  back-to-back meetings do not suppress one another.
+* Existing browser, calendar-selection, and bookmark settings retain
+  compatibility migrations.
 
-### Fixes included
+### Validation
 
-* Fix typo in language list (#839).
-* Fix multiple typos in the repo (#875).
-* Fix URL in PR template (#875).
-* Add Riverside meeting service (#875).
+* Added focused hostless and app-hosted regression tests for provider
+  switching, Google authentication, shared calendar selection, menu
+  status, meeting-link priority, ongoing meetings, and automatic join.
+* English source strings are validated with `make validate-strings`.
+  Non-English translations will be refreshed through Weblate after the
+  V5 string freeze.
 
 ## Version 4.11.0
 
