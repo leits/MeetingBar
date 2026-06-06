@@ -77,6 +77,7 @@ public class CalendarSync: ObservableObject {
             providerGeneration += 1
             calendars = newCalendars
             events = []
+            providerHealth = ProviderHealth()
             subscribeToRepositoryStoreChanges()
             refreshSubject.send()
             return .success
