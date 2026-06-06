@@ -32,6 +32,27 @@ final class AppMessageMappingTests: XCTestCase {
 }
 
 final class AppMessageCenterTests: XCTestCase {
+    func testXCTestHostSuppressesSystemUI() {
+        XCTAssertTrue(
+            AppMessageCenter.shouldSuppressSystemUI(
+                environment: [:],
+                xctestLoaded: true
+            )
+        )
+        XCTAssertTrue(
+            AppMessageCenter.shouldSuppressSystemUI(
+                environment: ["XCTestConfigurationFilePath": "/tmp/tests.xctestconfiguration"],
+                xctestLoaded: false
+            )
+        )
+        XCTAssertFalse(
+            AppMessageCenter.shouldSuppressSystemUI(
+                environment: [:],
+                xctestLoaded: false
+            )
+        )
+    }
+
     func testNotificationPathUsesUserNotification() async {
         let recorder = MessageRecorder()
         let center = makeCenter(notificationsEnabled: true, recorder: recorder)

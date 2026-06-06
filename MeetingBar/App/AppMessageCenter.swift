@@ -179,6 +179,7 @@ struct AppMessageCenter: Sendable {
             }
         },
         displayAlert: { title, text in
+            guard !AppMessageCenter.shouldSuppressSystemUI() else { return }
             let alert = NSAlert()
             alert.messageText = title
             alert.informativeText = text
@@ -187,6 +188,13 @@ struct AppMessageCenter: Sendable {
             alert.runModal()
         }
     )
+
+    static func shouldSuppressSystemUI(
+        environment: [String: String] = ProcessInfo.processInfo.environment,
+        xctestLoaded: Bool = NSClassFromString("XCTestCase") != nil
+    ) -> Bool {
+        xctestLoaded || environment["XCTestConfigurationFilePath"] != nil
+    }
 
     private let notificationsEnabled: NotificationsEnabled
     private let sendUserNotification: SendUserNotification
