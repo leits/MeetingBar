@@ -166,7 +166,7 @@ extension MeetingProvider {
                 .teams,
                 icon: "ms_teams_icon",
                 pattern:
-                    #"https?://(gov.)?teams\.microsoft\.(com|us)/l/meetup-join/[a-zA-Z0-9_%\/=\-\+\.?]+"#,
+                    #"https?://(gov\.)?teams\.microsoft\.(com|us)/(l/meetup-join/[a-zA-Z0-9_%\/=\-\+\.?]+(?:&[^\s]+)?|meet/\d+\?p=[A-Za-z0-9_\-]+(?:&[^\s]+)?)"#,
                 nativeAppBrowserName: "Teams"
             ),
 

@@ -47,6 +47,58 @@ final class MeetingLinkDetectorTests: XCTestCase {
         XCTAssertEqual(link?.service, .teams)
     }
 
+    func testDetectsLegacyTeamsMeetupJoinURLWithAdditionalQueryParameters() {
+        let url = "https://teams.microsoft.com/l/meetup-join/abc?context=xyz&anon=true"
+        let link = detectMeetingLink(url)
+
+        XCTAssertEqual(link?.service, .teams)
+        XCTAssertEqual(link?.url.absoluteString, url)
+    }
+
+    func testDetectsTeamsShortURL() {
+        let url = "https://teams.microsoft.com/meet/1234567890123?p=Aa1Bb2Cc3Dd4Ee5"
+        let link = detectMeetingLink(url)
+
+        XCTAssertEqual(link?.service, .teams)
+        XCTAssertEqual(link?.url.absoluteString, url)
+    }
+
+    func testDetectsTeamsShortURLWithAdditionalQueryParameters() {
+        let url = "https://teams.microsoft.com/meet/1234567890123?p=Aa1Bb2Cc3Dd4Ee5&anon=true"
+        let link = detectMeetingLink(url)
+
+        XCTAssertEqual(link?.service, .teams)
+        XCTAssertEqual(link?.url.absoluteString, url)
+    }
+
+    func testDetectsSupportedTeamsGovernmentHosts() {
+        let urls = [
+            "https://teams.microsoft.us/meet/1234567890123?p=Aa1Bb2Cc3Dd4Ee5",
+            "https://gov.teams.microsoft.com/meet/1234567890123?p=Aa1Bb2Cc3Dd4Ee5",
+            "https://gov.teams.microsoft.us/l/meetup-join/abc?context=xyz"
+        ]
+
+        for url in urls {
+            let link = detectMeetingLink(url)
+
+            XCTAssertEqual(link?.service, .teams, url)
+            XCTAssertEqual(link?.url.absoluteString, url)
+        }
+    }
+
+    func testDoesNotMatchUnrelatedTeamsPages() {
+        let urls = [
+            "https://teams.microsoft.com/",
+            "https://teams.microsoft.com/l/meeting/new",
+            "https://teams.microsoft.com/meet/1234567890123",
+            "https://teams.microsoft.com/meet/channel?p=Aa1Bb2Cc3Dd4Ee5"
+        ]
+
+        for url in urls {
+            XCTAssertNil(detectMeetingLink(url), url)
+        }
+    }
+
     func testDetectsCustomRegexLinkFromNotes() {
         let link = MeetingLinkDetector.detect(
             location: nil,

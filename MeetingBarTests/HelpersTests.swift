@@ -224,16 +224,24 @@ final class MeetingOpenerTests: BaseTestCase {
         ])
     }
 
-    func test_openMeetingLinkUsesDefaultsForScriptFlag() {
+    func test_detectedTeamsURLsUseTeamsOpeningFlow() throws {
         Defaults[.runJoinEventScript] = false
-        let performer = FakeMeetingOpeningPerformer()
-        let link = MeetingLink(service: .teams, url: URL(string: "https://teams.microsoft.com/l/meetup-join/abc")!)
+        let urls = [
+            URL(string: "https://teams.microsoft.com/l/meetup-join/abc")!,
+            URL(string: "https://teams.microsoft.com/meet/1234567890123?p=Aa1Bb2Cc3Dd4Ee5")!
+        ]
 
-        MeetingOpener.open(meetingLink: link, performer: performer)
+        for url in urls {
+            let performer = FakeMeetingOpeningPerformer()
+            let link = try XCTUnwrap(detectMeetingLink(url.absoluteString))
 
-        XCTAssertEqual(performer.events, [
-            .meetingLink(.teams, link.url)
-        ])
+            XCTAssertEqual(link.service, .teams)
+            MeetingOpener.open(meetingLink: link, performer: performer)
+
+            XCTAssertEqual(performer.events, [
+                .meetingLink(.teams, url)
+            ])
+        }
     }
 
     func test_openMeetingLinkRunsJoinScriptWhenEnabled() {
