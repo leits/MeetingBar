@@ -11,7 +11,14 @@ import SwiftUI
 
 struct AdvancedTab: View {
     var body: some View {
-        VStack {
+        VStack(alignment: .leading, spacing: 12) {
+            Label(
+                "preferences_advanced_setting_warning".loco(),
+                systemImage: "exclamationmark.triangle"
+            )
+            .font(.caption)
+            .foregroundStyle(.secondary)
+
             GroupBox(
                 label: Label(
                     "preferences_section_apple_script_hooks_title".loco(),
@@ -32,11 +39,6 @@ struct AdvancedTab: View {
                 }
             }
             Spacer()
-            HStack {
-                Spacer()
-                Text("preferences_advanced_setting_warning".loco())
-                Spacer()
-            }
         }
     }
 }
@@ -242,19 +244,19 @@ struct FilterEventRegexesSection: View {
     @Default(.filterEventRegexes) var filterEventRegexes
 
     @State private var showingEditRegexModal = false
-    @State private var selectedRegex = ""
+    @State private var regexDraft = RegexEditDraft.adding()
 
     var body: some View {
         DisclosureGroup("preferences_advanced_event_regex_title".loco()) {
             List {
-                Button("preferences_advanced_regex_add_button".loco()) { openEditRegexModal("") }
+                Button("preferences_advanced_regex_add_button".loco(), action: openAddRegexModal)
                     .buttonStyle(.borderedProminent)
                 ForEach(filterEventRegexes, id: \.self) { regex in
                     HStack {
                         Text(regex)
                         Spacer()
                         Button("preferences_advanced_regex_edit_button".loco()) {
-                            openEditRegexModal(regex)
+                            openEditRegexModal(for: regex)
                         }
                         Button("x") { removeRegex(regex) }
                     }
@@ -262,20 +264,29 @@ struct FilterEventRegexesSection: View {
             }.frame(height: 100)
                 .listStyle(.inset(alternatesRowBackgrounds: true))
                 .sheet(isPresented: $showingEditRegexModal) {
-                    EditRegexModal(regex: selectedRegex, function: addRegex)
+                    EditRegexModal(regex: regexDraft.value, onSave: saveRegex)
                 }
         }.padding(.leading, 19)
     }
 
-    func openEditRegexModal(_ regex: String) {
-        selectedRegex = regex
-        removeRegex(regex)
-        showingEditRegexModal.toggle()
+    func openAddRegexModal() {
+        regexDraft = .adding()
+        showingEditRegexModal = true
     }
 
-    func addRegex(_ regex: String) {
-        if !filterEventRegexes.contains(regex) {
-            filterEventRegexes.append(regex)
+    func openEditRegexModal(for regex: String) {
+        regexDraft = .editing(regex)
+        showingEditRegexModal = true
+    }
+
+    func saveRegex(_ regex: String) -> Bool {
+        regexDraft.value = regex
+        switch RegexListEditingPolicy.saving(regexDraft, in: filterEventRegexes) {
+        case .saved(let updated):
+            filterEventRegexes = updated
+            return true
+        case .duplicate, .originalMissing:
+            return false
         }
     }
 
@@ -290,7 +301,7 @@ struct MeetingRegexesSection: View {
     @Default(.customRegexes) var customRegexes
 
     @State private var showingEditRegexModal = false
-    @State private var selectedRegex = ""
+    @State private var regexDraft = RegexEditDraft.adding()
     @State private var regexTestText = ""
     @State private var regexTestResult: String?
     @State private var regexTestMatched = false
@@ -300,14 +311,14 @@ struct MeetingRegexesSection: View {
             VStack(alignment: .leading, spacing: 8) {
                 List {
                     Button("preferences_advanced_regex_add_button".loco()) {
-                        openEditRegexModal("")
+                        openAddRegexModal()
                     }.buttonStyle(.borderedProminent)
                     ForEach(customRegexes, id: \.self) { regex in
                         HStack {
                             Text(regex)
                             Spacer()
                             Button("preferences_advanced_regex_edit_button".loco()) {
-                                openEditRegexModal(regex)
+                                openEditRegexModal(for: regex)
                             }
                             Button("x") { removeRegex(regex) }
                         }
@@ -336,20 +347,29 @@ struct MeetingRegexesSection: View {
                 }
             }
             .sheet(isPresented: $showingEditRegexModal) {
-                EditRegexModal(regex: selectedRegex, function: addRegex)
+                EditRegexModal(regex: regexDraft.value, onSave: saveRegex)
             }
         }.padding(.leading, 19)
     }
 
-    func openEditRegexModal(_ regex: String) {
-        selectedRegex = regex
-        removeRegex(regex)
-        showingEditRegexModal.toggle()
+    func openAddRegexModal() {
+        regexDraft = .adding()
+        showingEditRegexModal = true
     }
 
-    func addRegex(_ regex: String) {
-        if !customRegexes.contains(regex) {
-            customRegexes.append(regex)
+    func openEditRegexModal(for regex: String) {
+        regexDraft = .editing(regex)
+        showingEditRegexModal = true
+    }
+
+    func saveRegex(_ regex: String) -> Bool {
+        regexDraft.value = regex
+        switch RegexListEditingPolicy.saving(regexDraft, in: customRegexes) {
+        case .saved(let updated):
+            customRegexes = updated
+            return true
+        case .duplicate, .originalMissing:
+            return false
         }
     }
 
@@ -382,17 +402,21 @@ struct MeetingRegexesSection: View {
 
 struct EditRegexModal: View {
     @Environment(\.presentationMode) var presentationMode
-    @State var new_regex: String = ""
-    var regex: String
-    var function: (_ regex: String) -> Void
+    @State private var draftRegex: String
+    let onSave: (_ regex: String) -> Bool
 
     @State private var showingAlert = false
-    @State private var error_msg = ""
+    @State private var errorMessage = ""
+
+    init(regex: String, onSave: @escaping (_ regex: String) -> Bool) {
+        _draftRegex = State(initialValue: regex)
+        self.onSave = onSave
+    }
 
     var body: some View {
         VStack {
             Spacer()
-            TextField("preferences_advanced_regex_new_title".loco(), text: $new_regex)
+            TextField("preferences_advanced_regex_new_title".loco(), text: $draftRegex)
             Spacer()
             HStack {
                 Button(action: cancel) {
@@ -401,32 +425,34 @@ struct EditRegexModal: View {
                 Spacer()
                 Button(action: save) {
                     Text("general_save".loco())
-                }.disabled(new_regex.isEmpty)
+                }.disabled(draftRegex.isEmpty)
             }
         }.padding()
             .frame(width: 500, height: 150)
-            .onAppear { self.new_regex = self.regex }
             .alert(isPresented: $showingAlert) {
                 Alert(
                     title: Text("preferences_advanced_regex_new_cant_save_title".loco()),
-                    message: Text(error_msg), dismissButton: .default(Text("general_ok".loco())))
+                    message: Text(errorMessage),
+                    dismissButton: .default(Text("general_ok".loco()))
+                )
             }
     }
 
     func cancel() {
-        if !regex.isEmpty {
-            function(regex)
-        }
         presentationMode.wrappedValue.dismiss()
     }
 
     func save() {
         do {
-            _ = try NSRegularExpression(pattern: new_regex)
-            function(new_regex)
-            presentationMode.wrappedValue.dismiss()
+            _ = try NSRegularExpression(pattern: draftRegex)
+            if onSave(draftRegex) {
+                presentationMode.wrappedValue.dismiss()
+            } else {
+                errorMessage = "preferences_advanced_regex_duplicate_error".loco()
+                showingAlert = true
+            }
         } catch let error as NSError {
-            error_msg = error.localizedDescription
+            errorMessage = error.localizedDescription
             showingAlert = true
         }
     }

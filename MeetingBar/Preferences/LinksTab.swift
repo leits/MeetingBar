@@ -25,75 +25,97 @@ struct LinksTab: View {
     @State private var bookmark: Bookmark?
 
     var body: some View {
-        VStack {
+        VStack(alignment: .leading, spacing: 12) {
             GroupBox(
                 label: Label(
                     "preferences_meeting_opening_behavior_title".loco(),
                     systemImage: "arrow.up.right.square")
             ) {
-                Picker(
-                    selection: $defaultBrowser,
-                    label: Text("preferences_services_link_meeting_title".loco()).frame(
-                        width: 200, alignment: .leading)
-                ) {
-                    Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
-                    ForEach(allBrowser, id: \.self) { (browser: Browser) in
-                        Text(browser.name).tag(browser)
+                VStack(alignment: .leading, spacing: 10) {
+                    Picker(
+                        selection: $defaultBrowser,
+                        label: Text("preferences_services_link_meeting_title".loco()).frame(
+                            width: 200, alignment: .leading)
+                    ) {
+                        Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
+                        ForEach(allBrowser, id: \.self) { (browser: Browser) in
+                            Text(browser.name).tag(browser)
+                        }
+                    }
+
+                    Text("preferences_services_link_default_help".loco())
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+
+                    Divider()
+
+                    Text("preferences_services_link_overrides_title".loco())
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                    Text("preferences_services_link_overrides_help".loco())
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+
+                    ForEach(
+                        MeetingProvider.all.filter { $0.nativeAppBrowserName != nil }, id: \.id
+                    ) { provider in
+                        MeetingProviderBrowserPicker(provider: provider)
+                    }
+
+                    Divider()
+
+                    HStack(alignment: .firstTextBaseline, spacing: 10) {
+                        Button(
+                            "preferences_configure_browsers_button".loco(),
+                            action: clickConfigureBrowser
+                        )
+                        .sheet(isPresented: $showBrowserConfiguration) {
+                            BrowserConfigView()
+                        }
+                        Text("preferences_configure_browsers_help".loco())
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
                     }
                 }
-
-                ForEach(
-                    MeetingProvider.all.filter { $0.nativeAppBrowserName != nil }, id: \.id
-                ) { provider in
-                    MeetingProviderBrowserPicker(provider: provider)
-                }
+                .padding(8)
             }
 
             GroupBox(
                 label: Label("preferences_section_create_title".loco(), systemImage: "plus.circle")
             ) {
-                HStack {
-                    Text("preferences_services_create_meeting_title".loco()).frame(
-                        width: 150, alignment: .leading)
-                    CreateMeetingServicePicker()
-                }
-
-                if createMeetingService == CreateMeetingServices.url {
+                VStack(alignment: .leading, spacing: 10) {
                     HStack {
-                        Text("preferences_services_create_meeting_custom_url_value".loco()).frame(
+                        Text("preferences_services_create_meeting_title".loco()).frame(
                             width: 150, alignment: .leading)
-                        TextField(
-                            "preferences_services_create_meeting_custom_url_placeholder".loco(),
-                            text: $createMeetingServiceUrl
-                        ).textFieldStyle(RoundedBorderTextFieldStyle())
+                        CreateMeetingServicePicker()
                     }
-                    HStack {
-                        Text("preferences_services_google_meet_tip".loco()).foregroundColor(.gray)
-                            .font(.system(size: 12))
-                    }
-                }
-                Picker(
-                    selection: $browserForCreateMeeting,
-                    label: Text("preferences_services_create_meeting_browser_title".loco())
-                        .frame(width: 150, alignment: .leading)
-                ) {
-                    Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
-                    ForEach(allBrowser, id: \.self) { (browser: Browser) in
-                        Text(browser.name).tag(browser)
-                    }
-                }
-            }
 
-            HStack {
-                Spacer()
-                Button(action: clickConfigureBrowser) {
-                    Text("preferences_configure_browsers_button".loco())
+                    if createMeetingService == CreateMeetingServices.url {
+                        HStack {
+                            Text("preferences_services_create_meeting_custom_url_value".loco())
+                                .frame(width: 150, alignment: .leading)
+                            TextField(
+                                "preferences_services_create_meeting_custom_url_placeholder".loco(),
+                                text: $createMeetingServiceUrl
+                            ).textFieldStyle(RoundedBorderTextFieldStyle())
+                        }
+                        Text("preferences_services_google_meet_tip".loco())
+                            .foregroundStyle(.secondary)
+                            .font(.caption)
+                    }
+                    Picker(
+                        selection: $browserForCreateMeeting,
+                        label: Text("preferences_services_create_meeting_browser_title".loco())
+                            .frame(width: 150, alignment: .leading)
+                    ) {
+                        Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
+                        ForEach(allBrowser, id: \.self) { (browser: Browser) in
+                            Text(browser.name).tag(browser)
+                        }
+                    }
                 }
-                .buttonStyle(.borderedProminent)
-                .sheet(isPresented: $showBrowserConfiguration) {
-                    BrowserConfigView()
-                }
-            }.frame(maxWidth: .infinity, alignment: .leading)
+                .padding(8)
+            }
 
             GroupBox(label: Label("preferences_tab_bookmarks".loco(), systemImage: "bookmark")) {
                 List {
@@ -195,7 +217,7 @@ struct CreateMeetingServicePicker: View {
     @Default(.createMeetingService) var createMeetingService
 
     var body: some View {
-        Picker(selection: $createMeetingService, label: Text("")) {
+        Picker(selection: $createMeetingService, label: EmptyView()) {
             Text(CreateMeetingServices.meet.localizedValue).tag(CreateMeetingServices.meet)
             Text(CreateMeetingServices.zoom.localizedValue).tag(CreateMeetingServices.zoom)
             Text(CreateMeetingServices.teams.localizedValue).tag(CreateMeetingServices.teams)

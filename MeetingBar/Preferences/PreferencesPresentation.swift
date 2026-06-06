@@ -226,6 +226,50 @@ enum CalendarSelectionBulkPolicy {
     }
 }
 
+struct RegexEditDraft: Equatable {
+    let originalValue: String?
+    var value: String
+
+    static func adding() -> RegexEditDraft {
+        RegexEditDraft(originalValue: nil, value: "")
+    }
+
+    static func editing(_ regex: String) -> RegexEditDraft {
+        RegexEditDraft(originalValue: regex, value: regex)
+    }
+}
+
+enum RegexListSaveResult: Equatable {
+    case saved([String])
+    case duplicate
+    case originalMissing
+}
+
+enum RegexListEditingPolicy {
+    static func saving(
+        _ draft: RegexEditDraft,
+        in regexes: [String]
+    ) -> RegexListSaveResult {
+        if let originalValue = draft.originalValue {
+            guard let index = regexes.firstIndex(of: originalValue) else {
+                return .originalMissing
+            }
+            guard draft.value == originalValue || !regexes.contains(draft.value) else {
+                return .duplicate
+            }
+
+            var updated = regexes
+            updated[index] = draft.value
+            return .saved(updated)
+        }
+
+        guard !regexes.contains(draft.value) else {
+            return .duplicate
+        }
+        return .saved(regexes + [draft.value])
+    }
+}
+
 enum MeetingProviderBrowserSelection {
     static func selectedBrowser(
         providerID: String,

@@ -208,6 +208,52 @@ final class PreferencesPresentationTests: XCTestCase {
         )
     }
 
+    func testRegexDraftDoesNotMutateOriginalListBeforeSave() {
+        let regexes = ["meet\\.google\\.com", "zoom\\.us"]
+
+        let draft = RegexEditDraft.editing(regexes[0])
+
+        XCTAssertEqual(draft.originalValue, regexes[0])
+        XCTAssertEqual(draft.value, regexes[0])
+        XCTAssertEqual(regexes, ["meet\\.google\\.com", "zoom\\.us"])
+    }
+
+    func testSavingRegexDraftReplacesOriginalInPlace() {
+        var draft = RegexEditDraft.editing("meet\\.google\\.com")
+        draft.value = "teams\\.microsoft\\.com"
+
+        XCTAssertEqual(
+            RegexListEditingPolicy.saving(
+                draft,
+                in: ["meet\\.google\\.com", "zoom\\.us"]
+            ),
+            .saved(["teams\\.microsoft\\.com", "zoom\\.us"])
+        )
+    }
+
+    func testSavingRegexDraftPreventsDuplicates() {
+        var draft = RegexEditDraft.editing("meet\\.google\\.com")
+        draft.value = "zoom\\.us"
+
+        XCTAssertEqual(
+            RegexListEditingPolicy.saving(
+                draft,
+                in: ["meet\\.google\\.com", "zoom\\.us"]
+            ),
+            .duplicate
+        )
+    }
+
+    func testSavingNewRegexAppendsWithoutChangingExistingValues() {
+        var draft = RegexEditDraft.adding()
+        draft.value = "teams\\.microsoft\\.com"
+
+        XCTAssertEqual(
+            RegexListEditingPolicy.saving(draft, in: ["zoom\\.us"]),
+            .saved(["zoom\\.us", "teams\\.microsoft\\.com"])
+        )
+    }
+
     func testMeetingProviderBrowserSelectionPersistsAndClearsOverrides() {
         let chrome = Browser(
             name: "Google Chrome",
