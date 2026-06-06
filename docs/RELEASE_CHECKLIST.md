@@ -111,7 +111,10 @@ make build-release
 Then manually verify:
 
 - First launch and onboarding for EventKit and Google Calendar
-- Provider switching and Google sign-out
+- Cancel Google authorization during onboarding and provider switching; confirm the previous provider and selected calendars remain active
+- Select a shared or public Google calendar alongside another calendar, then refresh and relaunch; confirm both selections and their events remain available
+- Restore an existing Google session and refresh an expired access token without requiring authorization again
+- Successful provider switching and Google sign-out
 - Wake, screen lock/unlock, timezone change, and day change refreshes
 - Status bar title/menu with no events, next event, long titles, and back-to-back events
 - Join, alternate links, dismiss, snooze, fullscreen, auto-join, and event-start scripts
