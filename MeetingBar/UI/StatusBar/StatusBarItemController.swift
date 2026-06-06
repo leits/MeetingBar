@@ -262,6 +262,9 @@ final class StatusBarItemController {
         statusItemMenu.autoenablesItems = false
         statusItemMenu.removeAllItems()
 
+        statusItemMenu.items += builder.buildMeetingControlSection()
+        statusItemMenu.addItem(NSMenuItem.separator())
+
         if menuState.hasSelectedCalendars {
             let today = Calendar.current.startOfDay(for: Date())
             let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today)!
@@ -304,17 +307,9 @@ final class StatusBarItemController {
                     date: tomorrow, title: "status_bar_section_tomorrow".loco(),
                     events: menuState.tomorrowEvents)
             }
-        } else {
-            let text = "status_bar_empty_calendar_message".loco()
-            let item = statusItemMenu.addItem(withTitle: "", action: nil, keyEquivalent: "")
-            let paragraphStyle = NSMutableParagraphStyle()
-            paragraphStyle.lineBreakMode = NSLineBreakMode.byWordWrapping
-            item.attributedTitle = NSAttributedString(
-                string: text, attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
-            item.isEnabled = false
         }
         statusItemMenu.addItem(NSMenuItem.separator())
-        statusItemMenu.items += builder.buildJoinSection(nextEvent: menuState.nextEvent)
+        statusItemMenu.items += builder.buildJoinSection(nextEvent: nil)
 
         if !menuState.meetings.bookmarks.isEmpty {
             statusItemMenu.addItem(NSMenuItem.separator())
@@ -417,6 +412,14 @@ final class StatusBarItemController {
         dependencies.send(.refreshCalendars)
     }
 
+    @objc func reconnectProviderAction() {
+        dependencies.send(.changeProvider(stateProvider, signOut: true))
+    }
+
+    @objc func openCalendarPermissionsAction() {
+        NSWorkspace.shared.open(Links.calendarPreferences)
+    }
+
     @objc
     func dismissEvent(sender: NSMenuItem) {
         if let event: MBEvent = sender.representedObject as? MBEvent {
@@ -472,6 +475,10 @@ final class StatusBarItemController {
     @objc
     func openPreferencesAction() {
         dependencies.openPreferences()
+    }
+
+    private var stateProvider: EventStoreProvider {
+        dependencies.appState().activeProvider
     }
 
     @objc

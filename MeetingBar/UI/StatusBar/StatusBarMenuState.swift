@@ -96,11 +96,8 @@ extension StatusBarMenuState {
         settings: AppSettings = .current,
         now: Date = Date()
     ) -> StatusBarMenuState {
-        make(
-            events: appState.events,
-            activeProvider: appState.activeProvider,
-            providerHealth: appState.providerHealth,
-            selectedCalendarIDs: appState.selectedCalendarIDs,
+        makeSnapshot(
+            appState: appState,
             settings: settings,
             now: now
         )
@@ -112,24 +109,26 @@ extension StatusBarMenuState {
     /// type itself stays clean.
     static func make(from events: [MBEvent]) -> StatusBarMenuState {
         let settings = AppSettings.current
-        return make(
-            events: events,
-            activeProvider: settings.calendar.eventStoreProvider,
-            providerHealth: ProviderHealth(),
-            selectedCalendarIDs: settings.calendar.selectedCalendarIDs,
+        var appState = AppState()
+        appState.events = events
+        appState.activeProvider = settings.calendar.eventStoreProvider
+        appState.selectedCalendarIDs = settings.calendar.selectedCalendarIDs
+        return makeSnapshot(
+            appState: appState,
             settings: settings,
             now: Date()
         )
     }
 
-    private static func make(
-        events: [MBEvent],
-        activeProvider: EventStoreProvider,
-        providerHealth: ProviderHealth,
-        selectedCalendarIDs: [String],
+    private static func makeSnapshot(
+        appState: AppState,
         settings: AppSettings,
         now: Date
     ) -> StatusBarMenuState {
+        let events = appState.events
+        let activeProvider = appState.activeProvider
+        let providerHealth = appState.providerHealth
+        let selectedCalendarIDs = appState.selectedCalendarIDs
         let today = Calendar.current.startOfDay(for: now)
         let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today)!
 

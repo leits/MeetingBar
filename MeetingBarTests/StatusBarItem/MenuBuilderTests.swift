@@ -136,6 +136,114 @@ final class MenuBuilderTests: BaseTestCase {
         XCTAssertEqual(state.nextEvent, event)
     }
 
+    func testMeetingControlMakesJoinPrimaryForEventWithLink() throws {
+        let now = Date(timeIntervalSinceReferenceDate: 800_000_000)
+        let calendarOpenURL = URL(string: "https://calendar.google.com/event?eid=abc")!
+        let event = makeFakeEvent(
+            id: "joinable",
+            start: now.addingTimeInterval(300),
+            end: now.addingTimeInterval(1800),
+            withLink: true,
+            calendarOpenURL: calendarOpenURL
+        )
+        var state = StatusBarMenuState()
+        state.nextEvent = event
+        state.settings = .empty
+
+        let items = MenuBuilder(target: Dummy(), state: state, now: now)
+            .buildMeetingControlSection()
+
+        let joinItem = try XCTUnwrap(items.first {
+            $0.action == #selector(StatusBarItemController.joinNextMeeting)
+        })
+        let actions = try XCTUnwrap(items.first {
+            $0.title == "status_bar_control_actions".loco()
+        }?.submenu?.items)
+
+        XCTAssertEqual(joinItem.title, "status_bar_control_join_next".loco())
+        XCTAssertNotNil(actions.first {
+            $0.action == #selector(StatusBarItemController.copyEventMeetingLink)
+        })
+        XCTAssertEqual(
+            actions.first {
+                $0.action == #selector(StatusBarItemController.openEventInCalendar)
+            }?.representedObject as? URL,
+            calendarOpenURL
+        )
+        XCTAssertNotNil(actions.first {
+            $0.action == #selector(StatusBarItemController.dismissEvent)
+        })
+    }
+
+    func testMeetingControlHidesBrokenJoinActionsWithoutLink() throws {
+        let now = Date(timeIntervalSinceReferenceDate: 800_000_000)
+        let event = makeFakeEvent(
+            id: "no-link",
+            start: now.addingTimeInterval(300),
+            end: now.addingTimeInterval(1800),
+            withLink: false,
+            calendarOpenURL: nil
+        )
+        var state = StatusBarMenuState()
+        state.nextEvent = event
+        state.settings = .empty
+
+        let items = MenuBuilder(target: Dummy(), state: state, now: now)
+            .buildMeetingControlSection()
+        let actions = try XCTUnwrap(items.first {
+            $0.title == "status_bar_control_actions".loco()
+        }?.submenu?.items)
+
+        XCTAssertNil(items.first {
+            $0.action == #selector(StatusBarItemController.joinNextMeeting)
+        })
+        XCTAssertTrue(items.contains {
+            $0.title == "status_bar_control_no_meeting_link".loco()
+        })
+        XCTAssertNil(actions.first {
+            $0.action == #selector(StatusBarItemController.copyEventMeetingLink)
+        })
+        XCTAssertNil(actions.first {
+            $0.action == #selector(StatusBarItemController.openEventInCalendar)
+        })
+    }
+
+    func testMeetingControlAuthRequiredOffersReconnect() {
+        var state = StatusBarMenuState()
+        state.emptyStateReason = .authRequired
+
+        let items = MenuBuilder(target: Dummy(), state: state)
+            .buildMeetingControlSection()
+
+        XCTAssertTrue(items.contains {
+            $0.action == #selector(StatusBarItemController.reconnectProviderAction)
+        })
+    }
+
+    func testMeetingControlNoCalendarsOffersPreferences() {
+        var state = StatusBarMenuState()
+        state.emptyStateReason = .noCalendarsSelected
+
+        let items = MenuBuilder(target: Dummy(), state: state)
+            .buildMeetingControlSection()
+
+        XCTAssertTrue(items.contains {
+            $0.action == #selector(StatusBarItemController.openPreferencesAction)
+        })
+    }
+
+    func testMeetingControlNoUpcomingOffersRefresh() {
+        var state = StatusBarMenuState()
+        state.emptyStateReason = .noUpcomingMeetings
+
+        let items = MenuBuilder(target: Dummy(), state: state)
+            .buildMeetingControlSection()
+
+        XCTAssertTrue(items.contains {
+            $0.action == #selector(StatusBarItemController.handleManualRefresh)
+        })
+    }
+
     func testDateSectionBuildsExpectedItems() {
         let builder = MenuBuilder(target: Dummy())
 

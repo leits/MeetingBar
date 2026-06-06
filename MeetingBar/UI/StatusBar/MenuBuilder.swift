@@ -22,6 +22,153 @@ struct MenuBuilder {
     var installationDate: Date?
     var now: Date = Date()
 
+    // MARK: Meeting control section ------------------------------------------
+
+    func buildMeetingControlSection() -> [NSMenuItem] {
+        if let event = state.nextEvent {
+            return buildMeetingControlSection(event: event)
+        }
+        return buildEmptyMeetingControlSection()
+    }
+
+    private func buildMeetingControlSection(event: MBEvent) -> [NSMenuItem] {
+        var items: [NSMenuItem] = []
+        let displayTitle = state.statusBar.hideMeetingTitle
+            ? "general_meeting".loco()
+            : event.title
+        let title = displayTitle.isEmpty ? "status_bar_no_title".loco() : displayTitle
+        let titleItem = NSMenuItem(title: title, action: nil, keyEquivalent: "")
+        titleItem.attributedTitle = NSAttributedString(
+            string: title,
+            attributes: [
+                .font: NSFont.boldSystemFont(ofSize: MenuStyleConstants.defaultFontSize + 1)
+            ]
+        )
+        titleItem.isEnabled = false
+        items.append(titleItem)
+
+        let time = eventTimePresentation(for: event)
+        let timeRange = event.isAllDay
+            ? time.start
+            : "\(time.start) – \(time.end)"
+        let context = [timeRange, event.calendar.title, event.calendar.source]
+            .filter { !$0.isEmpty }
+            .joined(separator: " • ")
+        let contextItem = NSMenuItem(title: context, action: nil, keyEquivalent: "")
+        contextItem.isEnabled = false
+        items.append(contextItem)
+
+        if event.meetingLink != nil {
+            let joinTitle = event.startDate < now
+                ? "status_bar_control_join_current".loco()
+                : "status_bar_control_join_next".loco()
+            let joinItem = NSMenuItem(
+                title: joinTitle,
+                action: #selector(StatusBarItemController.joinNextMeeting),
+                keyEquivalent: ""
+            )
+            joinItem.target = target
+            joinItem.image = NSImage(systemSymbolName: "video.fill", accessibilityDescription: nil)
+            items.append(joinItem)
+        } else {
+            let noLinkItem = NSMenuItem(
+                title: "status_bar_control_no_meeting_link".loco(),
+                action: nil,
+                keyEquivalent: ""
+            )
+            noLinkItem.isEnabled = false
+            items.append(noLinkItem)
+        }
+
+        items.append(makeMeetingActionsItem(for: event))
+        if case .stale = state.providerStatus {
+            items.append(statusItem(title: "status_bar_control_stale".loco()))
+        }
+        return items
+    }
+
+    private func makeMeetingActionsItem(for event: MBEvent) -> NSMenuItem {
+        let title = "status_bar_control_actions".loco()
+        let item = NSMenuItem(title: title, action: nil, keyEquivalent: "")
+        let menu = NSMenu(title: title)
+
+        if event.meetingLink != nil {
+            addEventAction(
+                to: menu,
+                title: "status_bar_submenu_copy_meeting_link".loco(),
+                action: #selector(StatusBarItemController.copyEventMeetingLink),
+                representedObject: event
+            )
+        }
+        if let alternateLinksItem = makeAlternateMeetingLinksMenu(for: event) {
+            menu.addItem(alternateLinksItem)
+        }
+        if let calendarOpenURL = event.calendarOpenURL {
+            addEventAction(
+                to: menu,
+                title: "status_bar_submenu_open_in_calendar".loco(),
+                action: #selector(StatusBarItemController.openEventInCalendar),
+                representedObject: calendarOpenURL
+            )
+        }
+        addEventAction(
+            to: menu,
+            title: "status_bar_submenu_dismiss_meeting".loco(),
+            action: #selector(StatusBarItemController.dismissEvent),
+            representedObject: event
+        )
+
+        item.submenu = menu
+        return item
+    }
+
+    private func buildEmptyMeetingControlSection() -> [NSMenuItem] {
+        let reason = state.emptyStateReason ?? .noUpcomingMeetings
+        let title: String
+        let actionTitle: String
+        let action: Selector
+
+        switch reason {
+        case .authRequired:
+            title = "status_bar_control_auth_required".loco()
+            actionTitle = "status_bar_control_reconnect".loco()
+            action = #selector(StatusBarItemController.reconnectProviderAction)
+        case .permissionRequired:
+            title = "status_bar_control_permission_required".loco()
+            actionTitle = "status_bar_control_grant_permission".loco()
+            action = #selector(StatusBarItemController.openCalendarPermissionsAction)
+        case .noCalendarsSelected:
+            title = "status_bar_control_no_calendars".loco()
+            actionTitle = "status_bar_control_select_calendars".loco()
+            action = #selector(StatusBarItemController.openPreferencesAction)
+        case .refreshFailed:
+            title = "status_bar_control_refresh_failed".loco()
+            actionTitle = "status_bar_section_refresh_sources".loco()
+            action = #selector(StatusBarItemController.handleManualRefresh)
+        case .noUpcomingMeetings:
+            title = "status_bar_control_no_upcoming".loco()
+            actionTitle = "status_bar_section_refresh_sources".loco()
+            action = #selector(StatusBarItemController.handleManualRefresh)
+        }
+
+        let titleItem = statusItem(title: title, bold: true)
+        let actionItem = NSMenuItem(title: actionTitle, action: action, keyEquivalent: "")
+        actionItem.target = target
+        return [titleItem, actionItem]
+    }
+
+    private func statusItem(title: String, bold: Bool = false) -> NSMenuItem {
+        let item = NSMenuItem(title: title, action: nil, keyEquivalent: "")
+        if bold {
+            item.attributedTitle = NSAttributedString(
+                string: title,
+                attributes: [.font: NSFont.boldSystemFont(ofSize: MenuStyleConstants.defaultFontSize)]
+            )
+        }
+        item.isEnabled = false
+        return item
+    }
+
     // MARK: Date section ------------------------------------------------------
 
     func buildDateSection(date: Date, title: String, events: [MBEvent]) -> [NSMenuItem] {
