@@ -26,13 +26,32 @@ private struct ProviderStatusSection: View {
     @EnvironmentObject var appModel: AppModel
 
     var body: some View {
+        let presentation = PreferencesCalendarPresentation.make(from: appModel.state)
+
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 8) {
                 Circle()
-                    .fill(statusColor)
+                    .fill(statusColor(presentation.statusTone))
                     .frame(width: 8, height: 8)
-                Text(statusText)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(presentation.providerTitleKey.loco())
+                        .font(.headline)
+                    Text(presentation.statusTextKey.loco())
+                        .foregroundStyle(.secondary)
+                        .font(.caption)
+                }
                 Spacer()
+                if presentation.canReconnect {
+                    Button("preferences_status_reconnect".loco()) {
+                        appModel.send(.changeProvider(.googleCalendar, signOut: true))
+                    }
+                    .disabled(appModel.state.providerChangeInProgress)
+                }
+                if presentation.canOpenCalendarSettings {
+                    Button("preferences_status_open_calendar_settings".loco()) {
+                        NSWorkspace.shared.open(Links.calendarPreferences)
+                    }
+                }
                 Button("preferences_status_refresh_now".loco()) {
                     appModel.send(.refreshCalendars)
                 }
@@ -61,22 +80,13 @@ private struct ProviderStatusSection: View {
         .padding(8)
     }
 
-    private var statusColor: Color {
-        let health = appModel.state.providerHealth
-        if health.authRequired { return .red }
-        if health.lastErrorDescription != nil { return .red }
-        if health.isStale { return .orange }
-        if health.lastSuccessfulRefresh != nil { return .green }
-        return .gray
-    }
-
-    private var statusText: String {
-        let health = appModel.state.providerHealth
-        if health.authRequired { return "preferences_status_state_auth_required".loco() }
-        if health.lastErrorDescription != nil { return "preferences_status_state_error".loco() }
-        if health.isStale { return "preferences_status_state_stale".loco() }
-        if health.lastSuccessfulRefresh != nil { return "preferences_status_state_ok".loco() }
-        return "preferences_status_state_initializing".loco()
+    private func statusColor(_ tone: PreferencesStatusTone) -> Color {
+        switch tone {
+        case .neutral: .gray
+        case .success: .green
+        case .warning: .orange
+        case .error: .red
+        }
     }
 }
 

@@ -14,15 +14,6 @@ struct AdvancedTab: View {
         VStack {
             GroupBox(
                 label: Label(
-                    "preferences_section_event_notifications_title".loco(), systemImage: "bell")
-            ) {
-                VStack(spacing: 10) {
-                    AutomaticEventJoinPicker()
-                    EndEventNotificationPicker()
-                }.frame(maxWidth: .infinity, alignment: .leading)
-            }
-            GroupBox(
-                label: Label(
                     "preferences_section_apple_script_hooks_title".loco(),
                     systemImage: "applescript")
             ) {

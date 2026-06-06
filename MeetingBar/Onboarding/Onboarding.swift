@@ -26,6 +26,25 @@ enum OnboardingAuthorizationState: Equatable {
     case failed(String)
 }
 
+enum OnboardingFlowPolicy {
+    static func canContinueCalendarSelection(selectedCalendarIDs: [String]) -> Bool {
+        !selectedCalendarIDs.isEmpty
+    }
+
+    static func authorizationState(
+        for result: ProviderSelectionResult
+    ) -> OnboardingAuthorizationState? {
+        switch result {
+        case .success:
+            return nil
+        case .cancelled:
+            return .failed("access_screen_provider_authorization_cancelled".loco())
+        case .authRequired(let description), .failed(let description):
+            return .failed(description)
+        }
+    }
+}
+
 @MainActor
 final class OnboardingRouter: ObservableObject {
     @Published var currentStep: OnboardingStep = .welcome

@@ -13,31 +13,107 @@ struct CalendarsTab: View {
     @EnvironmentObject var appModel: AppModel
 
     var body: some View {
-        VStack(alignment: .leading) {
+        let presentation = PreferencesCalendarPresentation.make(from: appModel.state)
+
+        VStack(alignment: .leading, spacing: 12) {
             GroupBox(
                 label: Label(
-                    "preferences_section_data_source_title".loco(), systemImage: "server.rack")
+                    "preferences_calendar_source_title".loco(), systemImage: "server.rack")
             ) {
-                ProviderPicker()
-            }
-            .padding(.bottom, 5)
-            Label("preferences_calendars_select_calendars_title".loco(), systemImage: "calendar")
-                .padding(5)
-            List {
-                if appModel.state.calendars.isEmpty {
-                    if appModel.state.activeProvider == .macOSEventKit {
-                        AccessDeniedBanner()
-                    }
-                    Button("general_refresh".loco()) {
-                        appModel.send(.refreshCalendars)
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack {
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(presentation.providerTitleKey.loco())
+                                .font(.headline)
+                            Label(
+                                presentation.statusTextKey.loco(),
+                                systemImage: statusSystemImage(presentation.statusTone)
+                            )
+                            .foregroundStyle(statusColor(presentation.statusTone))
+                            .font(.caption)
+                        }
+                        Spacer()
+                        ProviderPicker()
                     }
 
-                } else {
-                    CalendarSectionsView(calendars: appModel.state.calendars)
+                    Text(
+                        "preferences_calendars_selection_summary".loco(
+                            presentation.selectedCalendarCount,
+                            presentation.availableCalendarCount
+                        )
+                    )
+                    .foregroundStyle(.secondary)
+                    .font(.caption)
+                }
+                .padding(8)
+            }
+
+            GroupBox(
+                label: Label(
+                    "preferences_calendars_select_calendars_title".loco(),
+                    systemImage: "calendar")
+            ) {
+                List {
+                    if appModel.state.calendars.isEmpty {
+                        CalendarPreferencesEmptyState(presentation: presentation)
+                    } else {
+                        CalendarSectionsView(calendars: appModel.state.calendars)
+                    }
+                }
+                .listStyle(.inset)
+            }
+        }
+    }
+
+    private func statusSystemImage(_ tone: PreferencesStatusTone) -> String {
+        switch tone {
+        case .neutral: "circle"
+        case .success: "checkmark.circle.fill"
+        case .warning: "exclamationmark.triangle.fill"
+        case .error: "xmark.circle.fill"
+        }
+    }
+
+    private func statusColor(_ tone: PreferencesStatusTone) -> Color {
+        switch tone {
+        case .neutral: .secondary
+        case .success: .green
+        case .warning: .orange
+        case .error: .red
+        }
+    }
+}
+
+private struct CalendarPreferencesEmptyState: View {
+    @EnvironmentObject var appModel: AppModel
+    let presentation: PreferencesCalendarPresentation
+
+    var body: some View {
+        VStack(spacing: 10) {
+            Text(emptyStateText)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+            HStack {
+                if presentation.canReconnect {
+                    Button("preferences_status_reconnect".loco()) {
+                        appModel.send(.changeProvider(.googleCalendar, signOut: true))
+                    }
+                }
+                if presentation.canOpenCalendarSettings {
+                    Button("preferences_status_open_calendar_settings".loco()) {
+                        NSWorkspace.shared.open(Links.calendarPreferences)
+                    }
+                }
+                Button("general_refresh".loco()) {
+                    appModel.send(.refreshCalendars)
                 }
             }
-            .listStyle(.sidebar)
         }
+        .frame(maxWidth: .infinity, minHeight: 160)
+    }
+
+    private var emptyStateText: String {
+        presentation.emptyStateTextKey.loco()
     }
 }
 
@@ -76,9 +152,11 @@ struct ProviderPicker: View {
                 Text("Google Calendar API").tag(EventStoreProvider.googleCalendar)
             }
             .onChange(of: picker) { provider in
-                guard provider != appModel.state.activeProvider,
-                      !appModel.state.providerChangeInProgress
-                else { return }
+                guard ProviderPickerSelectionPolicy.shouldRequestChange(
+                    selectedProvider: provider,
+                    activeProvider: appModel.state.activeProvider,
+                    providerChangeInProgress: appModel.state.providerChangeInProgress
+                ) else { return }
                 appModel.send(.changeProvider(provider, signOut: false))
             }
             .disabled(appModel.state.providerChangeInProgress)
@@ -97,9 +175,11 @@ struct ProviderPicker: View {
             picker = provider
         }
         .onChange(of: appModel.state.providerChangeInProgress) { inProgress in
-            if !inProgress {
-                picker = appModel.state.activeProvider
-            }
+            picker = ProviderPickerSelectionPolicy.synchronizedSelection(
+                currentSelection: picker,
+                activeProvider: appModel.state.activeProvider,
+                providerChangeInProgress: inProgress
+            )
         }
     }
 }

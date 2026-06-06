@@ -48,6 +48,9 @@
 "preferences_tab_bookmarks" = "Bookmarks";
 "preferences_tab_links" = "Links";
 "preferences_tab_calendars" = "Calendars";
+"preferences_tab_meeting_opening" = "Meeting Opening";
+"preferences_tab_menu_bar" = "Menu Bar";
+"preferences_tab_notifications" = "Notifications";
 "preferences_tab_advanced" = "Advanced";
 "preferences_tab_status" = "Status";
 
@@ -63,6 +66,11 @@
 "preferences_section_create_title" = "Create";
 "preferences_section_apple_script_hooks_title" = "AppleScript Hooks";
 "preferences_section_regex_filters_title" = "Regex Filters";
+"preferences_calendar_source_title" = "Calendar Source";
+"preferences_calendars_selection_summary" = "%d selected of %d available calendars";
+"preferences_meeting_opening_behavior_title" = "Meeting Opening";
+"preferences_notifications_alerts_title" = "Meeting Alerts";
+"preferences_notifications_automation_title" = "Automatic Joining";
 
 // MARK: - Preferences Status
 
@@ -72,7 +80,10 @@
 "preferences_status_state_stale" = "Showing cached data";
 "preferences_status_state_error" = "Last refresh failed";
 "preferences_status_state_auth_required" = "Authorization required";
+"preferences_status_state_permission_required" = "Calendar permission required";
 "preferences_status_state_initializing" = "Initializing";
+"preferences_status_reconnect" = "Reconnect";
+"preferences_status_open_calendar_settings" = "Open Calendar Settings";
 "preferences_status_last_successful_refresh" = "Last successful refresh:";
 "preferences_status_last_error" = "Last error:";
 "preferences_status_refresh_now" = "Refresh now";

@@ -26,7 +26,11 @@ struct LinksTab: View {
 
     var body: some View {
         VStack {
-            GroupBox(label: Label("preferences_section_open_title".loco(), systemImage: "link")) {
+            GroupBox(
+                label: Label(
+                    "preferences_meeting_opening_behavior_title".loco(),
+                    systemImage: "arrow.up.right.square")
+            ) {
                 Picker(
                     selection: $defaultBrowser,
                     label: Text("preferences_services_link_meeting_title".loco()).frame(
@@ -152,13 +156,18 @@ struct MeetingProviderBrowserPicker: View {
 
     private var selection: Binding<Browser> {
         Binding(
-            get: { providerBrowsers[provider.id] ?? systemDefaultBrowser },
+            get: {
+                MeetingProviderBrowserSelection.selectedBrowser(
+                    providerID: provider.id,
+                    providerBrowsers: providerBrowsers
+                )
+            },
             set: { newBrowser in
-                if newBrowser == systemDefaultBrowser {
-                    providerBrowsers.removeValue(forKey: provider.id)
-                } else {
-                    providerBrowsers[provider.id] = newBrowser
-                }
+                providerBrowsers = MeetingProviderBrowserSelection.updating(
+                    providerID: provider.id,
+                    browser: newBrowser,
+                    providerBrowsers: providerBrowsers
+                )
             }
         )
     }

@@ -13,13 +13,32 @@ struct PreferencesView: View {
 
     var body: some View {
         TabView {
-            GeneralTab(patronageService: patronageService)
-                .tabItem { Text("preferences_tab_general".loco()) }
-            AppearanceTab().tabItem { Text("preferences_tab_appearance".loco()) }
-            LinksTab().tabItem { Text("preferences_tab_links".loco()) }
-            CalendarsTab().tabItem { Text("preferences_tab_calendars".loco()) }
-            AdvancedTab().tabItem { Text("preferences_tab_advanced".loco()) }
-            StatusTab().tabItem { Text("preferences_tab_status".loco()) }
+            ForEach(PreferencesTab.allCases, id: \.self) { tab in
+                tabContent(tab)
+                    .tabItem {
+                        Label(tab.titleKey.loco(), systemImage: tab.systemImage)
+                    }
+            }
         }.padding()
+    }
+
+    @ViewBuilder
+    private func tabContent(_ tab: PreferencesTab) -> some View {
+        switch tab {
+        case .general:
+            GeneralTab(patronageService: patronageService)
+        case .calendars:
+            CalendarsTab()
+        case .meetingOpening:
+            LinksTab()
+        case .menuBar:
+            AppearanceTab()
+        case .notifications:
+            NotificationsTab()
+        case .advanced:
+            AdvancedTab()
+        case .status:
+            StatusTab()
+        }
     }
 }

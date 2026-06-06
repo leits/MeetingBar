@@ -125,17 +125,10 @@ struct AuthorizationScreen: View {
         router.authorizationState = .requesting
         let result = await onboardingHandler.onProviderSelected(provider)
 
-        switch result {
-        case .success:
+        if result == .success {
             router.currentStep = .calendarSelection
-        case .cancelled:
-            router.authorizationState = .failed(
-                "access_screen_provider_authorization_cancelled".loco()
-            )
-        case .authRequired(let description):
-            router.authorizationState = .failed(description)
-        case .failed(let description):
-            router.authorizationState = .failed(description)
+        } else if let state = OnboardingFlowPolicy.authorizationState(for: result) {
+            router.authorizationState = state
         }
     }
 }

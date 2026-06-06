@@ -28,7 +28,7 @@ struct CalendarsScreen: View {
 
             HStack {
                 Spacer()
-                if onboardingHandler.appModel?.state.selectedCalendarIDs.isEmpty != false {
+                if !canContinue {
                     Text("calendars_screen_select_calendar_title".loco()).foregroundColor(
                         Color.gray)
                 }
@@ -36,9 +36,15 @@ struct CalendarsScreen: View {
                     router.currentStep = .meetingOpening
                 }
                 .buttonStyle(.borderedProminent)
-                .disabled(onboardingHandler.appModel?.state.selectedCalendarIDs.isEmpty != false)
+                .disabled(!canContinue)
             }
         }
+    }
+
+    private var canContinue: Bool {
+        OnboardingFlowPolicy.canContinueCalendarSelection(
+            selectedCalendarIDs: onboardingHandler.appModel?.state.selectedCalendarIDs ?? []
+        )
     }
 }
 

@@ -19,14 +19,6 @@ struct GeneralTab: View {
             GroupBox(label: Label("preferences_section_general_settings_title".loco(), systemImage: "gearshape")) {
                 LaunchAtLoginANDPreferredLanguagePicker()
             }
-            GroupBox(label: Label("preferences_section_event_notifications_title".loco(), systemImage: "bell.badge.fill")) {
-                VStack(alignment: .leading, spacing: 8) {
-                    JoinEventNotificationPicker()
-                    FullscreenNotificationPicker()
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            .padding(.top, 8)
             GroupBox(label: Label("preferences_section_shortcuts_title".loco(), systemImage: "keyboard")) {
                 ShortcutsSection()
             }.padding(.top, 8)
