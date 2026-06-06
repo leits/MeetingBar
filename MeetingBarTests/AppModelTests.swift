@@ -41,6 +41,19 @@ final class AppModelTests: BaseTestCase {
         XCTAssertEqual(harness.providerChanges.map(\.signOut), [true])
     }
 
+    func testSuccessfulProviderChangeUsesAlreadyFetchedCalendars() async {
+        let harness = AppModelTestHarness()
+        let googleCalendar = makeFakeCalendar(id: "google-calendar")
+        harness.providerCalendarsAfterChange = [googleCalendar]
+
+        let result = await harness.model.changeProvider(to: .googleCalendar)
+
+        XCTAssertEqual(result, .success)
+        XCTAssertEqual(harness.model.state.activeProvider, .googleCalendar)
+        XCTAssertEqual(harness.model.state.calendars, [googleCalendar])
+        XCTAssertFalse(harness.model.state.providerChangeInProgress)
+    }
+
     func testFailedProviderChangePreservesCurrentState() async {
         let harness = AppModelTestHarness()
         harness.providerSelectionResult = .cancelled

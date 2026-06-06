@@ -51,4 +51,21 @@ final class OnboardingFlowTests: XCTestCase {
         XCTAssertEqual(router.authorizationState, .idle)
         XCTAssertEqual(router.currentStep, .authorization)
     }
+
+    func testSuccessfulProviderSelectionEntersCalendarSelectionWithCalendars() async {
+        let harness = AppModelTestHarness()
+        let calendar = makeFakeCalendar(id: "google-calendar")
+        harness.providerCalendarsAfterChange = [calendar]
+        let router = OnboardingRouter()
+        router.selectProvider(.googleCalendar)
+
+        let result = await harness.model.changeProvider(to: .googleCalendar)
+        if result == .success {
+            router.currentStep = .calendarSelection
+        }
+
+        XCTAssertEqual(result, .success)
+        XCTAssertEqual(router.currentStep, .calendarSelection)
+        XCTAssertEqual(harness.model.state.calendars, [calendar])
+    }
 }

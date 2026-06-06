@@ -31,6 +31,8 @@ final class AppModelTestHarness {
     private(set) var startedAsyncOperationCount = 0
     private(set) var cancelledAsyncOperationCount = 0
     var providerSelectionResult: ProviderSelectionResult = .success
+    var providerCalendarsAfterChange: [MBCalendar] = []
+    private var calendarSnapshot: ([MBCalendar], EventStoreProvider) = ([], .macOSEventKit)
 
     let fixedNow: Date
     private let asyncOperationDelayNanoseconds: UInt64
@@ -52,7 +54,13 @@ final class AppModelTestHarness {
             guard let self else { return .failed("Harness unavailable") }
             guard await self.waitForAsyncOperationDelay() else { return .cancelled }
             self.providerChanges.append((provider, signOut))
+            if self.providerSelectionResult == .success {
+                self.calendarSnapshot = (self.providerCalendarsAfterChange, provider)
+            }
             return self.providerSelectionResult
+        },
+        currentCalendarSnapshot: { [weak self] in
+            self?.calendarSnapshot ?? ([], .macOSEventKit)
         },
         toggleCalendarSelection: { [weak self] id, selected in
             self?.calendarSelections.append((id, selected))

@@ -153,6 +153,11 @@ struct AppEnvironment {
     /// Switch the active calendar provider. `signOut = true` drops the current session first.
     var changeProvider: @MainActor (EventStoreProvider, Bool) async -> ProviderSelectionResult
 
+    /// Synchronous snapshot after provider changes. CalendarSync updates its
+    /// calendars before returning success, while its publisher is delivered to
+    /// AppModel on the next main-queue cycle.
+    var currentCalendarSnapshot: @MainActor () -> ([MBCalendar], EventStoreProvider)
+
     /// Add or remove a calendar from the user's selection. CalendarSync
     /// observes the underlying setting and re-fetches automatically.
     var toggleCalendarSelection: @MainActor (String, Bool) -> Void
@@ -221,6 +226,9 @@ struct AppEnvironment {
             },
             changeProvider: { newProvider, signOut in
                 await calendarSync.changeEventStoreProvider(newProvider, withSignOut: signOut)
+            },
+            currentCalendarSnapshot: {
+                (calendarSync.calendars, calendarSync.repository.activeProviderName)
             },
             toggleCalendarSelection: { id, selected in
                 AppSettings.setCalendarSelection(id: id, selected: selected)
@@ -552,7 +560,10 @@ final class AppModel: ObservableObject {
         guard generation == providerChangeGeneration else { return .cancelled }
 
         if result == .success {
-            resetProviderState(to: provider)
+            let (calendars, snapshotProvider) = environment.currentCalendarSnapshot()
+            state.activeProvider = provider
+            state.calendars = snapshotProvider == provider ? calendars : []
+            state.events = []
         }
         state.providerChangeInProgress = false
         return result
