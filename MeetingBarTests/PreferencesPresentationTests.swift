@@ -8,6 +8,35 @@ import XCTest
 @testable import MeetingBar
 
 final class PreferencesPresentationTests: XCTestCase {
+    func testCalendarSourcesExplainDistinctDataSourcesAndAccountScopes() {
+        XCTAssertEqual(
+            CalendarSourcePresentation.all.map(\.provider),
+            [.macOSEventKit, .googleCalendar]
+        )
+
+        let macOSSource = CalendarSourcePresentation.make(for: .macOSEventKit)
+        XCTAssertEqual(macOSSource.titleKey, "onboarding_apple_calendar_title")
+        XCTAssertEqual(
+            macOSSource.dataSourceKey,
+            "access_screen_provider_macos_data_source"
+        )
+        XCTAssertEqual(
+            macOSSource.accountScopeKey,
+            "access_screen_provider_macos_number_of_accounts"
+        )
+
+        let googleSource = CalendarSourcePresentation.make(for: .googleCalendar)
+        XCTAssertEqual(googleSource.titleKey, "onboarding_google_calendar_title")
+        XCTAssertEqual(
+            googleSource.dataSourceKey,
+            "access_screen_provider_gcalendar_data_source"
+        )
+        XCTAssertEqual(
+            googleSource.accountScopeKey,
+            "access_screen_provider_gcalendar_number_of_accounts"
+        )
+    }
+
     func testPreferencesTabsExposeCoreProductConceptsInOrder() {
         XCTAssertEqual(
             PreferencesTab.allCases,
@@ -83,6 +112,14 @@ final class PreferencesPresentationTests: XCTestCase {
         XCTAssertEqual(presentation.statusTone, .success)
         XCTAssertEqual(presentation.statusTextKey, "preferences_status_state_ok")
         XCTAssertEqual(presentation.providerTitleKey, "onboarding_google_calendar_title")
+        XCTAssertEqual(
+            presentation.providerDataSourceKey,
+            "access_screen_provider_gcalendar_data_source"
+        )
+        XCTAssertEqual(
+            presentation.providerAccountScopeKey,
+            "access_screen_provider_gcalendar_number_of_accounts"
+        )
         XCTAssertEqual(presentation.selectedCalendarCount, 1)
         XCTAssertEqual(presentation.availableCalendarCount, 2)
         XCTAssertFalse(presentation.canReconnect)

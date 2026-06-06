@@ -5,6 +5,48 @@
 
 import Foundation
 
+struct CalendarSourcePresentation: Equatable, Identifiable {
+    let provider: EventStoreProvider
+    let titleKey: String
+    let descriptionKey: String
+    let dataSourceKey: String
+    let accountScopeKey: String
+    let authorizationDescriptionKey: String
+    let systemImage: String
+
+    var id: EventStoreProvider { provider }
+
+    static let all: [CalendarSourcePresentation] = [
+        make(for: .macOSEventKit),
+        make(for: .googleCalendar)
+    ]
+
+    static func make(for provider: EventStoreProvider) -> CalendarSourcePresentation {
+        switch provider {
+        case .macOSEventKit:
+            CalendarSourcePresentation(
+                provider: provider,
+                titleKey: "onboarding_apple_calendar_title",
+                descriptionKey: "onboarding_apple_calendar_description",
+                dataSourceKey: "access_screen_provider_macos_data_source",
+                accountScopeKey: "access_screen_provider_macos_number_of_accounts",
+                authorizationDescriptionKey: "onboarding_authorization_apple_description",
+                systemImage: "calendar"
+            )
+        case .googleCalendar:
+            CalendarSourcePresentation(
+                provider: provider,
+                titleKey: "onboarding_google_calendar_title",
+                descriptionKey: "onboarding_google_calendar_description",
+                dataSourceKey: "access_screen_provider_gcalendar_data_source",
+                accountScopeKey: "access_screen_provider_gcalendar_number_of_accounts",
+                authorizationDescriptionKey: "onboarding_authorization_google_description",
+                systemImage: "globe"
+            )
+        }
+    }
+}
+
 enum PreferencesTab: CaseIterable, Hashable {
     case general
     case calendars
@@ -110,6 +152,8 @@ struct PreferencesCalendarPresentation: Equatable {
     let canReconnect: Bool
     let canOpenCalendarSettings: Bool
     let providerTitleKey: String
+    let providerDataSourceKey: String
+    let providerAccountScopeKey: String
     let statusTextKey: String
     let emptyStateTextKey: String
 
@@ -146,12 +190,7 @@ struct PreferencesCalendarPresentation: Equatable {
             statusTextKey = "preferences_status_state_initializing"
         }
 
-        let providerTitleKey = switch state.activeProvider {
-        case .macOSEventKit:
-            "onboarding_apple_calendar_title"
-        case .googleCalendar:
-            "onboarding_google_calendar_title"
-        }
+        let calendarSource = CalendarSourcePresentation.make(for: state.activeProvider)
 
         let emptyStateTextKey = switch connectionState {
         case .authRequired:
@@ -178,7 +217,9 @@ struct PreferencesCalendarPresentation: Equatable {
                 && connectionState == .authRequired,
             canOpenCalendarSettings: state.activeProvider == .macOSEventKit
                 && connectionState == .permissionRequired,
-            providerTitleKey: providerTitleKey,
+            providerTitleKey: calendarSource.titleKey,
+            providerDataSourceKey: calendarSource.dataSourceKey,
+            providerAccountScopeKey: calendarSource.accountScopeKey,
             statusTextKey: statusTextKey,
             emptyStateTextKey: emptyStateTextKey
         )

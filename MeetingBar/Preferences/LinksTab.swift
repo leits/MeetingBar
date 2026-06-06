@@ -146,7 +146,9 @@ struct LinksTab: View {
                     }.sheet(isPresented: $showingAddBookmarkModal) {
                         AddBookmarkModal()
                     }
-                }.listStyle(.sidebar)
+                }
+                .listStyle(.sidebar)
+                .frame(minHeight: 160)
                     .alert(isPresented: $showingAlert) {
                         Alert(
                             title: Text("preferences_bookmarks_delete_bookmark_title".loco()),

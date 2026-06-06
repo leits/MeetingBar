@@ -43,7 +43,8 @@ struct CalendarsScreen: View {
 
     private var canContinue: Bool {
         OnboardingFlowPolicy.canContinueCalendarSelection(
-            selectedCalendarIDs: onboardingHandler.appModel?.state.selectedCalendarIDs ?? []
+            selectedCalendarIDs: onboardingHandler.appModel?.state.selectedCalendarIDs ?? [],
+            availableCalendarIDs: onboardingHandler.appModel?.state.calendars.map(\.id) ?? []
         )
     }
 }
@@ -52,6 +53,8 @@ private struct CalendarSelectionContent: View {
     @ObservedObject var appModel: AppModel
 
     var body: some View {
+        let presentation = PreferencesCalendarPresentation.make(from: appModel.state)
+
         GroupBox {
             if appModel.state.calendars.isEmpty {
                 VStack(spacing: 10) {
@@ -59,9 +62,25 @@ private struct CalendarSelectionContent: View {
                         .font(.title)
                         .foregroundStyle(.secondary)
                     Text(emptyStateText)
-                    Button("general_refresh".loco()) {
-                        appModel.send(.refreshCalendars)
+                        .multilineTextAlignment(.center)
+                    HStack {
+                        if presentation.canReconnect {
+                            Button("preferences_status_reconnect".loco()) {
+                                appModel.send(
+                                    .changeProvider(presentation.activeProvider, signOut: true)
+                                )
+                            }
+                        }
+                        if presentation.canOpenCalendarSettings {
+                            Button("preferences_status_open_calendar_settings".loco()) {
+                                NSWorkspace.shared.open(Links.calendarPreferences)
+                            }
+                        }
+                        Button("general_refresh".loco()) {
+                            appModel.send(.refreshCalendars)
+                        }
                     }
+                    .disabled(appModel.state.providerChangeInProgress)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
@@ -69,6 +88,7 @@ private struct CalendarSelectionContent: View {
                     CalendarSectionsView(calendars: appModel.state.calendars)
                 }
                 .listStyle(.inset)
+                .frame(minHeight: 260)
             }
         }
         .environmentObject(appModel)

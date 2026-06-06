@@ -21,20 +21,30 @@ struct CalendarsTab: View {
                     "preferences_calendar_source_title".loco(), systemImage: "server.rack")
             ) {
                 VStack(alignment: .leading, spacing: 10) {
-                    HStack {
-                        VStack(alignment: .leading, spacing: 3) {
-                            Text(presentation.providerTitleKey.loco())
-                                .font(.headline)
-                            Label(
-                                presentation.statusTextKey.loco(),
-                                systemImage: statusSystemImage(presentation.statusTone)
-                            )
-                            .foregroundStyle(statusColor(presentation.statusTone))
-                            .font(.caption)
-                        }
-                        Spacer()
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(presentation.providerTitleKey.loco())
+                            .font(.headline)
+                        Label(
+                            presentation.statusTextKey.loco(),
+                            systemImage: statusSystemImage(presentation.statusTone)
+                        )
+                        .foregroundStyle(statusColor(presentation.statusTone))
+                        .font(.caption)
                         ProviderPicker()
                     }
+
+                    VStack(alignment: .leading, spacing: 5) {
+                        Label(
+                            presentation.providerDataSourceKey.loco(),
+                            systemImage: "arrow.triangle.2.circlepath"
+                        )
+                        Label(
+                            presentation.providerAccountScopeKey.loco(),
+                            systemImage: "person.2"
+                        )
+                    }
+                    .foregroundStyle(.secondary)
+                    .font(.caption)
 
                     Text(
                         "preferences_calendars_selection_summary".loco(
@@ -98,6 +108,7 @@ struct CalendarsTab: View {
                         }
                     }
                     .listStyle(.inset)
+                    .frame(minHeight: 280)
                 }
             }
         }
@@ -169,11 +180,12 @@ struct ProviderPicker: View {
 
     var body: some View {
         HStack {
-            Picker("", selection: $picker) {
-                Text("access_screen_provider_macos_title".loco()).tag(
-                    EventStoreProvider.macOSEventKit)
-                Text("Google Calendar API").tag(EventStoreProvider.googleCalendar)
+            Picker("access_screen_provider_picker_label".loco(), selection: $picker) {
+                ForEach(CalendarSourcePresentation.all) { source in
+                    Text(source.titleKey.loco()).tag(source.provider)
+                }
             }
+            .labelsHidden()
             .onChange(of: picker) { provider in
                 guard ProviderPickerSelectionPolicy.shouldRequestChange(
                     selectedProvider: provider,

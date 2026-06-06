@@ -77,5 +77,5 @@ struct PreferencesView: View {
 
 #Preview {
     PreferencesView(patronageService: PatronageService())
-        .frame(width: 700, height: 620)
+        .frame(width: 860, height: 620)
 }

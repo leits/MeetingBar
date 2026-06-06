@@ -21,18 +21,11 @@ struct AccessScreen: View {
                 .foregroundStyle(.secondary)
 
             HStack(spacing: 16) {
-                ProviderChoice(
-                    title: "onboarding_apple_calendar_title".loco(),
-                    description: "onboarding_apple_calendar_description".loco(),
-                    systemImage: "calendar",
-                    action: { router.selectProvider(.macOSEventKit) }
-                )
-                ProviderChoice(
-                    title: "onboarding_google_calendar_title".loco(),
-                    description: "onboarding_google_calendar_description".loco(),
-                    systemImage: "globe",
-                    action: { router.selectProvider(.googleCalendar) }
-                )
+                ForEach(CalendarSourcePresentation.all) { source in
+                    ProviderChoice(source: source) {
+                        router.selectProvider(source.provider)
+                    }
+                }
             }
             Spacer()
         }
@@ -40,24 +33,35 @@ struct AccessScreen: View {
 }
 
 private struct ProviderChoice: View {
-    let title: String
-    let description: String
-    let systemImage: String
+    let source: CalendarSourcePresentation
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            VStack(alignment: .leading, spacing: 12) {
-                Image(systemName: systemImage).font(.title)
-                Text(title).font(.headline)
-                Text(description)
+            VStack(alignment: .leading, spacing: 10) {
+                Image(systemName: source.systemImage).font(.title)
+                Text(source.titleKey.loco()).font(.headline)
+                Text(source.descriptionKey.loco())
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.leading)
+
+                Divider()
+
+                VStack(alignment: .leading, spacing: 6) {
+                    Label(
+                        source.dataSourceKey.loco(),
+                        systemImage: "arrow.triangle.2.circlepath"
+                    )
+                    Label(source.accountScopeKey.loco(), systemImage: "person.2")
+                }
+                .font(.caption)
+                .foregroundStyle(.secondary)
+
                 Spacer()
-                Text("onboarding_connect".loco()).fontWeight(.semibold)
+                Text("onboarding_use_calendar_source".loco()).fontWeight(.semibold)
             }
             .padding()
-            .frame(maxWidth: .infinity, minHeight: 190, alignment: .leading)
+            .frame(maxWidth: .infinity, minHeight: 250, alignment: .leading)
             .contentShape(Rectangle())
         }
         .buttonStyle(.bordered)
@@ -91,6 +95,11 @@ struct AuthorizationScreen: View {
                     .foregroundStyle(.red)
                     .multilineTextAlignment(.center)
                 HStack {
+                    Button("onboarding_choose_different_source".loco()) {
+                        router.selectedProvider = nil
+                        router.authorizationState = .idle
+                        router.currentStep = .calendarSource
+                    }
                     if router.selectedProvider == .macOSEventKit {
                         Button("access_screen_access_denied_system_preferences_button".loco()) {
                             NSWorkspace.shared.open(Links.calendarPreferences)
@@ -112,9 +121,12 @@ struct AuthorizationScreen: View {
     }
 
     private var authorizationDescription: String {
-        router.selectedProvider == .googleCalendar
-            ? "onboarding_authorization_google_description".loco()
-            : "onboarding_authorization_apple_description".loco()
+        guard let provider = router.selectedProvider else {
+            return "onboarding_authorization_apple_description".loco()
+        }
+        return CalendarSourcePresentation.make(for: provider)
+            .authorizationDescriptionKey
+            .loco()
     }
 
     private func authorize() async {

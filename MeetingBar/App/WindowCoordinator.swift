@@ -31,7 +31,7 @@ final class WindowCoordinator {
         onboardingHandler = handler
         let contentView = OnboardingView().environmentObject(handler)
         let onboardingWindow = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 660, height: 450),
+            contentRect: NSRect(x: 0, y: 0, width: 760, height: 520),
             styleMask: [.closable, .titled],
             backing: .buffered,
             defer: false
@@ -113,7 +113,7 @@ final class WindowCoordinator {
         }
 
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 700, height: 620),
+            contentRect: NSRect(x: 0, y: 0, width: 860, height: 620),
             styleMask: [.closable, .titled, .resizable],
             backing: .buffered,
             defer: false

@@ -27,8 +27,11 @@ enum OnboardingAuthorizationState: Equatable {
 }
 
 enum OnboardingFlowPolicy {
-    static func canContinueCalendarSelection(selectedCalendarIDs: [String]) -> Bool {
-        !selectedCalendarIDs.isEmpty
+    static func canContinueCalendarSelection(
+        selectedCalendarIDs: [String],
+        availableCalendarIDs: [String]
+    ) -> Bool {
+        !Set(selectedCalendarIDs).isDisjoint(with: availableCalendarIDs)
     }
 
     static func authorizationState(
@@ -67,19 +70,21 @@ struct OnboardingView: View {
             Divider()
             switch router.currentStep {
             case .welcome:
-                WelcomeScreen(router: router).padding()
+                WelcomeScreen(router: router)
             case .calendarSource:
-                AccessScreen(router: router).padding()
+                AccessScreen(router: router)
             case .authorization:
-                AuthorizationScreen(router: router).padding()
+                AuthorizationScreen(router: router)
             case .calendarSelection:
-                CalendarsScreen(router: router).padding()
+                CalendarsScreen(router: router)
             case .meetingOpening:
-                MeetingOpeningScreen(router: router).padding()
+                MeetingOpeningScreen(router: router)
             case .success:
-                OnboardingSuccessScreen().padding()
+                OnboardingSuccessScreen()
             }
-        }.frame(maxWidth: .infinity, maxHeight: .infinity).padding()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(20)
     }
 }
 
