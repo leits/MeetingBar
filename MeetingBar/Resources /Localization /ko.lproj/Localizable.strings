@@ -136,7 +136,7 @@
 "preferences_calendars_provider_gcalendar_change_account" = "구글 계정 변경";
 "preferences_calendars_provider_macos_switch" = "macOS 캘린더로 교체";
 "preferences_calendars_provider_gcalendar_switch" = "구글 캘린더 API로 교체";
-"preferences_advanced_setting_warning" = "⚠️ 설정을 충분히 이해한 경우에만 사용하세요.";
+"preferences_advanced_setting_warning" = "⚠️ 이 설정들의 기능을 정확히 이해한 경우에만 사용하십시오";
 "preferences_advanced_apple_script_checkmark" = "회의 참석 시 AppleScript 실행";
 "preferences_advanced_apple_script_placeholder" = "# 여기에 스크립트를 작성하세요\ntell application \"Music\" to pause";
 "preferences_advanced_run_script_on_event_start" = "AppleScript 자동 실행";
@@ -212,7 +212,7 @@
 "status_bar_error_app_link_title" = "%@ 를 통해 연결할 수 없어요";
 "status_bar_error_app_link_message" = "%@ 앱이 설치되어 있는지 확인하거나, 환경설정에서 해당 링크를 웹 브라우저로 열도록 설정해 주세요.";
 "welcome_screen_greeting_main_title" = "안녕하세요! MeetingBar는 정말 간단한 앱이라 거의 모든 준비가 끝났어요.";
-"welcome_screen_greeting_additional_title" = "당신만을 위한 설정을 시작해볼게요!";
+"welcome_screen_greeting_additional_title" = "이 공간을 100% 당신 것으로 만들어 봅시다!";
 "welcome_screen_login_launch_toggle_title" = "로그인 시 MeetingBar 실행";
 "welcome_screen_shortcut_next_meeting_title" = "단축키로 다음 이벤트 회의 참석:";
 "welcome_screen_ad_hoc_meeting_title" = "지금 바로 회의 생성 ";
