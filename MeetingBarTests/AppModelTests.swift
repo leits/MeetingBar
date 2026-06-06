@@ -263,6 +263,28 @@ final class AppModelTests: BaseTestCase {
         XCTAssertEqual(harness.dismissedEventIDs, ["next"])
     }
 
+    func testJoinNearestPrefersOngoingMeetingOverFutureMeeting() {
+        let now = Date(timeIntervalSince1970: 1_700_000_000)
+        let harness = AppModelTestHarness(now: now)
+        let ongoing = makeFakeEvent(
+            id: "ongoing",
+            start: now.addingTimeInterval(-300),
+            end: now.addingTimeInterval(900),
+            withLink: true
+        )
+        let future = makeFakeEvent(
+            id: "future",
+            start: now.addingTimeInterval(300),
+            end: now.addingTimeInterval(1800),
+            withLink: true
+        )
+        harness.model.send(.eventsLoaded([future, ongoing]))
+
+        harness.model.send(.joinNearestMeeting)
+
+        XCTAssertEqual(harness.openedMeetingIDs, ["ongoing"])
+    }
+
     func testToggleMeetingTitleVisibilityDelegatesToEnvironment() {
         let harness = AppModelTestHarness()
 

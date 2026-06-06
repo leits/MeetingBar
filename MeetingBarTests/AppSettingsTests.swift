@@ -46,6 +46,28 @@ final class AppSettingsTests: BaseTestCase {
         XCTAssertTrue(Defaults[.selectedCalendarIDs].isEmpty)
     }
 
+    func testSelectingSharedGoogleCalendarPreservesProviderScopedSelections() {
+        Defaults[.eventStoreProvider] = .googleCalendar
+        Defaults[.selectedCalendarIDs] = ["primary"]
+        Defaults[.selectedCalendarIDsByProvider] = [
+            EventStoreProvider.googleCalendar.rawValue: ["primary"],
+            EventStoreProvider.macOSEventKit.rawValue: ["eventkit-calendar"]
+        ]
+        Defaults[.selectedCalendarIDsByProviderMigrated] = true
+
+        AppSettings.setCalendarSelection(id: "shared-public", selected: true)
+
+        XCTAssertEqual(
+            AppSettings.selectedCalendarIDs(for: .googleCalendar),
+            ["primary", "shared-public"]
+        )
+        XCTAssertEqual(Defaults[.selectedCalendarIDs], ["primary", "shared-public"])
+        XCTAssertEqual(
+            AppSettings.selectedCalendarIDs(for: .macOSEventKit),
+            ["eventkit-calendar"]
+        )
+    }
+
     func testLegacyCalendarSelectionMigratesToActiveProvider() {
         Defaults[.eventStoreProvider] = .macOSEventKit
         Defaults[.selectedCalendarIDs] = ["legacy-calendar"]

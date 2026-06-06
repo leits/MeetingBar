@@ -19,6 +19,7 @@ final class FakeEventStore: AuthenticatedEventStore {
     nonisolated(unsafe) var stubbedSignInError: Error?
     nonisolated(unsafe) var fetchDelay: TimeInterval = 0
     nonisolated(unsafe) private(set) var fetchCallCount = 0
+    nonisolated(unsafe) private(set) var fetchedEventCalendarIDs: [[String]] = []
     nonisolated(unsafe) private(set) var refreshSourcesCallCount = 0
     nonisolated(unsafe) private(set) var signInCallCount = 0
     nonisolated(unsafe) private(set) var signOutCallCount = 0
@@ -42,10 +43,11 @@ final class FakeEventStore: AuthenticatedEventStore {
     }
 
     func fetchEventsForDateRange(
-        for _: [MBCalendar],
+        for calendars: [MBCalendar],
         from _: Date,
         to _: Date
     ) async throws -> [MBEvent] {
+        fetchedEventCalendarIDs.append(calendars.map(\.id))
         if let error = stubbedEventsError { throw error }
         if let error = stubbedError { throw error }
         return stubbedEvents

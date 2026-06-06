@@ -454,6 +454,33 @@ final class NotificationSchedulerTests: BaseTestCase {
         XCTAssertTrue(actionSink.actions.isEmpty)
     }
 
+    func testReconcileCancelsAutoJoinWhenEventIsDismissed() async {
+        let requestSink = FakeNotificationRequestSink()
+        let actionSink = FakeNotificationActionSink()
+        let scheduler = NotificationScheduler(sink: requestSink, actionSink: actionSink)
+        let scheduledNow = Date()
+        let evt = wallClockEvent(id: "A", now: scheduledNow, startsIn: 0.35)
+
+        await scheduler.reconcile(
+            events: [evt],
+            settings: actionOnlySettings(kind: .autoJoin, offset: 0.25),
+            now: scheduledNow
+        )
+        await scheduler.reconcile(
+            events: [evt],
+            settings: actionOnlySettings(
+                kind: .autoJoin,
+                offset: 0.25,
+                dismissedEventIDs: ["A"]
+            ),
+            now: scheduledNow
+        )
+
+        try? await Task.sleep(nanoseconds: 350_000_000)
+
+        XCTAssertTrue(actionSink.actions.isEmpty)
+    }
+
     func testFullscreenActionUsesProcessedListForDedup() async {
         let requestSink = FakeNotificationRequestSink()
         let actionSink = FakeNotificationActionSink()

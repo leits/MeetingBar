@@ -262,4 +262,13 @@ final class NextEventTests: XCTestCase {
             running
         )
     }
+
+    func testShowTenMinBeforeNextDoesNotHideRunningEventWithoutNextEvent() {
+        let running = event(id: "RUNNING", startsIn: -300)
+
+        XCTAssertEqual(
+            nextEvent([running], settings: settings(ongoingEventVisibility: .showTenMinBeforeNext)),
+            running
+        )
+    }
 }

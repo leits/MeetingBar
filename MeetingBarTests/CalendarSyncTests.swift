@@ -58,6 +58,56 @@ class CalendarSyncTests: BaseTestCase {
         // 4) Wait
         wait(for: [calExpectation, evtExpectation], timeout: 1.0)
     }
+
+    func testRefreshPreservesSelectedSharedGoogleCalendars() async throws {
+        let primary = MBCalendar(
+            title: "Primary", id: "primary", source: nil, email: nil, color: .black)
+        let shared = MBCalendar(
+            title: "Shared", id: "shared-public", source: nil, email: nil, color: .black)
+        Defaults[.eventStoreProvider] = .googleCalendar
+        Defaults[.selectedCalendarIDs] = [primary.id, shared.id]
+        Defaults[.selectedCalendarIDsByProvider] = [
+            EventStoreProvider.googleCalendar.rawValue: [primary.id, shared.id]
+        ]
+        Defaults[.selectedCalendarIDsByProviderMigrated] = true
+
+        let store = FakeEventStore(calendars: [primary, shared])
+        let repository = CalendarRepository(providerName: .googleCalendar) { _ in store }
+        let manager = CalendarSync(repository: repository, refreshInterval: 0)
+
+        let initialExp = expectation(description: "initial Google refresh")
+        manager.$providerHealth
+            .drop(while: { $0.lastSuccessfulRefresh == nil })
+            .first()
+            .sink { _ in initialExp.fulfill() }
+            .store(in: &cancellables)
+        await fulfillment(of: [initialExp], timeout: 1.0)
+
+        XCTAssertEqual(
+            Set(store.fetchedEventCalendarIDs.last ?? []),
+            Set([primary.id, shared.id])
+        )
+
+        try await Task.sleep(nanoseconds: 250_000_000)
+        let refreshExp = expectation(description: "manual Google refresh")
+        manager.$providerHealth
+            .dropFirst()
+            .first()
+            .sink { _ in refreshExp.fulfill() }
+            .store(in: &cancellables)
+
+        try await manager.refreshSources()
+        await fulfillment(of: [refreshExp], timeout: 1.0)
+
+        XCTAssertEqual(
+            AppSettings.selectedCalendarIDs(for: .googleCalendar),
+            [primary.id, shared.id]
+        )
+        XCTAssertEqual(
+            Set(store.fetchedEventCalendarIDs.last ?? []),
+            Set([primary.id, shared.id])
+        )
+    }
 }
 
 @MainActor class CalendarSyncSwitchProviderTests: BaseTestCase {
