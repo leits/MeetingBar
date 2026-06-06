@@ -28,6 +28,13 @@ struct MenuBuilder {
         if let event = state.nextEvent {
             return buildMeetingControlSection(event: event)
         }
+        // emptyStateReason does not propagate .stale, so when the provider is
+        // stale and the only reason for an empty section is that there are no
+        // upcoming meetings, replace the generic message with the stale warning.
+        if state.providerWarning == .stale,
+           state.emptyStateReason == .noUpcomingMeetings || state.emptyStateReason == nil {
+            return buildProviderWarningItems()
+        }
         return buildEmptyMeetingControlSection()
     }
 
