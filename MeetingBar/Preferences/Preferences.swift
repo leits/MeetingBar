@@ -8,18 +8,50 @@
 import SwiftUI
 
 struct PreferencesView: View {
-    @EnvironmentObject var appModel: AppModel
     @ObservedObject var patronageService: PatronageService
+    @State private var selectedTab = PreferencesTab.defaultSelection
 
     var body: some View {
-        TabView {
-            ForEach(PreferencesTab.allCases, id: \.self) { tab in
-                tabContent(tab)
-                    .tabItem {
+        HStack(spacing: 0) {
+            List {
+                ForEach(PreferencesTab.allCases, id: \.self) { tab in
+                    Button {
+                        selectedTab = tab
+                    } label: {
                         Label(tab.titleKey.loco(), systemImage: tab.systemImage)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .contentShape(Rectangle())
+                            .padding(.vertical, 5)
+                            .padding(.horizontal, 7)
                     }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(selectedTab == tab ? Color.white : Color.primary)
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(
+                        RoundedRectangle(cornerRadius: 5)
+                            .fill(selectedTab == tab ? Color.accentColor : Color.clear)
+                            .padding(.horizontal, 6)
+                    )
+                }
             }
-        }.padding()
+            .listStyle(.sidebar)
+            .frame(minWidth: 180, idealWidth: 190, maxWidth: 220)
+
+            Divider()
+
+            GeometryReader { geometry in
+                ScrollView {
+                    tabContent(selectedTab)
+                        .frame(
+                            maxWidth: .infinity,
+                            minHeight: max(0, geometry.size.height - 40),
+                            alignment: .topLeading
+                        )
+                        .padding(20)
+                }
+            }
+        }
+        .frame(minWidth: 700, minHeight: 500)
     }
 
     @ViewBuilder
@@ -41,4 +73,9 @@ struct PreferencesView: View {
             StatusTab()
         }
     }
+}
+
+#Preview {
+    PreferencesView(patronageService: PatronageService())
+        .frame(width: 700, height: 620)
 }

@@ -5,7 +5,7 @@
 
 import Foundation
 
-enum PreferencesTab: CaseIterable, Equatable {
+enum PreferencesTab: CaseIterable, Hashable {
     case general
     case calendars
     case meetingOpening
@@ -14,8 +14,10 @@ enum PreferencesTab: CaseIterable, Equatable {
     case advanced
     case status
 
-    // This metadata is the single source of truth for the current TabView and
-    // can also drive a future sidebar without duplicating labels or ordering.
+    static let defaultSelection: PreferencesTab = .general
+
+    // This metadata is the single source of truth for sidebar labels, icons,
+    // identity, and ordering.
     var titleKey: String {
         switch self {
         case .general:

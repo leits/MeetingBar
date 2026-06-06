@@ -33,6 +33,22 @@ final class PreferencesPresentationTests: XCTestCase {
                 "preferences_tab_status"
             ]
         )
+        XCTAssertEqual(
+            PreferencesTab.allCases.map(\.systemImage),
+            [
+                "gearshape",
+                "calendar",
+                "arrow.up.right.square",
+                "menubar.rectangle",
+                "bell",
+                "slider.horizontal.3",
+                "waveform.path.ecg"
+            ]
+        )
+    }
+
+    func testPreferencesDefaultSelectionIsGeneral() {
+        XCTAssertEqual(PreferencesTab.defaultSelection, .general)
     }
 
     func testStatusBarTimeOptionsIncludeHide() {
