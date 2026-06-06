@@ -65,9 +65,9 @@ extension ProviderHealth {
     private static func isAuthRequired(_ error: Error) -> Bool {
         if let authError = error as? AuthError {
             switch authError {
-            case .notSignedIn, .refreshFailed:
+            case .notSignedIn:
                 return true
-            case .cancelled:
+            case .cancelled, .refreshFailed:
                 return false
             }
         }

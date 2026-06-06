@@ -240,7 +240,7 @@ class CalendarSyncTests: BaseTestCase {
 
         let result = await manager.changeEventStoreProvider(.googleCalendar)
 
-        XCTAssertEqual(result, .authRequired("Google Calendar token refresh failed"))
+        XCTAssertEqual(result, .failed("Google Calendar token refresh failed"))
         XCTAssertEqual(repository.activeProviderName, .macOSEventKit)
         XCTAssertEqual(Defaults[.eventStoreProvider], .macOSEventKit)
         XCTAssertEqual(Defaults[.selectedCalendarIDs], [eventKitCalendar.id])
@@ -252,6 +252,8 @@ class CalendarSyncTests: BaseTestCase {
             AppSettings.selectedCalendarIDs(for: .googleCalendar),
             ["google-previous"]
         )
+        XCTAssertFalse(manager.providerHealth.authRequired)
+        XCTAssertTrue(manager.providerHealth.isStale)
     }
 
     func testSuccessfulSwitchRestoresProviderScopedCalendarSelections() async {
@@ -647,6 +649,21 @@ final class ProviderHealthTests: BaseTestCase {
         XCTAssertFalse(health.authRequired)
         XCTAssertTrue(health.isStale)
         XCTAssertEqual(health.lastSuccessfulRefresh, previousSuccess)
+    }
+
+    func test_refreshFailureIsStaleButDoesNotRequireReauthorization() {
+        let attempted = Date()
+        let previousSuccess = attempted.addingTimeInterval(-60)
+        let health = ProviderHealth.failure(
+            previous: ProviderHealth(lastSuccessfulRefresh: previousSuccess),
+            attempted: attempted,
+            error: AuthError.refreshFailed
+        )
+
+        XCTAssertFalse(health.authRequired)
+        XCTAssertTrue(health.isStale)
+        XCTAssertEqual(health.lastSuccessfulRefresh, previousSuccess)
+        XCTAssertEqual(health.lastErrorDescription, "Google Calendar token refresh failed")
     }
 
     func test_eventFetchAuthFailurePreservesDataAndMarksAuthRequired() async throws {

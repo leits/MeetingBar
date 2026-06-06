@@ -91,8 +91,9 @@ final class GCEventStore: NSObject,
     var isAuthorized: Bool { authState?.isAuthorized == true }
 
     func signIn(forcePrompt: Bool = false) async throws {
-        // if already authorised, nothing to do
-        if authState?.isAuthorized == true { return }
+        if Self.shouldSkipSignIn(forcePrompt: forcePrompt, state: authState) {
+            return
+        }
 
         // discover configuration for Google issuer
         let config = try await withCheckedThrowingContinuation { cont in
@@ -164,7 +165,7 @@ final class GCEventStore: NSObject,
 
         // Revoke tokens in parallel
         let access  = state.lastTokenResponse?.accessToken
-        let refresh = state.lastTokenResponse?.refreshToken
+        let refresh = state.refreshToken
         await withTaskGroup(of: Void.self) { grp in
             if let acc = access { grp.addTask { try? await self.revoke(token: acc) } }
             if let ref = refresh { grp.addTask { try? await self.revoke(token: ref) } }
@@ -279,14 +280,12 @@ final class GCEventStore: NSObject,
 
     // MARK: - Private helpers
     private func ensureSignedIn() async throws {
-        if authState?.isAuthorized == true,
-           authState?.lastTokenResponse?.refreshToken != nil {
+        if Self.hasReusableSession(authState) {
             return
         }
 
+        let forceConsent = authState?.refreshToken == nil
         if let running = signInTask { return try await running.value }
-
-        let forceConsent = authState?.lastTokenResponse?.refreshToken == nil
 
         let task = Task {
             try await signIn(forcePrompt: forceConsent)
@@ -294,6 +293,17 @@ final class GCEventStore: NSObject,
         signInTask = task
         defer { signInTask = nil }
         try await task.value
+    }
+
+    nonisolated static func hasReusableSession(_ state: OIDAuthState?) -> Bool {
+        state?.isAuthorized == true && state?.refreshToken != nil
+    }
+
+    nonisolated static func shouldSkipSignIn(
+        forcePrompt: Bool,
+        state: OIDAuthState?
+    ) -> Bool {
+        !forcePrompt && hasReusableSession(state)
     }
 
     private func validAccessToken(forceRefresh: Bool = false) async throws -> String {
@@ -316,12 +326,16 @@ final class GCEventStore: NSObject,
                     guard let self else { return }
                     if let token = accessToken {
                         cont.resume(returning: token) // stateChangeDelegate persists new tokens
-                    } else {
-                        if let err = error as NSError?,
-                           err.domain == OIDOAuthTokenErrorDomain {
+                    } else if let error {
+                        let nsError = error as NSError
+                        if nsError.domain == OIDOAuthTokenErrorDomain {
                             self.clearAuthState()
+                            cont.resume(throwing: AuthError.notSignedIn)
+                        } else {
+                            cont.resume(throwing: error)
                         }
-                        cont.resume(throwing: error ?? AuthError.refreshFailed)
+                    } else {
+                        cont.resume(throwing: AuthError.refreshFailed)
                     }
                 }
             }

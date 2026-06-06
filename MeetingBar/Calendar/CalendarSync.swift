@@ -100,8 +100,10 @@ public class CalendarSync: ObservableObject {
             switch authError {
             case .cancelled:
                 return .cancelled
-            case .notSignedIn, .refreshFailed:
+            case .notSignedIn:
                 return .authRequired(error.localizedDescription)
+            case .refreshFailed:
+                return .failed(error.localizedDescription)
             }
         }
         if case .unauthorized = error as? GoogleCalendarError {

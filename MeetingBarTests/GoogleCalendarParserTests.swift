@@ -3,6 +3,7 @@
 //  MeetingBarTests
 //
 
+import AppAuthCore
 import XCTest
 
 @testable import MeetingBar
@@ -285,5 +286,92 @@ final class GoogleCalendarParserTests: XCTestCase {
         XCTAssertEqual(queryItems?.first { $0.name == "eventTypes" }?.value, "default")
         XCTAssertEqual(queryItems?.first { $0.name == "timeMin" }?.value, "2026-01-01T00:00:00Z")
         XCTAssertEqual(queryItems?.first { $0.name == "timeMax" }?.value, "2026-01-02T00:00:00Z")
+    }
+}
+
+@MainActor
+final class GoogleAuthStateTests: XCTestCase {
+    func testLatestTokenResponseWithoutRefreshTokenKeepsReusableSession() throws {
+        let authorizationResponse = OIDAuthorizationResponse(
+            request: authorizationRequest(),
+            parameters: ["code": "authorization-code" as NSString]
+        )
+        let tokenRequest = try XCTUnwrap(authorizationResponse.tokenExchangeRequest())
+        let initialTokenResponse = tokenResponse(
+            request: tokenRequest,
+            accessToken: "access-token-1",
+            refreshToken: "refresh-token-1"
+        )
+        let state = OIDAuthState(
+            authorizationResponse: authorizationResponse,
+            tokenResponse: initialTokenResponse
+        )
+
+        state.update(
+            with: tokenResponse(
+                request: tokenRequest,
+                accessToken: "access-token-2",
+                refreshToken: nil
+            ),
+            error: nil
+        )
+
+        XCTAssertNil(state.lastTokenResponse?.refreshToken)
+        XCTAssertEqual(state.refreshToken, "refresh-token-1")
+        XCTAssertTrue(GCEventStore.hasReusableSession(state))
+        XCTAssertTrue(GCEventStore.shouldSkipSignIn(forcePrompt: false, state: state))
+        XCTAssertFalse(GCEventStore.shouldSkipSignIn(forcePrompt: true, state: state))
+    }
+
+    func testSessionWithoutPersistedRefreshTokenRequiresAuthorization() throws {
+        let authorizationResponse = OIDAuthorizationResponse(
+            request: authorizationRequest(),
+            parameters: ["code": "authorization-code" as NSString]
+        )
+        let tokenRequest = try XCTUnwrap(authorizationResponse.tokenExchangeRequest())
+        let state = OIDAuthState(
+            authorizationResponse: authorizationResponse,
+            tokenResponse: tokenResponse(
+                request: tokenRequest,
+                accessToken: "access-token",
+                refreshToken: nil
+            )
+        )
+
+        XCTAssertNil(state.refreshToken)
+        XCTAssertFalse(GCEventStore.hasReusableSession(state))
+        XCTAssertFalse(GCEventStore.shouldSkipSignIn(forcePrompt: false, state: state))
+    }
+
+    private func authorizationRequest() -> OIDAuthorizationRequest {
+        let configuration = OIDServiceConfiguration(
+            authorizationEndpoint: URL(string: "https://accounts.google.com/o/oauth2/v2/auth")!,
+            tokenEndpoint: URL(string: "https://oauth2.googleapis.com/token")!
+        )
+        return OIDAuthorizationRequest(
+            configuration: configuration,
+            clientId: "client-id",
+            clientSecret: nil,
+            scopes: ["email"],
+            redirectURL: URL(string: "com.test.app:/oauthredirect")!,
+            responseType: OIDResponseTypeCode,
+            additionalParameters: nil
+        )
+    }
+
+    private func tokenResponse(
+        request: OIDTokenRequest,
+        accessToken: String,
+        refreshToken: String?
+    ) -> OIDTokenResponse {
+        var parameters: [String: NSObject & NSCopying] = [
+            "access_token": accessToken as NSString,
+            "token_type": "Bearer" as NSString,
+            "expires_in": 3600 as NSNumber
+        ]
+        if let refreshToken {
+            parameters["refresh_token"] = refreshToken as NSString
+        }
+        return OIDTokenResponse(request: request, parameters: parameters)
     }
 }
