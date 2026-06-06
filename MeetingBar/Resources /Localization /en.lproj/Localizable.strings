@@ -48,8 +48,8 @@
 "preferences_tab_bookmarks" = "Bookmarks";
 "preferences_tab_links" = "Links";
 "preferences_tab_calendars" = "Calendars";
-"preferences_tab_meeting_opening" = "Meeting Opening";
-"preferences_tab_menu_bar" = "Menu Bar";
+"preferences_tab_meeting_opening" = "Meeting Links";
+"preferences_tab_menu_bar" = "Display & Events";
 "preferences_tab_notifications" = "Notifications";
 "preferences_tab_advanced" = "Advanced";
 "preferences_tab_status" = "Status";
@@ -68,7 +68,9 @@
 "preferences_section_regex_filters_title" = "Regex Filters";
 "preferences_calendar_source_title" = "Calendar Source";
 "preferences_calendars_selection_summary" = "%d selected of %d available calendars";
-"preferences_meeting_opening_behavior_title" = "Meeting Opening";
+"preferences_calendars_select_all" = "Select all";
+"preferences_calendars_deselect_all" = "Deselect all";
+"preferences_meeting_opening_behavior_title" = "Open meeting links";
 "preferences_notifications_alerts_title" = "Meeting Alerts";
 "preferences_notifications_automation_title" = "Automatic Joining";
 

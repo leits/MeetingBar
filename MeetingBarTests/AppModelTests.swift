@@ -134,6 +134,35 @@ final class AppModelTests: BaseTestCase {
         XCTAssertEqual(harness.calendarSelections.map(\.selected), [true, false])
     }
 
+    func testSelectAllCalendarsDelegatesOnlyMissingSelections() {
+        let harness = AppModelTestHarness()
+        harness.model.send(
+            .calendarsLoaded(
+                [
+                    makeFakeCalendar(id: "work"),
+                    makeFakeCalendar(id: "personal")
+                ],
+                provider: .macOSEventKit
+            )
+        )
+        harness.model.send(.selectedCalendarsChanged(["work"]))
+
+        harness.model.setAllCalendarSelections(selected: true)
+
+        XCTAssertEqual(harness.calendarSelections.map(\.id), ["personal"])
+        XCTAssertEqual(harness.calendarSelections.map(\.selected), [true])
+    }
+
+    func testDeselectAllCalendarsClearsCurrentProviderSelection() {
+        let harness = AppModelTestHarness()
+        harness.model.send(.selectedCalendarsChanged(["work", "shared"]))
+
+        harness.model.setAllCalendarSelections(selected: false)
+
+        XCTAssertEqual(harness.calendarSelections.map(\.id), ["work", "shared"])
+        XCTAssertEqual(harness.calendarSelections.map(\.selected), [false, false])
+    }
+
     func testSelectedCalendarChangesUpdateState() async {
         let harness = AppModelTestHarness()
         _ = harness.model

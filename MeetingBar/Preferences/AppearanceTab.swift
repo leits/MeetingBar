@@ -217,10 +217,12 @@ struct StatusBarSection: View {
                         "preferences_appearance_status_bar_time_title".loco(),
                         selection: $eventTimeFormat
                     ) {
-                        Text("preferences_appearance_status_bar_time_show_value".loco()).tag(
-                            EventTimeFormat.show)
-                        Text("preferences_appearance_status_bar_time_show_under_title_value".loco())
-                            .tag(EventTimeFormat.show_under_title)
+                        ForEach(
+                            PreferencesStatusBarTimeOption.allCases,
+                            id: \.format
+                        ) { option in
+                            Text(option.titleKey.loco()).tag(option.format)
+                        }
                     }
                 }.frame(width: 325)
 

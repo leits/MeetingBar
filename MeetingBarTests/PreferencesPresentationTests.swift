@@ -35,6 +35,21 @@ final class PreferencesPresentationTests: XCTestCase {
         )
     }
 
+    func testStatusBarTimeOptionsIncludeHide() {
+        XCTAssertEqual(
+            PreferencesStatusBarTimeOption.allCases.map(\.format),
+            [.show, .show_under_title, .hide]
+        )
+        XCTAssertEqual(
+            PreferencesStatusBarTimeOption.allCases.map(\.titleKey),
+            [
+                "preferences_appearance_status_bar_time_show_value",
+                "preferences_appearance_status_bar_time_show_under_title_value",
+                "preferences_appearance_status_bar_time_hide_value"
+            ]
+        )
+    }
+
     func testConnectedProviderPresentationUsesAppStateCounts() {
         let refreshedAt = Date(timeIntervalSince1970: 1_700_000_000)
         var state = AppState()
@@ -60,6 +75,7 @@ final class PreferencesPresentationTests: XCTestCase {
     func testGoogleAuthRequiredPresentationOffersReconnect() {
         var state = AppState()
         state.activeProvider = .googleCalendar
+        state.calendars = [makeFakeCalendar(id: "cached")]
         state.providerHealth = ProviderHealth(
             lastErrorDescription: "Sign in again",
             isStale: true,
@@ -81,6 +97,7 @@ final class PreferencesPresentationTests: XCTestCase {
     func testInitialEventKitFailureIsPresentedAsPermissionRequired() {
         var state = AppState()
         state.activeProvider = .macOSEventKit
+        state.calendars = [makeFakeCalendar(id: "cached")]
         state.providerHealth = ProviderHealth(
             lastAttemptedRefresh: Date(timeIntervalSince1970: 1_700_000_000),
             lastErrorDescription: "Access denied",
@@ -156,6 +173,38 @@ final class PreferencesPresentationTests: XCTestCase {
                 providerChangeInProgress: false
             ),
             .macOSEventKit
+        )
+    }
+
+    func testCalendarBulkSelectionOnlyAddsMissingCalendars() {
+        let changes = CalendarSelectionBulkPolicy.changes(
+            calendars: [
+                makeFakeCalendar(id: "work"),
+                makeFakeCalendar(id: "personal")
+            ],
+            selectedCalendarIDs: ["work"],
+            selectingAll: true
+        )
+
+        XCTAssertEqual(
+            changes,
+            [CalendarSelectionChange(id: "personal", selected: true)]
+        )
+    }
+
+    func testCalendarBulkDeselectionClearsActiveProviderSelection() {
+        let changes = CalendarSelectionBulkPolicy.changes(
+            calendars: [makeFakeCalendar(id: "work")],
+            selectedCalendarIDs: ["work", "shared"],
+            selectingAll: false
+        )
+
+        XCTAssertEqual(
+            changes,
+            [
+                CalendarSelectionChange(id: "work", selected: false),
+                CalendarSelectionChange(id: "shared", selected: false)
+            ]
         )
     }
 

@@ -14,6 +14,8 @@ enum PreferencesTab: CaseIterable, Equatable {
     case advanced
     case status
 
+    // This metadata is the single source of truth for the current TabView and
+    // can also drive a future sidebar without duplicating labels or ordering.
     var titleKey: String {
         switch self {
         case .general:
@@ -49,6 +51,34 @@ enum PreferencesTab: CaseIterable, Equatable {
             "slider.horizontal.3"
         case .status:
             "waveform.path.ecg"
+        }
+    }
+}
+
+enum PreferencesStatusBarTimeOption: CaseIterable, Equatable {
+    case show
+    case showUnderTitle
+    case hide
+
+    var format: EventTimeFormat {
+        switch self {
+        case .show:
+            .show
+        case .showUnderTitle:
+            .show_under_title
+        case .hide:
+            .hide
+        }
+    }
+
+    var titleKey: String {
+        switch self {
+        case .show:
+            "preferences_appearance_status_bar_time_show_value"
+        case .showUnderTitle:
+            "preferences_appearance_status_bar_time_show_under_title_value"
+        case .hide:
+            "preferences_appearance_status_bar_time_hide_value"
         }
     }
 }
@@ -162,6 +192,31 @@ enum ProviderPickerSelectionPolicy {
         providerChangeInProgress: Bool
     ) -> Bool {
         selectedProvider != activeProvider && !providerChangeInProgress
+    }
+}
+
+struct CalendarSelectionChange: Equatable {
+    let id: String
+    let selected: Bool
+}
+
+enum CalendarSelectionBulkPolicy {
+    static func changes(
+        calendars: [MBCalendar],
+        selectedCalendarIDs: [String],
+        selectingAll: Bool
+    ) -> [CalendarSelectionChange] {
+        if selectingAll {
+            let selectedIDs = Set(selectedCalendarIDs)
+            return calendars.compactMap { calendar in
+                guard !selectedIDs.contains(calendar.id) else { return nil }
+                return CalendarSelectionChange(id: calendar.id, selected: true)
+            }
+        }
+
+        return selectedCalendarIDs.map {
+            CalendarSelectionChange(id: $0, selected: false)
+        }
     }
 }
 
