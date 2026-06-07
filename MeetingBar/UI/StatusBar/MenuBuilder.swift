@@ -18,7 +18,7 @@ struct MenuBuilder {
     /// Defaults to a zero-state snapshot for tests that don't exercise
     /// state-driven branches; production callers must pass a real snapshot.
     var state: StatusBarMenuState = StatusBarMenuState()
-    let isFantasticalInstalled = checkIsFantasticalInstalled()
+    var isFantasticalInstalled = checkIsFantasticalInstalled()
     var installationDate: Date?
     var now: Date = Date()
 

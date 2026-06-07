@@ -728,6 +728,168 @@ final class MenuBuilderEventItemTests: BaseTestCase {
         XCTAssertTrue(subItems.contains { $0.title.lowercased().contains("status") })
     }
 
+    func test_submenuIsNotCreatedWhenShowEventDetailsFalse() throws {
+        let event = makeFakeEvent(
+            id: "NO-DETAILS",
+            start: Date().addingTimeInterval(600),
+            end: Date().addingTimeInterval(1200)
+        )
+
+        let item = try XCTUnwrap(buildItem(event: event))
+
+        XCTAssertNil(item.submenu)
+        XCTAssertEqual(item.toolTip, event.title)
+    }
+
+    func test_eventDetailsPreserveEstablishedFieldsAndActions() throws {
+        let now = Date(timeIntervalSinceReferenceDate: 800_000_000)
+        let calendar = MBCalendar(
+            title: "Work Calendar",
+            id: "work",
+            source: "Google",
+            email: "person@example.com",
+            color: .blue
+        )
+        let calendarOpenURL = URL(string: "ical://ekevent/FULL-DETAILS")!
+        var event = MBEvent(
+            id: "FULL-DETAILS",
+            lastModifiedDate: now,
+            title: "Architecture review",
+            status: .confirmed,
+            notes: "Agenda and decisions",
+            location: "Conference Room 5",
+            url: URL(string: "https://zoom.us/j/5551112222"),
+            calendarOpenURL: calendarOpenURL,
+            organizer: MBEventOrganizer(
+                email: "host@example.com",
+                name: "Meeting Host"
+            ),
+            attendees: [
+                MBEventAttendee(
+                    email: "guest@example.com",
+                    name: "Guest",
+                    status: .accepted
+                )
+            ],
+            startDate: now.addingTimeInterval(600),
+            endDate: now.addingTimeInterval(2400),
+            isAllDay: false,
+            recurrent: false,
+            calendar: calendar
+        )
+        event.participationStatus = .accepted
+
+        var state = StatusBarMenuState()
+        state.settings = .empty
+        state.settings.menu.showEventDetails = true
+        state.hasMultipleSelectedCalendars = true
+
+        let items = MenuBuilder(
+            target: Dummy(),
+            state: state,
+            isFantasticalInstalled: false,
+            now: now
+        ).buildDateSection(
+            date: now,
+            title: "Today",
+            events: [event]
+        )
+        let submenuItems = try XCTUnwrap(items.last?.submenu?.items)
+
+        XCTAssertNotNil(submenuItems.first?.view)
+        XCTAssertTrue(submenuItems.contains {
+            $0.title == "status_bar_submenu_status_title".loco(
+                "status_bar_submenu_status_accepted".loco()
+            )
+        })
+        XCTAssertTrue(submenuItems.contains { $0.title.contains("30") })
+        XCTAssertTrue(submenuItems.contains {
+            $0.title == "status_bar_submenu_calendar_title".loco(calendar.title)
+        })
+        XCTAssertTrue(submenuItems.contains {
+            $0.title == "status_bar_submenu_location_title".loco()
+        })
+        XCTAssertTrue(submenuItems.contains {
+            $0.title == "status_bar_submenu_organizer_title".loco("Meeting Host")
+        })
+        XCTAssertTrue(submenuItems.contains {
+            $0.title == "status_bar_submenu_notes_title".loco()
+        })
+        XCTAssertTrue(submenuItems.contains {
+            $0.title == "status_bar_submenu_attendees_title".loco(1)
+        })
+        XCTAssertTrue(submenuItems.contains {
+            $0.action == #selector(StatusBarItemController.copyEventMeetingLink)
+        })
+        XCTAssertTrue(submenuItems.contains {
+            $0.action == #selector(StatusBarItemController.dismissEvent)
+        })
+        XCTAssertTrue(submenuItems.contains {
+            $0.action == #selector(StatusBarItemController.emailAttendees)
+        })
+        XCTAssertEqual(
+            submenuItems.first {
+                $0.action == #selector(StatusBarItemController.openEventInCalendar)
+            }?.representedObject as? URL,
+            calendarOpenURL
+        )
+    }
+
+    func test_eventDetailsOfferUndismissForDismissedEvent() throws {
+        let now = Date(timeIntervalSinceReferenceDate: 800_000_000)
+        let event = makeFakeEvent(
+            id: "DISMISSED",
+            start: now.addingTimeInterval(600),
+            end: now.addingTimeInterval(1200),
+            withLink: true
+        )
+        var state = StatusBarMenuState()
+        state.settings = .empty
+        state.settings.menu.showEventDetails = true
+        state.settings.events.dismissedEvents = [
+            ProcessedEvent(id: event.id, eventEndDate: event.endDate)
+        ]
+
+        let items = MenuBuilder(target: Dummy(), state: state, now: now)
+            .buildDateSection(date: now, title: "Today", events: [event])
+        let submenuItems = try XCTUnwrap(items.last?.submenu?.items)
+
+        XCTAssertTrue(submenuItems.contains {
+            $0.action == #selector(StatusBarItemController.undismissEvent)
+        })
+        XCTAssertFalse(submenuItems.contains {
+            $0.action == #selector(StatusBarItemController.dismissEvent)
+        })
+    }
+
+    func test_eventDetailsOfferFantasticalWhenInstalled() throws {
+        let now = Date(timeIntervalSinceReferenceDate: 800_000_000)
+        let event = makeFakeEvent(
+            id: "FANTASTICAL",
+            start: now.addingTimeInterval(600),
+            end: now.addingTimeInterval(1200)
+        )
+        var state = StatusBarMenuState()
+        state.settings = .empty
+        state.settings.menu.showEventDetails = true
+
+        let items = MenuBuilder(
+            target: Dummy(),
+            state: state,
+            isFantasticalInstalled: true,
+            now: now
+        ).buildDateSection(
+            date: now,
+            title: "Today",
+            events: [event]
+        )
+        let fantasticalItem = try XCTUnwrap(items.last?.submenu?.items.first {
+            $0.action == #selector(StatusBarItemController.openEventInFantastical)
+        })
+
+        XCTAssertEqual((fantasticalItem.representedObject as? MBEvent)?.id, event.id)
+    }
+
     func test_eventDetailsUseTextViewsForLongFields() {
         Defaults[.showEventDetails] = true
         let calendar = MBCalendar(
