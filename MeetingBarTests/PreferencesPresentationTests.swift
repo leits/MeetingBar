@@ -80,6 +80,29 @@ final class PreferencesPresentationTests: XCTestCase {
         XCTAssertEqual(PreferencesTab.defaultSelection, .general)
     }
 
+    func testPreferencesSidebarGroupsAllTabsInProductOrder() {
+        XCTAssertEqual(
+            PreferencesSidebarSection.allCases.map(\.titleKey),
+            [
+                "preferences_sidebar_setup",
+                "preferences_sidebar_experience",
+                "preferences_sidebar_maintenance"
+            ]
+        )
+        XCTAssertEqual(
+            PreferencesSidebarSection.allCases.flatMap(\.tabs),
+            PreferencesTab.allCases
+        )
+        XCTAssertEqual(
+            PreferencesSidebarSection.allCases.map(\.tabs),
+            [
+                [.general, .calendars, .meetingOpening],
+                [.menuBar, .notifications],
+                [.advanced, .status]
+            ]
+        )
+    }
+
     func testStatusBarTimeOptionsIncludeHide() {
         XCTAssertEqual(
             PreferencesStatusBarTimeOption.allCases.map(\.format),

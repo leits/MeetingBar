@@ -53,6 +53,9 @@
 "preferences_tab_notifications" = "Notifications";
 "preferences_tab_advanced" = "Advanced";
 "preferences_tab_status" = "Status";
+"preferences_sidebar_setup" = "Setup";
+"preferences_sidebar_experience" = "Experience";
+"preferences_sidebar_maintenance" = "Maintenance";
 
 // MARK: - Preferences section titles
 

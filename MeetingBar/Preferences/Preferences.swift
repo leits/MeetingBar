@@ -14,24 +14,28 @@ struct PreferencesView: View {
     var body: some View {
         HStack(spacing: 0) {
             List {
-                ForEach(PreferencesTab.allCases, id: \.self) { tab in
-                    Button {
-                        selectedTab = tab
-                    } label: {
-                        Label(tab.titleKey.loco(), systemImage: tab.systemImage)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .contentShape(Rectangle())
-                            .padding(.vertical, 5)
-                            .padding(.horizontal, 7)
+                ForEach(PreferencesSidebarSection.allCases, id: \.self) { section in
+                    Section(header: Text(section.titleKey.loco())) {
+                        ForEach(section.tabs, id: \.self) { tab in
+                            Button {
+                                selectedTab = tab
+                            } label: {
+                                Label(tab.titleKey.loco(), systemImage: tab.systemImage)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .contentShape(Rectangle())
+                                    .padding(.vertical, 5)
+                                    .padding(.horizontal, 7)
+                            }
+                            .buttonStyle(.plain)
+                            .foregroundStyle(selectedTab == tab ? Color.white : Color.primary)
+                            .listRowInsets(EdgeInsets())
+                            .listRowBackground(
+                                RoundedRectangle(cornerRadius: 5)
+                                    .fill(selectedTab == tab ? Color.accentColor : Color.clear)
+                                    .padding(.horizontal, 6)
+                            )
+                        }
                     }
-                    .buttonStyle(.plain)
-                    .foregroundStyle(selectedTab == tab ? Color.white : Color.primary)
-                    .listRowInsets(EdgeInsets())
-                    .listRowBackground(
-                        RoundedRectangle(cornerRadius: 5)
-                            .fill(selectedTab == tab ? Color.accentColor : Color.clear)
-                            .padding(.horizontal, 6)
-                    )
                 }
             }
             .listStyle(.sidebar)
