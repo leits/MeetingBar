@@ -181,11 +181,11 @@
 
 // MARK: - Preferences Services
 
-"preferences_services_link_meeting_title" = "Open all meeting links in";
-"preferences_services_link_service_title" = "Open %@ links in";
+"preferences_services_link_meeting_title" = "Default browser for meeting links";
+"preferences_services_link_service_title" = "%@";
 "preferences_services_link_default_browser_value" = "Default web browser";
 "preferences_services_link_default_help" = "This browser is used unless a provider-specific override is set.";
-"preferences_services_link_overrides_title" = "Provider overrides";
+"preferences_services_link_overrides_title" = "Service-specific opening";
 "preferences_services_link_overrides_help" = "These choices override the default browser for each meeting service.";
 "preferences_services_link_modes_help" = "App, web app, and PWA options are optional. Existing browser behavior stays unchanged until you select one.";
 "preferences_meeting_opening_mode_meetinone" = "MeetInOne";

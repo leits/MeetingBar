@@ -244,6 +244,23 @@ enum ProviderPickerSelectionPolicy {
     }
 }
 
+enum BrowserPickerOptions {
+    static func make(
+        configured: [Browser],
+        selected: Browser,
+        systemDefault: Browser = systemDefaultBrowser
+    ) -> [Browser] {
+        var options = [systemDefault]
+        for browser in configured where !options.contains(browser) {
+            options.append(browser)
+        }
+        if !options.contains(selected) {
+            options.append(selected)
+        }
+        return options
+    }
+}
+
 struct RegexEditDraft: Equatable {
     let originalValue: String?
     var value: String

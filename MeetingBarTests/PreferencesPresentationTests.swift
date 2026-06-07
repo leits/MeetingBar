@@ -229,6 +229,41 @@ final class PreferencesPresentationTests: XCTestCase {
         )
     }
 
+    func testBrowserPickerAlwaysIncludesStoredSelection() {
+        let safari = Browser(
+            name: "Safari",
+            path: "/Applications/Safari.app"
+        )
+        let removedCustomBrowser = Browser(
+            name: "Work Chrome",
+            path: "/Applications/Google Chrome.app"
+        )
+
+        let options = BrowserPickerOptions.make(
+            configured: [safari],
+            selected: removedCustomBrowser
+        )
+
+        XCTAssertEqual(options.first, systemDefaultBrowser)
+        XCTAssertTrue(options.contains(safari))
+        XCTAssertTrue(options.contains(removedCustomBrowser))
+    }
+
+    func testBrowserPickerDoesNotDuplicateSystemOrConfiguredBrowser() {
+        let safari = Browser(
+            name: "Safari",
+            path: "/Applications/Safari.app"
+        )
+
+        XCTAssertEqual(
+            BrowserPickerOptions.make(
+                configured: [systemDefaultBrowser, safari, safari],
+                selected: safari
+            ),
+            [systemDefaultBrowser, safari]
+        )
+    }
+
     func testRegexDraftDoesNotMutateOriginalListBeforeSave() {
         let regexes = ["meet\\.google\\.com", "zoom\\.us"]
 

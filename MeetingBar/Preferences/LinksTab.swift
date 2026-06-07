@@ -24,6 +24,20 @@ struct LinksTab: View {
     @State private var showingAlert = false
     @State private var bookmark: Bookmark?
 
+    private var defaultBrowserOptions: [Browser] {
+        BrowserPickerOptions.make(
+            configured: allBrowser,
+            selected: defaultBrowser
+        )
+    }
+
+    private var createMeetingBrowserOptions: [Browser] {
+        BrowserPickerOptions.make(
+            configured: allBrowser,
+            selected: browserForCreateMeeting
+        )
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             GroupBox(
@@ -37,8 +51,7 @@ struct LinksTab: View {
                         label: Text("preferences_services_link_meeting_title".loco()).frame(
                             width: 200, alignment: .leading)
                     ) {
-                        Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
-                        ForEach(allBrowser, id: \.self) { (browser: Browser) in
+                        ForEach(defaultBrowserOptions, id: \.self) { (browser: Browser) in
                             Text(browser.name).tag(browser)
                         }
                     }
@@ -111,8 +124,7 @@ struct LinksTab: View {
                         label: Text("preferences_services_create_meeting_browser_title".loco())
                             .frame(width: 150, alignment: .leading)
                     ) {
-                        Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
-                        ForEach(allBrowser, id: \.self) { (browser: Browser) in
+                        ForEach(createMeetingBrowserOptions, id: \.self) { (browser: Browser) in
                             Text(browser.name).tag(browser)
                         }
                     }
@@ -206,6 +218,20 @@ struct MeetingProviderOpeningPicker: View {
         )
     }
 
+    private var browserOptions: [Browser] {
+        let selectedBrowser: Browser
+        switch selectedValue {
+        case .browser(let browser):
+            selectedBrowser = browser
+        case .mode:
+            selectedBrowser = systemDefaultBrowser
+        }
+        return BrowserPickerOptions.make(
+            configured: allBrowsers,
+            selected: selectedBrowser
+        )
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 3) {
             Picker(
@@ -215,15 +241,12 @@ struct MeetingProviderOpeningPicker: View {
                 )
                 .frame(width: labelWidth, alignment: .leading)
             ) {
-                Text(systemDefaultBrowser.name).tag(
-                    MeetingProviderOpeningSelection.browser(systemDefaultBrowser)
-                )
                 ForEach(provider.openingModes, id: \.self) { mode in
                     Text(mode.titleKey.loco()).tag(
                         MeetingProviderOpeningSelection.mode(mode)
                     )
                 }
-                ForEach(allBrowsers, id: \.self) { browser in
+                ForEach(browserOptions, id: \.self) { browser in
                     Text(browser.name).tag(MeetingProviderOpeningSelection.browser(browser))
                 }
             }
