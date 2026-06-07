@@ -12,6 +12,12 @@ import XCTest
 @testable import MeetingBarLogic
 
 final class MeetingProviderTests: XCTestCase {
+    private struct OpeningModeMetadata {
+        let titleKey: String
+        let helpKey: String?
+        let legacyName: String?
+    }
+
     // MARK: - Completeness
 
     func testRegistryContainsAllMeetingServicesCases() {
@@ -89,6 +95,64 @@ final class MeetingProviderTests: XCTestCase {
             MeetingProvider.provider(for: .facebook_workspace)?.displayName,
             "Workplace"
         )
+    }
+
+    func testOpeningModeMetadataIsCompleteAndStable() {
+        let expected: [MeetingOpeningMode: OpeningModeMetadata] = [
+            .meetInOne: OpeningModeMetadata(
+                titleKey: "preferences_meeting_opening_mode_meetinone",
+                helpKey: nil,
+                legacyName: "MeetInOne"
+            ),
+            .googleMeetPWA: OpeningModeMetadata(
+                titleKey: "preferences_meeting_opening_mode_google_meet_pwa",
+                helpKey: "preferences_meeting_opening_mode_google_meet_pwa_help",
+                legacyName: nil
+            ),
+            .zoomApp: OpeningModeMetadata(
+                titleKey: "preferences_meeting_opening_mode_zoom_app",
+                helpKey: nil,
+                legacyName: "Zoom"
+            ),
+            .zoomWebApp: OpeningModeMetadata(
+                titleKey: "preferences_meeting_opening_mode_zoom_web_app",
+                helpKey: "preferences_meeting_opening_mode_zoom_web_app_help",
+                legacyName: nil
+            ),
+            .teamsApp: OpeningModeMetadata(
+                titleKey: "preferences_meeting_opening_mode_teams_app",
+                helpKey: nil,
+                legacyName: "Teams"
+            ),
+            .workplaceApp: OpeningModeMetadata(
+                titleKey: "preferences_meeting_opening_mode_workplace_app",
+                helpKey: "preferences_meeting_opening_mode_workplace_app_help",
+                legacyName: nil
+            ),
+            .jitsiApp: OpeningModeMetadata(
+                titleKey: "preferences_meeting_opening_mode_jitsi_app",
+                helpKey: nil,
+                legacyName: "Jitsi"
+            ),
+            .slackApp: OpeningModeMetadata(
+                titleKey: "preferences_meeting_opening_mode_slack_app",
+                helpKey: nil,
+                legacyName: "Slack"
+            ),
+            .riversideApp: OpeningModeMetadata(
+                titleKey: "preferences_meeting_opening_mode_riverside_app",
+                helpKey: nil,
+                legacyName: "Riverside"
+            )
+        ]
+
+        XCTAssertEqual(Set(expected.keys), Set(MeetingOpeningMode.allCases))
+        for mode in MeetingOpeningMode.allCases {
+            let metadata = expected[mode]
+            XCTAssertEqual(mode.titleKey, metadata?.titleKey)
+            XCTAssertEqual(mode.helpKey, metadata?.helpKey)
+            XCTAssertEqual(mode.legacyBrowserName, metadata?.legacyName)
+        }
     }
 
     func testProtonMeetDescriptorUsesFallbackIconAndNoOpeningModes() {

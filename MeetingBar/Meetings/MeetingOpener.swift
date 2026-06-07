@@ -574,7 +574,7 @@ enum ZoomWebAppURLPolicy {
         let labels = host.split(separator: ".").map(String.init)
         for (index, label) in labels.enumerated() {
             let suffix = labels.dropFirst(index + 1).joined(separator: ".")
-            if (label == "zoom" || label == "zoom-x"),
+            if label == "zoom" || label == "zoom-x",
                ["us", "com", "com.cn", "de"].contains(suffix) {
                 return true
             }
