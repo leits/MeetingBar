@@ -67,10 +67,12 @@ struct FullscreenNotificationPicker: View {
                 isOn: $fullscreenNotificationsForEventsWithoutMeetingLink
             )
             .disabled(!fullscreenNotification)
+            .padding(.leading, 20)
 
             Text("shared_fullscreen_notification_without_link_help".loco())
                 .foregroundStyle(.secondary)
                 .font(.caption)
+                .padding(.leading, 20)
         }
     }
 }
@@ -119,7 +121,6 @@ struct EndEventNotificationPicker: View {
                 Text("general_three_minute_before".loco()).tag(TimeBeforeEventEnd.threeMinuteBefore)
                 Text("general_five_minute_before".loco()).tag(TimeBeforeEventEnd.fiveMinuteBefore)
             }.frame(width: 220, alignment: .leading).labelsHidden().disabled(!endOfEventNotification)
-            Text("βeta").font(.caption).foregroundColor(.orange)
         }
     }
 }
