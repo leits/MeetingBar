@@ -144,6 +144,10 @@ extension Defaults.Keys {
     /// Replaces the individual meetBrowser/zoomBrowser/… keys. See MeetingOpenPreferencesMigration.
     static let providerBrowsers = Key<[String: Browser]>("providerBrowsers", default: [:])
 
+    /// Opt-in provider-specific app/web/PWA mode IDs.
+    /// Unknown values are ignored and fall back to normal browser resolution.
+    static let providerOpeningModes = Key<[String: String]>("providerOpeningModes", default: [:])
+
     /**
      * browser used for creating a new meeting
      */

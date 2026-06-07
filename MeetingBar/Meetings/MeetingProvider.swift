@@ -13,6 +13,73 @@
 //  Pure domain data — no AppKit or Defaults imports.
 //
 
+enum MeetingOpeningMode: String, CaseIterable, Codable, Sendable {
+    case meetInOne
+    case googleMeetPWA
+    case zoomApp
+    case zoomWebApp
+    case teamsApp
+    case workplaceApp
+    case jitsiApp
+    case slackApp
+    case riversideApp
+
+    var titleKey: String {
+        switch self {
+        case .meetInOne:
+            "preferences_meeting_opening_mode_meetinone"
+        case .googleMeetPWA:
+            "preferences_meeting_opening_mode_google_meet_pwa"
+        case .zoomApp:
+            "preferences_meeting_opening_mode_zoom_app"
+        case .zoomWebApp:
+            "preferences_meeting_opening_mode_zoom_web_app"
+        case .teamsApp:
+            "preferences_meeting_opening_mode_teams_app"
+        case .workplaceApp:
+            "preferences_meeting_opening_mode_workplace_app"
+        case .jitsiApp:
+            "preferences_meeting_opening_mode_jitsi_app"
+        case .slackApp:
+            "preferences_meeting_opening_mode_slack_app"
+        case .riversideApp:
+            "preferences_meeting_opening_mode_riverside_app"
+        }
+    }
+
+    var helpKey: String? {
+        switch self {
+        case .googleMeetPWA:
+            "preferences_meeting_opening_mode_google_meet_pwa_help"
+        case .zoomWebApp:
+            "preferences_meeting_opening_mode_zoom_web_app_help"
+        case .workplaceApp:
+            "preferences_meeting_opening_mode_workplace_app_help"
+        case .meetInOne, .zoomApp, .teamsApp, .jitsiApp, .slackApp, .riversideApp:
+            nil
+        }
+    }
+
+    var legacyBrowserName: String? {
+        switch self {
+        case .meetInOne:
+            "MeetInOne"
+        case .zoomApp:
+            "Zoom"
+        case .teamsApp:
+            "Teams"
+        case .jitsiApp:
+            "Jitsi"
+        case .slackApp:
+            "Slack"
+        case .riversideApp:
+            "Riverside"
+        case .googleMeetPWA, .zoomWebApp, .workplaceApp:
+            nil
+        }
+    }
+}
+
 /// Per-provider metadata used by detection, opening, icon rendering, and the
 /// preferences UI.
 ///
@@ -40,10 +107,14 @@ struct MeetingProvider: Equatable, Sendable {
     /// (e.g. phone, facetimeaudio, url catch-all, other).
     let regexPattern: String?
 
-    /// Name of the per-provider native-app "browser" sentinel that appears in the
-    /// browser picker for this provider. `nil` means only real browsers are shown.
-    /// Plain String so the type stays free of AppKit / Defaults imports.
-    let nativeAppBrowserName: String?
+    /// Explicit app/web/PWA choices available in addition to real browsers.
+    let openingModes: [MeetingOpeningMode]
+
+    /// Compatibility metadata for code and migrations that still recognize the
+    /// original native-app Browser sentinel.
+    var nativeAppBrowserName: String? {
+        openingModes.compactMap(\.legacyBrowserName).first
+    }
 }
 
 // MARK: - Lookup
@@ -88,16 +159,17 @@ extension MeetingProvider {
             icon: String,
             height: Double = 16,
             pattern: String? = nil,
-            nativeAppBrowserName: String? = nil
+            displayName: String? = nil,
+            openingModes: [MeetingOpeningMode] = []
         ) -> MeetingProvider {
             MeetingProvider(
                 id: service.rawValue,
-                displayName: service.rawValue,
+                displayName: displayName ?? service.rawValue,
                 iconName: icon,
                 iconWidth: 16,
                 iconHeight: height,
                 regexPattern: pattern,
-                nativeAppBrowserName: nativeAppBrowserName
+                openingModes: openingModes
             )
         }
 
@@ -111,7 +183,13 @@ extension MeetingProvider {
                 icon: "google_meet_icon",
                 height: 13.2,
                 pattern: #"https?://meet.google.com/(_meet/)?[a-z-]+"#,
-                nativeAppBrowserName: "MeetInOne"),
+                openingModes: [.meetInOne, .googleMeetPWA]),
+
+            // Proton Meet
+            make(
+                .protonMeet,
+                icon: "no_online_session",
+                pattern: #"https?://meet\.proton\.me/join/[A-Za-z0-9-]+(?:[?#][^\s]*)?"#),
 
             // Google Meet Stream
             make(
@@ -138,7 +216,7 @@ extension MeetingProvider {
                 icon: "zoom_icon",
                 pattern:
                     #"https:\/\/(?:[a-zA-Z0-9-.]+)?zoom(-x)?\.(?:us|com|com\.cn|de)\/(?:my|[a-z]{1,2}|webinar)\/[-a-zA-Z0-9()@:%_\+.~#?&=\/]*"#,
-                nativeAppBrowserName: "Zoom"
+                openingModes: [.zoomApp, .zoomWebApp]
             ),
 
             // Zoom (native app scheme)
@@ -167,7 +245,7 @@ extension MeetingProvider {
                 icon: "ms_teams_icon",
                 pattern:
                     #"https?://(gov\.)?teams\.microsoft\.(com|us)/(l/meetup-join/[a-zA-Z0-9_%\/=\-\+\.?]+(?:&[^\s]+)?|meet/\d+\?p=[A-Za-z0-9_\-]+(?:&[^\s]+)?)"#,
-                nativeAppBrowserName: "Teams"
+                openingModes: [.teamsApp]
             ),
 
             // Cisco Webex
@@ -183,7 +261,7 @@ extension MeetingProvider {
                 .jitsi,
                 icon: "jitsi_icon",
                 pattern: #"https?://meet\.jit\.si/[^\s]*"#,
-                nativeAppBrowserName: "Jitsi"),
+                openingModes: [.jitsiApp]),
 
             // Amazon Chime
             make(
@@ -282,7 +360,9 @@ extension MeetingProvider {
             make(
                 .facebook_workspace,
                 icon: "facebook_workplace_icon",
-                pattern: #"https?://([a-z0-9-.]+)?workplace\.com/groupcall/[^\s]+"#),
+                pattern: #"https?://([a-z0-9-.]+)?workplace\.com/groupcall/[^\s]+"#,
+                displayName: "Workplace",
+                openingModes: [.workplaceApp]),
 
             // Lifesize
             make(
@@ -450,7 +530,7 @@ extension MeetingProvider {
                 .slack,
                 icon: "slack_icon",
                 pattern: #"https?://app\.slack\.com/huddle/[A-Za-z0-9./]+"#,
-                nativeAppBrowserName: "Slack"),
+                openingModes: [.slackApp]),
 
             // Gather
             make(
@@ -545,7 +625,7 @@ extension MeetingProvider {
                 .riverside,
                 icon: "riverside_icon",
                 pattern: #"https?://riverside\.(com|fm)/studio/[^\s]*"#,
-                nativeAppBrowserName: "Riverside"),
+                openingModes: [.riversideApp]),
 
             // Other — catch-all for custom regex matches, no URL pattern
             make(.other, icon: "no_online_session")

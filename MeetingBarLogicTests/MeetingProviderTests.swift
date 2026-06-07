@@ -64,11 +64,39 @@ final class MeetingProviderTests: XCTestCase {
         let desc = MeetingProvider.provider(for: .meet)
         XCTAssertNotNil(desc)
         XCTAssertEqual(desc?.iconName, "google_meet_icon")
+        XCTAssertEqual(desc?.openingModes, [.meetInOne, .googleMeetPWA])
         if let height = desc?.iconHeight {
             XCTAssertEqual(height, 13.2, accuracy: 0.01)
         } else {
             XCTFail("meet descriptor missing iconHeight")
         }
+    }
+
+    func testProviderSpecificOpeningModes() {
+        XCTAssertEqual(
+            MeetingProvider.provider(for: .zoom)?.openingModes,
+            [.zoomApp, .zoomWebApp]
+        )
+        XCTAssertEqual(
+            MeetingProvider.provider(for: .teams)?.openingModes,
+            [.teamsApp]
+        )
+        XCTAssertEqual(
+            MeetingProvider.provider(for: .facebook_workspace)?.openingModes,
+            [.workplaceApp]
+        )
+        XCTAssertEqual(
+            MeetingProvider.provider(for: .facebook_workspace)?.displayName,
+            "Workplace"
+        )
+    }
+
+    func testProtonMeetDescriptorUsesFallbackIconAndNoOpeningModes() {
+        let descriptor = MeetingProvider.provider(for: .protonMeet)
+
+        XCTAssertEqual(descriptor?.iconName, "no_online_session")
+        XCTAssertNotNil(descriptor?.regexPattern)
+        XCTAssertEqual(descriptor?.openingModes, [])
     }
 
     func testPhoneDescriptorHasNoPattern() {

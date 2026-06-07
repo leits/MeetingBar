@@ -20,6 +20,7 @@ import Foundation
 enum MeetingServices: String, Codable, CaseIterable, Sendable {
     case phone = "Phone"
     case meet = "Google Meet"
+    case protonMeet = "Proton Meet"
     case hangouts = "Google Hangouts"
     case zoom = "Zoom"
     case zoom_native = "Zoom native"

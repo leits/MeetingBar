@@ -36,6 +36,22 @@ final class MeetingLinkDetectorTests: XCTestCase {
         XCTAssertEqual(link?.service, .zoom)
     }
 
+    func testDetectsProtonMeetLinkAndPreservesFragment() {
+        let url = "https://meet.proton.me/join/id-FRMQ717ZMW#pwd-GoslDQl8D7mu"
+        let link = detectMeetingLink(url)
+
+        XCTAssertEqual(link?.service, .protonMeet)
+        XCTAssertEqual(link?.url.absoluteString, url)
+    }
+
+    func testDetectsProtonMeetLinkAndPreservesQuery() {
+        let url = "https://meet.proton.me/join/id-FRMQ717ZMW?ref=calendar"
+        let link = detectMeetingLink(url)
+
+        XCTAssertEqual(link?.service, .protonMeet)
+        XCTAssertEqual(link?.url.absoluteString, url)
+    }
+
     func testDetectsTeamsLinkFromNotes() {
         let link = MeetingLinkDetector.detect(
             location: nil,

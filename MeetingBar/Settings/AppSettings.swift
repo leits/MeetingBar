@@ -70,6 +70,7 @@ struct MeetingSettings: Equatable {
     /// Unified per-provider browser preferences (keyed by provider ID).
     /// Replaces the individual meetBrowser/zoomBrowser/… fields.
     var providerBrowsers: [String: Browser]
+    var providerOpeningModes: [String: String]
 }
 
 struct AdvancedSettings: Equatable {
@@ -156,7 +157,8 @@ extension AppSettings {
                 browsers: Defaults[.browsers],
                 defaultBrowser: Defaults[.defaultBrowser],
                 browserForCreateMeeting: Defaults[.browserForCreateMeeting],
-                providerBrowsers: Defaults[.providerBrowsers]
+                providerBrowsers: Defaults[.providerBrowsers],
+                providerOpeningModes: Defaults[.providerOpeningModes]
             ),
             advanced: AdvancedSettings(
                 automaticEventJoin: Defaults[.automaticEventJoin],
@@ -227,7 +229,8 @@ extension AppSettings {
                 defaultBrowser: Browser(
                     name: "Default Browser", path: "", arguments: "", deletable: false),
                 browserForCreateMeeting: systemDefaultBrowser,
-                providerBrowsers: [:]
+                providerBrowsers: [:],
+                providerOpeningModes: [:]
             ),
             advanced: AdvancedSettings(
                 automaticEventJoin: false,

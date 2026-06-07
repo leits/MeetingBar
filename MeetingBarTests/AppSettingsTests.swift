@@ -120,6 +120,19 @@ final class AppSettingsTests: BaseTestCase {
         )
     }
 
+    func testProviderOpeningModesDefaultEmptyAndMapFromDefaults() {
+        XCTAssertTrue(AppSettings.current.meetings.providerOpeningModes.isEmpty)
+
+        Defaults[.providerOpeningModes] = [
+            MeetingServices.zoom.rawValue: MeetingOpeningMode.zoomWebApp.rawValue
+        ]
+
+        XCTAssertEqual(
+            AppSettings.current.meetings.providerOpeningModes,
+            [MeetingServices.zoom.rawValue: MeetingOpeningMode.zoomWebApp.rawValue]
+        )
+    }
+
     func testToggleMeetingTitleVisibilityWriteHelper() {
         AppSettings.toggleMeetingTitleVisibility()
         XCTAssertTrue(Defaults[.hideMeetingTitle])
