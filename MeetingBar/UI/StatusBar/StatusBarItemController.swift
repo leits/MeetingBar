@@ -270,7 +270,7 @@ final class StatusBarItemController {
             let today = Calendar.current.startOfDay(for: Date())
             let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today)!
 
-            if menuState.showTimeline, !menuState.todayEvents.isEmpty {
+            if menuState.shouldShowTimeline {
                 let segments = menuState.todayEvents.map {
                     DaySegment(
                         start: max($0.startDate, today),

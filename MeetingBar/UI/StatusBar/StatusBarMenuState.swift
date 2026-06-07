@@ -69,6 +69,12 @@ struct StatusBarMenuState: Equatable {
     /// Whether the day-timeline bar should appear above the event list.
     var showTimeline: Bool = false
 
+    /// The timeline represents the current day, so it is intentionally hidden
+    /// when there are no events today even if the preference is enabled.
+    var shouldShowTimeline: Bool {
+        showTimeline && !todayEvents.isEmpty
+    }
+
     /// Time-format display (military vs am/pm) used when formatting event times.
     var timeFormat: TimeFormat = .military
 

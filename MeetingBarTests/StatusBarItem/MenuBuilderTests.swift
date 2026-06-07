@@ -137,6 +137,49 @@ final class MenuBuilderTests: BaseTestCase {
         XCTAssertEqual(state.nextEvent, event)
     }
 
+    func testTimelinePresentationRequiresPreferenceAndTodayEvents() {
+        let now = Date(timeIntervalSinceReferenceDate: 800_000_000)
+        let todayEvent = makeFakeEvent(
+            id: "today",
+            start: now.addingTimeInterval(300),
+            end: now.addingTimeInterval(1800)
+        )
+        let tomorrowEvent = makeFakeEvent(
+            id: "tomorrow",
+            start: Calendar.current.date(byAdding: .day, value: 1, to: now)!,
+            end: Calendar.current.date(byAdding: .day, value: 1, to: now)!
+                .addingTimeInterval(1800)
+        )
+        var settings = AppSettings.empty
+        settings.menu.showTimelineInMenu = true
+        var appState = AppState()
+        appState.events = [todayEvent]
+
+        let enabledWithTodayEvents = StatusBarMenuState.make(
+            from: appState,
+            settings: settings,
+            now: now
+        )
+        XCTAssertTrue(enabledWithTodayEvents.shouldShowTimeline)
+
+        appState.events = [tomorrowEvent]
+        let enabledWithoutTodayEvents = StatusBarMenuState.make(
+            from: appState,
+            settings: settings,
+            now: now
+        )
+        XCTAssertFalse(enabledWithoutTodayEvents.shouldShowTimeline)
+
+        settings.menu.showTimelineInMenu = false
+        appState.events = [todayEvent]
+        let disabledWithTodayEvents = StatusBarMenuState.make(
+            from: appState,
+            settings: settings,
+            now: now
+        )
+        XCTAssertFalse(disabledWithTodayEvents.shouldShowTimeline)
+    }
+
     func testMeetingControlMakesJoinPrimaryForEventWithLink() throws {
         let now = Date(timeIntervalSinceReferenceDate: 800_000_000)
         let calendarOpenURL = URL(string: "https://calendar.google.com/event?eid=abc")!
@@ -811,6 +854,28 @@ final class MenuBuilderQuickActionsTests: BaseTestCase {
         XCTAssertTrue(titles.contains { $0.contains("dismiss") })
         XCTAssertTrue(
             titles.contains { $0.contains("status_bar_menu_remove_all_dismissals".loco()) })
+    }
+
+    func testQuickActionsPreserveClipboardRefreshAndTitleVisibility() throws {
+        var state = StatusBarMenuState()
+        state.settings = .empty
+        state.settings.statusBar.eventTitleFormat = .show
+
+        let items = MenuBuilder(target: Dummy(), state: state)
+            .buildJoinSection(nextEvent: nil)
+        let quickActions = try XCTUnwrap(items.first {
+            $0.title == "status_bar_quick_actions".loco()
+        }?.submenu?.items)
+
+        XCTAssertTrue(quickActions.contains {
+            $0.action == #selector(StatusBarItemController.openLinkFromClipboardAction)
+        })
+        XCTAssertTrue(quickActions.contains {
+            $0.action == #selector(StatusBarItemController.handleManualRefresh)
+        })
+        XCTAssertTrue(quickActions.contains {
+            $0.action == #selector(StatusBarItemController.toggleMeetingTitleVisibility)
+        })
     }
 
 }
