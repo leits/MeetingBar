@@ -101,6 +101,10 @@ struct ScriptSection: View {
                     script: $joinEventScript, scriptLocation: $joinEventScriptLocation,
                     scriptName: "joinEventScript.scpt")
             }
+
+            Text("preferences_advanced_script_link_only_help".loco())
+                .font(.caption)
+                .foregroundStyle(.secondary)
         }
     }
 

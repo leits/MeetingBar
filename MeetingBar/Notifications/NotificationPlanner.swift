@@ -136,9 +136,16 @@ enum NotificationPlanner {
             appendIfDue(
                 .autoJoin, anchor: event.startDate, action: settings.autoJoin, event: event,
                 now: now, into: &planned)
-            appendIfDue(
-                .scriptOnStart, anchor: event.startDate, action: settings.scriptOnStart,
-                event: event, now: now, into: &planned)
+            if event.hasMeetingLink {
+                appendIfDue(
+                    .scriptOnStart,
+                    anchor: event.startDate,
+                    action: settings.scriptOnStart,
+                    event: event,
+                    now: now,
+                    into: &planned
+                )
+            }
         }
 
         return planned.sorted { $0.fireDate < $1.fireDate }

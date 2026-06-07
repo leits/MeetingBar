@@ -123,7 +123,7 @@ func createAppleScriptParametersForEvent(event: MBEvent) -> NSAppleEventDescript
  * This method will create an in memory event and use the parameter to execute the apple script.
  */
 @MainActor func runAppleScriptForNextEvent(events: [MBEvent]) {
-    if let nextEvent = events.nextEvent() {
+    if let nextEvent = events.nextEvent(linkRequired: true) {
         runMeetingStartsScript(event: nextEvent, type: .meetingStart)
     } else {
         AppMessageCenter.shared.post(.nextMeetingMissing)

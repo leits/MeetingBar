@@ -730,7 +730,7 @@ final class NotificationSchedulerTests: BaseTestCase {
         XCTAssertEqual(Defaults[.processedEventsForAutoJoin].map(\.id), [evt.id])
     }
 
-    func testScriptActionWithoutMeetingLinkRunsAndMarksProcessed() async {
+    func testScriptActionWithoutMeetingLinkDoesNotRunOrMarkProcessed() async {
         let requestSink = FakeNotificationRequestSink()
         let actionSink = FakeNotificationActionSink()
         let scheduler = NotificationScheduler(sink: requestSink, actionSink: actionSink)
@@ -743,11 +743,10 @@ final class NotificationSchedulerTests: BaseTestCase {
             now: scheduledNow
         )
 
-        await waitUntil { actionSink.actions.count == 1 }
+        try? await Task.sleep(nanoseconds: 300_000_000)
 
-        XCTAssertEqual(actionSink.actions.map(\.kind), [.scriptOnStart])
-        XCTAssertEqual(actionSink.actions.map(\.eventID), ["Script"])
-        XCTAssertEqual(Defaults[.processedEventsForRunScriptOnEventStart].map(\.id), ["Script"])
+        XCTAssertTrue(actionSink.actions.isEmpty)
+        XCTAssertTrue(Defaults[.processedEventsForRunScriptOnEventStart].isEmpty)
     }
 
     func testCurrentForSchedulerMapsDefaultsForMigratedActions() {

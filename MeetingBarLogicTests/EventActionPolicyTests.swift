@@ -35,7 +35,7 @@ final class EventActionPolicyTests: XCTestCase {
     private let scriptLikeConfig = EventActionConfig(
         actionTime: 60,
         allowsRecentlyStarted: false,
-        requiresMeetingLink: false
+        requiresMeetingLink: true
     )
 
     func testJoinableEventIsEligibleForFullscreenNotification() {
@@ -188,12 +188,12 @@ final class EventActionPolicyTests: XCTestCase {
         XCTAssertEqual(decision?.updatedProcessed.map(\.id), ["evt-1"])
     }
 
-    func testEvaluateScriptConfigFiresWithoutLink() {
+    func testEvaluateScriptConfigDoesNotFireWithoutLink() {
         let event = eventStartingIn(30, withLink: false)
         let decision = EventActionPolicy.evaluate(
             event: event, config: scriptLikeConfig, processed: [], now: now
         )
         XCTAssertNotNil(decision)
-        XCTAssertTrue(decision?.shouldFireSideEffect ?? false)
+        XCTAssertFalse(decision?.shouldFireSideEffect ?? true)
     }
 }

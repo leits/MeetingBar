@@ -253,9 +253,10 @@
 // MARK: - Preferences Advanced
 
 "preferences_advanced_setting_warning" = "These settings are intended for advanced users.";
-"preferences_advanced_apple_script_checkmark" = "Run AppleScript when joining a meeting";
+"preferences_advanced_apple_script_checkmark" = "Run AppleScript when joining";
 "preferences_advanced_apple_script_placeholder" = "# write your script here\ntell application \"Music\" to pause";
-"preferences_advanced_run_script_on_event_start" = "Run AppleScript automatically";
+"preferences_advanced_run_script_on_event_start" = "Run AppleScript before joinable meetings";
+"preferences_advanced_script_link_only_help" = "Runs only for events with meeting links.";
 "preferences_advanced_test_script_on_next_event" = "Test on next event";
 "preferences_advanced_edit_script" = "Edit script";
 "preferences_advanced_save_script_button" = "Save script";

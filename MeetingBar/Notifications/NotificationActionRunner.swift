@@ -152,7 +152,7 @@ final class NotificationActionRunner {
             return EventActionConfig(
                 actionTime: action.offset,
                 allowsRecentlyStarted: false,
-                requiresMeetingLink: false
+                requiresMeetingLink: true
             )
         case .eventStart, .eventEnd:
             return nil

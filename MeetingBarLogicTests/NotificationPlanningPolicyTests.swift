@@ -105,6 +105,44 @@ final class NotificationPlannerTests: XCTestCase {
         XCTAssertEqual(plans.map(\.kind), [.fullscreen])
     }
 
+    func testNoLinkEventDoesNotPlanScriptOnStart() {
+        let settings = NotificationPlanningSettings(
+            eventStart: .disabled,
+            eventEnd: .disabled,
+            fullscreen: .disabled,
+            autoJoin: .disabled,
+            scriptOnStart: .init(enabled: true, offset: 60),
+            dismissedEventIDs: []
+        )
+
+        let plans = NotificationPlanner.plan(
+            events: [event(startsIn: 600, hasMeetingLink: false)],
+            settings: settings,
+            now: now
+        )
+
+        XCTAssertTrue(plans.isEmpty)
+    }
+
+    func testJoinableEventPlansScriptOnStart() {
+        let settings = NotificationPlanningSettings(
+            eventStart: .disabled,
+            eventEnd: .disabled,
+            fullscreen: .disabled,
+            autoJoin: .disabled,
+            scriptOnStart: .init(enabled: true, offset: 60),
+            dismissedEventIDs: []
+        )
+
+        let plans = NotificationPlanner.plan(
+            events: [event(startsIn: 600, hasMeetingLink: true)],
+            settings: settings,
+            now: now
+        )
+
+        XCTAssertEqual(plans.map(\.kind), [.scriptOnStart])
+    }
+
     func testFireDateIsAnchorMinusOffset() {
         let evt = event(startsIn: 600, duration: 1800)
         let plans = NotificationPlanner.plan(events: [evt], settings: allEnabled, now: now)

@@ -199,6 +199,26 @@ final class NotificationActionHandlerTests: XCTestCase {
         XCTAssertEqual(actionCount, 0)
     }
 
+    func testScriptOnStartRejectsEventWithoutMeetingLink() {
+        let now = Date(timeIntervalSinceReferenceDate: 800_000_000)
+        let event = makeFakeEvent(
+            id: "no-link",
+            start: now,
+            end: now.addingTimeInterval(1800),
+            withLink: false
+        )
+        var scriptedEventIDs: [String] = []
+        let handler = NotificationActionHandler(
+            isScreenLocked: { false },
+            send: { _ in },
+            showFullscreen: { _ in },
+            runEventStartScript: { scriptedEventIDs.append($0.id) }
+        )
+
+        XCTAssertFalse(handler.performNotificationAction(.scriptOnStart, event: event))
+        XCTAssertTrue(scriptedEventIDs.isEmpty)
+    }
+
     private func makeEvent() -> MBEvent {
         let now = Date(timeIntervalSinceReferenceDate: 800_000_000)
         return makeFakeEvent(
