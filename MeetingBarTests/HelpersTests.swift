@@ -472,6 +472,12 @@ final class ProviderOpeningPolicyTests: BaseTestCase {
         case failed
     }
 
+    private final class OpeningSpy: @unchecked Sendable {
+        var nativeURLs: [URL] = []
+        var browserOpens: [(URL, Browser)] = []
+        var defaultURLs: [URL] = []
+    }
+
     func test_workplaceNativeURLPercentEncodesOriginalURL() {
         let original = URL(
             string: "https://workplace.com/groupcall/123?foo=bar&token=a+b#room"
@@ -503,6 +509,32 @@ final class ProviderOpeningPolicyTests: BaseTestCase {
                 for: URL(string: "https://example.com/groupcall/123")!
             )
         )
+    }
+
+    func test_workplaceNativeFailureFallsBackToOriginalURLInBrowser() {
+        let spy = OpeningSpy()
+        let original = URL(string: "https://workplace.com/groupcall/123?token=abc")!
+        let browser = Browser(name: "Safari", path: "/Applications/Safari.app")
+        let strategy = WorkplaceOpenStrategy(
+            nativeOpener: {
+                spy.nativeURLs.append($0)
+                return false
+            },
+            browserOpener: {
+                spy.browserOpens.append(($0, $1))
+            }
+        )
+
+        strategy.open(
+            url: original,
+            opening: ResolvedMeetingOpening(mode: .workplaceApp, browser: browser),
+            defaultBrowser: systemDefaultBrowser
+        )
+
+        XCTAssertEqual(spy.nativeURLs.count, 1)
+        XCTAssertEqual(spy.nativeURLs.first?.scheme, "workchat")
+        XCTAssertEqual(spy.browserOpens.first?.0, original)
+        XCTAssertEqual(spy.browserOpens.first?.1, browser)
     }
 
     func test_zoomWebAppTransformsMeetingURLAndPreservesQuery() {
@@ -593,6 +625,70 @@ final class ProviderOpeningPolicyTests: BaseTestCase {
             GoogleMeetPWALauncher.launch(plan) { _ in
                 throw TestError.failed
             }
+        )
+    }
+
+    func test_googleMeetPWAModeFallsBackToOriginalURLWhenLaunchFails() {
+        let spy = OpeningSpy()
+        let meetURL = URL(string: "https://meet.google.com/abc-defg-hij")!
+        let browser = Browser(name: "Safari", path: "/Applications/Safari.app")
+        let plan = GoogleMeetPWAOpenPlan(
+            executableURL: URL(fileURLWithPath: "/Applications/Google Chrome"),
+            arguments: []
+        )
+        let strategy = GoogleMeetOpenStrategy(
+            pwaPlanBuilder: { _ in plan },
+            pwaLauncher: { _ in false },
+            browserOpener: {
+                spy.browserOpens.append(($0, $1))
+            },
+            defaultOpener: {
+                spy.defaultURLs.append($0)
+            }
+        )
+
+        strategy.open(
+            url: meetURL,
+            opening: ResolvedMeetingOpening(mode: .googleMeetPWA, browser: browser),
+            defaultBrowser: systemDefaultBrowser
+        )
+
+        XCTAssertEqual(spy.browserOpens.first?.0, meetURL)
+        XCTAssertEqual(spy.browserOpens.first?.1, browser)
+        XCTAssertTrue(spy.defaultURLs.isEmpty)
+    }
+
+    func test_googleMeetDefaultBrowserAndMeetInOneBehaviorRemainUnchanged() {
+        let spy = OpeningSpy()
+        let meetURL = URL(string: "https://meet.google.com/abc-defg-hij")!
+        let browser = Browser(name: "Safari", path: "/Applications/Safari.app")
+        let strategy = GoogleMeetOpenStrategy(
+            pwaPlanBuilder: { _ in nil },
+            pwaLauncher: { _ in false },
+            browserOpener: {
+                spy.browserOpens.append(($0, $1))
+            },
+            defaultOpener: {
+                spy.defaultURLs.append($0)
+            }
+        )
+
+        strategy.open(
+            url: meetURL,
+            opening: ResolvedMeetingOpening(mode: nil, browser: browser),
+            defaultBrowser: systemDefaultBrowser
+        )
+        strategy.open(
+            url: meetURL,
+            opening: ResolvedMeetingOpening(mode: .meetInOne, browser: browser),
+            defaultBrowser: systemDefaultBrowser
+        )
+
+        XCTAssertEqual(spy.browserOpens.first?.0, meetURL)
+        XCTAssertEqual(spy.browserOpens.first?.1, browser)
+        XCTAssertEqual(
+            spy.defaultURLs,
+            [URL(string: "meetinone://url=\(meetURL.absoluteString)")!]
         )
     }
 

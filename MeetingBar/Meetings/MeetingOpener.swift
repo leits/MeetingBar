@@ -262,7 +262,7 @@ struct ZoomNativeOpenStrategy: MeetingOpenStrategy, Sendable {
     }
 }
 
-struct GoogleMeetPWAOpenPlan: Equatable {
+struct GoogleMeetPWAOpenPlan: Equatable, Sendable {
     let executableURL: URL
     let arguments: [String]
 }
@@ -356,6 +356,35 @@ enum GoogleMeetPWALauncher {
 /// Opens Google Meet links in the selected browser, MeetInOne, or the
 /// installed Chrome Google Meet PWA.
 struct GoogleMeetOpenStrategy: MeetingOpenStrategy, Sendable {
+    private let pwaPlanBuilder: @Sendable (URL) -> GoogleMeetPWAOpenPlan?
+    private let pwaLauncher: @Sendable (GoogleMeetPWAOpenPlan) -> Bool
+    private let browserOpener: @Sendable (URL, Browser) -> Void
+    private let defaultOpener: @Sendable (URL) -> Void
+
+    init(
+        pwaPlanBuilder: @escaping @Sendable (URL) -> GoogleMeetPWAOpenPlan? = {
+            GoogleMeetPWAOpenPolicy.plan(
+                for: $0,
+                chromeExecutableURL: GoogleMeetPWAInstallation.chromeExecutableURL(),
+                pwaAppID: GoogleMeetPWAInstallation.appID()
+            )
+        },
+        pwaLauncher: @escaping @Sendable (GoogleMeetPWAOpenPlan) -> Bool = {
+            GoogleMeetPWALauncher.launch($0)
+        },
+        browserOpener: @escaping @Sendable (URL, Browser) -> Void = {
+            $0.openIn(browser: $1)
+        },
+        defaultOpener: @escaping @Sendable (URL) -> Void = {
+            $0.openInDefaultBrowser()
+        }
+    ) {
+        self.pwaPlanBuilder = pwaPlanBuilder
+        self.pwaLauncher = pwaLauncher
+        self.browserOpener = browserOpener
+        self.defaultOpener = defaultOpener
+    }
+
     func open(
         url: URL,
         opening: ResolvedMeetingOpening,
@@ -364,20 +393,15 @@ struct GoogleMeetOpenStrategy: MeetingOpenStrategy, Sendable {
         switch opening.mode {
         case .meetInOne:
             let meetInOneURL = URL(string: "meetinone://url=" + url.absoluteString)!
-            meetInOneURL.openInDefaultBrowser()
+            defaultOpener(meetInOneURL)
         case .googleMeetPWA:
-            let plan = GoogleMeetPWAOpenPolicy.plan(
-                for: url,
-                chromeExecutableURL: GoogleMeetPWAInstallation.chromeExecutableURL(),
-                pwaAppID: GoogleMeetPWAInstallation.appID()
-            )
-            guard let plan, GoogleMeetPWALauncher.launch(plan) else {
-                url.openIn(browser: opening.browser)
+            guard let plan = pwaPlanBuilder(url), pwaLauncher(plan) else {
+                browserOpener(url, opening.browser)
                 return
             }
         case .zoomApp, .zoomWebApp, .teamsApp, .workplaceApp, .jitsiApp,
              .slackApp, .riversideApp, nil:
-            url.openIn(browser: opening.browser)
+            browserOpener(url, opening.browser)
         }
     }
 }
@@ -454,6 +478,21 @@ enum WorkplaceNativeURLPolicy {
 }
 
 struct WorkplaceOpenStrategy: MeetingOpenStrategy, Sendable {
+    private let nativeOpener: @Sendable (URL) -> Bool
+    private let browserOpener: @Sendable (URL, Browser) -> Void
+
+    init(
+        nativeOpener: @escaping @Sendable (URL) -> Bool = {
+            $0.openInDefaultBrowser()
+        },
+        browserOpener: @escaping @Sendable (URL, Browser) -> Void = {
+            $0.openIn(browser: $1)
+        }
+    ) {
+        self.nativeOpener = nativeOpener
+        self.browserOpener = browserOpener
+    }
+
     func open(
         url: URL,
         opening: ResolvedMeetingOpening,
@@ -462,13 +501,13 @@ struct WorkplaceOpenStrategy: MeetingOpenStrategy, Sendable {
         guard opening.mode == .workplaceApp,
               let nativeURL = WorkplaceNativeURLPolicy.nativeURL(for: url)
         else {
-            url.openIn(browser: opening.browser)
+            browserOpener(url, opening.browser)
             return
         }
 
-        guard nativeURL.openInDefaultBrowser() else {
+        guard nativeOpener(nativeURL) else {
             AppMessageCenter.shared.post(.meetingAppUnavailable(name: "Workplace"))
-            url.openIn(browser: opening.browser)
+            browserOpener(url, opening.browser)
             return
         }
     }

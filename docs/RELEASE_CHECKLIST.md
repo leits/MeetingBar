@@ -126,6 +126,14 @@ Then manually verify:
 - Esc dismisses the fullscreen notification
 - The Dismiss button dismisses the fullscreen notification
 - On a multi-monitor setup, fullscreen notification appears on the active/focused screen
+- Proton Meet link is detected and opens unchanged in the browser
+- Workplace call opens in the default browser mode
+- Workplace App mode opens Workchat and falls back to the original browser URL when unavailable
+- Zoom opens correctly in default browser, Zoom App, and Zoom Web App modes
+- Zoom `/my/` personal room opens once and does not attempt a second native/web-app launch
+- Google Meet opens correctly in default browser and MeetInOne modes
+- Google Meet PWA mode launches the installed Chrome PWA when available
+- Google Meet PWA mode falls back to the configured browser when Chrome or the PWA is unavailable
 - Notification authorization denied and granted paths
 - Preferences, changelog, diagnostics copy, launch at login, and app URL routes
 - App termination while refresh, OAuth, delayed actions, or StoreKit updates are active

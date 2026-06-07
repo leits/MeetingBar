@@ -63,6 +63,14 @@ final class MeetingLinkDetectorTests: XCTestCase {
         XCTAssertEqual(link?.service, .teams)
     }
 
+    func testDetectsExistingWorkplaceGroupCallLink() {
+        let url = "https://workplace.com/groupcall/123456?token=abc"
+        let link = detectMeetingLink(url)
+
+        XCTAssertEqual(link?.service, .facebook_workspace)
+        XCTAssertEqual(link?.url.absoluteString, url)
+    }
+
     func testDetectsLegacyTeamsMeetupJoinURLWithAdditionalQueryParameters() {
         let url = "https://teams.microsoft.com/l/meetup-join/abc?context=xyz&anon=true"
         let link = detectMeetingLink(url)

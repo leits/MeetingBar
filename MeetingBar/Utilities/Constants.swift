@@ -178,7 +178,7 @@ enum AppLanguage: String, Defaults.Serializable, Codable {
     case dutch = "nl"
 }
 
-struct Browser: Defaults.Serializable, Codable, Hashable {
+struct Browser: Defaults.Serializable, Codable, Hashable, Sendable {
     var name: String
     var path: String
     var arguments: String = ""
