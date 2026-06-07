@@ -38,6 +38,50 @@ final class EventActionPolicyTests: XCTestCase {
         requiresMeetingLink: false
     )
 
+    func testJoinableEventIsEligibleForFullscreenNotification() {
+        XCTAssertTrue(
+            FullscreenNotificationEligibilityPolicy.isEligible(
+                hasMeetingLink: true,
+                isAllDay: false,
+                fullscreenNotificationsEnabled: true,
+                includesEventsWithoutMeetingLink: false
+            )
+        )
+    }
+
+    func testNoLinkEventIsNotEligibleForFullscreenNotificationByDefault() {
+        XCTAssertFalse(
+            FullscreenNotificationEligibilityPolicy.isEligible(
+                hasMeetingLink: false,
+                isAllDay: false,
+                fullscreenNotificationsEnabled: true,
+                includesEventsWithoutMeetingLink: false
+            )
+        )
+    }
+
+    func testNoLinkEventIsEligibleForFullscreenNotificationWhenEnabled() {
+        XCTAssertTrue(
+            FullscreenNotificationEligibilityPolicy.isEligible(
+                hasMeetingLink: false,
+                isAllDay: false,
+                fullscreenNotificationsEnabled: true,
+                includesEventsWithoutMeetingLink: true
+            )
+        )
+    }
+
+    func testNoLinkAllDayEventRemainsIneligibleForFullscreenNotification() {
+        XCTAssertFalse(
+            FullscreenNotificationEligibilityPolicy.isEligible(
+                hasMeetingLink: false,
+                isAllDay: true,
+                fullscreenNotificationsEnabled: true,
+                includesEventsWithoutMeetingLink: true
+            )
+        )
+    }
+
     func testCleanupExpiredDropsEndedEntries() {
         let processed = [
             EventActionProcessedEvent(id: "ended", lastModifiedDate: nil, eventEndDate: now.addingTimeInterval(-1)),

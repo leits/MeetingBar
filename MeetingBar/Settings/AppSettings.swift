@@ -57,6 +57,7 @@ struct NotificationSettings: Equatable {
     var endOfEventNotificationTime: TimeBeforeEventEnd
     var fullscreenNotification: Bool
     var fullscreenNotificationTime: TimeBeforeEvent
+    var fullscreenNotificationsForEventsWithoutMeetingLink: Bool
 }
 
 struct MeetingSettings: Equatable {
@@ -144,7 +145,9 @@ extension AppSettings {
                 endOfEventNotification: Defaults[.endOfEventNotification],
                 endOfEventNotificationTime: Defaults[.endOfEventNotificationTime],
                 fullscreenNotification: Defaults[.fullscreenNotification],
-                fullscreenNotificationTime: Defaults[.fullscreenNotificationTime]
+                fullscreenNotificationTime: Defaults[.fullscreenNotificationTime],
+                fullscreenNotificationsForEventsWithoutMeetingLink:
+                    Defaults[.fullscreenNotificationsForEventsWithoutMeetingLink]
             ),
             meetings: MeetingSettings(
                 createMeetingService: Defaults[.createMeetingService],
@@ -213,7 +216,8 @@ extension AppSettings {
                 endOfEventNotification: true,
                 endOfEventNotificationTime: .atEnd,
                 fullscreenNotification: false,
-                fullscreenNotificationTime: .atStart
+                fullscreenNotificationTime: .atStart,
+                fullscreenNotificationsForEventsWithoutMeetingLink: false
             ),
             meetings: MeetingSettings(
                 createMeetingService: .zoom,

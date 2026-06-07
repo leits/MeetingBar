@@ -191,7 +191,8 @@ extension NotificationPlanningEvent {
             endDate: event.endDate,
             status: event.status == .canceled ? .canceled : .active,
             participationStatus: event.participationStatus == .declined ? .declined : .active,
-            isAllDay: event.isAllDay
+            isAllDay: event.isAllDay,
+            hasMeetingLink: event.meetingLink != nil
         )
     }
 }
@@ -281,6 +282,8 @@ extension NotificationPlanningSettings {
                 offset: TimeInterval(adv.eventStartScriptTime.rawValue)
             ),
             dismissedEventIDs: Set(events.dismissedEvents.map(\.id)),
+            fullscreenNotificationsForEventsWithoutMeetingLink:
+                notif.fullscreenNotificationsForEventsWithoutMeetingLink,
             hideMeetingTitle: statusBar.hideMeetingTitle,
             eventStartBody: NotificationContent.startBody(
                 for: notif.joinEventNotificationTime),

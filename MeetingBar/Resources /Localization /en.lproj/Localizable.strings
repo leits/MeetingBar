@@ -407,6 +407,9 @@
 
 "shared_send_notification_toggle" = "Send a system notification";
 "shared_fullscreen_notification_toggle" = "Show a fullscreen notification";
+"shared_fullscreen_notification_without_link_toggle" = "Also show fullscreen notifications for events without meeting links";
+"shared_fullscreen_notification_without_link_help" = "Events without meeting links show a fullscreen reminder with a Dismiss action only.";
+"fullscreen_notification_dismiss_action" = "Dismiss";
 "shared_send_notification_no_alert_style_tip" = "Note: Notifications are set to Banners, so they appear briefly before disappearing. To keep them onscreen until you dismiss them, switch to Alerts in your macOS notification settings.";
 "shared_send_notification_disabled_tip" = "⚠️ Your macOS notification settings for MeetingBar are off. Turn on notifications in the macOS system settings to keep track of meetings.";
 "shared_automatic_event_join_toggle" = "Automatically join next event meeting";

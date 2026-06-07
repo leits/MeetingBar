@@ -19,7 +19,8 @@ struct EventActionConfig {
 
     /// `true` if the side-effect should be skipped when the event has no
     /// meeting link, while still updating the processed-events list to
-    /// dedup retries. Used by fullscreen and auto-join.
+    /// dedup retries. Used by auto-join; fullscreen eligibility is handled by
+    /// `FullscreenNotificationEligibilityPolicy`.
     let requiresMeetingLink: Bool
 }
 
@@ -36,6 +37,19 @@ struct EventActionProcessedEvent: Equatable {
     let id: String
     let lastModifiedDate: Date?
     let eventEndDate: Date
+}
+
+enum FullscreenNotificationEligibilityPolicy {
+    static func isEligible(
+        hasMeetingLink: Bool,
+        isAllDay: Bool,
+        fullscreenNotificationsEnabled: Bool,
+        includesEventsWithoutMeetingLink: Bool
+    ) -> Bool {
+        guard fullscreenNotificationsEnabled else { return false }
+        if hasMeetingLink { return true }
+        return includesEventsWithoutMeetingLink && !isAllDay
+    }
 }
 
 enum EventActionPolicy {

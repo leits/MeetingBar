@@ -17,6 +17,7 @@ final class NotificationPlannerTests: XCTestCase {
         status: NotificationPlanningEvent.Status = .active,
         participation: NotificationPlanningEvent.ParticipationStatus = .active,
         allDay: Bool = false,
+        hasMeetingLink: Bool = true,
         lastModifiedDate: Date? = Date(timeIntervalSince1970: 1_000_000)
     ) -> NotificationPlanningEvent {
         NotificationPlanningEvent(
@@ -26,7 +27,8 @@ final class NotificationPlannerTests: XCTestCase {
             endDate: now.addingTimeInterval(startsIn + duration),
             status: status,
             participationStatus: participation,
-            isAllDay: allDay
+            isAllDay: allDay,
+            hasMeetingLink: hasMeetingLink
         )
     }
 
@@ -71,6 +73,36 @@ final class NotificationPlannerTests: XCTestCase {
             now: now
         )
         XCTAssertEqual(Set(plans.map(\.kind)), Set(NotificationKind.allCases))
+    }
+
+    func testNoLinkEventDoesNotPlanFullscreenNotificationByDefault() {
+        let plans = NotificationPlanner.plan(
+            events: [event(startsIn: 600, hasMeetingLink: false)],
+            settings: allEnabled,
+            now: now
+        )
+
+        XCTAssertFalse(plans.map(\.kind).contains(.fullscreen))
+    }
+
+    func testNoLinkEventPlansFullscreenNotificationWhenEnabled() {
+        let settings = NotificationPlanningSettings(
+            eventStart: .disabled,
+            eventEnd: .disabled,
+            fullscreen: .init(enabled: true, offset: 5),
+            autoJoin: .disabled,
+            scriptOnStart: .disabled,
+            dismissedEventIDs: [],
+            fullscreenNotificationsForEventsWithoutMeetingLink: true
+        )
+
+        let plans = NotificationPlanner.plan(
+            events: [event(startsIn: 600, hasMeetingLink: false)],
+            settings: settings,
+            now: now
+        )
+
+        XCTAssertEqual(plans.map(\.kind), [.fullscreen])
     }
 
     func testFireDateIsAnchorMinusOffset() {

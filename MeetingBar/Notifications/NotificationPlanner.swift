@@ -45,6 +45,7 @@ struct NotificationPlanningEvent: Equatable, Sendable {
     let status: Status
     let participationStatus: ParticipationStatus
     let isAllDay: Bool
+    let hasMeetingLink: Bool
 }
 
 struct NotificationPlanningSettings: Equatable, Sendable {
@@ -62,6 +63,7 @@ struct NotificationPlanningSettings: Equatable, Sendable {
     let autoJoin: Action
     let scriptOnStart: Action
     let dismissedEventIDs: Set<String>
+    let fullscreenNotificationsForEventsWithoutMeetingLink: Bool
 
     /// Whether to hide the event title in notifications (replaced with a generic label).
     let hideMeetingTitle: Bool
@@ -77,6 +79,7 @@ struct NotificationPlanningSettings: Equatable, Sendable {
         autoJoin: Action,
         scriptOnStart: Action,
         dismissedEventIDs: Set<String>,
+        fullscreenNotificationsForEventsWithoutMeetingLink: Bool = false,
         hideMeetingTitle: Bool = false,
         eventStartBody: String = "",
         eventEndBody: String = ""
@@ -87,6 +90,8 @@ struct NotificationPlanningSettings: Equatable, Sendable {
         self.autoJoin = autoJoin
         self.scriptOnStart = scriptOnStart
         self.dismissedEventIDs = dismissedEventIDs
+        self.fullscreenNotificationsForEventsWithoutMeetingLink =
+            fullscreenNotificationsForEventsWithoutMeetingLink
         self.hideMeetingTitle = hideMeetingTitle
         self.eventStartBody = eventStartBody
         self.eventEndBody = eventEndBody
@@ -117,9 +122,17 @@ enum NotificationPlanner {
             appendIfDue(
                 .eventEnd, anchor: event.endDate, action: settings.eventEnd, event: event, now: now,
                 into: &planned)
-            appendIfDue(
-                .fullscreen, anchor: event.startDate, action: settings.fullscreen, event: event,
-                now: now, into: &planned)
+            if FullscreenNotificationEligibilityPolicy.isEligible(
+                hasMeetingLink: event.hasMeetingLink,
+                isAllDay: event.isAllDay,
+                fullscreenNotificationsEnabled: settings.fullscreen.enabled,
+                includesEventsWithoutMeetingLink:
+                    settings.fullscreenNotificationsForEventsWithoutMeetingLink
+            ) {
+                appendIfDue(
+                    .fullscreen, anchor: event.startDate, action: settings.fullscreen, event: event,
+                    now: now, into: &planned)
+            }
             appendIfDue(
                 .autoJoin, anchor: event.startDate, action: settings.autoJoin, event: event,
                 now: now, into: &planned)

@@ -139,6 +139,7 @@ final class StatusBarItemController {
             .endOfEventNotificationTime,
             .fullscreenNotification,
             .fullscreenNotificationTime,
+            .fullscreenNotificationsForEventsWithoutMeetingLink,
             .automaticEventJoin,
             .automaticEventJoinTime,
             .runEventStartScript,

@@ -118,6 +118,14 @@ Then manually verify:
 - Wake, screen lock/unlock, timezone change, and day change refreshes
 - Status bar title/menu with no events, next event, long titles, and back-to-back events
 - Join, alternate links, dismiss, snooze, fullscreen, auto-join, and event-start scripts
+- Existing joinable meeting shows a fullscreen notification and still joins correctly
+- No-link event does not show a fullscreen notification by default
+- Enable fullscreen notifications for events without meeting links; confirm a no-link event shows one
+- No-link fullscreen notification shows Dismiss only, with no Join or Open in Calendar action
+- No-link fullscreen notification does not open a meeting or run a join script
+- Esc dismisses the fullscreen notification
+- The Dismiss button dismisses the fullscreen notification
+- On a multi-monitor setup, fullscreen notification appears on the active/focused screen
 - Notification authorization denied and granted paths
 - Preferences, changelog, diagnostics copy, launch at login, and app URL routes
 - App termination while refresh, OAuth, delayed actions, or StoreKit updates are active

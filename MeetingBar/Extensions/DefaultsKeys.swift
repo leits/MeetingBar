@@ -48,6 +48,10 @@ extension Defaults.Keys {
     static let fullscreenNotification = Key<Bool>("fullscreenNotification", default: false)
     static let fullscreenNotificationTime = Key<TimeBeforeEvent>(
         "fullscreenNotificationTime", default: .atStart)
+    static let fullscreenNotificationsForEventsWithoutMeetingLink = Key<Bool>(
+        "fullscreenNotificationsForEventsWithoutMeetingLink",
+        default: false
+    )
     static let processedEventsForFullscreenNotification = Key<[ProcessedEvent]>(
         "processedEventsForFullscreenNotification", default: [])
 

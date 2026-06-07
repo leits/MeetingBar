@@ -49,7 +49,13 @@ final class NotificationActionRunner {
                     fireDate: event.startDate.addingTimeInterval(-action.offset),
                     identity: ""
                 )
-                fireAction(plan: plan, event: event, action: action, now: now)
+                fireAction(
+                    plan: plan,
+                    event: event,
+                    action: action,
+                    settings: settings,
+                    now: now
+                )
             }
         }
     }
@@ -60,7 +66,7 @@ final class NotificationActionRunner {
         plan: PlannedNotification, event: MBEvent, settings: NotificationPlanningSettings, now: Date
     ) {
         let action = actionSettings(for: plan.kind, settings: settings)
-        fireAction(plan: plan, event: event, action: action, now: now)
+        fireAction(plan: plan, event: event, action: action, settings: settings, now: now)
     }
 
     // MARK: - Private helpers
@@ -69,18 +75,31 @@ final class NotificationActionRunner {
         plan: PlannedNotification,
         event: MBEvent,
         action: NotificationPlanningSettings.Action,
+        settings: NotificationPlanningSettings,
         now: Date
     ) {
+        let actionEvent = EventActionEvent(
+            id: event.id,
+            lastModifiedDate: event.lastModifiedDate,
+            startDate: event.startDate,
+            endDate: event.endDate,
+            isAllDay: event.isAllDay,
+            hasMeetingLink: event.meetingLink != nil
+        )
+
+        if plan.kind == .fullscreen {
+            guard FullscreenNotificationEligibilityPolicy.isEligible(
+                hasMeetingLink: actionEvent.hasMeetingLink,
+                isAllDay: actionEvent.isAllDay,
+                fullscreenNotificationsEnabled: action.enabled,
+                includesEventsWithoutMeetingLink:
+                    settings.fullscreenNotificationsForEventsWithoutMeetingLink
+            ) else { return }
+        }
+
         guard let config = actionConfig(for: plan.kind, action: action),
             let decision = EventActionPolicy.evaluate(
-                event: EventActionEvent(
-                    id: event.id,
-                    lastModifiedDate: event.lastModifiedDate,
-                    startDate: event.startDate,
-                    endDate: event.endDate,
-                    isAllDay: event.isAllDay,
-                    hasMeetingLink: event.meetingLink != nil
-                ),
+                event: actionEvent,
                 config: config,
                 processed: recordStore.processedRecords(for: plan.kind),
                 now: now
@@ -117,7 +136,13 @@ final class NotificationActionRunner {
         action: NotificationPlanningSettings.Action
     ) -> EventActionConfig? {
         switch kind {
-        case .fullscreen, .autoJoin:
+        case .fullscreen:
+            return EventActionConfig(
+                actionTime: action.offset,
+                allowsRecentlyStarted: true,
+                requiresMeetingLink: false
+            )
+        case .autoJoin:
             return EventActionConfig(
                 actionTime: action.offset,
                 allowsRecentlyStarted: true,

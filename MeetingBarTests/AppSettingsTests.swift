@@ -106,6 +106,20 @@ final class AppSettingsTests: BaseTestCase {
         XCTAssertFalse(AppSettings.current.statusBar.hideMeetingTitle)
     }
 
+    func testNoLinkFullscreenNotificationsDefaultOffAndMapFromDefaults() {
+        XCTAssertFalse(
+            AppSettings.current.notifications
+                .fullscreenNotificationsForEventsWithoutMeetingLink
+        )
+
+        Defaults[.fullscreenNotificationsForEventsWithoutMeetingLink] = true
+
+        XCTAssertTrue(
+            AppSettings.current.notifications
+                .fullscreenNotificationsForEventsWithoutMeetingLink
+        )
+    }
+
     func testToggleMeetingTitleVisibilityWriteHelper() {
         AppSettings.toggleMeetingTitleVisibility()
         XCTAssertTrue(Defaults[.hideMeetingTitle])

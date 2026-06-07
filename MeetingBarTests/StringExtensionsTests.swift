@@ -8,7 +8,10 @@ class StringExtensionsTests: XCTestCase {
         _ = I18N.instance.changeLanguage(to: .german)
         defer { _ = I18N.instance.changeLanguage(to: .system) }
 
-        XCTAssertEqual("preferences_status_provider_status_title".loco(), "Provider Status")
+        XCTAssertEqual(
+            "shared_fullscreen_notification_without_link_help".loco(),
+            "Events without meeting links show a fullscreen reminder with a Dismiss action only."
+        )
     }
 
     // MARK: withLinksEnabled

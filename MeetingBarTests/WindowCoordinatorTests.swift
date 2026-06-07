@@ -9,6 +9,103 @@ import XCTest
 
 @MainActor
 final class WindowCoordinatorTests: XCTestCase {
+    func testFullscreenScreenSelectionPrefersKeyThenMainWindowScreen() {
+        XCTAssertEqual(
+            FullscreenNotificationScreenSelectionPolicy.select(
+                keyWindowScreen: "key",
+                mainWindowScreen: "main-window",
+                mouseScreen: "mouse",
+                mainScreen: "main",
+                screens: ["first"]
+            ),
+            "key"
+        )
+        XCTAssertEqual(
+            FullscreenNotificationScreenSelectionPolicy.select(
+                keyWindowScreen: nil,
+                mainWindowScreen: "main-window",
+                mouseScreen: "mouse",
+                mainScreen: "main",
+                screens: ["first"]
+            ),
+            "main-window"
+        )
+    }
+
+    func testFullscreenScreenSelectionUsesMouseScreenFallback() {
+        XCTAssertEqual(
+            FullscreenNotificationScreenSelectionPolicy.select(
+                keyWindowScreen: nil,
+                mainWindowScreen: nil,
+                mouseScreen: "mouse",
+                mainScreen: "main",
+                screens: ["first"]
+            ),
+            "mouse"
+        )
+    }
+
+    func testFullscreenScreenSelectionUsesMainThenFirstScreenFallback() {
+        XCTAssertEqual(
+            FullscreenNotificationScreenSelectionPolicy.select(
+                keyWindowScreen: nil,
+                mainWindowScreen: nil,
+                mouseScreen: nil,
+                mainScreen: "main",
+                screens: ["first"]
+            ),
+            "main"
+        )
+        XCTAssertEqual(
+            FullscreenNotificationScreenSelectionPolicy.select(
+                keyWindowScreen: nil,
+                mainWindowScreen: nil,
+                mouseScreen: nil,
+                mainScreen: nil,
+                screens: ["first"]
+            ),
+            "first"
+        )
+    }
+
+    func testFullscreenKeyboardPolicyDismissesOnlyForEscape() {
+        XCTAssertTrue(
+            FullscreenNotificationKeyboardPolicy.shouldDismiss(
+                keyCode: FullscreenNotificationKeyboardPolicy.escapeKeyCode
+            )
+        )
+        XCTAssertFalse(FullscreenNotificationKeyboardPolicy.shouldDismiss(keyCode: 36))
+    }
+
+    func testFullscreenPresentationShowsJoinForJoinableEvent() {
+        let event = makeFakeEvent(
+            id: "joinable",
+            start: Date(),
+            end: Date().addingTimeInterval(1800),
+            withLink: true
+        )
+
+        XCTAssertEqual(
+            FullscreenNotificationPresentation.make(for: event).actions,
+            [.dismiss, .join]
+        )
+    }
+
+    func testFullscreenPresentationShowsDismissOnlyForNoLinkEvent() {
+        let event = makeFakeEvent(
+            id: "no-link",
+            start: Date(),
+            end: Date().addingTimeInterval(1800),
+            withLink: false,
+            calendarOpenURL: URL(string: "ical://ekevent/no-link")
+        )
+
+        XCTAssertEqual(
+            FullscreenNotificationPresentation.make(for: event).actions,
+            [.dismiss]
+        )
+    }
+
     func testOnboardingCloseRunsIncompleteOnboardingClosureOnlyWhenNotCompleted() {
         let coordinator = WindowCoordinator()
         var incompleteCloseCount = 0

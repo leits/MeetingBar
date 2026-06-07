@@ -6,6 +6,43 @@
 import AppKit
 import SwiftUI
 
+enum FullscreenNotificationScreenSelectionPolicy {
+    static func select<Screen>(
+        keyWindowScreen: Screen?,
+        mainWindowScreen: Screen?,
+        mouseScreen: Screen?,
+        mainScreen: Screen?,
+        screens: [Screen]
+    ) -> Screen? {
+        keyWindowScreen ?? mainWindowScreen ?? mouseScreen ?? mainScreen ?? screens.first
+    }
+}
+
+enum FullscreenNotificationKeyboardPolicy {
+    static let escapeKeyCode: UInt16 = 53
+
+    static func shouldDismiss(keyCode: UInt16) -> Bool {
+        keyCode == escapeKeyCode
+    }
+}
+
+final class FullscreenNotificationWindow: NSWindow {
+    override var canBecomeKey: Bool { true }
+    override var canBecomeMain: Bool { true }
+
+    override func keyDown(with event: NSEvent) {
+        if FullscreenNotificationKeyboardPolicy.shouldDismiss(keyCode: event.keyCode) {
+            close()
+            return
+        }
+        super.keyDown(with: event)
+    }
+
+    override func cancelOperation(_ sender: Any?) {
+        close()
+    }
+}
+
 /// Owns AppKit window lifecycle for app-level windows.
 ///
 /// Behavior stays outside this type: callers provide closures for close-time
@@ -69,9 +106,18 @@ final class WindowCoordinator {
     }
 
     func openFullscreenNotificationWindow(event: MBEvent) {
-        let screenFrame = NSScreen.main?.frame ?? NSRect(x: 0, y: 0, width: 800, height: 600)
+        let screens = NSScreen.screens
+        let mouseScreen = screens.first { $0.frame.contains(NSEvent.mouseLocation) }
+        let screen = FullscreenNotificationScreenSelectionPolicy.select(
+            keyWindowScreen: NSApp.keyWindow?.screen,
+            mainWindowScreen: NSApp.mainWindow?.screen,
+            mouseScreen: mouseScreen,
+            mainScreen: NSScreen.main,
+            screens: screens
+        )
+        let screenFrame = screen?.frame ?? NSRect(x: 0, y: 0, width: 800, height: 600)
 
-        let window = NSWindow(
+        let window = FullscreenNotificationWindow(
             contentRect: screenFrame,
             styleMask: [.borderless],
             backing: .buffered,
@@ -81,7 +127,6 @@ final class WindowCoordinator {
         window.contentView = NSHostingView(
             rootView: FullscreenNotification(event: event, window: window))
         window.appearance = NSAppearance(named: .darkAqua)
-        window.collectionBehavior = .canJoinAllSpaces
         window.collectionBehavior = .moveToActiveSpace
 
         window.titlebarAppearsTransparent = true
@@ -92,7 +137,9 @@ final class WindowCoordinator {
         let controller = NSWindowController(window: window)
         controller.showWindow(self)
 
-        window.center()
+        window.setFrame(screenFrame, display: true)
+        NSApplication.shared.activate(ignoringOtherApps: true)
+        window.makeKeyAndOrderFront(nil)
         window.orderFrontRegardless()
     }
 

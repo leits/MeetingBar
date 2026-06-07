@@ -67,7 +67,8 @@ final class NotificationSchedulerTests: BaseTestCase {
 
     private func fullscreenOnlySettings(
         offset: TimeInterval = 0.25,
-        dismissedEventIDs: Set<String> = []
+        dismissedEventIDs: Set<String> = [],
+        includesEventsWithoutMeetingLink: Bool = false
     ) -> NotificationPlanningSettings {
         NotificationPlanningSettings(
             eventStart: .disabled,
@@ -75,7 +76,9 @@ final class NotificationSchedulerTests: BaseTestCase {
             fullscreen: .init(enabled: true, offset: offset),
             autoJoin: .disabled,
             scriptOnStart: .disabled,
-            dismissedEventIDs: dismissedEventIDs
+            dismissedEventIDs: dismissedEventIDs,
+            fullscreenNotificationsForEventsWithoutMeetingLink:
+                includesEventsWithoutMeetingLink
         )
     }
 
@@ -532,7 +535,7 @@ final class NotificationSchedulerTests: BaseTestCase {
         XCTAssertTrue(Defaults[.processedEventsForFullscreenNotification].isEmpty)
     }
 
-    func testFullscreenActionWithoutMeetingLinkMarksProcessedWithoutOpening() async {
+    func testFullscreenActionWithoutMeetingLinkIsNotEligibleByDefault() async {
         let requestSink = FakeNotificationRequestSink()
         let actionSink = FakeNotificationActionSink()
         let scheduler = NotificationScheduler(sink: requestSink, actionSink: actionSink)
@@ -545,13 +548,39 @@ final class NotificationSchedulerTests: BaseTestCase {
             now: scheduledNow
         )
 
-        await waitUntil {
-            Defaults[.processedEventsForFullscreenNotification].contains { $0.id == evt.id }
-        }
+        try? await Task.sleep(nanoseconds: 350_000_000)
 
         XCTAssertTrue(actionSink.attempts.isEmpty)
         XCTAssertTrue(actionSink.actions.isEmpty)
-        XCTAssertEqual(Defaults[.processedEventsForFullscreenNotification].map(\.id), [evt.id])
+        XCTAssertTrue(Defaults[.processedEventsForFullscreenNotification].isEmpty)
+    }
+
+    func testFullscreenActionWithoutMeetingLinkFiresWhenEnabled() async {
+        let requestSink = FakeNotificationRequestSink()
+        let actionSink = FakeNotificationActionSink()
+        let scheduler = NotificationScheduler(sink: requestSink, actionSink: actionSink)
+        let scheduledNow = Date()
+        let evt = wallClockEvent(
+            id: "NoLink",
+            now: scheduledNow,
+            startsIn: 0.35,
+            withLink: false
+        )
+
+        await scheduler.reconcile(
+            events: [evt],
+            settings: fullscreenOnlySettings(
+                offset: 0.25,
+                includesEventsWithoutMeetingLink: true
+            ),
+            now: scheduledNow
+        )
+
+        await waitUntil { actionSink.actions.count == 1 }
+
+        XCTAssertEqual(actionSink.actions.map(\.kind), [.fullscreen])
+        XCTAssertEqual(actionSink.actions.map(\.eventID), ["NoLink"])
+        XCTAssertEqual(Defaults[.processedEventsForFullscreenNotification].map(\.id), ["NoLink"])
     }
 
     func testRemovingActionSinkCancelsPendingFullscreenActionTask() async {
@@ -733,6 +762,7 @@ final class NotificationSchedulerTests: BaseTestCase {
         Defaults[.endOfEventNotificationTime] = .fiveMinuteBefore
         Defaults[.fullscreenNotification] = true
         Defaults[.fullscreenNotificationTime] = .minuteBefore
+        Defaults[.fullscreenNotificationsForEventsWithoutMeetingLink] = true
         Defaults[.automaticEventJoin] = true
         Defaults[.automaticEventJoinTime] = .threeMinuteBefore
         Defaults[.runEventStartScript] = true
@@ -745,6 +775,7 @@ final class NotificationSchedulerTests: BaseTestCase {
         XCTAssertEqual(settings.eventStart, .init(enabled: true, offset: 180))
         XCTAssertEqual(settings.eventEnd, .init(enabled: false, offset: 300))
         XCTAssertEqual(settings.fullscreen, .init(enabled: true, offset: 60))
+        XCTAssertTrue(settings.fullscreenNotificationsForEventsWithoutMeetingLink)
         XCTAssertEqual(settings.autoJoin, .init(enabled: true, offset: 180))
         XCTAssertEqual(settings.scriptOnStart, .init(enabled: true, offset: 300))
         XCTAssertEqual(settings.dismissedEventIDs, Set(["dismissed"]))

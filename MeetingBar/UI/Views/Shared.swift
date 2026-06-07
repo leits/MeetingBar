@@ -41,16 +41,36 @@ struct AutomaticEventJoinPicker: View {
 struct FullscreenNotificationPicker: View {
     @Default(.fullscreenNotification) var fullscreenNotification
     @Default(.fullscreenNotificationTime) var fullscreenNotificationTime
+    @Default(.fullscreenNotificationsForEventsWithoutMeetingLink)
+    var fullscreenNotificationsForEventsWithoutMeetingLink
 
     var body: some View {
-        HStack {
-            Toggle("shared_fullscreen_notification_toggle".loco(), isOn: $fullscreenNotification)
-            Picker("", selection: $fullscreenNotificationTime) {
-                Text("general_when_event_starts".loco()).tag(TimeBeforeEvent.atStart)
-                Text("general_one_minute_before".loco()).tag(TimeBeforeEvent.minuteBefore)
-                Text("general_three_minute_before".loco()).tag(TimeBeforeEvent.threeMinuteBefore)
-                Text("general_five_minute_before".loco()).tag(TimeBeforeEvent.fiveMinuteBefore)
-            }.frame(width: 220, alignment: .leading).labelsHidden().disabled(!fullscreenNotification)
+        VStack(alignment: .leading, spacing: 6) {
+            HStack {
+                Toggle(
+                    "shared_fullscreen_notification_toggle".loco(),
+                    isOn: $fullscreenNotification
+                )
+                Picker("", selection: $fullscreenNotificationTime) {
+                    Text("general_when_event_starts".loco()).tag(TimeBeforeEvent.atStart)
+                    Text("general_one_minute_before".loco()).tag(TimeBeforeEvent.minuteBefore)
+                    Text("general_three_minute_before".loco()).tag(TimeBeforeEvent.threeMinuteBefore)
+                    Text("general_five_minute_before".loco()).tag(TimeBeforeEvent.fiveMinuteBefore)
+                }
+                .frame(width: 220, alignment: .leading)
+                .labelsHidden()
+                .disabled(!fullscreenNotification)
+            }
+
+            Toggle(
+                "shared_fullscreen_notification_without_link_toggle".loco(),
+                isOn: $fullscreenNotificationsForEventsWithoutMeetingLink
+            )
+            .disabled(!fullscreenNotification)
+
+            Text("shared_fullscreen_notification_without_link_help".loco())
+                .foregroundStyle(.secondary)
+                .font(.caption)
         }
     }
 }
