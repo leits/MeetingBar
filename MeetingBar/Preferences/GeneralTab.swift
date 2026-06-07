@@ -15,16 +15,20 @@ struct GeneralTab: View {
     @ObservedObject var patronageService: PatronageService
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 15) {
+        VStack(alignment: .leading, spacing: 12) {
             GroupBox(label: Label("preferences_section_general_settings_title".loco(), systemImage: "gearshape")) {
                 LaunchAtLoginANDPreferredLanguagePicker()
+                    .padding(8)
             }
             GroupBox(label: Label("preferences_section_shortcuts_title".loco(), systemImage: "keyboard")) {
                 ShortcutsSection()
-            }.padding(.top, 8)
+                    .padding(8)
+            }
             GroupBox(label: Label("preferences_section_about_title".loco(), systemImage: "person.crop.circle")) {
                 PatronageAppSection(patronageService: patronageService)
-            }.padding(.top, 8)
+                    .padding(8)
+            }
+            Spacer()
         }
     }
 }
@@ -33,20 +37,37 @@ struct ShortcutsSection: View {
     @State var showingModal = false
 
     var body: some View {
-        HStack {
-            Text("preferences_general_shortcut_create_meeting".loco())
-            KeyboardShortcuts.Recorder(for: .createMeetingShortcut)
-
-            Text("preferences_general_shortcut_join_next".loco())
-            KeyboardShortcuts.Recorder(for: .joinEventShortcut)
-
-            Spacer()
-
-            Button(action: { self.showingModal.toggle() }) {
-                Text("preferences_general_all_shortcut".loco())
-            }.sheet(isPresented: $showingModal) {
-                ShortcutsModal()
+        VStack(alignment: .leading, spacing: 8) {
+            ShortcutRow(
+                title: "preferences_general_shortcut_join_next".loco(),
+                recorder: KeyboardShortcuts.Recorder(for: .joinEventShortcut)
+            )
+            ShortcutRow(
+                title: "preferences_general_shortcut_create_meeting".loco(),
+                recorder: KeyboardShortcuts.Recorder(for: .createMeetingShortcut)
+            )
+            HStack {
+                Spacer()
+                Button(action: { self.showingModal.toggle() }) {
+                    Text("preferences_general_all_shortcut".loco())
+                }
+                .sheet(isPresented: $showingModal) {
+                    ShortcutsModal()
+                }
             }
+        }
+    }
+}
+
+private struct ShortcutRow<Recorder: View>: View {
+    let title: String
+    let recorder: Recorder
+
+    var body: some View {
+        HStack {
+            Text(title)
+            Spacer()
+            recorder
         }
     }
 }
@@ -103,7 +124,7 @@ struct PatronageAppSection: View {
     @ObservedObject var patronageService: PatronageService
 
     var body: some View {
-        VStack(alignment: .center, spacing: 15) {
+        VStack(alignment: .leading, spacing: 10) {
             if isInstalledFromAppStore {
                 HStack {
                     Text("preferences_general_patron_title".loco()).bold()
@@ -151,41 +172,42 @@ struct PatronageAppSection: View {
                 Divider()
             }
 
-            HStack {
-                VStack(alignment: .center) {
-                    Image("appIconForAbout").resizable().frame(width: 120.0, height: 120.0)
-                    Text("MeetingBar").font(.system(size: 20)).bold()
+            HStack(alignment: .center, spacing: 12) {
+                Image("appIconForAbout")
+                    .resizable()
+                    .frame(width: 64, height: 64)
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("MeetingBar")
+                        .font(.headline)
                     Text(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "")
-                        .foregroundColor(.gray)
-                }.lineLimit(1).minimumScaleFactor(0.5).frame(minWidth: 0, maxWidth: .infinity)
-                VStack {
-                    Spacer()
-                    Text("preferences_general_meeting_bar_description".loco()).multilineTextAlignment(.center)
-                    Text("")
-                    HStack {
-                        Spacer()
-                        Button(action: { Links.patreon.openInDefaultBrowser() }) {
-                            Text("Patreon")
-                        }
-                        Spacer()
-                        Button(action: { Links.buymeacoffee.openInDefaultBrowser() }) {
-                            Text("Buy Me A Coffee")
-                        }
-                        Spacer()
-                        Button(action: { Links.github.openInDefaultBrowser() }) {
-                            Text("GitHub")
-                        }
-                        Spacer()
-                        Button(action: { self.showingContactModal.toggle() }) {
-                            Text("preferences_general_external_contact".loco())
-                        }.sheet(isPresented: $showingContactModal) {
-                            ContactModal()
-                        }
-                        Spacer()
-                    }
-                    Spacer()
-                }.frame(minWidth: 360, maxWidth: .infinity)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Text("preferences_general_meeting_bar_description".loco())
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
             }
+
+            HStack(spacing: 8) {
+                Button("Patreon") {
+                    Links.patreon.openInDefaultBrowser()
+                }
+                Button("Buy Me A Coffee") {
+                    Links.buymeacoffee.openInDefaultBrowser()
+                }
+                Button("GitHub") {
+                    Links.github.openInDefaultBrowser()
+                }
+                Button("preferences_general_external_contact".loco()) {
+                    showingContactModal.toggle()
+                }
+                .sheet(isPresented: $showingContactModal) {
+                    ContactModal()
+                }
+                Spacer()
+            }
+            .controlSize(.small)
         }
     }
 }
