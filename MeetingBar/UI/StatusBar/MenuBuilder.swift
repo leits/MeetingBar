@@ -382,24 +382,24 @@ struct MenuBuilder {
             items.append(changelogItem)
         }
 
-        if state.isInstalledFromAppStore {
-            var showRateAppButton = true
+        var showRateAppButton = true
+        if let installationDate {
+            let twoWeeksAfterInstallation = Calendar.current.date(
+                byAdding: .day,
+                value: 14,
+                to: installationDate
+            )!
+            showRateAppButton = now > twoWeeksAfterInstallation
+        }
 
-            if let installationDate = installationDate {
-                let twoWeeksAfterInstallation = Calendar.current.date(
-                    byAdding: .day, value: 14, to: installationDate)!
-                showRateAppButton = Date() > twoWeeksAfterInstallation
-            }
-
-            if showRateAppButton {
-                let rateItem = NSMenuItem(
-                    title: "status_bar_rate_app".loco(),
-                    action: #selector(StatusBarItemController.rateApp),
-                    keyEquivalent: ""
-                )
-                rateItem.target = target
-                items.append(rateItem)
-            }
+        if showRateAppButton {
+            let rateItem = NSMenuItem(
+                title: "status_bar_rate_app".loco(),
+                action: #selector(StatusBarItemController.rateApp),
+                keyEquivalent: ""
+            )
+            rateItem.target = target
+            items.append(rateItem)
         }
 
         let preferencesItem = NSMenuItem(

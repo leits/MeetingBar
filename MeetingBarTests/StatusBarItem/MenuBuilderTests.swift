@@ -457,19 +457,43 @@ final class MenuBuilderTests: BaseTestCase {
             "Last item must be Quit")
     }
 
-    func test_preferencesSectionHidesRateAppWhenNotInstalledFromAppStore() {
-        Defaults[.isInstalledFromAppStore] = false
-        let distantPast = Calendar.current.date(byAdding: .day, value: -30, to: Date())!
+    func testPreferencesSectionShowsRateAppAfterDelayOutsideAppStore() {
+        let now = Date(timeIntervalSinceReferenceDate: 800_000_000)
+        let distantPast = Calendar.current.date(byAdding: .day, value: -30, to: now)!
         var state = StatusBarMenuState.make(from: [])
         state.isInstalledFromAppStore = false
         let builder = MenuBuilder(
-            target: Dummy(), state: state, installationDate: distantPast)
+            target: Dummy(),
+            state: state,
+            installationDate: distantPast,
+            now: now
+        )
 
         let titles = MenuBuilder.plainTitles(of: builder.buildPreferencesSection())
 
-        XCTAssertFalse(
+        XCTAssertTrue(
             titles.contains(where: { $0.contains("status_bar_rate_app".loco()) }),
-            "Rate App should be Mac App Store-only")
+            "Rate App should remain visible after the delay outside App Store builds"
+        )
+    }
+
+    func testPreferencesSectionHidesRateAppBeforeInstallationDelay() {
+        let now = Date(timeIntervalSinceReferenceDate: 800_000_000)
+        let recentInstallation = Calendar.current.date(byAdding: .day, value: -7, to: now)!
+        var state = StatusBarMenuState.make(from: [])
+        state.isInstalledFromAppStore = true
+        let builder = MenuBuilder(
+            target: Dummy(),
+            state: state,
+            installationDate: recentInstallation,
+            now: now
+        )
+
+        let titles = MenuBuilder.plainTitles(of: builder.buildPreferencesSection())
+
+        XCTAssertFalse(titles.contains {
+            $0.contains("status_bar_rate_app".loco())
+        })
     }
 
     func test_bookmarksInlineWhenCountIsThreeOrLess() {
