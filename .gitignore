@@ -15,6 +15,7 @@ build
 
 # SwiftPM hostless test build artifacts (created by `make test-logic`)
 .build/
+.swiftpm/
 
 # AI agent local state
 .claude/
