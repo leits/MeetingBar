@@ -321,6 +321,20 @@ final class MeetingOpenSettingsTests: BaseTestCase {
         )
     }
 
+    private func settings(
+        providerBrowsers: [String: Browser],
+        providerOpeningModes: [String: String],
+        defaultBrowser: Browser
+    ) -> MeetingOpenSettings {
+        MeetingOpenSettings(
+            defaultBrowser: defaultBrowser,
+            providerBrowsers: providerBrowsers,
+            providerOpeningModes: providerOpeningModes,
+            runJoinEventScript: false,
+            joinEventScriptLocation: nil
+        )
+    }
+
     func test_resolvedBrowserPrefersExplicitOverride() {
         let snapshot = settings(
             providerBrowsers: [MeetingServices.zoom.rawValue: zoom], defaultBrowser: safari)
@@ -348,14 +362,242 @@ final class MeetingOpenSettingsTests: BaseTestCase {
     func test_currentMapsDefaults() {
         Defaults[.defaultBrowser] = chrome
         Defaults[.providerBrowsers] = [MeetingServices.zoom.rawValue: zoom]
+        Defaults[.providerOpeningModes] = [
+            MeetingServices.zoom.rawValue: MeetingOpeningMode.zoomWebApp.rawValue
+        ]
         Defaults[.runJoinEventScript] = true
 
         let snapshot = MeetingOpenSettings.current
         XCTAssertEqual(snapshot.defaultBrowser, chrome)
         XCTAssertEqual(snapshot.providerBrowsers[MeetingServices.zoom.rawValue], zoom)
+        XCTAssertEqual(
+            snapshot.providerOpeningModes[MeetingServices.zoom.rawValue],
+            MeetingOpeningMode.zoomWebApp.rawValue
+        )
         XCTAssertTrue(snapshot.runJoinEventScript)
         // The per-provider preference still resolves through the snapshot.
         XCTAssertEqual(snapshot.resolvedBrowser(for: .zoom, explicit: nil), zoom)
+    }
+
+    func test_resolvedOpeningRestoresLegacyNativeAppSentinel() {
+        let snapshot = settings(
+            providerBrowsers: [MeetingServices.zoom.rawValue: zoomAppBrowser],
+            defaultBrowser: safari
+        )
+
+        XCTAssertEqual(
+            snapshot.resolvedOpening(for: .zoom, explicit: nil),
+            ResolvedMeetingOpening(mode: .zoomApp, browser: safari)
+        )
+    }
+
+    func test_resolvedOpeningKeepsExistingMeetInOneSentinelBehavior() {
+        let snapshot = settings(
+            providerBrowsers: [MeetingServices.meet.rawValue: meetInOneBrowser],
+            defaultBrowser: safari
+        )
+
+        XCTAssertEqual(
+            snapshot.resolvedOpening(for: .meet, explicit: nil),
+            ResolvedMeetingOpening(mode: .meetInOne, browser: safari)
+        )
+    }
+
+    func test_resolvedOpeningUsesStoredModeAndConfiguredBrowserFallback() {
+        let snapshot = settings(
+            providerBrowsers: [MeetingServices.zoom.rawValue: chrome],
+            providerOpeningModes: [
+                MeetingServices.zoom.rawValue: MeetingOpeningMode.zoomWebApp.rawValue
+            ],
+            defaultBrowser: safari
+        )
+
+        XCTAssertEqual(
+            snapshot.resolvedOpening(for: .zoom, explicit: nil),
+            ResolvedMeetingOpening(mode: .zoomWebApp, browser: chrome)
+        )
+    }
+
+    func test_resolvedOpeningIgnoresUnknownOrUnsupportedMode() {
+        let unknown = settings(
+            providerBrowsers: [MeetingServices.zoom.rawValue: chrome],
+            providerOpeningModes: [MeetingServices.zoom.rawValue: "removed-mode"],
+            defaultBrowser: safari
+        )
+        let unsupported = settings(
+            providerBrowsers: [MeetingServices.zoom.rawValue: chrome],
+            providerOpeningModes: [
+                MeetingServices.zoom.rawValue: MeetingOpeningMode.googleMeetPWA.rawValue
+            ],
+            defaultBrowser: safari
+        )
+
+        XCTAssertEqual(
+            unknown.resolvedOpening(for: .zoom, explicit: nil),
+            ResolvedMeetingOpening(mode: nil, browser: chrome)
+        )
+        XCTAssertEqual(
+            unsupported.resolvedOpening(for: .zoom, explicit: nil),
+            ResolvedMeetingOpening(mode: nil, browser: chrome)
+        )
+    }
+
+    func test_explicitBrowserOverridesStoredProviderMode() {
+        let snapshot = settings(
+            providerBrowsers: [:],
+            providerOpeningModes: [
+                MeetingServices.meet.rawValue: MeetingOpeningMode.googleMeetPWA.rawValue
+            ],
+            defaultBrowser: safari
+        )
+
+        XCTAssertEqual(
+            snapshot.resolvedOpening(for: .meet, explicit: chrome),
+            ResolvedMeetingOpening(mode: nil, browser: chrome)
+        )
+    }
+
+    func test_explicitLegacySentinelKeepsNativeAppBehavior() {
+        let snapshot = settings(providerBrowsers: [:], defaultBrowser: safari)
+
+        XCTAssertEqual(
+            snapshot.resolvedOpening(for: .teams, explicit: teamsAppBrowser),
+            ResolvedMeetingOpening(mode: .teamsApp, browser: safari)
+        )
+    }
+}
+
+final class ProviderOpeningPolicyTests: BaseTestCase {
+    private enum TestError: Error {
+        case failed
+    }
+
+    func test_workplaceNativeURLPercentEncodesOriginalURL() {
+        let original = URL(
+            string: "https://workplace.com/groupcall/123?foo=bar&token=a+b#room"
+        )!
+        let nativeURL = WorkplaceNativeURLPolicy.nativeURL(for: original)
+
+        XCTAssertEqual(nativeURL?.scheme, "workchat")
+        XCTAssertEqual(nativeURL?.host, "room")
+        XCTAssertEqual(
+            URLComponents(
+                url: nativeURL!,
+                resolvingAgainstBaseURL: false
+            )?.queryItems?.first(where: { $0.name == "joinurl" })?.value,
+            original.absoluteString
+        )
+        XCTAssertTrue(nativeURL?.absoluteString.contains("%3A%2F%2F") == true)
+        XCTAssertTrue(nativeURL?.absoluteString.contains("%26") == true)
+        XCTAssertTrue(nativeURL?.absoluteString.contains("%23") == true)
+    }
+
+    func test_workplaceNativeURLRejectsUnsupportedURL() {
+        XCTAssertNil(
+            WorkplaceNativeURLPolicy.nativeURL(
+                for: URL(string: "https://workplace.com/home")!
+            )
+        )
+        XCTAssertNil(
+            WorkplaceNativeURLPolicy.nativeURL(
+                for: URL(string: "https://example.com/groupcall/123")!
+            )
+        )
+    }
+
+    func test_zoomWebAppTransformsMeetingURLAndPreservesQuery() {
+        let transformed = ZoomWebAppURLPolicy.webAppURL(
+            for: URL(string: "https://company.zoom.us/j/123456789?pwd=abc&uname=Sam")!
+        )
+
+        XCTAssertEqual(
+            transformed?.absoluteString,
+            "https://app.zoom.us/wc/123456789/start?pwd=abc&uname=Sam"
+        )
+    }
+
+    func test_zoomWebAppRejectsPersonalRoomAndUnsupportedURL() {
+        XCTAssertNil(
+            ZoomWebAppURLPolicy.webAppURL(
+                for: URL(string: "https://zoom.us/my/someone")!
+            )
+        )
+        XCTAssertNil(
+            ZoomWebAppURLPolicy.webAppURL(
+                for: URL(string: "https://zoom.us/webinar/123456789")!
+            )
+        )
+        XCTAssertNil(
+            ZoomWebAppURLPolicy.webAppURL(
+                for: URL(string: "https://example.com/j/123456789")!
+            )
+        )
+    }
+
+    func test_googleMeetPWAPlanBuildsChromeArguments() {
+        let meetURL = URL(string: "https://meet.google.com/abc-defg-hij?authuser=me")!
+        let chromeURL = URL(
+            fileURLWithPath: "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+        )
+
+        XCTAssertEqual(
+            GoogleMeetPWAOpenPolicy.plan(
+                for: meetURL,
+                chromeExecutableURL: chromeURL,
+                pwaAppID: "abcdefghijklmnopabcdefghijklmnop"
+            ),
+            GoogleMeetPWAOpenPlan(
+                executableURL: chromeURL,
+                arguments: [
+                    "--app-id=abcdefghijklmnopabcdefghijklmnop",
+                    "--app-launch-url-for-shortcuts-menu-item=\(meetURL.absoluteString)"
+                ]
+            )
+        )
+    }
+
+    func test_googleMeetPWAPlanFallsBackWhenInputOrInstallationIsUnavailable() {
+        let meetURL = URL(string: "https://meet.google.com/abc-defg-hij")!
+        let chromeURL = URL(fileURLWithPath: "/Applications/Google Chrome")
+
+        XCTAssertNil(
+            GoogleMeetPWAOpenPolicy.plan(
+                for: URL(string: "https://example.com/abc-defg-hij")!,
+                chromeExecutableURL: chromeURL,
+                pwaAppID: "abcdefghijklmnopabcdefghijklmnop"
+            )
+        )
+        XCTAssertNil(
+            GoogleMeetPWAOpenPolicy.plan(
+                for: meetURL,
+                chromeExecutableURL: nil,
+                pwaAppID: "abcdefghijklmnopabcdefghijklmnop"
+            )
+        )
+        XCTAssertNil(
+            GoogleMeetPWAOpenPolicy.plan(
+                for: meetURL,
+                chromeExecutableURL: chromeURL,
+                pwaAppID: nil
+            )
+        )
+    }
+
+    func test_googleMeetPWALaunchFailureReturnsFalse() {
+        let plan = GoogleMeetPWAOpenPlan(
+            executableURL: URL(fileURLWithPath: "/missing/chrome"),
+            arguments: []
+        )
+
+        XCTAssertFalse(
+            GoogleMeetPWALauncher.launch(plan) { _ in
+                throw TestError.failed
+            }
+        )
+    }
+
+    func test_protonMeetUsesDefaultBrowserStrategy() {
+        XCTAssertTrue(openStrategy(for: .protonMeet) is DefaultBrowserOpenStrategy)
     }
 }
 

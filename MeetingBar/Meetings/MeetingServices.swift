@@ -78,9 +78,9 @@ func openMeetingURL(
     _ browser: Browser?,
     settings: MeetingOpenSettings = .current
 ) {
-    let resolved = settings.resolvedBrowser(for: service, explicit: browser)
+    let opening = settings.resolvedOpening(for: service, explicit: browser)
     openStrategy(for: service).open(
-        url: url, browser: resolved, defaultBrowser: settings.defaultBrowser)
+        url: url, opening: opening, defaultBrowser: settings.defaultBrowser)
 }
 
 // MARK: - Create-meeting descriptors
