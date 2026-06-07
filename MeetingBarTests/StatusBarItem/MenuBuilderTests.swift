@@ -198,13 +198,19 @@ final class MenuBuilderTests: BaseTestCase {
             .buildMeetingControlSection()
 
         let joinItem = try XCTUnwrap(items.first {
-            $0.action == #selector(StatusBarItemController.joinNextMeeting)
+            $0.action == #selector(StatusBarItemController.joinEvent)
         })
         let actions = try XCTUnwrap(items.first {
             $0.title == "status_bar_control_actions".loco()
         }?.submenu?.items)
 
         XCTAssertEqual(joinItem.title, "status_bar_control_join_next".loco())
+        XCTAssertEqual((joinItem.representedObject as? MBEvent)?.id, event.id)
+        XCTAssertEqual(
+            items.first?.title,
+            "status_bar_control_next_meeting".loco()
+        )
+        XCTAssertNotNil(items.first { $0.title == event.title }?.image)
         XCTAssertNotNil(actions.first {
             $0.action == #selector(StatusBarItemController.copyEventMeetingLink)
         })
@@ -254,7 +260,7 @@ final class MenuBuilderTests: BaseTestCase {
             $0.action == #selector(StatusBarItemController.reconnectProviderAction)
         })
         XCTAssertTrue(items.contains {
-            $0.action == #selector(StatusBarItemController.joinNextMeeting)
+            $0.action == #selector(StatusBarItemController.joinEvent)
         })
     }
 
@@ -278,7 +284,7 @@ final class MenuBuilderTests: BaseTestCase {
         }?.submenu?.items)
 
         XCTAssertNil(items.first {
-            $0.action == #selector(StatusBarItemController.joinNextMeeting)
+            $0.action == #selector(StatusBarItemController.joinEvent)
         })
         XCTAssertTrue(items.contains {
             $0.title == "status_bar_control_no_meeting_link".loco()
@@ -351,6 +357,25 @@ final class MenuBuilderTests: BaseTestCase {
         XCTAssertEqual(items.count, 3)
         XCTAssertEqual(
             MenuBuilder.plainTitles(of: items)[0], "Today (\(dateFormatter.string(from: day))):")
+    }
+
+    func testTodayEmptyStateCanBeVisuallySubduedWhenTomorrowHasEvents() throws {
+        let items = MenuBuilder(target: Dummy()).buildDateSection(
+            date: Date(),
+            title: "Today",
+            events: [],
+            subdueEmptyState: true
+        )
+        let emptyItem = try XCTUnwrap(items.last)
+
+        XCTAssertEqual(
+            emptyItem.attributedTitle?.attribute(
+                .foregroundColor,
+                at: 0,
+                effectiveRange: nil
+            ) as? NSColor,
+            NSColor.disabledControlTextColor
+        )
     }
 
     func test_joinSectionHasCreateAndJoin() {
@@ -902,6 +927,28 @@ final class MenuBuilderQuickActionsTests: BaseTestCase {
         })
     }
 
+    func testUtilitySectionKeepsDismissForTopCardEventWithoutDuplicateJoin() throws {
+        let event = makeFakeEvent(
+            id: "top-card",
+            start: Date().addingTimeInterval(300),
+            end: Date().addingTimeInterval(1800),
+            withLink: true
+        )
+        let items = MenuBuilder(target: Dummy())
+            .buildJoinSection(nextEvent: event, includeJoinAction: false)
+        let quickActions = try XCTUnwrap(items.last?.submenu?.items)
+
+        XCTAssertFalse(items.contains {
+            $0.action == #selector(StatusBarItemController.joinNextMeeting)
+        })
+        XCTAssertTrue(quickActions.contains {
+            $0.action == #selector(StatusBarItemController.dismissNextMeetingAction)
+        })
+        XCTAssertTrue(items.contains {
+            $0.action == #selector(StatusBarItemController.createMeetingAction)
+        })
+    }
+
 }
 
 @MainActor
@@ -1078,6 +1125,9 @@ final class StatusBarItemControllerPresentationTests: BaseTestCase {
         controller.events = [event]
 
         controller.joinNextMeeting()
+        let joinItem = NSMenuItem()
+        joinItem.representedObject = event
+        controller.joinEvent(sender: joinItem)
         controller.dismissNextMeetingAction()
         controller.dismiss(event: event)
         let item = NSMenuItem()
@@ -1087,7 +1137,7 @@ final class StatusBarItemControllerPresentationTests: BaseTestCase {
         controller.handleManualRefresh()
         controller.toggleMeetingTitleVisibility()
 
-        XCTAssertEqual(joinedEventIDs, [event.id])
+        XCTAssertEqual(joinedEventIDs, [event.id, event.id])
         XCTAssertEqual(dismissedEventIDs, [event.id, event.id])
         XCTAssertEqual(undismissedEventIDs, [event.id])
         XCTAssertTrue(didClearDismissals)

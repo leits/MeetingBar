@@ -296,7 +296,10 @@ final class StatusBarItemController {
             case .today:
                 statusItemMenu.items += builder.buildDateSection(
                     date: today, title: "status_bar_section_today".loco(),
-                    events: menuState.todayEvents)
+                    events: menuState.todayEvents,
+                    subdueEmptyState: menuState.todayEvents.isEmpty
+                        && !menuState.tomorrowEvents.isEmpty
+                )
             case .today_n_tomorrow:
                 statusItemMenu.items += builder.buildDateSection(
                     date: today, title: "status_bar_section_today".loco(),
@@ -310,7 +313,10 @@ final class StatusBarItemController {
             }
         }
         statusItemMenu.addItem(NSMenuItem.separator())
-        statusItemMenu.items += builder.buildJoinSection(nextEvent: nil)
+        statusItemMenu.items += builder.buildJoinSection(
+            nextEvent: menuState.nextEvent,
+            includeJoinAction: false
+        )
 
         if !menuState.meetings.bookmarks.isEmpty {
             statusItemMenu.addItem(NSMenuItem.separator())
@@ -338,6 +344,15 @@ final class StatusBarItemController {
         } else {
             AppMessageCenter.shared.post(.nextMeetingMissing)
         }
+    }
+
+    @objc
+    func joinEvent(sender: NSMenuItem) {
+        guard let event = sender.representedObject as? MBEvent else {
+            AppMessageCenter.shared.post(.nextMeetingMissing)
+            return
+        }
+        dependencies.send(.joinMeeting(eventID: event.id))
     }
 
     @objc

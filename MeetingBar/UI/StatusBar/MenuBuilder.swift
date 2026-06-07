@@ -40,6 +40,13 @@ struct MenuBuilder {
 
     private func buildMeetingControlSection(event: MBEvent) -> [NSMenuItem] {
         var items: [NSMenuItem] = []
+        let isCurrent = event.startDate <= now && event.endDate > now
+        items.append(statusItem(
+            title: isCurrent
+                ? "status_bar_control_current_meeting".loco()
+                : "status_bar_control_next_meeting".loco()
+        ))
+
         let displayTitle = state.statusBar.hideMeetingTitle
             ? "general_meeting".loco()
             : event.title
@@ -52,6 +59,7 @@ struct MenuBuilder {
             ]
         )
         titleItem.isEnabled = false
+        titleItem.image = getIconForMeetingService(event.meetingLink?.service)
         items.append(titleItem)
 
         let time = eventTimePresentation(for: event)
@@ -71,10 +79,11 @@ struct MenuBuilder {
                 : "status_bar_control_join_next".loco()
             let joinItem = NSMenuItem(
                 title: joinTitle,
-                action: #selector(StatusBarItemController.joinNextMeeting),
+                action: #selector(StatusBarItemController.joinEvent),
                 keyEquivalent: ""
             )
             joinItem.target = target
+            joinItem.representedObject = event
             joinItem.image = NSImage(systemSymbolName: "video.fill", accessibilityDescription: nil)
             items.append(joinItem)
         } else {
@@ -127,33 +136,7 @@ struct MenuBuilder {
         let title = "status_bar_control_actions".loco()
         let item = NSMenuItem(title: title, action: nil, keyEquivalent: "")
         let menu = NSMenu(title: title)
-
-        if event.meetingLink != nil {
-            addEventAction(
-                to: menu,
-                title: "status_bar_submenu_copy_meeting_link".loco(),
-                action: #selector(StatusBarItemController.copyEventMeetingLink),
-                representedObject: event
-            )
-        }
-        if let alternateLinksItem = makeAlternateMeetingLinksMenu(for: event) {
-            menu.addItem(alternateLinksItem)
-        }
-        if let calendarOpenURL = event.calendarOpenURL {
-            addEventAction(
-                to: menu,
-                title: "status_bar_submenu_open_in_calendar".loco(),
-                action: #selector(StatusBarItemController.openEventInCalendar),
-                representedObject: calendarOpenURL
-            )
-        }
-        addEventAction(
-            to: menu,
-            title: "status_bar_submenu_dismiss_meeting".loco(),
-            action: #selector(StatusBarItemController.dismissEvent),
-            representedObject: event
-        )
-
+        addEventActions(to: menu, event: event)
         item.submenu = menu
         return item
     }
@@ -207,7 +190,12 @@ struct MenuBuilder {
 
     // MARK: Date section ------------------------------------------------------
 
-    func buildDateSection(date: Date, title: String, events: [MBEvent]) -> [NSMenuItem] {
+    func buildDateSection(
+        date: Date,
+        title: String,
+        events: [MBEvent],
+        subdueEmptyState: Bool = false
+    ) -> [NSMenuItem] {
         var items: [NSMenuItem] = []
 
         // Header
@@ -243,6 +231,15 @@ struct MenuBuilder {
                 keyEquivalent: ""
             )
             item.isEnabled = false
+            if subdueEmptyState {
+                item.attributedTitle = NSAttributedString(
+                    string: item.title,
+                    attributes: [
+                        .font: NSFont.systemFont(ofSize: MenuStyleConstants.defaultFontSize - 1),
+                        .foregroundColor: NSColor.disabledControlTextColor
+                    ]
+                )
+            }
             items.append(item)
         }
         for event in sortedEvents {
@@ -256,14 +253,17 @@ struct MenuBuilder {
 
     // MARK: Join section ------------------------------------------------------
 
-    func buildJoinSection(nextEvent: MBEvent?) -> [NSMenuItem] {
+    func buildJoinSection(
+        nextEvent: MBEvent?,
+        includeJoinAction: Bool = true
+    ) -> [NSMenuItem] {
 
         var items: [NSMenuItem] = []
 
         // MENU ITEM: Join the meeting
         let now = self.now
 
-        if let nextEvent = nextEvent {
+        if let nextEvent = nextEvent, includeJoinAction {
             let itemTitle =
                 nextEvent.startDate < now
                 ? "status_bar_section_join_current_meeting".loco()
@@ -893,12 +893,14 @@ struct MenuBuilder {
             menu.addItem(alternateLinksItem)
         }
 
-        addEventAction(
-            to: menu,
-            title: "status_bar_submenu_copy_meeting_link".loco(),
-            action: #selector(StatusBarItemController.copyEventMeetingLink),
-            representedObject: event
-        )
+        if event.meetingLink != nil {
+            addEventAction(
+                to: menu,
+                title: "status_bar_submenu_copy_meeting_link".loco(),
+                action: #selector(StatusBarItemController.copyEventMeetingLink),
+                representedObject: event
+            )
+        }
 
         if isDismissed(event) {
             addEventAction(
