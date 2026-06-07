@@ -55,11 +55,14 @@ struct LinksTab: View {
                     Text("preferences_services_link_overrides_help".loco())
                         .font(.caption)
                         .foregroundStyle(.secondary)
+                    Text("preferences_services_link_modes_help".loco())
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
 
                     ForEach(
-                        MeetingProvider.all.filter { $0.nativeAppBrowserName != nil }, id: \.id
+                        MeetingProvider.all.filter { !$0.openingModes.isEmpty }, id: \.id
                     ) { provider in
-                        MeetingProviderBrowserPicker(provider: provider)
+                        MeetingProviderOpeningPicker(provider: provider)
                     }
 
                     Divider()
@@ -171,45 +174,66 @@ struct LinksTab: View {
     }
 }
 
-struct MeetingProviderBrowserPicker: View {
+struct MeetingProviderOpeningPicker: View {
     let provider: MeetingProvider
     var labelWidth: CGFloat = 200
 
     @Default(.providerBrowsers) private var providerBrowsers
+    @Default(.providerOpeningModes) private var providerOpeningModes
     @Default(.browsers) private var allBrowsers
 
-    private var selection: Binding<Browser> {
+    private var selectedValue: MeetingProviderOpeningSelection {
+        MeetingProviderOpeningSelectionPolicy.selected(
+            provider: provider,
+            providerBrowsers: providerBrowsers,
+            providerOpeningModes: providerOpeningModes
+        )
+    }
+
+    private var selection: Binding<MeetingProviderOpeningSelection> {
         Binding(
-            get: {
-                MeetingProviderBrowserSelection.selectedBrowser(
-                    providerID: provider.id,
-                    providerBrowsers: providerBrowsers
+            get: { selectedValue },
+            set: { newSelection in
+                let updated = MeetingProviderOpeningSelectionPolicy.updating(
+                    provider: provider,
+                    selection: newSelection,
+                    providerBrowsers: providerBrowsers,
+                    providerOpeningModes: providerOpeningModes
                 )
-            },
-            set: { newBrowser in
-                providerBrowsers = MeetingProviderBrowserSelection.updating(
-                    providerID: provider.id,
-                    browser: newBrowser,
-                    providerBrowsers: providerBrowsers
-                )
+                providerBrowsers = updated.providerBrowsers
+                providerOpeningModes = updated.providerOpeningModes
             }
         )
     }
 
     var body: some View {
-        Picker(
-            selection: selection,
-            label: Text(
-                "preferences_services_link_service_title".loco(provider.displayName)
-            )
-            .frame(width: labelWidth, alignment: .leading)
-        ) {
-            Text(systemDefaultBrowser.name).tag(systemDefaultBrowser)
-            if let nativeAppBrowserName = provider.nativeAppBrowserName {
-                Text(nativeAppBrowserName).tag(Browser(name: nativeAppBrowserName, path: ""))
+        VStack(alignment: .leading, spacing: 3) {
+            Picker(
+                selection: selection,
+                label: Text(
+                    "preferences_services_link_service_title".loco(provider.displayName)
+                )
+                .frame(width: labelWidth, alignment: .leading)
+            ) {
+                Text(systemDefaultBrowser.name).tag(
+                    MeetingProviderOpeningSelection.browser(systemDefaultBrowser)
+                )
+                ForEach(provider.openingModes, id: \.self) { mode in
+                    Text(mode.titleKey.loco()).tag(
+                        MeetingProviderOpeningSelection.mode(mode)
+                    )
+                }
+                ForEach(allBrowsers, id: \.self) { browser in
+                    Text(browser.name).tag(MeetingProviderOpeningSelection.browser(browser))
+                }
             }
-            ForEach(allBrowsers, id: \.self) { browser in
-                Text(browser.name).tag(browser)
+
+            if case let .mode(mode) = selectedValue,
+               let helpKey = mode.helpKey {
+                Text(helpKey.loco())
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .padding(.leading, labelWidth + 8)
             }
         }
     }

@@ -336,4 +336,116 @@ final class PreferencesPresentationTests: XCTestCase {
         )
         XCTAssertNil(reset[providerID])
     }
+
+    func testMeetingProviderOpeningSelectionRestoresLegacySentinel() {
+        let provider = MeetingProvider.provider(for: .zoom)!
+
+        XCTAssertEqual(
+            MeetingProviderOpeningSelectionPolicy.selected(
+                provider: provider,
+                providerBrowsers: [provider.id: zoomAppBrowser],
+                providerOpeningModes: [:]
+            ),
+            .mode(.zoomApp)
+        )
+    }
+
+    func testMeetingProviderOpeningSelectionPersistsModeAndBrowserFallback() {
+        let provider = MeetingProvider.provider(for: .zoom)!
+        let chrome = Browser(
+            name: "Google Chrome",
+            path: "/Applications/Google Chrome.app"
+        )
+
+        let updated = MeetingProviderOpeningSelectionPolicy.updating(
+            provider: provider,
+            selection: .mode(.zoomWebApp),
+            providerBrowsers: [provider.id: chrome],
+            providerOpeningModes: [:]
+        )
+
+        XCTAssertEqual(updated.providerBrowsers[provider.id], chrome)
+        XCTAssertEqual(
+            updated.providerOpeningModes[provider.id],
+            MeetingOpeningMode.zoomWebApp.rawValue
+        )
+        XCTAssertEqual(
+            MeetingProviderOpeningSelectionPolicy.selected(
+                provider: provider,
+                providerBrowsers: updated.providerBrowsers,
+                providerOpeningModes: updated.providerOpeningModes
+            ),
+            .mode(.zoomWebApp)
+        )
+    }
+
+    func testMeetingProviderOpeningSelectionReplacesLegacySentinelWithMode() {
+        let provider = MeetingProvider.provider(for: .meet)!
+
+        let updated = MeetingProviderOpeningSelectionPolicy.updating(
+            provider: provider,
+            selection: .mode(.googleMeetPWA),
+            providerBrowsers: [provider.id: meetInOneBrowser],
+            providerOpeningModes: [:]
+        )
+
+        XCTAssertNil(updated.providerBrowsers[provider.id])
+        XCTAssertEqual(
+            updated.providerOpeningModes[provider.id],
+            MeetingOpeningMode.googleMeetPWA.rawValue
+        )
+    }
+
+    func testMeetingProviderOpeningSelectionBrowserClearsMode() {
+        let provider = MeetingProvider.provider(for: .facebook_workspace)!
+        let safari = Browser(
+            name: "Safari",
+            path: "/Applications/Safari.app"
+        )
+
+        let updated = MeetingProviderOpeningSelectionPolicy.updating(
+            provider: provider,
+            selection: .browser(safari),
+            providerBrowsers: [:],
+            providerOpeningModes: [
+                provider.id: MeetingOpeningMode.workplaceApp.rawValue
+            ]
+        )
+
+        XCTAssertEqual(updated.providerBrowsers[provider.id], safari)
+        XCTAssertNil(updated.providerOpeningModes[provider.id])
+    }
+
+    func testMeetingProviderOpeningSelectionDefaultClearsOverrides() {
+        let provider = MeetingProvider.provider(for: .zoom)!
+
+        let updated = MeetingProviderOpeningSelectionPolicy.updating(
+            provider: provider,
+            selection: .browser(systemDefaultBrowser),
+            providerBrowsers: [provider.id: zoomAppBrowser],
+            providerOpeningModes: [
+                provider.id: MeetingOpeningMode.zoomWebApp.rawValue
+            ]
+        )
+
+        XCTAssertNil(updated.providerBrowsers[provider.id])
+        XCTAssertNil(updated.providerOpeningModes[provider.id])
+    }
+
+    func testMeetingProviderOpeningSelectionIgnoresUnknownStoredMode() {
+        let provider = MeetingProvider.provider(for: .zoom)!
+        let chrome = Browser(
+            name: "Google Chrome",
+            path: "/Applications/Google Chrome.app"
+        )
+
+        XCTAssertEqual(
+            MeetingProviderOpeningSelectionPolicy.selected(
+                provider: provider,
+                providerBrowsers: [provider.id: chrome],
+                providerOpeningModes: [provider.id: "removed-mode"]
+            ),
+            .browser(chrome)
+        )
+    }
 }

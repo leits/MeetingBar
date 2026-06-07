@@ -135,7 +135,7 @@ private struct MeetingOpeningScreen: View {
             GroupBox {
                 VStack(alignment: .leading, spacing: 12) {
                     ForEach(providers, id: \.id) { provider in
-                        MeetingProviderBrowserPicker(provider: provider, labelWidth: 150)
+                        MeetingProviderOpeningPicker(provider: provider, labelWidth: 150)
                     }
                 }
                 .padding(8)

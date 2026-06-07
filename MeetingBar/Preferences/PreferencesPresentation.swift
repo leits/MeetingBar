@@ -335,3 +335,72 @@ enum MeetingProviderBrowserSelection {
         return updated
     }
 }
+
+enum MeetingProviderOpeningSelection: Hashable {
+    case browser(Browser)
+    case mode(MeetingOpeningMode)
+}
+
+struct MeetingProviderOpeningPreferences: Equatable {
+    let providerBrowsers: [String: Browser]
+    let providerOpeningModes: [String: String]
+}
+
+enum MeetingProviderOpeningSelectionPolicy {
+    static func selected(
+        provider: MeetingProvider,
+        providerBrowsers: [String: Browser],
+        providerOpeningModes: [String: String]
+    ) -> MeetingProviderOpeningSelection {
+        if let modeID = providerOpeningModes[provider.id],
+           let mode = MeetingOpeningMode(rawValue: modeID),
+           provider.openingModes.contains(mode) {
+            return .mode(mode)
+        }
+        if let browser = providerBrowsers[provider.id] {
+            if let mode = legacyOpeningMode(for: provider, browser: browser) {
+                return .mode(mode)
+            }
+            return .browser(browser)
+        }
+        return .browser(systemDefaultBrowser)
+    }
+
+    static func updating(
+        provider: MeetingProvider,
+        selection: MeetingProviderOpeningSelection,
+        providerBrowsers: [String: Browser],
+        providerOpeningModes: [String: String]
+    ) -> MeetingProviderOpeningPreferences {
+        var browsers = providerBrowsers
+        var modes = providerOpeningModes
+
+        switch selection {
+        case .browser(let browser):
+            modes.removeValue(forKey: provider.id)
+            if browser == systemDefaultBrowser {
+                browsers.removeValue(forKey: provider.id)
+            } else {
+                browsers[provider.id] = browser
+            }
+        case .mode(let mode):
+            guard provider.openingModes.contains(mode) else {
+                modes.removeValue(forKey: provider.id)
+                return MeetingProviderOpeningPreferences(
+                    providerBrowsers: browsers,
+                    providerOpeningModes: modes
+                )
+            }
+            modes[provider.id] = mode.rawValue
+            if let browser = browsers[provider.id],
+               legacyOpeningMode(for: provider, browser: browser) != nil {
+                browsers.removeValue(forKey: provider.id)
+            }
+        }
+
+        return MeetingProviderOpeningPreferences(
+            providerBrowsers: browsers,
+            providerOpeningModes: modes
+        )
+    }
+}
