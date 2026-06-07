@@ -7,14 +7,26 @@ import SwiftUI
 
 struct StatusTab: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 15) {
-            GroupBox(label: Label("preferences_status_provider_status_title".loco(), systemImage: "antenna.radiowaves.left.and.right")) {
+        VStack(alignment: .leading, spacing: 12) {
+            GroupBox(
+                label: Label(
+                    "preferences_status_provider_status_title".loco(),
+                    systemImage: "antenna.radiowaves.left.and.right")
+            ) {
                 ProviderStatusSection()
             }
-            GroupBox(label: Label("preferences_status_permissions_title".loco(), systemImage: "checkmark.shield")) {
+            GroupBox(
+                label: Label(
+                    "preferences_status_permissions_title".loco(),
+                    systemImage: "checkmark.shield")
+            ) {
                 PermissionsSection()
             }
-            GroupBox(label: Label("preferences_status_diagnostics_title".loco(), systemImage: "doc.on.clipboard")) {
+            GroupBox(
+                label: Label(
+                    "preferences_status_diagnostics_title".loco(),
+                    systemImage: "doc.on.clipboard")
+            ) {
                 DiagnosticsSection()
             }
             Spacer()
@@ -40,6 +52,10 @@ private struct ProviderStatusSection: View {
                         .foregroundStyle(.secondary)
                         .font(.caption)
                 }
+                Spacer()
+            }
+
+            HStack(spacing: 8) {
                 Spacer()
                 if presentation.canReconnect {
                     Button("preferences_status_reconnect".loco()) {
