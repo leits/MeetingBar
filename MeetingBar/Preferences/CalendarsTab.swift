@@ -83,33 +83,15 @@ struct CalendarsTab: View {
                     "preferences_calendars_select_calendars_title".loco(),
                     systemImage: "calendar")
             ) {
-                VStack(spacing: 8) {
-                    HStack {
-                        Spacer()
-                        Button("preferences_calendars_select_all".loco()) {
-                            appModel.setAllCalendarSelections(selected: true)
-                        }
-                        .disabled(
-                            appModel.state.calendars.isEmpty
-                                || presentation.selectedCalendarCount
-                                    >= presentation.availableCalendarCount
-                        )
-                        Button("preferences_calendars_deselect_all".loco()) {
-                            appModel.setAllCalendarSelections(selected: false)
-                        }
-                        .disabled(appModel.state.selectedCalendarIDs.isEmpty)
+                List {
+                    if appModel.state.calendars.isEmpty {
+                        CalendarPreferencesEmptyState(presentation: presentation)
+                    } else {
+                        CalendarSectionsView(calendars: appModel.state.calendars)
                     }
-
-                    List {
-                        if appModel.state.calendars.isEmpty {
-                            CalendarPreferencesEmptyState(presentation: presentation)
-                        } else {
-                            CalendarSectionsView(calendars: appModel.state.calendars)
-                        }
-                    }
-                    .listStyle(.inset)
-                    .frame(minHeight: 280)
                 }
+                .listStyle(.inset)
+                .frame(minHeight: 280)
             }
         }
     }

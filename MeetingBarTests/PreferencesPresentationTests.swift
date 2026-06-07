@@ -229,38 +229,6 @@ final class PreferencesPresentationTests: XCTestCase {
         )
     }
 
-    func testCalendarBulkSelectionOnlyAddsMissingCalendars() {
-        let changes = CalendarSelectionBulkPolicy.changes(
-            calendars: [
-                makeFakeCalendar(id: "work"),
-                makeFakeCalendar(id: "personal")
-            ],
-            selectedCalendarIDs: ["work"],
-            selectingAll: true
-        )
-
-        XCTAssertEqual(
-            changes,
-            [CalendarSelectionChange(id: "personal", selected: true)]
-        )
-    }
-
-    func testCalendarBulkDeselectionClearsActiveProviderSelection() {
-        let changes = CalendarSelectionBulkPolicy.changes(
-            calendars: [makeFakeCalendar(id: "work")],
-            selectedCalendarIDs: ["work", "shared"],
-            selectingAll: false
-        )
-
-        XCTAssertEqual(
-            changes,
-            [
-                CalendarSelectionChange(id: "work", selected: false),
-                CalendarSelectionChange(id: "shared", selected: false)
-            ]
-        )
-    }
-
     func testRegexDraftDoesNotMutateOriginalListBeforeSave() {
         let regexes = ["meet\\.google\\.com", "zoom\\.us"]
 

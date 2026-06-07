@@ -244,31 +244,6 @@ enum ProviderPickerSelectionPolicy {
     }
 }
 
-struct CalendarSelectionChange: Equatable {
-    let id: String
-    let selected: Bool
-}
-
-enum CalendarSelectionBulkPolicy {
-    static func changes(
-        calendars: [MBCalendar],
-        selectedCalendarIDs: [String],
-        selectingAll: Bool
-    ) -> [CalendarSelectionChange] {
-        if selectingAll {
-            let selectedIDs = Set(selectedCalendarIDs)
-            return calendars.compactMap { calendar in
-                guard !selectedIDs.contains(calendar.id) else { return nil }
-                return CalendarSelectionChange(id: calendar.id, selected: true)
-            }
-        }
-
-        return selectedCalendarIDs.map {
-            CalendarSelectionChange(id: $0, selected: false)
-        }
-    }
-}
-
 struct RegexEditDraft: Equatable {
     let originalValue: String?
     var value: String

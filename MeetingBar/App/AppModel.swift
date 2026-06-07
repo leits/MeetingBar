@@ -367,19 +367,6 @@ final class AppModel: ObservableObject {
         send(.selectCalendar(id: id, selected: selected))
     }
 
-    /// Select or deselect all calendars for the active provider. `AppState`
-    /// already exposes the active provider's scoped selection.
-    func setAllCalendarSelections(selected: Bool) {
-        let changes = CalendarSelectionBulkPolicy.changes(
-            calendars: state.calendars,
-            selectedCalendarIDs: state.selectedCalendarIDs,
-            selectingAll: selected
-        )
-        changes.forEach {
-            send(.selectCalendar(id: $0.id, selected: $0.selected))
-        }
-    }
-
     func nextEvent(linkRequired: Bool = false) -> MBEvent? {
         state.nextEvent(now: environment.clock.now(), linkRequired: linkRequired)
     }

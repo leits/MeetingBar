@@ -68,8 +68,6 @@
 "preferences_section_regex_filters_title" = "Regex Filters";
 "preferences_calendar_source_title" = "Calendar Source";
 "preferences_calendars_selection_summary" = "%d selected of %d available calendars";
-"preferences_calendars_select_all" = "Select all";
-"preferences_calendars_deselect_all" = "Deselect all";
 "preferences_meeting_opening_behavior_title" = "Open meeting links";
 "preferences_notifications_alerts_title" = "Meeting Alerts";
 "preferences_notifications_automation_title" = "Automatic Joining";
