@@ -9,10 +9,25 @@
 import SwiftUI
 
 struct DaySegment: Identifiable {
-    let id = UUID()
+    let id: String
     let start: Date
     let end: Date
     let color: Color
+    let isHighlighted: Bool
+
+    init(
+        id: String = UUID().uuidString,
+        start: Date,
+        end: Date,
+        color: Color,
+        isHighlighted: Bool = false
+    ) {
+        self.id = id
+        self.start = start
+        self.end = end
+        self.color = color
+        self.isHighlighted = isHighlighted
+    }
 }
 
 enum DayTimelineLayout {
@@ -29,11 +44,12 @@ enum DayTimelineLayout {
 
 struct DayTimelineLayoutCalculator {
     // MARK: Cached range information
-    let now = Date()
+    let now: Date
     let visibleRange: ClosedRange<Date>
     private let totalSeconds: TimeInterval
 
-    init() {
+    init(now: Date = Date()) {
+        self.now = now
         let lower = now.addingTimeInterval(-DayTimelineLayout.hoursBefore)
         let upper = now.addingTimeInterval( DayTimelineLayout.hoursAfter)
         self.visibleRange = lower...upper
@@ -84,18 +100,20 @@ struct DayRelativeTimelineView: View {
     let timeFormat: TimeFormat
 
     // Cached / pre-computed values
-    private let layout   = DayTimelineLayoutCalculator()
+    private let layout: DayTimelineLayoutCalculator
     private let eventRows: [[DaySegment]]
     private let contentHeight: CGFloat
 
     /// Height the parent can rely on for sizing
-    var preferredHeight: CGFloat { contentHeight + 20 }   // vertical padding
+    var preferredHeight: CGFloat { contentHeight + 26 }   // top labels + vertical padding
 
     // MARK: Init
     init(segments: [DaySegment], currentDate: Date, timeFormat: TimeFormat) {
+        let layout = DayTimelineLayoutCalculator(now: currentDate)
         self.segments     = segments
         self.currentDate  = currentDate
         self.timeFormat   = timeFormat
+        self.layout       = layout
         self.eventRows    = layout.rows(for: segments)
         self.contentHeight = DayTimelineLayout.baseTrackHeight +
             DayTimelineLayout.rowHeight * CGFloat(max(eventRows.count - 1, 0))
@@ -132,8 +150,13 @@ struct DayRelativeTimelineView: View {
                         let widthPx = max(endX - startX, 1)
 
                         Capsule()
-                            .fill(seg.color.opacity(0.25))
-                            .overlay(Capsule().stroke(seg.color, lineWidth: 1))
+                            .fill(seg.color.opacity(seg.isHighlighted ? 0.55 : 0.25))
+                            .overlay(
+                                Capsule().stroke(
+                                    seg.color,
+                                    lineWidth: seg.isHighlighted ? 2 : 1
+                                )
+                            )
                             .frame(width: widthPx, height: DayTimelineLayout.segmentHeight)
                             .offset(
                                 x: startX,
@@ -155,6 +178,7 @@ struct DayRelativeTimelineView: View {
             .frame(height: contentHeight)
             .padding(.top, 10)
             .padding(.vertical, 8)
+            .padding(.horizontal, 12)
         }
         .frame(maxWidth: .infinity)
         .accessibilityLabel("timeline_accessibility_label".loco(segments.count))

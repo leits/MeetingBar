@@ -8,6 +8,7 @@
 
 import AppKit
 import Defaults
+import SwiftUI
 import XCTest
 
 @testable import MeetingBar
@@ -180,6 +181,65 @@ final class MenuBuilderTests: BaseTestCase {
         XCTAssertFalse(disabledWithTodayEvents.shouldShowTimeline)
     }
 
+    func testTopSectionPlacesTimelineBeforeMeetingSummary() throws {
+        let now = Date()
+        let event = makeFakeEvent(
+            id: "timeline-next",
+            start: now.addingTimeInterval(300),
+            end: now.addingTimeInterval(1800),
+            withLink: true
+        )
+        var state = StatusBarMenuState()
+        state.todayEvents = [event]
+        state.nextEvent = event
+        state.showTimeline = true
+        state.settings = .empty
+
+        let items = MenuBuilder(target: Dummy(), state: state, now: now)
+            .buildTopSection()
+
+        let timelineIndex = try XCTUnwrap(items.firstIndex {
+            $0.identifier == MenuBuilder.timelineItemIdentifier
+        })
+        let summaryIndex = try XCTUnwrap(items.firstIndex {
+            $0.identifier == MenuBuilder.meetingSummaryItemIdentifier
+        })
+        XCTAssertLessThan(timelineIndex, summaryIndex)
+
+        let hosting = try XCTUnwrap(
+            items[timelineIndex].view as? NSHostingView<DayRelativeTimelineView>
+        )
+        XCTAssertTrue(
+            hosting.rootView.segments.first { $0.id == event.id }?.isHighlighted ?? false
+        )
+    }
+
+    func testTopSectionOmitsTimelineWhenDisabled() {
+        let now = Date()
+        let event = makeFakeEvent(
+            id: "timeline-disabled",
+            start: now.addingTimeInterval(300),
+            end: now.addingTimeInterval(1800),
+            withLink: true
+        )
+        var state = StatusBarMenuState()
+        state.todayEvents = [event]
+        state.nextEvent = event
+        state.showTimeline = false
+        state.settings = .empty
+
+        let items = MenuBuilder(target: Dummy(), state: state, now: now)
+            .buildTopSection()
+
+        XCTAssertFalse(items.contains {
+            $0.identifier == MenuBuilder.timelineItemIdentifier
+        })
+        XCTAssertEqual(
+            items.first?.identifier,
+            MenuBuilder.meetingSummaryItemIdentifier
+        )
+    }
+
     func testMeetingControlMakesJoinPrimaryForEventWithLink() throws {
         let now = Date(timeIntervalSinceReferenceDate: 800_000_000)
         let calendarOpenURL = URL(string: "https://calendar.google.com/event?eid=abc")!
@@ -207,10 +267,14 @@ final class MenuBuilderTests: BaseTestCase {
         XCTAssertEqual(joinItem.title, "status_bar_control_join_next".loco())
         XCTAssertEqual((joinItem.representedObject as? MBEvent)?.id, event.id)
         XCTAssertEqual(
-            items.first?.title,
-            "status_bar_control_next_meeting".loco()
+            items.first?.identifier,
+            MenuBuilder.meetingSummaryItemIdentifier
         )
-        XCTAssertNotNil(items.first { $0.title == event.title }?.image)
+        XCTAssertEqual(
+            (items.first?.representedObject as? MBEvent)?.id,
+            event.id
+        )
+        XCTAssertNotNil(items.first?.view)
         XCTAssertNotNil(actions.first {
             $0.action == #selector(StatusBarItemController.copyEventMeetingLink)
         })
@@ -223,6 +287,87 @@ final class MenuBuilderTests: BaseTestCase {
         XCTAssertNotNil(actions.first {
             $0.action == #selector(StatusBarItemController.dismissEvent)
         })
+    }
+
+    func testJoinActionRoutesTheEventShownInMeetingSummary() throws {
+        let now = Date()
+        let event = makeFakeEvent(
+            id: "summary-join",
+            start: now.addingTimeInterval(300),
+            end: now.addingTimeInterval(1800),
+            withLink: true
+        )
+        var state = StatusBarMenuState()
+        state.nextEvent = event
+        state.settings = .empty
+        let controller = StatusBarItemController()
+        defer { NSStatusBar.system.removeStatusItem(controller.statusItem) }
+        var joinedEventIDs: [String] = []
+        controller.configure(dependencies: StatusBarDependencies(
+            send: { action in
+                guard case .joinMeeting(let eventID) = action else { return }
+                joinedEventIDs.append(eventID)
+            }
+        ))
+
+        let items = MenuBuilder(target: controller, state: state, now: now)
+            .buildMeetingControlSection()
+        let summaryEvent = try XCTUnwrap(
+            items.first {
+                $0.identifier == MenuBuilder.meetingSummaryItemIdentifier
+            }?.representedObject as? MBEvent
+        )
+        let joinItem = try XCTUnwrap(items.first {
+            $0.action == #selector(StatusBarItemController.joinEvent)
+        })
+
+        controller.joinEvent(sender: joinItem)
+
+        XCTAssertEqual(summaryEvent.id, event.id)
+        XCTAssertEqual(joinedEventIDs, [summaryEvent.id])
+    }
+
+    func testMeetingSummaryDeduplicatesAccountCalendarAndOrganizerValues() {
+        let now = Date()
+        let duplicateValue = "same@example.com"
+        let calendar = MBCalendar(
+            title: duplicateValue,
+            id: "duplicate-metadata",
+            source: duplicateValue,
+            email: duplicateValue,
+            color: .black
+        )
+        let event = MBEvent(
+            id: "metadata",
+            lastModifiedDate: now,
+            title: "Metadata sync",
+            status: .confirmed,
+            notes: nil,
+            location: nil,
+            url: URL(string: "https://zoom.us/j/5551112222"),
+            organizer: MBEventOrganizer(email: duplicateValue, name: duplicateValue),
+            startDate: now.addingTimeInterval(300),
+            endDate: now.addingTimeInterval(1800),
+            isAllDay: false,
+            recurrent: false,
+            calendar: calendar
+        )
+        var state = StatusBarMenuState()
+        state.nextEvent = event
+        state.settings = .empty
+
+        let presentation = MenuBuilder(target: Dummy(), state: state, now: now)
+            .meetingSummaryPresentation(for: event)
+
+        XCTAssertEqual(
+            presentation.metadata.filter { $0 == duplicateValue }.count,
+            1
+        )
+        XCTAssertTrue(presentation.metadata.contains("Zoom"))
+        XCTAssertEqual(
+            presentation.sectionTitle,
+            "status_bar_control_next_meeting".loco()
+        )
     }
 
     func testMeetingControlShowsAuthWarningAlongsideCachedNextEvent() {

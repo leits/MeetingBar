@@ -16,6 +16,9 @@ a safer foundation for calendar providers and future integrations.
 * Improved the meeting menu around the current or next meeting, with a
   clear Join action, source-aware secondary actions, and actionable
   empty and error states.
+* Moved the optional day timeline above the current or next meeting
+  summary so the menu opens with a compact today overview and clear
+  meeting actions.
 * Reorganized Preferences around Calendar Source, Meeting Opening,
   Menu Bar Display, Notifications, and Status/Diagnostics.
 * Added provider health and refresh information to application state so

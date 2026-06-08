@@ -10,7 +10,6 @@ import Cocoa
 import Combine
 import Defaults
 import KeyboardShortcuts
-import SwiftUI
 
 enum MenuStyleConstants {
     static let defaultFontSize: CGFloat = 13
@@ -277,34 +276,11 @@ final class StatusBarItemController {
         statusItemMenu.autoenablesItems = false
         statusItemMenu.removeAllItems()
 
-        statusItemMenu.items += builder.buildMeetingControlSection()
-        statusItemMenu.addItem(NSMenuItem.separator())
+        statusItemMenu.items += builder.buildTopSection()
 
         if menuState.hasSelectedCalendars {
             let today = Calendar.current.startOfDay(for: Date())
             let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today)!
-
-            if menuState.shouldShowTimeline {
-                let segments = menuState.todayEvents.map {
-                    DaySegment(
-                        start: max($0.startDate, today),
-                        end: min($0.endDate, tomorrow),
-                        color: Color($0.calendar.color))
-                }
-
-                let timeline = DayRelativeTimelineView(
-                    segments: segments,
-                    currentDate: Date(),
-                    timeFormat: menuState.timeFormat)
-                let hosting = NSHostingView(rootView: timeline)
-                hosting.autoresizingMask = [.width]
-                hosting.frame.size.height = timeline.preferredHeight
-
-                let item = NSMenuItem()
-                item.view = hosting
-                statusItemMenu.addItem(item)
-                statusItemMenu.addItem(.separator())
-            }
 
             switch menuState.events.showEventsForPeriod {
             case .today:

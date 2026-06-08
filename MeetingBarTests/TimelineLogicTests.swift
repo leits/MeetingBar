@@ -88,7 +88,7 @@ final class TimelineLogicTests: XCTestCase {
             currentDate: Calendar.current.date(byAdding: .minute, value: 25, to: Date())!,
             timeFormat: .military
         )
-        // base + padding top/bottom + inter-row = 22 + 20
-        XCTAssertEqual(view.preferredHeight, 42)
+        // Base track + top labels + vertical padding = 22 + 26
+        XCTAssertEqual(view.preferredHeight, 48)
     }
 }

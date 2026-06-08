@@ -8,9 +8,17 @@
 
 import Cocoa
 import KeyboardShortcuts
+import SwiftUI
 
 @MainActor
 struct MenuBuilder {
+    static let timelineItemIdentifier = NSUserInterfaceItemIdentifier(
+        "MeetingBar.StatusBar.Timeline"
+    )
+    static let meetingSummaryItemIdentifier = NSUserInterfaceItemIdentifier(
+        "MeetingBar.StatusBar.MeetingSummary"
+    )
+
     /// All menu items created will forward their action to this object.
     let target: AnyObject
     /// Snapshot of all events, settings, and pre-computed flags used while
@@ -21,6 +29,18 @@ struct MenuBuilder {
     var isFantasticalInstalled = checkIsFantasticalInstalled()
     var installationDate: Date?
     var now: Date = Date()
+
+    // MARK: Top section ------------------------------------------------------
+
+    func buildTopSection() -> [NSMenuItem] {
+        var items: [NSMenuItem] = []
+        if let timelineItem = makeTimelineItem() {
+            items.append(timelineItem)
+        }
+        items.append(contentsOf: buildMeetingControlSection())
+        items.append(.separator())
+        return items
+    }
 
     // MARK: Meeting control section ------------------------------------------
 
@@ -40,38 +60,7 @@ struct MenuBuilder {
 
     private func buildMeetingControlSection(event: MBEvent) -> [NSMenuItem] {
         var items: [NSMenuItem] = []
-        let isCurrent = event.startDate <= now && event.endDate > now
-        items.append(statusItem(
-            title: isCurrent
-                ? "status_bar_control_current_meeting".loco()
-                : "status_bar_control_next_meeting".loco()
-        ))
-
-        let displayTitle = state.statusBar.hideMeetingTitle
-            ? "general_meeting".loco()
-            : event.title
-        let title = displayTitle.isEmpty ? "status_bar_no_title".loco() : displayTitle
-        let titleItem = NSMenuItem(title: title, action: nil, keyEquivalent: "")
-        titleItem.attributedTitle = NSAttributedString(
-            string: title,
-            attributes: [
-                .font: NSFont.boldSystemFont(ofSize: MenuStyleConstants.defaultFontSize + 1)
-            ]
-        )
-        titleItem.isEnabled = false
-        titleItem.image = getIconForMeetingService(event.meetingLink?.service)
-        items.append(titleItem)
-
-        let time = eventTimePresentation(for: event)
-        let timeRange = event.isAllDay
-            ? time.start
-            : "\(time.start) – \(time.end)"
-        let context = [timeRange, event.calendar.title, event.calendar.source]
-            .filter { !$0.isEmpty }
-            .joined(separator: " • ")
-        let contextItem = NSMenuItem(title: context, action: nil, keyEquivalent: "")
-        contextItem.isEnabled = false
-        items.append(contextItem)
+        items.append(makeMeetingSummaryItem(for: event))
 
         if event.meetingLink != nil {
             let joinTitle = event.startDate < now
@@ -99,6 +88,42 @@ struct MenuBuilder {
         items.append(makeMeetingActionsItem(for: event))
         items.append(contentsOf: buildProviderWarningItems())
         return items
+    }
+
+    func meetingSummaryPresentation(for event: MBEvent) -> MeetingSummaryPresentation {
+        let isCurrent = event.startDate <= now && event.endDate > now
+        let displayTitle = state.statusBar.hideMeetingTitle
+            ? "general_meeting".loco()
+            : event.title
+        let eventTitle = displayTitle.isEmpty
+            ? "status_bar_no_title".loco()
+            : displayTitle
+        let time = eventTimePresentation(for: event)
+        let timeRange = event.isAllDay
+            ? time.start
+            : "\(time.start) – \(time.end)"
+        let meetingProvider = event.meetingLink?.service
+            .flatMap(MeetingProvider.provider(for:))?
+            .displayName
+        let account = firstMeaningfulMetadataValue([
+            event.calendar.email,
+            event.calendar.source == "unknown" ? nil : event.calendar.source,
+            event.organizer?.email
+        ])
+
+        return MeetingSummaryPresentation(
+            sectionTitle: isCurrent
+                ? "status_bar_control_current_meeting".loco()
+                : "status_bar_control_next_meeting".loco(),
+            eventTitle: eventTitle,
+            metadata: uniqueMetadataValues([
+                timeRange,
+                meetingProvider,
+                account,
+                event.calendar.title
+            ]),
+            meetingService: event.meetingLink?.service
+        )
     }
 
     private func buildProviderWarningItems() -> [NSMenuItem] {
@@ -186,6 +211,85 @@ struct MenuBuilder {
         }
         item.isEnabled = false
         return item
+    }
+
+    private func makeTimelineItem() -> NSMenuItem? {
+        guard state.shouldShowTimeline else { return nil }
+
+        let today = Calendar.current.startOfDay(for: now)
+        let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today)!
+        let highlightedEventID = state.nextEvent?.id
+        let segments = state.todayEvents.map {
+            DaySegment(
+                id: $0.id,
+                start: max($0.startDate, today),
+                end: min($0.endDate, tomorrow),
+                color: Color($0.calendar.color),
+                isHighlighted: $0.id == highlightedEventID
+            )
+        }
+        let timeline = DayRelativeTimelineView(
+            segments: segments,
+            currentDate: now,
+            timeFormat: state.timeFormat
+        )
+        let hosting = NSHostingView(rootView: timeline)
+        hosting.autoresizingMask = [.width]
+        hosting.frame = NSRect(
+            x: 0,
+            y: 0,
+            width: MeetingSummaryView.preferredWidth,
+            height: timeline.preferredHeight
+        )
+
+        let item = NSMenuItem()
+        item.identifier = Self.timelineItemIdentifier
+        item.view = hosting
+        return item
+    }
+
+    private func makeMeetingSummaryItem(for event: MBEvent) -> NSMenuItem {
+        let presentation = meetingSummaryPresentation(for: event)
+        let summary = MeetingSummaryView(
+            presentation: presentation,
+            providerIcon: getIconForMeetingService(presentation.meetingService)
+        )
+        let hosting = NSHostingView(rootView: summary)
+        hosting.frame = NSRect(
+            x: 0,
+            y: 0,
+            width: MeetingSummaryView.preferredWidth,
+            height: MeetingSummaryView.preferredHeight
+        )
+
+        let item = NSMenuItem()
+        item.identifier = Self.meetingSummaryItemIdentifier
+        item.representedObject = event
+        item.view = hosting
+        return item
+    }
+
+    private func firstMeaningfulMetadataValue(_ values: [String?]) -> String? {
+        values.lazy
+            .compactMap { value in
+                value?.trimmingCharacters(in: .whitespacesAndNewlines)
+            }
+            .first { !$0.isEmpty }
+    }
+
+    private func uniqueMetadataValues(_ values: [String?]) -> [String] {
+        var seen = Set<String>()
+        return values.compactMap { value in
+            guard let trimmed = value?.trimmingCharacters(in: .whitespacesAndNewlines),
+                  !trimmed.isEmpty
+            else { return nil }
+            let identity = trimmed.folding(
+                options: [.caseInsensitive, .diacriticInsensitive],
+                locale: .current
+            )
+            guard seen.insert(identity).inserted else { return nil }
+            return trimmed
+        }
     }
 
     // MARK: Date section ------------------------------------------------------
