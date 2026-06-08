@@ -18,6 +18,59 @@ final class AppModelTests: BaseTestCase {
         XCTAssertEqual(harness.refreshCallCount, 1)
     }
 
+    func testSystemClockChangeRefreshesTimeDerivedStateAndNotifications() async {
+        let harness = AppModelTestHarness()
+        let event = makeFakeEvent(
+            id: "clock-change",
+            start: harness.fixedNow,
+            end: harness.fixedNow.addingTimeInterval(1800)
+        )
+        harness.model.send(.eventsLoaded([event]))
+        await harness.flushAsyncActions()
+
+        harness.model.send(.systemClockChanged)
+        await harness.flushAsyncActions()
+
+        XCTAssertEqual(harness.model.state.timeContextRevision, 1)
+        XCTAssertEqual(harness.refreshCallCount, 1)
+        XCTAssertEqual(harness.reconciledEventIDs, [
+            [event.id],
+            [event.id]
+        ])
+    }
+
+    func testTimezoneChangeRefreshesTimeDerivedStateAndNotifications() async {
+        let harness = AppModelTestHarness()
+        let event = makeFakeEvent(
+            id: "timezone-change",
+            start: harness.fixedNow,
+            end: harness.fixedNow.addingTimeInterval(1800)
+        )
+        harness.model.send(.eventsLoaded([event]))
+        await harness.flushAsyncActions()
+
+        harness.model.send(.timezoneChanged)
+        await harness.flushAsyncActions()
+
+        XCTAssertEqual(harness.model.state.timeContextRevision, 1)
+        XCTAssertEqual(harness.refreshCallCount, 1)
+        XCTAssertEqual(harness.reconciledEventIDs.last, [event.id])
+    }
+
+    func testLifecycleObserverForwardsSystemClockChanges() async {
+        let observer = LifecycleObserver()
+        let callback = expectation(description: "system clock callback")
+        observer.onSystemClockChanged = {
+            callback.fulfill()
+        }
+        observer.start()
+        defer { observer.stop() }
+
+        NotificationCenter.default.post(name: .NSSystemClockDidChange, object: nil)
+
+        await fulfillment(of: [callback], timeout: 1)
+    }
+
     func testProviderChangeClearsStateAndDelegatesToEnvironment() async {
         let harness = AppModelTestHarness()
         let calendar = makeFakeCalendar(id: "cal")

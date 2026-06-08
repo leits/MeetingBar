@@ -172,8 +172,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         lifecycleObserver.onDidWake = { [weak self] in
             self?.appModel?.handleWake()
         }
+        lifecycleObserver.onSystemClockChanged = { [weak self] in
+            self?.handleSystemClockChange()
+        }
         lifecycleObserver.onTimezoneChanged = { [weak self] in
-            self?.appModel?.handleTimezoneChange()
+            self?.handleTimezoneChange()
         }
         lifecycleObserver.onDayChanged = { [weak self] in
             self?.appModel?.handleDayChange()
@@ -191,6 +194,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
      * ------------------------
      */
     private func startAsyncLoops() {
+        statusLoopTask?.cancel()
+
         // Redraw status bar item on hh:mm:00
         statusLoopTask = Task(priority: .utility) { [weak self] in
             while let self, !Task.isCancelled {
@@ -205,7 +210,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
                 // Sleep until that boundary
                 let interval = nextMinute.timeIntervalSince(now)
-                try? await Task.sleep(nanoseconds: UInt64(interval * Double(NSEC_PER_SEC)))
+                do {
+                    try await Task.sleep(
+                        nanoseconds: UInt64(max(interval, 0) * Double(NSEC_PER_SEC))
+                    )
+                } catch {
+                    return
+                }
 
                 // Once we hit hh:mm:00, redraw
                 await MainActor.run {
@@ -214,6 +225,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 }
             }
         }
+    }
+
+    private func handleSystemClockChange() {
+        appModel?.handleSystemClockChange()
+        startAsyncLoops()
+    }
+
+    private func handleTimezoneChange() {
+        appModel?.handleTimezoneChange()
+        startAsyncLoops()
     }
 
     /*

@@ -51,6 +51,10 @@ struct AppState: Equatable {
     /// `true` while the screen is locked or the display is off.
     var screenIsLocked: Bool = false
 
+    /// Incremented when wall-clock interpretation changes so time-derived UI
+    /// re-renders even when the calendar data itself has not changed.
+    var timeContextRevision = 0
+
     // MARK: Derived
 
     /// Next upcoming event that has not been dismissed and is not all-day.
@@ -83,6 +87,7 @@ enum AppAction {
     case screenLocked
     case screenUnlocked
     case didWake
+    case systemClockChanged
     case timezoneChanged
     case dayChanged
 
@@ -326,7 +331,7 @@ final class AppModel: ObservableObject {
     func send(_ action: AppAction) {
         switch action {
         case .launched, .willTerminate, .screenLocked, .screenUnlocked,
-             .didWake, .timezoneChanged, .dayChanged:
+             .didWake, .systemClockChanged, .timezoneChanged, .dayChanged:
             handleLifecycleAction(action)
         case .calendarStoreChanged, .refreshCalendars, .calendarsLoaded,
              .eventsLoaded, .selectedCalendarsChanged, .providerHealthChanged,
@@ -355,6 +360,7 @@ final class AppModel: ObservableObject {
     func handleScreenLock() { send(.screenLocked) }
     func handleScreenUnlock() { send(.screenUnlocked) }
     func handleWake() { send(.didWake) }
+    func handleSystemClockChange() { send(.systemClockChanged) }
     func handleTimezoneChange() { send(.timezoneChanged) }
     func handleDayChange() { send(.dayChanged) }
     func handleCalendarStoreChange() { send(.calendarStoreChanged) }
@@ -415,7 +421,11 @@ final class AppModel: ObservableObject {
         case .screenUnlocked:
             state.screenIsLocked = false
             scheduleRefresh()
-        case .didWake, .timezoneChanged, .dayChanged:
+        case .systemClockChanged, .timezoneChanged:
+            state.timeContextRevision += 1
+            reconcileNotificationsFromState()
+            scheduleRefresh()
+        case .didWake, .dayChanged:
             scheduleRefresh()
         default:
             break

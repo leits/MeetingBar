@@ -7,7 +7,7 @@ import AppKit
 import Foundation
 
 /// Registers for macOS system notifications (screen lock/unlock, wake,
-/// timezone change, calendar day change) and forwards them as callbacks.
+/// clock/timezone change, calendar day change) and forwards them as callbacks.
 ///
 /// Owned by `AppDelegate`; keeps `AppDelegate` thin by concentrating all
 /// `DistributedNotificationCenter` / `NSWorkspace` wiring here.
@@ -16,6 +16,7 @@ final class LifecycleObserver {
     var onScreenLocked: () -> Void = {}
     var onScreenUnlocked: () -> Void = {}
     var onDidWake: () -> Void = {}
+    var onSystemClockChanged: () -> Void = {}
     var onTimezoneChanged: () -> Void = {}
     var onDayChanged: () -> Void = {}
 
@@ -54,6 +55,17 @@ final class LifecycleObserver {
             ) { [weak self] _ in
                 Task { @MainActor [weak self] in
                     self?.onDidWake()
+                }
+            })
+
+        observers.append(
+            NotificationCenter.default.addObserver(
+                forName: .NSSystemClockDidChange,
+                object: nil,
+                queue: .main
+            ) { [weak self] _ in
+                Task { @MainActor [weak self] in
+                    self?.onSystemClockChanged()
                 }
             })
 
