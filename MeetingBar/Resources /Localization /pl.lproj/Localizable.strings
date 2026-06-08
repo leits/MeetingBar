@@ -320,7 +320,6 @@
 "link_url_cant_open_message" = "Upewnij się, że masz zainstalowany %@, lub zamiast tego otwieraj takie linki w przeglądarce internetowej z poziomu preferencji.";
 "status_bar_submenu_attendees_status_unknown" = " [?]";
 "access_screen_access_screen_access_denied_go_to_title" = "Go to";
-"preferences_services_link_service_title" = "%@ を開くアプリ";
 "preferences_services_link_service_title" = "Otwórz linki do %@ w";
 "status_bar_preferences" = "Preferencje";
 "status_bar_submenu_status_tentative" = " ☝️ Wstępnia akceptacja";
@@ -332,7 +331,6 @@
 "notification_next_meeting_dismissed_message" = "Możesz usunąć odwołania w Szybkich Akcjach";
 "notification_all_dismissals_removed_title" = "Usuń wszystkie odwołania";
 "notification_all_dismissals_removed_message" = "Wszystkie odwołania spotkania wracają do akcji";
-"status_bar_section_refresh_sources" = "Odśwież źródła";
 "notifications_meetingbar_dismiss_event_action" = "Odrzuć";
 "preferences_tab_links" = "Linki";
 "preferences_appearance_status_bar_ongoing_title" = "Widoczność trwającego wydarzenia:";
