@@ -23,6 +23,19 @@ struct CalendarsTab: View {
                 VStack(alignment: .leading, spacing: 10) {
                     ProviderPicker()
 
+                    VStack(alignment: .leading, spacing: 5) {
+                        Label(
+                            presentation.providerDataSourceKey.loco(),
+                            systemImage: "arrow.triangle.2.circlepath"
+                        )
+                        Label(
+                            presentation.providerAccountScopeKey.loco(),
+                            systemImage: "person.2"
+                        )
+                    }
+                    .foregroundStyle(.secondary)
+                    .font(.caption)
+
                     HStack(spacing: 6) {
                         Label(
                             presentation.statusTextKey.loco(),
@@ -38,39 +51,7 @@ struct CalendarsTab: View {
                                 .foregroundStyle(.secondary)
                                 .font(.caption)
                         }
-                    }
-
-                    VStack(alignment: .leading, spacing: 5) {
-                        Label(
-                            presentation.providerDataSourceKey.loco(),
-                            systemImage: "arrow.triangle.2.circlepath"
-                        )
-                        Label(
-                            presentation.providerAccountScopeKey.loco(),
-                            systemImage: "person.2"
-                        )
-                    }
-                    .foregroundStyle(.secondary)
-                    .font(.caption)
-
-                    Text(
-                        "preferences_calendars_selection_summary".loco(
-                            presentation.selectedCalendarCount,
-                            presentation.availableCalendarCount
-                        )
-                    )
-                    .foregroundStyle(.secondary)
-                    .font(.caption)
-
-                    if let error = appModel.state.providerHealth.lastErrorDescription {
-                        Text(error)
-                            .foregroundStyle(.red)
-                            .font(.caption)
-                            .textSelection(.enabled)
-                            .lineLimit(3)
-                    }
-
-                    HStack {
+                        Spacer()
                         if presentation.canReconnect {
                             Button("preferences_status_reconnect".loco()) {
                                 appModel.send(
@@ -87,7 +68,14 @@ struct CalendarsTab: View {
                             appModel.send(.refreshCalendars)
                         }
                         .disabled(appModel.state.providerChangeInProgress)
-                        Spacer()
+                    }
+
+                    if let error = appModel.state.providerHealth.lastErrorDescription {
+                        Text(error)
+                            .foregroundStyle(.red)
+                            .font(.caption)
+                            .textSelection(.enabled)
+                            .lineLimit(3)
                     }
                 }
                 .padding(8)
@@ -109,13 +97,6 @@ struct CalendarsTab: View {
                 .frame(minHeight: 280)
             }
 
-            GroupBox(
-                label: Label(
-                    "preferences_status_permissions_title".loco(),
-                    systemImage: "checkmark.shield")
-            ) {
-                PermissionsSection()
-            }
         }
     }
 
@@ -136,81 +117,6 @@ private struct CalendarPreferencesEmptyState: View {
 
     private var emptyStateText: String {
         presentation.emptyStateTextKey.loco()
-    }
-}
-
-struct PermissionsSection: View {
-    @EnvironmentObject var appModel: AppModel
-    @State private var snapshot: PermissionSnapshot?
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            if let snap = snapshot {
-                PermissionRow(
-                    label: "preferences_status_permission_calendar".loco(),
-                    ok: snap.calendarAccess == .authorized,
-                    detail: calendarDetail(snap.calendarAccess)
-                )
-                PermissionRow(
-                    label: "preferences_status_permission_notifications".loco(),
-                    ok: snap.notificationAccess == .authorized || snap.notificationAccess == .provisional,
-                    detail: notificationDetail(snap.notificationAccess)
-                )
-                if snap.googleAuthStatus != .notActive {
-                    PermissionRow(
-                        label: "preferences_status_permission_google".loco(),
-                        ok: snap.googleAuthStatus == .authorized,
-                        detail: snap.googleAuthStatus == .authorized
-                            ? "preferences_status_permission_authorized".loco()
-                            : "preferences_status_permission_not_authorized".loco()
-                    )
-                }
-            } else {
-                ProgressView()
-                    .controlSize(.small)
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(8)
-        .task(id: appModel.state.activeProvider) {
-            snapshot = await PermissionReporter.current(provider: appModel.state.activeProvider)
-        }
-    }
-
-    private func calendarDetail(_ access: PermissionSnapshot.CalendarAccess) -> String {
-        switch access {
-        case .authorized: return "preferences_status_permission_authorized".loco()
-        case .denied: return "preferences_status_permission_denied".loco()
-        case .restricted: return "preferences_status_permission_restricted".loco()
-        case .notDetermined: return "preferences_status_permission_not_determined".loco()
-        }
-    }
-
-    private func notificationDetail(_ access: PermissionSnapshot.NotificationAccess) -> String {
-        switch access {
-        case .authorized: return "preferences_status_permission_authorized".loco()
-        case .provisional: return "preferences_status_permission_provisional".loco()
-        case .denied: return "preferences_status_permission_denied".loco()
-        case .notDetermined: return "preferences_status_permission_not_determined".loco()
-        }
-    }
-}
-
-private struct PermissionRow: View {
-    let label: String
-    let ok: Bool
-    let detail: String
-
-    var body: some View {
-        HStack(spacing: 8) {
-            Image(systemName: ok ? "checkmark.circle.fill" : "exclamationmark.circle.fill")
-                .foregroundStyle(ok ? .green : .orange)
-            Text(label)
-            Spacer()
-            Text(detail)
-                .foregroundStyle(.secondary)
-                .font(.caption)
-        }
     }
 }
 
