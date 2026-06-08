@@ -21,16 +21,23 @@ struct CalendarsTab: View {
                     "preferences_calendar_source_title".loco(), systemImage: "server.rack")
             ) {
                 VStack(alignment: .leading, spacing: 10) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text(presentation.providerTitleKey.loco())
-                            .font(.headline)
+                    ProviderPicker()
+
+                    HStack(spacing: 6) {
                         Label(
                             presentation.statusTextKey.loco(),
                             systemImage: statusSystemImage(presentation.statusTone)
                         )
                         .foregroundStyle(statusColor(presentation.statusTone))
                         .font(.caption)
-                        ProviderPicker()
+                        if let lastSuccess = appModel.state.providerHealth.lastSuccessfulRefresh {
+                            Text("·")
+                                .foregroundStyle(.tertiary)
+                                .font(.caption)
+                            Text(lastSuccess.formatted(date: .omitted, time: .shortened))
+                                .foregroundStyle(.secondary)
+                                .font(.caption)
+                        }
                     }
 
                     VStack(alignment: .leading, spacing: 5) {
@@ -54,6 +61,14 @@ struct CalendarsTab: View {
                     )
                     .foregroundStyle(.secondary)
                     .font(.caption)
+
+                    if let error = appModel.state.providerHealth.lastErrorDescription {
+                        Text(error)
+                            .foregroundStyle(.red)
+                            .font(.caption)
+                            .textSelection(.enabled)
+                            .lineLimit(3)
+                    }
 
                     HStack {
                         if presentation.canReconnect {
@@ -96,23 +111,6 @@ struct CalendarsTab: View {
         }
     }
 
-    private func statusSystemImage(_ tone: PreferencesStatusTone) -> String {
-        switch tone {
-        case .neutral: "circle"
-        case .success: "checkmark.circle.fill"
-        case .warning: "exclamationmark.triangle.fill"
-        case .error: "xmark.circle.fill"
-        }
-    }
-
-    private func statusColor(_ tone: PreferencesStatusTone) -> Color {
-        switch tone {
-        case .neutral: .secondary
-        case .success: .green
-        case .warning: .orange
-        case .error: .red
-        }
-    }
 }
 
 private struct CalendarPreferencesEmptyState: View {
@@ -130,6 +128,24 @@ private struct CalendarPreferencesEmptyState: View {
 
     private var emptyStateText: String {
         presentation.emptyStateTextKey.loco()
+    }
+}
+
+private func statusSystemImage(_ tone: PreferencesStatusTone) -> String {
+    switch tone {
+    case .neutral: "circle"
+    case .success: "checkmark.circle.fill"
+    case .warning: "exclamationmark.triangle.fill"
+    case .error: "xmark.circle.fill"
+    }
+}
+
+private func statusColor(_ tone: PreferencesStatusTone) -> Color {
+    switch tone {
+    case .neutral: .secondary
+    case .success: .green
+    case .warning: .orange
+    case .error: .red
     }
 }
 

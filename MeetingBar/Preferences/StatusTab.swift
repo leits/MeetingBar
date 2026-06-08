@@ -10,13 +10,6 @@ struct StatusTab: View {
         VStack(alignment: .leading, spacing: 12) {
             GroupBox(
                 label: Label(
-                    "preferences_status_provider_status_title".loco(),
-                    systemImage: "antenna.radiowaves.left.and.right")
-            ) {
-                ProviderStatusSection()
-            }
-            GroupBox(
-                label: Label(
                     "preferences_status_permissions_title".loco(),
                     systemImage: "checkmark.shield")
             ) {
@@ -34,77 +27,6 @@ struct StatusTab: View {
     }
 }
 
-private struct ProviderStatusSection: View {
-    @EnvironmentObject var appModel: AppModel
-
-    var body: some View {
-        let presentation = PreferencesCalendarPresentation.make(from: appModel.state)
-
-        VStack(alignment: .leading, spacing: 10) {
-            HStack(spacing: 8) {
-                Circle()
-                    .fill(statusColor(presentation.statusTone))
-                    .frame(width: 8, height: 8)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(presentation.providerTitleKey.loco())
-                        .font(.headline)
-                    Text(presentation.statusTextKey.loco())
-                        .foregroundStyle(.secondary)
-                        .font(.caption)
-                }
-                Spacer()
-            }
-
-            HStack(spacing: 8) {
-                Spacer()
-                if presentation.canReconnect {
-                    Button("preferences_status_reconnect".loco()) {
-                        appModel.send(.changeProvider(presentation.activeProvider, signOut: true))
-                    }
-                    .disabled(appModel.state.providerChangeInProgress)
-                }
-                if presentation.canOpenCalendarSettings {
-                    Button("preferences_status_open_calendar_settings".loco()) {
-                        NSWorkspace.shared.open(Links.calendarPreferences)
-                    }
-                }
-                Button("preferences_status_refresh_now".loco()) {
-                    appModel.send(.refreshCalendars)
-                }
-            }
-
-            if let lastSuccess = appModel.state.providerHealth.lastSuccessfulRefresh {
-                HStack {
-                    Text("preferences_status_last_successful_refresh".loco())
-                        .foregroundStyle(.secondary)
-                    Text(lastSuccess.formatted(date: .omitted, time: .shortened))
-                }
-            }
-
-            if let error = appModel.state.providerHealth.lastErrorDescription {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("preferences_status_last_error".loco())
-                        .foregroundStyle(.secondary)
-                    Text(error)
-                        .foregroundStyle(.red)
-                        .textSelection(.enabled)
-                        .lineLimit(4)
-                }
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(8)
-    }
-
-    private func statusColor(_ tone: PreferencesStatusTone) -> Color {
-        switch tone {
-        case .neutral: .gray
-        case .success: .green
-        case .warning: .orange
-        case .error: .red
-        }
-    }
-}
 
 private struct PermissionsSection: View {
     @EnvironmentObject var appModel: AppModel
