@@ -73,8 +73,6 @@ struct PreferencesView: View {
             NotificationsTab()
         case .advanced:
             AdvancedTab()
-        case .status:
-            StatusTab()
         }
     }
 }

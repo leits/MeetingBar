@@ -54,7 +54,6 @@ enum PreferencesTab: CaseIterable, Hashable {
     case menuBar
     case notifications
     case advanced
-    case status
 
     static let defaultSelection: PreferencesTab = .general
 
@@ -74,8 +73,6 @@ enum PreferencesTab: CaseIterable, Hashable {
             "preferences_tab_notifications"
         case .advanced:
             "preferences_tab_advanced"
-        case .status:
-            "preferences_tab_status"
         }
     }
 
@@ -93,8 +90,6 @@ enum PreferencesTab: CaseIterable, Hashable {
             "bell"
         case .advanced:
             "slider.horizontal.3"
-        case .status:
-            "waveform.path.ecg"
         }
     }
 }
@@ -122,7 +117,7 @@ enum PreferencesSidebarSection: CaseIterable {
         case .experience:
             [.menuBar, .notifications]
         case .maintenance:
-            [.advanced, .status]
+            [.advanced]
         }
     }
 }

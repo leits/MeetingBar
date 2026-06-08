@@ -75,6 +75,7 @@ private struct ShortcutRow<Recorder: View>: View {
 
 
 struct PatronageAppSection: View {
+    @EnvironmentObject var appModel: AppModel
     @Default(.patronageDuration) var patronageDuration
     @Default(.isInstalledFromAppStore) var isInstalledFromAppStore
     @ObservedObject var patronageService: PatronageService
@@ -159,6 +160,11 @@ struct PatronageAppSection: View {
                     Links.emailMe.openInDefaultBrowser()
                 }
                 Spacer()
+                Button("preferences_status_copy_diagnostics".loco()) {
+                    DiagnosticsClipboard.copy(
+                        snapshot: DiagnosticsSnapshot(appState: appModel.state)
+                    )
+                }
             }
             .controlSize(.small)
         }
