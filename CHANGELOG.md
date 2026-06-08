@@ -51,6 +51,9 @@ a safer foundation for calendar providers and future integrations.
   also attempting a native Zoom deep link.
 * Dismissed meetings remain hidden until their modification date changes,
   allowing updated meetings to appear again.
+* Added a defensive status bar fallback icon when a settings combination
+  would otherwise render neither an icon nor text. This does not override
+  third-party menu bar item hiding tools.
 
 ### Architecture
 

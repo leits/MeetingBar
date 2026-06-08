@@ -1185,6 +1185,61 @@ final class StatusBarTitleRendererTests: BaseTestCase {
 final class StatusBarItemControllerPresentationTests: BaseTestCase {
     private static let calendarID = "status_bar_test_calendar"
 
+    func test_renderStatusBarUsesFallbackImageWhenPresentationIsEmpty() throws {
+        let controller = StatusBarItemController()
+        defer { NSStatusBar.system.removeStatusItem(controller.statusItem) }
+
+        controller.renderStatusBar(makePresentation(mode: .noUpcoming))
+
+        let button = try XCTUnwrap(controller.statusItem.button)
+        XCTAssertNotNil(button.image)
+        XCTAssertEqual(button.title, "")
+        XCTAssertEqual(button.attributedTitle.string, "")
+    }
+
+    func test_renderStatusBarDoesNotAddFallbackWhenTitleIsVisible() throws {
+        let controller = StatusBarItemController()
+        defer { NSStatusBar.system.removeStatusItem(controller.statusItem) }
+
+        controller.renderStatusBar(makePresentation(
+            title: "Visible meeting",
+            layout: .inline(showTime: false)
+        ))
+
+        let button = try XCTUnwrap(controller.statusItem.button)
+        XCTAssertNil(button.image)
+        XCTAssertEqual(button.attributedTitle.string, "Visible meeting")
+    }
+
+    func test_renderStatusBarDoesNotOverrideExistingIcon() throws {
+        let controller = StatusBarItemController()
+        defer { NSStatusBar.system.removeStatusItem(controller.statusItem) }
+
+        controller.renderStatusBar(makePresentation(
+            mode: .noUpcoming,
+            icon: .asset(MenuStyleConstants.calendarCheckmarkIconName)
+        ))
+
+        let button = try XCTUnwrap(controller.statusItem.button)
+        XCTAssertEqual(
+            button.image?.name(),
+            MenuStyleConstants.iconNamed(
+                MenuStyleConstants.calendarCheckmarkIconName
+            ).name()
+        )
+    }
+
+    func test_renderStatusBarUsesFallbackForHiddenEventTitleWithoutIcon() throws {
+        let controller = StatusBarItemController()
+        defer { NSStatusBar.system.removeStatusItem(controller.statusItem) }
+
+        controller.renderStatusBar(makePresentation())
+
+        let button = try XCTUnwrap(controller.statusItem.button)
+        XCTAssertNotNil(button.image)
+        XCTAssertEqual(button.attributedTitle.string, "")
+    }
+
     func test_updateTitleCompactsLongTitleAndShowsFallbackMeetingIcon() throws {
         configureStatusBarDefaults()
         Defaults[.eventTitleIconFormat] = .none
@@ -1338,6 +1393,25 @@ final class StatusBarItemControllerPresentationTests: BaseTestCase {
         Defaults[.statusbarEventTitleLength] = statusbarEventTitleLengthLimits.max
         Defaults[.personalEventsAppereance] = .show_active
         Defaults[.nonAllDayEvents] = .show
+    }
+
+    private func makePresentation(
+        mode: StatusBarTitleMode = .nextEvent,
+        title: String = "",
+        icon: StatusBarIcon = .none,
+        layout: StatusBarTitleLayout = .none
+    ) -> StatusBarPresentation {
+        StatusBarPresentation(
+            mode: mode,
+            title: title,
+            time: "",
+            tooltip: nil,
+            icon: icon,
+            layout: layout,
+            titleStyle: .normal,
+            compactFallback: false,
+            removeDeliveredNotifications: false
+        )
     }
 
     private func makeStatusEvent(

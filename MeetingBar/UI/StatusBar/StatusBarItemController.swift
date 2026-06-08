@@ -216,7 +216,7 @@ final class StatusBarItemController {
         renderStatusBar(presentation)
     }
 
-    private func renderStatusBar(_ presentation: StatusBarPresentation) {
+    func renderStatusBar(_ presentation: StatusBarPresentation) {
         guard let button = statusItem.button else { return }
 
         button.image = nil
@@ -237,9 +237,23 @@ final class StatusBarItemController {
         button.image?.size = MenuStyleConstants.iconSize
         button.imagePosition = button.image?.name() == "no_online_session" ? .noImage : .imageLeft
 
-        guard presentation.mode == .nextEvent else { return }
-        button.attributedTitle = StatusBarTitleRenderer.attributedTitle(for: presentation)
-        button.toolTip = presentation.tooltip
+        if presentation.mode == .nextEvent {
+            button.attributedTitle = StatusBarTitleRenderer.attributedTitle(for: presentation)
+            button.toolTip = presentation.tooltip
+        }
+
+        ensureStatusBarButtonIsVisible(button)
+    }
+
+    private func ensureStatusBarButtonIsVisible(_ button: NSStatusBarButton) {
+        guard button.image == nil,
+              button.title.isEmpty,
+              button.attributedTitle.string.isEmpty
+        else { return }
+
+        button.image = MenuStyleConstants.iconNamed(MenuStyleConstants.appIconName)
+        button.image?.size = MenuStyleConstants.iconSize
+        button.imagePosition = .imageLeft
     }
 
     /*
