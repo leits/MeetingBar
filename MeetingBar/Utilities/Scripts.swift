@@ -31,7 +31,7 @@ enum ScriptType: String, Codable, CaseIterable {
  * 11. parameter - meeting notes (string)- if no notes are set, value "EMPTY" will be used
  * 12. parameter - calendar name (string) - the name of the calendar this event belongs to
  * 13. parameter - calendar source (string) - the source/account of the calendar (e.g., iCloud, Gmail)
- * 13. parameter - attendees (string) - list of event attendees in "Name <email>" comma-separated format
+ * 14. parameter - attendees (string) - list of event attendees in "Name <email>" comma-separated format
  */
 func createAppleScriptParametersForEvent(event: MBEvent) -> NSAppleEventDescriptor {
     let parameters = NSAppleEventDescriptor.list()
@@ -46,7 +46,10 @@ func createAppleScriptParametersForEvent(event: MBEvent) -> NSAppleEventDescript
 
     if let meetingLink = event.meetingLink {
         parameters.insert(NSAppleEventDescriptor(string: meetingLink.url.absoluteString), at: 0)
-        parameters.insert(NSAppleEventDescriptor(string: meetingLink.service!.rawValue), at: 0)
+        parameters.insert(
+            NSAppleEventDescriptor(string: meetingLink.service?.rawValue ?? "EMPTY"),
+            at: 0
+        )
     } else {
         parameters.insert(NSAppleEventDescriptor(string: "EMPTY"), at: 0)
         parameters.insert(NSAppleEventDescriptor(string: "EMPTY"), at: 0)
@@ -63,8 +66,10 @@ func createAppleScriptParametersForEvent(event: MBEvent) -> NSAppleEventDescript
     return parameters
 }
 
-// runs the predefined script with parameters.
-@MainActor func runMeetingStartsScript(event: MBEvent, type: ScriptType) {
+func createAppleScriptEvent(
+    event: MBEvent,
+    type: ScriptType
+) -> NSAppleEventDescriptor {
     let parameters = createAppleScriptParametersForEvent(event: event)
 
     let appleEvent = NSAppleEventDescriptor(
@@ -77,6 +82,12 @@ func createAppleScriptParametersForEvent(event: MBEvent) -> NSAppleEventDescript
 
     appleEvent.setDescriptor(NSAppleEventDescriptor(string: type.rawValue), forKeyword: AEKeyword(keyASSubroutineName))
     appleEvent.setDescriptor(parameters, forKeyword: AEKeyword(keyDirectObject))
+    return appleEvent
+}
+
+// runs the predefined script with parameters.
+@MainActor func runMeetingStartsScript(event: MBEvent, type: ScriptType) {
+    let appleEvent = createAppleScriptEvent(event: event, type: type)
 
     let scriptPath: URL
     do {

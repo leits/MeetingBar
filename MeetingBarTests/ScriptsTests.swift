@@ -1,3 +1,4 @@
+import Carbon
 @testable import MeetingBar
 import XCTest
 
@@ -29,7 +30,7 @@ final class ScriptsTests: XCTestCase {
         let parameters = createAppleScriptParametersForEvent(event: event)
 
         // Then: Verify all parameters are present and in correct order
-        XCTAssertEqual(parameters.numberOfItems, 14, "Should have 13 parameters including calendar info")
+        XCTAssertEqual(parameters.numberOfItems, 14, "Should have 14 parameters")
 
         // Verify calendar parameters (last two parameters)
         XCTAssertEqual(parameters.atIndex(14)?.stringValue, "John Smith <j@s.com>, Olivia Smith <p@s.com>", "Calendar source should be last parameter")
@@ -82,5 +83,71 @@ final class ScriptsTests: XCTestCase {
         XCTAssertEqual(parameters.atIndex(10)?.stringValue, "EMPTY", "Empty meeting service should be 'EMPTY'")
         XCTAssertEqual(parameters.atIndex(9)?.stringValue, "EMPTY", "Empty meeting URL should be 'EMPTY'")
         XCTAssertEqual(parameters.atIndex(6)?.stringValue, "EMPTY", "Empty location should be 'EMPTY'")
+    }
+
+    func testCreateAppleScriptEventCarriesDocumentedJoinPayload() {
+        let start = Date(timeIntervalSince1970: 1_700_000_000)
+        let end = start.addingTimeInterval(1800)
+        let attendees = [
+            MBEventAttendee(email: "one@example.com", name: "One", status: .accepted),
+            MBEventAttendee(email: "two@example.com", name: "Two", status: .accepted)
+        ]
+        let event = MBEvent(
+            id: "join-event",
+            lastModifiedDate: start,
+            title: "Join payload",
+            status: .confirmed,
+            notes: "Agenda",
+            location: "Room 42",
+            url: URL(string: "https://zoom.us/j/5551112222"),
+            organizer: nil,
+            attendees: attendees,
+            startDate: start,
+            endDate: end,
+            isAllDay: false,
+            recurrent: false,
+            calendar: MBCalendar(
+                title: "Work",
+                id: "work",
+                source: "Google",
+                email: nil,
+                color: .black
+            )
+        )
+
+        let appleEvent = createAppleScriptEvent(event: event, type: .meetingStart)
+        let parameters = appleEvent.paramDescriptor(forKeyword: AEKeyword(keyDirectObject))
+
+        XCTAssertEqual(
+            appleEvent.paramDescriptor(forKeyword: AEKeyword(keyASSubroutineName))?.stringValue,
+            ScriptType.meetingStart.rawValue
+        )
+        XCTAssertEqual(parameters?.atIndex(1)?.stringValue, event.id)
+        XCTAssertEqual(parameters?.atIndex(2)?.stringValue, event.title)
+        XCTAssertEqual(parameters?.atIndex(3)?.booleanValue, event.isAllDay)
+        XCTAssertEqual(parameters?.atIndex(4)?.dateValue, start)
+        XCTAssertEqual(parameters?.atIndex(5)?.dateValue, end)
+        XCTAssertEqual(parameters?.atIndex(6)?.stringValue, event.location)
+        XCTAssertEqual(parameters?.atIndex(8)?.int32Value, 2)
+        XCTAssertEqual(parameters?.atIndex(9)?.stringValue, event.meetingLink?.url.absoluteString)
+        XCTAssertEqual(parameters?.atIndex(10)?.stringValue, MeetingServices.zoom.rawValue)
+        XCTAssertEqual(parameters?.atIndex(11)?.stringValue, event.notes)
+    }
+
+    func testCreateAppleScriptParametersHandlesCustomMeetingService() {
+        var event = makeFakeEvent(
+            id: "custom-service",
+            start: Date(),
+            end: Date().addingTimeInterval(1800)
+        )
+        event.meetingLink = MeetingLink(
+            service: nil,
+            url: URL(string: "https://meetings.example.com/custom-room")!
+        )
+
+        let parameters = createAppleScriptParametersForEvent(event: event)
+
+        XCTAssertEqual(parameters.atIndex(9)?.stringValue, event.meetingLink?.url.absoluteString)
+        XCTAssertEqual(parameters.atIndex(10)?.stringValue, "EMPTY")
     }
 }

@@ -104,7 +104,7 @@ func legacyOpeningMode(
 }
 
 protocol MeetingOpeningPerforming {
-    func runJoinEventScriptIfConfigured()
+    func runJoinEventScriptIfConfigured(event: MBEvent)
     func openMeetingLink(_ service: MeetingServices?, _ url: URL)
     func openEventURL(_ url: URL)
     func notifyMissingLink(title: String)
@@ -113,13 +113,26 @@ protocol MeetingOpeningPerforming {
 struct SystemMeetingOpeningPerformer: MeetingOpeningPerforming {
     var settings: MeetingOpenSettings
 
-    func runJoinEventScriptIfConfigured() {
+    func runJoinEventScriptIfConfigured(event: MBEvent) {
         guard settings.runJoinEventScript,
-              let scriptLocation = settings.joinEventScriptLocation
+              let scriptLocation = settings.joinEventScriptLocation,
+              event.meetingLink != nil
         else { return }
         let scriptURL = scriptLocation.appendingPathComponent("joinEventScript.scpt")
-        let task = try? NSUserAppleScriptTask(url: scriptURL)
-        task?.execute { error in
+        let task: NSUserAppleScriptTask
+        do {
+            task = try NSUserAppleScriptTask(url: scriptURL)
+        } catch {
+            AppMessageCenter.shared.post(
+                .joinScriptFailed(description: error.localizedDescription)
+            )
+            return
+        }
+
+        // Join hooks use the same documented event payload contract as
+        // event-start hooks.
+        let appleEvent = createAppleScriptEvent(event: event, type: .meetingStart)
+        task.execute(withAppleEvent: appleEvent) { _, error in
             if let error {
                 AppMessageCenter.shared.post(
                     .joinScriptFailed(description: error.localizedDescription)
@@ -158,7 +171,11 @@ enum MeetingOpener {
             runJoinEventScript: settings.runJoinEventScript
         )
 
-        perform(action, performer: performer ?? SystemMeetingOpeningPerformer(settings: settings))
+        perform(
+            action,
+            event: event,
+            performer: performer ?? SystemMeetingOpeningPerformer(settings: settings)
+        )
     }
 
     static func open(
@@ -167,7 +184,7 @@ enum MeetingOpener {
         performer: (any MeetingOpeningPerforming)? = nil
     ) {
         perform(
-            .openMeetingLink(meetingLink, runJoinScript: settings.runJoinEventScript),
+            .openMeetingLink(meetingLink, runJoinScript: false),
             performer: performer ?? SystemMeetingOpeningPerformer(settings: settings)
         )
     }
@@ -185,11 +202,15 @@ enum MeetingOpener {
         service.perform(withItems: [])
     }
 
-    static func perform(_ action: MeetingOpeningAction, performer: any MeetingOpeningPerforming) {
+    static func perform(
+        _ action: MeetingOpeningAction,
+        event: MBEvent? = nil,
+        performer: any MeetingOpeningPerforming
+    ) {
         switch action {
         case let .openMeetingLink(meetingLink, runJoinScript):
-            if runJoinScript {
-                performer.runJoinEventScriptIfConfigured()
+            if runJoinScript, let event {
+                performer.runJoinEventScriptIfConfigured(event: event)
             }
             performer.openMeetingLink(meetingLink.service, meetingLink.url)
         case let .openEventURL(eventURL):

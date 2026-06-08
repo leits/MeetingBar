@@ -164,7 +164,7 @@ final class DiagnosticsAdapterTests: BaseTestCase {
 
 private final class FakeMeetingOpeningPerformer: MeetingOpeningPerforming {
     enum Event: Equatable {
-        case script
+        case script(eventID: String)
         case meetingLink(MeetingServices?, URL)
         case eventURL(URL)
         case missingLink(String)
@@ -172,8 +172,8 @@ private final class FakeMeetingOpeningPerformer: MeetingOpeningPerforming {
 
     private(set) var events: [Event] = []
 
-    func runJoinEventScriptIfConfigured() {
-        events.append(.script)
+    func runJoinEventScriptIfConfigured(event: MBEvent) {
+        events.append(.script(eventID: event.id))
     }
 
     func openMeetingLink(_ service: MeetingServices?, _ url: URL) {
@@ -193,14 +193,21 @@ final class MeetingOpenerTests: BaseTestCase {
     func test_performRunsJoinScriptBeforeOpeningMeetingLinkWhenRequested() {
         let performer = FakeMeetingOpeningPerformer()
         let link = MeetingLink(service: .zoom, url: URL(string: "https://zoom.us/j/5551112222")!)
+        let event = makeFakeEvent(
+            id: "join-script",
+            start: Date().addingTimeInterval(60),
+            end: Date().addingTimeInterval(600),
+            withLink: true
+        )
 
         MeetingOpener.perform(
             .openMeetingLink(link, runJoinScript: true),
+            event: event,
             performer: performer
         )
 
         XCTAssertEqual(performer.events, [
-            .script,
+            .script(eventID: event.id),
             .meetingLink(.zoom, link.url)
         ])
     }
@@ -249,7 +256,7 @@ final class MeetingOpenerTests: BaseTestCase {
         MeetingOpener.open(event: event, performer: performer)
 
         XCTAssertEqual(performer.events, [
-            .script,
+            .script(eventID: event.id),
             .meetingLink(.zoom, URL(string: "https://zoom.us/j/5551112222")!)
         ])
     }
@@ -274,7 +281,7 @@ final class MeetingOpenerTests: BaseTestCase {
         }
     }
 
-    func test_openMeetingLinkRunsJoinScriptWhenEnabled() {
+    func test_openMeetingLinkWithoutEventPayloadDoesNotRunJoinScript() {
         Defaults[.runJoinEventScript] = true
         let performer = FakeMeetingOpeningPerformer()
         let link = MeetingLink(service: .meet, url: URL(string: "https://meet.google.com/abc-defg-hij")!)
@@ -282,8 +289,24 @@ final class MeetingOpenerTests: BaseTestCase {
         MeetingOpener.open(meetingLink: link, performer: performer)
 
         XCTAssertEqual(performer.events, [
-            .script,
             .meetingLink(.meet, link.url)
+        ])
+    }
+
+    func test_openNoLinkEventDoesNotRunJoinScript() {
+        Defaults[.runJoinEventScript] = true
+        let performer = FakeMeetingOpeningPerformer()
+        let event = makeFakeEvent(
+            id: "no-link",
+            start: Date().addingTimeInterval(60),
+            end: Date().addingTimeInterval(600),
+            withLink: false
+        )
+
+        MeetingOpener.open(event: event, performer: performer)
+
+        XCTAssertEqual(performer.events, [
+            .missingLink(event.title)
         ])
     }
 
