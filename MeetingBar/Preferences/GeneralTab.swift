@@ -34,10 +34,12 @@ struct GeneralTab: View {
 }
 
 struct ShortcutsSection: View {
-    @State var showingModal = false
-
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
+            ShortcutRow(
+                title: "preferences_general_shortcut_open_menu".loco(),
+                recorder: KeyboardShortcuts.Recorder(for: .openMenuShortcut)
+            )
             ShortcutRow(
                 title: "preferences_general_shortcut_join_next".loco(),
                 recorder: KeyboardShortcuts.Recorder(for: .joinEventShortcut)
@@ -46,15 +48,14 @@ struct ShortcutsSection: View {
                 title: "preferences_general_shortcut_create_meeting".loco(),
                 recorder: KeyboardShortcuts.Recorder(for: .createMeetingShortcut)
             )
-            HStack {
-                Spacer()
-                Button(action: { self.showingModal.toggle() }) {
-                    Text("preferences_general_all_shortcut".loco())
-                }
-                .sheet(isPresented: $showingModal) {
-                    ShortcutsModal()
-                }
-            }
+            ShortcutRow(
+                title: "preferences_general_shortcut_join_from_clipboard".loco(),
+                recorder: KeyboardShortcuts.Recorder(for: .openClipboardShortcut)
+            )
+            ShortcutRow(
+                title: "preferences_general_shortcut_toggle_meeting_name_visibility".loco(),
+                recorder: KeyboardShortcuts.Recorder(for: .toggleMeetingTitleVisibilityShortcut)
+            )
         }
     }
 }
@@ -72,53 +73,8 @@ private struct ShortcutRow<Recorder: View>: View {
     }
 }
 
-struct ShortcutsModal: View {
-    @Environment(\.presentationMode) var presentationMode
-
-    var body: some View {
-        VStack {
-            Text("preferences_general_option_shortcuts".loco()).font(.headline).bold()
-            List {
-                HStack {
-                    Text("preferences_general_shortcut_open_menu".loco())
-                    Spacer()
-                    KeyboardShortcuts.Recorder(for: .openMenuShortcut)
-                }
-                HStack {
-                    Text("preferences_general_shortcut_create_meeting".loco())
-                    Spacer()
-                    KeyboardShortcuts.Recorder(for: .createMeetingShortcut)
-                }
-                HStack {
-                    Text("preferences_general_shortcut_join_next".loco())
-                    Spacer()
-                    KeyboardShortcuts.Recorder(for: .joinEventShortcut)
-                }
-                HStack {
-                    Text("preferences_general_shortcut_join_from_clipboard".loco())
-                    Spacer()
-                    KeyboardShortcuts.Recorder(for: .openClipboardShortcut)
-                }
-                HStack {
-                    Text("preferences_general_shortcut_toggle_meeting_name_visibility".loco())
-                    Spacer()
-                    KeyboardShortcuts.Recorder(for: .toggleMeetingTitleVisibilityShortcut)
-                }
-            }
-            HStack {
-                Spacer()
-                Button(action: {
-                    self.presentationMode.wrappedValue.dismiss()
-                }) {
-                    Text("general_close".loco())
-                }
-            }
-        }.padding().frame(width: 420, height: 300)
-    }
-}
 
 struct PatronageAppSection: View {
-    @State var showingContactModal = false
     @Default(.patronageDuration) var patronageDuration
     @Default(.isInstalledFromAppStore) var isInstalledFromAppStore
     @ObservedObject var patronageService: PatronageService
@@ -172,18 +128,18 @@ struct PatronageAppSection: View {
                 Divider()
             }
 
-            HStack(alignment: .center, spacing: 12) {
+            HStack(alignment: .center, spacing: 16) {
                 Image("appIconForAbout")
                     .resizable()
-                    .frame(width: 64, height: 64)
-                VStack(alignment: .leading, spacing: 3) {
+                    .frame(width: 80, height: 80)
+                VStack(alignment: .leading, spacing: 4) {
                     Text("MeetingBar")
-                        .font(.headline)
+                        .font(.title2).bold()
                     Text(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(.secondary)
                     Text("preferences_general_meeting_bar_description".loco())
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -200,10 +156,7 @@ struct PatronageAppSection: View {
                     Links.github.openInDefaultBrowser()
                 }
                 Button("preferences_general_external_contact".loco()) {
-                    showingContactModal.toggle()
-                }
-                .sheet(isPresented: $showingContactModal) {
-                    ContactModal()
+                    Links.emailMe.openInDefaultBrowser()
                 }
                 Spacer()
             }
@@ -212,37 +165,6 @@ struct PatronageAppSection: View {
     }
 }
 
-struct ContactModal: View {
-    @Environment(\.presentationMode) var presentationMode
-
-    var body: some View {
-        VStack {
-            Spacer()
-            Text("preferences_general_feedback_title".loco())
-            Spacer()
-
-            Button(action: { Links.emailMe.openInDefaultBrowser() }) {
-                Text("preferences_general_feedback_email".loco()).frame(width: 80)
-            }
-            Button(action: { Links.twitter.openInDefaultBrowser() }) {
-                Text("Twitter").frame(width: 80)
-            }
-            Button(action: { Links.telegram.openInDefaultBrowser() }) {
-                Text("Telegram").frame(width: 80)
-            }
-            Spacer()
-            Divider()
-            HStack {
-                Spacer()
-                Button(action: {
-                    self.presentationMode.wrappedValue.dismiss()
-                }) {
-                    Text("general_close".loco())
-                }
-            }
-        }.padding().frame(width: 300, height: 220)
-    }
-}
 
 #Preview() {
     GeneralTab(patronageService: PatronageService())
