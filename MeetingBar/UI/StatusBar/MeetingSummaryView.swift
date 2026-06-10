@@ -22,6 +22,8 @@ struct MeetingSummaryView: View {
     let providerIcon: NSImage
     var onJoin: (() -> Void)? = nil
 
+    @State private var isHovered = false
+
     static let preferredWidth: CGFloat = 380
     static let preferredHeight: CGFloat = 66
 
@@ -55,8 +57,13 @@ struct MeetingSummaryView: View {
             height: Self.preferredHeight,
             alignment: .leading
         )
+        .background(
+            RoundedRectangle(cornerRadius: 4)
+                .fill(isHovered && onJoin != nil ? Color.primary.opacity(0.15) : Color.clear)
+        )
         .contentShape(Rectangle())
         .onHover { hovering in
+            isHovered = hovering
             guard onJoin != nil else { return }
             if hovering { NSCursor.pointingHand.push() }
             else { NSCursor.pop() }
