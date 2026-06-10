@@ -64,12 +64,13 @@ private enum WindowStylePolicy {
     @MainActor
     static func applyRoundedCorners(to window: NSWindow, radius: CGFloat = 12) {
         window.isOpaque = false
-        window.backgroundColor = .white
 
         if let contentView = window.contentView {
             contentView.wantsLayer = true
             contentView.layer?.cornerRadius = radius
             contentView.layer?.masksToBounds = true
+            // Background color that adapts to light/dark mode
+            contentView.layer?.backgroundColor = NSColor.windowBackgroundColor.cgColor
         }
     }
 }
