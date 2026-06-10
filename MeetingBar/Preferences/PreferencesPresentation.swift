@@ -97,7 +97,7 @@ enum PreferencesTab: CaseIterable, Hashable {
 enum PreferencesSidebarSection: CaseIterable {
     case setup
     case experience
-    case advanced
+    case maintenance
 
     var titleKey: String {
         switch self {
@@ -105,8 +105,8 @@ enum PreferencesSidebarSection: CaseIterable {
             "preferences_sidebar_setup"
         case .experience:
             "preferences_sidebar_experience"
-        case .advanced:
-            "preferences_sidebar_advanced"
+        case .maintenance:
+            "preferences_sidebar_maintenance"
         }
     }
 
@@ -116,7 +116,7 @@ enum PreferencesSidebarSection: CaseIterable {
             [.general, .calendars, .meetingOpening]
         case .experience:
             [.menuBar, .notifications]
-        case .advanced:
+        case .maintenance:
             [.advanced]
         }
     }

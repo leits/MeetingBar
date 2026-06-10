@@ -15,25 +15,19 @@ struct GeneralTab: View {
     @ObservedObject var patronageService: PatronageService
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 12) {
             GroupBox(label: Label("preferences_section_general_settings_title".loco(), systemImage: "gearshape")) {
                 LaunchAtLoginANDPreferredLanguagePicker()
-                    .padding(10)
+                    .padding(8)
             }
-            .padding(.bottom, 4)
-
             GroupBox(label: Label("preferences_section_shortcuts_title".loco(), systemImage: "keyboard")) {
                 ShortcutsSection()
-                    .padding(10)
+                    .padding(8)
             }
-            .padding(.bottom, 4)
-
             GroupBox(label: Label("preferences_section_about_title".loco(), systemImage: "person.crop.circle")) {
                 PatronageAppSection(patronageService: patronageService)
-                    .padding(10)
+                    .padding(8)
             }
-            .padding(.bottom, 4)
-
             Spacer()
         }
     }
@@ -41,7 +35,7 @@ struct GeneralTab: View {
 
 struct ShortcutsSection: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 8) {
             ShortcutRow(
                 title: "preferences_general_shortcut_open_menu".loco(),
                 recorder: KeyboardShortcuts.Recorder(for: .openMenuShortcut)
@@ -71,13 +65,11 @@ private struct ShortcutRow<Recorder: View>: View {
     let recorder: Recorder
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack {
             Text(title)
-                .font(.system(size: 13))
             Spacer()
             recorder
         }
-        .padding(.vertical, 2)
     }
 }
 

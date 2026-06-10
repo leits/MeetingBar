@@ -7,7 +7,7 @@ import SwiftUI
 
 struct NotificationsTab: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 15) {
+        VStack(alignment: .leading, spacing: 16) {
             GroupBox(
                 label: Label(
                     "preferences_notifications_alerts_title".loco(),
@@ -19,7 +19,7 @@ struct NotificationsTab: View {
                     EndEventNotificationPicker()
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(8)
+                .padding(10)
             }
 
             GroupBox(
@@ -29,7 +29,7 @@ struct NotificationsTab: View {
             ) {
                 AutomaticEventJoinPicker()
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(8)
+                    .padding(10)
             }
 
             Spacer()

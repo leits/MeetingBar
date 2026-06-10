@@ -22,18 +22,21 @@ private struct SettingsRow<Control: View>: View {
     }
 
     var body: some View {
-        HStack(alignment: .firstTextBaseline, spacing: 16) {
+        HStack(alignment: .center, spacing: 12) {
             Text(title)
-                .frame(width: 210, alignment: .leading)
+                .font(.system(size: 13))
+                .frame(width: 200, alignment: .leading)
+            Spacer()
             control
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(maxWidth: 280, alignment: .trailing)
         }
+        .padding(.vertical, 4)
     }
 }
 
 struct AppearanceTab: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 15) {
+        VStack(alignment: .leading, spacing: 16) {
             EventsSection()
             StatusBarSection()
             MenuSection()
@@ -58,7 +61,7 @@ struct EventsSection: View {
                 "preferences_appearance_events_title".loco(),
                 systemImage: "calendar.day.timeline.left")
         ) {
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: 10) {
                 SettingsRow("preferences_appearance_events_show_events_for_title".loco()) {
                     Picker("", selection: $showEventsForPeriod) {
                         Text("preferences_appearance_events_show_events_for_today_value".loco())
@@ -173,7 +176,7 @@ struct EventsSection: View {
                     .frame(width: 280)
                 }
             }
-            .padding(8)
+            .padding(10)
         }
     }
 }
@@ -193,7 +196,7 @@ struct StatusBarSection: View {
                 "preferences_appearance_status_bar_title".loco(),
                 systemImage: "menubar.rectangle")
         ) {
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: 10) {
                 SettingsRow("preferences_appearance_status_bar_icon_title".loco()) {
                     Picker("", selection: $eventTitleIconFormat) {
                         HStack {
@@ -304,7 +307,7 @@ struct StatusBarSection: View {
                     .frame(minWidth: 340, idealWidth: 380)
                 }
             }
-            .padding(8)
+            .padding(10)
         }
     }
 
@@ -330,7 +333,7 @@ struct MenuSection: View {
                 "preferences_section_menu_title".loco(),
                 systemImage: "filemenu.and.selection")
         ) {
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: 10) {
                 SettingsRow("preferences_appearance_menu_show_timeline_toggle".loco()) {
                     Toggle("", isOn: $showTimelineInMenu)
                         .labelsHidden()
@@ -375,7 +378,7 @@ struct MenuSection: View {
                         .labelsHidden()
                 }
             }
-            .padding(8)
+            .padding(10)
         }
     }
 }
