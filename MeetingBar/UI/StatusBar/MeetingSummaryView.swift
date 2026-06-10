@@ -53,8 +53,8 @@ struct MeetingSummaryView: View {
         .padding(.horizontal, 12)
         .padding(.vertical, 6)
         .frame(
-            width: Self.preferredWidth,
-            height: Self.preferredHeight,
+            maxWidth: .infinity,
+            minHeight: Self.preferredHeight,
             alignment: .leading
         )
         .background(

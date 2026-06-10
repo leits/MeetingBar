@@ -69,7 +69,7 @@ final class WindowCoordinator {
         let contentView = OnboardingView().environmentObject(handler)
         let onboardingWindow = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 760, height: 520),
-            styleMask: [.closable, .titled],
+            styleMask: [],
             backing: .buffered,
             defer: false
         )
@@ -81,7 +81,7 @@ final class WindowCoordinator {
 
         onboardingWindow.level = .floating
         onboardingWindow.center()
-        onboardingWindow.orderFrontRegardless()
+        onboardingWindow.makeKeyAndOrderFront(nil)
     }
 
     func openChangelogWindow() {
@@ -102,7 +102,6 @@ final class WindowCoordinator {
         controller.showWindow(self)
 
         changelogWindow.center()
-        changelogWindow.orderFrontRegardless()
     }
 
     func openFullscreenNotificationWindow(event: MBEvent) {
@@ -168,15 +167,14 @@ final class WindowCoordinator {
 
         window.title = WindowTitles.preferences
         window.contentView = NSHostingView(rootView: contentView)
-        window.makeKeyAndOrderFront(nil)
         window.level = .floating
+        window.makeKeyAndOrderFront(nil)
         NSApplication.shared.activate(ignoringOtherApps: true)
 
         let controller = NSWindowController(window: window)
         controller.showWindow(self)
 
         window.center()
-        window.orderFrontRegardless()
 
         preferencesWindow = window
     }
