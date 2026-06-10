@@ -9,73 +9,105 @@
 import Defaults
 import SwiftUI
 
+// MARK: - Consistent Row Layout
+
 private struct PreferenceRow<Control: View>: View {
     let label: String
     let control: Control
+    let description: String?
 
     init(
         _ label: String,
+        description: String? = nil,
         @ViewBuilder control: () -> Control
     ) {
         self.label = label
+        self.description = description
         self.control = control()
     }
 
     var body: some View {
-        HStack(spacing: 16) {
-            Text(label)
-                .font(.system(size: 13))
-            Spacer()
-            control
+        VStack(alignment: .leading, spacing: 4) {
+            HStack(alignment: .center, spacing: 16) {
+                Text(label)
+                    .font(.system(size: 13))
+                    .frame(width: 220, alignment: .leading)
+
+                control
+                    .frame(minWidth: 280, alignment: .leading)
+
+                Spacer()
+            }
+            .frame(height: 26)
+
+            if let description = description {
+                Text(description)
+                    .font(.system(size: 11))
+                    .foregroundStyle(.secondary)
+                    .padding(.leading, 220 + 16)
+            }
         }
-        .frame(height: 24)
     }
 }
 
-private struct SectionTitle: View {
+// MARK: - Section Header
+
+private struct SectionHeader: View {
     let title: String
     let icon: String?
+    let description: String?
 
-    init(_ title: String, icon: String? = nil) {
+    init(_ title: String, icon: String? = nil, description: String? = nil) {
         self.title = title
         self.icon = icon
+        self.description = description
     }
 
     var body: some View {
-        HStack(spacing: 8) {
-            if let icon = icon {
-                Image(systemName: icon)
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(.secondary)
-                    .frame(width: 16)
+        VStack(alignment: .leading, spacing: 4) {
+            HStack(spacing: 8) {
+                if let icon = icon {
+                    Image(systemName: icon)
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(.secondary)
+                        .frame(width: 16, height: 16)
+                }
+                Text(title)
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(.primary)
+                Spacer()
             }
-            Text(title.uppercased())
-                .font(.system(size: 12, weight: .semibold))
-                .foregroundStyle(.secondary)
-            Spacer()
+
+            if let description = description {
+                Text(description)
+                    .font(.system(size: 12))
+                    .foregroundStyle(.secondary)
+            }
         }
-        .padding(.top, 16)
+        .padding(.top, 20)
         .padding(.bottom, 12)
     }
 }
 
+// MARK: - Main Tab
+
 struct AppearanceTab: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 0) {
-                    EventsSection()
-                    Divider().padding(.vertical, 16)
-                    StatusBarSection()
-                    Divider().padding(.vertical, 16)
-                    MenuSection()
-                }
-                .padding(.horizontal, 24)
-                .padding(.vertical, 16)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
+                EventsSection()
+                Divider().padding(.vertical, 16)
+                StatusBarSection()
+                Divider().padding(.vertical, 16)
+                MenuSection()
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(24)
         }
     }
 }
+
+// MARK: - Events Section
 
 struct EventsSection: View {
     @Default(.showEventsForPeriod) var showEventsForPeriod
@@ -89,9 +121,10 @@ struct EventsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            SectionTitle("Events", icon: "calendar.day.timeline.left")
+            SectionHeader("Events", icon: "calendar.day.timeline.left")
 
             VStack(alignment: .leading, spacing: 12) {
+                // Group 1: Range
                 PreferenceRow("Show events for") {
                     Picker("", selection: $showEventsForPeriod) {
                         Text("preferences_appearance_events_show_events_for_today_value".loco())
@@ -104,19 +137,23 @@ struct EventsSection: View {
 
                 Divider().padding(.vertical, 4)
 
+                // Group 2: Event types
                 PreferenceRow("preferences_appearance_events_all_day_title".loco()) {
                     Picker("", selection: $allDayEvents) {
-                        Text("preferences_appearance_events_value_show".loco()).tag(AlldayEventsAppereance.show)
+                        Text("preferences_appearance_events_value_show".loco())
+                            .tag(AlldayEventsAppereance.show)
                         Text("preferences_appearance_events_value_only_with_link".loco())
                             .tag(AlldayEventsAppereance.show_with_meeting_link_only)
-                        Text("preferences_appearance_events_value_hide".loco()).tag(AlldayEventsAppereance.hide)
+                        Text("preferences_appearance_events_value_hide".loco())
+                            .tag(AlldayEventsAppereance.hide)
                     }
                     .labelsHidden()
                 }
 
                 PreferenceRow("preferences_appearance_events_non_all_day_title".loco()) {
                     Picker("", selection: $nonAllDayEvents) {
-                        Text("preferences_appearance_events_value_show".loco()).tag(NonAlldayEventsAppereance.show)
+                        Text("preferences_appearance_events_value_show".loco())
+                            .tag(NonAlldayEventsAppereance.show)
                         Text("preferences_appearance_events_value_inactive_without_meeting_link".loco())
                             .tag(NonAlldayEventsAppereance.show_inactive_without_meeting_link)
                         Text("preferences_appearance_events_value_hide_without_meeting_link".loco())
@@ -127,49 +164,70 @@ struct EventsSection: View {
 
                 PreferenceRow("preferences_appearance_events_without_guest_title".loco()) {
                     Picker("", selection: $personalEventsAppereance) {
-                        Text("preferences_appearance_events_value_show".loco()).tag(PastEventsAppereance.show_active)
-                        Text("preferences_appearance_events_value_as_inactive".loco()).tag(PastEventsAppereance.show_inactive)
-                        Text("preferences_appearance_events_value_hide".loco()).tag(PastEventsAppereance.hide)
+                        Text("preferences_appearance_events_value_show".loco())
+                            .tag(PastEventsAppereance.show_active)
+                        Text("preferences_appearance_events_value_as_inactive".loco())
+                            .tag(PastEventsAppereance.show_inactive)
+                        Text("preferences_appearance_events_value_hide".loco())
+                            .tag(PastEventsAppereance.hide)
                     }
                     .labelsHidden()
                 }
 
                 Divider().padding(.vertical, 4)
 
+                // Group 3: Invitation status
                 PreferenceRow("preferences_appearance_events_pending_title".loco()) {
                     Picker("", selection: $showPendingEvents) {
-                        Text("preferences_appearance_events_value_show".loco()).tag(PendingEventsAppereance.show)
-                        Text("preferences_appearance_events_value_as_underlined".loco()).tag(PendingEventsAppereance.show_underlined)
-                        Text("preferences_appearance_events_value_as_inactive".loco()).tag(PendingEventsAppereance.show_inactive)
-                        Text("preferences_appearance_events_value_hide".loco()).tag(PendingEventsAppereance.hide)
+                        Text("preferences_appearance_events_value_show".loco())
+                            .tag(PendingEventsAppereance.show)
+                        Text("preferences_appearance_events_value_as_underlined".loco())
+                            .tag(PendingEventsAppereance.show_underlined)
+                        Text("preferences_appearance_events_value_as_inactive".loco())
+                            .tag(PendingEventsAppereance.show_inactive)
+                        Text("preferences_appearance_events_value_hide".loco())
+                            .tag(PendingEventsAppereance.hide)
                     }
                     .labelsHidden()
                 }
 
                 PreferenceRow("preferences_appearance_events_tentative_title".loco()) {
                     Picker("", selection: $showTentativeEvents) {
-                        Text("preferences_appearance_events_value_show".loco()).tag(TentativeEventsAppereance.show)
-                        Text("preferences_appearance_events_value_as_underlined".loco()).tag(TentativeEventsAppereance.show_underlined)
-                        Text("preferences_appearance_events_value_as_inactive".loco()).tag(TentativeEventsAppereance.show_inactive)
-                        Text("preferences_appearance_events_value_hide".loco()).tag(TentativeEventsAppereance.hide)
+                        Text("preferences_appearance_events_value_show".loco())
+                            .tag(TentativeEventsAppereance.show)
+                        Text("preferences_appearance_events_value_as_underlined".loco())
+                            .tag(TentativeEventsAppereance.show_underlined)
+                        Text("preferences_appearance_events_value_as_inactive".loco())
+                            .tag(TentativeEventsAppereance.show_inactive)
+                        Text("preferences_appearance_events_value_hide".loco())
+                            .tag(TentativeEventsAppereance.hide)
                     }
                     .labelsHidden()
                 }
 
                 PreferenceRow("preferences_appearance_events_declined_title".loco()) {
                     Picker("", selection: $declinedEventsAppereance) {
-                        Text("preferences_appearance_events_value_with_strikethrough".loco()).tag(DeclinedEventsAppereance.strikethrough)
-                        Text("preferences_appearance_events_value_as_inactive".loco()).tag(DeclinedEventsAppereance.show_inactive)
-                        Text("preferences_appearance_events_value_hide".loco()).tag(DeclinedEventsAppereance.hide)
+                        Text("preferences_appearance_events_value_with_strikethrough".loco())
+                            .tag(DeclinedEventsAppereance.strikethrough)
+                        Text("preferences_appearance_events_value_as_inactive".loco())
+                            .tag(DeclinedEventsAppereance.show_inactive)
+                        Text("preferences_appearance_events_value_hide".loco())
+                            .tag(DeclinedEventsAppereance.hide)
                     }
                     .labelsHidden()
                 }
 
+                Divider().padding(.vertical, 4)
+
+                // Group 4: Time
                 PreferenceRow("preferences_appearance_events_past_title".loco()) {
                     Picker("", selection: $pastEventsAppereance) {
-                        Text("preferences_appearance_events_value_show".loco()).tag(PastEventsAppereance.show_active)
-                        Text("preferences_appearance_events_value_as_inactive".loco()).tag(PastEventsAppereance.show_inactive)
-                        Text("preferences_appearance_events_value_hide".loco()).tag(PastEventsAppereance.hide)
+                        Text("preferences_appearance_events_value_show".loco())
+                            .tag(PastEventsAppereance.show_active)
+                        Text("preferences_appearance_events_value_as_inactive".loco())
+                            .tag(PastEventsAppereance.show_inactive)
+                        Text("preferences_appearance_events_value_hide".loco())
+                            .tag(PastEventsAppereance.hide)
                     }
                     .labelsHidden()
                 }
@@ -177,6 +235,8 @@ struct EventsSection: View {
         }
     }
 }
+
+// MARK: - Status Bar Section
 
 struct StatusBarSection: View {
     @Default(.eventTitleIconFormat) var eventTitleIconFormat
@@ -186,41 +246,55 @@ struct StatusBarSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            SectionTitle("Status Bar", icon: "menubar.rectangle")
+            SectionHeader("Status Bar", icon: "menubar.rectangle")
 
             VStack(alignment: .leading, spacing: 12) {
-                PreferenceRow("preferences_appearance_status_bar_icon_title".loco()) {
+                PreferenceRow("Icon") {
                     Picker("", selection: $eventTitleIconFormat) {
-                        Text("preferences_appearance_status_bar_icon_calendar_icon_value".loco()).tag(EventTitleIconFormat.calendar)
-                        Text("preferences_appearance_status_bar_icon_app_icon_value".loco()).tag(EventTitleIconFormat.appicon)
-                        Text("preferences_appearance_status_bar_icon_specific_icon_value".loco()).tag(EventTitleIconFormat.eventtype)
-                        Text("preferences_appearance_status_bar_icon_no_icon_value".loco()).tag(EventTitleIconFormat.none)
+                        Text("preferences_appearance_status_bar_icon_calendar_icon_value".loco())
+                            .tag(EventTitleIconFormat.calendar)
+                        Text("preferences_appearance_status_bar_icon_app_icon_value".loco())
+                            .tag(EventTitleIconFormat.appicon)
+                        Text("preferences_appearance_status_bar_icon_specific_icon_value".loco())
+                            .tag(EventTitleIconFormat.eventtype)
+                        Text("preferences_appearance_status_bar_icon_no_icon_value".loco())
+                            .tag(EventTitleIconFormat.none)
                     }
                     .labelsHidden()
                 }
 
-                PreferenceRow("preferences_appearance_status_bar_title_title".loco()) {
+                PreferenceRow("Title") {
                     Picker("", selection: $eventTitleFormat) {
-                        Text("preferences_appearance_status_bar_title_event_title_value".loco()).tag(EventTitleFormat.show)
-                        Text("preferences_appearance_status_bar_title_dot_value".loco()).tag(EventTitleFormat.dot)
-                        Text("preferences_appearance_status_bar_title_hide_value".loco()).tag(EventTitleFormat.none)
+                        Text("preferences_appearance_status_bar_title_event_title_value".loco())
+                            .tag(EventTitleFormat.show)
+                        Text("preferences_appearance_status_bar_title_dot_value".loco())
+                            .tag(EventTitleFormat.dot)
+                        Text("preferences_appearance_status_bar_title_hide_value".loco())
+                            .tag(EventTitleFormat.none)
                     }
                     .labelsHidden()
                 }
 
-                PreferenceRow("preferences_appearance_status_bar_time_format_title".loco()) {
+                PreferenceRow("Time") {
                     Picker("", selection: $eventTimeFormat) {
-                        Text("preferences_appearance_menu_time_format_12_hour_value".loco()).tag(TimeFormat.am_pm)
-                        Text("preferences_appearance_menu_time_format_24_hour_value".loco()).tag(TimeFormat.military)
+                        Text("preferences_appearance_menu_time_format_12_hour_value".loco())
+                            .tag(TimeFormat.am_pm)
+                        Text("preferences_appearance_menu_time_format_24_hour_value".loco())
+                            .tag(TimeFormat.military)
                     }
                     .labelsHidden()
                 }
 
-                PreferenceRow("preferences_appearance_status_bar_ongoing_title".loco()) {
+                Divider().padding(.vertical, 4)
+
+                PreferenceRow("Keep ongoing event visible") {
                     Picker("", selection: $ongoingEventVisibility) {
-                        Text("preferences_appearance_status_bar_ongoing_time_immediate_value".loco()).tag(OngoingEventVisibility.hideImmediateAfter)
-                        Text("preferences_appearance_status_bar_ongoing_time_ten_after_value".loco()).tag(OngoingEventVisibility.showTenMinAfter)
-                        Text("preferences_appearance_status_bar_ongoing_time_ten_before_next_value".loco()).tag(OngoingEventVisibility.showTenMinBeforeNext)
+                        Text("preferences_appearance_status_bar_ongoing_time_immediate_value".loco())
+                            .tag(OngoingEventVisibility.hideImmediateAfter)
+                        Text("preferences_appearance_status_bar_ongoing_time_ten_after_value".loco())
+                            .tag(OngoingEventVisibility.showTenMinAfter)
+                        Text("preferences_appearance_status_bar_ongoing_time_ten_before_next_value".loco())
+                            .tag(OngoingEventVisibility.showTenMinBeforeNext)
                     }
                     .labelsHidden()
                 }
@@ -228,6 +302,8 @@ struct StatusBarSection: View {
         }
     }
 }
+
+// MARK: - Menu Section
 
 struct MenuSection: View {
     @Default(.showTimelineInMenu) var showTimelineInMenu
@@ -237,22 +313,24 @@ struct MenuSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            SectionTitle("Menu", icon: "filemenu.and.selection")
+            SectionHeader("Menu", icon: "filemenu.and.selection")
 
             VStack(alignment: .leading, spacing: 12) {
-                PreferenceRow("preferences_appearance_menu_show_timeline_toggle".loco()) {
+                PreferenceRow("Show visual timeline") {
                     Toggle("", isOn: $showTimelineInMenu).labelsHidden()
                 }
 
-                PreferenceRow("preferences_appearance_menu_show_event_end_time_value".loco()) {
+                Divider().padding(.vertical, 4)
+
+                PreferenceRow("Show event end time") {
                     Toggle("", isOn: $showEventEndTime).labelsHidden()
                 }
 
-                PreferenceRow("preferences_appearance_menu_show_meeting_service_icon".loco()) {
+                PreferenceRow("Show meeting service icon") {
                     Toggle("", isOn: $showMeetingServiceIcon).labelsHidden()
                 }
 
-                PreferenceRow("preferences_appearance_menu_show_event_details".loco()) {
+                PreferenceRow("Show event details as submenu") {
                     Toggle("", isOn: $showEventDetails).labelsHidden()
                 }
             }
