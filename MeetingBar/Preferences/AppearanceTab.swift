@@ -22,23 +22,44 @@ private struct SettingsRow<Control: View>: View {
     }
 
     var body: some View {
-        HStack(alignment: .center, spacing: 12) {
+        HStack(alignment: .center, spacing: 16) {
             Text(title)
                 .font(.system(size: 13))
-                .frame(width: 200, alignment: .leading)
-            Spacer()
+                .frame(maxWidth: .infinity, alignment: .leading)
             control
-                .frame(maxWidth: 280, alignment: .trailing)
+                .frame(minWidth: 180)
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, 6)
+    }
+}
+
+private struct SectionHeader: View {
+    let title: String
+    let systemImage: String
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Image(systemName: systemImage)
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundStyle(.secondary)
+            Text(title)
+                .font(.system(size: 13, weight: .semibold))
+                .textCase(.uppercase)
+                .foregroundStyle(.secondary)
+            Spacer()
+        }
+        .padding(.top, 12)
+        .padding(.bottom, 8)
     }
 }
 
 struct AppearanceTab: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 0) {
             EventsSection()
+            Divider().padding(.vertical, 12)
             StatusBarSection()
+            Divider().padding(.vertical, 12)
             MenuSection()
             Spacer()
         }
@@ -56,127 +77,90 @@ struct EventsSection: View {
     @Default(.showEventsForPeriod) var showEventsForPeriod
 
     var body: some View {
-        GroupBox(
-            label: Label(
-                "preferences_appearance_events_title".loco(),
-                systemImage: "calendar.day.timeline.left")
-        ) {
+        VStack(alignment: .leading, spacing: 0) {
+            SectionHeader(title: "events", systemImage: "calendar.day.timeline.left")
+
             VStack(alignment: .leading, spacing: 10) {
                 SettingsRow("preferences_appearance_events_show_events_for_title".loco()) {
                     Picker("", selection: $showEventsForPeriod) {
                         Text("preferences_appearance_events_show_events_for_today_value".loco())
                             .tag(ShowEventsForPeriod.today)
-                        Text(
-                            "preferences_appearance_events_show_events_for_today_tomorrow_value"
-                                .loco()
-                        )
-                        .tag(ShowEventsForPeriod.today_n_tomorrow)
+                        Text("preferences_appearance_events_show_events_for_today_tomorrow_value".loco())
+                            .tag(ShowEventsForPeriod.today_n_tomorrow)
                     }
                     .labelsHidden()
-                    .frame(width: 280)
                 }
 
                 SettingsRow("preferences_appearance_events_all_day_title".loco()) {
                     Picker("", selection: $allDayEvents) {
-                        Text("preferences_appearance_events_value_show".loco())
-                            .tag(AlldayEventsAppereance.show)
+                        Text("preferences_appearance_events_value_show".loco()).tag(AlldayEventsAppereance.show)
                         Text("preferences_appearance_events_value_only_with_link".loco())
                             .tag(AlldayEventsAppereance.show_with_meeting_link_only)
-                        Text("preferences_appearance_events_value_hide".loco())
-                            .tag(AlldayEventsAppereance.hide)
+                        Text("preferences_appearance_events_value_hide".loco()).tag(AlldayEventsAppereance.hide)
                     }
                     .labelsHidden()
-                    .frame(width: 320)
                 }
 
                 SettingsRow("preferences_appearance_events_non_all_day_title".loco()) {
                     Picker("", selection: $nonAllDayEvents) {
-                        Text("preferences_appearance_events_value_show".loco())
-                            .tag(NonAlldayEventsAppereance.show)
-                        Text(
-                            "preferences_appearance_events_value_inactive_without_meeting_link"
-                                .loco()
-                        )
-                        .tag(NonAlldayEventsAppereance.show_inactive_without_meeting_link)
-                        Text(
-                            "preferences_appearance_events_value_hide_without_meeting_link".loco()
-                        )
-                        .tag(NonAlldayEventsAppereance.hide_without_meeting_link)
+                        Text("preferences_appearance_events_value_show".loco()).tag(NonAlldayEventsAppereance.show)
+                        Text("preferences_appearance_events_value_inactive_without_meeting_link".loco())
+                            .tag(NonAlldayEventsAppereance.show_inactive_without_meeting_link)
+                        Text("preferences_appearance_events_value_hide_without_meeting_link".loco())
+                            .tag(NonAlldayEventsAppereance.hide_without_meeting_link)
                     }
                     .labelsHidden()
-                    .frame(width: 320)
                 }
 
                 SettingsRow("preferences_appearance_events_without_guest_title".loco()) {
                     Picker("", selection: $personalEventsAppereance) {
-                        Text("preferences_appearance_events_value_show".loco())
-                            .tag(PastEventsAppereance.show_active)
-                        Text("preferences_appearance_events_value_as_inactive".loco())
-                            .tag(PastEventsAppereance.show_inactive)
-                        Text("preferences_appearance_events_value_hide".loco())
-                            .tag(PastEventsAppereance.hide)
+                        Text("preferences_appearance_events_value_show".loco()).tag(PastEventsAppereance.show_active)
+                        Text("preferences_appearance_events_value_as_inactive".loco()).tag(PastEventsAppereance.show_inactive)
+                        Text("preferences_appearance_events_value_hide".loco()).tag(PastEventsAppereance.hide)
                     }
                     .labelsHidden()
-                    .frame(width: 280)
                 }
 
                 SettingsRow("preferences_appearance_events_pending_title".loco()) {
                     Picker("", selection: $showPendingEvents) {
-                        Text("preferences_appearance_events_value_show".loco())
-                            .tag(PendingEventsAppereance.show)
-                        Text("preferences_appearance_events_value_as_underlined".loco())
-                            .tag(PendingEventsAppereance.show_underlined)
-                        Text("preferences_appearance_events_value_as_inactive".loco())
-                            .tag(PendingEventsAppereance.show_inactive)
-                        Text("preferences_appearance_events_value_hide".loco())
-                            .tag(PendingEventsAppereance.hide)
+                        Text("preferences_appearance_events_value_show".loco()).tag(PendingEventsAppereance.show)
+                        Text("preferences_appearance_events_value_as_underlined".loco()).tag(PendingEventsAppereance.show_underlined)
+                        Text("preferences_appearance_events_value_as_inactive".loco()).tag(PendingEventsAppereance.show_inactive)
+                        Text("preferences_appearance_events_value_hide".loco()).tag(PendingEventsAppereance.hide)
                     }
                     .labelsHidden()
-                    .frame(width: 280)
                 }
 
                 SettingsRow("preferences_appearance_events_tentative_title".loco()) {
                     Picker("", selection: $showTentativeEvents) {
-                        Text("preferences_appearance_events_value_show".loco())
-                            .tag(TentativeEventsAppereance.show)
-                        Text("preferences_appearance_events_value_as_underlined".loco())
-                            .tag(TentativeEventsAppereance.show_underlined)
-                        Text("preferences_appearance_events_value_as_inactive".loco())
-                            .tag(TentativeEventsAppereance.show_inactive)
-                        Text("preferences_appearance_events_value_hide".loco())
-                            .tag(TentativeEventsAppereance.hide)
+                        Text("preferences_appearance_events_value_show".loco()).tag(TentativeEventsAppereance.show)
+                        Text("preferences_appearance_events_value_as_underlined".loco()).tag(TentativeEventsAppereance.show_underlined)
+                        Text("preferences_appearance_events_value_as_inactive".loco()).tag(TentativeEventsAppereance.show_inactive)
+                        Text("preferences_appearance_events_value_hide".loco()).tag(TentativeEventsAppereance.hide)
                     }
                     .labelsHidden()
-                    .frame(width: 280)
                 }
 
                 SettingsRow("preferences_appearance_events_declined_title".loco()) {
                     Picker("", selection: $declinedEventsAppereance) {
                         Text("preferences_appearance_events_value_with_strikethrough".loco())
                             .tag(DeclinedEventsAppereance.strikethrough)
-                        Text("preferences_appearance_events_value_as_inactive".loco())
-                            .tag(DeclinedEventsAppereance.show_inactive)
-                        Text("preferences_appearance_events_value_hide".loco())
-                            .tag(DeclinedEventsAppereance.hide)
+                        Text("preferences_appearance_events_value_as_inactive".loco()).tag(DeclinedEventsAppereance.show_inactive)
+                        Text("preferences_appearance_events_value_hide".loco()).tag(DeclinedEventsAppereance.hide)
                     }
                     .labelsHidden()
-                    .frame(width: 280)
                 }
 
                 SettingsRow("preferences_appearance_events_past_title".loco()) {
                     Picker("", selection: $pastEventsAppereance) {
-                        Text("preferences_appearance_events_value_show".loco())
-                            .tag(PastEventsAppereance.show_active)
-                        Text("preferences_appearance_events_value_as_inactive".loco())
-                            .tag(PastEventsAppereance.show_inactive)
-                        Text("preferences_appearance_events_value_hide".loco())
-                            .tag(PastEventsAppereance.hide)
+                        Text("preferences_appearance_events_value_show".loco()).tag(PastEventsAppereance.show_active)
+                        Text("preferences_appearance_events_value_as_inactive".loco()).tag(PastEventsAppereance.show_inactive)
+                        Text("preferences_appearance_events_value_hide".loco()).tag(PastEventsAppereance.hide)
                     }
                     .labelsHidden()
-                    .frame(width: 280)
                 }
             }
-            .padding(10)
+            .padding(.bottom, 12)
         }
     }
 }
@@ -191,130 +175,55 @@ struct StatusBarSection: View {
     @Default(.ongoingEventVisibility) var ongoingEventVisibility
 
     var body: some View {
-        GroupBox(
-            label: Label(
-                "preferences_appearance_status_bar_title".loco(),
-                systemImage: "menubar.rectangle")
-        ) {
+        VStack(alignment: .leading, spacing: 0) {
+            SectionHeader(title: "Status bar", systemImage: "menubar.rectangle")
+
             VStack(alignment: .leading, spacing: 10) {
                 SettingsRow("preferences_appearance_status_bar_icon_title".loco()) {
                     Picker("", selection: $eventTitleIconFormat) {
-                        HStack {
-                            Image(nsImage: getImage(iconName: EventTitleIconFormat.calendar.rawValue))
-                                .resizable()
-                                .frame(width: 16.0, height: 16.0)
-                            Text("preferences_appearance_status_bar_icon_calendar_icon_value".loco())
-                        }.tag(EventTitleIconFormat.calendar)
-
-                        HStack {
-                            Image(nsImage: getImage(iconName: EventTitleIconFormat.appicon.rawValue))
-                                .resizable()
-                                .frame(width: 16.0, height: 16.0)
-                            Text("preferences_appearance_status_bar_icon_app_icon_value".loco())
-                        }.tag(EventTitleIconFormat.appicon)
-
-                        HStack {
-                            Image(nsImage: getImage(iconName: EventTitleIconFormat.eventtype.rawValue))
-                                .resizable()
-                                .frame(width: 16.0, height: 16.0)
-                            Text("preferences_appearance_status_bar_icon_specific_icon_value".loco())
-                        }.tag(EventTitleIconFormat.eventtype)
-
-                        HStack {
-                            Image(nsImage: getImage(iconName: EventTitleIconFormat.none.rawValue))
-                                .resizable()
-                                .frame(width: 16.0, height: 16.0)
-                            Text("preferences_appearance_status_bar_icon_no_icon_value".loco())
-                        }.tag(EventTitleIconFormat.none)
+                        Text("preferences_appearance_status_bar_icon_calendar_icon_value".loco())
+                            .tag(EventTitleIconFormat.calendar)
+                        Text("preferences_appearance_status_bar_icon_app_icon_value".loco())
+                            .tag(EventTitleIconFormat.appicon)
+                        Text("preferences_appearance_status_bar_icon_specific_icon_value".loco())
+                            .tag(EventTitleIconFormat.eventtype)
+                        Text("preferences_appearance_status_bar_icon_no_icon_value".loco())
+                            .tag(EventTitleIconFormat.none)
                     }
                     .labelsHidden()
-                    .frame(width: 280)
                 }
 
                 SettingsRow("preferences_appearance_status_bar_title_title".loco()) {
                     Picker("", selection: $eventTitleFormat) {
-                        Text("preferences_appearance_status_bar_title_event_title_value".loco()).tag(
-                            EventTitleFormat.show)
-                        Text("preferences_appearance_status_bar_title_dot_value".loco()).tag(
-                            EventTitleFormat.dot)
-                        Text("preferences_appearance_status_bar_title_hide_value".loco()).tag(
-                            EventTitleFormat.none)
+                        Text("preferences_appearance_status_bar_title_event_title_value".loco()).tag(EventTitleFormat.show)
+                        Text("preferences_appearance_status_bar_title_dot_value".loco()).tag(EventTitleFormat.dot)
+                        Text("preferences_appearance_status_bar_title_hide_value".loco()).tag(EventTitleFormat.none)
                     }
                     .labelsHidden()
-                    .frame(width: 280)
                 }
 
-                SettingsRow(
-                    "preferences_appearance_status_bar_title_shorten_stepper".loco(
-                        statusbarEventTitleLength)
-                ) {
-                    Stepper(
-                        "",
-                        value: $statusbarEventTitleLength,
-                        in: statusbarEventTitleLengthLimits.min
-                            ... statusbarEventTitleLengthLimits.max,
-                        step: 5
-                    )
-                    .labelsHidden()
-                    .disabled(eventTitleFormat != .show)
-                }
-
-                SettingsRow("preferences_appearance_status_bar_time_title".loco()) {
+                SettingsRow("preferences_appearance_status_bar_time_format_title".loco()) {
                     Picker("", selection: $eventTimeFormat) {
-                        ForEach(
-                            PreferencesStatusBarTimeOption.allCases,
-                            id: \.format
-                        ) { option in
-                            Text(option.titleKey.loco()).tag(option.format)
-                        }
+                        Text("preferences_appearance_menu_time_format_12_hour_value".loco()).tag(TimeFormat.am_pm)
+                        Text("preferences_appearance_menu_time_format_24_hour_value".loco()).tag(TimeFormat.military)
                     }
                     .labelsHidden()
-                    .frame(width: 280)
-                }
-
-                SettingsRow("preferences_appearance_status_bar_next_event_toggle".loco()) {
-                    HStack {
-                        Toggle("", isOn: $showEventMaxTimeUntilEventEnabled)
-                            .labelsHidden()
-                        Stepper(
-                            "preferences_appearance_status_bar_next_event_stepper".loco(
-                                showEventMaxTimeUntilEventThreshold),
-                            value: $showEventMaxTimeUntilEventThreshold,
-                            in: 5 ... 720,
-                            step: 5
-                        )
-                        .disabled(!showEventMaxTimeUntilEventEnabled)
-                    }
                 }
 
                 SettingsRow("preferences_appearance_status_bar_ongoing_title".loco()) {
                     Picker("", selection: $ongoingEventVisibility) {
-                        Text(
-                            "preferences_appearance_status_bar_ongoing_time_immediate_value".loco()
-                        )
-                        .tag(OngoingEventVisibility.hideImmediateAfter)
-                        Text(
-                            "preferences_appearance_status_bar_ongoing_time_ten_after_value".loco()
-                        )
-                        .tag(OngoingEventVisibility.showTenMinAfter)
-                        Text(
-                            "preferences_appearance_status_bar_ongoing_time_ten_before_next_value"
-                                .loco()
-                        )
-                        .tag(OngoingEventVisibility.showTenMinBeforeNext)
+                        Text("preferences_appearance_status_bar_ongoing_time_immediate_value".loco())
+                            .tag(OngoingEventVisibility.hideImmediateAfter)
+                        Text("preferences_appearance_status_bar_ongoing_time_ten_after_value".loco())
+                            .tag(OngoingEventVisibility.showTenMinAfter)
+                        Text("preferences_appearance_status_bar_ongoing_time_ten_before_next_value".loco())
+                            .tag(OngoingEventVisibility.showTenMinBeforeNext)
                     }
                     .labelsHidden()
-                    .frame(minWidth: 340, idealWidth: 380)
                 }
             }
-            .padding(10)
+            .padding(.bottom, 12)
         }
-    }
-
-    func getImage(iconName: String) -> NSImage {
-        let icon = NSImage(named: iconName)
-        icon!.size = NSSize(width: 16, height: 16)
-        return icon!
     }
 }
 
@@ -328,57 +237,30 @@ struct MenuSection: View {
     @Default(.showTimelineInMenu) var showTimelineInMenu
 
     var body: some View {
-        GroupBox(
-            label: Label(
-                "preferences_section_menu_title".loco(),
-                systemImage: "filemenu.and.selection")
-        ) {
+        VStack(alignment: .leading, spacing: 0) {
+            SectionHeader(title: "Menu", systemImage: "filemenu.and.selection")
+
             VStack(alignment: .leading, spacing: 10) {
                 SettingsRow("preferences_appearance_menu_show_timeline_toggle".loco()) {
-                    Toggle("", isOn: $showTimelineInMenu)
-                        .labelsHidden()
+                    Toggle("", isOn: $showTimelineInMenu).labelsHidden()
                 }
 
                 SettingsRow("preferences_appearance_menu_shorten_event_title_toggle".loco()) {
-                    HStack {
-                        Toggle("", isOn: $shortenEventTitle)
-                            .labelsHidden()
-                        Stepper(
-                            "preferences_appearance_menu_shorten_event_title_stepper".loco(
-                                menuEventTitleLength),
-                            value: $menuEventTitleLength,
-                            in: 20 ... 100,
-                            step: 5
-                        )
-                        .disabled(!shortenEventTitle)
-                    }
-                }
-
-                SettingsRow("preferences_appearance_menu_time_format_title".loco()) {
-                    Picker("", selection: $timeFormat) {
-                        Text("preferences_appearance_menu_time_format_12_hour_value".loco())
-                            .tag(TimeFormat.am_pm)
-                        Text("preferences_appearance_menu_time_format_24_hour_value".loco())
-                            .tag(TimeFormat.military)
-                    }
-                    .labelsHidden()
-                    .frame(width: 220)
+                    Toggle("", isOn: $shortenEventTitle).labelsHidden()
                 }
 
                 SettingsRow("preferences_appearance_menu_show_event_end_time_value".loco()) {
-                    Toggle("", isOn: $showEventEndTime)
-                        .labelsHidden()
+                    Toggle("", isOn: $showEventEndTime).labelsHidden()
                 }
-                SettingsRow("preferences_appearance_menu_show_event_icon_value".loco()) {
-                    Toggle("", isOn: $showMeetingServiceIcon)
-                        .labelsHidden()
+
+                SettingsRow("preferences_appearance_menu_show_meeting_service_icon".loco()) {
+                    Toggle("", isOn: $showMeetingServiceIcon).labelsHidden()
                 }
-                SettingsRow("preferences_appearance_menu_show_event_details_value".loco()) {
-                    Toggle("", isOn: $showEventDetails)
-                        .labelsHidden()
+
+                SettingsRow("preferences_appearance_menu_show_event_details".loco()) {
+                    Toggle("", isOn: $showEventDetails).labelsHidden()
                 }
             }
-            .padding(10)
         }
     }
 }
