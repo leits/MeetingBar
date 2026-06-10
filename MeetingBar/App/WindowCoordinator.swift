@@ -60,6 +60,20 @@ final class OnboardingWindow: NSWindow {
     }
 }
 
+private enum WindowStylePolicy {
+    @MainActor
+    static func applyRoundedCorners(to window: NSWindow, radius: CGFloat = 12) {
+        window.isOpaque = false
+        window.backgroundColor = .white
+
+        if let contentView = window.contentView {
+            contentView.wantsLayer = true
+            contentView.layer?.cornerRadius = radius
+            contentView.layer?.masksToBounds = true
+        }
+    }
+}
+
 /// Owns AppKit window lifecycle for app-level windows.
 ///
 /// Behavior stays outside this type: callers provide closures for close-time
@@ -93,6 +107,7 @@ final class WindowCoordinator {
 
         onboardingWindow.title = WindowTitles.onboarding
         onboardingWindow.contentView = NSHostingView(rootView: contentView)
+        WindowStylePolicy.applyRoundedCorners(to: onboardingWindow)
         let controller = NSWindowController(window: onboardingWindow)
         controller.showWindow(self)
 
@@ -112,6 +127,7 @@ final class WindowCoordinator {
         changelogWindow.title = WindowTitles.changelog
         changelogWindow.level = .floating
         changelogWindow.contentView = NSHostingView(rootView: contentView)
+        WindowStylePolicy.applyRoundedCorners(to: changelogWindow)
         changelogWindow.makeKeyAndOrderFront(nil)
         NSApplication.shared.activate(ignoringOtherApps: true)
 
@@ -184,6 +200,7 @@ final class WindowCoordinator {
 
         window.title = WindowTitles.preferences
         window.contentView = NSHostingView(rootView: contentView)
+        WindowStylePolicy.applyRoundedCorners(to: window)
         window.level = .floating
         window.makeKeyAndOrderFront(nil)
         NSApplication.shared.activate(ignoringOtherApps: true)
