@@ -43,6 +43,23 @@ final class FullscreenNotificationWindow: NSWindow {
     }
 }
 
+final class OnboardingWindow: NSWindow {
+    override var canBecomeKey: Bool { true }
+    override var canBecomeMain: Bool { true }
+
+    override func keyDown(with event: NSEvent) {
+        if event.keyCode == 53 { // Escape
+            close()
+            return
+        }
+        super.keyDown(with: event)
+    }
+
+    override func cancelOperation(_ sender: Any?) {
+        close()
+    }
+}
+
 /// Owns AppKit window lifecycle for app-level windows.
 ///
 /// Behavior stays outside this type: callers provide closures for close-time
@@ -67,7 +84,7 @@ final class WindowCoordinator {
         handler.appModel = appModel
         onboardingHandler = handler
         let contentView = OnboardingView().environmentObject(handler)
-        let onboardingWindow = NSWindow(
+        let onboardingWindow = OnboardingWindow(
             contentRect: NSRect(x: 0, y: 0, width: 760, height: 520),
             styleMask: [],
             backing: .buffered,

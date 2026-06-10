@@ -65,26 +65,45 @@ struct OnboardingView: View {
     @StateObject private var router = OnboardingRouter()
 
     var body: some View {
-        VStack(alignment: .leading) {
-            OnboardingProgress(step: router.currentStep)
-            Divider()
-            switch router.currentStep {
-            case .welcome:
-                WelcomeScreen(router: router)
-            case .calendarSource:
-                AccessScreen(router: router)
-            case .authorization:
-                AuthorizationScreen(router: router)
-            case .calendarSelection:
-                CalendarsScreen(router: router)
-            case .meetingOpening:
-                MeetingOpeningScreen(router: router)
-            case .success:
-                OnboardingSuccessScreen()
+        VStack(spacing: 0) {
+            HStack {
+                Text("MeetingBar Setup")
+                    .font(.headline)
+                    .foregroundStyle(.secondary)
+                Spacer()
+                Button(action: { NSApplication.shared.keyWindow?.close() }) {
+                    Image(systemName: "xmark")
+                        .foregroundStyle(.secondary)
+                        .font(.title3)
+                }
+                .buttonStyle(.plain)
+                .help("Close")
             }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(Color(nsColor: .controlBackgroundColor))
+
+            VStack(alignment: .leading) {
+                OnboardingProgress(step: router.currentStep)
+                Divider()
+                switch router.currentStep {
+                case .welcome:
+                    WelcomeScreen(router: router)
+                case .calendarSource:
+                    AccessScreen(router: router)
+                case .authorization:
+                    AuthorizationScreen(router: router)
+                case .calendarSelection:
+                    CalendarsScreen(router: router)
+                case .meetingOpening:
+                    MeetingOpeningScreen(router: router)
+                case .success:
+                    OnboardingSuccessScreen()
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .padding(20)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding(20)
     }
 }
 
