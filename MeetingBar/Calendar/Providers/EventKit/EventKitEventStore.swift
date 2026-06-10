@@ -161,7 +161,8 @@ private func fetchEventsOffMain(knownCalendars: [MBCalendar], dateFrom: Date, da
         )
         events.append(event)
     }
-    return events
+    let deduplicated = Dictionary(events.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first }).values
+    return Array(deduplicated)
 }
 
 func eventKitCalendarOpenURL(for identifier: String) -> URL? {
