@@ -63,15 +63,20 @@ final class OnboardingWindow: NSWindow {
 private enum WindowStylePolicy {
     @MainActor
     static func applyRoundedCorners(to window: NSWindow, radius: CGFloat = 12) {
-        window.isOpaque = false
+        window.isOpaque = true
+        window.backgroundColor = NSColor.windowBackgroundColor
 
-        if let contentView = window.contentView {
-            contentView.wantsLayer = true
-            contentView.layer?.cornerRadius = radius
-            contentView.layer?.masksToBounds = true
-            // Background color that adapts to light/dark mode
-            contentView.layer?.backgroundColor = NSColor.windowBackgroundColor.cgColor
-        }
+        guard let contentView = window.contentView else { return }
+
+        contentView.wantsLayer = true
+        contentView.layer?.cornerRadius = radius
+        contentView.layer?.masksToBounds = true
+
+        // Add subtle drop shadow for depth (like system windows)
+        contentView.layer?.shadowColor = NSColor.black.cgColor
+        contentView.layer?.shadowOpacity = 0.08
+        contentView.layer?.shadowOffset = CGSize(width: 0, height: -2)
+        contentView.layer?.shadowRadius = 8
     }
 }
 
