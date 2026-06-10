@@ -44,6 +44,7 @@ private struct ProviderChoice: View {
                 Text(source.descriptionKey.loco())
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.leading)
+                    .lineLimit(nil)
 
                 Divider()
 
