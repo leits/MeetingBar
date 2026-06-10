@@ -17,12 +17,10 @@ final class NotificationPlannerTests: XCTestCase {
         status: NotificationPlanningEvent.Status = .active,
         participation: NotificationPlanningEvent.ParticipationStatus = .active,
         allDay: Bool = false,
-        hasMeetingLink: Bool = true,
-        lastModifiedDate: Date? = Date(timeIntervalSince1970: 1_000_000)
+        hasMeetingLink: Bool = true
     ) -> NotificationPlanningEvent {
         NotificationPlanningEvent(
             id: id,
-            lastModifiedDate: lastModifiedDate,
             startDate: now.addingTimeInterval(startsIn),
             endDate: now.addingTimeInterval(startsIn + duration),
             status: status,
@@ -241,15 +239,9 @@ final class NotificationPlannerTests: XCTestCase {
         XCTAssertEqual(first.map(\.identity), second.map(\.identity))
     }
 
-    func testIdentityChangesWhenEventLastModifiedChanges() {
-        let original = event(
-            startsIn: 600,
-            lastModifiedDate: Date(timeIntervalSince1970: 1_000_000)
-        )
-        let rescheduled = event(
-            startsIn: 600,
-            lastModifiedDate: Date(timeIntervalSince1970: 1_000_060)
-        )
+    func testIdentityChangesWhenEventStartDateChanges() {
+        let original = event(startsIn: 600)
+        let rescheduled = event(startsIn: 900)
 
         let plansBefore = NotificationPlanner.plan(
             events: [original], settings: allEnabled, now: now
@@ -260,17 +252,31 @@ final class NotificationPlannerTests: XCTestCase {
         XCTAssertNotEqual(plansBefore.first?.identity, plansAfter.first?.identity)
     }
 
+    func testIdentityIsStableWhenOnlyLastModifiedChanges() {
+        let original = event(startsIn: 600)
+        let sameTimeNewModified = NotificationPlanningEvent(
+            id: original.id,
+            startDate: original.startDate,
+            endDate: original.endDate,
+            status: original.status,
+            participationStatus: original.participationStatus,
+            isAllDay: original.isAllDay,
+            hasMeetingLink: original.hasMeetingLink
+        )
+
+        let plansBefore = NotificationPlanner.plan(
+            events: [original], settings: allEnabled, now: now
+        )
+        let plansAfter = NotificationPlanner.plan(
+            events: [sameTimeNewModified], settings: allEnabled, now: now
+        )
+        XCTAssertEqual(plansBefore.map(\.identity), plansAfter.map(\.identity))
+    }
+
     func testIdentityIncludesKindAndOffset() {
         let evt = event(startsIn: 600)
         let plans = NotificationPlanner.plan(events: [evt], settings: allEnabled, now: now)
         let identities = plans.map(\.identity)
         XCTAssertEqual(Set(identities).count, identities.count)
-    }
-
-    func testIdentityUsesZeroWhenLastModifiedDateIsMissing() {
-        let evt = event(startsIn: 600, lastModifiedDate: nil)
-        let plans = NotificationPlanner.plan(events: [evt], settings: allEnabled, now: now)
-
-        XCTAssertTrue(plans.allSatisfy { $0.identity.contains("evt|0|") })
     }
 }

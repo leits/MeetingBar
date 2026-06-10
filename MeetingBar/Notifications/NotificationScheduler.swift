@@ -186,7 +186,6 @@ extension NotificationPlanningEvent {
     init(event: MBEvent) {
         self.init(
             id: event.id,
-            lastModifiedDate: event.lastModifiedDate,
             startDate: event.startDate,
             endDate: event.endDate,
             status: event.status == .canceled ? .canceled : .active,

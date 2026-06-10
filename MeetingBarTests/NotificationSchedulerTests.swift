@@ -19,8 +19,7 @@ final class NotificationSchedulerTests: BaseTestCase {
             id: id,
             start: now.addingTimeInterval(startsIn),
             end: now.addingTimeInterval(startsIn + duration),
-            withLink: true,
-            lastModifiedDate: Date(timeIntervalSinceReferenceDate: 700_000_000)
+            withLink: true
         )
     }
 
@@ -30,7 +29,7 @@ final class NotificationSchedulerTests: BaseTestCase {
         startsIn: TimeInterval,
         duration: TimeInterval = 1800,
         withLink: Bool = true,
-        lastModifiedDate: Date? = Date(timeIntervalSinceReferenceDate: 700_000_000)
+        lastModifiedDate: Date? = nil
     ) -> MBEvent {
         makeFakeEvent(
             id: id,
@@ -243,23 +242,50 @@ final class NotificationSchedulerTests: BaseTestCase {
         await scheduler.reconcile(events: [original], settings: allEnabled, now: now)
         let identifiersAfterFirst = Set(sink.currentPendingIdentifiers())
 
-        // Reschedule: same id, different lastModifiedDate.
+        // Reschedule: same id, different start time.
         let rescheduled = makeFakeEvent(
             id: "A",
-            start: original.startDate,
-            end: original.endDate,
-            withLink: true,
-            lastModifiedDate: Date(timeIntervalSinceReferenceDate: 750_000_000)
+            start: original.startDate.addingTimeInterval(300),
+            end: original.endDate.addingTimeInterval(300),
+            withLink: true
         )
         await scheduler.reconcile(events: [rescheduled], settings: allEnabled, now: now)
         let identifiersAfterReschedule = Set(sink.currentPendingIdentifiers())
 
         XCTAssertNotEqual(
             identifiersAfterFirst, identifiersAfterReschedule,
-            "lastModifiedDate change must produce new identities and remove old ones")
+            "start date change must produce new identities and remove old ones")
         XCTAssertFalse(
             sink.removedBatches.flatMap { $0 }.isEmpty,
             "old identifiers must be removed, not left dangling")
+    }
+
+    func testReconcileIsIdempotentWhenOnlyLastModifiedChanges() async {
+        let sink = FakeNotificationRequestSink()
+        let scheduler = NotificationScheduler(sink: sink)
+
+        let original = event(id: "A", startsIn: 600)
+        await scheduler.reconcile(events: [original], settings: allEnabled, now: now)
+        let identifiersAfterFirst = Set(sink.currentPendingIdentifiers())
+
+        // lastModifiedDate changes (e.g., Google Calendar sync) but event time is the same.
+        let sameTimeDifferentModified = makeFakeEvent(
+            id: "A",
+            start: original.startDate,
+            end: original.endDate,
+            withLink: true,
+            lastModifiedDate: Date(timeIntervalSinceReferenceDate: 750_000_000)
+        )
+        await scheduler.reconcile(
+            events: [sameTimeDifferentModified], settings: allEnabled, now: now)
+        let identifiersAfterSync = Set(sink.currentPendingIdentifiers())
+
+        XCTAssertEqual(
+            identifiersAfterFirst, identifiersAfterSync,
+            "lastModifiedDate-only change must not replace pending notifications")
+        XCTAssertEqual(
+            sink.addedIdentifiers.count, identifiersAfterFirst.count,
+            "second reconcile must not re-add anything when event time is unchanged")
     }
 
     func testChangingJoinNotificationTimeReplacesPendingStartRequest() async {

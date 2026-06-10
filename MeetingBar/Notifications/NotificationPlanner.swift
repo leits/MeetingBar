@@ -39,7 +39,6 @@ struct NotificationPlanningEvent: Equatable, Sendable {
     }
 
     let id: String
-    let lastModifiedDate: Date?
     let startDate: Date
     let endDate: Date
     let status: Status
@@ -177,19 +176,16 @@ enum NotificationPlanner {
                 eventID: event.id,
                 kind: kind,
                 fireDate: fireDate,
-                identity: identity(
-                    eventID: event.id, lastModified: event.lastModifiedDate, kind: kind,
-                    offset: action.offset)
+                identity: identity(eventID: event.id, anchor: anchor, kind: kind, offset: action.offset)
             ))
     }
 
     private static func identity(
         eventID: String,
-        lastModified: Date?,
+        anchor: Date,
         kind: NotificationKind,
         offset: TimeInterval
     ) -> String {
-        let modifiedKey = lastModified.map { String(Int($0.timeIntervalSince1970)) } ?? "0"
-        return "\(eventID)|\(modifiedKey)|\(kind.rawValue)|\(Int(offset))"
+        "\(eventID)|\(Int(anchor.timeIntervalSince1970))|\(kind.rawValue)|\(Int(offset))"
     }
 }
