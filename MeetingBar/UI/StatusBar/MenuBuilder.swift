@@ -61,30 +61,6 @@ struct MenuBuilder {
     private func buildMeetingControlSection(event: MBEvent) -> [NSMenuItem] {
         var items: [NSMenuItem] = []
         items.append(makeMeetingSummaryItem(for: event))
-
-        if event.meetingLink != nil {
-            let joinTitle = event.startDate < now
-                ? "status_bar_control_join_current".loco()
-                : "status_bar_control_join_next".loco()
-            let joinItem = NSMenuItem(
-                title: joinTitle,
-                action: #selector(StatusBarItemController.joinEvent),
-                keyEquivalent: ""
-            )
-            joinItem.target = target
-            joinItem.representedObject = event
-            joinItem.image = NSImage(systemSymbolName: "video.fill", accessibilityDescription: nil)
-            items.append(joinItem)
-        } else {
-            let noLinkItem = NSMenuItem(
-                title: "status_bar_control_no_meeting_link".loco(),
-                action: nil,
-                keyEquivalent: ""
-            )
-            noLinkItem.isEnabled = false
-            items.append(noLinkItem)
-        }
-
         items.append(makeMeetingActionsItem(for: event))
         items.append(contentsOf: buildProviderWarningItems())
         return items
@@ -249,10 +225,26 @@ struct MenuBuilder {
     }
 
     private func makeMeetingSummaryItem(for event: MBEvent) -> NSMenuItem {
+        let item = NSMenuItem()
+        item.identifier = Self.meetingSummaryItemIdentifier
+        item.representedObject = event
+
+        let onJoin: (() -> Void)?
+        if event.meetingLink != nil, let controller = target as? StatusBarItemController {
+            onJoin = { [weak item, weak controller] in
+                guard let item, let controller else { return }
+                item.menu?.cancelTracking()
+                controller.joinEvent(sender: item)
+            }
+        } else {
+            onJoin = nil
+        }
+
         let presentation = meetingSummaryPresentation(for: event)
         let summary = MeetingSummaryView(
             presentation: presentation,
-            providerIcon: getIconForMeetingService(presentation.meetingService)
+            providerIcon: getIconForMeetingService(presentation.meetingService),
+            onJoin: onJoin
         )
         let hosting = NSHostingView(rootView: summary)
         hosting.frame = NSRect(
@@ -261,10 +253,7 @@ struct MenuBuilder {
             width: MeetingSummaryView.preferredWidth,
             height: MeetingSummaryView.preferredHeight
         )
-
-        let item = NSMenuItem()
-        item.identifier = Self.meetingSummaryItemIdentifier
-        item.representedObject = event
+        hosting.autoresizingMask = [.width]
         item.view = hosting
         return item
     }

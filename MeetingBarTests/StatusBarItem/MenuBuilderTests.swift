@@ -257,24 +257,19 @@ final class MenuBuilderTests: BaseTestCase {
         let items = MenuBuilder(target: Dummy(), state: state, now: now)
             .buildMeetingControlSection()
 
-        let joinItem = try XCTUnwrap(items.first {
-            $0.action == #selector(StatusBarItemController.joinEvent)
-        })
         let actions = try XCTUnwrap(items.first {
             $0.title == "status_bar_control_actions".loco()
         }?.submenu?.items)
 
-        XCTAssertEqual(joinItem.title, "status_bar_control_join_next".loco())
-        XCTAssertEqual((joinItem.representedObject as? MBEvent)?.id, event.id)
-        XCTAssertEqual(
-            items.first?.identifier,
-            MenuBuilder.meetingSummaryItemIdentifier
-        )
-        XCTAssertEqual(
-            (items.first?.representedObject as? MBEvent)?.id,
-            event.id
-        )
+        // Summary card is the primary (first) item and carries the event
+        XCTAssertEqual(items.first?.identifier, MenuBuilder.meetingSummaryItemIdentifier)
+        XCTAssertEqual((items.first?.representedObject as? MBEvent)?.id, event.id)
         XCTAssertNotNil(items.first?.view)
+
+        // No separate join button — join is triggered by clicking the summary card
+        XCTAssertNil(items.first { $0.action == #selector(StatusBarItemController.joinEvent) })
+
+        // Actions submenu still contains link-related and event actions
         XCTAssertNotNil(actions.first {
             $0.action == #selector(StatusBarItemController.copyEventMeetingLink)
         })
@@ -312,19 +307,15 @@ final class MenuBuilderTests: BaseTestCase {
 
         let items = MenuBuilder(target: controller, state: state, now: now)
             .buildMeetingControlSection()
-        let summaryEvent = try XCTUnwrap(
-            items.first {
-                $0.identifier == MenuBuilder.meetingSummaryItemIdentifier
-            }?.representedObject as? MBEvent
-        )
-        let joinItem = try XCTUnwrap(items.first {
-            $0.action == #selector(StatusBarItemController.joinEvent)
+        let summaryItem = try XCTUnwrap(items.first {
+            $0.identifier == MenuBuilder.meetingSummaryItemIdentifier
         })
 
-        controller.joinEvent(sender: joinItem)
+        // Simulate the tap: summary item carries the event, joinEvent reads representedObject
+        controller.joinEvent(sender: summaryItem)
 
-        XCTAssertEqual(summaryEvent.id, event.id)
-        XCTAssertEqual(joinedEventIDs, [summaryEvent.id])
+        XCTAssertEqual((summaryItem.representedObject as? MBEvent)?.id, event.id)
+        XCTAssertEqual(joinedEventIDs, [event.id])
     }
 
     func testMeetingSummaryDeduplicatesAccountCalendarAndOrganizerValues() {
@@ -404,8 +395,9 @@ final class MenuBuilderTests: BaseTestCase {
         XCTAssertTrue(items.contains {
             $0.action == #selector(StatusBarItemController.reconnectProviderAction)
         })
-        XCTAssertTrue(items.contains {
-            $0.action == #selector(StatusBarItemController.joinEvent)
+        // Summary card (not a separate join button) shows the cached event
+        XCTAssertNotNil(items.first {
+            $0.identifier == MenuBuilder.meetingSummaryItemIdentifier
         })
     }
 
@@ -428,12 +420,12 @@ final class MenuBuilderTests: BaseTestCase {
             $0.title == "status_bar_control_actions".loco()
         }?.submenu?.items)
 
-        XCTAssertNil(items.first {
-            $0.action == #selector(StatusBarItemController.joinEvent)
-        })
-        XCTAssertTrue(items.contains {
-            $0.title == "status_bar_control_no_meeting_link".loco()
-        })
+        // Summary card is shown but carries no join action
+        XCTAssertEqual(items.first?.identifier, MenuBuilder.meetingSummaryItemIdentifier)
+        XCTAssertNil(items.first { $0.action == #selector(StatusBarItemController.joinEvent) })
+        XCTAssertFalse(items.contains { $0.title == "status_bar_control_no_meeting_link".loco() })
+
+        // Actions submenu omits link-specific items when there is no link
         XCTAssertNil(actions.first {
             $0.action == #selector(StatusBarItemController.copyEventMeetingLink)
         })

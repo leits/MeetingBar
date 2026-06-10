@@ -46,8 +46,7 @@ final class PreferencesPresentationTests: XCTestCase {
                 .meetingOpening,
                 .menuBar,
                 .notifications,
-                .advanced,
-                .status
+                .advanced
             ]
         )
         XCTAssertEqual(
@@ -58,8 +57,7 @@ final class PreferencesPresentationTests: XCTestCase {
                 "preferences_tab_meeting_opening",
                 "preferences_tab_menu_bar",
                 "preferences_tab_notifications",
-                "preferences_tab_advanced",
-                "preferences_tab_status"
+                "preferences_tab_advanced"
             ]
         )
         XCTAssertEqual(
@@ -70,8 +68,7 @@ final class PreferencesPresentationTests: XCTestCase {
                 "arrow.up.right.square",
                 "menubar.rectangle",
                 "bell",
-                "slider.horizontal.3",
-                "waveform.path.ecg"
+                "slider.horizontal.3"
             ]
         )
     }
@@ -98,7 +95,7 @@ final class PreferencesPresentationTests: XCTestCase {
             [
                 [.general, .calendars, .meetingOpening],
                 [.menuBar, .notifications],
-                [.advanced, .status]
+                [.advanced]
             ]
         )
     }

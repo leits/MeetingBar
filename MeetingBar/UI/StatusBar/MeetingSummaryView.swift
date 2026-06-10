@@ -20,6 +20,7 @@ struct MeetingSummaryPresentation: Equatable {
 struct MeetingSummaryView: View {
     let presentation: MeetingSummaryPresentation
     let providerIcon: NSImage
+    var onJoin: (() -> Void)? = nil
 
     static let preferredWidth: CGFloat = 380
     static let preferredHeight: CGFloat = 66
@@ -55,7 +56,12 @@ struct MeetingSummaryView: View {
             alignment: .leading
         )
         .contentShape(Rectangle())
-        .allowsHitTesting(false)
+        .onHover { hovering in
+            guard onJoin != nil else { return }
+            if hovering { NSCursor.pointingHand.push() }
+            else { NSCursor.pop() }
+        }
+        .onTapGesture { onJoin?() }
     }
 }
 
