@@ -43,15 +43,20 @@ struct PreferencesView: View {
 
             Divider()
 
-            GeometryReader { geometry in
-                ScrollView {
-                    tabContent(selectedTab)
-                        .frame(
-                            maxWidth: .infinity,
-                            minHeight: max(0, geometry.size.height - 40),
-                            alignment: .topLeading
-                        )
-                        .padding(24)
+            if selectedTab.isSelfScrolling {
+                tabContent(selectedTab)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                GeometryReader { geometry in
+                    ScrollView {
+                        tabContent(selectedTab)
+                            .frame(
+                                maxWidth: .infinity,
+                                minHeight: max(0, geometry.size.height - 40),
+                                alignment: .topLeading
+                            )
+                            .padding(24)
+                    }
                 }
             }
         }

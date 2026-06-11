@@ -92,6 +92,12 @@ enum PreferencesTab: CaseIterable, Hashable {
             "slider.horizontal.3"
         }
     }
+
+    /// Tabs rendered as a grouped `Form` manage their own scrolling, so the
+    /// preferences window must not wrap them in an outer `ScrollView`.
+    var isSelfScrolling: Bool {
+        self == .menuBar
+    }
 }
 
 enum PreferencesSidebarSection: CaseIterable {
