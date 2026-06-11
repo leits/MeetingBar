@@ -33,6 +33,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private var cancellables = Set<AnyCancellable>()
 
     func applicationDidFinishLaunching(_: Notification) {
+        // When launched as a test host, skip the entire launch flow so tests
+        // don't trigger onboarding, status bar setup, or calendar sync.
+        guard !AppMessageCenter.shouldSuppressSystemUI() else { return }
+
         patronageService.start()
 
         // Migrate legacy per-provider browser keys → providerBrowsers map
