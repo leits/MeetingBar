@@ -11,9 +11,17 @@ struct MeetingSummaryPresentation: Equatable {
     let eventTitle: String
     let metadata: [String]
     let meetingService: MeetingServices?
+    /// Relative time until the meeting starts (e.g. "in 25m"); nil for
+    /// running meetings, where the section title already says enough.
+    var countdown: String?
 
     var metadataText: String {
         metadata.joined(separator: " • ")
+    }
+
+    var sectionTitleText: String {
+        guard let countdown, !countdown.isEmpty else { return sectionTitle }
+        return "\(sectionTitle) • \(countdown)"
     }
 }
 
@@ -28,27 +36,40 @@ struct MeetingSummaryView: View {
     static let preferredHeight: CGFloat = 66
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 3) {
-            Text(presentation.sectionTitle)
-                .font(.caption)
-                .foregroundStyle(.secondary)
+        HStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 3) {
+                Text(presentation.sectionTitleText)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
 
-            HStack(spacing: 7) {
-                Image(nsImage: providerIcon)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 16, height: 16)
+                HStack(spacing: 7) {
+                    Image(nsImage: providerIcon)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 16, height: 16)
 
-                Text(presentation.eventTitle)
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(.primary)
+                    Text(presentation.eventTitle)
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(.primary)
+                        .lineLimit(1)
+                }
+
+                Text(presentation.metadataText)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
                     .lineLimit(1)
             }
 
-            Text(presentation.metadataText)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .lineLimit(1)
+            if onJoin != nil {
+                Spacer(minLength: 8)
+                Text("notifications_meetingbar_join_event_action".loco())
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 5)
+                    .background(Capsule().fill(Color.accentColor))
+                    .opacity(isHovered ? 1.0 : 0.9)
+            }
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 6)
@@ -78,8 +99,10 @@ struct MeetingSummaryView: View {
             sectionTitle: "Next meeting",
             eventTitle: "Weekly product sync",
             metadata: ["10:00 – 10:30", "Zoom", "Work"],
-            meetingService: .zoom
+            meetingService: .zoom,
+            countdown: "in 25m"
         ),
-        providerIcon: getIconForMeetingService(.zoom)
+        providerIcon: getIconForMeetingService(.zoom),
+        onJoin: {}
     )
 }

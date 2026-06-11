@@ -87,6 +87,18 @@ struct MenuBuilder {
             event.organizer?.email
         ])
 
+        let countdown: String?
+        if isCurrent || event.isAllDay {
+            countdown = nil
+        } else {
+            let timeLeft = StatusBarTitlePolicy.formattedTimeLeft(
+                from: now,
+                to: event.startDate,
+                calendar: Calendar.current
+            )
+            countdown = timeLeft.isEmpty ? nil : "status_bar_event_status_in".loco(timeLeft)
+        }
+
         return MeetingSummaryPresentation(
             sectionTitle: isCurrent
                 ? "status_bar_control_current_meeting".loco()
@@ -98,7 +110,8 @@ struct MenuBuilder {
                 account,
                 event.calendar.title
             ]),
-            meetingService: event.meetingLink?.service
+            meetingService: event.meetingLink?.service,
+            countdown: countdown
         )
     }
 
@@ -136,6 +149,14 @@ struct MenuBuilder {
     private func makeMeetingActionsItem(for event: MBEvent) -> NSMenuItem {
         let title = "status_bar_control_actions".loco()
         let item = NSMenuItem(title: title, action: nil, keyEquivalent: "")
+        // Visually secondary so it doesn't compete with the summary card above.
+        item.attributedTitle = NSAttributedString(
+            string: title,
+            attributes: [
+                .font: NSFont.systemFont(ofSize: MenuStyleConstants.defaultFontSize - 1),
+                .foregroundColor: NSColor.secondaryLabelColor
+            ]
+        )
         let menu = NSMenu(title: title)
         addEventActions(to: menu, event: event)
         item.submenu = menu
@@ -201,7 +222,8 @@ struct MenuBuilder {
                 start: max($0.startDate, today),
                 end: min($0.endDate, tomorrow),
                 color: Color($0.calendar.color),
-                isHighlighted: $0.id == highlightedEventID
+                isHighlighted: $0.id == highlightedEventID,
+                title: state.statusBar.hideMeetingTitle ? nil : $0.title
             )
         }
         let timeline = DayRelativeTimelineView(
@@ -297,19 +319,23 @@ struct MenuBuilder {
         dateFormatter.locale = I18N.instance.locale
 
         let dateString = dateFormatter.string(from: date)
-        let dateTitle = "\(title) (\(dateString)):"
-        let titleItem = NSMenuItem(
-            title: dateTitle,
-            action: nil,
-            keyEquivalent: ""
-        )
-        titleItem.attributedTitle = NSAttributedString(
-            string: dateTitle,
-            attributes: [
-                NSAttributedString.Key.font: NSFont.boldSystemFont(
-                    ofSize: MenuStyleConstants.defaultFontSize)
-            ])
-        titleItem.isEnabled = false
+        let dateTitle = "\(title) (\(dateString))"
+        let titleItem: NSMenuItem
+        if #available(macOS 14.0, *) {
+            titleItem = NSMenuItem.sectionHeader(title: dateTitle)
+        } else {
+            titleItem = NSMenuItem(title: dateTitle, action: nil, keyEquivalent: "")
+            titleItem.attributedTitle = NSAttributedString(
+                string: dateTitle,
+                attributes: [
+                    .font: NSFont.systemFont(
+                        ofSize: MenuStyleConstants.defaultFontSize - 2,
+                        weight: .semibold
+                    ),
+                    .foregroundColor: NSColor.secondaryLabelColor
+                ])
+            titleItem.isEnabled = false
+        }
 
         items.append(titleItem)
 
@@ -572,12 +598,12 @@ struct MenuBuilder {
 
         let menuTitle = eventMenuTitle(for: event)
         let time = eventTimePresentation(for: event)
-        let itemTitle = eventItemTitle(
+        let itemTitle = eventItemAttributedTitle(
             eventTitle: menuTitle,
-            startTime: time.start,
-            endTime: time.end
+            time: time,
+            isAllDay: event.isAllDay
         )
-        let eventItem = makeBaseEventItem(event: event, title: itemTitle)
+        let eventItem = makeBaseEventItem(event: event, title: itemTitle.plain)
 
         applyEventItemAppearance(eventItem, event: event, title: itemTitle)
         eventItem.representedObject = event
@@ -595,6 +621,16 @@ struct MenuBuilder {
         let formatter: DateFormatter
         let start: String
         let end: String
+    }
+
+    /// Attributed menu row title: a fixed-width "start–end" time column
+    /// followed by the event title. Keeping the title range around lets the
+    /// appearance helpers style the title without touching the time column.
+    private struct EventItemTitle {
+        let attributed: NSMutableAttributedString
+        let titleRange: NSRange
+        var plain: String { attributed.string }
+        var fullRange: NSRange { NSRange(location: 0, length: attributed.length) }
     }
 
     private struct EventItemStyle {
@@ -637,7 +673,7 @@ struct MenuBuilder {
 
         switch state.timeFormat {
         case .am_pm:
-            formatter.dateFormat = "h:mm a  "
+            formatter.dateFormat = "h:mm a"
         case .military:
             formatter.dateFormat = "HH:mm"
         }
@@ -650,23 +686,78 @@ struct MenuBuilder {
             )
         }
 
-        let end = state.timeFormat == .am_pm ? "\t \t \t" : "\t"
         return EventTimePresentation(
             formatter: formatter,
             start: "status_bar_event_start_time_all_day".loco(),
-            end: end
+            end: ""
         )
     }
 
-    private func eventItemTitle(
+    private func eventItemAttributedTitle(
         eventTitle: String,
-        startTime: String,
-        endTime: String
-    ) -> String {
-        if state.statusBar.showEventEndTime {
-            return "\(startTime) \t \(endTime) \t \(eventTitle)"
+        time: EventTimePresentation,
+        isAllDay: Bool
+    ) -> EventItemTitle {
+        let timeColumn: String
+        if isAllDay {
+            timeColumn = time.start
+        } else if state.statusBar.showEventEndTime {
+            timeColumn = "\(time.start)–\(time.end)"
+        } else {
+            timeColumn = time.start
         }
-        return "\(startTime) \t \(eventTitle)"
+
+        let timeFont = NSFont.monospacedDigitSystemFont(
+            ofSize: MenuStyleConstants.defaultFontSize,
+            weight: .regular
+        )
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.tabStops = [
+            NSTextTab(textAlignment: .left, location: timeColumnTabStopLocation(font: timeFont))
+        ]
+        paragraphStyle.lineBreakMode = .byTruncatingTail
+
+        let attributed = NSMutableAttributedString(
+            string: "\(timeColumn)\t\(eventTitle)",
+            attributes: [.paragraphStyle: paragraphStyle]
+        )
+        let timeRange = NSRange(location: 0, length: (timeColumn as NSString).length)
+        attributed.addAttribute(.font, value: timeFont, range: timeRange)
+        if !isAllDay, state.statusBar.showEventEndTime {
+            // De-emphasize the dash and end time so the start time leads the row.
+            let startLength = (time.start as NSString).length
+            attributed.addAttribute(
+                .foregroundColor,
+                value: NSColor.secondaryLabelColor,
+                range: NSRange(location: startLength, length: timeRange.length - startLength)
+            )
+        }
+
+        let titleStart = timeRange.length + 1
+        return EventItemTitle(
+            attributed: attributed,
+            titleRange: NSRange(location: titleStart, length: attributed.length - titleStart)
+        )
+    }
+
+    /// One shared tab stop for all rows so event titles align regardless of
+    /// the rendered time strings (including the localized "All day" label).
+    private func timeColumnTabStopLocation(font: NSFont) -> CGFloat {
+        let timeTemplate: String
+        switch state.timeFormat {
+        case .am_pm:
+            timeTemplate = "12:58 PM"
+        case .military:
+            timeTemplate = "88:88"
+        }
+        let templates = [
+            "status_bar_event_start_time_all_day".loco(),
+            state.statusBar.showEventEndTime ? "\(timeTemplate)–\(timeTemplate)" : timeTemplate
+        ]
+        let width = templates
+            .map { ($0 as NSString).size(withAttributes: [.font: font]).width }
+            .max() ?? 0
+        return ceil(width) + 12
     }
 
     private func makeBaseEventItem(event: MBEvent, title: String) -> NSMenuItem {
@@ -677,15 +768,43 @@ struct MenuBuilder {
         )
         item.target = target
         if state.menu.showMeetingServiceIcon {
-            item.image = getIconForMeetingService(event.meetingLink?.service)
+            if event.meetingLink != nil {
+                item.image = getIconForMeetingService(event.meetingLink?.service)
+            } else {
+                // No meeting link: keep the icon column aligned and surface
+                // the calendar color instead of an empty slot.
+                item.image = Self.calendarColorDot(for: event.calendar.color)
+            }
         }
         return item
+    }
+
+    private static var calendarDotCache: [NSColor: NSImage] = [:]
+
+    private static func calendarColorDot(for color: NSColor) -> NSImage {
+        if let cached = calendarDotCache[color] {
+            return cached
+        }
+        let image = NSImage(size: MenuStyleConstants.iconSize, flipped: false) { _ in
+            let diameter: CGFloat = 8
+            let dotRect = NSRect(
+                x: (MenuStyleConstants.iconSize.width - diameter) / 2,
+                y: (MenuStyleConstants.iconSize.height - diameter) / 2,
+                width: diameter,
+                height: diameter
+            )
+            color.setFill()
+            NSBezierPath(ovalIn: dotRect).fill()
+            return true
+        }
+        calendarDotCache[color] = image
+        return image
     }
 
     private func applyEventItemAppearance(
         _ item: NSMenuItem,
         event: MBEvent,
-        title: String
+        title: EventItemTitle
     ) {
         var style = baseEventItemStyle(for: event)
 
@@ -757,59 +876,67 @@ struct MenuBuilder {
 
     private func applyPastEventAppearance(
         _ item: NSMenuItem,
-        title: String,
+        title: EventItemTitle,
         style: inout EventItemStyle
     ) {
         item.state = .on
         item.onStateImage = nil
 
-        guard state.events.pastEventsAppearance == .show_inactive else { return }
-        style.attributes[.foregroundColor] = NSColor.disabledControlTextColor
-        style.attributes[.font] = NSFont.systemFont(ofSize: 14)
-        item.attributedTitle = NSAttributedString(string: title, attributes: style.attributes)
-        item.image = item.image?.tintedDisabled()
+        let attributed = title.attributed
+        attributed.addAttributes(style.attributes, range: title.fullRange)
+        if state.events.pastEventsAppearance == .show_inactive {
+            attributed.addAttribute(
+                .foregroundColor,
+                value: NSColor.disabledControlTextColor,
+                range: title.fullRange
+            )
+            item.image = item.image?.tintedDisabled()
+        }
+        item.attributedTitle = attributed
     }
 
     private func applyRunningEventAppearance(
         _ item: NSMenuItem,
-        title: String,
+        title: EventItemTitle,
         style: EventItemStyle
     ) {
         item.state = .mixed
         item.mixedStateImage = nil
 
-        var attributes = style.attributes
-        attributes[.font] = runningEventFont(shouldShowAsActive: style.shouldShowAsActive)
-
-        let attributedTitle = NSMutableAttributedString(
-            string: title,
-            attributes: attributes
+        let attributed = title.attributed
+        attributed.addAttributes(style.attributes, range: title.fullRange)
+        attributed.addAttribute(
+            .font,
+            value: runningEventFont(shouldShowAsActive: style.shouldShowAsActive),
+            range: title.titleRange
         )
         if style.shouldShowAsActive {
             let runningImage = NSTextAttachment()
             runningImage.image = NSImage(named: MenuStyleConstants.runningIconName)
             runningImage.image?.size = MenuStyleConstants.iconSize
-            attributedTitle.append(NSAttributedString(string: " "))
-            attributedTitle.append(NSAttributedString(attachment: runningImage))
+            attributed.append(NSAttributedString(string: " "))
+            attributed.append(NSAttributedString(attachment: runningImage))
         }
-        item.attributedTitle = attributedTitle
+        item.attributedTitle = attributed
     }
 
     private func runningEventFont(shouldShowAsActive: Bool) -> NSFont {
         if shouldShowAsActive, state.events.showTentativeEvents != .show_underlined {
-            return NSFont.boldSystemFont(ofSize: 14)
+            return NSFont.boldSystemFont(ofSize: MenuStyleConstants.defaultFontSize)
         }
-        return NSFont.systemFont(ofSize: 14)
+        return NSFont.systemFont(ofSize: MenuStyleConstants.defaultFontSize)
     }
 
     private func applyUpcomingEventAppearance(
         _ item: NSMenuItem,
-        title: String,
+        title: EventItemTitle,
         style: EventItemStyle
     ) {
         item.state = .off
         item.offStateImage = nil
-        item.attributedTitle = NSAttributedString(string: title, attributes: style.attributes)
+        let attributed = title.attributed
+        attributed.addAttributes(style.attributes, range: title.fullRange)
+        item.attributedTitle = attributed
     }
 
     private func configureEventDetails(

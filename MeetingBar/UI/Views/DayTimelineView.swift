@@ -14,19 +14,22 @@ struct DaySegment: Identifiable {
     let end: Date
     let color: Color
     let isHighlighted: Bool
+    let title: String?
 
     init(
         id: String = UUID().uuidString,
         start: Date,
         end: Date,
         color: Color,
-        isHighlighted: Bool = false
+        isHighlighted: Bool = false,
+        title: String? = nil
     ) {
         self.id = id
         self.start = start
         self.end = end
         self.color = color
         self.isHighlighted = isHighlighted
+        self.title = title
     }
 }
 
@@ -147,7 +150,7 @@ struct DayRelativeTimelineView: View {
                     ForEach(eventRows[row]) { seg in
                         let startX  = layout.xPosition(of: max(seg.start, layout.visibleRange.lowerBound), width: width)
                         let endX    = layout.xPosition(of: min(seg.end, layout.visibleRange.upperBound), width: width)
-                        let widthPx = max(endX - startX, 1)
+                        let widthPx = max(endX - startX, DayTimelineLayout.segmentHeight / 2)
 
                         Capsule()
                             .fill(seg.color.opacity(seg.isHighlighted ? 0.55 : 0.25))
@@ -163,6 +166,7 @@ struct DayRelativeTimelineView: View {
                                 y: (DayTimelineLayout.baseTrackHeight - DayTimelineLayout.segmentHeight) / 2 +
                                    CGFloat(row) * DayTimelineLayout.rowHeight
                             )
+                            .help(seg.title ?? "")
                     }
                 }
 
@@ -173,6 +177,10 @@ struct DayRelativeTimelineView: View {
                         .fill(Color.accentColor)
                         .frame(width: 2, height: contentHeight + 4)
                         .offset(x: x - 1, y: -2)
+                    Circle()
+                        .fill(Color.accentColor)
+                        .frame(width: 6, height: 6)
+                        .offset(x: x - 3, y: -5)
                 }
             }
             .frame(height: contentHeight)

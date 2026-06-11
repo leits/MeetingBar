@@ -332,7 +332,7 @@ enum StatusBarTitlePolicy {
         }
     }
 
-    private static func formattedTimeLeft(from start: Date, to end: Date, calendar: Calendar) -> String {
+    static func formattedTimeLeft(from start: Date, to end: Date, calendar: Calendar) -> String {
         let formatter = DateComponentsFormatter()
         formatter.unitsStyle = .abbreviated
         formatter.allowedUnits = [.minute, .hour, .day]

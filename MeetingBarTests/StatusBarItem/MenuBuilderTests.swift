@@ -493,7 +493,7 @@ final class MenuBuilderTests: BaseTestCase {
         // header + 2 events
         XCTAssertEqual(items.count, 3)
         XCTAssertEqual(
-            MenuBuilder.plainTitles(of: items)[0], "Today (\(dateFormatter.string(from: day))):")
+            MenuBuilder.plainTitles(of: items)[0], "Today (\(dateFormatter.string(from: day)))")
     }
 
     func testTodayEmptyStateCanBeVisuallySubduedWhenTomorrowHasEvents() throws {
@@ -731,9 +731,9 @@ final class MenuBuilderTests: BaseTestCase {
         XCTAssertEqual(
             snapshot,
             [
-                "Today (\(dateFormatter.string(from: today))):",
-                "00:30 \t 01:00 \t Event S1",
-                "02:00 \t 02:15 \t Event S2",
+                "Today (\(dateFormatter.string(from: today)))",
+                "00:30–01:00\tEvent S1",
+                "02:00–02:15\tEvent S2",
                 "status_bar_section_join_next_meeting".loco(),
                 "status_bar_section_join_create_meeting".loco(),
                 "status_bar_quick_actions".loco()
@@ -1139,12 +1139,20 @@ final class MenuBuilderEventItemTests: BaseTestCase {
         let item = buildItem(event: runEvent, now: now)
         XCTAssertEqual(item?.state, .mixed)
 
-        let font =
-            item!.attributedTitle?
-            .attribute(.font, at: 0, effectiveRange: nil) as? NSFont
-        XCTAssertTrue(
-            font?.fontDescriptor.symbolicTraits.contains(.bold) ?? false,
-            "running event title should be bold")
+        // The time column keeps a regular monospaced-digit font; bold is
+        // applied to the event-title range only.
+        let attributedTitle = item!.attributedTitle!
+        var containsBoldRun = false
+        attributedTitle.enumerateAttribute(
+            .font,
+            in: NSRange(location: 0, length: attributedTitle.length)
+        ) { value, _, _ in
+            if let font = value as? NSFont,
+               font.fontDescriptor.symbolicTraits.contains(.bold) {
+                containsBoldRun = true
+            }
+        }
+        XCTAssertTrue(containsBoldRun, "running event title should be bold")
     }
 
     func test_upcomingEventUsesOffStateWithoutRunningIcon() throws {
