@@ -180,6 +180,7 @@
 "preferences_appearance_menu_show_event_title" = "Show event:";
 "preferences_appearance_menu_show_event_end_time_value" = "end time";
 "preferences_appearance_menu_show_event_icon_value" = "icon";
+"preferences_appearance_menu_show_event_calendar_color_value" = "calendar color";
 "preferences_appearance_menu_show_event_details_value" = "details as submenu";
 
 // MARK: - Preferences Services

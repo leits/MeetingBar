@@ -98,6 +98,7 @@ final class StatusBarItemController {
             .showEventMaxTimeUntilEventEnabled, .showEventDetails,
             .shortenEventTitle, .menuEventTitleLength,
             .showEventEndTime, .showMeetingServiceIcon,
+            .showEventCalendarColor,
             .timeFormat, .bookmarks, .eventTitleFormat,
             .personalEventsAppereance, .pastEventsAppereance,
             .declinedEventsAppereance, .ongoingEventVisibility,

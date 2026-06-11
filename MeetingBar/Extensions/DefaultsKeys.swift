@@ -80,6 +80,7 @@ extension Defaults.Keys {
 
     static let showEventDetails = Key<Bool>("showEventDetails", default: false)
     static let showMeetingServiceIcon = Key<Bool>("showMeetingServiceIcon", default: true)
+    static let showEventCalendarColor = Key<Bool>("showEventCalendarColor", default: true)
 
     static let declinedEventsAppereance = Key<DeclinedEventsAppereance>(
         "declinedEventsAppereance", default: .strikethrough)

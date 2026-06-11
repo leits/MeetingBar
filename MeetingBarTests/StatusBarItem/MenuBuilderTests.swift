@@ -1170,6 +1170,35 @@ final class MenuBuilderEventItemTests: BaseTestCase {
         XCTAssertFalse(item.attributedTitle?.string.contains("\u{fffc}") ?? true)
     }
 
+    /// Calendar color enabled (default): no-link events show a drawn color
+    /// dot (unnamed image), linked events get a badged composite. Disabled:
+    /// the original named asset images are used.
+    func test_eventRowReflectsCalendarColorSetting() throws {
+        let now = Date(timeIntervalSinceReferenceDate: 800_000_000)
+        let noLinkEvent = makeFakeEvent(
+            id: "NO-LINK-COLOR",
+            start: now.addingTimeInterval(600),
+            end: now.addingTimeInterval(1200)
+        )
+        let linkedEvent = makeFakeEvent(
+            id: "LINKED-COLOR",
+            start: now.addingTimeInterval(600),
+            end: now.addingTimeInterval(1200),
+            withLink: true
+        )
+
+        let dotImage = try XCTUnwrap(buildItem(event: noLinkEvent, now: now)?.image)
+        XCTAssertNil(dotImage.name(), "color dot should be a drawn, unnamed image")
+        let badgedImage = try XCTUnwrap(buildItem(event: linkedEvent, now: now)?.image)
+        XCTAssertNil(badgedImage.name(), "badged service icon should be a drawn, unnamed image")
+
+        Defaults[.showEventCalendarColor] = false
+        let placeholder = try XCTUnwrap(buildItem(event: noLinkEvent, now: now)?.image)
+        XCTAssertEqual(placeholder.name(), "no_online_session")
+        let serviceIcon = try XCTUnwrap(buildItem(event: linkedEvent, now: now)?.image)
+        XCTAssertNotNil(serviceIcon.name(), "plain service icon should be the named asset")
+    }
+
     func test_pastEventUsesOnState() throws {
         let now = Date(timeIntervalSinceReferenceDate: 800_000_000)
         let event = makeFakeEvent(

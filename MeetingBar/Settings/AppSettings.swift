@@ -48,6 +48,7 @@ struct MenuSettings: Equatable {
     var menuEventTitleLength: Int
     var showEventDetails: Bool
     var showMeetingServiceIcon: Bool
+    var showEventCalendarColor: Bool
 }
 
 struct NotificationSettings: Equatable {
@@ -138,7 +139,8 @@ extension AppSettings {
                 shortenEventTitle: Defaults[.shortenEventTitle],
                 menuEventTitleLength: Defaults[.menuEventTitleLength],
                 showEventDetails: Defaults[.showEventDetails],
-                showMeetingServiceIcon: Defaults[.showMeetingServiceIcon]
+                showMeetingServiceIcon: Defaults[.showMeetingServiceIcon],
+                showEventCalendarColor: Defaults[.showEventCalendarColor]
             ),
             notifications: NotificationSettings(
                 joinEventNotification: Defaults[.joinEventNotification],
@@ -210,7 +212,8 @@ extension AppSettings {
                 shortenEventTitle: true,
                 menuEventTitleLength: 50,
                 showEventDetails: false,
-                showMeetingServiceIcon: true
+                showMeetingServiceIcon: true,
+                showEventCalendarColor: true
             ),
             notifications: NotificationSettings(
                 joinEventNotification: true,

@@ -292,6 +292,7 @@ struct MenuSection: View {
     @Default(.showEventEndTime) var showEventEndTime
     @Default(.showEventDetails) var showEventDetails
     @Default(.showMeetingServiceIcon) var showMeetingServiceIcon
+    @Default(.showEventCalendarColor) var showEventCalendarColor
     @Default(.showTimelineInMenu) var showTimelineInMenu
 
     var body: some View {
@@ -320,6 +321,10 @@ struct MenuSection: View {
             Toggle(
                 settingLabel("preferences_appearance_menu_show_event_icon_value"),
                 isOn: $showMeetingServiceIcon
+            )
+            Toggle(
+                settingLabel("preferences_appearance_menu_show_event_calendar_color_value"),
+                isOn: $showEventCalendarColor
             )
             Toggle(
                 settingLabel("preferences_appearance_menu_show_event_details_value"),

@@ -767,16 +767,32 @@ struct MenuBuilder {
             keyEquivalent: ""
         )
         item.target = target
-        if state.menu.showMeetingServiceIcon {
-            if event.meetingLink != nil {
-                item.image = getIconForMeetingService(event.meetingLink?.service)
-            } else {
-                // No meeting link: keep the icon column aligned and surface
-                // the calendar color instead of an empty slot.
-                item.image = Self.calendarColorDot(for: event.calendar.color)
-            }
-        }
+        item.image = eventRowIcon(for: event)
         return item
+    }
+
+    /// Icon column for an event row, combining two preferences: the meeting
+    /// service icon (where the meeting opens) and the calendar color (which
+    /// calendar the event belongs to, shown as a dot or a badge).
+    private func eventRowIcon(for event: MBEvent) -> NSImage? {
+        let showServiceIcon = state.menu.showMeetingServiceIcon
+        let showCalendarColor = state.menu.showEventCalendarColor
+        let color = event.calendar.color
+
+        guard showServiceIcon else {
+            return showCalendarColor ? Self.calendarColorDot(for: color) : nil
+        }
+        guard event.meetingLink != nil else {
+            // No meeting link: keep the icon column aligned and surface the
+            // calendar color instead of an empty placeholder.
+            return showCalendarColor
+                ? Self.calendarColorDot(for: color)
+                : getIconForMeetingService(nil)
+        }
+        let service = event.meetingLink?.service
+        return showCalendarColor
+            ? Self.badgedServiceIcon(for: service, color: color)
+            : getIconForMeetingService(service)
     }
 
     private static var calendarDotCache: [NSColor: NSImage] = [:]
@@ -798,6 +814,66 @@ struct MenuBuilder {
             return true
         }
         calendarDotCache[color] = image
+        return image
+    }
+
+    private struct BadgedIconKey: Hashable {
+        let service: MeetingServices?
+        let color: NSColor
+    }
+
+    private static var badgedIconCache: [BadgedIconKey: NSImage] = [:]
+
+    /// Service icon with a small calendar-color dot in the bottom-right
+    /// corner, separated by a punched-out gap so it reads on any icon.
+    private static func badgedServiceIcon(
+        for service: MeetingServices?,
+        color: NSColor
+    ) -> NSImage {
+        let base = getIconForMeetingService(service)
+        // Template icons are tinted by AppKit at draw time; rasterizing a
+        // badge onto them would break dark-mode rendering.
+        guard !base.isTemplate else { return base }
+
+        let key = BadgedIconKey(service: service, color: color)
+        if let cached = badgedIconCache[key] {
+            return cached
+        }
+
+        let image = NSImage(size: MenuStyleConstants.iconSize, flipped: false) { rect in
+            let baseSize = base.size
+            if baseSize.width > 0, baseSize.height > 0 {
+                let scale = min(rect.width / baseSize.width, rect.height / baseSize.height)
+                let drawSize = NSSize(
+                    width: baseSize.width * scale,
+                    height: baseSize.height * scale
+                )
+                base.draw(in: NSRect(
+                    x: rect.minX + (rect.width - drawSize.width) / 2,
+                    y: rect.minY + (rect.height - drawSize.height) / 2,
+                    width: drawSize.width,
+                    height: drawSize.height
+                ))
+            }
+
+            let diameter: CGFloat = 7
+            let badgeRect = NSRect(
+                x: rect.maxX - diameter,
+                y: rect.minY,
+                width: diameter,
+                height: diameter
+            )
+            if let context = NSGraphicsContext.current?.cgContext {
+                context.saveGState()
+                context.setBlendMode(.clear)
+                context.fillEllipse(in: badgeRect.insetBy(dx: -1.5, dy: -1.5))
+                context.restoreGState()
+            }
+            color.setFill()
+            NSBezierPath(ovalIn: badgeRect).fill()
+            return true
+        }
+        badgedIconCache[key] = image
         return image
     }
 
