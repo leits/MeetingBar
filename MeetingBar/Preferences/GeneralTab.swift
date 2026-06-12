@@ -15,48 +15,44 @@ struct GeneralTab: View {
     @ObservedObject var patronageService: PatronageService
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            GroupBox(label: Label("preferences_section_general_settings_title".loco(), systemImage: "gearshape")) {
+        PreferencesGroupedForm {
+            Section(header: Text("preferences_section_general_settings_title".loco())) {
                 LaunchAtLoginANDPreferredLanguagePicker()
-                    .padding(8)
             }
-            GroupBox(label: Label("preferences_section_shortcuts_title".loco(), systemImage: "keyboard")) {
+
+            Section(header: Text("preferences_section_shortcuts_title".loco())) {
                 ShortcutsSection()
-                    .padding(8)
             }
-            GroupBox(label: Label("preferences_section_about_title".loco(), systemImage: "person.crop.circle")) {
+
+            Section(header: Text("preferences_section_about_title".loco())) {
                 PatronageAppSection(patronageService: patronageService)
-                    .padding(8)
             }
-            Spacer()
         }
     }
 }
 
 struct ShortcutsSection: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            ShortcutRow(
-                title: "preferences_general_shortcut_open_menu".loco(),
-                recorder: KeyboardShortcuts.Recorder(for: .openMenuShortcut)
-            )
-            ShortcutRow(
-                title: "preferences_general_shortcut_join_next".loco(),
-                recorder: KeyboardShortcuts.Recorder(for: .joinEventShortcut)
-            )
-            ShortcutRow(
-                title: "preferences_general_shortcut_create_meeting".loco(),
-                recorder: KeyboardShortcuts.Recorder(for: .createMeetingShortcut)
-            )
-            ShortcutRow(
-                title: "preferences_general_shortcut_join_from_clipboard".loco(),
-                recorder: KeyboardShortcuts.Recorder(for: .openClipboardShortcut)
-            )
-            ShortcutRow(
-                title: "preferences_general_shortcut_toggle_meeting_name_visibility".loco(),
-                recorder: KeyboardShortcuts.Recorder(for: .toggleMeetingTitleVisibilityShortcut)
-            )
-        }
+        ShortcutRow(
+            title: "preferences_general_shortcut_open_menu".loco(),
+            recorder: KeyboardShortcuts.Recorder(for: .openMenuShortcut)
+        )
+        ShortcutRow(
+            title: "preferences_general_shortcut_join_next".loco(),
+            recorder: KeyboardShortcuts.Recorder(for: .joinEventShortcut)
+        )
+        ShortcutRow(
+            title: "preferences_general_shortcut_create_meeting".loco(),
+            recorder: KeyboardShortcuts.Recorder(for: .createMeetingShortcut)
+        )
+        ShortcutRow(
+            title: "preferences_general_shortcut_join_from_clipboard".loco(),
+            recorder: KeyboardShortcuts.Recorder(for: .openClipboardShortcut)
+        )
+        ShortcutRow(
+            title: "preferences_general_shortcut_toggle_meeting_name_visibility".loco(),
+            recorder: KeyboardShortcuts.Recorder(for: .toggleMeetingTitleVisibilityShortcut)
+        )
     }
 }
 
@@ -81,8 +77,8 @@ struct PatronageAppSection: View {
     @ObservedObject var patronageService: PatronageService
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            if isInstalledFromAppStore {
+        if isInstalledFromAppStore {
+            VStack(alignment: .leading, spacing: 10) {
                 HStack {
                     Text("preferences_general_patron_title".loco()).bold()
                     Spacer()
@@ -126,10 +122,10 @@ struct PatronageAppSection: View {
                 if patronageDuration > 0 {
                     Text("preferences_general_patron_thank_for_purchase".loco(patronageDuration))
                 }
-                Divider()
             }
+        }
 
-            HStack(alignment: .center, spacing: 16) {
+        HStack(alignment: .center, spacing: 16) {
                 Image("appIconForAbout")
                     .resizable()
                     .frame(width: 80, height: 80)
@@ -146,28 +142,27 @@ struct PatronageAppSection: View {
                 }
             }
 
-            HStack(spacing: 8) {
-                Button("Patreon") {
-                    Links.patreon.openInDefaultBrowser()
-                }
-                Button("Buy Me A Coffee") {
-                    Links.buymeacoffee.openInDefaultBrowser()
-                }
-                Button("GitHub") {
-                    Links.github.openInDefaultBrowser()
-                }
-                Button("preferences_general_external_contact".loco()) {
-                    Links.emailMe.openInDefaultBrowser()
-                }
-                Spacer()
-                Button("preferences_status_copy_diagnostics".loco()) {
-                    DiagnosticsClipboard.copy(
-                        snapshot: DiagnosticsSnapshot(appState: appModel.state)
-                    )
-                }
+        HStack(spacing: 8) {
+            Button("Patreon") {
+                Links.patreon.openInDefaultBrowser()
             }
-            .controlSize(.small)
+            Button("Buy Me A Coffee") {
+                Links.buymeacoffee.openInDefaultBrowser()
+            }
+            Button("GitHub") {
+                Links.github.openInDefaultBrowser()
+            }
+            Button("preferences_general_external_contact".loco()) {
+                Links.emailMe.openInDefaultBrowser()
+            }
+            Spacer()
+            Button("preferences_status_copy_diagnostics".loco()) {
+                DiagnosticsClipboard.copy(
+                    snapshot: DiagnosticsSnapshot(appState: appModel.state)
+                )
+            }
         }
+        .controlSize(.small)
     }
 }
 

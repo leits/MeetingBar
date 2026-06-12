@@ -7,32 +7,22 @@ import SwiftUI
 
 struct NotificationsTab: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            GroupBox(
-                label: Label(
-                    "preferences_notifications_alerts_title".loco(),
-                    systemImage: "bell.badge")
-            ) {
-                VStack(alignment: .leading, spacing: 10) {
-                    JoinEventNotificationPicker()
-                    FullscreenNotificationPicker()
-                    EndEventNotificationPicker()
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(10)
+        PreferencesGroupedForm {
+            Section(header: Text("preferences_notifications_alerts_title".loco())) {
+                JoinEventNotificationPicker()
             }
 
-            GroupBox(
-                label: Label(
-                    "preferences_notifications_automation_title".loco(),
-                    systemImage: "play.circle")
-            ) {
+            Section {
+                FullscreenNotificationPicker()
+            }
+
+            Section {
+                EndEventNotificationPicker()
+            }
+
+            Section(header: Text("preferences_notifications_automation_title".loco())) {
                 AutomaticEventJoinPicker()
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(10)
             }
-
-            Spacer()
         }
     }
 }
