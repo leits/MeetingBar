@@ -39,145 +39,125 @@ struct LinksTab: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            GroupBox(
-                label: Label(
-                    "preferences_meeting_opening_behavior_title".loco(),
-                    systemImage: "arrow.up.right.square")
-            ) {
-                VStack(alignment: .leading, spacing: 10) {
-                    Picker(
-                        selection: $defaultBrowser,
-                        label: Text("preferences_services_link_meeting_title".loco()).frame(
-                            width: 200, alignment: .leading)
-                    ) {
-                        ForEach(defaultBrowserOptions, id: \.self) { (browser: Browser) in
-                            Text(browser.name).tag(browser)
-                        }
-                    }
-
-                    Text("preferences_services_link_default_help".loco())
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-
-                    Divider()
-
-                    Text("preferences_services_link_overrides_title".loco())
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
-                    Text("preferences_services_link_overrides_help".loco())
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    Text("preferences_services_link_modes_help".loco())
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-
-                    ForEach(
-                        MeetingProvider.all.filter { !$0.openingModes.isEmpty }, id: \.id
-                    ) { provider in
-                        MeetingProviderOpeningPicker(provider: provider)
-                    }
-
-                    Divider()
-
-                    HStack(alignment: .firstTextBaseline, spacing: 10) {
-                        Button(
-                            "preferences_configure_browsers_button".loco(),
-                            action: clickConfigureBrowser
-                        )
-                        .sheet(isPresented: $showBrowserConfiguration) {
-                            BrowserConfigView()
-                        }
-                        Text("preferences_configure_browsers_help".loco())
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+        PreferencesGroupedForm {
+            Section(header: Text("preferences_meeting_opening_behavior_title".loco())) {
+                Picker(
+                    "preferences_services_link_meeting_title".loco(),
+                    selection: $defaultBrowser
+                ) {
+                    ForEach(defaultBrowserOptions, id: \.self) { (browser: Browser) in
+                        Text(browser.name).tag(browser)
                     }
                 }
-                .padding(8)
+
+                Text("preferences_services_link_default_help".loco())
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
 
-            GroupBox(
-                label: Label("preferences_section_create_title".loco(), systemImage: "plus.circle")
-            ) {
-                VStack(alignment: .leading, spacing: 10) {
+            Section(header: Text("preferences_services_link_overrides_title".loco())) {
+                Text("preferences_services_link_overrides_help".loco())
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Text("preferences_services_link_modes_help".loco())
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                ForEach(
+                    MeetingProvider.all.filter { !$0.openingModes.isEmpty }, id: \.id
+                ) { provider in
+                    MeetingProviderOpeningPicker(provider: provider)
+                }
+
+                HStack(alignment: .firstTextBaseline, spacing: 10) {
+                    Button(
+                        "preferences_configure_browsers_button".loco(),
+                        action: clickConfigureBrowser
+                    )
+                    .sheet(isPresented: $showBrowserConfiguration) {
+                        BrowserConfigView()
+                    }
+                    Text("preferences_configure_browsers_help".loco())
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            Section(header: Text("preferences_section_create_title".loco())) {
+                HStack {
+                    Text("preferences_services_create_meeting_title".loco())
+                    Spacer()
+                    CreateMeetingServicePicker()
+                        .fixedSize()
+                }
+
+                if createMeetingService == CreateMeetingServices.url {
                     HStack {
-                        Text("preferences_services_create_meeting_title".loco()).frame(
-                            width: 150, alignment: .leading)
-                        CreateMeetingServicePicker()
+                        Text("preferences_services_create_meeting_custom_url_value".loco())
+                        TextField(
+                            "preferences_services_create_meeting_custom_url_placeholder".loco(),
+                            text: $createMeetingServiceUrl
+                        ).textFieldStyle(RoundedBorderTextFieldStyle())
                     }
+                    Text("preferences_services_google_meet_tip".loco())
+                        .foregroundStyle(.secondary)
+                        .font(.caption)
+                }
 
-                    if createMeetingService == CreateMeetingServices.url {
-                        HStack {
-                            Text("preferences_services_create_meeting_custom_url_value".loco())
-                                .frame(width: 150, alignment: .leading)
-                            TextField(
-                                "preferences_services_create_meeting_custom_url_placeholder".loco(),
-                                text: $createMeetingServiceUrl
-                            ).textFieldStyle(RoundedBorderTextFieldStyle())
-                        }
-                        Text("preferences_services_google_meet_tip".loco())
-                            .foregroundStyle(.secondary)
-                            .font(.caption)
-                    }
-                    Picker(
-                        selection: $browserForCreateMeeting,
-                        label: Text("preferences_services_create_meeting_browser_title".loco())
-                            .frame(width: 150, alignment: .leading)
-                    ) {
-                        ForEach(createMeetingBrowserOptions, id: \.self) { (browser: Browser) in
-                            Text(browser.name).tag(browser)
-                        }
+                Picker(
+                    "preferences_services_create_meeting_browser_title".loco(),
+                    selection: $browserForCreateMeeting
+                ) {
+                    ForEach(createMeetingBrowserOptions, id: \.self) { (browser: Browser) in
+                        Text(browser.name).tag(browser)
                     }
                 }
-                .padding(8)
             }
 
-            GroupBox(label: Label("preferences_tab_bookmarks".loco(), systemImage: "bookmark")) {
-                List {
-                    if self.bookmarks.isEmpty {
-                        Text("preferences_bookmarks_no_bookmarks_placeholder".loco())
-                    }
-                    ForEach(bookmarks, id: \.self) { bookmark in
-                        HStack {
-                            Image(nsImage: NSImage(named: NSImage.listViewTemplateName)!)
-                                .foregroundColor(.gray)
-
-                            Text("\(bookmark.name) (\(bookmark.service)): \(bookmark.url)")
-                            Spacer()
-                            Button(action: {
-                                self.bookmark = bookmark
-                                self.showingAlert = true
-                            }) {
-                                Image(
-                                    nsImage: NSImage(
-                                        named: NSImage.stopProgressFreestandingTemplateName)!)
-                            }.buttonStyle(PlainButtonStyle())
-                        }.padding(3)
-                    }.onMove { source, destination in
-                        bookmarks.move(fromOffsets: source, toOffset: destination)
-                    }
-                    Button("preferences_bookmarks_add_bookmark_button".loco()) {
-                        self.showingAddBookmarkModal.toggle()
-                    }.sheet(isPresented: $showingAddBookmarkModal) {
-                        AddBookmarkModal()
-                    }
+            Section(header: Text("preferences_tab_bookmarks".loco())) {
+                if self.bookmarks.isEmpty {
+                    Text("preferences_bookmarks_no_bookmarks_placeholder".loco())
+                        .foregroundStyle(.secondary)
                 }
-                .listStyle(.sidebar)
-                .frame(minHeight: 160)
-                    .alert(isPresented: $showingAlert) {
-                        Alert(
-                            title: Text("preferences_bookmarks_delete_bookmark_title".loco()),
-                            message: Text(
-                                "preferences_bookmarks_delete_bookmark_message".loco(
-                                    self.bookmark?.name ?? "")),
-                            primaryButton: .default(Text("general_delete".loco())) {
-                                bookmarks.removeAll { $0.url == self.bookmark?.url }
-                            },
-                            secondaryButton: .cancel()
-                        )
+                ForEach(bookmarks, id: \.self) { bookmark in
+                    HStack {
+                        Image(nsImage: NSImage(named: NSImage.listViewTemplateName)!)
+                            .foregroundColor(.gray)
+
+                        Text("\(bookmark.name) (\(bookmark.service)): \(bookmark.url)")
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                        Spacer()
+                        Button(action: {
+                            self.bookmark = bookmark
+                            self.showingAlert = true
+                        }) {
+                            Image(
+                                nsImage: NSImage(
+                                    named: NSImage.stopProgressFreestandingTemplateName)!)
+                        }.buttonStyle(PlainButtonStyle())
                     }
+                }.onMove { source, destination in
+                    bookmarks.move(fromOffsets: source, toOffset: destination)
+                }
+                Button("preferences_bookmarks_add_bookmark_button".loco()) {
+                    self.showingAddBookmarkModal.toggle()
+                }.sheet(isPresented: $showingAddBookmarkModal) {
+                    AddBookmarkModal()
+                }
             }
-            Spacer()
+        }
+        .alert(isPresented: $showingAlert) {
+            Alert(
+                title: Text("preferences_bookmarks_delete_bookmark_title".loco()),
+                message: Text(
+                    "preferences_bookmarks_delete_bookmark_message".loco(
+                        self.bookmark?.name ?? "")),
+                primaryButton: .default(Text("general_delete".loco())) {
+                    bookmarks.removeAll { $0.url == self.bookmark?.url }
+                },
+                secondaryButton: .cancel()
+            )
         }
     }
 
@@ -188,7 +168,9 @@ struct LinksTab: View {
 
 struct MeetingProviderOpeningPicker: View {
     let provider: MeetingProvider
-    var labelWidth: CGFloat = 200
+    /// Fixed label width for legacy column layouts (onboarding). When nil,
+    /// the picker renders as a regular form row with a natural label.
+    var labelWidth: CGFloat?
 
     @Default(.providerBrowsers) private var providerBrowsers
     @Default(.providerOpeningModes) private var providerOpeningModes
@@ -233,31 +215,33 @@ struct MeetingProviderOpeningPicker: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 3) {
-            Picker(
-                selection: selection,
-                label: Text(
-                    "preferences_services_link_service_title".loco(provider.displayName)
+        Picker(selection: selection, label: pickerLabel) {
+            ForEach(provider.openingModes, id: \.self) { mode in
+                Text(mode.titleKey.loco()).tag(
+                    MeetingProviderOpeningSelection.mode(mode)
                 )
-                .frame(width: labelWidth, alignment: .leading)
-            ) {
-                ForEach(provider.openingModes, id: \.self) { mode in
-                    Text(mode.titleKey.loco()).tag(
-                        MeetingProviderOpeningSelection.mode(mode)
-                    )
-                }
-                ForEach(browserOptions, id: \.self) { browser in
-                    Text(browser.name).tag(MeetingProviderOpeningSelection.browser(browser))
-                }
             }
+            ForEach(browserOptions, id: \.self) { browser in
+                Text(browser.name).tag(MeetingProviderOpeningSelection.browser(browser))
+            }
+        }
 
-            if case let .mode(mode) = selectedValue,
-               let helpKey = mode.helpKey {
-                Text(helpKey.loco())
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .padding(.leading, labelWidth + 8)
-            }
+        if case let .mode(mode) = selectedValue,
+           let helpKey = mode.helpKey {
+            Text(helpKey.loco())
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .padding(.leading, labelWidth.map { $0 + 8 } ?? 16)
+        }
+    }
+
+    @ViewBuilder
+    private var pickerLabel: some View {
+        let label = Text("preferences_services_link_service_title".loco(provider.displayName))
+        if let labelWidth {
+            label.frame(width: labelWidth, alignment: .leading)
+        } else {
+            label
         }
     }
 }
