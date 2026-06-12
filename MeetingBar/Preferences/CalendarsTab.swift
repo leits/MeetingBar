@@ -15,88 +15,73 @@ struct CalendarsTab: View {
     var body: some View {
         let presentation = PreferencesCalendarPresentation.make(from: appModel.state)
 
-        VStack(alignment: .leading, spacing: 12) {
-            GroupBox(
-                label: Label(
-                    "preferences_calendar_source_title".loco(), systemImage: "server.rack")
-            ) {
-                VStack(alignment: .leading, spacing: 10) {
-                    ProviderPicker()
+        PreferencesGroupedForm {
+            Section(header: Text("preferences_calendar_source_title".loco())) {
+                ProviderPicker()
 
-                    VStack(alignment: .leading, spacing: 5) {
-                        Label(
-                            presentation.providerDataSourceKey.loco(),
-                            systemImage: "arrow.triangle.2.circlepath"
-                        )
-                        Label(
-                            presentation.providerAccountScopeKey.loco(),
-                            systemImage: "person.2"
-                        )
-                    }
-                    .foregroundStyle(.secondary)
+                VStack(alignment: .leading, spacing: 5) {
+                    Label(
+                        presentation.providerDataSourceKey.loco(),
+                        systemImage: "arrow.triangle.2.circlepath"
+                    )
+                    Label(
+                        presentation.providerAccountScopeKey.loco(),
+                        systemImage: "person.2"
+                    )
+                }
+                .foregroundStyle(.secondary)
+                .font(.caption)
+
+                HStack(spacing: 6) {
+                    Label(
+                        presentation.statusTextKey.loco(),
+                        systemImage: statusSystemImage(presentation.statusTone)
+                    )
+                    .foregroundStyle(statusColor(presentation.statusTone))
                     .font(.caption)
-
-                    HStack(spacing: 6) {
-                        Label(
-                            presentation.statusTextKey.loco(),
-                            systemImage: statusSystemImage(presentation.statusTone)
-                        )
-                        .foregroundStyle(statusColor(presentation.statusTone))
-                        .font(.caption)
-                        if let lastSuccess = appModel.state.providerHealth.lastSuccessfulRefresh {
-                            Text("·")
-                                .foregroundStyle(.tertiary)
-                                .font(.caption)
-                            Text(lastSuccess.formatted(date: .omitted, time: .shortened))
-                                .foregroundStyle(.secondary)
-                                .font(.caption)
-                        }
-                        Spacer()
-                        if presentation.canReconnect {
-                            Button("preferences_status_reconnect".loco()) {
-                                appModel.send(
-                                    .changeProvider(presentation.activeProvider, signOut: true))
-                            }
-                            .disabled(appModel.state.providerChangeInProgress)
-                        }
-                        if presentation.canOpenCalendarSettings {
-                            Button("preferences_status_open_calendar_settings".loco()) {
-                                NSWorkspace.shared.open(Links.calendarPreferences)
-                            }
-                        }
-                        Button("general_refresh".loco()) {
-                            appModel.send(.refreshCalendars)
+                    if let lastSuccess = appModel.state.providerHealth.lastSuccessfulRefresh {
+                        Text("·")
+                            .foregroundStyle(.tertiary)
+                            .font(.caption)
+                        Text(lastSuccess.formatted(date: .omitted, time: .shortened))
+                            .foregroundStyle(.secondary)
+                            .font(.caption)
+                    }
+                    Spacer()
+                    if presentation.canReconnect {
+                        Button("preferences_status_reconnect".loco()) {
+                            appModel.send(
+                                .changeProvider(presentation.activeProvider, signOut: true))
                         }
                         .disabled(appModel.state.providerChangeInProgress)
                     }
-
-                    if let error = appModel.state.providerHealth.lastErrorDescription {
-                        Text(error)
-                            .foregroundStyle(.red)
-                            .font(.caption)
-                            .textSelection(.enabled)
-                            .lineLimit(3)
+                    if presentation.canOpenCalendarSettings {
+                        Button("preferences_status_open_calendar_settings".loco()) {
+                            NSWorkspace.shared.open(Links.calendarPreferences)
+                        }
                     }
+                    Button("general_refresh".loco()) {
+                        appModel.send(.refreshCalendars)
+                    }
+                    .disabled(appModel.state.providerChangeInProgress)
                 }
-                .padding(8)
+
+                if let error = appModel.state.providerHealth.lastErrorDescription {
+                    Text(error)
+                        .foregroundStyle(.red)
+                        .font(.caption)
+                        .textSelection(.enabled)
+                        .lineLimit(3)
+                }
             }
 
-            GroupBox(
-                label: Label(
-                    "preferences_calendars_select_calendars_title".loco(),
-                    systemImage: "calendar")
-            ) {
-                List {
-                    if appModel.state.calendars.isEmpty {
-                        CalendarPreferencesEmptyState(presentation: presentation)
-                    } else {
-                        CalendarSectionsView(calendars: appModel.state.calendars)
-                    }
+            if appModel.state.calendars.isEmpty {
+                Section(header: Text("preferences_calendars_select_calendars_title".loco())) {
+                    CalendarPreferencesEmptyState(presentation: presentation)
                 }
-                .listStyle(.inset)
-                .frame(minHeight: 280)
+            } else {
+                CalendarSectionsView(calendars: appModel.state.calendars)
             }
-
         }
     }
 
@@ -166,30 +151,20 @@ struct ProviderPicker: View {
     @State private var picker = EventStoreProvider.macOSEventKit
 
     var body: some View {
-        HStack {
-            Picker("access_screen_provider_picker_label".loco(), selection: $picker) {
-                ForEach(CalendarSourcePresentation.all) { source in
-                    Text(source.titleKey.loco()).tag(source.provider)
-                }
-            }
-            .labelsHidden()
-            .onChange(of: picker) { provider in
-                guard ProviderPickerSelectionPolicy.shouldRequestChange(
-                    selectedProvider: provider,
-                    activeProvider: appModel.state.activeProvider,
-                    providerChangeInProgress: appModel.state.providerChangeInProgress
-                ) else { return }
-                appModel.send(.changeProvider(provider, signOut: false))
-            }
-            .disabled(appModel.state.providerChangeInProgress)
-
-            if appModel.state.activeProvider == .googleCalendar {
-                Button("preferences_calendars_provider_gcalendar_change_account".loco()) {
-                    appModel.send(.changeProvider(.googleCalendar, signOut: true))
-                }
-                .disabled(appModel.state.providerChangeInProgress)
+        Picker("access_screen_provider_picker_label".loco(), selection: $picker) {
+            ForEach(CalendarSourcePresentation.all) { source in
+                Text(source.titleKey.loco()).tag(source.provider)
             }
         }
+        .onChange(of: picker) { provider in
+            guard ProviderPickerSelectionPolicy.shouldRequestChange(
+                selectedProvider: provider,
+                activeProvider: appModel.state.activeProvider,
+                providerChangeInProgress: appModel.state.providerChangeInProgress
+            ) else { return }
+            appModel.send(.changeProvider(provider, signOut: false))
+        }
+        .disabled(appModel.state.providerChangeInProgress)
         .onAppear {
             picker = appModel.state.activeProvider
         }
@@ -202,6 +177,16 @@ struct ProviderPicker: View {
                 activeProvider: appModel.state.activeProvider,
                 providerChangeInProgress: inProgress
             )
+        }
+
+        if appModel.state.activeProvider == .googleCalendar {
+            HStack {
+                Spacer()
+                Button("preferences_calendars_provider_gcalendar_change_account".loco()) {
+                    appModel.send(.changeProvider(.googleCalendar, signOut: true))
+                }
+                .disabled(appModel.state.providerChangeInProgress)
+            }
         }
     }
 }
