@@ -135,7 +135,7 @@
 "preferences_appearance_events_show_events_for_title" = "Show events for";
 "preferences_appearance_events_show_events_for_today_value" = "today";
 "preferences_appearance_events_show_events_for_today_tomorrow_value" = "today and tomorrow";
-"preferences_appearance_events_non_all_day_title" = "Other events:";
+"preferences_appearance_events_non_all_day_title" = "Timed events";
 "preferences_appearance_events_value_inactive_without_meeting_link" = "show those without meeting links as inactive";
 "preferences_appearance_events_value_hide_without_meeting_link" = "hide all without meeting links";
 "preferences_appearance_events_all_day_title" = "All-day events:";
@@ -161,7 +161,7 @@
 "preferences_appearance_status_bar_title_dot_value" = "dot (•)";
 "preferences_appearance_status_bar_title_hide_value" = "hide";
 "preferences_appearance_status_bar_title_shorten_stepper" = "shorten to %d characters";
-"preferences_appearance_status_bar_time_title" = "Time";
+"preferences_appearance_status_bar_time_title" = "Show time";
 "preferences_appearance_status_bar_time_show_value" = "show";
 "preferences_appearance_status_bar_time_show_under_title_value" = "show under title";
 "preferences_appearance_status_bar_time_hide_value" = "hide";
