@@ -13,11 +13,26 @@ import KeyboardShortcuts
 
 struct GeneralTab: View {
     @ObservedObject var patronageService: PatronageService
+    @Default(.timeFormat) var timeFormat
 
     var body: some View {
         PreferencesGroupedForm {
             Section(header: Text("preferences_section_general_settings_title".loco())) {
                 LaunchAtLoginANDPreferredLanguagePicker()
+
+                // 12/24-hour format affects every surface that renders clock
+                // times (dropdown rows, timeline, event details, fullscreen
+                // notification), so it lives with the app-wide options rather
+                // than under Menu.
+                Picker(
+                    preferenceLabel("preferences_appearance_menu_time_format_title"),
+                    selection: $timeFormat
+                ) {
+                    Text("preferences_appearance_menu_time_format_12_hour_value".loco())
+                        .tag(TimeFormat.am_pm)
+                    Text("preferences_appearance_menu_time_format_24_hour_value".loco())
+                        .tag(TimeFormat.military)
+                }
             }
 
             Section(header: Text("preferences_section_shortcuts_title".loco())) {

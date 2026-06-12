@@ -9,18 +9,6 @@
 import Defaults
 import SwiftUI
 
-/// Returns a row label for the given localization key with any trailing
-/// colon removed. Legacy strings include colons ("All-day events:") that the
-/// grouped-form layout doesn't use; trimming at presentation level keeps all
-/// locales consistent without touching translation files.
-private func settingLabel(_ key: String) -> String {
-    var label = key.loco().trimmingCharacters(in: .whitespaces)
-    while let last = label.last, last == ":" || last == "：" {
-        label.removeLast()
-    }
-    return label
-}
-
 struct AppearanceTab: View {
     var body: some View {
         PreferencesGroupedForm {
@@ -46,7 +34,7 @@ struct EventsSection: View {
     var body: some View {
         Section(header: Text("preferences_appearance_events_title".loco())) {
             Picker(
-                settingLabel("preferences_appearance_events_show_events_for_title"),
+                preferenceLabel("preferences_appearance_events_show_events_for_title"),
                 selection: $showEventsForPeriod
             ) {
                 Text("preferences_appearance_events_show_events_for_today_value".loco())
@@ -58,7 +46,7 @@ struct EventsSection: View {
 
         Section {
             Picker(
-                settingLabel("preferences_appearance_events_all_day_title"),
+                preferenceLabel("preferences_appearance_events_all_day_title"),
                 selection: $allDayEvents
             ) {
                 Text("preferences_appearance_events_value_show".loco())
@@ -70,7 +58,7 @@ struct EventsSection: View {
             }
 
             Picker(
-                settingLabel("preferences_appearance_events_non_all_day_title"),
+                preferenceLabel("preferences_appearance_events_non_all_day_title"),
                 selection: $nonAllDayEvents
             ) {
                 Text("preferences_appearance_events_value_show".loco())
@@ -82,7 +70,7 @@ struct EventsSection: View {
             }
 
             Picker(
-                settingLabel("preferences_appearance_events_without_guest_title"),
+                preferenceLabel("preferences_appearance_events_without_guest_title"),
                 selection: $personalEventsAppereance
             ) {
                 Text("preferences_appearance_events_value_show".loco())
@@ -96,7 +84,7 @@ struct EventsSection: View {
 
         Section {
             Picker(
-                settingLabel("preferences_appearance_events_pending_title"),
+                preferenceLabel("preferences_appearance_events_pending_title"),
                 selection: $showPendingEvents
             ) {
                 Text("preferences_appearance_events_value_show".loco())
@@ -110,7 +98,7 @@ struct EventsSection: View {
             }
 
             Picker(
-                settingLabel("preferences_appearance_events_tentative_title"),
+                preferenceLabel("preferences_appearance_events_tentative_title"),
                 selection: $showTentativeEvents
             ) {
                 Text("preferences_appearance_events_value_show".loco())
@@ -124,7 +112,7 @@ struct EventsSection: View {
             }
 
             Picker(
-                settingLabel("preferences_appearance_events_declined_title"),
+                preferenceLabel("preferences_appearance_events_declined_title"),
                 selection: $declinedEventsAppereance
             ) {
                 Text("preferences_appearance_events_value_with_strikethrough".loco())
@@ -136,7 +124,7 @@ struct EventsSection: View {
             }
 
             Picker(
-                settingLabel("preferences_appearance_events_past_title"),
+                preferenceLabel("preferences_appearance_events_past_title"),
                 selection: $pastEventsAppereance
             ) {
                 Text("preferences_appearance_events_value_show".loco())
@@ -164,7 +152,7 @@ struct StatusBarSection: View {
     var body: some View {
         Section(header: Text("preferences_appearance_status_bar_title".loco())) {
             Picker(
-                settingLabel("preferences_appearance_status_bar_icon_title"),
+                preferenceLabel("preferences_appearance_status_bar_icon_title"),
                 selection: $eventTitleIconFormat
             ) {
                 HStack {
@@ -197,7 +185,7 @@ struct StatusBarSection: View {
             }
 
             Picker(
-                settingLabel("preferences_appearance_status_bar_title_title"),
+                preferenceLabel("preferences_appearance_status_bar_title_title"),
                 selection: $eventTitleFormat
             ) {
                 Text("preferences_appearance_status_bar_title_event_title_value".loco())
@@ -222,7 +210,7 @@ struct StatusBarSection: View {
             .disabled(eventTitleFormat != .show)
 
             Picker(
-                settingLabel("preferences_appearance_status_bar_time_title"),
+                preferenceLabel("preferences_appearance_status_bar_time_title"),
                 selection: $eventTimeFormat
             ) {
                 ForEach(PreferencesStatusBarTimeOption.allCases, id: \.format) { option in
@@ -233,7 +221,7 @@ struct StatusBarSection: View {
 
         Section {
             Toggle(
-                settingLabel("preferences_appearance_status_bar_next_event_toggle"),
+                preferenceLabel("preferences_appearance_status_bar_next_event_toggle"),
                 isOn: $showEventMaxTimeUntilEventEnabled
             )
 
@@ -251,7 +239,7 @@ struct StatusBarSection: View {
             .disabled(!showEventMaxTimeUntilEventEnabled)
 
             Picker(
-                settingLabel("preferences_appearance_status_bar_ongoing_title"),
+                preferenceLabel("preferences_appearance_status_bar_ongoing_title"),
                 selection: $ongoingEventVisibility
             ) {
                 Text("preferences_appearance_status_bar_ongoing_time_immediate_value".loco())
@@ -274,7 +262,6 @@ struct StatusBarSection: View {
 // MARK: - Menu
 
 struct MenuSection: View {
-    @Default(.timeFormat) var timeFormat
     @Default(.shortenEventTitle) var shortenEventTitle
     @Default(.menuEventTitleLength) var menuEventTitleLength
     @Default(.showEventEndTime) var showEventEndTime
@@ -286,43 +273,33 @@ struct MenuSection: View {
     var body: some View {
         Section(header: Text("preferences_appearance_menu_title".loco())) {
             Toggle(
-                settingLabel("preferences_appearance_menu_show_timeline_toggle"),
+                preferenceLabel("preferences_appearance_menu_show_timeline_toggle"),
                 isOn: $showTimelineInMenu
             )
-
-            Picker(
-                settingLabel("preferences_appearance_menu_time_format_title"),
-                selection: $timeFormat
-            ) {
-                Text("preferences_appearance_menu_time_format_12_hour_value".loco())
-                    .tag(TimeFormat.am_pm)
-                Text("preferences_appearance_menu_time_format_24_hour_value".loco())
-                    .tag(TimeFormat.military)
-            }
         }
 
-        Section(header: Text(settingLabel("preferences_appearance_menu_show_event_title"))) {
+        Section(header: Text(preferenceLabel("preferences_appearance_menu_show_event_title"))) {
             Toggle(
-                settingLabel("preferences_appearance_menu_show_event_end_time_value"),
+                preferenceLabel("preferences_appearance_menu_show_event_end_time_value"),
                 isOn: $showEventEndTime
             )
             Toggle(
-                settingLabel("preferences_appearance_menu_show_event_icon_value"),
+                preferenceLabel("preferences_appearance_menu_show_event_icon_value"),
                 isOn: $showMeetingServiceIcon
             )
             Toggle(
-                settingLabel("preferences_appearance_menu_show_event_calendar_color_value"),
+                preferenceLabel("preferences_appearance_menu_show_event_calendar_color_value"),
                 isOn: $showEventCalendarColor
             )
             Toggle(
-                settingLabel("preferences_appearance_menu_show_event_details_value"),
+                preferenceLabel("preferences_appearance_menu_show_event_details_value"),
                 isOn: $showEventDetails
             )
         }
 
         Section {
             Toggle(
-                settingLabel("preferences_appearance_menu_shorten_event_title_toggle"),
+                preferenceLabel("preferences_appearance_menu_shorten_event_title_toggle"),
                 isOn: $shortenEventTitle
             )
 

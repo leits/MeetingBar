@@ -56,6 +56,7 @@
 "preferences_sidebar_setup" = "Setup";
 "preferences_sidebar_experience" = "Experience";
 "preferences_sidebar_maintenance" = "Maintenance";
+"preferences_sidebar_advanced" = "Advanced";
 
 // MARK: - Preferences section titles
 

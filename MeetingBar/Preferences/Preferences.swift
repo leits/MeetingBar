@@ -68,6 +68,18 @@ struct PreferencesView: View {
     }
 }
 
+/// Returns a row label for the given localization key with any trailing
+/// colon removed. Legacy strings include colons ("All-day events:") that the
+/// grouped-form layout doesn't use; trimming at presentation level keeps all
+/// locales consistent without touching translation files.
+func preferenceLabel(_ key: String) -> String {
+    var label = key.loco().trimmingCharacters(in: .whitespaces)
+    while let last = label.last, last == ":" || last == "：" {
+        label.removeLast()
+    }
+    return label
+}
+
 /// Shared container for preferences tabs: a grouped form matching the
 /// System Settings look on macOS 13+, with a plain scrollable form as the
 /// macOS 12 fallback. Tabs built on this manage their own scrolling.

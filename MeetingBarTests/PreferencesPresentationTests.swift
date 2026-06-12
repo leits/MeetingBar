@@ -83,7 +83,7 @@ final class PreferencesPresentationTests: XCTestCase {
             [
                 "preferences_sidebar_setup",
                 "preferences_sidebar_experience",
-                "preferences_sidebar_maintenance"
+                "preferences_sidebar_advanced"
             ]
         )
         XCTAssertEqual(
