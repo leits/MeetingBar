@@ -43,22 +43,8 @@ struct PreferencesView: View {
 
             Divider()
 
-            if selectedTab.isSelfScrolling {
-                tabContent(selectedTab)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else {
-                GeometryReader { geometry in
-                    ScrollView {
-                        tabContent(selectedTab)
-                            .frame(
-                                maxWidth: .infinity,
-                                minHeight: max(0, geometry.size.height - 40),
-                                alignment: .topLeading
-                            )
-                            .padding(24)
-                    }
-                }
-            }
+            tabContent(selectedTab)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .frame(minWidth: 700, minHeight: 500)
     }
@@ -78,6 +64,25 @@ struct PreferencesView: View {
             NotificationsTab()
         case .advanced:
             AdvancedTab()
+        }
+    }
+}
+
+/// Shared container for preferences tabs: a grouped form matching the
+/// System Settings look on macOS 13+, with a plain scrollable form as the
+/// macOS 12 fallback. Tabs built on this manage their own scrolling.
+struct PreferencesGroupedForm<Content: View>: View {
+    @ViewBuilder var content: Content
+
+    var body: some View {
+        if #available(macOS 13.0, *) {
+            Form { content }
+                .formStyle(.grouped)
+        } else {
+            ScrollView {
+                Form { content }
+                    .padding(20)
+            }
         }
     }
 }

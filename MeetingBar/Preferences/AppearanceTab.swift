@@ -23,22 +23,10 @@ private func settingLabel(_ key: String) -> String {
 
 struct AppearanceTab: View {
     var body: some View {
-        if #available(macOS 13.0, *) {
-            Form {
-                EventsSection()
-                StatusBarSection()
-                MenuSection()
-            }
-            .formStyle(.grouped)
-        } else {
-            ScrollView {
-                Form {
-                    EventsSection()
-                    StatusBarSection()
-                    MenuSection()
-                }
-                .padding(20)
-            }
+        PreferencesGroupedForm {
+            EventsSection()
+            StatusBarSection()
+            MenuSection()
         }
     }
 }
