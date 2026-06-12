@@ -11,34 +11,24 @@ import SwiftUI
 
 struct AdvancedTab: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Label(
-                "preferences_advanced_setting_warning".loco(),
-                systemImage: "exclamationmark.triangle"
-            )
-            .font(.caption)
-            .foregroundStyle(.secondary)
+        PreferencesGroupedForm {
+            Section {
+                Label(
+                    "preferences_advanced_setting_warning".loco(),
+                    systemImage: "exclamationmark.triangle"
+                )
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            }
 
-            GroupBox(
-                label: Label(
-                    "preferences_section_apple_script_hooks_title".loco(),
-                    systemImage: "applescript")
-            ) {
-                VStack(spacing: 10) {
-                    ScriptSection()
-                }
+            Section(header: Text("preferences_section_apple_script_hooks_title".loco())) {
+                ScriptSection()
             }
-            GroupBox(
-                label: Label(
-                    "preferences_section_regex_filters_title".loco(),
-                    systemImage: "line.horizontal.3.decrease.circle")
-            ) {
-                VStack(spacing: 10) {
-                    FilterEventRegexesSection()
-                    MeetingRegexesSection()
-                }
+
+            Section(header: Text("preferences_section_regex_filters_title".loco())) {
+                FilterEventRegexesSection()
+                MeetingRegexesSection()
             }
-            Spacer()
         }
     }
 }
@@ -59,53 +49,63 @@ struct ScriptSection: View {
     @State private var showingJoinEventScriptModal = false
 
     var body: some View {
-        VStack(alignment: .leading) {
-            HStack {
-                Toggle(
-                    "preferences_advanced_run_script_on_event_start".loco(),
-                    isOn: $runEventStartScript)
-                Picker("", selection: $eventStartScriptTime) {
-                    Text("general_when_event_starts".loco()).tag(TimeBeforeEvent.atStart)
-                    Text("general_one_minute_before".loco()).tag(TimeBeforeEvent.minuteBefore)
-                    Text("general_three_minute_before".loco()).tag(
-                        TimeBeforeEvent.threeMinuteBefore)
-                    Text("general_five_minute_before".loco()).tag(TimeBeforeEvent.fiveMinuteBefore)
-                }.frame(width: 150, alignment: .leading).labelsHidden().disabled(
-                    !runEventStartScript)
-                Spacer()
-                if runEventStartScript {
-                    Button(action: runSampleScript) {
-                        Text("preferences_advanced_test_script_on_next_event".loco())
-                    }
-                    Button("preferences_advanced_edit_script".loco()) {
-                        showingRunEventStartScriptModal = true
-                    }
-                }
-            }.sheet(isPresented: $showingRunEventStartScriptModal) {
-                EditScriptModal(
-                    script: $eventStartScript, scriptLocation: $eventStartScriptLocation,
-                    scriptName: "eventStartScript.scpt")
-            }
-
-            HStack {
-                Toggle(
-                    "preferences_advanced_apple_script_checkmark".loco(), isOn: $runJoinEventScript)
-                Spacer()
-                if runJoinEventScript {
-                    Button("preferences_advanced_edit_script".loco()) {
-                        showingJoinEventScriptModal = true
-                    }
-                }
-            }.sheet(isPresented: $showingJoinEventScriptModal) {
-                EditScriptModal(
-                    script: $joinEventScript, scriptLocation: $joinEventScriptLocation,
-                    scriptName: "joinEventScript.scpt")
-            }
-
-            Text("preferences_advanced_script_link_only_help".loco())
-                .font(.caption)
-                .foregroundStyle(.secondary)
+        Toggle(
+            "preferences_advanced_run_script_on_event_start".loco(),
+            isOn: $runEventStartScript
+        )
+        .sheet(isPresented: $showingRunEventStartScriptModal) {
+            EditScriptModal(
+                script: $eventStartScript, scriptLocation: $eventStartScriptLocation,
+                scriptName: "eventStartScript.scpt")
         }
+
+        HStack {
+            Picker("", selection: $eventStartScriptTime) {
+                Text("general_when_event_starts".loco()).tag(TimeBeforeEvent.atStart)
+                Text("general_one_minute_before".loco()).tag(TimeBeforeEvent.minuteBefore)
+                Text("general_three_minute_before".loco()).tag(TimeBeforeEvent.threeMinuteBefore)
+                Text("general_five_minute_before".loco()).tag(TimeBeforeEvent.fiveMinuteBefore)
+            }
+            .labelsHidden()
+            .fixedSize()
+            .disabled(!runEventStartScript)
+
+            Spacer()
+
+            if runEventStartScript {
+                Button(action: runSampleScript) {
+                    Text("preferences_advanced_test_script_on_next_event".loco())
+                }
+                Button("preferences_advanced_edit_script".loco()) {
+                    showingRunEventStartScriptModal = true
+                }
+            }
+        }
+        .padding(.leading, 16)
+
+        Toggle(
+            "preferences_advanced_apple_script_checkmark".loco(),
+            isOn: $runJoinEventScript
+        )
+        .sheet(isPresented: $showingJoinEventScriptModal) {
+            EditScriptModal(
+                script: $joinEventScript, scriptLocation: $joinEventScriptLocation,
+                scriptName: "joinEventScript.scpt")
+        }
+
+        if runJoinEventScript {
+            HStack {
+                Spacer()
+                Button("preferences_advanced_edit_script".loco()) {
+                    showingJoinEventScriptModal = true
+                }
+            }
+            .padding(.leading, 16)
+        }
+
+        Text("preferences_advanced_script_link_only_help".loco())
+            .font(.caption)
+            .foregroundStyle(.secondary)
     }
 
     func runSampleScript() {
@@ -252,12 +252,12 @@ struct FilterEventRegexesSection: View {
 
     var body: some View {
         DisclosureGroup("preferences_advanced_event_regex_title".loco()) {
-            List {
-                Button("preferences_advanced_regex_add_button".loco(), action: openAddRegexModal)
-                    .buttonStyle(.borderedProminent)
+            VStack(alignment: .leading, spacing: 8) {
                 ForEach(filterEventRegexes, id: \.self) { regex in
                     HStack {
                         Text(regex)
+                            .lineLimit(1)
+                            .truncationMode(.middle)
                         Spacer()
                         Button("preferences_advanced_regex_edit_button".loco()) {
                             openEditRegexModal(for: regex)
@@ -265,12 +265,13 @@ struct FilterEventRegexesSection: View {
                         Button("x") { removeRegex(regex) }
                     }
                 }
-            }.frame(height: 100)
-                .listStyle(.inset(alternatesRowBackgrounds: true))
-                .sheet(isPresented: $showingEditRegexModal) {
-                    EditRegexModal(regex: regexDraft.value, onSave: saveRegex)
-                }
-        }.padding(.leading, 19)
+                Button("preferences_advanced_regex_add_button".loco(), action: openAddRegexModal)
+            }
+            .padding(.vertical, 4)
+            .sheet(isPresented: $showingEditRegexModal) {
+                EditRegexModal(regex: regexDraft.value, onSave: saveRegex)
+            }
+        }
     }
 
     func openAddRegexModal() {
@@ -313,47 +314,44 @@ struct MeetingRegexesSection: View {
     var body: some View {
         DisclosureGroup("preferences_advanced_regex_title".loco()) {
             VStack(alignment: .leading, spacing: 8) {
-                List {
-                    Button("preferences_advanced_regex_add_button".loco()) {
-                        openAddRegexModal()
-                    }.buttonStyle(.borderedProminent)
-                    ForEach(customRegexes, id: \.self) { regex in
-                        HStack {
-                            Text(regex)
-                            Spacer()
-                            Button("preferences_advanced_regex_edit_button".loco()) {
-                                openEditRegexModal(for: regex)
-                            }
-                            Button("x") { removeRegex(regex) }
+                ForEach(customRegexes, id: \.self) { regex in
+                    HStack {
+                        Text(regex)
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                        Spacer()
+                        Button("preferences_advanced_regex_edit_button".loco()) {
+                            openEditRegexModal(for: regex)
                         }
+                        Button("x") { removeRegex(regex) }
                     }
                 }
-                .frame(height: 100)
-                .listStyle(.inset(alternatesRowBackgrounds: true))
+                Button("preferences_advanced_regex_add_button".loco()) {
+                    openAddRegexModal()
+                }
 
                 Divider()
 
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("preferences_advanced_regex_test_title".loco())
-                        .font(.subheadline)
-                    TextField(
-                        "preferences_advanced_regex_test_placeholder".loco(), text: $regexTestText
-                    )
-                    .textFieldStyle(.roundedBorder)
-                    HStack {
-                        Button("preferences_advanced_regex_test_button".loco(), action: testRegex)
-                            .disabled(regexTestText.isEmpty || customRegexes.isEmpty)
-                        if let regexTestResult {
-                            Text(regexTestResult)
-                                .foregroundColor(regexTestMatched ? .secondary : .red)
-                        }
+                Text("preferences_advanced_regex_test_title".loco())
+                    .font(.subheadline)
+                TextField(
+                    "preferences_advanced_regex_test_placeholder".loco(), text: $regexTestText
+                )
+                .textFieldStyle(.roundedBorder)
+                HStack {
+                    Button("preferences_advanced_regex_test_button".loco(), action: testRegex)
+                        .disabled(regexTestText.isEmpty || customRegexes.isEmpty)
+                    if let regexTestResult {
+                        Text(regexTestResult)
+                            .foregroundColor(regexTestMatched ? .secondary : .red)
                     }
                 }
             }
+            .padding(.vertical, 4)
             .sheet(isPresented: $showingEditRegexModal) {
                 EditRegexModal(regex: regexDraft.value, onSave: saveRegex)
             }
-        }.padding(.leading, 19)
+        }
     }
 
     func openAddRegexModal() {
