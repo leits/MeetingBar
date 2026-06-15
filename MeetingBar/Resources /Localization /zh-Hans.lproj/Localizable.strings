@@ -44,3 +44,4 @@
 "preferences_general_feedback_title" = "如有疑问或建议，\n尽管联系：";
 "preferences_general_feedback_email" = "邮箱";
 "preferences_appearance_events_title" = "活动";
+"preferences_appearance_menu_show_event_location_value" = "地点";

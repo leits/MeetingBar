@@ -30,6 +30,7 @@
 "preferences_appearance_status_bar_next_event_toggle" = "Csak olyan események mutatása, ami ezelőtt kezdődnek";
 "preferences_appearance_status_bar_next_event_stepper" = "%d perc";
 "preferences_appearance_menu_show_event_icon_value" = "ikon";
+"preferences_appearance_menu_show_event_location_value" = "helyszín";
 "preferences_appearance_menu_show_event_details_value" = "részletek almenüként";
 "preferences_services_link_meeting_title" = "Minden találkozó link megnyitása ebben";
 "preferences_services_create_meeting_title" = "Találkozók létrehozása ezzel";

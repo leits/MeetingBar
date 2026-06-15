@@ -56,6 +56,7 @@
 "preferences_appearance_menu_time_format_24_hour_value" = "24 uur";
 "preferences_appearance_menu_show_event_end_time_value" = "eindtijd";
 "preferences_appearance_menu_show_event_icon_value" = "icoon";
+"preferences_appearance_menu_show_event_location_value" = "locatie";
 "preferences_appearance_menu_shorten_event_title_toggle" = "Verkort de titel van de meeting tot";
 "preferences_appearance_menu_show_event_title" = "Toon meeting:";
 "preferences_appearance_menu_show_event_details_value" = "details als submenu";

@@ -100,6 +100,7 @@
 "preferences_appearance_menu_show_event_title" = "நிகழ்வைக் காட்டு:";
 "preferences_appearance_menu_show_event_end_time_value" = "இறுதி நேரம்";
 "preferences_appearance_menu_show_event_icon_value" = "படவுரு";
+"preferences_appearance_menu_show_event_location_value" = "இடம்";
 "preferences_appearance_menu_show_event_details_value" = "விவரங்கள் துணை";
 "preferences_services_link_meeting_title" = "அனைத்து சந்திப்பு இணைப்புகளையும் திறக்கவும்";
 "preferences_services_link_service_title" = "திறந்த %@ இணைப்புகள்";

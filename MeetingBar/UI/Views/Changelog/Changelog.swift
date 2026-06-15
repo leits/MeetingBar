@@ -186,6 +186,7 @@ struct ChangelogView: View {
                             Text("• Added action to dismiss the event from the notification")
                             Text("• Added support for LiveKit Meet, Meetecho, and StreamYard links")
                             Text("• You can now set any executable as a \"browser\" to open meeting links")
+                            Text("\u{2022} Show event locations in the menu")
                             Text("and a lot of bug fixes and translations updates")
                         }
                     }

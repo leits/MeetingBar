@@ -87,6 +87,7 @@
 "preferences_appearance_menu_time_format_24_hour_value" = "24-saat";
 "preferences_appearance_menu_show_event_title" = "Etkinliği göster:";
 "preferences_appearance_menu_show_event_icon_value" = "simge";
+"preferences_appearance_menu_show_event_location_value" = "konum";
 "preferences_appearance_menu_show_event_details_value" = "detaylar alt menüde";
 
 // MARK: - Preferences Services

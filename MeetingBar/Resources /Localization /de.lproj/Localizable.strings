@@ -237,6 +237,7 @@
 "preferences_services_link_meeting_title" = "Meeting-Links öffnen mit";
 "preferences_appearance_menu_show_event_details_value" = "Details als Untermenü";
 "preferences_appearance_menu_show_event_icon_value" = "symbol";
+"preferences_appearance_menu_show_event_location_value" = "Ort";
 "preferences_appearance_menu_show_event_end_time_value" = "Endzeit";
 "preferences_appearance_menu_show_event_title" = "Ereignis anzeigen:";
 "preferences_appearance_menu_time_format_24_hour_value" = "24-Stunden";

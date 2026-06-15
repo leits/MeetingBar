@@ -233,6 +233,7 @@
 "preferences_appearance_events_past_title" = "Dřívější události:";
 "preferences_appearance_events_value_inactive_without_meeting_link" = "zobrazit všechny bez odkazů na schůzku jako neaktivní";
 "preferences_appearance_menu_show_event_icon_value" = "ikonu";
+"preferences_appearance_menu_show_event_location_value" = "místo";
 "preferences_appearance_menu_show_event_end_time_value" = "čas konce";
 "preferences_appearance_menu_shorten_event_title_stepper" = "%d znaků";
 "preferences_appearance_menu_shorten_event_title_toggle" = "Zkrátit název události na";

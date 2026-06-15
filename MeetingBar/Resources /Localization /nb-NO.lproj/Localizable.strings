@@ -242,6 +242,7 @@
 "preferences_services_link_meeting_title" = "Åpne alle møtelenker i";
 "preferences_appearance_menu_show_event_details_value" = "detaljer som undermeny";
 "preferences_appearance_menu_show_event_icon_value" = "ikon";
+"preferences_appearance_menu_show_event_location_value" = "sted";
 "preferences_appearance_menu_show_event_end_time_value" = "slutt-tid";
 "preferences_appearance_menu_show_event_title" = "Vis begivenhet:";
 "preferences_appearance_menu_time_format_24_hour_value" = "24-timersklokke";

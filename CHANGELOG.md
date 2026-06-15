@@ -8,6 +8,7 @@ For next releases info look here: <https://github.com/leits/MeetingBar/releases>
 * Fix multiple typos in the repo (#875)
 * Fix URL in PR template (#875) 
 * Add Riverside meeting service (#875)
+* Show event locations in the menu
 
 ## Version 4.11.0
 
