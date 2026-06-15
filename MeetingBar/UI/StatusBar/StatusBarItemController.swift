@@ -282,7 +282,7 @@ final class StatusBarItemController {
                     paragraphStyle.alignment = .center
 
                     var styles = [NSAttributedString.Key: Any]()
-                    styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: MenuStyleConstants.secondaryFontSize)
+                    styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: 12)
                     styles[NSAttributedString.Key.baselineOffset] = -3
 
                     if nextEvent.participationStatus == .pending, Defaults[.showPendingEvents] == .show_inactive {
