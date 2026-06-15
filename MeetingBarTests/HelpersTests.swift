@@ -73,4 +73,72 @@ class HelpersTests: XCTestCase {
         let result = hexStringToUIColor(hex: "#FFFF00")
         XCTAssertEqual(result, NSColor.yellow)
     }
+
+    func test_displayLocation_emptyLocation_returnNil() {
+        let event = makeFakeEvent(
+            id: "empty-location",
+            start: Date(),
+            end: Date().addingTimeInterval(60),
+            location: " \n\t "
+        )
+
+        XCTAssertNil(event.displayLocation)
+    }
+
+    func test_displayLocation_normalizesWhitespace() {
+        let event = makeFakeEvent(
+            id: "room-location",
+            start: Date(),
+            end: Date().addingTimeInterval(60),
+            location: "  Room A\nFloor\t2  "
+        )
+
+        XCTAssertEqual(event.displayLocation, "Room A Floor 2")
+    }
+
+    func test_displayLocation_urlOnlyLocation_returnNil() {
+        let event = makeFakeEvent(
+            id: "url-location",
+            start: Date(),
+            end: Date().addingTimeInterval(60),
+            location: "https://zoom.us/j/5551112222"
+        )
+
+        XCTAssertNil(event.displayLocation)
+    }
+
+    func test_displayLocation_urlOnlyCustomSchemeWithHost_returnNil() {
+        let event = makeFakeEvent(
+            id: "custom-url-location",
+            start: Date(),
+            end: Date().addingTimeInterval(60),
+            location: "zoommtg://zoom.us/join?action=join&confno=5551112222"
+        )
+
+        XCTAssertNil(event.displayLocation)
+    }
+
+    func test_displayLocation_mixedPhysicalLocationAndUrl_returnLocation() {
+        let location = "Room A https://maps.example.com/floor/2"
+        let event = makeFakeEvent(
+            id: "mixed-location",
+            start: Date(),
+            end: Date().addingTimeInterval(60),
+            location: location
+        )
+
+        XCTAssertEqual(event.displayLocation, location)
+    }
+
+    func test_displayLocation_hostlessUri_returnLocation() {
+        let location = "mailto:frontdesk@example.com"
+        let event = makeFakeEvent(
+            id: "hostless-location",
+            start: Date(),
+            end: Date().addingTimeInterval(60),
+            location: location
+        )
+
+        XCTAssertEqual(event.displayLocation, location)
+    }
 }

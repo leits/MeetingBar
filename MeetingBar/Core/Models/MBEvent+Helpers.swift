@@ -9,6 +9,31 @@
 import Defaults
 import Foundation
 
+public extension MBEvent {
+    var displayLocation: String? {
+        guard let location else {
+            return nil
+        }
+
+        let normalizedLocation = location
+            .components(separatedBy: .whitespacesAndNewlines)
+            .filter { !$0.isEmpty }
+            .joined(separator: " ")
+
+        guard !normalizedLocation.isEmpty else {
+            return nil
+        }
+
+        if let url = URL(string: normalizedLocation),
+           url.scheme?.isEmpty == false,
+           url.host?.isEmpty == false {
+            return nil
+        }
+
+        return normalizedLocation
+    }
+}
+
 public extension Array where Element == MBEvent {
     /// Returns only those events that pass all the user’s Defaults filters.
 

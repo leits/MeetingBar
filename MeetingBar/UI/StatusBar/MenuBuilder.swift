@@ -316,12 +316,14 @@ struct MenuBuilder {
             eventEndTime = eventTimeFormatter.string(from: event.endDate)
         }
 
-        let itemTitle: String
+        let itemTitlePrefix: String
         if Defaults[.showEventEndTime] {
-            itemTitle = "\(eventStartTime) \t \(eventEndTime) \t \(eventTitle)"
+            itemTitlePrefix = "\(eventStartTime) \t \(eventEndTime) \t "
         } else {
-            itemTitle = "\(eventStartTime) \t \(eventTitle)"
+            itemTitlePrefix = "\(eventStartTime) \t "
         }
+        let itemTitle = "\(itemTitlePrefix)\(eventTitle)"
+        let itemLocation = eventItemLocation(event)
 
         // Event Item
 
@@ -337,6 +339,7 @@ struct MenuBuilder {
         }
 
         var shouldShowAsActive = true
+        var shouldShowLocationAsInactive = false
         var styles = [NSAttributedString.Key: Any]()
 
         if event.participationStatus == .declined || eventStatus == .canceled {
@@ -346,15 +349,18 @@ struct MenuBuilder {
                 styles[NSAttributedString.Key.strikethroughStyle] = NSUnderlineStyle.thick.rawValue
             }
             shouldShowAsActive = false
+            shouldShowLocationAsInactive = true
         }
 
         if !event.isAllDay, Defaults[.nonAllDayEvents] == .show_inactive_without_meeting_link, event.meetingLink == nil {
             styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
+            shouldShowLocationAsInactive = true
         }
 
         if event.participationStatus == .pending {
             if Defaults[.showPendingEvents] == .show_inactive {
                 styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
+                shouldShowLocationAsInactive = true
             } else if Defaults[.showPendingEvents] == .show_underlined {
                 styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
             }
@@ -363,6 +369,7 @@ struct MenuBuilder {
         if event.participationStatus == .tentative {
             if Defaults[.showTentativeEvents] == .show_inactive {
                 styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
+                shouldShowLocationAsInactive = true
             } else if Defaults[.showTentativeEvents] == .show_underlined {
                 styles[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.byWord.rawValue
             }
@@ -371,6 +378,7 @@ struct MenuBuilder {
         if event.attendees.isEmpty, Defaults[.personalEventsAppereance] == .show_inactive {
             styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
             shouldShowAsActive = false
+            shouldShowLocationAsInactive = true
         }
 
         if event.endDate < now, eventStatus != .canceled {
@@ -379,12 +387,24 @@ struct MenuBuilder {
             if Defaults[.pastEventsAppereance] == .show_inactive {
                 styles[NSAttributedString.Key.foregroundColor] = NSColor.disabledControlTextColor
                 styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: 14)
+                shouldShowLocationAsInactive = true
 
-                eventItem.attributedTitle = NSAttributedString(
-                    string: itemTitle,
-                    attributes: styles
+                eventItem.attributedTitle = eventItemAttributedTitle(
+                    title: itemTitle,
+                    titlePrefix: itemTitlePrefix,
+                    location: itemLocation,
+                    titleAttributes: styles,
+                    shouldShowLocationAsInactive: shouldShowLocationAsInactive
                 )
                 eventItem.image = eventItem.image?.tintedDisabled()
+            } else {
+                eventItem.attributedTitle = eventItemAttributedTitle(
+                    title: itemTitle,
+                    titlePrefix: itemTitlePrefix,
+                    location: itemLocation,
+                    titleAttributes: styles,
+                    shouldShowLocationAsInactive: shouldShowLocationAsInactive
+                )
             }
         } else if event.startDate < now, event.endDate > now, eventStatus != .canceled {
             eventItem.state = .mixed
@@ -422,12 +442,25 @@ struct MenuBuilder {
                 eventTitle.append(NSAttributedString(string: " "))
                 eventTitle.append(runningIcon)
             }
+            appendLocation(
+                itemLocation,
+                to: eventTitle,
+                titlePrefix: itemTitlePrefix,
+                titleAttributes: styles,
+                shouldShowAsInactive: shouldShowLocationAsInactive
+            )
 
             eventItem.attributedTitle = eventTitle
         } else {
             eventItem.state = .off
             eventItem.offStateImage = nil
-            eventItem.attributedTitle = NSAttributedString(string: itemTitle, attributes: styles)
+            eventItem.attributedTitle = eventItemAttributedTitle(
+                title: itemTitle,
+                titlePrefix: itemTitlePrefix,
+                location: itemLocation,
+                titleAttributes: styles,
+                shouldShowLocationAsInactive: shouldShowLocationAsInactive
+            )
         }
 
         eventItem.representedObject = event
@@ -574,5 +607,94 @@ struct MenuBuilder {
             eventItem.toolTip = event.title
         }
         return eventItem
+    }
+
+    private func eventItemLocation(_ event: MBEvent) -> String? {
+        guard Defaults[.showEventLocation], var location = event.displayLocation else {
+            return nil
+        }
+
+        if Defaults[.shortenEventTitle] {
+            location = shortenTitle(title: location, offset: Defaults[.menuEventTitleLength])
+        }
+
+        return location
+    }
+
+    private func eventItemAttributedTitle(
+        title: String,
+        titlePrefix: String,
+        location: String?,
+        titleAttributes: [NSAttributedString.Key: Any],
+        shouldShowLocationAsInactive: Bool
+    ) -> NSAttributedString {
+        let attributedTitle = NSMutableAttributedString(string: title, attributes: titleAttributes)
+        appendLocation(
+            location,
+            to: attributedTitle,
+            titlePrefix: titlePrefix,
+            titleAttributes: titleAttributes,
+            shouldShowAsInactive: shouldShowLocationAsInactive
+        )
+        return attributedTitle
+    }
+
+    private func appendLocation(
+        _ location: String?,
+        to attributedTitle: NSMutableAttributedString,
+        titlePrefix: String,
+        titleAttributes: [NSAttributedString.Key: Any],
+        shouldShowAsInactive: Bool
+    ) {
+        guard let location else {
+            return
+        }
+
+        let paragraphStyle = NSMutableParagraphStyle()
+        let titleIndent = eventTitleIndent(for: titlePrefix, attributes: titleAttributes)
+        paragraphStyle.firstLineHeadIndent = titleIndent
+        paragraphStyle.headIndent = titleIndent
+
+        let locationAttributes: [NSAttributedString.Key: Any] = [
+            .font: NSFont.systemFont(ofSize: 12),
+            .foregroundColor: shouldShowAsInactive ? NSColor.disabledControlTextColor : NSColor.secondaryLabelColor,
+            .paragraphStyle: paragraphStyle
+        ]
+
+        attributedTitle.append(NSAttributedString(string: "\n"))
+        attributedTitle.append(NSAttributedString(string: location, attributes: locationAttributes))
+    }
+
+    private func eventTitleIndent(for titlePrefix: String, attributes: [NSAttributedString.Key: Any]) -> CGFloat {
+        var position: CGFloat = 0
+        var segment = ""
+
+        for character in titlePrefix {
+            if character == "\t" {
+                position += width(of: segment, attributes: attributes)
+                position = nextDefaultTabStop(after: position)
+                segment = ""
+            } else {
+                segment.append(character)
+            }
+        }
+
+        position += width(of: segment, attributes: attributes)
+        return position
+    }
+
+    private func nextDefaultTabStop(after position: CGFloat) -> CGFloat {
+        let appKitFallbackTabInterval: CGFloat = 28
+        let defaultTabInterval = NSParagraphStyle.default.defaultTabInterval
+        let tabInterval = defaultTabInterval > 0 ? defaultTabInterval : appKitFallbackTabInterval
+        return (floor(position / tabInterval) + 1) * tabInterval
+    }
+
+    private func width(of string: String, attributes: [NSAttributedString.Key: Any]) -> CGFloat {
+        var measurementAttributes = attributes
+        if measurementAttributes[.font] == nil {
+            measurementAttributes[.font] = NSFont.systemFont(ofSize: MenuStyleConstants.defaultFontSize)
+        }
+        return (string as NSString).size(withAttributes: measurementAttributes).width
     }
 }
