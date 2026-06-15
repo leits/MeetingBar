@@ -201,7 +201,11 @@ final class MenuBuilderEventItemTests: BaseTestCase {
 
         let textStorage = NSTextStorage(attributedString: attributedTitle)
         let layoutManager = NSLayoutManager()
-        let textContainer = NSTextContainer(size: NSSize(width: 1_000, height: CGFloat.greatestFiniteMagnitude))
+        let textContainerSize = NSSize(
+            width: attributedTitle.size().width + MenuStyleConstants.defaultFontSize,
+            height: CGFloat.greatestFiniteMagnitude
+        )
+        let textContainer = NSTextContainer(size: textContainerSize)
         textContainer.lineFragmentPadding = 0
 
         layoutManager.addTextContainer(textContainer)
