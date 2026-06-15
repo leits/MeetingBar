@@ -9,7 +9,7 @@
 import Defaults
 import Foundation
 
-public extension MBEvent {
+extension MBEvent {
     var displayLocation: String? {
         guard let location else {
             return nil
@@ -24,7 +24,8 @@ public extension MBEvent {
             return nil
         }
 
-        if let url = URL(string: normalizedLocation),
+        if normalizedLocation.rangeOfCharacter(from: .whitespacesAndNewlines) == nil,
+           let url = URL(string: normalizedLocation),
            url.scheme?.isEmpty == false,
            url.host?.isEmpty == false {
             return nil

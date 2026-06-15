@@ -130,6 +130,18 @@ class HelpersTests: XCTestCase {
         XCTAssertEqual(event.displayLocation, location)
     }
 
+    func test_displayLocation_urlFirstMixedPhysicalLocation_returnLocation() {
+        let location = "https://maps.example.com/floor/2 Room A"
+        let event = makeFakeEvent(
+            id: "url-first-mixed-location",
+            start: Date(),
+            end: Date().addingTimeInterval(60),
+            location: location
+        )
+
+        XCTAssertEqual(event.displayLocation, location)
+    }
+
     func test_displayLocation_hostlessUri_returnLocation() {
         let location = "mailto:frontdesk@example.com"
         let event = makeFakeEvent(

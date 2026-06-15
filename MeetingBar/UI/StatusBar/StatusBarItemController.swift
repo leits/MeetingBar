@@ -15,6 +15,7 @@ import SwiftUI
 
 enum MenuStyleConstants {
     static let defaultFontSize: CGFloat = 13
+    static let secondaryFontSize: CGFloat = defaultFontSize - 1
     static let runningIconName = "running_icon"
     static let appIconName = "AppIcon"
     static let calendarCheckmarkIconName = "iconCalendarCheckmark"
@@ -281,7 +282,7 @@ final class StatusBarItemController {
                     paragraphStyle.alignment = .center
 
                     var styles = [NSAttributedString.Key: Any]()
-                    styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: 12)
+                    styles[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: MenuStyleConstants.secondaryFontSize)
                     styles[NSAttributedString.Key.baselineOffset] = -3
 
                     if nextEvent.participationStatus == .pending, Defaults[.showPendingEvents] == .show_inactive {

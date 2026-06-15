@@ -7,6 +7,7 @@
 //
 
 import XCTest
+import AppKit
 import Defaults
 @testable import MeetingBar
 
@@ -173,6 +174,47 @@ final class MenuBuilderEventItemTests: BaseTestCase {
                               title: "T",
                               events: [event])
         return items.count > 1 ? items[1] : nil              // 0 = header
+    }
+
+    private func assertLocationAlignsWithEventTitle(
+        event: MBEvent,
+        location: String,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        guard let attributedTitle = buildItem(event: event)?.attributedTitle else {
+            XCTFail("Expected an attributed event title", file: file, line: line)
+            return
+        }
+
+        let titleRange = (attributedTitle.string as NSString).range(of: event.title)
+        let locationRange = (attributedTitle.string as NSString).range(of: location)
+
+        guard titleRange.location != NSNotFound else {
+            XCTFail("Expected event title in attributed string", file: file, line: line)
+            return
+        }
+        guard locationRange.location != NSNotFound else {
+            XCTFail("Expected event location in attributed string", file: file, line: line)
+            return
+        }
+
+        let textStorage = NSTextStorage(attributedString: attributedTitle)
+        let layoutManager = NSLayoutManager()
+        let textContainer = NSTextContainer(size: NSSize(width: 1_000, height: CGFloat.greatestFiniteMagnitude))
+        textContainer.lineFragmentPadding = 0
+
+        layoutManager.addTextContainer(textContainer)
+        textStorage.addLayoutManager(layoutManager)
+        layoutManager.ensureLayout(for: textContainer)
+
+        let titleGlyphRange = layoutManager.glyphRange(forCharacterRange: titleRange, actualCharacterRange: nil)
+        let locationGlyphRange = layoutManager.glyphRange(forCharacterRange: locationRange, actualCharacterRange: nil)
+        let titleRect = layoutManager.boundingRect(forGlyphRange: titleGlyphRange, in: textContainer)
+        let locationRect = layoutManager.boundingRect(forGlyphRange: locationGlyphRange, in: textContainer)
+
+        XCTAssertEqual(titleRect.minX, locationRect.minX, accuracy: 0.5, file: file, line: line)
+        XCTAssertGreaterThan(locationRect.minY, titleRect.minY, file: file, line: line)
     }
 
     // MARK: – Tests -----------------------------------------------------------
@@ -381,6 +423,50 @@ final class MenuBuilderEventItemTests: BaseTestCase {
 
         XCTAssertTrue(attributedTitle.string.contains(expectedLocation))
         XCTAssertFalse(attributedTitle.string.contains(location))
+    }
+
+    func test_locationAlignsWithTitleForAllDayEvents() {
+        let now = Date()
+        let location = "Room A"
+        let event = makeFakeEvent(
+            id: "ALIGNAD",
+            start: now.addingTimeInterval(-3600),
+            end: now.addingTimeInterval(3600),
+            isAllDay: true,
+            location: location
+        )
+
+        assertLocationAlignsWithEventTitle(event: event, location: location)
+    }
+
+    func test_locationAlignsWithTitleForAmPmTimeFormat() {
+        Defaults[.timeFormat] = .am_pm
+
+        let now = Date()
+        let location = "Room A"
+        let event = makeFakeEvent(
+            id: "ALIGNAMPM",
+            start: now.addingTimeInterval(-300),
+            end: now.addingTimeInterval(900),
+            location: location
+        )
+
+        assertLocationAlignsWithEventTitle(event: event, location: location)
+    }
+
+    func test_locationAlignsWithTitleWhenEndTimeIsHidden() {
+        Defaults[.showEventEndTime] = false
+
+        let now = Date()
+        let location = "Room A"
+        let event = makeFakeEvent(
+            id: "ALIGNNOEND",
+            start: now.addingTimeInterval(-300),
+            end: now.addingTimeInterval(900),
+            location: location
+        )
+
+        assertLocationAlignsWithEventTitle(event: event, location: location)
     }
 }
 

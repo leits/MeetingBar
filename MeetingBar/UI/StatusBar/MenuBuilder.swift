@@ -656,7 +656,7 @@ struct MenuBuilder {
         paragraphStyle.headIndent = titleIndent
 
         let locationAttributes: [NSAttributedString.Key: Any] = [
-            .font: NSFont.systemFont(ofSize: 12),
+            .font: NSFont.systemFont(ofSize: MenuStyleConstants.secondaryFontSize),
             .foregroundColor: shouldShowAsInactive ? NSColor.disabledControlTextColor : NSColor.secondaryLabelColor,
             .paragraphStyle: paragraphStyle
         ]
