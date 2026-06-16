@@ -104,6 +104,7 @@
 "preferences_appearance_menu_show_event_title" = "Pokaż zdarzenie:";
 "preferences_appearance_menu_show_event_end_time_value" = "czas zakończenia";
 "preferences_appearance_menu_show_event_icon_value" = "ikona";
+"preferences_appearance_menu_show_event_location_value" = "lokalizacja";
 "preferences_appearance_menu_show_event_details_value" = "szczegóły jako podmenu";
 
 // MARK: - Preferences Services

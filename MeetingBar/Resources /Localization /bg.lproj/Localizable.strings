@@ -113,6 +113,7 @@
 "preferences_appearance_menu_show_event_title" = "Показвай за събитието:";
 "preferences_appearance_menu_show_event_end_time_value" = "краен час";
 "preferences_appearance_menu_show_event_icon_value" = "икона";
+"preferences_appearance_menu_show_event_location_value" = "местоположение";
 "preferences_appearance_menu_show_event_details_value" = "детайли като подменю";
 
 // MARK: - Preferences Services

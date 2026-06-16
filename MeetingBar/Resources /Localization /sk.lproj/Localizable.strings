@@ -171,6 +171,7 @@
 "preferences_appearance_menu_time_format_24_hour_value" = "24-hodinový";
 "preferences_appearance_menu_show_event_end_time_value" = "čas ukončenia";
 "preferences_appearance_menu_show_event_icon_value" = "ikona";
+"preferences_appearance_menu_show_event_location_value" = "miesto";
 "preferences_appearance_menu_show_event_details_value" = "podrobnosti ako podmenu";
 "preferences_services_create_meeting_title" = "Vytvárať stretnutia cez";
 "preferences_services_google_meet_tip" = "Tip: Google Meet podporuje výber účtu v URL adrese, napr. https://meet.google.com/new?authuser=1";

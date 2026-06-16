@@ -262,6 +262,7 @@ struct MenuSection: View {
     @Default(.showEventEndTime) var showEventEndTime
     @Default(.showEventDetails) var showEventDetails
     @Default(.showMeetingServiceIcon) var showMeetingServiceIcon
+    @Default(.showEventLocation) var showEventLocation
     @Default(.showTimelineInMenu) var showTimelineInMenu
 
     var body: some View {
@@ -300,6 +301,10 @@ struct MenuSection: View {
                     Toggle(
                         "preferences_appearance_menu_show_event_icon_value".loco(),
                         isOn: $showMeetingServiceIcon
+                    )
+                    Toggle(
+                        "preferences_appearance_menu_show_event_location_value".loco(),
+                        isOn: $showEventLocation
                     )
                     Toggle(
                         "preferences_appearance_menu_show_event_details_value".loco(),

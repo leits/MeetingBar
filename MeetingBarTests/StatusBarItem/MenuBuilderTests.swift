@@ -7,6 +7,7 @@
 //
 
 import XCTest
+import AppKit
 import Defaults
 @testable import MeetingBar
 
@@ -175,6 +176,51 @@ final class MenuBuilderEventItemTests: BaseTestCase {
         return items.count > 1 ? items[1] : nil              // 0 = header
     }
 
+    private func assertLocationAlignsWithEventTitle(
+        event: MBEvent,
+        location: String,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        guard let attributedTitle = buildItem(event: event)?.attributedTitle else {
+            XCTFail("Expected an attributed event title", file: file, line: line)
+            return
+        }
+
+        let titleRange = (attributedTitle.string as NSString).range(of: event.title)
+        let locationRange = (attributedTitle.string as NSString).range(of: location)
+
+        guard titleRange.location != NSNotFound else {
+            XCTFail("Expected event title in attributed string", file: file, line: line)
+            return
+        }
+        guard locationRange.location != NSNotFound else {
+            XCTFail("Expected event location in attributed string", file: file, line: line)
+            return
+        }
+
+        let textStorage = NSTextStorage(attributedString: attributedTitle)
+        let layoutManager = NSLayoutManager()
+        let textContainerSize = NSSize(
+            width: attributedTitle.size().width + MenuStyleConstants.defaultFontSize,
+            height: CGFloat.greatestFiniteMagnitude
+        )
+        let textContainer = NSTextContainer(size: textContainerSize)
+        textContainer.lineFragmentPadding = 0
+
+        layoutManager.addTextContainer(textContainer)
+        textStorage.addLayoutManager(layoutManager)
+        layoutManager.ensureLayout(for: textContainer)
+
+        let titleGlyphRange = layoutManager.glyphRange(forCharacterRange: titleRange, actualCharacterRange: nil)
+        let locationGlyphRange = layoutManager.glyphRange(forCharacterRange: locationRange, actualCharacterRange: nil)
+        let titleRect = layoutManager.boundingRect(forGlyphRange: titleGlyphRange, in: textContainer)
+        let locationRect = layoutManager.boundingRect(forGlyphRange: locationGlyphRange, in: textContainer)
+
+        XCTAssertEqual(titleRect.minX, locationRect.minX, accuracy: 0.5, file: file, line: line)
+        XCTAssertGreaterThan(locationRect.minY, titleRect.minY, file: file, line: line)
+    }
+
     // MARK: – Tests -----------------------------------------------------------
 
     /// Placeholder text when no events
@@ -251,6 +297,180 @@ final class MenuBuilderEventItemTests: BaseTestCase {
             .attribute(.font, at: 0, effectiveRange: nil) as? NSFont
         XCTAssertTrue(font?.fontDescriptor.symbolicTraits.contains(.bold) ?? false,
                       "running event title should be bold")
+    }
+
+    func test_eventLocationShownByDefault() {
+        let event = makeFakeEvent(
+            id: "LOC",
+            start: Date().addingTimeInterval(600),
+            end: Date().addingTimeInterval(1200),
+            location: "Room A"
+        )
+
+        let item = buildItem(event: event)
+
+        XCTAssertTrue(Defaults[.showEventLocation])
+        XCTAssertTrue(item?.attributedTitle?.string.contains("\nRoom A") ?? false)
+    }
+
+    func test_eventLocationHiddenWhenSettingIsFalse() {
+        Defaults[.showEventLocation] = false
+
+        let event = makeFakeEvent(
+            id: "HIDELOC",
+            start: Date().addingTimeInterval(600),
+            end: Date().addingTimeInterval(1200),
+            location: "Room A"
+        )
+
+        let item = buildItem(event: event)
+
+        XCTAssertFalse(item?.attributedTitle?.string.contains("Room A") ?? true)
+    }
+
+    func test_urlOnlyLocationHiddenFromCompactRowButShownInDetails() {
+        Defaults[.showEventDetails] = true
+        let location = "https://zoom.us/j/5551112222"
+        let event = makeFakeEvent(
+            id: "URLLOC",
+            start: Date().addingTimeInterval(600),
+            end: Date().addingTimeInterval(1200),
+            location: location
+        )
+
+        let item = buildItem(event: event)
+
+        XCTAssertFalse(item?.attributedTitle?.string.contains(location) ?? true)
+        XCTAssertTrue(item?.submenu?.items.contains { $0.title == location } ?? false)
+    }
+
+    func test_locationDoesNotInheritPendingUnderline() {
+        Defaults[.showPendingEvents] = .show_underlined
+
+        let event = makeFakeEvent(
+            id: "PLOC",
+            start: Date().addingTimeInterval(600),
+            end: Date().addingTimeInterval(1200),
+            participationStatus: .pending,
+            location: "Room A"
+        )
+
+        let attributedTitle = buildItem(event: event)!.attributedTitle!
+        let locationRange = (attributedTitle.string as NSString).range(of: "Room A")
+
+        XCTAssertNotNil(attributedTitle.attribute(.underlineStyle, at: 0, effectiveRange: nil))
+        XCTAssertNotEqual(locationRange.location, NSNotFound)
+        guard locationRange.location != NSNotFound else {
+            return
+        }
+        XCTAssertNil(attributedTitle.attribute(.underlineStyle, at: locationRange.location, effectiveRange: nil))
+
+        let color = attributedTitle.attribute(.foregroundColor, at: locationRange.location, effectiveRange: nil) as? NSColor
+        XCTAssertTrue(color?.isEqual(NSColor.secondaryLabelColor) ?? false)
+    }
+
+    func test_inactiveEventLocationUsesDisabledColor() {
+        Defaults[.showPendingEvents] = .show_inactive
+
+        let event = makeFakeEvent(
+            id: "ILOC",
+            start: Date().addingTimeInterval(600),
+            end: Date().addingTimeInterval(1200),
+            participationStatus: .pending,
+            location: "Room A"
+        )
+
+        let attributedTitle = buildItem(event: event)!.attributedTitle!
+        let locationRange = (attributedTitle.string as NSString).range(of: "Room A")
+
+        XCTAssertNotEqual(locationRange.location, NSNotFound)
+        guard locationRange.location != NSNotFound else {
+            return
+        }
+        let color = attributedTitle.attribute(.foregroundColor, at: locationRange.location, effectiveRange: nil) as? NSColor
+        XCTAssertTrue(color?.isEqual(NSColor.disabledControlTextColor) ?? false)
+    }
+
+    func test_runningEventLocationDoesNotInheritBoldFont() {
+        let now = Date()
+        let runEvent = makeFakeEvent(
+            id: "RUNLOC",
+            start: now.addingTimeInterval(-300),
+            end: now.addingTimeInterval(900),
+            location: "Room A"
+        )
+
+        let attributedTitle = buildItem(event: runEvent)!.attributedTitle!
+        let locationRange = (attributedTitle.string as NSString).range(of: "Room A")
+
+        XCTAssertNotEqual(locationRange.location, NSNotFound)
+        guard locationRange.location != NSNotFound else {
+            return
+        }
+        let font = attributedTitle.attribute(.font, at: locationRange.location, effectiveRange: nil) as? NSFont
+        XCTAssertNotNil(font)
+        XCTAssertFalse(font?.fontDescriptor.symbolicTraits.contains(.bold) ?? true)
+    }
+
+    func test_eventLocationUsesMenuTitleTruncation() {
+        Defaults[.menuEventTitleLength] = 20
+        let location = "Conference room with very long location"
+        let expectedLocation = shortenTitle(title: location, offset: Defaults[.menuEventTitleLength])
+        let event = makeFakeEvent(
+            id: "LONGLOC",
+            start: Date().addingTimeInterval(600),
+            end: Date().addingTimeInterval(1200),
+            location: location
+        )
+
+        let attributedTitle = buildItem(event: event)!.attributedTitle!
+
+        XCTAssertTrue(attributedTitle.string.contains(expectedLocation))
+        XCTAssertFalse(attributedTitle.string.contains(location))
+    }
+
+    func test_locationAlignsWithTitleForAllDayEvents() {
+        let now = Date()
+        let location = "Room A"
+        let event = makeFakeEvent(
+            id: "ALIGNAD",
+            start: now.addingTimeInterval(-3600),
+            end: now.addingTimeInterval(3600),
+            isAllDay: true,
+            location: location
+        )
+
+        assertLocationAlignsWithEventTitle(event: event, location: location)
+    }
+
+    func test_locationAlignsWithTitleForAmPmTimeFormat() {
+        Defaults[.timeFormat] = .am_pm
+
+        let now = Date()
+        let location = "Room A"
+        let event = makeFakeEvent(
+            id: "ALIGNAMPM",
+            start: now.addingTimeInterval(-300),
+            end: now.addingTimeInterval(900),
+            location: location
+        )
+
+        assertLocationAlignsWithEventTitle(event: event, location: location)
+    }
+
+    func test_locationAlignsWithTitleWhenEndTimeIsHidden() {
+        Defaults[.showEventEndTime] = false
+
+        let now = Date()
+        let location = "Room A"
+        let event = makeFakeEvent(
+            id: "ALIGNNOEND",
+            start: now.addingTimeInterval(-300),
+            end: now.addingTimeInterval(900),
+            location: location
+        )
+
+        assertLocationAlignsWithEventTitle(event: event, location: location)
     }
 }
 

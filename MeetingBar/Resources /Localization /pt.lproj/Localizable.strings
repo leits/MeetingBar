@@ -85,6 +85,7 @@
 "preferences_appearance_menu_show_event_title" = "Mostrar evento:";
 "preferences_appearance_menu_show_event_end_time_value" = "horário do fim";
 "preferences_appearance_menu_show_event_icon_value" = "ícone";
+"preferences_appearance_menu_show_event_location_value" = "local";
 "preferences_appearance_menu_show_event_details_value" = "pormenores como submenu";
 "preferences_services_link_meeting_title" = "Abrir todas as ligações de reunião em";
 "preferences_services_link_default_browser_value" = "Navegador padrão";

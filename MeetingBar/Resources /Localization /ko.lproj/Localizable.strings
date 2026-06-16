@@ -93,6 +93,7 @@
 "preferences_appearance_menu_show_event_title" = "이벤트 표시:";
 "preferences_appearance_menu_show_event_end_time_value" = "종료 시간";
 "preferences_appearance_menu_show_event_icon_value" = "아이콘";
+"preferences_appearance_menu_show_event_location_value" = "위치";
 "preferences_appearance_menu_show_event_details_value" = "세부사항";
 "preferences_services_link_meeting_title" = "모든 회의 연결 시";
 "preferences_services_link_service_title" = "%@ 연결 시";

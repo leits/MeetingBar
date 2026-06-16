@@ -216,6 +216,7 @@
 "preferences_services_link_meeting_title" = "Ouvrir tous les liens de réunion dans";
 "preferences_appearance_menu_show_event_details_value" = "détails comme sous-menu";
 "preferences_appearance_menu_show_event_icon_value" = "icône";
+"preferences_appearance_menu_show_event_location_value" = "lieu";
 "preferences_appearance_menu_show_event_end_time_value" = "heure de fin";
 "preferences_appearance_menu_show_event_title" = "Afficher l'évènement :";
 "preferences_appearance_menu_time_format_24_hour_value" = "24 heures";

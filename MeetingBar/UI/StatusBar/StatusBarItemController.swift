@@ -15,6 +15,7 @@ import SwiftUI
 
 enum MenuStyleConstants {
     static let defaultFontSize: CGFloat = 13
+    static let secondaryFontSize: CGFloat = defaultFontSize - 1
     static let runningIconName = "running_icon"
     static let appIconName = "AppIcon"
     static let calendarCheckmarkIconName = "iconCalendarCheckmark"
@@ -68,7 +69,7 @@ final class StatusBarItemController {
             .showEventMaxTimeUntilEventEnabled, .showEventDetails,
             .shortenEventTitle, .menuEventTitleLength,
             .showEventEndTime, .showMeetingServiceIcon,
-            .timeFormat, .bookmarks, .eventTitleFormat,
+            .showEventLocation, .timeFormat, .bookmarks, .eventTitleFormat,
             .personalEventsAppereance, .pastEventsAppereance,
             .declinedEventsAppereance, .ongoingEventVisibility,
             .showTimelineInMenu,

@@ -69,6 +69,7 @@
 "preferences_appearance_menu_show_event_title" = "הצגת אירוע:";
 "preferences_appearance_menu_show_event_end_time_value" = "זמן הסיום";
 "preferences_appearance_menu_show_event_icon_value" = "סמל";
+"preferences_appearance_menu_show_event_location_value" = "מיקום";
 "preferences_appearance_menu_show_event_details_value" = "פרטים כתת־תפריט";
 "preferences_services_link_service_title" = "לפתוח קישורי %@ עם";
 "preferences_services_link_default_browser_value" = "דפדפן בררת המחדל";
