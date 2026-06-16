@@ -118,6 +118,18 @@ class HelpersTests: XCTestCase {
         XCTAssertNil(event.displayLocation)
     }
 
+    func test_displayLocation_urlOnlyPhysicalLocation_returnLocation() {
+        let location = "https://maps.example.com/floor/2"
+        let event = makeFakeEvent(
+            id: "url-only-physical-location",
+            start: Date(),
+            end: Date().addingTimeInterval(60),
+            location: location
+        )
+
+        XCTAssertEqual(event.displayLocation, location)
+    }
+
     func test_displayLocation_mixedPhysicalLocationAndUrl_returnLocation() {
         let location = "Room A https://maps.example.com/floor/2"
         let event = makeFakeEvent(

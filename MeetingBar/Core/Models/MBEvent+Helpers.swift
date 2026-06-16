@@ -27,7 +27,8 @@ extension MBEvent {
         if normalizedLocation.rangeOfCharacter(from: .whitespacesAndNewlines) == nil,
            let url = URL(string: normalizedLocation),
            url.scheme?.isEmpty == false,
-           url.host?.isEmpty == false {
+           url.host?.isEmpty == false,
+           detectMeetingLink(normalizedLocation) != nil {
             return nil
         }
 
