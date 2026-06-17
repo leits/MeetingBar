@@ -26,13 +26,10 @@ struct WelcomeScreen: View {
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: 480)
             Spacer()
-            HStack {
-                Spacer()
-                Button("onboarding_continue".loco()) {
-                    router.currentStep = .calendarSource
-                }
-                .buttonStyle(.borderedProminent)
-            }
+            OnboardingFooter(
+                primaryTitle: "onboarding_continue".loco(),
+                primaryAction: { router.currentStep = .calendarSource }
+            )
         }
     }
 }

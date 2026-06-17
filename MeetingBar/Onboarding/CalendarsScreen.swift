@@ -26,18 +26,13 @@ struct CalendarsScreen: View {
                 ProgressView()
             }
 
-            HStack {
-                Spacer()
-                if !canContinue {
-                    Text("calendars_screen_select_calendar_title".loco()).foregroundColor(
-                        Color.gray)
-                }
-                Button("onboarding_continue".loco()) {
-                    router.currentStep = .meetingOpening
-                }
-                .buttonStyle(.borderedProminent)
-                .disabled(!canContinue)
-            }
+            OnboardingFooter(
+                onBack: { router.currentStep = .calendarSource },
+                hint: canContinue ? nil : "calendars_screen_select_calendar_title".loco(),
+                primaryTitle: "onboarding_continue".loco(),
+                primaryEnabled: canContinue,
+                primaryAction: { router.currentStep = .meetingOpening }
+            )
         }
     }
 

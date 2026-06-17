@@ -360,8 +360,10 @@
 "status_bar_error_app_link_message" = "Ensure you have the %@ installed, or open such links in a web browser from the preferences instead.";
 // MARK: - Welcome screen
 
+"onboarding_setup_title" = "MeetingBar Setup";
 "onboarding_progress" = "Step %@ of %@";
 "onboarding_continue" = "Continue";
+"onboarding_back" = "Back";
 "onboarding_done" = "Done";
 "onboarding_connect" = "Connect";
 "onboarding_use_calendar_source" = "Use this source";

@@ -55,6 +55,19 @@ final class OnboardingFlowTests: XCTestCase {
         )
     }
 
+    func testProgressMapsStepsToFourUserFacingStages() {
+        XCTAssertEqual(OnboardingProgressPolicy.totalStages, 4)
+        XCTAssertEqual(OnboardingProgressPolicy.stageIndex(for: .welcome), 1)
+        // Authorization runs automatically as part of source selection, so it
+        // shares the source stage rather than counting as its own.
+        XCTAssertEqual(OnboardingProgressPolicy.stageIndex(for: .calendarSource), 2)
+        XCTAssertEqual(OnboardingProgressPolicy.stageIndex(for: .authorization), 2)
+        XCTAssertEqual(OnboardingProgressPolicy.stageIndex(for: .calendarSelection), 3)
+        XCTAssertEqual(OnboardingProgressPolicy.stageIndex(for: .meetingOpening), 4)
+        // The terminal success screen shows no progress position.
+        XCTAssertNil(OnboardingProgressPolicy.stageIndex(for: .success))
+    }
+
     func testSelectingProviderMovesRouterToAuthorizationStep() {
         let router = OnboardingRouter()
 

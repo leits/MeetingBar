@@ -28,6 +28,7 @@ struct AccessScreen: View {
                 }
             }
             Spacer()
+            OnboardingFooter(onBack: { router.currentStep = .welcome })
         }
     }
 }

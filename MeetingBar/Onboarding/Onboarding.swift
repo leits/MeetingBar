@@ -61,15 +61,34 @@ final class OnboardingRouter: ObservableObject {
     }
 }
 
+/// Maps a step to its position among the user-facing setup stages. The
+/// authorization step shares stage 2 with source selection (it runs
+/// automatically), and `success` is terminal, so neither shows a distinct
+/// progress position.
+enum OnboardingProgressPolicy {
+    static let totalStages = 4
+
+    static func stageIndex(for step: OnboardingStep) -> Int? {
+        switch step {
+        case .welcome: 1
+        case .calendarSource, .authorization: 2
+        case .calendarSelection: 3
+        case .meetingOpening: 4
+        case .success: nil
+        }
+    }
+}
+
 struct OnboardingView: View {
     @StateObject private var router = OnboardingRouter()
 
     var body: some View {
         VStack(spacing: 0) {
-            HStack {
-                Text("MeetingBar Setup")
+            HStack(spacing: 12) {
+                Text("onboarding_setup_title".loco())
                     .font(.headline)
                     .foregroundStyle(.secondary)
+                OnboardingProgress(step: router.currentStep)
                 Spacer()
                 Button(action: { NSApplication.shared.keyWindow?.close() }) {
                     Image(systemName: "xmark")
@@ -77,15 +96,15 @@ struct OnboardingView: View {
                         .font(.title3)
                 }
                 .buttonStyle(.plain)
-                .help("Close")
+                .help("general_close".loco())
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
             .background(Color(nsColor: .controlBackgroundColor))
 
+            Divider()
+
             VStack(alignment: .leading) {
-                OnboardingProgress(step: router.currentStep)
-                Divider()
                 switch router.currentStep {
                 case .welcome:
                     WelcomeScreen(router: router)
@@ -107,26 +126,59 @@ struct OnboardingView: View {
     }
 }
 
+/// Slim segmented progress shown in the window header. Filled segments mark
+/// completed and current stages; the textual "Step X of Y" is preserved as the
+/// accessibility label.
 private struct OnboardingProgress: View {
     let step: OnboardingStep
 
-    private var index: Int {
-        switch step {
-        case .welcome: 1
-        case .calendarSource: 2
-        case .authorization: 3
-        case .calendarSelection: 4
-        case .meetingOpening: 5
-        case .success: 6
+    var body: some View {
+        if let index = OnboardingProgressPolicy.stageIndex(for: step) {
+            let total = OnboardingProgressPolicy.totalStages
+            HStack(spacing: 5) {
+                ForEach(1 ... total, id: \.self) { stage in
+                    Capsule()
+                        .fill(stage <= index ? Color.accentColor : Color.secondary.opacity(0.25))
+                        .frame(width: 18, height: 4)
+                }
+            }
+            .accessibilityElement()
+            .accessibilityLabel(Text("onboarding_progress".loco("\(index)", "\(total)")))
         }
     }
+}
+
+/// Shared footer for onboarding screens: an optional Back button on the
+/// leading edge and an optional primary action on the trailing edge, with an
+/// optional inline hint and busy spinner. Keeps navigation consistent across
+/// every step instead of each screen hand-rolling its own button row.
+struct OnboardingFooter: View {
+    var onBack: (() -> Void)?
+    var hint: String?
+    var isBusy: Bool = false
+    var primaryTitle: String?
+    var primaryEnabled: Bool = true
+    var primaryAction: (() -> Void)?
 
     var body: some View {
-        HStack {
-            Text("onboarding_progress".loco("\(index)", "6"))
-                .font(.caption)
-                .foregroundStyle(.secondary)
+        HStack(spacing: 12) {
+            if let onBack {
+                Button("onboarding_back".loco(), action: onBack)
+            }
             Spacer()
+            if let hint {
+                Text(hint)
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+            }
+            if isBusy {
+                ProgressView().controlSize(.small)
+            }
+            if let primaryTitle, let primaryAction {
+                Button(primaryTitle, action: primaryAction)
+                    .buttonStyle(.borderedProminent)
+                    .disabled(!primaryEnabled || isBusy)
+            }
         }
     }
 }
@@ -166,17 +218,12 @@ private struct MeetingOpeningScreen: View {
             }
 
             Spacer()
-            HStack {
-                Spacer()
-                if isCompleting {
-                    ProgressView().controlSize(.small)
-                }
-                Button("onboarding_continue".loco()) {
-                    Task { await complete() }
-                }
-                .buttonStyle(.borderedProminent)
-                .disabled(isCompleting)
-            }
+            OnboardingFooter(
+                onBack: { router.currentStep = .calendarSelection },
+                isBusy: isCompleting,
+                primaryTitle: "onboarding_continue".loco(),
+                primaryAction: { Task { await complete() } }
+            )
         }
     }
 
@@ -212,13 +259,10 @@ private struct OnboardingSuccessScreen: View {
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
             Spacer()
-            HStack {
-                Spacer()
-                Button("onboarding_done".loco()) {
-                    NSApplication.shared.keyWindow?.close()
-                }
-                .buttonStyle(.borderedProminent)
-            }
+            OnboardingFooter(
+                primaryTitle: "onboarding_done".loco(),
+                primaryAction: { NSApplication.shared.keyWindow?.close() }
+            )
         }
     }
 }
