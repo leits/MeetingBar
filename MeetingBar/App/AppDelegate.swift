@@ -80,8 +80,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    /// Opens the first-run setup window. Shared by the cold-launch path and the
-    /// debug "Launch onboarding" action so both drive the exact same flow.
+    /// Opens the first-run setup window from the cold-launch path when setup is
+    /// incomplete.
     func presentOnboardingWindow() {
         guard let appModel else { return }
         windowCoordinator.openOnboardingWindow(
@@ -122,9 +122,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let model = AppModel(environment: env)
         appModel = model
         AppRuntimeBridge.shared.install(appModel: model)
-        AppRuntimeBridge.shared.installOnboardingPresenter { [weak self] in
-            self?.presentOnboardingWindow()
-        }
 
         let actionHandler = NotificationActionHandler(
             isScreenLocked: { [weak model] in model?.state.screenIsLocked ?? false },

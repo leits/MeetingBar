@@ -204,7 +204,6 @@ private struct EssentialsScreen: View {
     @State private var isCompleting = false
     @State private var errorMessage: String?
 
-    @Default(.showEventsForPeriod) private var showEventsForPeriod
     @Default(.joinEventNotification) private var joinEventNotification
     @Default(.joinEventNotificationTime) private var joinEventNotificationTime
     @Default(.defaultBrowser) private var defaultBrowser
@@ -222,24 +221,14 @@ private struct EssentialsScreen: View {
             Text("onboarding_essentials_description".loco())
                 .foregroundStyle(.secondary)
 
-            PreferencesGroupedForm {
-                Section(header: Text("onboarding_essentials_availability_title".loco())) {
+            GroupBox {
+                VStack(alignment: .leading, spacing: 12) {
                     LaunchAtLogin.Toggle {
                         Text("preferences_general_option_login_launch".loco())
                     }
 
-                    Picker(
-                        preferenceLabel("preferences_appearance_events_show_events_for_title"),
-                        selection: $showEventsForPeriod
-                    ) {
-                        Text("preferences_appearance_events_show_events_for_today_value".loco())
-                            .tag(ShowEventsForPeriod.today)
-                        Text("preferences_appearance_events_show_events_for_today_tomorrow_value".loco())
-                            .tag(ShowEventsForPeriod.today_n_tomorrow)
-                    }
-                }
+                    Divider()
 
-                Section(header: Text("onboarding_essentials_joining_title".loco())) {
                     HStack {
                         Text("preferences_services_link_meeting_title".loco())
                         Spacer()
@@ -251,9 +240,9 @@ private struct EssentialsScreen: View {
                         Spacer()
                         KeyboardShortcuts.Recorder(for: .joinEventShortcut)
                     }
-                }
 
-                Section(header: Text("onboarding_essentials_reminders_title".loco())) {
+                    Divider()
+
                     HStack {
                         Toggle(
                             "shared_send_notification_toggle".loco(),
@@ -263,8 +252,8 @@ private struct EssentialsScreen: View {
                         notificationTimePicker
                     }
                 }
+                .padding(8)
             }
-            .frame(maxHeight: .infinity)
 
             Text("onboarding_essentials_hint".loco())
                 .font(.caption)
@@ -276,6 +265,7 @@ private struct EssentialsScreen: View {
             }
 
             Spacer()
+
             OnboardingFooter(
                 onBack: { router.currentStep = .calendarSelection },
                 isBusy: isCompleting,

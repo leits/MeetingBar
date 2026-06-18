@@ -33,14 +33,6 @@ struct AdvancedTab: View {
                 FilterEventRegexesSection()
                 MeetingRegexesSection()
             }
-
-            #if DEBUG
-            Section(header: Text("Debug")) {
-                Button("Launch onboarding") {
-                    AppRuntimeBridge.shared.openOnboarding()
-                }
-            }
-            #endif
         }
     }
 }

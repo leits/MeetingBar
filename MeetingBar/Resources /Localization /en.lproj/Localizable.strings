@@ -385,7 +385,7 @@
 "onboarding_meeting_opening_title" = "Choose how meetings open";
 "onboarding_meeting_opening_description" = "Set the default app or browser for your most common meeting services.";
 "onboarding_essentials_title" = "Choose daily behavior";
-"onboarding_essentials_description" = "Pick how MeetingBar should behave in the menu bar, when meetings start, and when you join.";
+"onboarding_essentials_description" = "Choose a few defaults for opening meetings and staying on schedule.";
 "onboarding_essentials_availability_title" = "Availability";
 "onboarding_essentials_joining_title" = "Joining";
 "onboarding_essentials_reminders_title" = "Reminders";

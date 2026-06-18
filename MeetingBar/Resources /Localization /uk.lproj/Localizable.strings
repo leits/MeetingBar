@@ -447,7 +447,7 @@
 "onboarding_meeting_opening_title" = "Виберіть, як відкриваються зустрічі";
 "onboarding_meeting_opening_description" = "Встановіть застосунок або браузер за замовчуванням для найпоширеніших сервісів зустрічей.";
 "onboarding_essentials_title" = "Налаштуйте щоденну поведінку";
-"onboarding_essentials_description" = "Оберіть, як MeetingBar поводитиметься у смузі меню, перед початком зустрічей і під час приєднання.";
+"onboarding_essentials_description" = "Оберіть кілька типових дій для відкриття зустрічей і нагадувань.";
 "onboarding_essentials_availability_title" = "Доступність";
 "onboarding_essentials_joining_title" = "Приєднання";
 "onboarding_essentials_reminders_title" = "Нагадування";
