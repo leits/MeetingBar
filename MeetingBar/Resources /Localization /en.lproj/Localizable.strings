@@ -135,9 +135,7 @@
 "preferences_appearance_events_show_events_for_title" = "Show events for";
 "preferences_appearance_events_show_events_for_today_value" = "today";
 "preferences_appearance_events_show_events_for_today_tomorrow_value" = "today and tomorrow";
-"preferences_appearance_events_non_all_day_title" = "Timed events";
-"preferences_appearance_events_value_inactive_without_meeting_link" = "show those without meeting links as inactive";
-"preferences_appearance_events_value_hide_without_meeting_link" = "hide all without meeting links";
+"preferences_appearance_events_no_meeting_link_title" = "Events without a meeting link";
 "preferences_appearance_events_all_day_title" = "All-day events:";
 "preferences_appearance_events_without_guest_title" = "Events without guests:";
 "preferences_appearance_events_past_title" = "Past events:";
@@ -366,7 +364,6 @@
 "onboarding_back" = "Back";
 "onboarding_done" = "Done";
 "onboarding_connect" = "Connect";
-"onboarding_use_calendar_source" = "Use this source";
 "onboarding_choose_different_source" = "Choose a different source";
 "onboarding_welcome_title" = "Welcome to MeetingBar";
 "onboarding_welcome_description" = "MeetingBar helps you see and join your next meeting directly from the menu bar.";
@@ -387,6 +384,13 @@
 "onboarding_calendar_selection_reconnect" = "Google Calendar needs to be reconnected.";
 "onboarding_meeting_opening_title" = "Choose how meetings open";
 "onboarding_meeting_opening_description" = "Set the default app or browser for your most common meeting services.";
+"onboarding_essentials_title" = "Choose daily behavior";
+"onboarding_essentials_description" = "Pick how MeetingBar should behave in the menu bar, when meetings start, and when you join.";
+"onboarding_essentials_availability_title" = "Availability";
+"onboarding_essentials_joining_title" = "Joining";
+"onboarding_essentials_reminders_title" = "Reminders";
+"onboarding_essentials_hint" = "You can tune every detail later in Preferences.";
+"onboarding_start_using" = "Start using MeetingBar";
 "onboarding_success_title" = "You’re ready";
 "onboarding_success_description" = "Your next meeting will appear in the menu bar.";
 

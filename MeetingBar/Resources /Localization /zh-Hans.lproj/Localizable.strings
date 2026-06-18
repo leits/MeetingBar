@@ -128,7 +128,6 @@
 "onboarding_progress" = "第 %@ 步，共 %@ 步";
 "onboarding_success_description" = "您的下一个会议将显示在菜单栏中。";
 "onboarding_success_title" = "已准备就绪";
-"onboarding_use_calendar_source" = "使用此来源";
 "onboarding_welcome_description" = "MeetingBar 帮助您直接从菜单栏查看并加入下一个会议。";
 "onboarding_welcome_title" = "欢迎使用 MeetingBar";
 "preferences_advanced_apple_script_checkmark" = "加入会议时运行 AppleScript";
@@ -156,7 +155,6 @@
 "preferences_advanced_wrong_location_title" = "位置错误";
 "preferences_appearance_events_all_day_title" = "全天事件：";
 "preferences_appearance_events_declined_title" = "已拒绝的事件：";
-"preferences_appearance_events_non_all_day_title" = "其他事件：";
 "preferences_appearance_events_past_title" = "过去的事件：";
 "preferences_appearance_events_pending_title" = "待处理事件";
 "preferences_appearance_events_show_events_for_title" = "显示以下时间的事件：";
@@ -166,8 +164,6 @@
 "preferences_appearance_events_value_as_inactive" = "显示为不活跃";
 "preferences_appearance_events_value_as_underlined" = "显示带下划线";
 "preferences_appearance_events_value_hide" = "隐藏";
-"preferences_appearance_events_value_hide_without_meeting_link" = "隐藏没有会议链接的事件";
-"preferences_appearance_events_value_inactive_without_meeting_link" = "将没有会议链接的事件显示为不活跃";
 "preferences_appearance_events_value_only_with_link" = "仅显示有会议链接的事件";
 "preferences_appearance_events_value_show" = "显示";
 "preferences_appearance_events_value_with_strikethrough" = "显示带删除线";
@@ -410,3 +406,5 @@
 "welcome_screen_setup_calendar_title" = "设置日历";
 "welcome_screen_shortcut_ad_hoc_meeting_title" = "使用您的快捷键：";
 "welcome_screen_shortcut_next_meeting_title" = "使用您的快捷键加入下一个事件会议：";
+"preferences_appearance_events_no_meeting_link_title" = "无会议链接的事件";
+"preferences_appearance_menu_show_event_calendar_color_value" = "日历颜色";

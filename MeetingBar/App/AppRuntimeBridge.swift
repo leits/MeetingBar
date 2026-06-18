@@ -15,11 +15,22 @@ final class AppRuntimeBridge {
     static let shared = AppRuntimeBridge()
 
     private weak var appModel: AppModel?
+    private var onboardingPresenter: (() -> Void)?
 
     private init() {}
 
     func install(appModel: AppModel) {
         self.appModel = appModel
+    }
+
+    /// AppDelegate registers how to (re)open the first-run setup window so debug
+    /// entry points can trigger it without reaching into AppKit directly.
+    func installOnboardingPresenter(_ presenter: @escaping () -> Void) {
+        onboardingPresenter = presenter
+    }
+
+    func openOnboarding() {
+        onboardingPresenter?()
     }
 
     func nearestEvent() -> MBEvent? {

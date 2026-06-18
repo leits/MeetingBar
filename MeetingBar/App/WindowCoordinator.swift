@@ -63,20 +63,19 @@ final class OnboardingWindow: NSWindow {
 private enum WindowStylePolicy {
     @MainActor
     static func applyRoundedCorners(to window: NSWindow, radius: CGFloat = 12) {
-        window.isOpaque = true
-        window.backgroundColor = NSColor.windowBackgroundColor
+        // Clear, non-opaque window so AppKit derives the drop shadow from the
+        // opaque SwiftUI content (which paints its own rounded background and
+        // hairline border). A shadow set on the content layer itself can't
+        // work here: masksToBounds clips the rounded corners *and* the shadow.
+        window.isOpaque = false
+        window.backgroundColor = .clear
+        window.hasShadow = true
 
         guard let contentView = window.contentView else { return }
 
         contentView.wantsLayer = true
         contentView.layer?.cornerRadius = radius
         contentView.layer?.masksToBounds = true
-
-        // Add subtle drop shadow for depth (like system windows)
-        contentView.layer?.shadowColor = NSColor.black.cgColor
-        contentView.layer?.shadowOpacity = 0.08
-        contentView.layer?.shadowOffset = CGSize(width: 0, height: -2)
-        contentView.layer?.shadowRadius = 8
     }
 }
 
@@ -119,6 +118,11 @@ final class WindowCoordinator {
 
         onboardingWindow.level = .floating
         onboardingWindow.center()
+        // MeetingBar is a menu-bar agent, so it isn't the active app when the
+        // setup window opens. Without activating, the window never becomes key
+        // until the user clicks it, and prominent (accent) controls render
+        // without their fill — making the Continue button look absent.
+        NSApp.activate(ignoringOtherApps: true)
         onboardingWindow.makeKeyAndOrderFront(nil)
     }
 
@@ -192,6 +196,11 @@ final class WindowCoordinator {
             .environmentObject(calendarSync)
 
         if let preferencesWindow {
+            if preferencesWindow.isMiniaturized {
+                preferencesWindow.deminiaturize(nil)
+            }
+            // Activate the (accessory) app first, then key the existing window,
+            // so reopening Preferences brings it to front *and* focused.
             NSApplication.shared.activate(ignoringOtherApps: true)
             preferencesWindow.makeKeyAndOrderFront(nil)
             return
@@ -206,15 +215,26 @@ final class WindowCoordinator {
 
         window.title = WindowTitles.preferences
         window.contentView = NSHostingView(rootView: contentView)
-        WindowStylePolicy.applyRoundedCorners(to: window)
-        window.level = .floating
-        window.makeKeyAndOrderFront(nil)
-        NSApplication.shared.activate(ignoringOtherApps: true)
+        // No custom rounded-corner / shadow layer here: this is a standard
+        // titled window, so the system draws its own corners and shadow. The
+        // transparent titlebar lets the NavigationSplitView sidebar material
+        // flow up under the title bar for the System Settings look; the active
+        // tab name is shown via the detail's `.navigationTitle`.
+        window.titlebarAppearsTransparent = true
+        window.titleVisibility = .hidden
+        window.styleMask.insert(.fullSizeContentView)
+        // Standard window level (not .floating): clicking another app should
+        // send Preferences behind it, like any normal window.
 
         let controller = NSWindowController(window: window)
         controller.showWindow(self)
-
         window.center()
+
+        // This is an LSUIElement accessory app, so it isn't frontmost by
+        // default. Activate the app *before* keying the window so Preferences
+        // opens focused rather than just ordered to the front.
+        NSApplication.shared.activate(ignoringOtherApps: true)
+        window.makeKeyAndOrderFront(nil)
 
         preferencesWindow = window
     }

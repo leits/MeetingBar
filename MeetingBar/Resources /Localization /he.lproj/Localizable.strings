@@ -40,8 +40,6 @@
 "preferences_appearance_events_show_events_for_today_value" = "היום";
 "preferences_appearance_events_show_events_for_title" = "הצגת אירועים על פני";
 "preferences_appearance_events_show_events_for_today_tomorrow_value" = "היום ומחר";
-"preferences_appearance_events_non_all_day_title" = "אירועים אחרים:";
-"preferences_appearance_events_value_hide_without_meeting_link" = "להסתיר את אלו ללא קישורי פגישות";
 "preferences_appearance_events_all_day_title" = "אירועי כל היום:";
 "preferences_appearance_events_without_guest_title" = "אירועים ללא אורחים:";
 "preferences_appearance_events_past_title" = "אירועי עבר:";
@@ -242,7 +240,6 @@
 // MARK: - Preferences Appearance
 
 "preferences_appearance_events_title" = "אירועים";
-"preferences_appearance_events_value_inactive_without_meeting_link" = "הצגת אלו ללא קישורי פגישות כבלתי פעילים";
 "preferences_appearance_events_value_as_underlined" = "הצגה כמסומן בקו תחתון";
 "preferences_appearance_status_bar_icon_specific_icon_value" = " סמל מוכוון אירוע (למשל MS Teams)";
 "preferences_appearance_status_bar_title_shorten_stepper" = "קיצור ל־%d תווים";
@@ -368,7 +365,6 @@
 "onboarding_progress" = "שלב %@ מתוך %@";
 "onboarding_success_description" = "הפגישה הבאה שלך תופיע בסרגל התפריטים.";
 "onboarding_success_title" = "אתה מוכן";
-"onboarding_use_calendar_source" = "השתמש במקור זה";
 "onboarding_welcome_description" = "MeetingBar עוזר לך לראות ולהצטרף לפגישה הבאה שלך ישירות מסרגל התפריטים.";
 "onboarding_welcome_title" = "ברוך הבא ל‑MeetingBar";
 "preferences_advanced_regex_duplicate_error" = "ביטוי רגולרי זה כבר קיים.";
@@ -464,3 +460,5 @@
 "preferences_sidebar_setup" = "הגדרה";
 "status_bar_control_current_meeting" = "פגישה נוכחית";
 "status_bar_control_next_meeting" = "הפגישה הבאה";
+"preferences_appearance_events_no_meeting_link_title" = "אירועים ללא קישור לפגישה";
+"preferences_appearance_menu_show_event_calendar_color_value" = "צבע היומן";

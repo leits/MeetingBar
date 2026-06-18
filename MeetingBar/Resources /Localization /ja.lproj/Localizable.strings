@@ -67,9 +67,6 @@
 "preferences_appearance_events_show_events_for_title" = "表示するイベント:";
 "preferences_appearance_events_show_events_for_today_value" = "今日";
 "preferences_appearance_events_show_events_for_today_tomorrow_value" = "今日と明日";
-"preferences_appearance_events_non_all_day_title" = "その他のイベント:";
-"preferences_appearance_events_value_inactive_without_meeting_link" = "リンクのないイベントを非アクティブで表示";
-"preferences_appearance_events_value_hide_without_meeting_link" = "リンクのないイベントを非表示";
 "preferences_appearance_events_all_day_title" = "終日のイベント:";
 "preferences_appearance_events_without_guest_title" = "ゲストのないイベント:";
 "preferences_appearance_events_past_title" = "過去のイベント:";
@@ -385,7 +382,6 @@
 "onboarding_progress" = "ステップ %@ / %@";
 "onboarding_success_description" = "次のミーティングがメニューバーに表示されます。";
 "onboarding_success_title" = "準備完了";
-"onboarding_use_calendar_source" = "このソースを使用";
 "onboarding_welcome_description" = "MeetingBarは次のミーティングをメニューバーから直接確認・参加するのに役立ちます。";
 "onboarding_welcome_title" = "MeetingBarへようこそ";
 "preferences_advanced_regex_duplicate_error" = "この正規表現はすでに存在します。";
@@ -488,3 +484,5 @@
 "preferences_sidebar_setup" = "セットアップ";
 "status_bar_control_current_meeting" = "現在のミーティング";
 "status_bar_control_next_meeting" = "次のミーティング";
+"preferences_appearance_events_no_meeting_link_title" = "会議リンクのないイベント";
+"preferences_appearance_menu_show_event_calendar_color_value" = "カレンダーの色";

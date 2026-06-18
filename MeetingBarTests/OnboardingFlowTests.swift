@@ -63,7 +63,7 @@ final class OnboardingFlowTests: XCTestCase {
         XCTAssertEqual(OnboardingProgressPolicy.stageIndex(for: .calendarSource), 2)
         XCTAssertEqual(OnboardingProgressPolicy.stageIndex(for: .authorization), 2)
         XCTAssertEqual(OnboardingProgressPolicy.stageIndex(for: .calendarSelection), 3)
-        XCTAssertEqual(OnboardingProgressPolicy.stageIndex(for: .meetingOpening), 4)
+        XCTAssertEqual(OnboardingProgressPolicy.stageIndex(for: .essentials), 4)
         // The terminal success screen shows no progress position.
         XCTAssertNil(OnboardingProgressPolicy.stageIndex(for: .success))
     }

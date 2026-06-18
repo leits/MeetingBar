@@ -253,9 +253,6 @@
 "preferences_appearance_events_past_title" = "Évènements passés :";
 "preferences_appearance_events_without_guest_title" = "Évènements sans invités :";
 "preferences_appearance_events_all_day_title" = "Évènements d'une journée :";
-"preferences_appearance_events_value_hide_without_meeting_link" = "masquer tous les liens sans réunion";
-"preferences_appearance_events_value_inactive_without_meeting_link" = "afficher ceux qui n'ont pas de liens de réunion comme inactifs";
-"preferences_appearance_events_non_all_day_title" = "Autres évènements :";
 "preferences_appearance_events_show_events_for_today_tomorrow_value" = "aujourd'hui et demain";
 "preferences_appearance_events_show_events_for_today_value" = "aujourd'hui";
 "preferences_appearance_events_show_events_for_title" = "Afficher les évènements pour";
@@ -368,7 +365,6 @@
 "onboarding_progress" = "Étape %@ sur %@";
 "onboarding_success_description" = "Votre prochaine réunion apparaîtra dans la barre des menus.";
 "onboarding_success_title" = "Vous êtes prêt";
-"onboarding_use_calendar_source" = "Utiliser cette source";
 "onboarding_welcome_description" = "MeetingBar vous aide à voir et rejoindre votre prochaine réunion directement depuis la barre des menus.";
 "onboarding_welcome_title" = "Bienvenue dans MeetingBar";
 "preferences_advanced_regex_duplicate_error" = "Cette expression régulière existe déjà.";
@@ -464,3 +460,5 @@
 "preferences_sidebar_setup" = "Configuration";
 "status_bar_control_current_meeting" = "Réunion en cours";
 "status_bar_control_next_meeting" = "Prochaine réunion";
+"preferences_appearance_events_no_meeting_link_title" = "Événements sans lien de réunion";
+"preferences_appearance_menu_show_event_calendar_color_value" = "couleur du calendrier";

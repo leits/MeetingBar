@@ -62,9 +62,6 @@
 "preferences_appearance_events_show_events_for_title" = "Prikaži događaje za";
 "preferences_appearance_events_show_events_for_today_value" = "danas";
 "preferences_appearance_events_show_events_for_today_tomorrow_value" = "danas ili sutra";
-"preferences_appearance_events_non_all_day_title" = "Drugi događaji:";
-"preferences_appearance_events_value_inactive_without_meeting_link" = "prikaži događaje bez poveznica kao neaktivne";
-"preferences_appearance_events_value_hide_without_meeting_link" = "sakrij sve bez poveznica na sastanke";
 "preferences_appearance_events_all_day_title" = "Cjelodnevni događaji:";
 "preferences_appearance_events_without_guest_title" = "Događaji bez gostiju:";
 "preferences_appearance_events_past_title" = "Prošli događaji:";
@@ -374,7 +371,6 @@
 "onboarding_progress" = "Korak %@ od %@";
 "onboarding_success_description" = "Sljedeći sastanak pojavit će se u traci izbornika.";
 "onboarding_success_title" = "Spremni ste";
-"onboarding_use_calendar_source" = "Koristi ovaj izvor";
 "onboarding_welcome_description" = "MeetingBar vam pomaže vidjeti i pridružiti se sljedećem sastanku izravno iz trake izbornika.";
 "onboarding_welcome_title" = "Dobrodošli u MeetingBar";
 "preferences_advanced_regex_duplicate_error" = "Ovaj regularni izraz već postoji.";
@@ -470,3 +466,5 @@
 "preferences_sidebar_setup" = "Postavljanje";
 "status_bar_control_current_meeting" = "Trenutni sastanak";
 "status_bar_control_next_meeting" = "Sljedeći sastanak";
+"preferences_appearance_events_no_meeting_link_title" = "Događaji bez poveznice na sastanak";
+"preferences_appearance_menu_show_event_calendar_color_value" = "boja kalendara";

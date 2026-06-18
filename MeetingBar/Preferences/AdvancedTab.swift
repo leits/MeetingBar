@@ -13,12 +13,16 @@ struct AdvancedTab: View {
     var body: some View {
         PreferencesGroupedForm {
             Section {
-                Label(
-                    "preferences_advanced_setting_warning".loco(),
-                    systemImage: "exclamationmark.triangle"
-                )
-                .font(.caption)
-                .foregroundStyle(.secondary)
+                HStack(spacing: 10) {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundStyle(.orange)
+                        .font(.title3)
+                    Text("preferences_advanced_setting_warning".loco())
+                        .fontWeight(.medium)
+                    Spacer()
+                }
+                .padding(.vertical, 2)
+                .listRowBackground(Color.orange.opacity(0.12))
             }
 
             Section(header: Text("preferences_section_apple_script_hooks_title".loco())) {
@@ -29,6 +33,14 @@ struct AdvancedTab: View {
                 FilterEventRegexesSection()
                 MeetingRegexesSection()
             }
+
+            #if DEBUG
+            Section(header: Text("Debug")) {
+                Button("Launch onboarding") {
+                    AppRuntimeBridge.shared.openOnboarding()
+                }
+            }
+            #endif
         }
     }
 }

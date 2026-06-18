@@ -21,25 +21,39 @@ struct CalendarsScreen: View {
                 .foregroundStyle(.secondary)
 
             if let appModel = onboardingHandler.appModel {
-                CalendarSelectionContent(appModel: appModel)
+                // Observe appModel here so the footer's enabled state recomputes
+                // when a calendar is toggled (CalendarsScreen itself only
+                // observes the router and handler, which don't change on toggle).
+                CalendarSelectionStep(router: router, appModel: appModel)
             } else {
                 ProgressView()
+                Spacer()
+                OnboardingFooter(onBack: { router.currentStep = .calendarSource })
             }
-
-            OnboardingFooter(
-                onBack: { router.currentStep = .calendarSource },
-                hint: canContinue ? nil : "calendars_screen_select_calendar_title".loco(),
-                primaryTitle: "onboarding_continue".loco(),
-                primaryEnabled: canContinue,
-                primaryAction: { router.currentStep = .meetingOpening }
-            )
         }
+    }
+}
+
+private struct CalendarSelectionStep: View {
+    @ObservedObject var router: OnboardingRouter
+    @ObservedObject var appModel: AppModel
+
+    var body: some View {
+        CalendarSelectionContent(appModel: appModel)
+
+        OnboardingFooter(
+            onBack: { router.currentStep = .calendarSource },
+            hint: canContinue ? nil : "calendars_screen_select_calendar_title".loco(),
+            primaryTitle: "onboarding_continue".loco(),
+            primaryEnabled: canContinue,
+            primaryAction: { router.currentStep = .essentials }
+        )
     }
 
     private var canContinue: Bool {
         OnboardingFlowPolicy.canContinueCalendarSelection(
-            selectedCalendarIDs: onboardingHandler.appModel?.state.selectedCalendarIDs ?? [],
-            availableCalendarIDs: onboardingHandler.appModel?.state.calendars.map(\.id) ?? []
+            selectedCalendarIDs: appModel.state.selectedCalendarIDs,
+            availableCalendarIDs: appModel.state.calendars.map(\.id)
         )
     }
 }
@@ -48,45 +62,49 @@ private struct CalendarSelectionContent: View {
     @ObservedObject var appModel: AppModel
 
     var body: some View {
-        let presentation = PreferencesCalendarPresentation.make(from: appModel.state)
-
-        GroupBox {
+        // Same grouped-form presentation as Preferences → Calendars, so the
+        // selection list looks identical in both places.
+        PreferencesGroupedForm {
             if appModel.state.calendars.isEmpty {
-                VStack(spacing: 10) {
-                    Image(systemName: emptyStateIcon)
-                        .font(.title)
-                        .foregroundStyle(.secondary)
-                    Text(emptyStateText)
-                        .multilineTextAlignment(.center)
-                    HStack {
-                        if presentation.canReconnect {
-                            Button("preferences_status_reconnect".loco()) {
-                                appModel.send(
-                                    .changeProvider(presentation.activeProvider, signOut: true)
-                                )
-                            }
-                        }
-                        if presentation.canOpenCalendarSettings {
-                            Button("preferences_status_open_calendar_settings".loco()) {
-                                NSWorkspace.shared.open(Links.calendarPreferences)
-                            }
-                        }
-                        Button("general_refresh".loco()) {
-                            appModel.send(.refreshCalendars)
-                        }
-                    }
-                    .disabled(appModel.state.providerChangeInProgress)
+                Section {
+                    emptyState
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
-                List {
-                    CalendarSectionsView(calendars: appModel.state.calendars)
-                }
-                .listStyle(.inset)
-                .frame(minHeight: 260)
+                CalendarSectionsView(calendars: appModel.state.calendars)
             }
         }
         .environmentObject(appModel)
+        .frame(maxHeight: .infinity)
+    }
+
+    @ViewBuilder
+    private var emptyState: some View {
+        let presentation = PreferencesCalendarPresentation.make(from: appModel.state)
+        VStack(spacing: 10) {
+            Image(systemName: emptyStateIcon)
+                .font(.title)
+                .foregroundStyle(.secondary)
+            Text(emptyStateText)
+                .multilineTextAlignment(.center)
+            HStack {
+                if presentation.canReconnect {
+                    Button("preferences_status_reconnect".loco()) {
+                        appModel.send(.changeProvider(presentation.activeProvider, signOut: true))
+                    }
+                }
+                if presentation.canOpenCalendarSettings {
+                    Button("preferences_status_open_calendar_settings".loco()) {
+                        NSWorkspace.shared.open(Links.calendarPreferences)
+                    }
+                }
+                Button("general_refresh".loco()) {
+                    appModel.send(.refreshCalendars)
+                }
+            }
+            .disabled(appModel.state.providerChangeInProgress)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 8)
     }
 
     private var emptyStateIcon: String {

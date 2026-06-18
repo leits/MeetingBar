@@ -58,14 +58,14 @@ struct EventsSection: View {
             }
 
             Picker(
-                preferenceLabel("preferences_appearance_events_non_all_day_title"),
+                preferenceLabel("preferences_appearance_events_no_meeting_link_title"),
                 selection: $nonAllDayEvents
             ) {
                 Text("preferences_appearance_events_value_show".loco())
                     .tag(NonAlldayEventsAppereance.show)
-                Text("preferences_appearance_events_value_inactive_without_meeting_link".loco())
+                Text("preferences_appearance_events_value_as_inactive".loco())
                     .tag(NonAlldayEventsAppereance.show_inactive_without_meeting_link)
-                Text("preferences_appearance_events_value_hide_without_meeting_link".loco())
+                Text("preferences_appearance_events_value_hide".loco())
                     .tag(NonAlldayEventsAppereance.hide_without_meeting_link)
             }
 
@@ -196,15 +196,20 @@ struct StatusBarSection: View {
                     .tag(EventTitleFormat.none)
             }
 
-            Stepper(
-                value: $statusbarEventTitleLength,
-                in: statusbarEventTitleLengthLimits.min ... statusbarEventTitleLengthLimits.max,
-                step: 5
-            ) {
-                Text(
-                    "preferences_appearance_status_bar_title_shorten_stepper".loco(
-                        statusbarEventTitleLength)
-                )
+            HStack {
+                Spacer()
+                Stepper(
+                    value: $statusbarEventTitleLength,
+                    in: statusbarEventTitleLengthLimits.min ... statusbarEventTitleLengthLimits.max,
+                    step: 5
+                ) {
+                    Text(
+                        "preferences_appearance_status_bar_title_shorten_stepper".loco(
+                            statusbarEventTitleLength)
+                    )
+                    .monospacedDigit()
+                }
+                .fixedSize()
             }
             .padding(.leading, 16)
             .disabled(eventTitleFormat != .show)
@@ -225,15 +230,20 @@ struct StatusBarSection: View {
                 isOn: $showEventMaxTimeUntilEventEnabled
             )
 
-            Stepper(
-                value: $showEventMaxTimeUntilEventThreshold,
-                in: 5 ... 720,
-                step: 5
-            ) {
-                Text(
-                    "preferences_appearance_status_bar_next_event_stepper".loco(
-                        showEventMaxTimeUntilEventThreshold)
-                )
+            HStack {
+                Spacer()
+                Stepper(
+                    value: $showEventMaxTimeUntilEventThreshold,
+                    in: 5 ... 720,
+                    step: 5
+                ) {
+                    Text(
+                        "preferences_appearance_status_bar_next_event_stepper".loco(
+                            showEventMaxTimeUntilEventThreshold)
+                    )
+                    .monospacedDigit()
+                }
+                .fixedSize()
             }
             .padding(.leading, 16)
             .disabled(!showEventMaxTimeUntilEventEnabled)
@@ -303,15 +313,20 @@ struct MenuSection: View {
                 isOn: $shortenEventTitle
             )
 
-            Stepper(
-                value: $menuEventTitleLength,
-                in: 20 ... 100,
-                step: 5
-            ) {
-                Text(
-                    "preferences_appearance_menu_shorten_event_title_stepper".loco(
-                        menuEventTitleLength)
-                )
+            HStack {
+                Spacer()
+                Stepper(
+                    value: $menuEventTitleLength,
+                    in: 20 ... 100,
+                    step: 5
+                ) {
+                    Text(
+                        "preferences_appearance_menu_shorten_event_title_stepper".loco(
+                            menuEventTitleLength)
+                    )
+                    .monospacedDigit()
+                }
+                .fixedSize()
             }
             .padding(.leading, 16)
             .disabled(!shortenEventTitle)

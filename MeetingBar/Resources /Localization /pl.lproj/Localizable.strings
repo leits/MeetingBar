@@ -63,9 +63,6 @@
 "preferences_appearance_events_show_events_for_title" = "Pokaż wydarzenia dla";
 "preferences_appearance_events_show_events_for_today_value" = "dzisiaj";
 "preferences_appearance_events_show_events_for_today_tomorrow_value" = "dziś i jutro";
-"preferences_appearance_events_non_all_day_title" = "Inne wydarzenia:";
-"preferences_appearance_events_value_inactive_without_meeting_link" = "pokaż te bez linków do spotkań jako nieaktywne";
-"preferences_appearance_events_value_hide_without_meeting_link" = "ukryj wszystkie spotkania bez linków";
 "preferences_appearance_events_all_day_title" = "Wydarzenia całodniowe:";
 "preferences_appearance_events_without_guest_title" = "Wydarzenia bez gości:";
 "preferences_appearance_events_past_title" = "Wydarzenia z przeszłości:";
@@ -376,7 +373,6 @@
 "onboarding_progress" = "Krok %@ z %@";
 "onboarding_success_description" = "Twoje następne spotkanie pojawi się na pasku menu.";
 "onboarding_success_title" = "Jesteś gotowy";
-"onboarding_use_calendar_source" = "Użyj tego źródła";
 "onboarding_welcome_description" = "MeetingBar pomaga zobaczyć i dołączyć do następnego spotkania bezpośrednio z paska menu.";
 "onboarding_welcome_title" = "Witaj w MeetingBar";
 "preferences_advanced_regex_duplicate_error" = "To wyrażenie regularne już istnieje.";
@@ -472,3 +468,5 @@
 "preferences_sidebar_setup" = "Konfiguracja";
 "status_bar_control_current_meeting" = "Bieżące spotkanie";
 "status_bar_control_next_meeting" = "Następne spotkanie";
+"preferences_appearance_events_no_meeting_link_title" = "Wydarzenia bez linku do spotkania";
+"preferences_appearance_menu_show_event_calendar_color_value" = "kolor kalendarza";

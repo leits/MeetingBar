@@ -55,9 +55,6 @@
 "preferences_general_feedback_email" = "E-posta";
 "preferences_appearance_events_show_events_for_today_value" = "bugün";
 "preferences_appearance_events_show_events_for_today_tomorrow_value" = "bugün ve yarın";
-"preferences_appearance_events_non_all_day_title" = "Diğer etkinlikler:";
-"preferences_appearance_events_value_inactive_without_meeting_link" = "toplantı bağlantıları olmayanları etkin değil olarak göster";
-"preferences_appearance_events_value_hide_without_meeting_link" = "tümünü toplantı linki olmadan gizle";
 "preferences_appearance_events_all_day_title" = "Gün boyu etkinlikleri:";
 "preferences_appearance_events_past_title" = "Önceki etkinlikler:";
 "preferences_appearance_events_pending_title" = "Bekleyen etkinlikler";
@@ -376,7 +373,6 @@
 "onboarding_progress" = "Adım %@ / %@";
 "onboarding_success_description" = "Bir sonraki toplantınız menü çubuğunda görünecek.";
 "onboarding_success_title" = "Hazırsınız";
-"onboarding_use_calendar_source" = "Bu kaynağı kullan";
 "onboarding_welcome_description" = "MeetingBar, bir sonraki toplantınızı doğrudan menü çubuğundan görmenize ve katılmanıza yardımcı olur.";
 "onboarding_welcome_title" = "MeetingBar'a Hoş Geldiniz";
 "preferences_advanced_regex_duplicate_error" = "Bu düzenli ifade zaten mevcut.";
@@ -472,3 +468,5 @@
 "preferences_sidebar_setup" = "Kurulum";
 "status_bar_control_current_meeting" = "Mevcut toplantı";
 "status_bar_control_next_meeting" = "Sonraki toplantı";
+"preferences_appearance_events_no_meeting_link_title" = "Toplantı bağlantısı olmayan etkinlikler";
+"preferences_appearance_menu_show_event_calendar_color_value" = "takvim rengi";

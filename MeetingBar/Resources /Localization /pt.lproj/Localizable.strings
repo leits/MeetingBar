@@ -46,9 +46,6 @@
 "preferences_appearance_events_show_events_for_title" = "Mostrar eventos de";
 "preferences_appearance_events_show_events_for_today_value" = "hoje";
 "preferences_appearance_events_show_events_for_today_tomorrow_value" = "hoje e amanhã";
-"preferences_appearance_events_non_all_day_title" = "Outros eventos:";
-"preferences_appearance_events_value_inactive_without_meeting_link" = "mostrar reuniões sem ligações como inativas";
-"preferences_appearance_events_value_hide_without_meeting_link" = "ocultar todas as reuniões sem ligações";
 "preferences_appearance_events_all_day_title" = "Eventos de dia inteiro:";
 "preferences_appearance_events_without_guest_title" = "Eventos sem convidados:";
 "preferences_appearance_events_past_title" = "Eventos passados:";
@@ -174,7 +171,6 @@
 "onboarding_progress" = "Passo %@ de %@";
 "onboarding_success_description" = "A sua próxima reunião aparecerá na barra de menus.";
 "onboarding_success_title" = "Está pronto";
-"onboarding_use_calendar_source" = "Usar esta fonte";
 "onboarding_welcome_description" = "O MeetingBar ajuda-o a ver e entrar na sua próxima reunião diretamente da barra de menus.";
 "onboarding_welcome_title" = "Bem-vindo ao MeetingBar";
 "preferences_advanced_apple_script_checkmark" = "Executar AppleScript ao entrar numa reunião";
@@ -410,3 +406,5 @@
 "preferences_sidebar_setup" = "Configuração";
 "preferences_sidebar_experience" = "Experiência";
 "preferences_sidebar_maintenance" = "Manutenção";
+"preferences_appearance_events_no_meeting_link_title" = "Eventos sem ligação para a reunião";
+"preferences_appearance_menu_show_event_calendar_color_value" = "cor do calendário";

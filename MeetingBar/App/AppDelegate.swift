@@ -74,29 +74,35 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 setup()
             } else {
                 setup(triggerInitialRefresh: false)
-                guard let appModel else { return }
-                windowCoordinator.openOnboardingWindow(
-                    appModel: appModel,
-                    onProviderSelected: { [weak appModel] provider in
-                        guard let appModel else {
-                            return .failed("Application state is unavailable")
-                        }
-                        return await appModel.changeProvider(to: provider)
-                    },
-                    onComplete: { [weak appModel] provider in
-                        guard let appModel else {
-                            return .failed("Application state is unavailable")
-                        }
-                        let result = await appModel.completeOnboarding(with: provider)
-                        if result == .success {
-                            appModel.handleLaunch()
-                        }
-                        return result
-                    }
-                )
+                presentOnboardingWindow()
             }
             launchTask = nil
         }
+    }
+
+    /// Opens the first-run setup window. Shared by the cold-launch path and the
+    /// debug "Launch onboarding" action so both drive the exact same flow.
+    func presentOnboardingWindow() {
+        guard let appModel else { return }
+        windowCoordinator.openOnboardingWindow(
+            appModel: appModel,
+            onProviderSelected: { [weak appModel] provider in
+                guard let appModel else {
+                    return .failed("Application state is unavailable")
+                }
+                return await appModel.changeProvider(to: provider)
+            },
+            onComplete: { [weak appModel] provider in
+                guard let appModel else {
+                    return .failed("Application state is unavailable")
+                }
+                let result = await appModel.completeOnboarding(with: provider)
+                if result == .success {
+                    appModel.handleLaunch()
+                }
+                return result
+            }
+        )
     }
 
     func setup(triggerInitialRefresh: Bool = true) {
@@ -116,6 +122,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let model = AppModel(environment: env)
         appModel = model
         AppRuntimeBridge.shared.install(appModel: model)
+        AppRuntimeBridge.shared.installOnboardingPresenter { [weak self] in
+            self?.presentOnboardingWindow()
+        }
 
         let actionHandler = NotificationActionHandler(
             isScreenLocked: { [weak model] in model?.state.screenIsLocked ?? false },

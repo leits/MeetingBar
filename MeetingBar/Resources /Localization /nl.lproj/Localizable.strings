@@ -38,7 +38,6 @@
 
 "preferences_appearance_events_title" = "Meetings";
 "preferences_appearance_events_show_events_for_title" = "Toon meetings voor";
-"preferences_appearance_events_non_all_day_title" = "Andere meetings:";
 "preferences_appearance_events_all_day_title" = "Dag meetings:";
 "preferences_appearance_events_past_title" = "Verlopen meetings:";
 "preferences_appearance_events_pending_title" = "Meetings in afwachting";
@@ -81,8 +80,6 @@
 "preferences_general_feedback_email" = "E-mailadres";
 "preferences_appearance_events_show_events_for_today_tomorrow_value" = "vandaag en morgen";
 "preferences_appearance_events_show_events_for_today_value" = "vandaag";
-"preferences_appearance_events_value_hide_without_meeting_link" = "verberg alle meetings zonder links";
-"preferences_appearance_events_value_inactive_without_meeting_link" = "toon meetings zonder links als inactief";
 "preferences_appearance_events_without_guest_title" = "Meetings zonder deelnemers:";
 "preferences_appearance_events_tentative_title" = "Voorlopige meetings:";
 "preferences_appearance_events_value_show" = "toon";
@@ -407,7 +404,6 @@
 "onboarding_continue" = "Doorgaan";
 "onboarding_done" = "Klaar";
 "onboarding_connect" = "Verbinden";
-"onboarding_use_calendar_source" = "Deze bron gebruiken";
 "onboarding_choose_different_source" = "Een andere bron kiezen";
 "onboarding_welcome_title" = "Welkom bij MeetingBar";
 "onboarding_welcome_description" = "MeetingBar helpt je je volgende meeting te zien en eraan deel te nemen direct vanuit de menubalk.";
@@ -467,3 +463,5 @@
 "preferences_sidebar_setup" = "Instelling";
 "status_bar_control_current_meeting" = "Huidige vergadering";
 "status_bar_control_next_meeting" = "Volgende vergadering";
+"preferences_appearance_events_no_meeting_link_title" = "Afspraken zonder vergaderlink";
+"preferences_appearance_menu_show_event_calendar_color_value" = "agendakleur";

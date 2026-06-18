@@ -44,9 +44,6 @@
 "preferences_general_feedback_title" = "Ha bármilyen kérdésed vagy visszajelzésed van,\nnyugodtan lépj kapcsolatba:";
 "preferences_general_feedback_email" = "Email";
 "preferences_appearance_events_show_events_for_today_tomorrow_value" = "ma és holnap";
-"preferences_appearance_events_non_all_day_title" = "Egyéb események:";
-"preferences_appearance_events_value_inactive_without_meeting_link" = "találkozó link nélkülieket mutassa inaktívnak";
-"preferences_appearance_events_value_hide_without_meeting_link" = "minden találkozó link nélküli elrejtése";
 "preferences_appearance_events_past_title" = "Előző események:";
 "preferences_appearance_events_pending_title" = "Függőben lévő események";
 "preferences_appearance_events_declined_title" = "Elutasított események:";
@@ -226,7 +223,6 @@
 "onboarding_progress" = "%@. lépés / %@";
 "onboarding_success_description" = "A következő értekezlet megjelenik a menüsorban.";
 "onboarding_success_title" = "Készen áll";
-"onboarding_use_calendar_source" = "Ezt a forrást használom";
 "onboarding_welcome_description" = "A MeetingBar segítségével közvetlenül a menüsorból láthatja és csatlakozhat a következő értekezletéhez.";
 "onboarding_welcome_title" = "Üdvözöljük a MeetingBar-ban";
 "preferences_advanced_apple_script_placeholder" = "# írja ide a szkriptet\ntell application \"Music\" to pause";
@@ -417,3 +413,5 @@
 "preferences_sidebar_experience" = "Élmény";
 "preferences_sidebar_maintenance" = "Karbantartás";
 "preferences_sidebar_setup" = "Beállítás";
+"preferences_appearance_events_no_meeting_link_title" = "Események értekezlet-hivatkozás nélkül";
+"preferences_appearance_menu_show_event_calendar_color_value" = "naptár színe";

@@ -36,9 +36,6 @@
 "preferences_appearance_events_show_events_for_title" = "이벤트 표시";
 "preferences_appearance_events_show_events_for_today_value" = "오늘";
 "preferences_appearance_events_show_events_for_today_tomorrow_value" = "내일까지";
-"preferences_appearance_events_non_all_day_title" = "기타 이벤트:";
-"preferences_appearance_events_value_inactive_without_meeting_link" = "회의를 연결할 수 없으면 비활성화";
-"preferences_appearance_events_value_hide_without_meeting_link" = "회의를 연결할 수 없으면 숨기기";
 "preferences_appearance_events_all_day_title" = "종일 이벤트:";
 "preferences_appearance_events_without_guest_title" = "참석자 없는 이벤트:";
 "preferences_appearance_events_past_title" = "지난 이벤트:";
@@ -269,7 +266,6 @@
 "onboarding_progress" = "%@ / %@ 단계";
 "onboarding_success_description" = "다음 미팅이 메뉴 막대에 표시됩니다.";
 "onboarding_success_title" = "준비가 완료되었습니다";
-"onboarding_use_calendar_source" = "이 소스 사용";
 "onboarding_welcome_description" = "MeetingBar는 메뉴 막대에서 직접 다음 미팅을 확인하고 참여할 수 있도록 도와줍니다.";
 "onboarding_welcome_title" = "MeetingBar에 오신 것을 환영합니다";
 "preferences_advanced_regex_duplicate_error" = "이 정규식은 이미 존재합니다.";
@@ -411,3 +407,5 @@
 "preferences_sidebar_setup" = "설정";
 "status_bar_control_current_meeting" = "현재 회의";
 "status_bar_control_next_meeting" = "다음 회의";
+"preferences_appearance_events_no_meeting_link_title" = "회의 링크가 없는 일정";
+"preferences_appearance_menu_show_event_calendar_color_value" = "캘린더 색상";

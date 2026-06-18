@@ -59,9 +59,6 @@
 "preferences_appearance_events_show_events_for_title" = "நிகழ்வுகளைக் காட்டு";
 "preferences_appearance_events_show_events_for_today_value" = "இன்று";
 "preferences_appearance_events_show_events_for_today_tomorrow_value" = "இன்றும் நாளை";
-"preferences_appearance_events_non_all_day_title" = "பிற நிகழ்வுகள்:";
-"preferences_appearance_events_value_inactive_without_meeting_link" = "இணைப்புகளைச் சந்திக்காமல் இருப்பவர்களை செயலற்றதாகக் காட்டுங்கள்";
-"preferences_appearance_events_value_hide_without_meeting_link" = "இணைப்புகளை நிறைவு செய்யாமல் அனைத்தையும் மறைக்கவும்";
 "preferences_appearance_events_all_day_title" = "நாள் நிகழ்வுகள்:";
 "preferences_appearance_events_without_guest_title" = "விருந்தினர்கள் இல்லாத நிகழ்வுகள்:";
 "preferences_appearance_events_past_title" = "கடந்த நிகழ்வுகள்:";
@@ -315,7 +312,6 @@
 "onboarding_progress" = "படி %@ / %@";
 "onboarding_success_description" = "உங்கள் அடுத்த கூட்டம் மெனு பட்டியில் தோன்றும்.";
 "onboarding_success_title" = "நீங்கள் தயாராக உள்ளீர்கள்";
-"onboarding_use_calendar_source" = "இந்த மூலத்தை பயன்படுத்து";
 "onboarding_welcome_description" = "MeetingBar உங்கள் அடுத்த கூட்டத்தை மெனு பட்டியிலிருந்து நேரடியாக பார்க்கவும் சேரவும் உதவுகிறது.";
 "onboarding_welcome_title" = "MeetingBar க்கு வரவேற்கிறோம்";
 "preferences_advanced_regex_duplicate_error" = "இந்த வழக்கமான வெளிப்பாடு ஏற்கனவே உள்ளது.";
@@ -411,3 +407,5 @@
 "preferences_sidebar_setup" = "அமைவு";
 "status_bar_control_current_meeting" = "தற்போதைய கூட்டம்";
 "status_bar_control_next_meeting" = "அடுத்த கூட்டம்";
+"preferences_appearance_events_no_meeting_link_title" = "சந்திப்பு இணைப்பு இல்லாத நிகழ்வுகள்";
+"preferences_appearance_menu_show_event_calendar_color_value" = "காலெண்டர் நிறம்";

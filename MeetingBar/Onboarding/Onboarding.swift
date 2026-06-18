@@ -6,17 +6,20 @@
 //  Copyright © 2020 Andrii Leitsius. All rights reserved.
 //
 import Combine
+import Defaults
+import KeyboardShortcuts
+import LaunchAtLogin
 import SwiftUI
 
-/// Setup steps the onboarding flow walks through. Future steps (notification
-/// permission, post-setup recap, etc.) can be inserted without changing how
-/// individual screens drive the transition.
+/// Setup steps the onboarding flow walks through. Future steps (post-setup
+/// recap, etc.) can be inserted without changing how individual screens drive
+/// the transition.
 enum OnboardingStep: Hashable {
     case welcome
     case calendarSource
     case authorization
     case calendarSelection
-    case meetingOpening
+    case essentials
     case success
 }
 
@@ -73,7 +76,7 @@ enum OnboardingProgressPolicy {
         case .welcome: 1
         case .calendarSource, .authorization: 2
         case .calendarSelection: 3
-        case .meetingOpening: 4
+        case .essentials: 4
         case .success: nil
         }
     }
@@ -114,8 +117,8 @@ struct OnboardingView: View {
                     AuthorizationScreen(router: router)
                 case .calendarSelection:
                     CalendarsScreen(router: router)
-                case .meetingOpening:
-                    MeetingOpeningScreen(router: router)
+                case .essentials:
+                    EssentialsScreen(router: router)
                 case .success:
                     OnboardingSuccessScreen()
                 }
@@ -123,6 +126,15 @@ struct OnboardingView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding(20)
         }
+        // The window itself is clear (WindowStylePolicy); the content paints an
+        // opaque rounded background and a hairline border so the borderless
+        // window reads as a distinct surface and AppKit can derive its shadow.
+        .background(Color(nsColor: .windowBackgroundColor))
+        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .strokeBorder(Color(nsColor: .separatorColor), lineWidth: 1)
+        )
     }
 }
 
@@ -183,34 +195,80 @@ struct OnboardingFooter: View {
     }
 }
 
-private struct MeetingOpeningScreen: View {
+/// Final setup step: a short first-run pass over the choices that affect daily
+/// use immediately. The rest of the product-level configuration stays in
+/// Preferences, where users have more context.
+private struct EssentialsScreen: View {
     @ObservedObject var router: OnboardingRouter
     @EnvironmentObject var onboardingHandler: OnboardingHandler
     @State private var isCompleting = false
     @State private var errorMessage: String?
 
-    private let providers = [
-        MeetingProvider.provider(for: .meet),
-        MeetingProvider.provider(for: .zoom),
-        MeetingProvider.provider(for: .teams)
-    ].compactMap { $0 }
+    @Default(.showEventsForPeriod) private var showEventsForPeriod
+    @Default(.joinEventNotification) private var joinEventNotification
+    @Default(.joinEventNotificationTime) private var joinEventNotificationTime
+    @Default(.defaultBrowser) private var defaultBrowser
+    @Default(.browsers) private var allBrowsers
+
+    private var defaultBrowserOptions: [Browser] {
+        BrowserPickerOptions.make(configured: allBrowsers, selected: defaultBrowser)
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
-            Text("onboarding_meeting_opening_title".loco())
+            Text("onboarding_essentials_title".loco())
                 .font(.title2)
                 .bold()
-            Text("onboarding_meeting_opening_description".loco())
+            Text("onboarding_essentials_description".loco())
                 .foregroundStyle(.secondary)
 
-            GroupBox {
-                VStack(alignment: .leading, spacing: 12) {
-                    ForEach(providers, id: \.id) { provider in
-                        MeetingProviderOpeningPicker(provider: provider, labelWidth: 150)
+            PreferencesGroupedForm {
+                Section(header: Text("onboarding_essentials_availability_title".loco())) {
+                    LaunchAtLogin.Toggle {
+                        Text("preferences_general_option_login_launch".loco())
+                    }
+
+                    Picker(
+                        preferenceLabel("preferences_appearance_events_show_events_for_title"),
+                        selection: $showEventsForPeriod
+                    ) {
+                        Text("preferences_appearance_events_show_events_for_today_value".loco())
+                            .tag(ShowEventsForPeriod.today)
+                        Text("preferences_appearance_events_show_events_for_today_tomorrow_value".loco())
+                            .tag(ShowEventsForPeriod.today_n_tomorrow)
                     }
                 }
-                .padding(8)
+
+                Section(header: Text("onboarding_essentials_joining_title".loco())) {
+                    HStack {
+                        Text("preferences_services_link_meeting_title".loco())
+                        Spacer()
+                        defaultBrowserPicker
+                    }
+
+                    HStack {
+                        Text(preferenceLabel("preferences_general_shortcut_join_next"))
+                        Spacer()
+                        KeyboardShortcuts.Recorder(for: .joinEventShortcut)
+                    }
+                }
+
+                Section(header: Text("onboarding_essentials_reminders_title".loco())) {
+                    HStack {
+                        Toggle(
+                            "shared_send_notification_toggle".loco(),
+                            isOn: $joinEventNotification
+                        )
+                        Spacer()
+                        notificationTimePicker
+                    }
+                }
             }
+            .frame(maxHeight: .infinity)
+
+            Text("onboarding_essentials_hint".loco())
+                .font(.caption)
+                .foregroundStyle(.secondary)
 
             if let errorMessage {
                 Text(errorMessage)
@@ -221,10 +279,32 @@ private struct MeetingOpeningScreen: View {
             OnboardingFooter(
                 onBack: { router.currentStep = .calendarSelection },
                 isBusy: isCompleting,
-                primaryTitle: "onboarding_continue".loco(),
+                primaryTitle: "onboarding_start_using".loco(),
                 primaryAction: { Task { await complete() } }
             )
         }
+    }
+
+    private var defaultBrowserPicker: some View {
+        Picker("", selection: $defaultBrowser) {
+            ForEach(defaultBrowserOptions, id: \.self) { (browser: Browser) in
+                Text(browser.name).tag(browser)
+            }
+        }
+        .labelsHidden()
+        .fixedSize()
+    }
+
+    private var notificationTimePicker: some View {
+        Picker("", selection: $joinEventNotificationTime) {
+            Text("general_when_event_starts".loco()).tag(TimeBeforeEvent.atStart)
+            Text("general_one_minute_before".loco()).tag(TimeBeforeEvent.minuteBefore)
+            Text("general_three_minute_before".loco()).tag(TimeBeforeEvent.threeMinuteBefore)
+            Text("general_five_minute_before".loco()).tag(TimeBeforeEvent.fiveMinuteBefore)
+        }
+        .labelsHidden()
+        .fixedSize()
+        .disabled(!joinEventNotification)
     }
 
     private func complete() async {

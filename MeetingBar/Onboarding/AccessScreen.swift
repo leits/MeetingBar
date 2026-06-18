@@ -22,25 +22,45 @@ struct AccessScreen: View {
 
             HStack(spacing: 16) {
                 ForEach(CalendarSourcePresentation.all) { source in
-                    ProviderChoice(source: source) {
-                        router.selectProvider(source.provider)
+                    ProviderChoice(
+                        source: source,
+                        isSelected: router.selectedProvider == source.provider
+                    ) {
+                        // Clicking a card only selects it; advancing to
+                        // authorization is a separate, explicit Continue press.
+                        router.selectedProvider = source.provider
                     }
                 }
             }
             Spacer()
-            OnboardingFooter(onBack: { router.currentStep = .welcome })
+            OnboardingFooter(
+                onBack: { router.currentStep = .welcome },
+                primaryTitle: "onboarding_continue".loco(),
+                primaryEnabled: router.selectedProvider != nil,
+                primaryAction: {
+                    guard let provider = router.selectedProvider else { return }
+                    router.selectProvider(provider)
+                }
+            )
         }
     }
 }
 
 private struct ProviderChoice: View {
     let source: CalendarSourcePresentation
+    let isSelected: Bool
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
             VStack(alignment: .leading, spacing: 10) {
-                Image(systemName: source.systemImage).font(.title)
+                HStack(alignment: .top) {
+                    Image(systemName: source.systemImage).font(.title)
+                    Spacer()
+                    Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                        .font(.title3)
+                        .foregroundStyle(isSelected ? Color.accentColor : Color.secondary.opacity(0.4))
+                }
                 Text(source.titleKey.loco()).font(.headline)
                 Text(source.descriptionKey.loco())
                     .foregroundStyle(.secondary)
@@ -60,13 +80,23 @@ private struct ProviderChoice: View {
                 .foregroundStyle(.secondary)
 
                 Spacer()
-                Text("onboarding_use_calendar_source".loco()).fontWeight(.semibold)
             }
             .padding()
             .frame(maxWidth: .infinity, minHeight: 250, alignment: .leading)
+            .background(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(Color(nsColor: .controlBackgroundColor))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .strokeBorder(
+                        isSelected ? Color.accentColor : Color(nsColor: .separatorColor),
+                        lineWidth: isSelected ? 2 : 1
+                    )
+            )
             .contentShape(Rectangle())
         }
-        .buttonStyle(.bordered)
+        .buttonStyle(.plain)
     }
 }
 

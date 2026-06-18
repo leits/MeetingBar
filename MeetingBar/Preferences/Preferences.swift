@@ -9,9 +9,49 @@ import SwiftUI
 
 struct PreferencesView: View {
     @ObservedObject var patronageService: PatronageService
-    @State private var selectedTab = PreferencesTab.defaultSelection
+    // Non-optional: a settings window always has exactly one active tab.
+    // An optional selection binding let NavigationSplitView seed the sidebar
+    // highlight out of sync with the detail on first appearance.
+    @State private var selectedTab: PreferencesTab = .defaultSelection
 
     var body: some View {
+        if #available(macOS 13.0, *) {
+            NavigationSplitView {
+                sidebar
+                    .navigationSplitViewColumnWidth(min: 200, ideal: 215, max: 240)
+            } detail: {
+                tabContent(selectedTab)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .navigationTitle(selectedTab.titleKey.loco())
+            }
+            .navigationSplitViewStyle(.balanced)
+            .frame(minWidth: 760, minHeight: 520)
+        } else {
+            legacyLayout
+        }
+    }
+
+    // The native sidebar list: `List(selection:)` provides the System Settings
+    // accent-pill selection and translucent material for free, so the custom
+    // Button / listRowBackground styling the legacy layout needs is gone here.
+    @available(macOS 13.0, *)
+    private var sidebar: some View {
+        List(selection: $selectedTab) {
+            ForEach(PreferencesSidebarSection.allCases, id: \.self) { section in
+                Section(section.titleKey.loco()) {
+                    ForEach(section.tabs, id: \.self) { tab in
+                        Label(tab.titleKey.loco(), systemImage: tab.systemImage)
+                            .tag(tab)
+                    }
+                }
+            }
+        }
+        .listStyle(.sidebar)
+    }
+
+    // macOS 12 fallback: NavigationSplitView is unavailable, so keep the manual
+    // split with hand-rolled selection styling.
+    private var legacyLayout: some View {
         HStack(spacing: 0) {
             List {
                 ForEach(PreferencesSidebarSection.allCases, id: \.self) { section in

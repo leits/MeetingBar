@@ -67,9 +67,6 @@
 "preferences_appearance_events_show_events_for_title" = "Показвай събития за";
 "preferences_appearance_events_show_events_for_today_value" = "днес";
 "preferences_appearance_events_show_events_for_today_tomorrow_value" = "днес и утре";
-"preferences_appearance_events_non_all_day_title" = "Други събития:";
-"preferences_appearance_events_value_inactive_without_meeting_link" = "показвай тези без връзка като неактивни";
-"preferences_appearance_events_value_hide_without_meeting_link" = "скрий всички без връзка";
 "preferences_appearance_events_all_day_title" = "Целодневни събития:";
 "preferences_appearance_events_without_guest_title" = "Събития без гости:";
 "preferences_appearance_events_past_title" = "Минали събития:";
@@ -375,7 +372,6 @@
 "onboarding_progress" = "Стъпка %@ от %@";
 "onboarding_success_description" = "Следващата ви среща ще се появи в лентата с менюта.";
 "onboarding_success_title" = "Готови сте";
-"onboarding_use_calendar_source" = "Използвай този източник";
 "onboarding_welcome_description" = "MeetingBar ви помага да видите и се присъедините към следващата среща директно от лентата с менюта.";
 "onboarding_welcome_title" = "Добре дошли в MeetingBar";
 "preferences_advanced_regex_duplicate_error" = "Този регулярен израз вече съществува.";
@@ -471,3 +467,5 @@
 "preferences_sidebar_setup" = "Настройка";
 "status_bar_control_current_meeting" = "Текуща среща";
 "status_bar_control_next_meeting" = "Следваща среща";
+"preferences_appearance_events_no_meeting_link_title" = "Събития без връзка за среща";
+"preferences_appearance_menu_show_event_calendar_color_value" = "цвят на календара";

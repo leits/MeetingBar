@@ -119,8 +119,6 @@
 "preferences_appearance_status_bar_title_title" = "Tittel";
 "preferences_appearance_status_bar_icon_no_icon_value" = " Uten ikon";
 "preferences_appearance_status_bar_icon_specific_icon_value" = " Begivenhetssesifikt ikon (f.eks. MS Teams)";
-"preferences_appearance_events_value_hide_without_meeting_link" = "skjul alle uten møtelenker";
-"preferences_appearance_events_value_inactive_without_meeting_link" = "vis dem uten møtelenker som inaktive";
 "preferences_general_external_patronage" = "Kronerulling";
 "preferences_general_meeting_bar_description" = "MeetingBar er et fritt program laget av Andrii Leitsius 🇺🇦\nProgrammet tar sikte på å gjøre din opplevelse med nettbaserte møter smidigere og enklere";
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "Veksle visning av tittel i statusfelt:";
@@ -271,7 +269,6 @@
 "preferences_appearance_events_past_title" = "Tidligere begivenheter:";
 "preferences_appearance_events_without_guest_title" = "Begivenheter uten gjester:";
 "preferences_appearance_events_all_day_title" = "Heldagsbegivenheter:";
-"preferences_appearance_events_non_all_day_title" = "Andre begivenheter:";
 "preferences_appearance_events_show_events_for_today_tomorrow_value" = "i dag og i morgen";
 "preferences_appearance_events_show_events_for_today_value" = "i dag";
 "preferences_appearance_events_show_events_for_title" = "Vise begivenheter for";
@@ -365,7 +362,6 @@
 "onboarding_progress" = "Trinn %@ av %@";
 "onboarding_success_description" = "Neste møte vil vises i menylinjen.";
 "onboarding_success_title" = "Du er klar";
-"onboarding_use_calendar_source" = "Bruk denne kilden";
 "onboarding_welcome_description" = "MeetingBar hjelper deg med å se og delta i neste møte direkte fra menylinjen.";
 "onboarding_welcome_title" = "Velkommen til MeetingBar";
 "preferences_advanced_regex_duplicate_error" = "Dette regulære uttrykket finnes allerede.";
@@ -468,3 +464,5 @@
 "preferences_sidebar_setup" = "Oppsett";
 "status_bar_control_current_meeting" = "Nåværende møte";
 "status_bar_control_next_meeting" = "Neste møte";
+"preferences_appearance_events_no_meeting_link_title" = "Hendelser uten møtelenke";
+"preferences_appearance_menu_show_event_calendar_color_value" = "kalenderfarge";

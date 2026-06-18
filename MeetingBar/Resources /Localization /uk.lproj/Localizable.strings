@@ -63,9 +63,7 @@
 "preferences_appearance_events_show_events_for_title" = "Показати події зі";
 "preferences_appearance_events_show_events_for_today_value" = "сьогодні";
 "preferences_appearance_events_show_events_for_today_tomorrow_value" = "сьогодні та завтра";
-"preferences_appearance_events_non_all_day_title" = "Події не на весь день:";
-"preferences_appearance_events_value_inactive_without_meeting_link" = "показати як неактивні, якщо немає посилання на зустріч";
-"preferences_appearance_events_value_hide_without_meeting_link" = "приховати, якщо немає посилання на зустріч";
+"preferences_appearance_events_no_meeting_link_title" = "Події без посилання на зустріч";
 "preferences_appearance_events_all_day_title" = "Події на весь день:";
 "preferences_appearance_events_without_guest_title" = "Події без учасників:";
 "preferences_appearance_events_past_title" = "Минулі події:";
@@ -428,7 +426,6 @@
 "onboarding_continue" = "Продовжити";
 "onboarding_done" = "Готово";
 "onboarding_connect" = "Підключити";
-"onboarding_use_calendar_source" = "Використати це джерело";
 "onboarding_choose_different_source" = "Вибрати інше джерело";
 "onboarding_welcome_title" = "Ласкаво просимо у MeetingBar";
 "onboarding_welcome_description" = "MeetingBar допомагає бачити та приєднуватись до наступної зустрічі прямо зі смуги меню.";
@@ -449,6 +446,13 @@
 "onboarding_calendar_selection_reconnect" = "Google Calendar потребує повторного підключення.";
 "onboarding_meeting_opening_title" = "Виберіть, як відкриваються зустрічі";
 "onboarding_meeting_opening_description" = "Встановіть застосунок або браузер за замовчуванням для найпоширеніших сервісів зустрічей.";
+"onboarding_essentials_title" = "Налаштуйте щоденну поведінку";
+"onboarding_essentials_description" = "Оберіть, як MeetingBar поводитиметься у смузі меню, перед початком зустрічей і під час приєднання.";
+"onboarding_essentials_availability_title" = "Доступність";
+"onboarding_essentials_joining_title" = "Приєднання";
+"onboarding_essentials_reminders_title" = "Нагадування";
+"onboarding_essentials_hint" = "Усі деталі можна змінити пізніше в Налаштуваннях.";
+"onboarding_start_using" = "Почати користуватись MeetingBar";
 "onboarding_success_title" = "Ви готові";
 "onboarding_success_description" = "Наступна зустріч з'явиться у смузі меню.";
 "access_screen_provider_authorization_cancelled" = "Авторизацію скасовано. Спробуй ще раз, щоб підключити календар.";
@@ -474,3 +478,4 @@
 "preferences_sidebar_setup" = "Налаштування";
 "status_bar_control_current_meeting" = "Поточна зустріч";
 "status_bar_control_next_meeting" = "Наступна зустріч";
+"preferences_appearance_menu_show_event_calendar_color_value" = "колір календаря";

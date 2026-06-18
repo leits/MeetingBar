@@ -231,7 +231,6 @@
 "preferences_appearance_events_declined_title" = "Odmítnuté události:";
 "preferences_appearance_events_pending_title" = "Nevyřízené události";
 "preferences_appearance_events_past_title" = "Dřívější události:";
-"preferences_appearance_events_value_inactive_without_meeting_link" = "zobrazit všechny bez odkazů na schůzku jako neaktivní";
 "preferences_appearance_menu_show_event_icon_value" = "ikonu";
 "preferences_appearance_menu_show_event_end_time_value" = "čas konce";
 "preferences_appearance_menu_shorten_event_title_stepper" = "%d znaků";
@@ -258,8 +257,6 @@
 "preferences_appearance_events_value_show" = "zobrazit";
 "preferences_appearance_events_without_guest_title" = "Události bez hostů:";
 "preferences_appearance_events_all_day_title" = "Celodenní události:";
-"preferences_appearance_events_value_hide_without_meeting_link" = "skrýt všechny bez odkazů na schůzku";
-"preferences_appearance_events_non_all_day_title" = "Ostatní události:";
 "preferences_appearance_events_show_events_for_today_tomorrow_value" = "dnešek a zítřek";
 "preferences_appearance_events_show_events_for_today_value" = "dnešek";
 "preferences_appearance_events_show_events_for_title" = "Zobrazit události na";
@@ -364,7 +361,6 @@
 "onboarding_progress" = "Krok %@ z %@";
 "onboarding_success_description" = "Vaše příští schůzka se zobrazí v řádku nabídek.";
 "onboarding_success_title" = "Jste připraveni";
-"onboarding_use_calendar_source" = "Použít tento zdroj";
 "onboarding_welcome_description" = "MeetingBar vám pomáhá vidět a připojit se k příští schůzce přímo z řádku nabídek.";
 "onboarding_welcome_title" = "Vítejte v MeetingBar";
 "preferences_advanced_regex_duplicate_error" = "Tento regulární výraz již existuje.";
@@ -467,3 +463,5 @@
 "preferences_sidebar_setup" = "Nastavení";
 "status_bar_control_current_meeting" = "Aktuální schůzka";
 "status_bar_control_next_meeting" = "Další schůzka";
+"preferences_appearance_events_no_meeting_link_title" = "Události bez odkazu na schůzku";
+"preferences_appearance_menu_show_event_calendar_color_value" = "barva kalendáře";

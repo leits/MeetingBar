@@ -42,8 +42,6 @@
 "preferences_appearance_events_show_events_for_today_value" = "dnes";
 "preferences_appearance_events_show_events_for_today_tomorrow_value" = "dnes a zajtra";
 "preferences_appearance_events_all_day_title" = "Celodenné udalosti:";
-"preferences_appearance_events_value_hide_without_meeting_link" = "skryť všetky bez odkazov na stretnutie";
-"preferences_appearance_events_value_inactive_without_meeting_link" = "zobraziť tie bez odkazov na stretnutie, ako neaktívne";
 "preferences_appearance_events_value_only_with_link" = "zobraziť iba tie s odkazmi na stretnutie";
 "preferences_services_supported_links_list" = "Podporované odkazy na služby:\n%@";
 "preferences_services_link_default_browser_value" = "Predvolený webový prehliadač";
@@ -136,7 +134,6 @@
 
 "preferences_appearance_events_title" = "Udalosti";
 "preferences_appearance_events_show_events_for_title" = "Zobraziť udalosti pre";
-"preferences_appearance_events_non_all_day_title" = "Ďalšie udalosti:";
 "preferences_appearance_events_without_guest_title" = "Udalosti bez hostí:";
 "preferences_appearance_events_pending_title" = "Čakajúce udalosti";
 "preferences_appearance_events_declined_title" = "Odmietnuté udalosti:";
@@ -370,7 +367,6 @@
 "onboarding_progress" = "Krok %@ z %@";
 "onboarding_success_description" = "Vaše ďalšie stretnutie sa zobrazí v paneli s ponukami.";
 "onboarding_success_title" = "Ste pripravený";
-"onboarding_use_calendar_source" = "Použiť tento zdroj";
 "onboarding_welcome_description" = "MeetingBar vám pomáha vidieť a pripojiť sa k vášmu ďalšiemu stretnutiu priamo z panela s ponukami.";
 "onboarding_welcome_title" = "Vitajte v MeetingBar";
 "preferences_advanced_regex_duplicate_error" = "Tento regulárny výraz už existuje.";
@@ -466,3 +462,5 @@
 "preferences_sidebar_setup" = "Nastavenie";
 "status_bar_control_current_meeting" = "Aktuálne stretnutie";
 "status_bar_control_next_meeting" = "Ďalšie stretnutie";
+"preferences_appearance_events_no_meeting_link_title" = "Udalosti bez odkazu na schôdzu";
+"preferences_appearance_menu_show_event_calendar_color_value" = "farba kalendára";
