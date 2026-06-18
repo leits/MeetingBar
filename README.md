@@ -132,7 +132,6 @@ MeetingBar also uses these resources:
 
 * [KeyboardShortcuts](https://github.com/sindresorhus/KeyboardShortcuts) for managing global keyboard shortcuts
 * [Defaults](https://github.com/sindresorhus/Defaults) for managing user settings
-* StoreKit for patronage via in-app purchases
 
 App logo made by [Miroslav Rajkovic](https://www.rajkovic.co/).
 
