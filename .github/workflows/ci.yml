@@ -79,4 +79,6 @@ jobs:
           name: swiftpm-coverage
           path: .build/**/debug/codecov
           if-no-files-found: ignore
+          # .build is a dotfile; upload-artifact skips hidden paths otherwise.
+          include-hidden-files: true
           retention-days: 7
