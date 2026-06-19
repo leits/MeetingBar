@@ -17,7 +17,7 @@ LOGIC_COVERAGE_SOURCES := MeetingBar/Calendar MeetingBar/Meetings MeetingBar/Not
 # Pipe xcodebuild through xcbeautify when available; otherwise grep for the lines that matter.
 XCFILTER := $(shell command -v xcbeautify >/dev/null 2>&1 && echo 'xcbeautify --quiet --renderer terminal' || echo "grep -E '(error:|warning:|FAIL|PASS|\\*\\* )'")
 
-.PHONY: build build-quiet build-release test test-quiet test-app test-app-quiet test-logic test-logic-quiet coverage coverage-report coverage-logic-report coverage-app-report coverage-gate lint lint-fix open validate-strings
+.PHONY: build build-quiet build-release test test-quiet test-app test-app-quiet test-logic test-logic-quiet coverage coverage-report coverage-logic-report coverage-app-report coverage-gate test-summary lint lint-fix open validate-strings
 
 build:
 	@mkdir -p $(BUILD_DIR)
@@ -113,3 +113,6 @@ open:
 
 validate-strings:
 	@bash Scripts/validate_localizations.sh
+
+test-summary:
+	@bash Scripts/test_summary.sh $(XCODE_RESULT_BUNDLE)

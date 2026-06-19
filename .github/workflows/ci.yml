@@ -63,10 +63,13 @@ jobs:
       - name: Run app-hosted tests
         run: make test-app-quiet
 
-      - name: Publish coverage summary
+      - name: Publish results summary
         if: always()
         run: |
           {
+            echo "## App test results"
+            make test-summary
+            echo ""
             echo "## Coverage"
             echo '```'
             make coverage-report 2>&1 || echo "coverage report unavailable"
