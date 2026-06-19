@@ -27,6 +27,9 @@ jobs:
     name: Build and Test
     runs-on: macos-15
     timeout-minutes: 45
+    permissions:
+      contents: read
+      checks: write
 
     steps:
       - name: Checkout
@@ -63,6 +66,14 @@ jobs:
 
       - name: Run app-hosted tests
         run: make test-app-quiet
+
+      - name: Publish Test Results
+        uses: dorny/test-reporter@a43b3a5f7366b97d083190328d2c652e1a8b6aa2 # v3.0.0
+        if: always()
+        with:
+          name: MeetingBar Tests
+          path: build/test-results/*.xml
+          reporter: java-junit
 
       - name: Publish results summary
         if: always()
