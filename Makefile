@@ -10,7 +10,7 @@ DERIVED_DATA_DIR := $(BUILD_DIR)/DerivedData
 XCODE_SOURCE_PACKAGES_DIR := $(BUILD_DIR)/SourcePackages
 HOST_ARCH := $(shell uname -m)
 DESTINATION ?= platform=macOS,arch=$(HOST_ARCH)
-XCODEBUILD_FLAGS := -project $(PROJECT) -scheme $(SCHEME) -destination '$(DESTINATION)' -derivedDataPath $(DERIVED_DATA_DIR) -clonedSourcePackagesDirPath $(XCODE_SOURCE_PACKAGES_DIR)
+XCODEBUILD_FLAGS := -project $(PROJECT) -scheme $(SCHEME) -destination '$(DESTINATION)' -derivedDataPath $(DERIVED_DATA_DIR) -clonedSourcePackagesDirPath $(XCODE_SOURCE_PACKAGES_DIR) -onlyUsePackageVersionsFromResolvedFile
 LOCAL_CODESIGN_FLAGS := CODE_SIGN_IDENTITY="" CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO
 LOGIC_COVERAGE_SOURCES := MeetingBar/Calendar MeetingBar/Meetings MeetingBar/Notifications MeetingBar/UI/StatusBar MeetingBar/Utilities/Diagnostics
 
