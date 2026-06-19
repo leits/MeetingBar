@@ -98,18 +98,8 @@ final class StoreKitPatronageStore: PatronageStore {
     func currentEntitlements() async -> [PatronageTransaction] {
         var entitlements: [PatronageTransaction] = []
 
-        if #available(macOS 15.4, *) {
-            for productID in PatronageProducts.all {
-                for await verification in StoreKit.Transaction.currentEntitlements(
-                    for: productID
-                ) {
-                    appendVerified(verification, to: &entitlements)
-                }
-            }
-        } else {
-            for await verification in StoreKit.Transaction.currentEntitlements {
-                appendVerified(verification, to: &entitlements)
-            }
+        for await verification in StoreKit.Transaction.currentEntitlements {
+            appendVerified(verification, to: &entitlements)
         }
 
         return entitlements
