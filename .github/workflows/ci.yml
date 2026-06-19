@@ -63,6 +63,17 @@ jobs:
       - name: Run app-hosted tests
         run: make test-app-quiet
 
+      - name: Publish coverage summary
+        if: always()
+        run: |
+          {
+            echo "## Coverage"
+            echo '```'
+            make coverage-report 2>&1 || echo "coverage report unavailable"
+            make coverage-gate 2>&1 || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Upload Xcode result bundle
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
