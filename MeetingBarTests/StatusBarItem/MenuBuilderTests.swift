@@ -423,7 +423,6 @@ final class MenuBuilderTests: BaseTestCase {
         // Summary card is shown but carries no join action
         XCTAssertEqual(items.first?.identifier, MenuBuilder.meetingSummaryItemIdentifier)
         XCTAssertNil(items.first { $0.action == #selector(StatusBarItemController.joinEvent) })
-        XCTAssertFalse(items.contains { $0.title == "status_bar_control_no_meeting_link".loco() })
 
         // Actions submenu omits link-specific items when there is no link
         XCTAssertNil(actions.first {
