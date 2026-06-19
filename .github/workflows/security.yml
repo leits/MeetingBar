@@ -102,7 +102,7 @@ jobs:
 
       - name: Run Codacy Analysis CLI
         if: env.CODACY_PROJECT_TOKEN != ''
-        uses: codacy/codacy-analysis-cli-action@d840f886c4bd4edc059706d09c6a1586111c540b # v1.1.0
+        uses: codacy/codacy-analysis-cli-action@562ee3e92b8e92df8b67e0a5ff8aa8e261919c08 # v4.4.7
         with:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
           verbose: true
