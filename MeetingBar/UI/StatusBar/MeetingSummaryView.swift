@@ -28,7 +28,7 @@ struct MeetingSummaryPresentation: Equatable {
 struct MeetingSummaryView: View {
     let presentation: MeetingSummaryPresentation
     let providerIcon: NSImage
-    var onJoin: (() -> Void)? = nil
+    var onJoin: (() -> Void)?
 
     @State private var isHovered = false
 
@@ -86,8 +86,11 @@ struct MeetingSummaryView: View {
         .onHover { hovering in
             isHovered = hovering
             guard onJoin != nil else { return }
-            if hovering { NSCursor.pointingHand.push() }
-            else { NSCursor.pop() }
+            if hovering {
+                NSCursor.pointingHand.push()
+            } else {
+                NSCursor.pop()
+            }
         }
         .onTapGesture { onJoin?() }
     }
