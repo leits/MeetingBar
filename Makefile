@@ -16,8 +16,10 @@ LOGIC_COVERAGE_SOURCES := MeetingBar/Calendar MeetingBar/Meetings MeetingBar/Not
 
 # Pipe xcodebuild through xcbeautify when available; otherwise grep for the lines that matter.
 XCFILTER := $(shell command -v xcbeautify >/dev/null 2>&1 && echo 'xcbeautify --quiet --renderer terminal' || echo "grep -E '(error:|warning:|FAIL|PASS|\\*\\* )'")
+# Append a JUnit report to app-hosted test runs when xcbeautify is available.
+JUNIT_REPORT := $(shell command -v xcbeautify >/dev/null 2>&1 && echo '--report junit --report-path $(BUILD_DIR)/test-results')
 
-.PHONY: build build-quiet build-release test test-quiet test-app test-app-quiet test-logic test-logic-quiet coverage coverage-report coverage-logic-report coverage-app-report coverage-gate test-summary lint lint-fix open validate-strings
+.PHONY: build build-quiet build-release test test-quiet test-app test-app-quiet test-logic test-logic-quiet coverage coverage-report coverage-logic-report coverage-app-report coverage-gate test-summary coverage-codecov lint lint-fix open validate-strings
 
 build:
 	@mkdir -p $(BUILD_DIR)
@@ -42,9 +44,9 @@ test-app:
 	@$(MAKE) --no-print-directory coverage-app-report
 
 test-app-quiet:
-	@mkdir -p $(COVERAGE_DIR)
+	@mkdir -p $(COVERAGE_DIR) $(BUILD_DIR)/test-results
 	@rm -rf $(XCODE_RESULT_BUNDLE)
-	@set -o pipefail; $(XCODEBUILD) $(XCODEBUILD_FLAGS) -configuration Debug -enableCodeCoverage YES -resultBundlePath $(XCODE_RESULT_BUNDLE) build test $(LOCAL_CODESIGN_FLAGS) 2>&1 | $(XCFILTER)
+	@set -o pipefail; $(XCODEBUILD) $(XCODEBUILD_FLAGS) -configuration Debug -enableCodeCoverage YES -resultBundlePath $(XCODE_RESULT_BUNDLE) build test $(LOCAL_CODESIGN_FLAGS) 2>&1 | $(XCFILTER) $(JUNIT_REPORT)
 	@$(MAKE) --no-print-directory coverage-app-report
 
 test-logic:
@@ -116,3 +118,21 @@ validate-strings:
 
 test-summary:
 	@bash Scripts/test_summary.sh $(XCODE_RESULT_BUNDLE)
+
+# Export lcov coverage for both test suites with repo-relative paths, ready to
+# upload to Codecov. Each suite is independent: a missing one is skipped, not
+# fatal, so partial results still publish.
+coverage-codecov:
+	@mkdir -p $(COVERAGE_DIR)
+	@PROFILE="$$(ls -d .build/*/debug/codecov/default.profdata .build/debug/codecov/default.profdata 2>/dev/null | head -n 1)" ; \
+	BIN="$$(ls -d .build/*/debug/MeetingBarLogicPackageTests.xctest/Contents/MacOS/MeetingBarLogicPackageTests .build/debug/MeetingBarLogicPackageTests.xctest/Contents/MacOS/MeetingBarLogicPackageTests 2>/dev/null | head -n 1)" ; \
+	if [ -f "$$PROFILE" ] && [ -x "$$BIN" ]; then \
+		xcrun llvm-cov export -format=lcov "$$BIN" -instr-profile "$$PROFILE" $(LOGIC_COVERAGE_SOURCES) | sed "s|$(CURDIR)/||" > $(COVERAGE_DIR)/logic.lcov ; \
+		echo "Wrote $(COVERAGE_DIR)/logic.lcov ($$(grep -c '^SF:' $(COVERAGE_DIR)/logic.lcov) files)" ; \
+	else echo "Logic coverage unavailable; skipping logic.lcov." ; fi
+	@PROFDATA="$$(find $(DERIVED_DATA_DIR) -name Coverage.profdata 2>/dev/null | head -n 1)" ; \
+	DYLIB="$(DERIVED_DATA_DIR)/Build/Products/Debug/MeetingBar.app/Contents/MacOS/MeetingBar.debug.dylib" ; \
+	if [ -n "$$PROFDATA" ] && [ -f "$$DYLIB" ]; then \
+		xcrun llvm-cov export -format=lcov "$$DYLIB" -instr-profile "$$PROFDATA" "$(CURDIR)/MeetingBar" | sed "s|$(CURDIR)/||" > $(COVERAGE_DIR)/app.lcov ; \
+		echo "Wrote $(COVERAGE_DIR)/app.lcov ($$(grep -c '^SF:' $(COVERAGE_DIR)/app.lcov) files)" ; \
+	else echo "App coverage unavailable; skipping app.lcov." ; fi

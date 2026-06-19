@@ -20,6 +20,7 @@ defaults:
 
 env:
   DEVELOPER_DIR: /Applications/Xcode_16.2.app/Contents/Developer
+  CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
 jobs:
   build-and-test:
@@ -76,6 +77,26 @@ jobs:
             make coverage-gate 2>&1 || true
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Generate Codecov coverage reports
+        if: ${{ !cancelled() && env.CODECOV_TOKEN != '' }}
+        run: make coverage-codecov
+
+      - name: Upload coverage to Codecov
+        if: ${{ !cancelled() && env.CODECOV_TOKEN != '' }}
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
+        with:
+          files: build/coverage/logic.lcov,build/coverage/app.lcov
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Upload test results to Codecov
+        if: ${{ !cancelled() && env.CODECOV_TOKEN != '' }}
+        uses: codecov/test-results-action@0fa95f0e1eeaafde2c782583b36b28ad0d8c77d3 # v1.2.1
+        with:
+          files: build/test-results/junit.xml
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Upload Xcode result bundle
         if: always()
