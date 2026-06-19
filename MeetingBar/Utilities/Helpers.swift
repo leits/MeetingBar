@@ -193,7 +193,6 @@ func openLinkFromClipboard() {
     }
 }
 
-#if DEBUG
 /// Sample event for SwiftUI previews only.
 func generateFakeEvent() -> MBEvent {
     let calendar = MBCalendar(
@@ -216,7 +215,6 @@ func generateFakeEvent() -> MBEvent {
     )
     return event
 }
-#endif
 
 extension NSImage {
     /// Returns a copy tinted with macOS disabled text colour.
