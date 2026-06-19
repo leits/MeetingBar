@@ -7,7 +7,6 @@
 //
 
 import AppIntents
-import AppKit
 
 @available(macOS 13.0, *)
 enum EventDetailsTypeAppEnum: String, AppEnum {
@@ -39,6 +38,35 @@ enum EventDetailsTypeAppEnum: String, AppEnum {
 }
 
 @available(macOS 13.0, *)
+enum EventDetailsValueFormatter {
+    static func value(for type: EventDetailsTypeAppEnum, event: MBEvent) -> String? {
+        switch type {
+        case .title:
+            return event.title
+        case .calendarTitle:
+            return event.calendar.title
+        case .meetingLink:
+            return event.meetingLink?.url.absoluteString
+        case .meetingService:
+            return event.meetingLink?.service?.localizedValue
+        case .url:
+            return event.url?.absoluteString
+        case .notes:
+            return event.notes
+        case .location:
+            return event.location
+        case .startDate:
+            return event.startDate.formatted()
+        case .endDate:
+            return event.endDate.formatted()
+        case .attendees:
+            return event.attendees.map { "\($0.name) <\($0.email ?? "unknown")>" }.joined(
+                separator: ", ")
+        }
+    }
+}
+
+@available(macOS 13.0, *)
 struct GetNearestEventDetails: AppIntent {
     static let title: LocalizedStringResource = "Get Nearest Event Details"
     static let description = IntentDescription(
@@ -57,26 +85,11 @@ struct GetNearestEventDetails: AppIntent {
 
     func perform() async throws
         -> some IntentResult & ReturnsValue<String?> {
-        // Hop to the main actor only for the AppKit interaction
+        // Hop to the main actor only for the live app model bridge.
         let value: String? = await MainActor.run {
-            guard
-                let appDelegate = NSApplication.shared.delegate as? AppDelegate,
-                let nextEvent = appDelegate.statusBarItem.events.nextEvent()
-            else { return nil }
+            guard let nextEvent = AppRuntimeBridge.shared.nearestEvent() else { return nil }
 
-            switch type {
-            case .title: return nextEvent.title
-            case .calendarTitle: return nextEvent.calendar.title
-            case .meetingLink: return nextEvent.meetingLink?.url.absoluteString
-            case .meetingService: return nextEvent.meetingLink?.service?.localizedValue
-            case .url: return nextEvent.url?.absoluteString
-            case .notes: return nextEvent.notes
-            case .location: return nextEvent.location
-            case .startDate: return nextEvent.startDate.formatted()
-            case .endDate: return nextEvent.endDate.formatted()
-            case .attendees:
-                return nextEvent.attendees.map { "\($0.name) <\($0.email ?? "unknown")>" }.joined(separator: ", ")
-            }
+            return EventDetailsValueFormatter.value(for: type, event: nextEvent)
         }
         return .result(value: value)
     }
@@ -89,9 +102,7 @@ struct JoinNearestMeetingIntent: AppIntent {
 
     func perform() async throws -> some IntentResult {
         await MainActor.run {
-            (NSApplication.shared.delegate as? AppDelegate)?
-                .statusBarItem
-                .joinNextMeeting()
+            AppRuntimeBridge.shared.send(.joinNearestMeeting)
         }
         return .result()
     }
@@ -100,13 +111,12 @@ struct JoinNearestMeetingIntent: AppIntent {
 @available(macOS 13.0, *)
 struct DismissNearestMeetingIntent: AppIntent {
     static let title: LocalizedStringResource = "Dismiss Nearest Meeting"
-    static let description = IntentDescription("Dismiss the nearest (current or next) event meeting.")
+    static let description = IntentDescription(
+        "Dismiss the nearest (current or next) event meeting.")
 
     func perform() async throws -> some IntentResult {
         await MainActor.run {
-            (NSApplication.shared.delegate as? AppDelegate)?
-                .statusBarItem
-                .dismissNextMeetingAction()
+            AppRuntimeBridge.shared.send(.dismissNearestMeeting)
         }
         return .result()
     }

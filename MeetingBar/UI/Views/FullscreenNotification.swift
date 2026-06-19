@@ -9,11 +9,28 @@
 import Defaults
 import SwiftUI
 
+enum FullscreenNotificationAction: Equatable {
+    case dismiss
+    case join
+}
+
+struct FullscreenNotificationPresentation: Equatable {
+    let actions: [FullscreenNotificationAction]
+
+    static func make(for event: MBEvent) -> FullscreenNotificationPresentation {
+        FullscreenNotificationPresentation(
+            actions: event.meetingLink == nil ? [.dismiss] : [.dismiss, .join]
+        )
+    }
+}
+
 struct FullscreenNotification: View {
     var event: MBEvent
     var window: NSWindow?
 
     var body: some View {
+        let presentation = FullscreenNotificationPresentation.make(for: event)
+
         ZStack {
             Rectangle.semiOpaqueWindow()
             VStack {
@@ -36,13 +53,19 @@ struct FullscreenNotification: View {
 
                 HStack(spacing: 30) {
                     Button(action: dismiss) {
-                        Text("general_close".loco()).padding(.vertical, 5).padding(.horizontal, 20)
+                        Text("fullscreen_notification_dismiss_action".loco())
+                            .padding(.vertical, 5)
+                            .padding(.horizontal, 20)
                     }
-                    Button(action: joinEvent) {
-                        Text("notifications_meetingbar_join_event_action".loco()).padding(
-                            .vertical, 5
-                        ).padding(.horizontal, 25)
-                    }.background(Color.accentColor).cornerRadius(5)
+                    if presentation.actions.contains(.join) {
+                        Button(action: joinEvent) {
+                            Text("notifications_meetingbar_join_event_action".loco()).padding(
+                                .vertical, 5
+                            ).padding(.horizontal, 25)
+                        }
+                        .background(Color.accentColor)
+                        .cornerRadius(5)
+                    }
                 }
             }
         }
@@ -55,7 +78,7 @@ struct FullscreenNotification: View {
     }
 
     func joinEvent() {
-        event.openMeeting()
+        MeetingOpener.open(event: event)
         window?.close()
     }
 }

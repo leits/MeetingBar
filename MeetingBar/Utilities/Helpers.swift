@@ -13,7 +13,10 @@ import Foundation
 
 struct Bookmark: Codable, Defaults.Serializable, Hashable {
     var name: String
-    var service: MeetingServices
+    /// Provider string ID (= MeetingServices.rawValue for built-in providers).
+    /// Backward-compatible: the old Bookmark.service (MeetingServices) encoded
+    /// its rawValue as the JSON string, so existing stored bookmarks decode fine.
+    var service: String
     var url: URL
 }
 
@@ -23,57 +26,12 @@ struct ProcessedEvent: Codable, Defaults.Serializable, Hashable {
     var eventEndDate: Date
 }
 
-/**
- * this method will extract m365 safe links if any of these links are found in the given text..
- * The method will extract the real url from safe links and decode it, so that the following regex logic can detect the meeting service.
- *
- * The original link looks like this
- *https://nam12.safelinks.protection.outlook.com/ap/t-59584e83/?url=https%3A%2F%2Fteams.microsoft.com%2Fl%2Fmeetup-join%2F19%253ameeting_[obfuscated]&data=[obfuscated]
- *
- * and the method will extract it to https://teams.microsoft.com/l/meetup-join/19%3ameeting_[obfuscated]
- * If no m365 links are found, the original text is returned.
- *
- */
-func cleanupOutlookSafeLinks(rawText: String) -> String {
-    var text = rawText
-    autoreleasepool {
-        var links = UtilsRegex.outlookSafeLinkRegex.matches(in: text, range: NSRange(text.startIndex..., in: text))
-        if !links.isEmpty {
-            repeat {
-                let urlRange = links[0].range(at: 1)
-                let safeLinks = links.map { String(text[Range($0.range, in: text)!]) }
-                if !safeLinks.isEmpty {
-                    let serviceUrl = (text as NSString).substring(with: urlRange)
-                    if let decodedServiceURL = serviceUrl.decodeUrl() {
-                        text = text.replacingOccurrences(of: safeLinks[0], with: decodedServiceURL)
-                    }
-                }
-                links = UtilsRegex.outlookSafeLinkRegex.matches(in: text, range: NSRange(text.startIndex..., in: text))
-            } while !links.isEmpty
-        }
-    }
-    return text
-}
-
-func getMatch(text: String, regex: NSRegularExpression) -> String? {
-    var match: String?
-
-    autoreleasepool {
-        let resultsIterator = regex.matches(in: text, range: NSRange(text.startIndex..., in: text))
-        let resultsMap = resultsIterator.map { String(text[Range($0.range, in: text)!]) }
-
-        if !resultsMap.isEmpty {
-            match = resultsMap[0]
-        }
-    }
-
-    return match
-}
-
 func cleanUpNotes(_ notes: String) -> String {
     let zoomSeparator = "\n──────────"
-    let meetSeparator = "-::~:~::~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~::~:~::-"
-    let cleanNotes = notes
+    let meetSeparator =
+        "-::~:~::~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~::~:~::-"
+    let cleanNotes =
+        notes
         .components(separatedBy: zoomSeparator)[0]
         .components(separatedBy: meetSeparator)[0]
         .htmlTagsStripped()
@@ -87,7 +45,9 @@ func compareVersions(_ versionX: String, _ versionY: String) -> Bool {
 func addInstalledBrowser() {
     let existingBrowsers = Defaults[.browsers]
 
-    var appUrls = LSCopyApplicationURLsForURL(URL(string: "https:")! as CFURL, .all)?.takeRetainedValue() as? [URL]
+    var appUrls =
+        LSCopyApplicationURLsForURL(URL(string: "https:")! as CFURL, .all)?.takeRetainedValue()
+        as? [URL]
 
     if !appUrls!.isEmpty {
         appUrls = appUrls?.sorted { $0.path.fileName() < $1.path.fileName() }
@@ -122,7 +82,11 @@ func hexStringToUIColor(hex: String) -> NSColor {
     )
 }
 
-@MainActor func createNSViewFromText(text: String) -> NSView {
+@MainActor func createNSViewFromText(
+    text: String,
+    font: NSFont = NSFont.systemFont(ofSize: 14),
+    maxWidth: CGFloat = 300.0
+) -> NSView {
     // Create views
     let paddingView = NSView()
     let textView = NSTextView()
@@ -135,9 +99,9 @@ func hexStringToUIColor(hex: String) -> NSColor {
         text.splitWithNewLineAttributedString(
             with: [
                 NSAttributedString.Key.paragraphStyle: paragraphStyle,
-                NSAttributedString.Key.font: NSFont.systemFont(ofSize: 14)
+                NSAttributedString.Key.font: font
             ],
-            maxWidth: 300.0
+            maxWidth: maxWidth
         )
         .withLinksEnabled()
     )
@@ -151,7 +115,8 @@ func hexStringToUIColor(hex: String) -> NSColor {
             // There's 10pt of padding seemingly built into the left side,
             // no such thing on the right so we go 20pt to match the left side
             textView.frame = NSRect(x: 10.0, y: 0.0, width: frame.width, height: frame.height)
-            paddingView.frame = NSRect(x: 0.0, y: 0.0, width: frame.width + 20, height: frame.height)
+            paddingView.frame = NSRect(
+                x: 0.0, y: 0.0, width: frame.width + 20, height: frame.height)
         } else {
             // Backup layout if we couldn't calculate frame
             textView.autoresizingMask = [.width, .height]
@@ -164,8 +129,11 @@ func hexStringToUIColor(hex: String) -> NSColor {
 }
 
 func getInstallationDate() -> Date? {
-    let urlToDocumentsFolder: URL? = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last
-    return try? FileManager.default.attributesOfItem(atPath: (urlToDocumentsFolder?.path)!)[.creationDate] as? Date
+    let urlToDocumentsFolder: URL? = FileManager.default.urls(
+        for: .documentDirectory, in: .userDomainMask
+    ).last
+    return try? FileManager.default.attributesOfItem(atPath: (urlToDocumentsFolder?.path)!)[
+        .creationDate] as? Date
 }
 
 /*
@@ -175,14 +143,18 @@ func getInstallationDate() -> Date? {
  */
 
 func checkIsFantasticalInstalled() -> Bool {
-    NSWorkspace.shared.urlForApplication(withBundleIdentifier: "com.flexibits.fantastical2.mac") != nil
+    NSWorkspace.shared.urlForApplication(withBundleIdentifier: "com.flexibits.fantastical2.mac")
+        != nil
 }
 
 func openInFantastical(startDate: Date, title: String) {
     let dateFormatter = DateFormatter()
     dateFormatter.dateFormat = "yyyy-MM-dd"
 
-    let queryItems = [URLQueryItem(name: "date", value: dateFormatter.string(from: startDate)), URLQueryItem(name: "title", value: title)]
+    let queryItems = [
+        URLQueryItem(name: "date", value: dateFormatter.string(from: startDate)),
+        URLQueryItem(name: "title", value: title)
+    ]
     var fantasticalUrlComp = URLComponents()
     fantasticalUrlComp.scheme = "x-fantastical3"
     fantasticalUrlComp.host = "show"
@@ -203,27 +175,29 @@ func openLinkFromClipboard() {
     let clipboardContent = pasteboard.string(forType: .string) ?? ""
 
     if !clipboardContent.isEmpty {
-        let meetingLink = detectMeetingLink(clipboardContent)
+        let meetingLink = detectMeetingLink(
+            clipboardContent, customRegexes: Defaults[.customRegexes])
 
         if let meetingLink = meetingLink {
-            openMeetingURL(meetingLink.service, meetingLink.url, nil)
+            MeetingOpener.open(meetingLink: meetingLink)
         } else {
             let validUrl = NSURL(string: clipboardContent)
             if validUrl != nil {
                 URL(string: clipboardContent)?.openInDefaultBrowser()
             } else {
-                sendNotification("No valid url",
-                                 "Clipboard has no meeting link, so the meeting cannot be started")
+                AppMessageCenter.shared.post(.clipboardInvalid)
             }
         }
     } else {
-        sendNotification("Clipboard is empty",
-                         "Clipboard has no content, so the meeting cannot be started...")
+        AppMessageCenter.shared.post(.clipboardEmpty)
     }
 }
 
+#if DEBUG
+/// Sample event for SwiftUI previews only.
 func generateFakeEvent() -> MBEvent {
-    let calendar = MBCalendar(title: "Fake calendar", id: "fake_cal", source: nil, email: nil, color: .black)
+    let calendar = MBCalendar(
+        title: "Fake calendar", id: "fake_cal", source: nil, email: nil, color: .black)
 
     let event = MBEvent(
         id: "test_event",
@@ -242,16 +216,7 @@ func generateFakeEvent() -> MBEvent {
     )
     return event
 }
-
-extension Data {
-    init?(base64URL urlString: String) {
-        var st = urlString.replacingOccurrences(of: "-", with: "+")
-                         .replacingOccurrences(of: "_", with: "/")
-        let pad = 4 - st.count % 4
-        if pad < 4 { st.append(String(repeating: "=", count: pad)) }
-        self.init(base64Encoded: st)
-    }
-}
+#endif
 
 extension NSImage {
     /// Returns a copy tinted with macOS disabled text colour.
@@ -259,10 +224,10 @@ extension NSImage {
         let copy = self.copy() as! NSImage
         copy.lockFocus()
         NSColor.disabledControlTextColor
-                    .withAlphaComponent(0.4)
-                    .set()
+            .withAlphaComponent(0.4)
+            .set()
         let rect = NSRect(origin: .zero, size: copy.size)
-        rect.fill(using: .sourceAtop)        // keep alpha, replace colour
+        rect.fill(using: .sourceAtop)  // keep alpha, replace colour
 
         copy.unlockFocus()
         return copy

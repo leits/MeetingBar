@@ -1,7 +1,9 @@
 reporter: "github-actions-logging"
 
 included:
+  - Package.swift
   - MeetingBar
+  - MeetingBarLogicTests
   - MeetingBarTests
 
 excluded:

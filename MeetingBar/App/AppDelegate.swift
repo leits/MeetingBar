@@ -6,29 +6,41 @@
 //  Copyright © 2020 Andrii Leitsius. All rights reserved.
 //
 
+import AppKit
 import Combine
 import Defaults
 import KeyboardShortcuts
-import SwiftUI
 import UserNotifications
 
 @MainActor
 @main
-class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotificationCenterDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate {
     var statusBarItem: StatusBarItemController!
-    var eventManager: EventManager!
+    var calendarSync: CalendarSync!
+    let notificationScheduler = NotificationScheduler()
+    let snoozeService = SnoozeService()
+    let patronageService = PatronageService()
+    private var notificationCenterDelegate: NotificationCenterDelegate?
+    private var notificationActionHandler: NotificationActionHandler?
+    private(set) var appModel: AppModel?
+    private let lifecycleObserver = LifecycleObserver()
+    private let urlHandler = URLHandler()
+    private let windowCoordinator = WindowCoordinator()
 
-    var screenIsLocked: Bool = false
-
-    weak var preferencesWindow: NSWindow!
+    private var launchTask: Task<Void, Never>?
+    private var notificationSetupTask: Task<Void, Never>?
     private var statusLoopTask: Task<Void, Never>?
-
-    private var eventCancellable: AnyCancellable?
+    private var cancellables = Set<AnyCancellable>()
 
     func applicationDidFinishLaunching(_: Notification) {
-        // AppStore sync
-        completeStoreTransactions()
-        checkAppSource()
+        // When launched as a test host, skip the entire launch flow so tests
+        // don't trigger onboarding, status bar setup, or calendar sync.
+        guard !AppMessageCenter.shouldSuppressSystemUI() else { return }
+
+        patronageService.start()
+
+        // Migrate legacy per-provider browser keys → providerBrowsers map
+        MeetingOpenPreferencesMigration.migrateDefaultsIfNeeded()
 
         // Handle windows closing closing
         NotificationCenter.default.addObserver(
@@ -50,59 +62,140 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
             andEventID: AEEventID(kAEGetURL)
         )
 
-        if Defaults[.onboardingCompleted] {
-            Task {
-                eventManager = await EventManager()
-                setup()
+        launchTask = Task { [weak self] in
+            guard let self else { return }
+            let manager = await CalendarSync()
+            guard !Task.isCancelled else {
+                manager.stop()
+                return
             }
-        } else {
-            openOnboardingWindow()
+            calendarSync = manager
+            if Defaults[.onboardingCompleted] {
+                setup()
+            } else {
+                setup(triggerInitialRefresh: false)
+                presentOnboardingWindow()
+            }
+            launchTask = nil
         }
     }
 
-    func setup() {
-        statusBarItem.setAppDelegate(appdelegate: self)
+    /// Opens the first-run setup window from the cold-launch path when setup is
+    /// incomplete.
+    func presentOnboardingWindow() {
+        guard let appModel else { return }
+        windowCoordinator.openOnboardingWindow(
+            appModel: appModel,
+            onProviderSelected: { [weak appModel] provider in
+                guard let appModel else {
+                    return .failed("Application state is unavailable")
+                }
+                return await appModel.changeProvider(to: provider)
+            },
+            onComplete: { [weak appModel] provider in
+                guard let appModel else {
+                    return .failed("Application state is unavailable")
+                }
+                let result = await appModel.completeOnboarding(with: provider)
+                if result == .success {
+                    appModel.handleLaunch()
+                }
+                return result
+            }
+        )
+    }
 
-        UNUserNotificationCenter.current().delegate = self
-        Task { @MainActor in
+    func setup(triggerInitialRefresh: Bool = true) {
+        guard appModel == nil else { return }
+        let env = AppEnvironment.live(
+            calendarSync: calendarSync,
+            notificationScheduler: notificationScheduler,
+            snoozeService: snoozeService,
+            openPreferences: { [weak self] in
+                self?.openPreferencesWindow(nil)
+            },
+            resumeOAuthFlow: { [weak self] url in
+                guard let calendarSync = self?.calendarSync else { return }
+                calendarSync.repository.resumeAuthorizationFlow(with: url)
+            }
+        )
+        let model = AppModel(environment: env)
+        appModel = model
+        AppRuntimeBridge.shared.install(appModel: model)
+
+        let actionHandler = NotificationActionHandler(
+            isScreenLocked: { [weak model] in model?.state.screenIsLocked ?? false },
+            send: { [weak model] action in model?.send(action) },
+            showFullscreen: { [weak self] event in
+                self?.windowCoordinator.openFullscreenNotificationWindow(event: event)
+            },
+            runEventStartScript: { event in
+                runMeetingStartsScript(event: event, type: .meetingStart)
+            }
+        )
+        notificationActionHandler = actionHandler
+        notificationScheduler.setActionSink(actionHandler)
+
+        statusBarItem.configure(dependencies: StatusBarDependencies(
+            appState: { [weak model] in model?.state ?? AppState() },
+            events: { [weak model] in model?.state.events ?? [] },
+            send: { [weak model] action in model?.send(action) },
+            openPreferences: { [weak self] in self?.openPreferencesWindow(nil) },
+            openChangelog: { [weak self] in self?.openChangelogWindow(nil) },
+            quit: { [weak self] in self?.quit(nil) }
+        ))
+
+        // Drive status bar from AppModel state: update title and menu whenever
+        // events change.
+        model.$state
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.statusBarItem.updateTitle()
+                self?.statusBarItem.updateMenu()
+            }
+            .store(in: &cancellables)
+
+        let ncDelegate = NotificationCenterDelegate { [weak model] response in
+            model?.send(.notificationResponse(response))
+        }
+        notificationCenterDelegate = ncDelegate
+        UNUserNotificationCenter.current().delegate = ncDelegate
+        notificationSetupTask = Task { @MainActor [weak self] in
             await ensureNotificationAuthorization()
+            guard !Task.isCancelled else { return }
             registerNotificationCategories()
+            self?.notificationSetupTask = nil
         }
 
-        eventCancellable = eventManager.$events
-            .receive(on: DispatchQueue.main) // ensure UI work on main thread
-            .sink { [weak self] events in
-                guard let self = self else { return }
-                // 1) update your model
-                self.statusBarItem.events = events
-                // 2) redraw
-                self.statusBarItem.updateTitle()
-                self.statusBarItem.updateMenu()
-                // 3) schedule next notification
-                if let next = events.nextEvent() {
-                    Task { await scheduleEventNotification(next) }
-                }
-            }
-
         startAsyncLoops()
-        // ActionsOnEventStart
-        ActionsOnEventStart(self).startWatching()
-        //
-
         if Defaults[.browsers].isEmpty {
             addInstalledBrowser()
         }
 
-        // Handle sleep and wake up events
-        let dnc = DistributedNotificationCenter.default()
-        dnc.addObserver(
-            self, selector: #selector(AppDelegate.lockListener),
-            name: .init("com.apple.screenIsLocked"), object: nil
-        )
-        dnc.addObserver(
-            self, selector: #selector(AppDelegate.unlockListener),
-            name: .init("com.apple.screenIsUnlocked"), object: nil
-        )
+        lifecycleObserver.onScreenLocked = { [weak self] in
+            self?.appModel?.handleScreenLock()
+        }
+        lifecycleObserver.onScreenUnlocked = { [weak self] in
+            self?.appModel?.handleScreenUnlock()
+        }
+        lifecycleObserver.onDidWake = { [weak self] in
+            self?.appModel?.handleWake()
+        }
+        lifecycleObserver.onSystemClockChanged = { [weak self] in
+            self?.handleSystemClockChange()
+        }
+        lifecycleObserver.onTimezoneChanged = { [weak self] in
+            self?.handleTimezoneChange()
+        }
+        lifecycleObserver.onDayChanged = { [weak self] in
+            self?.appModel?.handleDayChange()
+        }
+        lifecycleObserver.start()
+
+        if triggerInitialRefresh {
+            model.handleLaunch()
+        }
     }
 
     /*
@@ -111,6 +204,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
      * ------------------------
      */
     private func startAsyncLoops() {
+        statusLoopTask?.cancel()
+
         // Redraw status bar item on hh:mm:00
         statusLoopTask = Task(priority: .utility) { [weak self] in
             while let self, !Task.isCancelled {
@@ -125,7 +220,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
 
                 // Sleep until that boundary
                 let interval = nextMinute.timeIntervalSince(now)
-                try? await Task.sleep(nanoseconds: UInt64(interval * Double(NSEC_PER_SEC)))
+                do {
+                    try await Task.sleep(
+                        nanoseconds: UInt64(max(interval, 0) * Double(NSEC_PER_SEC))
+                    )
+                } catch {
+                    return
+                }
 
                 // Once we hit hh:mm:00, redraw
                 await MainActor.run {
@@ -136,57 +237,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
         }
     }
 
-    /*
-     * -----------------------
-     * MARK: - User Notification Center
-     * ------------------------
-     */
-
-    /// Implementation is necessary to show notifications even when the app has focus!
-    func userNotificationCenter(
-        _: UNUserNotificationCenter, willPresent _: UNNotification,
-        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) ->
-            Void
-    ) {
-        completionHandler([.list, .banner, .badge, .sound])
+    private func handleSystemClockChange() {
+        appModel?.handleSystemClockChange()
+        startAsyncLoops()
     }
 
-    func userNotificationCenter(
-        _: UNUserNotificationCenter, didReceive response: UNNotificationResponse,
-        withCompletionHandler completionHandler: @escaping () -> Void
-    ) {
-        defer {
-            completionHandler()
-        }
-
-        guard
-            ["EVENT", "SNOOZE_EVENT"].contains(
-                response.notification.request.content.categoryIdentifier),
-            let eventID = response.notification.request.content.userInfo["eventID"] as? String,
-            let event = statusBarItem.events.first(where: { $0.id == eventID })
-        else {
-            return
-        }
-        Task {
-            switch response.actionIdentifier {
-            case "JOIN_ACTION", UNNotificationDefaultActionIdentifier:
-                event.openMeeting()
-            case "DISMISS_ACTION":
-                statusBarItem.dismiss(event: event)
-            case NotificationEventTimeAction.untilStart.rawValue:
-                await snoozeEventNotification(event, NotificationEventTimeAction.untilStart)
-            case NotificationEventTimeAction.fiveMinuteLater.rawValue:
-                await snoozeEventNotification(event, NotificationEventTimeAction.fiveMinuteLater)
-            case NotificationEventTimeAction.tenMinuteLater.rawValue:
-                await snoozeEventNotification(event, NotificationEventTimeAction.tenMinuteLater)
-            case NotificationEventTimeAction.fifteenMinuteLater.rawValue:
-                await snoozeEventNotification(event, NotificationEventTimeAction.fifteenMinuteLater)
-            case NotificationEventTimeAction.thirtyMinuteLater.rawValue:
-                await snoozeEventNotification(event, NotificationEventTimeAction.thirtyMinuteLater)
-            default:
-                break
-            }
-        }
+    private func handleTimezoneChange() {
+        appModel?.handleTimezoneChange()
+        startAsyncLoops()
     }
 
     /*
@@ -195,131 +253,35 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
      * ------------------------
      */
 
-    func openOnboardingWindow() {
-        let contentView = OnboardingView()
-        let onboardingWindow = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 660, height: 450),
-            styleMask: [.closable, .titled],
-            backing: .buffered,
-            defer: false
-        )
-
-        onboardingWindow.title = WindowTitles.onboarding
-        onboardingWindow.contentView = NSHostingView(rootView: contentView)
-        let controller = NSWindowController(window: onboardingWindow)
-        controller.showWindow(self)
-
-        onboardingWindow.level = .floating
-        onboardingWindow.center()
-        onboardingWindow.orderFrontRegardless()
-    }
-
     @objc
     func openChangelogWindow(_: NSStatusBarButton?) {
-        let contentView = ChangelogView()
-        let changelogWindow = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 600, height: 400),
-            styleMask: [.closable, .titled, .resizable],
-            backing: .buffered,
-            defer: false
-        )
-        changelogWindow.title = WindowTitles.changelog
-        changelogWindow.level = .floating
-        changelogWindow.contentView = NSHostingView(rootView: contentView)
-        changelogWindow.makeKeyAndOrderFront(nil)
-        // allow the changelof window can be focused automatically when opened
-        NSApplication.shared.activate(ignoringOtherApps: true)
-
-        let controller = NSWindowController(window: changelogWindow)
-        controller.showWindow(self)
-
-        changelogWindow.center()
-        changelogWindow.orderFrontRegardless()
-    }
-
-    func openFullscreenNotificationWindow(event: MBEvent) {
-        let screenFrame = NSScreen.main?.frame ?? NSRect(x: 0, y: 0, width: 800, height: 600)
-
-        let window = NSWindow(
-            contentRect: screenFrame,
-            styleMask: [.borderless],
-            backing: .buffered,
-            defer: false
-        )
-
-        window.contentView = NSHostingView(
-            rootView: FullscreenNotification(event: event, window: window))
-        window.appearance = NSAppearance(named: .darkAqua)
-        window.collectionBehavior = .canJoinAllSpaces
-        window.collectionBehavior = .moveToActiveSpace
-
-        window.titlebarAppearsTransparent = true
-        window.styleMask.insert(.fullSizeContentView)
-        window.title = "Meetingbar Fullscreen Notification"
-        window.level = .screenSaver
-
-        let controller = NSWindowController(window: window)
-        controller.showWindow(self)
-
-        window.center()
-        window.orderFrontRegardless()
+        windowCoordinator.openChangelogWindow()
     }
 
     @objc
     func openPreferencesWindow(_: NSStatusBarButton?) {
-        let contentView = PreferencesView().environmentObject(eventManager)
-
-        if let preferencesWindow {
-            // if a window is already open, focus on it instead of opening another one.
-            NSApplication.shared.activate(ignoringOtherApps: true)
-            preferencesWindow.makeKeyAndOrderFront(nil)
-            return
-        } else {
-            let window = NSWindow(
-                contentRect: NSRect(x: 0, y: 0, width: 700, height: 620),
-                styleMask: [.closable, .titled, .resizable],
-                backing: .buffered,
-                defer: false
-            )
-
-            window.title = WindowTitles.preferences
-            window.contentView = NSHostingView(rootView: contentView)
-            window.makeKeyAndOrderFront(nil)
-            window.level = .floating
-            // allow the preference window can be focused automatically when opened
-            NSApplication.shared.activate(ignoringOtherApps: true)
-
-            let controller = NSWindowController(window: window)
-            controller.showWindow(self)
-
-            window.center()
-            window.orderFrontRegardless()
-
-            preferencesWindow = window
-        }
+        windowCoordinator.openPreferencesWindow(
+            appModel: appModel,
+            calendarSync: calendarSync,
+            patronageService: patronageService
+        )
     }
 
     @objc
     func windowClosed(notification: NSNotification) {
         let window = notification.object as? NSWindow
-        if let windowTitle = window?.title {
-            if windowTitle == WindowTitles.onboarding, !Defaults[.onboardingCompleted] {
+        windowCoordinator.handleWindowClosed(
+            window,
+            onboardingCompleted: Defaults[.onboardingCompleted],
+            onIncompleteOnboardingClosed: { [weak self] in
+                guard let self else { return }
                 NSApplication.shared.terminate(self)
-            } else if windowTitle == WindowTitles.changelog {
-                Defaults[.lastRevisedVersionInChangelog] = Defaults[.appVersion]
-                statusBarItem.updateMenu()
+            },
+            onChangelogClosed: { [weak self] in
+                AppSettings.acknowledgeCurrentChangelog()
+                self?.statusBarItem.updateMenu()
             }
-        }
-    }
-
-    @objc
-    func lockListener(notification _: NSNotification) {
-        screenIsLocked = true
-    }
-
-    @objc
-    func unlockListener(notification _: NSNotification) {
-        screenIsLocked = false
+        )
     }
 
     /*
@@ -333,23 +295,29 @@ class AppDelegate: NSObject, NSApplicationDelegate, @preconcurrency UNUserNotifi
         getURLEvent event: NSAppleEventDescriptor, replyEvent _: NSAppleEventDescriptor
     ) {
         if let string = event.paramDescriptor(forKeyword: keyDirectObject)?.stringValue,
-           let url = URL(string: string) {
-            if url == URL(string: "meetingbar://preferences") {
-                openPreferencesWindow(nil)
-            } else {
-                GCEventStore.shared
-                    .currentAuthorizationFlow?.resumeExternalUserAgentFlow(with: url)
-            }
+            let url = URL(string: string) {
+            appModel?.send(.openRoute(urlHandler.route(for: url)))
         }
     }
 
     @objc
-    func quit(_: NSStatusBarButton) {
+    func quit(_: Any?) {
         statusLoopTask?.cancel()
         NSApplication.shared.terminate(self)
     }
 
     func applicationWillTerminate(_: Notification) {
+        launchTask?.cancel()
+        launchTask = nil
+        notificationSetupTask?.cancel()
+        notificationSetupTask = nil
         statusLoopTask?.cancel()
+        statusLoopTask = nil
+        lifecycleObserver.stop()
+        appModel?.handleWillTerminate()
+        notificationScheduler.stop()
+        calendarSync?.stop()
+        patronageService.stop()
+        cancellables.removeAll()
     }
 }

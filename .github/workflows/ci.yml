@@ -1,0 +1,133 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - '**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  DEVELOPER_DIR: /Applications/Xcode_16.2.app/Contents/Developer
+  CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: macos-15
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      checks: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Select Xcode
+        run: |
+          if [ ! -d "$DEVELOPER_DIR" ]; then
+            echo "Expected Xcode not found at $DEVELOPER_DIR"
+            ls -1 /Applications | grep '^Xcode' || true
+            exit 1
+          fi
+          sudo xcode-select -s "$DEVELOPER_DIR"
+          xcodebuild -version
+          swift --version
+
+      - name: Cache SwiftPM packages
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: |
+            .build
+            build/SourcePackages
+            ~/Library/Caches/org.swift.swiftpm
+            ~/Library/org.swift.swiftpm
+          key: ${{ runner.os }}-spm-${{ hashFiles('Package.swift', 'MeetingBar.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-spm-
+
+      - name: Validate localizations
+        run: make validate-strings
+
+      - name: Run SwiftPM logic tests
+        run: make test-logic-quiet
+
+      - name: Run app-hosted tests
+        run: make test-app-quiet
+
+      - name: Publish Test Results
+        uses: dorny/test-reporter@a43b3a5f7366b97d083190328d2c652e1a8b6aa2 # v3.0.0
+        if: always()
+        with:
+          name: MeetingBar Tests
+          path: build/test-results/*.xml
+          reporter: java-junit
+
+      - name: Publish results summary
+        if: always()
+        run: |
+          {
+            echo "## App test results"
+            make test-summary
+            echo ""
+            echo "## Coverage"
+            echo '```'
+            make coverage-report 2>&1 || echo "coverage report unavailable"
+            make coverage-gate 2>&1 || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Install Slather
+        if: ${{ !cancelled() && env.CODECOV_TOKEN != '' }}
+        run: gem install slather
+
+      - name: Generate coverage report
+        if: ${{ !cancelled() && env.CODECOV_TOKEN != '' }}
+        run: make coverage-codecov
+
+      - name: Upload coverage to Codecov
+        if: ${{ !cancelled() && env.CODECOV_TOKEN != '' }}
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
+        with:
+          files: build/coverage/cobertura.xml
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Upload test results to Codecov
+        if: ${{ !cancelled() && env.CODECOV_TOKEN != '' }}
+        uses: codecov/test-results-action@0fa95f0e1eeaafde2c782583b36b28ad0d8c77d3 # v1.2.1
+        with:
+          directory: build/test-results
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Upload Xcode result bundle
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: MeetingBar.xcresult
+          path: build/coverage/MeetingBar.xcresult
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload SwiftPM coverage data
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: swiftpm-coverage
+          path: .build/**/debug/codecov
+          if-no-files-found: ignore
+          # .build is a dotfile; upload-artifact skips hidden paths otherwise.
+          include-hidden-files: true
+          retention-days: 7

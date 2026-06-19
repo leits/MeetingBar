@@ -1,0 +1,15 @@
+version: 2
+updates:
+  # Keep GitHub Actions (version tags and pinned SHAs) current. A single
+  # grouped PR per week keeps the noise down while ensuring the CI, Lint and
+  # Security workflows never silently drift onto stale or yanked action refs.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+    commit-message:
+      prefix: ci

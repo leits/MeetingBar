@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		1418907C26F23CCD00DCD9B1 /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = 1418907B26F23CCD00DCD9B1 /* KeyboardShortcuts */; };
 		1418907F26F23CF600DCD9B1 /* Defaults in Frameworks */ = {isa = PBXBuildFile; productRef = 1418907E26F23CF600DCD9B1 /* Defaults */; };
-		1432D98C25C4B94900FD121D /* SwiftyStoreKit in Frameworks */ = {isa = PBXBuildFile; productRef = 1432D98B25C4B94900FD121D /* SwiftyStoreKit */; };
 		40DC7054250E5E1000217DD9 /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC7053250E5E1000217DD9 /* ServiceManagement.framework */; };
 		4616E3A729BB62D100665FE0 /* LaunchAtLogin in Frameworks */ = {isa = PBXBuildFile; productRef = 4616E3A629BB62D100665FE0 /* LaunchAtLogin */; };
 		467D98092DDB501F00EB205C /* AppAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 467D98082DDB501F00EB205C /* AppAuth */; };
@@ -66,7 +65,6 @@
 				4616E3A729BB62D100665FE0 /* LaunchAtLogin in Frameworks */,
 				467D980B2DDB501F00EB205C /* AppAuthCore in Frameworks */,
 				1418907C26F23CCD00DCD9B1 /* KeyboardShortcuts in Frameworks */,
-				1432D98C25C4B94900FD121D /* SwiftyStoreKit in Frameworks */,
 				1418907F26F23CF600DCD9B1 /* Defaults in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -132,7 +130,6 @@
 			);
 			name = MeetingBar;
 			packageProductDependencies = (
-				1432D98B25C4B94900FD121D /* SwiftyStoreKit */,
 				1418907B26F23CCD00DCD9B1 /* KeyboardShortcuts */,
 				1418907E26F23CF600DCD9B1 /* Defaults */,
 				4616E3A629BB62D100665FE0 /* LaunchAtLogin */,
@@ -211,10 +208,11 @@
 				ko,
 				ta,
 				enm,
+				"zh-Hans",
+				pt,
 			);
 			mainGroup = 144C01702462D0C3000C9FFC;
 			packageReferences = (
-				1432D98A25C4B94900FD121D /* XCRemoteSwiftPackageReference "SwiftyStoreKit" */,
 				1418907A26F23CCD00DCD9B1 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */,
 				1418907D26F23CF600DCD9B1 /* XCRemoteSwiftPackageReference "Defaults" */,
 				4616E3A529BB62D100665FE0 /* XCRemoteSwiftPackageReference "LaunchAtLogin" */,
@@ -284,7 +282,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nexport PATH=\"$PATH:/opt/homebrew/bin\"\nif which swiftlint > /dev/null; then\n  swiftlint --fix && swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nexport PATH=\"$PATH:/opt/homebrew/bin\"\nif which swiftlint > /dev/null; then\n  swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -355,6 +353,7 @@
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = KGH289N6T8;
 				EMBED_ASSET_PACKS_IN_PRODUCT_BUNDLE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -424,6 +423,7 @@
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = KGH289N6T8;
 				EMBED_ASSET_PACKS_IN_PRODUCT_BUNDLE = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -454,7 +454,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 169;
+				CURRENT_PROJECT_VERSION = 170;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -468,7 +468,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 4.11.6;
+				MARKETING_VERSION = 5.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = leits.MeetingBar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -484,7 +484,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 169;
+				CURRENT_PROJECT_VERSION = 170;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -498,7 +498,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 4.11.6;
+				MARKETING_VERSION = 5.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = leits.MeetingBar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -599,14 +599,6 @@
 				minimumVersion = 9.0.2;
 			};
 		};
-		1432D98A25C4B94900FD121D /* XCRemoteSwiftPackageReference "SwiftyStoreKit" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/bizz84/SwiftyStoreKit.git";
-			requirement = {
-				kind = upToNextMinorVersion;
-				minimumVersion = 0.16.3;
-			};
-		};
 		4616E3A529BB62D100665FE0 /* XCRemoteSwiftPackageReference "LaunchAtLogin" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/sindresorhus/LaunchAtLogin";
@@ -635,11 +627,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 1418907D26F23CF600DCD9B1 /* XCRemoteSwiftPackageReference "Defaults" */;
 			productName = Defaults;
-		};
-		1432D98B25C4B94900FD121D /* SwiftyStoreKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 1432D98A25C4B94900FD121D /* XCRemoteSwiftPackageReference "SwiftyStoreKit" */;
-			productName = SwiftyStoreKit;
 		};
 		4616E3A629BB62D100665FE0 /* LaunchAtLogin */ = {
 			isa = XCSwiftPackageProductDependency;

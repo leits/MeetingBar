@@ -11,20 +11,26 @@ import Foundation
 final class I18N {
     nonisolated(unsafe) static let instance = I18N()
 
-    private var bundle = Bundle.main
-    var locale = Locale.current
+    private var bundle: Bundle
+    var locale: Locale
+    private let englishBundle: Bundle
 
-    private let englishBundle: Bundle = {
-        guard
-            let path = Bundle.main.path(forResource: "en", ofType: "lproj"),
-            let b = Bundle(path: path)
-        else {
-            return Bundle.main
+    private init() {
+        bundle = Bundle.main
+        locale = Locale.current
+        if let path = Bundle.main.path(forResource: "en", ofType: "lproj"),
+           let englishBundle = Bundle(path: path) {
+            self.englishBundle = englishBundle
+        } else {
+            englishBundle = Bundle.main
         }
-        return b
-    }()
+    }
 
-    private init() {}
+    init(bundle: Bundle, englishBundle: Bundle, locale: Locale = .current) {
+        self.bundle = bundle
+        self.englishBundle = englishBundle
+        self.locale = locale
+    }
 
     // MARK: - App language
 
@@ -57,8 +63,9 @@ final class I18N {
     // MARK: - Loco
 
     func localizedString(for key: String) -> String {
-        let localized = bundle.localizedString(forKey: key, value: "$\(key)$", table: nil)
-        if localized == key {
+        let missingMarker = "$\(key)$"
+        let localized = bundle.localizedString(forKey: key, value: missingMarker, table: nil)
+        if localized == key || localized == missingMarker {
             return englishBundle.localizedString(forKey: key, value: key, table: nil)
         }
         return localized

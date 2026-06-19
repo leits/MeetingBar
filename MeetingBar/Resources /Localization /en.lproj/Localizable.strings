@@ -13,13 +13,27 @@
 "general_save" = "Save";
 "general_meeting" = "Meeting";
 "general_when_event_starts" = "when event starts";
+"general_when_event_ends" = "when event ends";
 "general_one_minute_before" = "1 minute before";
 "general_three_minute_before" = "3 minutes before";
 "general_five_minute_before" = "5 minutes before";
+"general_refresh" = "Refresh";
+"general_end_of_event_notification_toggle" = "Send a notification when event ends";
+"timeline_accessibility_label" = "Timeline with %d events";
 "create_meeting_error_title" = "Cannot create new meeting";
 "create_meeting_error_message" = "Custom URL \"%@\" missing or invalid. ";
 "next_meeting_empty_title" = "There are no upcoming meetings today";
 "next_meeting_empty_message" = "Woohoo! It's time to make cocoa";
+"message_clipboard_invalid_title" = "No valid URL";
+"message_clipboard_invalid_text" = "Clipboard has no meeting link, so the meeting cannot be started.";
+"message_clipboard_empty_title" = "Clipboard is empty";
+"message_clipboard_empty_text" = "Clipboard has no content, so the meeting cannot be started.";
+"message_event_script_execution_failed_title" = "AppleScript execution failed";
+"message_event_script_execution_failed_text" = "The script in %@ failed: %@";
+"message_event_script_file_missing_title" = "AppleScript file not found";
+"message_event_script_file_missing_text" = "The eventStartScript.scpt file does not exist in %@.";
+"message_google_account_connected_title" = "Google Account connected";
+"message_google_account_connected_text" = "%@ is connected";
 
 // MARK: - Window titles
 
@@ -30,26 +44,51 @@
 // MARK: - Preferences tabs
 
 "preferences_tab_general" = "General";
-"preferences_tab_appearance" = "Appearance";
 "preferences_tab_bookmarks" = "Bookmarks";
-"preferences_tab_links" = "Links";
 "preferences_tab_calendars" = "Calendars";
+"preferences_tab_meeting_opening" = "Meeting Links";
+"preferences_tab_menu_bar" = "Display & Events";
+"preferences_tab_notifications" = "Notifications";
 "preferences_tab_advanced" = "Advanced";
+"preferences_sidebar_setup" = "Setup";
+"preferences_sidebar_experience" = "Experience";
+"preferences_sidebar_advanced" = "Advanced";
+
+// MARK: - Preferences section titles
+
+"preferences_section_general_settings_title" = "General Settings";
+"preferences_section_shortcuts_title" = "Keyboard Shortcuts";
+"preferences_section_create_title" = "Create meetings";
+"preferences_section_apple_script_hooks_title" = "AppleScript Hooks";
+"preferences_section_regex_filters_title" = "Regex Filters";
+"preferences_calendar_source_title" = "Calendar Source";
+"preferences_meeting_opening_behavior_title" = "Open meeting links";
+"preferences_notifications_alerts_title" = "Meeting Alerts";
+"preferences_notifications_automation_title" = "Automatic Joining";
+
+// MARK: - Preferences Status
+
+"preferences_status_state_ok" = "Up to date";
+"preferences_status_state_stale" = "Showing cached data";
+"preferences_status_state_error" = "Last refresh failed";
+"preferences_status_state_auth_required" = "Authorization required";
+"preferences_status_state_permission_required" = "Calendar permission required";
+"preferences_status_state_initializing" = "Initializing";
+"preferences_status_reconnect" = "Reconnect";
+"preferences_status_open_calendar_settings" = "Open Calendar Settings";
+"preferences_status_copy_diagnostics" = "Copy diagnostics";
 
 // MARK: - Preferences General
 
 "preferences_general_option_login_launch" = "Launch after login";
 "preferences_general_option_preferred_language_title" = "Language:";
 "preferences_general_option_preferred_language_system_value" = "System";
-"preferences_general_option_shortcuts" = "Shortcuts";
-"preferences_general_all_shortcut" = "All Shortcuts";
 "preferences_general_shortcut_open_menu" = "Open menu:";
 "preferences_general_shortcut_create_meeting" = "Create meeting:";
 "preferences_general_shortcut_join_next" = "Join next meeting:";
 "preferences_general_shortcut_join_from_clipboard" = "Join meeting from clipboard:";
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "Toggle title visibility in status bar:";
 "preferences_general_meeting_bar_description" = "MeetingBar is an open-source app\ncreated by Andrii Leitsius 🇺🇦\nFor smoother and easier online meetings";
-"preferences_general_external_patronage" = "Patronage";
 "preferences_general_external_contact" = "Contact";
 "preferences_general_patron_title" = "Become a Patron";
 "preferences_general_patron_three_months" = "3 months – 2.99 USD";
@@ -58,8 +97,6 @@
 "preferences_general_patron_description" = "These are one-off purchases, and will not auto-renew.";
 "preferences_general_patron_thank_for_purchase" = "Thanks! You have supported MeetingBar for %d months 🎉";
 "preferences_general_patron_restore_purchases" = "Restore Purchases";
-"preferences_general_feedback_title" = "If you have any questions or feedback,\nfeel free to get in contact:";
-"preferences_general_feedback_email" = "E-mail";
 
 // MARK: - Preferences Appearance
 
@@ -67,9 +104,7 @@
 "preferences_appearance_events_show_events_for_title" = "Show events for";
 "preferences_appearance_events_show_events_for_today_value" = "today";
 "preferences_appearance_events_show_events_for_today_tomorrow_value" = "today and tomorrow";
-"preferences_appearance_events_non_all_day_title" = "Other events:";
-"preferences_appearance_events_value_inactive_without_meeting_link" = "show those without meeting links as inactive";
-"preferences_appearance_events_value_hide_without_meeting_link" = "hide all without meeting links";
+"preferences_appearance_events_no_meeting_link_title" = "Events without a meeting link";
 "preferences_appearance_events_all_day_title" = "All-day events:";
 "preferences_appearance_events_without_guest_title" = "Events without guests:";
 "preferences_appearance_events_past_title" = "Past events:";
@@ -93,7 +128,7 @@
 "preferences_appearance_status_bar_title_dot_value" = "dot (•)";
 "preferences_appearance_status_bar_title_hide_value" = "hide";
 "preferences_appearance_status_bar_title_shorten_stepper" = "shorten to %d characters";
-"preferences_appearance_status_bar_time_title" = "Time";
+"preferences_appearance_status_bar_time_title" = "Show time";
 "preferences_appearance_status_bar_time_show_value" = "show";
 "preferences_appearance_status_bar_time_show_under_title_value" = "show under title";
 "preferences_appearance_status_bar_time_hide_value" = "hide";
@@ -113,15 +148,30 @@
 "preferences_appearance_menu_show_event_title" = "Show event:";
 "preferences_appearance_menu_show_event_end_time_value" = "end time";
 "preferences_appearance_menu_show_event_icon_value" = "icon";
+"preferences_appearance_menu_show_event_calendar_color_value" = "calendar color";
 "preferences_appearance_menu_show_event_details_value" = "details as submenu";
 
 // MARK: - Preferences Services
 
-"preferences_services_link_meeting_title" = "Open all meeting links in";
-"preferences_services_link_service_title" = "Open %@ links in";
+"preferences_services_link_meeting_title" = "Default browser for meeting links";
+"preferences_services_link_service_title" = "%@";
 "preferences_services_link_default_browser_value" = "Default web browser";
-"preferences_services_supported_links_list" = "Supported links for services:\n%@";
-"preferences_services_supported_links_mailback" = "If the service you use isn't supported, you can send an e-mail to the developers";
+"preferences_services_link_default_help" = "This browser is used unless a provider-specific override is set.";
+"preferences_services_link_overrides_title" = "Service-specific opening";
+"preferences_services_link_overrides_help" = "These choices override the default browser for each meeting service.";
+"preferences_services_link_modes_help" = "App, web app, and PWA options are optional. Existing browser behavior stays unchanged until you select one.";
+"preferences_meeting_opening_mode_meetinone" = "MeetInOne";
+"preferences_meeting_opening_mode_google_meet_pwa" = "Google Meet PWA (Chrome)";
+"preferences_meeting_opening_mode_google_meet_pwa_help" = "Opens Google Meet through the installed Chrome PWA when available. Falls back to your browser.";
+"preferences_meeting_opening_mode_zoom_app" = "Zoom App";
+"preferences_meeting_opening_mode_zoom_web_app" = "Zoom Web App";
+"preferences_meeting_opening_mode_zoom_web_app_help" = "Opens supported Zoom meeting links in Zoom’s web client.";
+"preferences_meeting_opening_mode_teams_app" = "Teams App";
+"preferences_meeting_opening_mode_workplace_app" = "Workplace App";
+"preferences_meeting_opening_mode_workplace_app_help" = "Opens supported Workplace calls in the native Workchat app when available.";
+"preferences_meeting_opening_mode_jitsi_app" = "Jitsi App";
+"preferences_meeting_opening_mode_slack_app" = "Slack App";
+"preferences_meeting_opening_mode_riverside_app" = "Riverside App";
 "preferences_services_create_meeting_title" = "Create meetings via";
 "preferences_services_create_meeting_custom_url_value" = "Custom URL";
 "preferences_services_create_meeting_custom_url_placeholder" = "Please enter a valid URL (with http:// or https://)";
@@ -130,7 +180,8 @@
 
 // MARK: - Preferences Services Browsers Configuration
 
-"preferences_configure_browsers_button" = "Configure web browsers";
+"preferences_configure_browsers_button" = "Configure Browsers…";
+"preferences_configure_browsers_help" = "Add custom browsers, profiles, or apps for opening meeting links.";
 "preferences_configure_browsers_delete_alert_title" = "Delete web browser configuration?";
 "preferences_configure_browsers_delete_alert_message" = "Delete the %@ browser configuration?";
 "preferences_configure_browsers_add_button_browser_title" = "Web browser";
@@ -160,21 +211,16 @@
 
 // MARK: - Preferences Calendars
 
-"preferences_calendars_select_calendars_title" = "Select calendars to show events in status bar";
-"preferences_calendars_add_account_description" = "Can't find the calendar you need?";
-"preferences_calendars_add_account_button" = "Add calendar account";
-"preferences_calendars_add_account_modal" = "To add external calendars:\n1. Open the default calendar app\n2. Click 'Add Account' in the menu\n3. Choose and connect your account";
-"preferences_calendars_provider_section_title" = "Calendars provider";
+"preferences_calendars_select_calendars_title" = "Select calendars to show meetings in the menu bar";
 "preferences_calendars_provider_gcalendar_change_account" = "Change Google Account";
-"preferences_calendars_provider_macos_switch" = "Switch to macOS Calendar";
-"preferences_calendars_provider_gcalendar_switch" = "Switch to Google Calendar API";
 
 // MARK: - Preferences Advanced
 
-"preferences_advanced_setting_warning" = "⚠️ Only use these settings if you understand what they do";
-"preferences_advanced_apple_script_checkmark" = "Run AppleScript when joining a meeting";
+"preferences_advanced_setting_warning" = "These settings are intended for advanced users.";
+"preferences_advanced_apple_script_checkmark" = "Run AppleScript when joining";
 "preferences_advanced_apple_script_placeholder" = "# write your script here\ntell application \"Music\" to pause";
-"preferences_advanced_run_script_on_event_start" = "Run AppleScript automatically";
+"preferences_advanced_run_script_on_event_start" = "Run AppleScript before joinable meetings";
+"preferences_advanced_script_link_only_help" = "Runs only for events with meeting links.";
 "preferences_advanced_test_script_on_next_event" = "Test on next event";
 "preferences_advanced_edit_script" = "Edit script";
 "preferences_advanced_save_script_button" = "Save script";
@@ -187,14 +233,20 @@
 "preferences_advanced_regex_edit_button" = "edit";
 "preferences_advanced_regex_new_title" = "Enter regex";
 "preferences_advanced_regex_new_cant_save_title" = "Can't save regex";
+"preferences_advanced_regex_duplicate_error" = "This regex already exists.";
+"preferences_advanced_regex_test_title" = "Test meeting link regex";
+"preferences_advanced_regex_test_placeholder" = "Paste sample event text";
+"preferences_advanced_regex_test_button" = "Test regex";
+"preferences_advanced_regex_test_match" = "Matched %@";
+"preferences_advanced_regex_test_no_match" = "No match";
 
 // MARK: - Status bar
 
 "status_bar_section_today" = "Today";
 "status_bar_section_tomorrow" = "Tomorrow";
-"status_bar_empty_calendar_message" = "Select your calendars in the preferences\nto see your meetings";
 "status_bar_section_join_next_meeting" = "Join next event meeting";
 "status_bar_section_join_current_meeting" = "Join current event meeting";
+"status_bar_join_with_other_link" = "Join with other link";
 "status_bar_section_join_from_clipboard" = "Open meeting from clipboard";
 "status_bar_section_refresh_sources" = "Refresh sources";
 "status_bar_menu_dismiss_curent_meeting" = "Dismiss current meeting";
@@ -206,6 +258,18 @@
 "notification_all_dismissals_removed_title" = "Removed all dismissals";
 "notification_all_dismissals_removed_message" = "All dismissed meetings are back in action";
 "status_bar_section_join_create_meeting" = "Create meeting";
+"status_bar_control_actions" = "More actions";
+"status_bar_control_current_meeting" = "Current meeting";
+"status_bar_control_next_meeting" = "Next meeting";
+"status_bar_control_stale" = "Calendar refresh failed — showing last known data";
+"status_bar_control_auth_required" = "Google Calendar needs to be reconnected";
+"status_bar_control_reconnect" = "Reconnect Google Calendar";
+"status_bar_control_permission_required" = "Calendar permission is required";
+"status_bar_control_grant_permission" = "Grant Calendar Permission";
+"status_bar_control_no_calendars" = "No calendars selected";
+"status_bar_control_select_calendars" = "Select Calendars in Preferences";
+"status_bar_control_refresh_failed" = "Calendar refresh failed";
+"status_bar_control_no_upcoming" = "No upcoming meetings";
 "status_bar_section_bookmarks_title" = "Bookmarks";
 "status_bar_section_bookmarks_menu" = "Bookmarks menu";
 "status_bar_section_date_nothing" = "Nothing for %@";
@@ -219,7 +283,6 @@
 "status_bar_submenu_status_pending" = " ⏳ Pending";
 "status_bar_submenu_status_unknown" = " ❔ Unknown";
 "status_bar_submenu_status_default_extended" = " ❔ (%@)";
-"status_bar_submenu_status_default_simple" = " ❔ (Unknown)";
 "status_bar_submenu_location_title" = "Location:";
 "status_bar_submenu_organizer_title" = "Organizer: %@";
 "status_bar_submenu_notes_title" = "Notes:";
@@ -251,43 +314,61 @@
 "status_bar_error_app_link_message" = "Ensure you have the %@ installed, or open such links in a web browser from the preferences instead.";
 // MARK: - Welcome screen
 
-"welcome_screen_greeting_main_title" = "Hi! MeetingBar is such a simple app that everything is almost ready.";
-"welcome_screen_greeting_additional_title" = "Let’s make it 100% yours!";
-"welcome_screen_login_launch_toggle_title" = "Launch MeetingBar at Login";
-"welcome_screen_shortcut_next_meeting_title" = "Join next event meeting with your shortcut:";
-"welcome_screen_ad_hoc_meeting_title" = "Create ad hoc meetings in ";
-"welcome_screen_shortcut_ad_hoc_meeting_title" = "with your shortcut:";
-"welcome_screen_setup_calendar_title" = "Set up calendars";
+"onboarding_setup_title" = "MeetingBar Setup";
+"onboarding_progress" = "Step %@ of %@";
+"onboarding_continue" = "Continue";
+"onboarding_back" = "Back";
+"onboarding_done" = "Done";
+"onboarding_choose_different_source" = "Choose a different source";
+"onboarding_welcome_title" = "Welcome to MeetingBar";
+"onboarding_welcome_description" = "MeetingBar helps you see and join your next meeting directly from the menu bar.";
+"onboarding_calendar_source_title" = "Choose your calendar source";
+"onboarding_calendar_source_description" = "Choose how MeetingBar reads calendar data. Both options can include Google calendars.";
+"onboarding_apple_calendar_title" = "macOS Calendar app";
+"onboarding_apple_calendar_description" = "Reads calendars from the Calendar app on this Mac, including every account configured there.";
+"onboarding_google_calendar_title" = "Google Calendar API";
+"onboarding_google_calendar_description" = "Connects MeetingBar directly to Google Calendar without using the macOS Calendar app.";
+"onboarding_authorization_title" = "Verify calendar access";
+"onboarding_authorization_waiting" = "Waiting for authorization…";
+"onboarding_authorization_apple_description" = "Allow MeetingBar to read events from the Calendar app on this Mac.";
+"onboarding_authorization_google_description" = "Complete Google sign-in in your browser, then return to MeetingBar.";
+"onboarding_calendar_selection_title" = "Choose calendars";
+"onboarding_calendar_selection_description" = "Select the calendars whose meetings should appear in MeetingBar.";
+"onboarding_calendar_selection_empty" = "No calendars found. Refresh or check your calendar accounts.";
+"onboarding_calendar_selection_permission" = "Calendar permission is required. Grant access in System Settings, then refresh.";
+"onboarding_calendar_selection_reconnect" = "Google Calendar needs to be reconnected.";
+"onboarding_essentials_title" = "Choose daily behavior";
+"onboarding_essentials_description" = "Choose a few defaults for opening meetings and staying on schedule.";
+"onboarding_essentials_hint" = "You can tune every detail later in Preferences.";
+"onboarding_start_using" = "Start using MeetingBar";
+"onboarding_success_title" = "You’re ready";
+"onboarding_success_description" = "Your next meeting will appear in the menu bar.";
+
 
 // MARK: - Calendars screen
 
 "calendars_screen_select_calendar_title" = "Select at least one calendar";
-"calendars_screen_start_button" = "Start using app";
 
 // MARK: - Access screen
 
-"access_screen_access_denied_title" = "Oops! It looks like you denied access to calendars.";
 "access_screen_access_screen_access_denied_go_to_title" = "Go to";
 "access_screen_access_denied_system_preferences_button" = "System Preferences";
-"access_screen_access_denied_checkbox_title" = "and select a checkbox near MeetingBar.";
 "access_screen_access_denied_relaunch_title" = "Then launch the app manually to continue the setup.";
-"access_screen_access_granted_title" = "Requesting access to calendars…";
-"access_screen_access_granted_click_ok_title" = "Click \"OK\" in the macOS popup.";
-"access_screen_provider_picker_label" = "Select calendars provider";
-"access_screen_provider_macos_title" = "MacOS Calendar app";
-"access_screen_provider_macos_recommended" = "(recommended)";
-"access_screen_provider_macos_data_source" = "Get data from MacOS Calendar app";
-"access_screen_provider_macos_number_of_accounts" = "Any number of any connected accounts";
-"access_screen_provider_gcalendar_data_source" = "Get data directly from Google Calendar";
-"access_screen_provider_gcalendar_number_of_accounts" = "Only one Google account";
-"access_screen_provider_gcalendar_sign_in_title" = "Google Sign In";
-"access_screen_provider_gcalendar_sign_in_description" = "Allow MeetingBar access to your calendar in browser window";
+"access_screen_provider_picker_label" = "Select calendar source";
+"access_screen_provider_macos_data_source" = "Uses the macOS Calendar app as the data source";
+"access_screen_provider_macos_number_of_accounts" = "All configured accounts: iCloud, Google, Exchange, CalDAV, and more";
+"access_screen_provider_gcalendar_data_source" = "Connects directly through the Google Calendar API";
+"access_screen_provider_gcalendar_number_of_accounts" = "One Google account at a time";
 "access_screen_try_again" = "Try again";
+"access_screen_provider_authorization_cancelled" = "Authorization was cancelled. Try again to connect your calendar.";
 
 // MARK: - Shared
 
 "shared_send_notification_toggle" = "Send a system notification";
 "shared_fullscreen_notification_toggle" = "Show a fullscreen notification";
+"shared_fullscreen_notification_without_link_toggle" = "Also show fullscreen notifications for events without meeting links";
+"shared_fullscreen_notification_without_link_help" = "Events without meeting links show a fullscreen reminder with a Dismiss action only.";
+"fullscreen_notification_dismiss_action" = "Dismiss";
 "shared_send_notification_no_alert_style_tip" = "Note: Notifications are set to Banners, so they appear briefly before disappearing. To keep them onscreen until you dismiss them, switch to Alerts in your macOS notification settings.";
 "shared_send_notification_disabled_tip" = "⚠️ Your macOS notification settings for MeetingBar are off. Turn on notifications in the macOS system settings to keep track of meetings.";
 "shared_automatic_event_join_toggle" = "Automatically join next event meeting";
@@ -299,7 +380,6 @@
 "constants_meeting_service_zoom_native" = "Zoom native";
 "constants_meeting_service_other" = "Other";
 "constants_meeting_service_url" = "URL";
-"constants_browser_defaultBrowser" = "Default web browser";
 
 // MARK: - Store
 
@@ -308,13 +388,9 @@
 "store_patronage_restore_nothing_message" = "Nothing to restore";
 "store_patronage_purchase_success_message" = "Purchase made. Thanks for your support!";
 "store_patronage_purchase_unknown_message" = "Unknown error. Please contact support.";
-"store_patronage_purchase_client_invalid_message" = "Not allowed to make the payment";
-"store_patronage_purchase_payment_invalid_message" = "Invalid purchase identifier";
 "store_patronage_purchase_payment_not_allowed_message" = "The device is not allowed to carry out the payment";
 "store_patronage_purchase_store_product_not_available_message" = "The product is not available in the current storefront";
-"store_patronage_purchase_cloud_service_permission_denied_message" = "Access to cloud service info is not allowed";
 "store_patronage_purchase_cloud_service_network_connection_failed" = "Could not connect to the network";
-"store_patronage_purchase_cloud_service_revoked_message" = "User has revoked permission to use this cloud service";
 
 // MARK: - Notifications
 

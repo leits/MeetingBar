@@ -1,0 +1,55 @@
+// swift-tools-version: 6.0
+
+import PackageDescription
+
+let package = Package(
+    name: "MeetingBarLogic",
+    platforms: [
+        .macOS(.v12)
+    ],
+    products: [
+        .library(name: "MeetingBarLogic", targets: ["MeetingBarLogic"])
+    ],
+    targets: [
+        .target(
+            name: "MeetingBarLogic",
+            path: "MeetingBar",
+            exclude: [
+                // Exclude app-layer files that depend on AppKit/Defaults/EventKit.
+                // SPM scans the whole MeetingBar/ tree for resources; these paths
+                // prevent it from picking up .lproj bundles and asset catalogues.
+                "Resources ",
+                "Assets.xcassets",
+                "Base.lproj",
+                "Preview Content"
+            ],
+            sources: [
+                // Utilities/Diagnostics
+                "Utilities/Diagnostics/DiagnosticsReport.swift",
+                // Notifications
+                "Notifications/EventActionPolicy.swift",
+                "Notifications/NotificationPlanner.swift",
+                // Calendar
+                "Calendar/EventFiltering.swift",
+                "Calendar/EventSelection.swift",
+                "Calendar/Providers/Google/GoogleCalendarPolicy.swift",
+                // Meetings
+                "Meetings/MeetingLinkDetector.swift",
+                "Meetings/MeetingProvider.swift",
+                // UI/StatusBar
+                "UI/StatusBar/StatusBarPresentation.swift"
+            ],
+            swiftSettings: [
+                .unsafeFlags(["-strict-concurrency=complete"])
+            ]
+        ),
+        .testTarget(
+            name: "MeetingBarLogicTests",
+            dependencies: ["MeetingBarLogic"],
+            path: "MeetingBarLogicTests",
+            swiftSettings: [
+                .unsafeFlags(["-strict-concurrency=complete"])
+            ]
+        )
+    ]
+)

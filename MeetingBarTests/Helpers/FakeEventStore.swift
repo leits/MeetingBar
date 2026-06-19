@@ -7,11 +7,23 @@
 //
 
 import Foundation
+
 @testable import MeetingBar
 
-final class FakeEventStore: EventStore {
-    var stubbedCalendars: [MBCalendar]
-    var stubbedEvents: [MBEvent]
+final class FakeEventStore: AuthenticatedEventStore {
+    nonisolated(unsafe) var stubbedCalendars: [MBCalendar]
+    nonisolated(unsafe) var stubbedEvents: [MBEvent]
+    nonisolated(unsafe) var stubbedError: Error?
+    nonisolated(unsafe) var stubbedCalendarError: Error?
+    nonisolated(unsafe) var stubbedEventsError: Error?
+    nonisolated(unsafe) var stubbedSignInError: Error?
+    nonisolated(unsafe) var fetchDelay: TimeInterval = 0
+    nonisolated(unsafe) private(set) var fetchCallCount = 0
+    nonisolated(unsafe) private(set) var fetchedEventCalendarIDs: [[String]] = []
+    nonisolated(unsafe) private(set) var refreshSourcesCallCount = 0
+    nonisolated(unsafe) private(set) var signInCallCount = 0
+    nonisolated(unsafe) private(set) var signOutCallCount = 0
+    nonisolated(unsafe) private(set) var cancelPendingOperationsCallCount = 0
 
     init(calendars: [MBCalendar] = [], events: [MBEvent] = []) {
         stubbedCalendars = calendars
@@ -21,18 +33,41 @@ final class FakeEventStore: EventStore {
     // MARK: - EventStore
 
     func fetchAllCalendars() async throws -> [MBCalendar] {
-        stubbedCalendars
+        fetchCallCount += 1
+        if fetchDelay > 0 {
+            try await Task.sleep(nanoseconds: UInt64(fetchDelay * 1_000_000_000))
+        }
+        if let error = stubbedCalendarError { throw error }
+        if let error = stubbedError { throw error }
+        return stubbedCalendars
     }
 
     func fetchEventsForDateRange(
-        for _: [MBCalendar],
+        for calendars: [MBCalendar],
         from _: Date,
         to _: Date
     ) async throws -> [MBEvent] {
-        stubbedEvents
+        fetchedEventCalendarIDs.append(calendars.map(\.id))
+        if let error = stubbedEventsError { throw error }
+        if let error = stubbedError { throw error }
+        return stubbedEvents
     }
 
-    func refreshSources() async { /* no-op */ }
-    func signIn(forcePrompt: Bool = false) async throws { /* no-op */ }
-    func signOut() async { /* no-op */ }
+    func refreshSources() async {
+        refreshSourcesCallCount += 1
+    }
+
+    func signIn(forcePrompt _: Bool) async throws {
+        signInCallCount += 1
+        if let error = stubbedSignInError { throw error }
+    }
+
+    func signOut() async {
+        signOutCallCount += 1
+    }
+
+    @MainActor
+    func cancelPendingOperations() {
+        cancelPendingOperationsCallCount += 1
+    }
 }

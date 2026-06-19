@@ -8,7 +8,7 @@
 
 import XCTest
 @testable import MeetingBar
-import SwiftUICore
+import SwiftUI
 
 final class TimelineLogicTests: XCTestCase {
 
@@ -85,9 +85,10 @@ final class TimelineLogicTests: XCTestCase {
     @MainActor func testPreferredHeight_matchesRowCount() {
         let view  = DayRelativeTimelineView(
             segments: [seg(0, 10), seg(20, 30), seg(40, 50)], // 1 row
-            currentDate: Calendar.current.date(byAdding: .minute, value: 25, to: Date())!
+            currentDate: Calendar.current.date(byAdding: .minute, value: 25, to: Date())!,
+            timeFormat: .military
         )
-        // base + padding top/bottom + inter-row = 22 + 20
-        XCTAssertEqual(view.preferredHeight, 42)
+        // Base track + top labels + vertical padding = 22 + 26
+        XCTAssertEqual(view.preferredHeight, 48)
     }
 }

@@ -1,13 +1,89 @@
-# Changelog for Meetingbar
+# Changelog for MeetingBar
 
 For next releases info look here: <https://github.com/leits/MeetingBar/releases>
 
-## Unreleased
+## 5.0.0 (2026-06-19)
 
-* Fix typo in language list (#839)
-* Fix multiple typos in the repo (#875)
-* Fix URL in PR template (#875) 
-* Add Riverside meeting service (#875)
+MeetingBar 5 is an architecture and product refresh. It improves the
+first-run experience and day-to-day meeting controls while establishing
+a safer foundation for calendar providers and future integrations.
+
+### Product refresh
+
+* Added a clearer onboarding flow for calendar source selection,
+  authorization, calendar selection, meeting-opening preferences, and
+  final daily-essentials setup.
+* Improved the meeting menu around the current or next meeting, with a
+  clear Join action, source-aware secondary actions, and actionable
+  empty and error states.
+* Moved the optional day timeline above the current or next meeting
+  summary so the menu opens with a compact today overview and clear
+  meeting actions.
+* Reorganized Preferences around General, Calendars, Meeting Opening,
+  Menu Bar, Notifications, and Advanced.
+* Added provider health and refresh information to application state so
+  onboarding, the menu, and Preferences show consistent status.
+
+### Calendar reliability
+
+* Calendar provider setup and switching are transactional. Cancelling or
+  failing Google authorization keeps the previous provider and calendar
+  selection active.
+* Selected calendars are stored per provider, so Apple Calendar and
+  Google Calendar selections are preserved when switching.
+* Successful provider setup keeps already-fetched calendars available
+  for onboarding instead of briefly showing an empty selection state.
+* Google sessions use the persisted OAuth refresh token rather than only
+  the latest token response, preventing unnecessary reauthorization.
+* Refresh failures preserve last-known calendars and events and surface
+  stale or reconnect warnings instead of silently showing empty data.
+* Provider warnings remain visible in the menu even when a cached next
+  meeting is available.
+
+### Meeting reliability
+
+* Open in Calendar is source-aware: Apple Calendar events use their
+  EventKit identifier, while Google events use the Google Calendar web
+  link when available.
+* Native conference data is preferred over unrelated links in event
+  notes, with custom meeting-link regexes retained as a fallback.
+* Microsoft Teams short meeting links such as
+  `teams.microsoft.com/meet/...?...` are detected alongside legacy
+  `meetup-join` links, including supported government hosts.
+* Zoom personal-room `/my/` links open once in the browser instead of
+  also attempting a native Zoom deep link.
+* Dismissed meetings remain hidden until their modification date changes,
+  allowing updated meetings to appear again.
+* Added a defensive status bar fallback icon when a settings combination
+  would otherwise render neither an icon nor text. This does not override
+  third-party menu bar item hiding tools.
+
+### Architecture
+
+* `AppModel`, `AppState`, `AppAction`, and `AppEnvironment` now provide
+  the central application-state boundary.
+* Calendar providers are isolated behind `CalendarRepository`,
+  `CalendarSync`, and provider health state.
+* Meeting providers and link detection use a shared descriptor registry.
+* Testable policies for event selection, meeting links, notifications,
+  status presentation, and Google Calendar behavior live in the
+  hostless `MeetingBarLogic` package.
+* Notification planning and delayed actions are managed per event, so
+  back-to-back meetings do not suppress one another.
+* Existing browser, calendar-selection, and bookmark settings retain
+  compatibility migrations.
+* Contributor documentation now consolidates architecture, dependency,
+  and release-sensitive guidance, with obsolete planning, migration, and
+  checklist drafts removed.
+
+### Validation
+
+* Added focused hostless and app-hosted regression tests for provider
+  switching, Google authentication, shared calendar selection, menu
+  status, meeting-link priority, ongoing meetings, and automatic join.
+* English source strings are validated with `make validate-strings`.
+  Non-English translations will be refreshed through Weblate after the
+  V5 string freeze.
 
 ## Version 4.11.0
 
