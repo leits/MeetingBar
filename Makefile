@@ -119,20 +119,11 @@ validate-strings:
 test-summary:
 	@bash Scripts/test_summary.sh $(XCODE_RESULT_BUNDLE)
 
-# Export lcov coverage for both test suites with repo-relative paths, ready to
-# upload to Codecov. Each suite is independent: a missing one is skipped, not
-# fatal, so partial results still publish.
+# Generate a Cobertura coverage report from the app-hosted test build for
+# Codecov. Uses slather against our custom derived-data path; skips cleanly
+# (rather than failing) when slather is not installed locally.
 coverage-codecov:
 	@mkdir -p $(COVERAGE_DIR)
-	@PROFILE="$$(ls -d .build/*/debug/codecov/default.profdata .build/debug/codecov/default.profdata 2>/dev/null | head -n 1)" ; \
-	BIN="$$(ls -d .build/*/debug/MeetingBarLogicPackageTests.xctest/Contents/MacOS/MeetingBarLogicPackageTests .build/debug/MeetingBarLogicPackageTests.xctest/Contents/MacOS/MeetingBarLogicPackageTests 2>/dev/null | head -n 1)" ; \
-	if [ -f "$$PROFILE" ] && [ -x "$$BIN" ]; then \
-		xcrun llvm-cov export -format=lcov "$$BIN" -instr-profile "$$PROFILE" $(LOGIC_COVERAGE_SOURCES) | sed "s|$(CURDIR)/||" > $(COVERAGE_DIR)/logic.lcov ; \
-		echo "Wrote $(COVERAGE_DIR)/logic.lcov ($$(grep -c '^SF:' $(COVERAGE_DIR)/logic.lcov) files)" ; \
-	else echo "Logic coverage unavailable; skipping logic.lcov." ; fi
-	@PROFDATA="$$(find $(DERIVED_DATA_DIR) -name Coverage.profdata 2>/dev/null | head -n 1)" ; \
-	DYLIB="$(DERIVED_DATA_DIR)/Build/Products/Debug/MeetingBar.app/Contents/MacOS/MeetingBar.debug.dylib" ; \
-	if [ -n "$$PROFDATA" ] && [ -f "$$DYLIB" ]; then \
-		xcrun llvm-cov export -format=lcov "$$DYLIB" -instr-profile "$$PROFDATA" "$(CURDIR)/MeetingBar" | sed "s|$(CURDIR)/||" > $(COVERAGE_DIR)/app.lcov ; \
-		echo "Wrote $(COVERAGE_DIR)/app.lcov ($$(grep -c '^SF:' $(COVERAGE_DIR)/app.lcov) files)" ; \
-	else echo "App coverage unavailable; skipping app.lcov." ; fi
+	@if command -v slather >/dev/null 2>&1; then \
+		slather coverage --scheme $(SCHEME) --cobertura-xml --build-directory $(DERIVED_DATA_DIR) --output-directory $(COVERAGE_DIR) $(PROJECT) ; \
+	else echo "slather not installed; skipping cobertura. Install with: gem install slather" ; fi
