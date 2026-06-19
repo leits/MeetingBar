@@ -313,8 +313,9 @@ Swift 6 strict concurrency is explicit in both Xcode settings and the SwiftPM lo
 
 CI is split by responsibility:
 
-- `main.yml` validates localization keys, runs SwiftPM logic tests, and runs the Xcode app-hosted build/test path with coverage.
-- `swiftlint.yml` runs SwiftLint and is triggered by Swift, config, project, script, workflow, and base-localization changes.
+- `ci.yml` validates localization keys, runs SwiftPM logic tests, and runs the Xcode app-hosted build/test path with coverage artifacts.
+- `lint.yml` runs SwiftLint.
+- `security.yml` runs Dependency Review on pull requests, CodeQL Swift analysis on trusted refs, and the optional Codacy SARIF upload when its token is configured.
 
 The local unsigned Debug build may print the entitlements/code-signing warning when `CODE_SIGNING_REQUIRED=NO`; that is not a Swift warning and is expected for local verification.
 

@@ -6,32 +6,45 @@ SWIFTLINT ?= swiftlint
 BUILD_DIR ?= build
 COVERAGE_DIR := $(BUILD_DIR)/coverage
 XCODE_RESULT_BUNDLE := $(COVERAGE_DIR)/MeetingBar.xcresult
+DERIVED_DATA_DIR := $(BUILD_DIR)/DerivedData
+XCODE_SOURCE_PACKAGES_DIR := $(BUILD_DIR)/SourcePackages
+HOST_ARCH := $(shell uname -m)
+DESTINATION ?= platform=macOS,arch=$(HOST_ARCH)
+XCODEBUILD_FLAGS := -project $(PROJECT) -scheme $(SCHEME) -destination '$(DESTINATION)' -derivedDataPath $(DERIVED_DATA_DIR) -clonedSourcePackagesDirPath $(XCODE_SOURCE_PACKAGES_DIR)
+LOCAL_CODESIGN_FLAGS := CODE_SIGN_IDENTITY="" CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO
 LOGIC_COVERAGE_SOURCES := MeetingBar/Calendar MeetingBar/Meetings MeetingBar/Notifications MeetingBar/UI/StatusBar MeetingBar/Utilities/Diagnostics
 
 # Pipe xcodebuild through xcbeautify when available; otherwise grep for the lines that matter.
 XCFILTER := $(shell command -v xcbeautify >/dev/null 2>&1 && echo 'xcbeautify --quiet --renderer terminal' || echo "grep -E '(error:|warning:|FAIL|PASS|\\*\\* )'")
 
-.PHONY: build build-quiet build-release test test-quiet test-logic test-logic-quiet coverage coverage-report coverage-logic-report coverage-app-report coverage-gate lint lint-fix open validate-strings
+.PHONY: build build-quiet build-release test test-quiet test-app test-app-quiet test-logic test-logic-quiet coverage coverage-report coverage-logic-report coverage-app-report coverage-gate lint lint-fix open validate-strings
 
 build:
-	$(XCODEBUILD) -project $(PROJECT) -scheme $(SCHEME) -configuration Debug build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+	@mkdir -p $(BUILD_DIR)
+	$(XCODEBUILD) $(XCODEBUILD_FLAGS) -configuration Debug build $(LOCAL_CODESIGN_FLAGS)
 
 build-quiet:
-	@set -o pipefail; $(XCODEBUILD) -project $(PROJECT) -scheme $(SCHEME) -configuration Debug build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO 2>&1 | $(XCFILTER)
+	@mkdir -p $(BUILD_DIR)
+	@set -o pipefail; $(XCODEBUILD) $(XCODEBUILD_FLAGS) -configuration Debug build $(LOCAL_CODESIGN_FLAGS) 2>&1 | $(XCFILTER)
 
 build-release:
-	$(XCODEBUILD) -project $(PROJECT) -scheme $(SCHEME) -configuration Release build
+	@mkdir -p $(BUILD_DIR)
+	$(XCODEBUILD) $(XCODEBUILD_FLAGS) -configuration Release build
 
-test: test-logic
+test: test-logic test-app
+
+test-quiet: test-logic-quiet test-app-quiet
+
+test-app:
 	@mkdir -p $(COVERAGE_DIR)
 	@rm -rf $(XCODE_RESULT_BUNDLE)
-	$(XCODEBUILD) -project $(PROJECT) -scheme $(SCHEME) -configuration Debug -enableCodeCoverage YES -resultBundlePath $(XCODE_RESULT_BUNDLE) build test CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+	$(XCODEBUILD) $(XCODEBUILD_FLAGS) -configuration Debug -enableCodeCoverage YES -resultBundlePath $(XCODE_RESULT_BUNDLE) build test $(LOCAL_CODESIGN_FLAGS)
 	@$(MAKE) --no-print-directory coverage-app-report
 
-test-quiet: test-logic-quiet
+test-app-quiet:
 	@mkdir -p $(COVERAGE_DIR)
 	@rm -rf $(XCODE_RESULT_BUNDLE)
-	@set -o pipefail; $(XCODEBUILD) -project $(PROJECT) -scheme $(SCHEME) -configuration Debug -enableCodeCoverage YES -resultBundlePath $(XCODE_RESULT_BUNDLE) build test CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO 2>&1 | $(XCFILTER)
+	@set -o pipefail; $(XCODEBUILD) $(XCODEBUILD_FLAGS) -configuration Debug -enableCodeCoverage YES -resultBundlePath $(XCODE_RESULT_BUNDLE) build test $(LOCAL_CODESIGN_FLAGS) 2>&1 | $(XCFILTER)
 	@$(MAKE) --no-print-directory coverage-app-report
 
 test-logic:
