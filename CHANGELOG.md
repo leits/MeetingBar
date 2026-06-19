@@ -1,4 +1,4 @@
-# Changelog for Meetingbar
+# Changelog for MeetingBar
 
 For next releases info look here: <https://github.com/leits/MeetingBar/releases>
 
@@ -12,15 +12,15 @@ a safer foundation for calendar providers and future integrations.
 
 * Added a clearer onboarding flow for calendar source selection,
   authorization, calendar selection, meeting-opening preferences, and
-  final setup confirmation.
+  final daily-essentials setup.
 * Improved the meeting menu around the current or next meeting, with a
   clear Join action, source-aware secondary actions, and actionable
   empty and error states.
 * Moved the optional day timeline above the current or next meeting
   summary so the menu opens with a compact today overview and clear
   meeting actions.
-* Reorganized Preferences around Calendar Source, Meeting Opening,
-  Menu Bar Display, Notifications, and Status/Diagnostics.
+* Reorganized Preferences around General, Calendars, Meeting Opening,
+  Menu Bar, Notifications, and Advanced.
 * Added provider health and refresh information to application state so
   onboarding, the menu, and Preferences show consistent status.
 
@@ -72,6 +72,9 @@ a safer foundation for calendar providers and future integrations.
   back-to-back meetings do not suppress one another.
 * Existing browser, calendar-selection, and bookmark settings retain
   compatibility migrations.
+* Contributor documentation now consolidates architecture, dependency,
+  and release-sensitive guidance, with obsolete planning, migration, and
+  checklist drafts removed.
 
 ### Validation
 

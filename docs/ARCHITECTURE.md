@@ -1,6 +1,6 @@
 # MeetingBar Architecture
 
-This document is the contributor-facing map of the codebase. It complements [`ROADMAP.md`](../ROADMAP.md) (planning) and [`CLAUDE.md`](../CLAUDE.md) (AI agent instructions). Read this first if it is your first time touching MeetingBar.
+This document is the contributor-facing map of the codebase. It is the canonical reference for app structure, dependency ownership, and release-sensitive configuration. [`CLAUDE.md`](../CLAUDE.md) and [`AGENTS.md`](../AGENTS.md) provide AI-agent operating instructions.
 
 If anything below disagrees with the actual code, the code wins — and the doc needs a fix.
 
@@ -117,7 +117,7 @@ MeetingBar/                         (~76 .swift files)
 ├── Settings/
 │   └── AppSettings.swift           — value-type settings groups + AppSettings.current factory (single Defaults boundary)
 │
-├── Preferences/                    — SwiftUI Settings window tabs (General/Appearance/…/Status)
+├── Preferences/                    — SwiftUI Settings window tabs (General, Calendars, Meeting Opening, Menu Bar, Notifications, Advanced)
 ├── Onboarding/                     — multi-screen first-launch flow
 ├── UI/
 │   ├── StatusBar/                  — menu bar item, menu construction, presentation
@@ -148,9 +148,9 @@ Tests live in `MeetingBarTests/` (host-app tests, AppKit-aware) and `MeetingBarL
 
 ---
 
-## Migration rule for new architecture work
+## Architecture rule for new work
 
-The migration target is deliberately simple:
+The target shape is deliberately simple:
 
 ```text
 UI sends actions.
@@ -162,7 +162,7 @@ macOS integrations execute side effects.
 
 Use MeetingBar names for new boundaries (`CalendarSync`, `MeetingOpener`, `NotificationScheduler`, `AppSettings`, `WindowCoordinator`) rather than generic architecture labels. A new type is useful only if it gives a workflow one obvious owner or makes a decision testable.
 
-Current PR gate for architecture changes:
+PR gate for architecture changes:
 
 1. Add or update tests around the owner that receives moved behavior.
 2. Keep old production paths only when the next PR removes them explicitly.
@@ -303,7 +303,7 @@ Within one source, longer URLs win when one is a prefix of another (Zoom truncat
 
 `AppModelTestHarness` wires `AppModel` to in-memory publishers and recording closures. Use it for AppAction scenarios before moving behavior out of AppDelegate, StatusBar, AppIntent, Preferences, or notification delegates.
 
-Current logic coverage baseline, recorded when strict concurrency was made explicit: hostless source-region coverage is about 95.9%, with line coverage about 99.1%. Keep coverage visible during the migration; do not chase total percentage by testing trivial wrappers.
+Current logic coverage baseline, recorded when strict concurrency was made explicit: hostless source-region coverage is about 95.9%, with line coverage about 99.1%. Keep coverage visible when moving logic; do not chase total percentage by testing trivial wrappers.
 
 ---
 
@@ -363,7 +363,7 @@ extension StatusBarPresentationSettings {
 
 The policy itself takes the snapshot and never imports `Defaults`. This is what keeps the policy hostless-testable.
 
-**When to add a new setting.** Per the roadmap product guardrails: only when the behavior is genuinely subjective, common, easy to explain, and low-risk. First try improving the default. A "fix" that adds two new toggles is usually the wrong fix.
+**When to add a new setting.** Add one only when the behavior is genuinely subjective, common, easy to explain, and low-risk. First try improving the default. A "fix" that adds two new toggles is usually the wrong fix.
 
 ---
 
@@ -382,7 +382,7 @@ The policy itself takes the snapshot and never imports `Defaults`. This is what 
 
 ## High-risk files
 
-Touching these requires extra care, tests around behavior, and a focused PR. Listed in `ROADMAP.md` and reproduced here:
+Touching these requires extra care, tests around behavior, and a focused PR:
 
 - `App/AppDelegate.swift`
 - `Calendar/CalendarSync.swift`
@@ -396,7 +396,7 @@ Touching these requires extra care, tests around behavior, and a focused PR. Lis
 - `Meetings/MeetingServices.swift`
 - `App/Notifications.swift`
 
-Before changing one of these, check `ROADMAP.md` to confirm your change aligns with the current phase.
+Before changing one of these, identify the workflow owner, keep the behavior change narrow, and state the validation path in the PR.
 
 ---
 
@@ -407,7 +407,7 @@ You want to add "do not notify for events shorter than 5 minutes".
 1. **Decide where the rule lives.** It is a per-event filter for notifications → it belongs in `NotificationPlanner`, not in the scheduler service.
 2. **Add the setting.** New key in `Extensions/DefaultsKeys.swift`. Read it once in `NotificationPlanningSettings.currentForScheduler` (the adapter).
 3. **Update the policy.** Inside `NotificationPlanner.plan(for:settings:now:)`, return `[]` when `event.duration < settings.minDurationForNotifications`.
-4. **Test it hostless.** Add a case in `MeetingBarLogicTests/NotificationPlannerTests.swift`: short event → empty plan; long event → plan unchanged.
+4. **Test it hostless.** Add a case in `MeetingBarLogicTests/NotificationPlanningPolicyTests.swift`: short event -> empty plan; long event -> plan unchanged.
 5. **Update the UI.** Add a toggle in the relevant Preferences tab. Localize the label and add the key to `en.lproj/Localizable.strings`. Run `make validate-strings`.
 6. **Reconcile triggers.** Make sure `StatusBarItemController.setupDefaultsObservers()` (or wherever the watcher list lives) listens to your new key so flipping it triggers a notification reconcile.
 7. **Open a small PR.** Body: rule, why a default tweak alone is not enough, screenshots if UI, test names.
@@ -437,9 +437,30 @@ SwiftLint disabled rules: `file_length`, `function_body_length`, `type_body_leng
 
 ---
 
-## Release-sensitive files
+## Dependencies And Release-sensitive Files
 
-Treat these as architecture-owned, release-sensitive files. Changes should be named in PR notes and covered by CI where possible:
+Direct app dependencies are declared as Xcode Swift Package references in `MeetingBar.xcodeproj/project.pbxproj` and pinned by `MeetingBar.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved`.
+
+| Package | Project requirement | Current resolved version | Purpose |
+|---|---|---|---|
+| KeyboardShortcuts | `2.3.0 ..< 2.4.0` | `2.3.0` | Global shortcuts |
+| Defaults | `9.0.2 ..< 9.1.0` | `9.0.3` | Typed user defaults |
+| LaunchAtLogin | `5.0.2 ..< 6.0.0` | `5.0.2` | Login item integration |
+| AppAuth-iOS | `2.0.0 ..< 3.0.0` | `2.0.0` | Google OAuth |
+
+`swift-syntax 601.0.1` is currently transitive. StoreKit 2 is an Apple system framework used by `PatronageService`; it is not an external package dependency, and no external StoreKit package is used.
+
+`Package.swift` defines the hostless `MeetingBarLogic` SwiftPM target and its tests. Keep it aligned with pure policy files that need fast `swift test` coverage, but do not use it as the source of truth for app package dependencies.
+
+When updating a dependency:
+
+1. Read release notes and minimum macOS/Swift requirements.
+2. Change the Xcode package requirement intentionally; do not edit only `Package.resolved`.
+3. Review the resolved diff for unexpected transitive updates.
+4. Run `make build`, `make test`, and any targeted checks for the touched behavior.
+5. Name dependency, project-file, entitlement, or capability changes in the PR and release notes when user-visible.
+
+Treat these as release-sensitive files. Changes should be named in PR notes and covered by CI or local validation where possible:
 
 - `MeetingBar.xcodeproj/project.pbxproj`
 - `MeetingBar.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved`
@@ -451,17 +472,28 @@ Treat these as architecture-owned, release-sensitive files. Changes should be na
 - `Scripts/**`
 - `MeetingBar/Resources /Localization /en.lproj/Localizable.strings`
 
-For dependency changes, explain why the package remains or how it is being removed. For App Store/direct-build differences, verify app-source behavior, signing assumptions, URL schemes, sandbox capabilities, and localization validation before release.
+Before a signed release, verify the configuration that unsigned local Debug builds cannot prove: signing team and provisioning, hardened runtime, sandbox capabilities, URL schemes, Google OAuth placeholders and callback scheme, App Store receipt classification, StoreKit 2 patronage products, launch-at-login helper behavior, and localization validation.
 
-The concrete dependency policy and release procedure live in [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md).
+Standard release validation starts with:
+
+```bash
+make lint
+make validate-strings
+make test
+make build-release
+```
+
+Then manually smoke-test first launch/onboarding for EventKit and Google Calendar, provider switching and Google sign-out, wake/screen-lock/timezone/day-change refreshes, status-bar/menu states, meeting-link opening, notifications, fullscreen reminders, scripts, Preferences, diagnostics copy, app URL routes, and app termination while refresh, OAuth, delayed actions, or StoreKit updates are active.
 
 ---
 
 ## Pointers
 
-- Planning, release scope, open issues triage: [`ROADMAP.md`](../ROADMAP.md)
-- Dependencies, signing, capabilities, StoreKit, and release verification: [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md)
+- Project overview and installation: [`README.md`](../README.md)
+- Contributor workflow: [`CONTRIBUTING.md`](../CONTRIBUTING.md)
+- Unreleased user-visible changes: [`CHANGELOG.md`](../CHANGELOG.md)
 - AI agent operating instructions: [`CLAUDE.md`](../CLAUDE.md), [`AGENTS.md`](../AGENTS.md)
+- Security and contact: [`SECURITY.md`](../SECURITY.md), [`CONTACT.md`](../CONTACT.md)
 - Localization: `MeetingBar/Resources /Localization /` (note the spaces in the path — historical)
 - Meeting service URL patterns: [`MeetingBar/Meetings/MeetingServices.swift`](../MeetingBar/Meetings/MeetingServices.swift)
 - All persistent settings keys: [`MeetingBar/Extensions/DefaultsKeys.swift`](../MeetingBar/Extensions/DefaultsKeys.swift)

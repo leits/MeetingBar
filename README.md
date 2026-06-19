@@ -132,31 +132,9 @@ MeetingBar also uses these resources:
 
 * [KeyboardShortcuts](https://github.com/sindresorhus/KeyboardShortcuts) for managing global keyboard shortcuts
 * [Defaults](https://github.com/sindresorhus/Defaults) for managing user settings
+* [LaunchAtLogin](https://github.com/sindresorhus/LaunchAtLogin) for launch-at-login integration
+* [AppAuth-iOS](https://github.com/openid/AppAuth-iOS) for Google Calendar OAuth
 
 App logo made by [Miroslav Rajkovic](https://www.rajkovic.co/).
-
-## Contributors ✨
-
-Thanks goes to these wonderful people:
-
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-
-<!-- prettier-ignore-start -->
-
-<!-- markdownlint-disable -->
-
-<table>
-  <tr>
-    <td align="center"><a href="https://github.com/leits"><img src="https://avatars.githubusercontent.com/u/12017826?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Andrii Leitsius</b></sub></a><br /><a href="https://github.com/leits/MeetingBar/commits?author=leits" title="Code">💻</a> <a href="#maintenance-leits" title="Maintenance">🚧</a></td>
-    <td align="center"><a href="https://github.com/jgoldhammer"><img src="https://avatars.githubusercontent.com/u/3872101?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Jens Goldhammer</b></sub></a><br /><a href="https://github.com/leits/MeetingBar/commits?author=jgoldhammer" title="Code">💻</a> <a href="#maintenance-jgoldhammer" title="Maintenance">🚧</a></td>
-    <td align="center"><a href="https://github.com/0bmxa"><img src="https://avatars.githubusercontent.com/u/15385891?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Max</b></sub></a><br /><a href="https://github.com/leits/MeetingBar/commits?author=0bmxa" title="Code">💻</a></td>
-  </tr>
-</table>
-
-<!-- markdownlint-restore -->
-
-<!-- prettier-ignore-end -->
-
-<!-- ALL-CONTRIBUTORS-LIST:END -->
 
 If you encounter any bugs or have a feature request, [open an issue](https://github.com/leits/MeetingBar/issues/new).
