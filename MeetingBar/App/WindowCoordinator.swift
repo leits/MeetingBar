@@ -203,6 +203,10 @@ final class WindowCoordinator {
             // so reopening Preferences brings it to front *and* focused.
             NSApplication.shared.activate(ignoringOtherApps: true)
             preferencesWindow.makeKeyAndOrderFront(nil)
+            // `activate` is async for an accessory app, so force the window to
+            // the front regardless of when activation lands; otherwise it can
+            // be ordered behind other apps' windows.
+            preferencesWindow.orderFrontRegardless()
             return
         }
 
@@ -235,6 +239,10 @@ final class WindowCoordinator {
         // opens focused rather than just ordered to the front.
         NSApplication.shared.activate(ignoringOtherApps: true)
         window.makeKeyAndOrderFront(nil)
+        // `activate` is async for an accessory app, so force the window to the
+        // front regardless of when activation lands; otherwise it can open
+        // behind other apps' windows.
+        window.orderFrontRegardless()
 
         preferencesWindow = window
     }
