@@ -193,6 +193,8 @@ func openLinkFromClipboard() {
     }
 }
 
+#if DEBUG
+/// Sample event for SwiftUI previews only.
 func generateFakeEvent() -> MBEvent {
     let calendar = MBCalendar(
         title: "Fake calendar", id: "fake_cal", source: nil, email: nil, color: .black)
@@ -214,16 +216,7 @@ func generateFakeEvent() -> MBEvent {
     )
     return event
 }
-
-extension Data {
-    init?(base64URL urlString: String) {
-        var st = urlString.replacingOccurrences(of: "-", with: "+")
-            .replacingOccurrences(of: "_", with: "/")
-        let pad = 4 - st.count % 4
-        if pad < 4 { st.append(String(repeating: "=", count: pad)) }
-        self.init(base64Encoded: st)
-    }
-}
+#endif
 
 extension NSImage {
     /// Returns a copy tinted with macOS disabled text colour.
