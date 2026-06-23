@@ -194,6 +194,7 @@ final class MenuBuilderTests: BaseTestCase {
         state.nextEvent = event
         state.showTimeline = true
         state.settings = .empty
+        state.settings.statusBar.eventTitleFormat = .generic
 
         let items = MenuBuilder(target: Dummy(), state: state, now: now)
             .buildTopSection()
@@ -211,6 +212,10 @@ final class MenuBuilderTests: BaseTestCase {
         )
         XCTAssertTrue(
             hosting.rootView.segments.first { $0.id == event.id }?.isHighlighted ?? false
+        )
+        XCTAssertEqual(
+            hosting.rootView.segments.first { $0.id == event.id }?.title,
+            event.title
         )
     }
 
@@ -359,6 +364,24 @@ final class MenuBuilderTests: BaseTestCase {
             presentation.sectionTitle,
             "status_bar_control_next_meeting".loco()
         )
+    }
+
+    func testMeetingSummaryKeepsEventTitleWhenStatusBarUsesGenericTitle() {
+        let now = Date()
+        let event = makeFakeEvent(
+            id: "privacy-title",
+            start: now.addingTimeInterval(300),
+            end: now.addingTimeInterval(1800),
+            withLink: true
+        )
+        var state = StatusBarMenuState()
+        state.settings = .empty
+        state.settings.statusBar.eventTitleFormat = .generic
+
+        let presentation = MenuBuilder(target: Dummy(), state: state, now: now)
+            .meetingSummaryPresentation(for: event)
+
+        XCTAssertEqual(presentation.eventTitle, event.title)
     }
 
     func testMeetingControlShowsAuthWarningAlongsideCachedNextEvent() {
@@ -1259,6 +1282,23 @@ final class MenuBuilderQuickActionsTests: BaseTestCase {
         })
         XCTAssertTrue(quickActions.contains {
             $0.action == #selector(StatusBarItemController.toggleMeetingTitleVisibility)
+        })
+    }
+
+    func testQuickActionsOfferShowTitleWhenStatusBarUsesGenericTitle() throws {
+        var state = StatusBarMenuState()
+        state.settings = .empty
+        state.settings.statusBar.eventTitleFormat = .generic
+
+        let items = MenuBuilder(target: Dummy(), state: state)
+            .buildJoinSection(nextEvent: nil)
+        let quickActions = try XCTUnwrap(items.first {
+            $0.title == "status_bar_quick_actions".loco()
+        }?.submenu?.items)
+
+        XCTAssertTrue(quickActions.contains {
+            $0.title == "status_bar_show_meeting_names".loco()
+                && $0.action == #selector(StatusBarItemController.toggleMeetingTitleVisibility)
         })
     }
 

@@ -41,6 +41,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         // Migrate legacy per-provider browser keys → providerBrowsers map
         MeetingOpenPreferencesMigration.migrateDefaultsIfNeeded()
+        StatusBarTitleFormatMigration.migrateDefaultsIfNeeded()
 
         // Handle windows closing closing
         NotificationCenter.default.addObserver(

@@ -143,12 +143,10 @@ enum StatusBarPresenter {
 
         let rawTitleCount = nextEvent.title?.count ?? 0
         let needsCompactTitle = settings.title.titleFormat == .show
-            && !settings.title.hideMeetingTitle
             && rawTitleCount > settings.compactTitleLimit
         let titleSettings = needsCompactTitle
             ? StatusBarTitleSettings(
                 titleFormat: settings.title.titleFormat,
-                hideMeetingTitle: settings.title.hideMeetingTitle,
                 titleLength: settings.compactTitleLimit,
                 labels: settings.title.labels
             )
@@ -172,7 +170,9 @@ enum StatusBarPresenter {
         var title = text.title
         var compactFallback = false
 
-        if (needsCompactTitle && icon == .none) || (title.isEmpty && icon == .none) {
+        let shouldFillEmptyTitle = settings.title.titleFormat != .none
+        if (needsCompactTitle && icon == .none)
+            || (shouldFillEmptyTitle && title.isEmpty && icon == .none) {
             icon = .meetingService(nextEvent.meetingService)
             if title.isEmpty {
                 title = "•"
@@ -259,6 +259,7 @@ enum StatusBarPresenter {
 
 enum StatusBarEventTitleFormat: Equatable {
     case show
+    case generic
     case dot
     case none
 }
@@ -272,7 +273,6 @@ struct StatusBarTitleLabels: Equatable {
 
 struct StatusBarTitleSettings: Equatable {
     let titleFormat: StatusBarEventTitleFormat
-    let hideMeetingTitle: Bool
     let titleLength: Int
     let labels: StatusBarTitleLabels
 }
@@ -316,15 +316,14 @@ enum StatusBarTitlePolicy {
     private static func formattedTitle(_ rawTitle: String?, settings: StatusBarTitleSettings) -> String {
         switch settings.titleFormat {
         case .show:
-            if settings.hideMeetingTitle {
-                return settings.labels.genericMeetingTitle
-            }
             return shortenTitle(
                 rawTitle,
                 limit: settings.titleLength,
                 noTitle: settings.labels.noTitle
             )
             .replacingOccurrences(of: "\n", with: " ")
+        case .generic:
+            return settings.labels.genericMeetingTitle
         case .dot:
             return "•"
         case .none:
