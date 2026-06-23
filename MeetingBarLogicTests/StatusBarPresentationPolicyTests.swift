@@ -41,7 +41,6 @@ final class StatusBarPresentationTests: XCTestCase {
             presentation: settings(hasSelectedCalendars: hasSelectedCalendars),
             title: StatusBarTitleSettings(
                 titleFormat: titleFormat,
-                hideMeetingTitle: false,
                 titleLength: titleLength,
                 labels: StatusBarTitleLabels(
                     genericMeetingTitle: "Meeting",
@@ -195,7 +194,7 @@ final class StatusBarPresentationTests: XCTestCase {
         XCTAssertTrue(presentation.compactFallback)
     }
 
-    func testPresenterAvoidsBlankStatusWhenTitleAndIconAreDisabled() {
+    func testPresenterHonorsHiddenTitleWhenIconIsDisabled() {
         let presentation = StatusBarPresenter.presentation(
             nextEvent: event(title: "Weekly sync", meetingService: nil),
             settings: presenterSettings(titleFormat: .none, timeDisplay: .hide, iconFormat: .none),
@@ -203,10 +202,10 @@ final class StatusBarPresentationTests: XCTestCase {
             calendar: calendar()
         )
 
-        XCTAssertEqual(presentation.title, "•")
-        XCTAssertEqual(presentation.icon, .meetingService(nil))
+        XCTAssertEqual(presentation.title, "")
+        XCTAssertEqual(presentation.icon, .none)
         XCTAssertEqual(presentation.layout, .inline(showTime: false))
-        XCTAssertTrue(presentation.compactFallback)
+        XCTAssertFalse(presentation.compactFallback)
     }
 
     func testPresenterMarksPendingStackedTitleInactive() {

@@ -103,6 +103,7 @@ extension StatusBarEventTitleFormat {
     init(_ format: EventTitleFormat) {
         switch format {
         case .show: self = .show
+        case .generic: self = .generic
         case .dot: self = .dot
         case .none: self = .none
         }
@@ -124,7 +125,6 @@ extension StatusBarTitleSettings {
     static var current: StatusBarTitleSettings {
         StatusBarTitleSettings(
             titleFormat: StatusBarEventTitleFormat(Defaults[.eventTitleFormat]),
-            hideMeetingTitle: Defaults[.hideMeetingTitle],
             titleLength: Defaults[.statusbarEventTitleLength],
             labels: .current
         )

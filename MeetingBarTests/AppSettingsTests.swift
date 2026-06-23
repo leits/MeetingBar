@@ -97,8 +97,8 @@ final class AppSettingsTests: BaseTestCase {
 
     // MARK: - StatusBarSettings
 
-    func testStatusBarSettings_hideMeetingTitle() {
-        Defaults[.hideMeetingTitle] = true
+    func testStatusBarSettings_genericTitleHidesMeetingTitle() {
+        Defaults[.eventTitleFormat] = .generic
         XCTAssertTrue(AppSettings.current.statusBar.hideMeetingTitle)
     }
 
@@ -135,15 +135,49 @@ final class AppSettingsTests: BaseTestCase {
 
     func testToggleMeetingTitleVisibilityWriteHelper() {
         AppSettings.toggleMeetingTitleVisibility()
-        XCTAssertTrue(Defaults[.hideMeetingTitle])
+        XCTAssertEqual(Defaults[.eventTitleFormat], .generic)
+        XCTAssertTrue(AppSettings.current.statusBar.hideMeetingTitle)
+        XCTAssertFalse(Defaults[.hideMeetingTitle])
 
         AppSettings.toggleMeetingTitleVisibility()
+        XCTAssertEqual(Defaults[.eventTitleFormat], .show)
+        XCTAssertFalse(AppSettings.current.statusBar.hideMeetingTitle)
+        XCTAssertFalse(Defaults[.hideMeetingTitle])
+    }
+
+    func testToggleMeetingTitleVisibilityRestoresEventTitleFromExplicitHiddenTitle() {
+        Defaults[.eventTitleFormat] = .none
+
+        AppSettings.toggleMeetingTitleVisibility()
+
+        XCTAssertEqual(Defaults[.eventTitleFormat], .show)
+        XCTAssertFalse(AppSettings.current.statusBar.hideMeetingTitle)
         XCTAssertFalse(Defaults[.hideMeetingTitle])
     }
 
     func testStatusBarSettings_eventTitleFormat() {
         Defaults[.eventTitleFormat] = .dot
         XCTAssertEqual(AppSettings.current.statusBar.eventTitleFormat, .dot)
+    }
+
+    func testLegacyHiddenMeetingTitleMigratesToGenericTitleFormat() {
+        Defaults[.hideMeetingTitle] = true
+        Defaults[.eventTitleFormat] = .show
+
+        StatusBarTitleFormatMigration.migrateDefaultsIfNeeded()
+
+        XCTAssertEqual(Defaults[.eventTitleFormat], .generic)
+        XCTAssertFalse(Defaults[.hideMeetingTitle])
+    }
+
+    func testLegacyHiddenMeetingTitleMigrationPreservesExplicitNonTitleFormatsAndClearsLegacyKey() {
+        Defaults[.hideMeetingTitle] = true
+        Defaults[.eventTitleFormat] = .dot
+
+        StatusBarTitleFormatMigration.migrateDefaultsIfNeeded()
+
+        XCTAssertEqual(Defaults[.eventTitleFormat], .dot)
+        XCTAssertFalse(Defaults[.hideMeetingTitle])
     }
 
     // MARK: - NotificationSettings
@@ -315,7 +349,7 @@ final class AppSettingsTests: BaseTestCase {
     // MARK: - currentForScheduler integration
 
     func testCurrentForScheduler_hideMeetingTitle_propagates() {
-        Defaults[.hideMeetingTitle] = true
+        Defaults[.eventTitleFormat] = .generic
         let settings = NotificationPlanningSettings.currentForScheduler
         XCTAssertTrue(settings.hideMeetingTitle)
     }
