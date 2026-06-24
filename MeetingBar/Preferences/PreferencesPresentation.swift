@@ -285,9 +285,14 @@ enum BrowserPickerOptions {
     }
 }
 
-struct RegexEditDraft: Equatable {
+struct RegexEditDraft: Equatable, Identifiable {
     let originalValue: String?
     var value: String
+
+    /// Identity for `.sheet(item:)` presentation. `nil` originalValue (an add)
+    /// gets a distinct id from any edit so the editor rebuilds with the right
+    /// seed value each time it is presented.
+    var id: String { originalValue ?? "" }
 
     static func adding() -> RegexEditDraft {
         RegexEditDraft(originalValue: nil, value: "")

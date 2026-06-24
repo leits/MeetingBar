@@ -251,8 +251,7 @@ struct NSScrollableTextViewWrapper: NSViewRepresentable {
 struct FilterEventRegexesSection: View {
     @Default(.filterEventRegexes) var filterEventRegexes
 
-    @State private var showingEditRegexModal = false
-    @State private var regexDraft = RegexEditDraft.adding()
+    @State private var regexDraft: RegexEditDraft?
 
     var body: some View {
         DisclosureGroup("preferences_advanced_event_regex_title".loco()) {
@@ -272,25 +271,24 @@ struct FilterEventRegexesSection: View {
                 Button("preferences_advanced_regex_add_button".loco(), action: openAddRegexModal)
             }
             .padding(.vertical, 4)
-            .sheet(isPresented: $showingEditRegexModal) {
-                EditRegexModal(regex: regexDraft.value, onSave: saveRegex)
+            .sheet(item: $regexDraft) { draft in
+                EditRegexModal(regex: draft.value, onSave: saveRegex)
             }
         }
     }
 
     func openAddRegexModal() {
         regexDraft = .adding()
-        showingEditRegexModal = true
     }
 
     func openEditRegexModal(for regex: String) {
         regexDraft = .editing(regex)
-        showingEditRegexModal = true
     }
 
     func saveRegex(_ regex: String) -> Bool {
-        regexDraft.value = regex
-        switch RegexListEditingPolicy.saving(regexDraft, in: filterEventRegexes) {
+        guard var draft = regexDraft else { return false }
+        draft.value = regex
+        switch RegexListEditingPolicy.saving(draft, in: filterEventRegexes) {
         case .saved(let updated):
             filterEventRegexes = updated
             return true
@@ -309,8 +307,7 @@ struct FilterEventRegexesSection: View {
 struct MeetingRegexesSection: View {
     @Default(.customRegexes) var customRegexes
 
-    @State private var showingEditRegexModal = false
-    @State private var regexDraft = RegexEditDraft.adding()
+    @State private var regexDraft: RegexEditDraft?
     @State private var regexTestText = ""
     @State private var regexTestResult: String?
     @State private var regexTestMatched = false
@@ -352,25 +349,24 @@ struct MeetingRegexesSection: View {
                 }
             }
             .padding(.vertical, 4)
-            .sheet(isPresented: $showingEditRegexModal) {
-                EditRegexModal(regex: regexDraft.value, onSave: saveRegex)
+            .sheet(item: $regexDraft) { draft in
+                EditRegexModal(regex: draft.value, onSave: saveRegex)
             }
         }
     }
 
     func openAddRegexModal() {
         regexDraft = .adding()
-        showingEditRegexModal = true
     }
 
     func openEditRegexModal(for regex: String) {
         regexDraft = .editing(regex)
-        showingEditRegexModal = true
     }
 
     func saveRegex(_ regex: String) -> Bool {
-        regexDraft.value = regex
-        switch RegexListEditingPolicy.saving(regexDraft, in: customRegexes) {
+        guard var draft = regexDraft else { return false }
+        draft.value = regex
+        switch RegexListEditingPolicy.saving(draft, in: customRegexes) {
         case .saved(let updated):
             customRegexes = updated
             return true
@@ -408,12 +404,15 @@ struct MeetingRegexesSection: View {
 
 struct EditRegexModal: View {
     @Environment(\.presentationMode) var presentationMode
-    @State private var draftRegex: String
     let onSave: (_ regex: String) -> Bool
 
+    @State private var draftRegex: String
     @State private var showingAlert = false
     @State private var errorMessage = ""
 
+    // Seeded in init rather than onAppear: `.sheet(item:)` gives the modal a
+    // fresh identity per presentation, so the initial value is applied before
+    // the first render and the field never flashes empty.
     init(regex: String, onSave: @escaping (_ regex: String) -> Bool) {
         _draftRegex = State(initialValue: regex)
         self.onSave = onSave
