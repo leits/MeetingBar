@@ -524,8 +524,11 @@ final class MeetingLinkDetectorTests: XCTestCase {
         let selfReferential = "https://nam11.safelinks.protection.outlook.com/" +
             "?url=https://nam11.safelinks.protection.outlook.com/?url=x"
 
-        // Should return promptly regardless of the exact unwrapped value.
-        _ = cleanupOutlookSafeLinks(rawText: selfReferential)
+        let result = cleanupOutlookSafeLinks(rawText: selfReferential)
+
+        // Terminates, fully unwrapping the nested wrappers to the inner target
+        // rather than looping on the self-reference.
+        XCTAssertEqual(result, "x")
     }
 
     func testDetectionSucceedsForEventCarryingUndecodableSafeLink() {

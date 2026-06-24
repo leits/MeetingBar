@@ -220,6 +220,23 @@ func detectMeetingLink(_ rawText: String, customRegexes: [String] = []) -> Meeti
     return nil
 }
 
+/// Rewrites Outlook SafeLink wrappers in `rawText` back to their real
+/// targets, so meeting-link detection sees the underlying URL rather than the
+/// `…safelinks.protection.outlook.com/…url=<encoded>` redirect. Each pass
+/// unwraps the first SafeLink and re-scans, which also resolves SafeLinks
+/// nested inside one another.
+///
+/// The loop is deliberately bounded and only continues while it makes forward
+/// progress. It stops when:
+///
+/// 1. the `url=` value can't be percent-decoded — a malformed or truncated
+///    `%` escape, which `removingPercentEncoding` reports as `nil`;
+/// 2. a rewrite leaves the text unchanged, so the same match would be found
+///    again; or
+/// 3. a hard pass cap is reached, as a final backstop.
+///
+/// Without these guards a single event carrying a malformed SafeLink would
+/// loop forever and wedge calendar sync.
 func cleanupOutlookSafeLinks(rawText: String) -> String {
     guard let outlookSafeLinkRegex else { return rawText }
 
