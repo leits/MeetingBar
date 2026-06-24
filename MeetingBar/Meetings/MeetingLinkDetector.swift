@@ -225,24 +225,28 @@ func cleanupOutlookSafeLinks(rawText: String) -> String {
 
     var text = rawText
     autoreleasepool {
-        var links = outlookSafeLinkRegex.matches(
-            in: text, range: NSRange(text.startIndex..., in: text))
-        if !links.isEmpty {
-            repeat {
-                let urlRange = links[0].range(at: 1)
-                let safeLinks = links.compactMap { match -> String? in
-                    guard let range = Range(match.range, in: text) else { return nil }
-                    return String(text[range])
-                }
-                if !safeLinks.isEmpty {
-                    let serviceURL = (text as NSString).substring(with: urlRange)
-                    if let decodedServiceURL = serviceURL.removingPercentEncoding {
-                        text = text.replacingOccurrences(of: safeLinks[0], with: decodedServiceURL)
-                    }
-                }
-                links = outlookSafeLinkRegex.matches(
-                    in: text, range: NSRange(text.startIndex..., in: text))
-            } while !links.isEmpty
+        // Each pass unwraps the first remaining SafeLink and re-scans, which
+        // also handles nested SafeLinks. The loop MUST make forward progress on
+        // every iteration or it spins forever: if the `url=` value can't be
+        // percent-decoded (an invalid `%` sequence) or the rewrite leaves the
+        // text unchanged, the same match is found again every pass. Bound it by
+        // a no-progress break and a hard cap so a single malformed SafeLink can
+        // never wedge calendar sync.
+        let maxPasses = 32
+        for _ in 0 ..< maxPasses {
+            let matches = outlookSafeLinkRegex.matches(
+                in: text, range: NSRange(text.startIndex..., in: text))
+            guard let match = matches.first,
+                  let fullRange = Range(match.range, in: text)
+            else { break }
+
+            let safeLink = String(text[fullRange])
+            let encodedTarget = (text as NSString).substring(with: match.range(at: 1))
+            guard let decodedTarget = encodedTarget.removingPercentEncoding else { break }
+
+            let updated = text.replacingOccurrences(of: safeLink, with: decodedTarget)
+            guard updated != text else { break }
+            text = updated
         }
     }
     return text

@@ -495,4 +495,54 @@ final class MeetingLinkDetectorTests: XCTestCase {
         XCTAssertTrue(stripped.contains("https://meet.google.com/abc-defg-hij"))
         XCTAssertFalse(stripped.contains("<p>"))
     }
+
+    func testCleanupOutlookSafeLinksUnwrapsValidLink() {
+        let target = "https://zoom.us/j/123456789"
+        let safe = outlookSafeLink(for: target)
+
+        XCTAssertEqual(cleanupOutlookSafeLinks(rawText: "Join \(safe) today"), "Join \(target) today")
+    }
+
+    func testCleanupOutlookSafeLinksTerminatesOnUndecodableTarget() {
+        // Regression: a SafeLink whose `url=` value contains an invalid percent
+        // escape ("%xx") makes `removingPercentEncoding` return nil, so the old
+        // `repeat … while !links.isEmpty` loop never rewrote the text and spun
+        // forever — wedging calendar sync on a single malformed event. The
+        // cleanup must now terminate (test would hang/time out if it regressed).
+        let malformed = "Join https://nam11.safelinks.protection.outlook.com/" +
+            "?data=x&url=https%3A%2F%2Fzoom.us%2Fj%2F1%xx end"
+
+        let result = cleanupOutlookSafeLinks(rawText: malformed)
+
+        // Undecodable target is left untouched, but crucially the call returns.
+        XCTAssertEqual(result, malformed)
+    }
+
+    func testCleanupOutlookSafeLinksTerminatesWhenRewriteMakesNoProgress() {
+        // A SafeLink whose decoded `url=` value still contains the same SafeLink
+        // (self-referential) must not loop forever.
+        let selfReferential = "https://nam11.safelinks.protection.outlook.com/" +
+            "?url=https://nam11.safelinks.protection.outlook.com/?url=x"
+
+        // Should return promptly regardless of the exact unwrapped value.
+        _ = cleanupOutlookSafeLinks(rawText: selfReferential)
+    }
+
+    func testDetectionSucceedsForEventCarryingUndecodableSafeLink() {
+        // The end-to-end path that hung in the field: an event whose notes carry
+        // a malformed SafeLink must still produce a detection result (here: the
+        // plain Zoom link present alongside it) without hanging.
+        let notes = "Backup https://nam11.safelinks.protection.outlook.com/" +
+            "?data=x&url=https%3A%2F%2Fbad%xx\nReal: https://zoom.us/j/9999"
+
+        let link = MeetingLinkDetector.detect(
+            location: nil,
+            eventURL: nil,
+            notes: notes,
+            calendarEmail: nil,
+            currentUserEmail: nil
+        )
+
+        XCTAssertEqual(link?.service, .zoom)
+    }
 }
