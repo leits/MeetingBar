@@ -454,7 +454,7 @@ extension MeetingProvider {
             make(
                 .zhumu,
                 icon: "zhumu_icon",
-                pattern: #"https://welink\.zhumu\.com/(?:j|wc/join)/[0-9]+(?:\?(?:pwd|wpk)=[a-zA-Z0-9]+)?"#),
+                pattern: #"https://welink\.zhumu\.com/(?:j/[0-9]+(?:\?pwd=[A-Za-z0-9]+)?|wc/join/[0-9]+\?wpk=[A-Za-z0-9]+)"#),
 
             // Lark
             make(

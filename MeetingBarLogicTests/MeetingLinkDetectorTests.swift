@@ -145,7 +145,10 @@ final class MeetingLinkDetectorTests: XCTestCase {
     func testDoesNotMatchNonMeetingZhumuPages() {
         let urls = [
             "https://welink.zhumu.com/download",
-            "https://welink.zhumu.com/j/"
+            "https://welink.zhumu.com/j/",
+            // The web-client form is only a real meeting link with its `?wpk=`
+            // key; a bare `/wc/join/<id>` is not.
+            "https://welink.zhumu.com/wc/join/150525986"
         ]
 
         for url in urls {
