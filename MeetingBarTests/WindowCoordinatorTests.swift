@@ -147,4 +147,22 @@ final class WindowCoordinatorTests: XCTestCase {
         XCTAssertEqual(incompleteCloseCount, 0)
         XCTAssertEqual(changelogCloseCount, 1)
     }
+
+    /// When the monitor an alert was shown on is disconnected, repositioning
+    /// recomputes the target screen with the same policy used at open time.
+    /// The disconnected screen is no longer among `screens`, so selection falls
+    /// back to a still-connected one rather than the vanished display.
+    func testFullscreenScreenSelectionFallsBackWhenScreenDisconnected() {
+        // The external monitor that was the key window's screen is now gone;
+        // only the built-in screen remains connected.
+        let selected = FullscreenNotificationScreenSelectionPolicy.select(
+            keyWindowScreen: String?.none,
+            mainWindowScreen: String?.none,
+            mouseScreen: String?.none,
+            mainScreen: "built-in",
+            screens: ["built-in"]
+        )
+
+        XCTAssertEqual(selected, "built-in")
+    }
 }

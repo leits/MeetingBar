@@ -89,6 +89,15 @@ final class WindowCoordinator {
     private weak var preferencesWindow: NSWindow?
     private weak var onboardingHandler: OnboardingHandler?
 
+    /// Open fullscreen notification windows, tracked so they can be moved onto
+    /// the appropriate screen when the display configuration changes (e.g. an
+    /// external monitor is connected or disconnected while the alert is up).
+    private var fullscreenNotificationWindows = NSHashTable<NSWindow>.weakObjects()
+
+    /// Whether the coordinator is already observing screen-parameter changes.
+    /// The observer is registered lazily on the first fullscreen notification.
+    private var isObservingScreenParameters = false
+
     func openOnboardingWindow(
         appModel: AppModel,
         onProviderSelected:
@@ -148,16 +157,8 @@ final class WindowCoordinator {
     }
 
     func openFullscreenNotificationWindow(event: MBEvent) {
-        let screens = NSScreen.screens
-        let mouseScreen = screens.first { $0.frame.contains(NSEvent.mouseLocation) }
-        let screen = FullscreenNotificationScreenSelectionPolicy.select(
-            keyWindowScreen: NSApp.keyWindow?.screen,
-            mainWindowScreen: NSApp.mainWindow?.screen,
-            mouseScreen: mouseScreen,
-            mainScreen: NSScreen.main,
-            screens: screens
-        )
-        let screenFrame = screen?.frame ?? NSRect(x: 0, y: 0, width: 800, height: 600)
+        let screenFrame = preferredFullscreenScreen()?.frame
+            ?? NSRect(x: 0, y: 0, width: 800, height: 600)
 
         let window = FullscreenNotificationWindow(
             contentRect: screenFrame,
@@ -176,6 +177,12 @@ final class WindowCoordinator {
         window.title = "Meetingbar Fullscreen Notification"
         window.level = .screenSaver
 
+        // Track the window and start observing display changes so the alert can
+        // be moved onto the right screen if monitors are connected/disconnected
+        // while it is showing.
+        fullscreenNotificationWindows.add(window)
+        startObservingScreenParametersIfNeeded()
+
         let controller = NSWindowController(window: window)
         controller.showWindow(self)
 
@@ -183,6 +190,44 @@ final class WindowCoordinator {
         NSApplication.shared.activate(ignoringOtherApps: true)
         window.makeKeyAndOrderFront(nil)
         window.orderFrontRegardless()
+    }
+
+    /// Picks the screen a fullscreen notification should appear on, using the
+    /// same precedence whether the window is being opened or repositioned.
+    private func preferredFullscreenScreen() -> NSScreen? {
+        let screens = NSScreen.screens
+        let mouseScreen = screens.first { $0.frame.contains(NSEvent.mouseLocation) }
+        return FullscreenNotificationScreenSelectionPolicy.select(
+            keyWindowScreen: NSApp.keyWindow?.screen,
+            mainWindowScreen: NSApp.mainWindow?.screen,
+            mouseScreen: mouseScreen,
+            mainScreen: NSScreen.main,
+            screens: screens
+        )
+    }
+
+    private func startObservingScreenParametersIfNeeded() {
+        guard !isObservingScreenParameters else { return }
+        isObservingScreenParameters = true
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(screenParametersDidChange),
+            name: NSApplication.didChangeScreenParametersNotification,
+            object: nil
+        )
+    }
+
+    /// Resizes and recenters any open fullscreen notification onto the current
+    /// preferred screen. Without this, an alert shown on an external monitor
+    /// stays at the old geometry after the monitor is disconnected — leaving it
+    /// off-screen and impossible to dismiss.
+    @objc
+    private func screenParametersDidChange() {
+        guard let screenFrame = preferredFullscreenScreen()?.frame else { return }
+        for case let window as NSWindow in fullscreenNotificationWindows.allObjects {
+            window.setFrame(screenFrame, display: true)
+            window.orderFrontRegardless()
+        }
     }
 
     func openPreferencesWindow(
