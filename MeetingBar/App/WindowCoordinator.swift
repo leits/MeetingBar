@@ -26,6 +26,21 @@ enum FullscreenNotificationKeyboardPolicy {
     }
 }
 
+enum FullscreenNotificationRepositionPolicy {
+    /// Decides whether an open alert must be moved after the display layout
+    /// changed. An alert is stranded once any part of it falls outside every
+    /// connected screen — e.g. it was shown on an external monitor that has
+    /// since been disconnected — so it should be moved back onto a visible
+    /// screen. An alert still fully on a connected screen is left alone, so a
+    /// benign change elsewhere doesn't yank it to another display.
+    static func needsReposition(
+        windowFrame: CGRect,
+        screenFrames: [CGRect]
+    ) -> Bool {
+        !screenFrames.contains { $0.contains(windowFrame) }
+    }
+}
+
 final class FullscreenNotificationWindow: NSWindow {
     override var canBecomeKey: Bool { true }
     override var canBecomeMain: Bool { true }
@@ -217,15 +232,21 @@ final class WindowCoordinator {
         )
     }
 
-    /// Resizes and recenters any open fullscreen notification onto the current
-    /// preferred screen. Without this, an alert shown on an external monitor
-    /// stays at the old geometry after the monitor is disconnected — leaving it
-    /// off-screen and impossible to dismiss.
+    /// Moves any open fullscreen notification that the display change left
+    /// stranded onto the current preferred screen. Without this, an alert shown
+    /// on an external monitor stays at the old geometry after the monitor is
+    /// disconnected — leaving it off-screen and impossible to dismiss. Alerts
+    /// still fully on a connected screen are left where they are.
     @objc
     private func screenParametersDidChange() {
-        guard let screenFrame = preferredFullscreenScreen()?.frame else { return }
+        let screenFrames = NSScreen.screens.map(\.frame)
+        guard let targetFrame = preferredFullscreenScreen()?.frame else { return }
         for case let window as NSWindow in fullscreenNotificationWindows.allObjects {
-            window.setFrame(screenFrame, display: true)
+            guard FullscreenNotificationRepositionPolicy.needsReposition(
+                windowFrame: window.frame,
+                screenFrames: screenFrames
+            ) else { continue }
+            window.setFrame(targetFrame, display: true)
             window.orderFrontRegardless()
         }
     }

@@ -148,21 +148,46 @@ final class WindowCoordinatorTests: XCTestCase {
         XCTAssertEqual(changelogCloseCount, 1)
     }
 
-    /// When the monitor an alert was shown on is disconnected, repositioning
-    /// recomputes the target screen with the same policy used at open time.
-    /// The disconnected screen is no longer among `screens`, so selection falls
-    /// back to a still-connected one rather than the vanished display.
-    func testFullscreenScreenSelectionFallsBackWhenScreenDisconnected() {
-        // The external monitor that was the key window's screen is now gone;
-        // only the built-in screen remains connected.
-        let selected = FullscreenNotificationScreenSelectionPolicy.select(
-            keyWindowScreen: String?.none,
-            mainWindowScreen: String?.none,
-            mouseScreen: String?.none,
-            mainScreen: "built-in",
-            screens: ["built-in"]
-        )
+    /// An external monitor an alert was shown on is disconnected: its frame no
+    /// longer intersects any connected screen, so the alert must be moved.
+    func testRepositionNeededWhenAlertScreenDisconnected() {
+        let builtIn = CGRect(x: 0, y: 0, width: 1440, height: 900)
+        // Alert is sitting on a second display to the right that is now gone.
+        let alertOnExternal = CGRect(x: 1440, y: 0, width: 1920, height: 1080)
 
-        XCTAssertEqual(selected, "built-in")
+        XCTAssertTrue(
+            FullscreenNotificationRepositionPolicy.needsReposition(
+                windowFrame: alertOnExternal,
+                screenFrames: [builtIn]
+            )
+        )
+    }
+
+    /// The alert is still fully within a connected screen, so a display change
+    /// elsewhere must not yank it to another screen.
+    func testRepositionNotNeededWhenAlertStillOnConnectedScreen() {
+        let builtIn = CGRect(x: 0, y: 0, width: 1440, height: 900)
+        let external = CGRect(x: 1440, y: 0, width: 1920, height: 1080)
+
+        XCTAssertFalse(
+            FullscreenNotificationRepositionPolicy.needsReposition(
+                windowFrame: builtIn,
+                screenFrames: [builtIn, external]
+            )
+        )
+    }
+
+    /// A partially off-screen alert (overlapping a connected screen but not
+    /// fully contained) is still considered stranded and is repositioned.
+    func testRepositionNeededWhenAlertOnlyPartiallyOnScreen() {
+        let builtIn = CGRect(x: 0, y: 0, width: 1440, height: 900)
+        let halfOff = CGRect(x: 1000, y: 0, width: 1440, height: 900)
+
+        XCTAssertTrue(
+            FullscreenNotificationRepositionPolicy.needsReposition(
+                windowFrame: halfOff,
+                screenFrames: [builtIn]
+            )
+        )
     }
 }
