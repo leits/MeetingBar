@@ -123,6 +123,39 @@ final class MeetingLinkDetectorTests: XCTestCase {
         }
     }
 
+    func testDetectsZhumuMeetingLinkVariants() {
+        // Real Zhumu/WeMeeting join formats: a `/j/` link with an optional
+        // `?pwd=` passcode, and the web-client `/wc/join/` link with a `?wpk=`
+        // key. The original pattern used `[0-9]+?pwd=` (a lazy quantifier that
+        // ate the `?`), so it never matched a real link.
+        let urls = [
+            "https://welink.zhumu.com/j/154051242?pwd=abc123",
+            "https://welink.zhumu.com/j/150525986",
+            "https://welink.zhumu.com/wc/join/150525986?wpk=wcpk5b53"
+        ]
+
+        for url in urls {
+            let link = detectMeetingLink(url)
+
+            XCTAssertEqual(link?.service, .zhumu, url)
+            XCTAssertEqual(link?.url.absoluteString, url, url)
+        }
+    }
+
+    func testDoesNotMatchNonMeetingZhumuPages() {
+        let urls = [
+            "https://welink.zhumu.com/download",
+            "https://welink.zhumu.com/j/",
+            // The web-client form is only a real meeting link with its `?wpk=`
+            // key; a bare `/wc/join/<id>` is not.
+            "https://welink.zhumu.com/wc/join/150525986"
+        ]
+
+        for url in urls {
+            XCTAssertNil(detectMeetingLink(url), url)
+        }
+    }
+
     func testDetectsCustomRegexLinkFromNotes() {
         let link = MeetingLinkDetector.detect(
             location: nil,
