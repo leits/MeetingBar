@@ -211,12 +211,20 @@ final class WindowCoordinator {
     /// same precedence whether the window is being opened or repositioned.
     private func preferredFullscreenScreen() -> NSScreen? {
         let screens = NSScreen.screens
+        // AppKit already guarantees `NSWindow.screen` / `NSScreen.main` are
+        // members of the current `screens` (or nil), but guard explicitly so a
+        // disconnected display can never be selected — otherwise we could resize
+        // a stranded alert onto another off-screen frame.
+        func connected(_ screen: NSScreen?) -> NSScreen? {
+            guard let screen, screens.contains(screen) else { return nil }
+            return screen
+        }
         let mouseScreen = screens.first { $0.frame.contains(NSEvent.mouseLocation) }
         return FullscreenNotificationScreenSelectionPolicy.select(
-            keyWindowScreen: NSApp.keyWindow?.screen,
-            mainWindowScreen: NSApp.mainWindow?.screen,
+            keyWindowScreen: connected(NSApp.keyWindow?.screen),
+            mainWindowScreen: connected(NSApp.mainWindow?.screen),
             mouseScreen: mouseScreen,
-            mainScreen: NSScreen.main,
+            mainScreen: connected(NSScreen.main),
             screens: screens
         )
     }
