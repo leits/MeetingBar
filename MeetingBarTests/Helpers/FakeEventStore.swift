@@ -18,6 +18,9 @@ final class FakeEventStore: AuthenticatedEventStore {
     nonisolated(unsafe) var stubbedEventsError: Error?
     nonisolated(unsafe) var stubbedSignInError: Error?
     nonisolated(unsafe) var fetchDelay: TimeInterval = 0
+    /// When true, `fetchEventsForDateRange` honours the requested calendars
+    /// (like a real provider) instead of returning every stubbed event.
+    nonisolated(unsafe) var respectsCalendarFilter = false
     nonisolated(unsafe) private(set) var fetchCallCount = 0
     nonisolated(unsafe) private(set) var fetchedEventCalendarIDs: [[String]] = []
     nonisolated(unsafe) private(set) var refreshSourcesCallCount = 0
@@ -50,7 +53,9 @@ final class FakeEventStore: AuthenticatedEventStore {
         fetchedEventCalendarIDs.append(calendars.map(\.id))
         if let error = stubbedEventsError { throw error }
         if let error = stubbedError { throw error }
-        return stubbedEvents
+        guard respectsCalendarFilter else { return stubbedEvents }
+        let requestedIDs = Set(calendars.map(\.id))
+        return stubbedEvents.filter { requestedIDs.contains($0.calendar.id) }
     }
 
     func refreshSources() async {
