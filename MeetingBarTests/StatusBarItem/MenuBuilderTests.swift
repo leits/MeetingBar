@@ -1289,31 +1289,42 @@ final class MenuBuilderQuickActionsTests: BaseTestCase {
 @MainActor
 final class StatusBarTitleRendererTests: BaseTestCase {
 
-    func test_stackedTitleCentersBothLinesAndUsesCompactFonts() {
+    func test_stackedLayoutProducesNoAttributedTitle() {
+        // The stacked layout is rendered as a self-centered image in
+        // renderStatusBar, so attributedTitle(for:) must not emit any text for it.
         let title = StatusBarTitleRenderer.attributedTitle(
             for: makePresentation(layout: .stacked)
         )
 
-        XCTAssertEqual(title.string, "Weekly sync\nnow")
+        XCTAssertEqual(title.string, "")
+    }
 
-        let paragraphStyle =
-            title.attribute(
-                .paragraphStyle,
-                at: 0,
-                effectiveRange: nil
-            ) as? NSParagraphStyle
-        XCTAssertEqual(paragraphStyle?.alignment, .center)
-        XCTAssertEqual(paragraphStyle?.lineHeightMultiple ?? 0, 0.7, accuracy: 0.001)
+    func test_stackedImageIsNonTemplateSizedToMenuBarAndWidensWithIcon() {
+        let withoutIcon = StatusBarTitleRenderer.stackedImage(
+            title: "Weekly sync", time: "in 5 min", icon: nil, style: .normal
+        )
 
-        let titleFont = title.attribute(.font, at: 0, effectiveRange: nil) as? NSFont
-        let timeFont =
-            title.attribute(
-                .font,
-                at: title.length - 1,
-                effectiveRange: nil
-            ) as? NSFont
-        XCTAssertEqual(titleFont?.pointSize ?? 0, 12, accuracy: 0.001)
-        XCTAssertEqual(timeFont?.pointSize ?? 0, 9, accuracy: 0.001)
+        // Non-template so colored meeting-service icons are preserved.
+        XCTAssertFalse(withoutIcon.isTemplate)
+        // Centered within the menu-bar height (clamped up for tall glyphs).
+        XCTAssertGreaterThanOrEqual(withoutIcon.size.height, NSStatusBar.system.thickness - 0.5)
+        XCTAssertGreaterThanOrEqual(withoutIcon.size.width, 1)
+
+        let icon = NSImage(size: NSSize(width: 16, height: 16))
+        let withIcon = StatusBarTitleRenderer.stackedImage(
+            title: "Weekly sync", time: "in 5 min", icon: icon, style: .normal
+        )
+        XCTAssertGreaterThan(withIcon.size.width, withoutIcon.size.width)
+
+        // Participation styles (inactive/underlined) still produce a valid,
+        // non-template image (they exercise the reused titleAttributes styling).
+        for style in [StatusBarTitleStyle.inactive, .underlined] {
+            let styled = StatusBarTitleRenderer.stackedImage(
+                title: "Weekly sync", time: "in 5 min", icon: nil, style: style
+            )
+            XCTAssertFalse(styled.isTemplate)
+            XCTAssertGreaterThanOrEqual(styled.size.width, 1)
+        }
     }
 
     func test_inlineTitleIncludesTimeAndUnderlineStyle() {
@@ -1468,16 +1479,21 @@ final class StatusBarItemControllerPresentationTests: BaseTestCase {
         controller.updateTitle()
 
         let button = try XCTUnwrap(controller.statusItem.button)
-        XCTAssertTrue(button.attributedTitle.string.contains("\n"))
-
-        let paragraphStyle =
-            button.attributedTitle.attribute(
-                .paragraphStyle,
-                at: 0,
-                effectiveRange: nil
-            ) as? NSParagraphStyle
-        XCTAssertEqual(paragraphStyle?.alignment, .center)
-        XCTAssertEqual(paragraphStyle?.lineHeightMultiple ?? 0, 0.7, accuracy: 0.001)
+        // Stacked "time under title" is drawn as a single self-centered image
+        // (NSStatusBarButton cannot vertically center a multi-line title), so the
+        // button carries no attributedTitle and shows an image-only item. The image
+        // is non-template so colored meeting-service icons are preserved; the title
+        // + time stay available to VoiceOver via the accessibility label.
+        XCTAssertTrue(button.attributedTitle.string.isEmpty)
+        XCTAssertEqual(button.title, "")
+        let image = try XCTUnwrap(button.image)
+        XCTAssertFalse(image.isTemplate)
+        XCTAssertEqual(button.imagePosition, .imageOnly)
+        XCTAssertEqual(button.toolTip, "Weekly sync")
+        let accessibilityLabel = try XCTUnwrap(button.accessibilityLabel())
+        XCTAssertTrue(accessibilityLabel.contains("Weekly sync"))
+        // Label is "<title>, <time>" — the countdown must be exposed too, not just the title.
+        XCTAssertTrue(accessibilityLabel.contains(", "))
     }
 
     func test_actionsUseInjectedAppActionSender() {
