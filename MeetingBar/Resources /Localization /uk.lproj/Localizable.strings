@@ -84,6 +84,7 @@
 "preferences_appearance_status_bar_icon_no_icon_value" = " Без значка";
 "preferences_appearance_status_bar_title_title" = "Заголовок";
 "preferences_appearance_status_bar_title_event_title_value" = "заголовок події";
+"preferences_appearance_status_bar_title_generic_value" = "загальна назва (Зустріч)";
 "preferences_appearance_status_bar_title_dot_value" = "крапка (•)";
 "preferences_appearance_status_bar_title_hide_value" = "приховати";
 "preferences_appearance_status_bar_title_shorten_stepper" = "скоротити до %d символів";

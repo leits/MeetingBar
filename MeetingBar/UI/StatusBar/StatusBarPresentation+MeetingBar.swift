@@ -91,8 +91,7 @@ extension StatusBarPresenterSettings {
             iconFormatAssetName: Defaults[.eventTitleIconFormat].rawValue,
             iconAssets: .production,
             pendingDisplay: StatusBarParticipationDisplay(Defaults[.showPendingEvents]),
-            tentativeDisplay: StatusBarParticipationDisplay(Defaults[.showTentativeEvents]),
-            compactTitleLimit: 28
+            tentativeDisplay: StatusBarParticipationDisplay(Defaults[.showTentativeEvents])
         )
     }
 }
@@ -103,6 +102,7 @@ extension StatusBarEventTitleFormat {
     init(_ format: EventTitleFormat) {
         switch format {
         case .show: self = .show
+        case .generic: self = .generic
         case .dot: self = .dot
         case .none: self = .none
         }
@@ -124,7 +124,6 @@ extension StatusBarTitleSettings {
     static var current: StatusBarTitleSettings {
         StatusBarTitleSettings(
             titleFormat: StatusBarEventTitleFormat(Defaults[.eventTitleFormat]),
-            hideMeetingTitle: Defaults[.hideMeetingTitle],
             titleLength: Defaults[.statusbarEventTitleLength],
             labels: .current
         )

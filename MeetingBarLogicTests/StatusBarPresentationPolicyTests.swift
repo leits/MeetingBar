@@ -34,14 +34,12 @@ final class StatusBarPresentationTests: XCTestCase {
         timeDisplay: StatusBarTimeDisplay = .show,
         iconFormat: StatusBarIconFormat = .none,
         pendingDisplay: StatusBarParticipationDisplay = .normal,
-        tentativeDisplay: StatusBarParticipationDisplay = .normal,
-        compactTitleLimit: Int = 28
+        tentativeDisplay: StatusBarParticipationDisplay = .normal
     ) -> StatusBarPresenterSettings {
         StatusBarPresenterSettings(
             presentation: settings(hasSelectedCalendars: hasSelectedCalendars),
             title: StatusBarTitleSettings(
                 titleFormat: titleFormat,
-                hideMeetingTitle: false,
                 titleLength: titleLength,
                 labels: StatusBarTitleLabels(
                     genericMeetingTitle: "Meeting",
@@ -55,8 +53,7 @@ final class StatusBarPresentationTests: XCTestCase {
             iconFormatAssetName: "no_online_session",
             iconAssets: assets,
             pendingDisplay: pendingDisplay,
-            tentativeDisplay: tentativeDisplay,
-            compactTitleLimit: compactTitleLimit
+            tentativeDisplay: tentativeDisplay
         )
     }
 
@@ -181,21 +178,22 @@ final class StatusBarPresentationTests: XCTestCase {
         XCTAssertFalse(presentation.time.isEmpty)
     }
 
-    func testPresenterCompactsLongTitleAndAddsIconFallback() {
+    func testPresenterKeepsFullTitleAndOmitsIconWhenIconDisabled() {
         let longTitle = String(repeating: "Very long meeting title ", count: 8)
         let presentation = StatusBarPresenter.presentation(
             nextEvent: event(title: longTitle, meetingService: .zoom),
-            settings: presenterSettings(titleLength: 200, iconFormat: .none, compactTitleLimit: 28),
+            settings: presenterSettings(titleLength: 200, iconFormat: .none),
             now: now,
             calendar: calendar()
         )
 
-        XCTAssertEqual(presentation.icon, .meetingService(.zoom))
-        XCTAssertTrue(presentation.title.hasSuffix("..."))
-        XCTAssertTrue(presentation.compactFallback)
+        // No icon was selected, so the presenter must not inject a meeting-service
+        // icon, and the title must honor the configured length (no compaction).
+        XCTAssertEqual(presentation.icon, .none)
+        XCTAssertEqual(presentation.title, longTitle.trimmingCharacters(in: .whitespacesAndNewlines))
     }
 
-    func testPresenterAvoidsBlankStatusWhenTitleAndIconAreDisabled() {
+    func testPresenterHonorsHiddenTitleWhenIconIsDisabled() {
         let presentation = StatusBarPresenter.presentation(
             nextEvent: event(title: "Weekly sync", meetingService: nil),
             settings: presenterSettings(titleFormat: .none, timeDisplay: .hide, iconFormat: .none),
@@ -203,10 +201,9 @@ final class StatusBarPresentationTests: XCTestCase {
             calendar: calendar()
         )
 
-        XCTAssertEqual(presentation.title, "•")
-        XCTAssertEqual(presentation.icon, .meetingService(nil))
+        XCTAssertEqual(presentation.title, "")
+        XCTAssertEqual(presentation.icon, .none)
         XCTAssertEqual(presentation.layout, .inline(showTime: false))
-        XCTAssertTrue(presentation.compactFallback)
     }
 
     func testPresenterMarksPendingStackedTitleInactive() {
@@ -270,8 +267,7 @@ final class StatusBarPresentationTests: XCTestCase {
             iconFormatAssetName: base.iconFormatAssetName,
             iconAssets: base.iconAssets,
             pendingDisplay: base.pendingDisplay,
-            tentativeDisplay: base.tentativeDisplay,
-            compactTitleLimit: base.compactTitleLimit
+            tentativeDisplay: base.tentativeDisplay
         )
         let farEvent = StatusBarEventPresentationInput(
             title: "Far meeting",
