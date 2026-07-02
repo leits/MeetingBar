@@ -178,6 +178,10 @@ final class StatusBarEventTitleFormatMappingTests: XCTestCase {
         XCTAssertEqual(StatusBarEventTitleFormat(.show), .show)
     }
 
+    func test_generic_mapsToGeneric() {
+        XCTAssertEqual(StatusBarEventTitleFormat(.generic), .generic)
+    }
+
     func test_dot_mapsToDot() {
         XCTAssertEqual(StatusBarEventTitleFormat(.dot), .dot)
     }
