@@ -213,14 +213,15 @@ struct MenuBuilder {
         let today = Calendar.current.startOfDay(for: now)
         let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today)!
         let highlightedEventID = state.nextEvent?.id
-        let segments = state.todayEvents.map {
-            DaySegment(
-                id: $0.id,
-                start: max($0.startDate, today),
-                end: min($0.endDate, tomorrow),
-                color: Color($0.calendar.color),
-                isHighlighted: $0.id == highlightedEventID,
-                title: $0.title
+        let segments = state.todayEvents.compactMap { event -> DaySegment? in
+            guard shouldRenderEvent(event) else { return nil }
+            return DaySegment(
+                id: event.id,
+                start: max(event.startDate, today),
+                end: min(event.endDate, tomorrow),
+                color: Color(event.calendar.color),
+                isHighlighted: event.id == highlightedEventID,
+                title: event.title
             )
         }
         let timeline = DayRelativeTimelineView(
