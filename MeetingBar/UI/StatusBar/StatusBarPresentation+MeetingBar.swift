@@ -91,8 +91,7 @@ extension StatusBarPresenterSettings {
             iconFormatAssetName: Defaults[.eventTitleIconFormat].rawValue,
             iconAssets: .production,
             pendingDisplay: StatusBarParticipationDisplay(Defaults[.showPendingEvents]),
-            tentativeDisplay: StatusBarParticipationDisplay(Defaults[.showTentativeEvents]),
-            compactTitleLimit: 28
+            tentativeDisplay: StatusBarParticipationDisplay(Defaults[.showTentativeEvents])
         )
     }
 }

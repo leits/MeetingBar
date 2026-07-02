@@ -1388,7 +1388,6 @@ final class StatusBarTitleRendererTests: BaseTestCase {
             icon: .none,
             layout: layout,
             titleStyle: titleStyle,
-            compactFallback: false,
             removeDeliveredNotifications: false
         )
     }
@@ -1622,7 +1621,6 @@ final class StatusBarItemControllerPresentationTests: BaseTestCase {
             icon: icon,
             layout: layout,
             titleStyle: .normal,
-            compactFallback: false,
             removeDeliveredNotifications: false
         )
     }
