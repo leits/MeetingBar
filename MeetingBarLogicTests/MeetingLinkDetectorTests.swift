@@ -377,12 +377,29 @@ final class MeetingLinkDetectorTests: XCTestCase {
         )
     }
 
-    func testGoogleMeetFallsBackToCurrentUserEmail() {
+    func testGoogleMeetAppendsAuthuserFromCurrentUserEmail() {
         let link = MeetingLinkDetector.detect(
             location: "https://meet.google.com/abc-defg-hij",
             eventURL: nil,
             notes: nil,
             calendarEmail: nil,
+            currentUserEmail: "me@example.com"
+        )
+        XCTAssertEqual(
+            link?.url.absoluteString,
+            "https://meet.google.com/abc-defg-hij?authuser=me@example.com"
+        )
+    }
+
+    func testGoogleMeetPrefersCurrentUserEmailOverCalendarEmail() {
+        // With multiple calendars connected to one account, the current-user
+        // attendee identity resolves the correct Google account better than
+        // the calendar's own email.
+        let link = MeetingLinkDetector.detect(
+            location: "https://meet.google.com/abc-defg-hij",
+            eventURL: nil,
+            notes: nil,
+            calendarEmail: "calendar@example.com",
             currentUserEmail: "me@example.com"
         )
         XCTAssertEqual(
@@ -421,20 +438,6 @@ final class MeetingLinkDetectorTests: XCTestCase {
             .queryItems?
             .filter { $0.name == "authuser" }
         XCTAssertEqual(authuserItems?.map(\.value), ["owner@example.com"])
-    }
-
-    func testCalendarEmailWinsOverCurrentUserEmail() {
-        let link = MeetingLinkDetector.detect(
-            location: "https://meet.google.com/abc-defg-hij",
-            eventURL: nil,
-            notes: nil,
-            calendarEmail: "owner@example.com",
-            currentUserEmail: "me@example.com"
-        )
-        XCTAssertEqual(
-            link?.url.absoluteString,
-            "https://meet.google.com/abc-defg-hij?authuser=owner@example.com"
-        )
     }
 
     func testZoomURLDoesNotGetAuthuser() {

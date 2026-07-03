@@ -519,7 +519,7 @@ enum MeetingLinkDetector {
         currentUserEmail: String?
     ) -> MeetingLinkCandidate {
         guard candidate.service == .meet,
-              let authAccount = calendarEmail ?? currentUserEmail,
+              let authAccount = currentUserEmail ?? calendarEmail,
               let urlWithAuth = url(candidate.url, appendingAuthuser: authAccount)
         else { return candidate }
         return MeetingLinkCandidate(
