@@ -23,13 +23,9 @@
 "notifications_snooze_until_start" = "Snooze until start time";
 "notifications_snooze_for" = "Snooze for %@ min";
 "notifications_meetingbar_join_event_action" = "Připojit se";
-"store_patronage_purchase_cloud_service_revoked_message" = "Uživatel zrušil oprávnění k používání této cloudové služby";
 "store_patronage_purchase_cloud_service_network_connection_failed" = "Nepodařilo se připojit k síti";
-"store_patronage_purchase_cloud_service_permission_denied_message" = "Přístup k informacím o cloudové službě není povolen";
 "store_patronage_purchase_store_product_not_available_message" = "Produkt není v aktuálním obchodě k dispozici";
 "store_patronage_purchase_payment_not_allowed_message" = "Ze zařízení nelze provést platbu";
-"store_patronage_purchase_payment_invalid_message" = "Neplatný identifikátor nákupu";
-"store_patronage_purchase_client_invalid_message" = "Nelze provést platbu";
 "store_patronage_purchase_unknown_message" = "Neznámá chyba. Kontaktujte prosím podporu.";
 "store_patronage_purchase_success_message" = "Zakoupeno. Děkujeme za podporu!";
 "store_patronage_restore_nothing_message" = "Není co obnovovat";
@@ -38,7 +34,6 @@
 // MARK: - Store
 
 "store_patronage_title" = "Členství MeetingBaru";
-"constants_browser_defaultBrowser" = "Výchozí webový prohlížeč";
 "constants_meeting_service_url" = "URL";
 "constants_meeting_service_other" = "Jiná";
 "constants_meeting_service_zoom_native" = "Nativní Zoom";
@@ -57,43 +52,21 @@
 
 "shared_send_notification_toggle" = "Odeslat systémové oznámení";
 "shared_fullscreen_notification_toggle" = "Show a fullscreen notification";
-"access_screen_access_granted_click_ok_title" = "Ve vyskakovacím okně systému macOS klikněte na tlačítko \"OK\".";
-"access_screen_access_granted_title" = "Žádost o přístup ke kalendářům…";
 "access_screen_access_denied_relaunch_title" = "Pak spusťte aplikaci ručně a pokračujte v nastavení.";
-"access_screen_access_denied_checkbox_title" = "a zaškrtněte políčko u položky MeetingBar.";
 "access_screen_access_screen_access_denied_go_to_title" = "Přejděte na";
 "access_screen_access_denied_system_preferences_button" = "Předvolby systému";
 "shared_automatic_event_join_toggle" = "Automatically join next event meeting";
 "shared_automatic_event_join_tip" = "This setting will automatically open your next meeting in your configured app or browser";
-
-// MARK: - Access screen
-
-"access_screen_access_denied_title" = "Vypadá to, že jste zakázali přístup ke kalendářům.";
-"calendars_screen_start_button" = "Začít používat aplikaci";
 "access_screen_provider_picker_label" = "Vyberte poskytovatele kalendářů";
-"access_screen_provider_macos_title" = "aplikace MacOS Kalendář";
-"access_screen_provider_macos_recommended" = "(doporučeno)";
 "access_screen_provider_macos_data_source" = "Získat data z aplikace MacOS Kalendář";
 "access_screen_provider_macos_number_of_accounts" = "Any number of any connected accounts";
 "access_screen_provider_gcalendar_data_source" = "Získat data přímo z Google Kalendář";
 "access_screen_provider_gcalendar_number_of_accounts" = "Pouze jeden Google účet";
-"access_screen_provider_gcalendar_sign_in_title" = "Google přihlášení";
-"access_screen_provider_gcalendar_sign_in_description" = "Allow MeetingBar access to your calendar in browser window";
 "access_screen_try_again" = "Zkuste znovu";
 
 // MARK: - Calendars screen
 
 "calendars_screen_select_calendar_title" = "Vyberte aspoň jeden kalendář";
-"welcome_screen_setup_calendar_title" = "Nastavení kalendářů";
-"welcome_screen_shortcut_next_meeting_title" = "Připojit se k příští schůzce zkratkou:";
-"welcome_screen_greeting_additional_title" = "Pojďte si ji trochu přizpůsobit!";
-
-// MARK: - Welcome screen
-
-"welcome_screen_greeting_main_title" = "Vítejte! Apka MeetingBar je tak jednoduchá, že už je skoro vše hotové.";
-"welcome_screen_shortcut_ad_hoc_meeting_title" = "pomocí zkratky:";
-"welcome_screen_ad_hoc_meeting_title" = "Vytvářet ad hoc schůzky v ";
-"welcome_screen_login_launch_toggle_title" = "Spouštět aplikaci MeetingBar po přihlášení";
 "status_bar_error_app_link_title" = "Oops! Nelze otevřít odkaz v aplikaci %@";
 "status_bar_error_app_link_message" = "Ujistěte se, že máte nainstalovanou aplikaci %@, nebo v předvolbách nastavte, aby se její odkazy otevíraly ve webovém prohlížeči.";
 "status_bar_error_link_missed_message" = "Odkaz nebyl nalezen, nebo služba schůzky zatím není podporována";
@@ -123,7 +96,6 @@
 "status_bar_submenu_notes_title" = "Poznámky:";
 "status_bar_submenu_organizer_title" = "Organizátor: %@";
 "status_bar_submenu_location_title" = "Místnost:";
-"status_bar_submenu_status_default_simple" = " ❔ (Neznámý)";
 "status_bar_submenu_status_default_extended" = " ❔ (%@)";
 "status_bar_submenu_status_unknown" = " ❔ Neznámý";
 "status_bar_submenu_status_pending" = " ⏳ Čeká na vyřízení";
@@ -139,7 +111,6 @@
 "status_bar_section_join_from_clipboard" = "Otevřít schůzku ze schránky";
 "status_bar_section_join_next_meeting" = "Připojit se k nadcházející schůzce";
 "status_bar_section_join_current_meeting" = "Připojit se k aktuální schůzce";
-"status_bar_empty_calendar_message" = "Pro zobrazení vašich schůzek\nvyberte kalendáře v předvolbách";
 "status_bar_section_tomorrow" = "Zítra";
 
 // MARK: - Status bar
@@ -165,13 +136,7 @@
 // MARK: - Preferences Advanced
 
 "preferences_advanced_setting_warning" = "⚠️ Tato nastavení použijte jen v případě, že rozumíte, k čemu je";
-"preferences_calendars_add_account_modal" = "Pro přidání externích kalendářů:\n1. Otevřete výchozí aplikaci Kalendář\n2. V nabídce klikněte na položku \"Přidat účet\"\n3. Vyberte a připojte svůj účet";
-"preferences_calendars_provider_section_title" = "Poskytovatel kalendářů";
 "preferences_calendars_provider_gcalendar_change_account" = "Změnit Google Účet";
-"preferences_calendars_provider_macos_switch" = "Switch to macOS Calendar";
-"preferences_calendars_provider_gcalendar_switch" = "Přepnout na Google Kalendář API";
-"preferences_calendars_add_account_button" = "Přidat účet";
-"preferences_calendars_add_account_description" = "Nemůžete najít požadovaný kalendář?";
 
 // MARK: - Preferences Calendars
 
@@ -210,8 +175,6 @@
 "preferences_services_google_meet_tip" = "Tip: Služba Google Meet podporuje výběr účtu v adrese URL, např. https://meet.google.com/new?authuser=1";
 "preferences_services_create_meeting_custom_url_value" = "Vlastní adresa URL";
 "preferences_services_create_meeting_title" = "Vytvářet schůzky přes";
-"preferences_services_supported_links_mailback" = "Pokud služba, kterou používáte, není podporována, napište e-mail vývojářům";
-"preferences_services_supported_links_list" = "Podporované odkazy na služby:\n%@";
 "preferences_services_link_default_browser_value" = "Výchozí webový prohlížeč";
 "preferences_services_link_service_title" = "Otvírat odkazy služby %@ v";
 
@@ -264,8 +227,6 @@
 // MARK: - Preferences Appearance
 
 "preferences_appearance_events_title" = "Události";
-"preferences_general_feedback_email" = "E-mail";
-"preferences_general_feedback_title" = "Pokud máte jakékoli dotazy nebo připomínky,\nkontaktujte mě:";
 "preferences_general_patron_restore_purchases" = "Obnovit nákupy";
 "preferences_general_patron_thank_for_purchase" = "Díky! Podpořili jste MeetingBar na %d měsíců! 🎉";
 "preferences_general_patron_description" = "Toto jsou jednorázové nákupy a automaticky se neobnovují.";
@@ -274,15 +235,12 @@
 "preferences_general_patron_three_months" = "3 měsíce – 2,99 USD";
 "preferences_general_patron_title" = "Staňte se členem";
 "preferences_general_external_contact" = "Kontakt";
-"preferences_general_external_patronage" = "Členství";
 "preferences_general_meeting_bar_description" = "MeetingBar je open-source aplikace, kterou vytvořil Andrii Leitsius 🇺🇦\nCílem aplikace je usnadnit a zjednodušit práci s online schůzkami";
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "Přepnout viditelnost nadpisu v řádku nabídek:";
 "preferences_general_shortcut_join_from_clipboard" = "Připojit se ke schůzce ze schránky:";
 "preferences_general_shortcut_join_next" = "Připojit se k nadcházející schůzce:";
 "preferences_general_shortcut_create_meeting" = "Vytvořit schůzku:";
 "preferences_general_shortcut_open_menu" = "Otevřít nabídku:";
-"preferences_general_all_shortcut" = "Všechny zkratky";
-"preferences_general_option_shortcuts" = "Zkratky";
 "preferences_general_option_preferred_language_system_value" = "Automaticky";
 "preferences_general_option_preferred_language_title" = "Preferovaný jazyk:";
 
@@ -292,7 +250,6 @@
 "preferences_tab_advanced" = "Pokročilé";
 "preferences_tab_calendars" = "Kalendáře";
 "preferences_tab_bookmarks" = "Záložky";
-"preferences_tab_appearance" = "Vzhled";
 
 // MARK: - Preferences tabs
 
@@ -351,13 +308,10 @@
 "onboarding_calendar_source_description" = "Vyberte, jak MeetingBar čte data kalendáře. Obě možnosti mohou zahrnovat kalendáře Google.";
 "onboarding_calendar_source_title" = "Vyberte zdroj kalendáře";
 "onboarding_choose_different_source" = "Vybrat jiný zdroj";
-"onboarding_connect" = "Připojit";
 "onboarding_continue" = "Pokračovat";
 "onboarding_done" = "Hotovo";
 "onboarding_google_calendar_description" = "Propojuje MeetingBar přímo s Google Kalendářem bez použití aplikace Kalendář macOS.";
 "onboarding_google_calendar_title" = "Google Calendar API";
-"onboarding_meeting_opening_description" = "Nastavte výchozí aplikaci nebo prohlížeč pro nejčastěji používané služby schůzek.";
-"onboarding_meeting_opening_title" = "Vyberte způsob otevírání schůzek";
 "onboarding_progress" = "Krok %@ z %@";
 "onboarding_success_description" = "Vaše příští schůzka se zobrazí v řádku nabídek.";
 "onboarding_success_title" = "Jste připraveni";
@@ -370,45 +324,21 @@
 "preferences_advanced_regex_test_placeholder" = "Vložte ukázkový text události";
 "preferences_advanced_regex_test_title" = "Testovat regex odkazu na schůzku";
 "preferences_calendar_source_title" = "Zdroj kalendáře";
-"preferences_calendars_deselect_all" = "Zrušit výběr všech";
-"preferences_calendars_select_all" = "Vybrat vše";
-"preferences_calendars_selection_summary" = "%d vybráno z %d dostupných kalendářů";
 "preferences_configure_browsers_help" = "Přidejte vlastní prohlížeče, profily nebo aplikace pro otevírání odkazů na schůzky.";
 "preferences_meeting_opening_behavior_title" = "Otevřít odkazy na schůzky";
 "preferences_notifications_alerts_title" = "Upozornění na schůzky";
 "preferences_notifications_automation_title" = "Automatické připojení";
-"preferences_section_about_title" = "O aplikaci a podpora";
 "preferences_section_apple_script_hooks_title" = "Háčky AppleScript";
 "preferences_section_create_title" = "Vytvořit schůzky";
-"preferences_section_data_source_title" = "Zdroj dat";
-"preferences_section_event_notifications_title" = "Upozornění na události";
 "preferences_section_general_settings_title" = "Obecná nastavení";
-"preferences_section_menu_title" = "Nabídka";
-"preferences_section_open_title" = "Otevřít";
 "preferences_section_regex_filters_title" = "Filtry regex";
 "preferences_section_shortcuts_title" = "Klávesové zkratky";
 "preferences_services_link_default_help" = "Tento prohlížeč se používá, pokud není nastaveno přepsání pro konkrétního poskytovatele.";
 "preferences_services_link_overrides_help" = "Tato nastavení přepisují výchozí prohlížeč pro každou službu schůzek.";
 "preferences_services_link_overrides_title" = "Přepsání podle poskytovatele";
 "preferences_status_copy_diagnostics" = "Kopírovat diagnostiku";
-"preferences_status_diagnostics_hint" = "Zkopíruje verzi aplikace, poskytovatele, stav obnovení a poslední chybu do schránky pro hlášení problémů.";
-"preferences_status_diagnostics_title" = "Diagnostika";
-"preferences_status_last_error" = "Poslední chyba:";
-"preferences_status_last_successful_refresh" = "Poslední úspěšné obnovení:";
 "preferences_status_open_calendar_settings" = "Otevřít nastavení kalendáře";
-"preferences_status_permission_authorized" = "Autorizováno";
-"preferences_status_permission_calendar" = "Kalendář";
-"preferences_status_permission_denied" = "Odmítnuto";
-"preferences_status_permission_google" = "Google účet";
-"preferences_status_permission_not_authorized" = "Neautorizováno";
-"preferences_status_permission_not_determined" = "Nepožádáno";
-"preferences_status_permission_notifications" = "Upozornění";
-"preferences_status_permission_provisional" = "Předběžné";
-"preferences_status_permission_restricted" = "Omezeno";
-"preferences_status_permissions_title" = "Oprávnění";
-"preferences_status_provider_status_title" = "Stav poskytovatele";
 "preferences_status_reconnect" = "Znovu připojit";
-"preferences_status_refresh_now" = "Obnovit nyní";
 "preferences_status_state_auth_required" = "Vyžaduje se autorizace";
 "preferences_status_state_error" = "Poslední obnovení selhalo";
 "preferences_status_state_initializing" = "Inicializace";
@@ -418,14 +348,10 @@
 "preferences_tab_meeting_opening" = "Odkazy na schůzky";
 "preferences_tab_menu_bar" = "Zobrazení a události";
 "preferences_tab_notifications" = "Upozornění";
-"preferences_tab_status" = "Stav";
 "status_bar_control_actions" = "Akce schůzky";
 "status_bar_control_auth_required" = "Google Kalendář je třeba znovu připojit";
 "status_bar_control_grant_permission" = "Udělit oprávnění ke kalendáři";
-"status_bar_control_join_current" = "Připojit se k aktuální schůzce";
-"status_bar_control_join_next" = "Připojit se k příští schůzce";
 "status_bar_control_no_calendars" = "Žádné kalendáře nejsou vybrány";
-"status_bar_control_no_meeting_link" = "Žádný odkaz na schůzku není k dispozici";
 "status_bar_control_no_upcoming" = "Žádné nadcházející schůzky";
 "status_bar_control_permission_required" = "Je vyžadováno oprávnění ke kalendáři";
 "status_bar_control_reconnect" = "Znovu připojit Google Kalendář";
@@ -443,7 +369,6 @@
 "preferences_appearance_status_bar_ongoing_time_ten_after_value" = "skrýt 10 min po zahájení";
 "preferences_appearance_status_bar_ongoing_time_ten_before_next_value" = "skrýt 10 min před příští událostí";
 "preferences_appearance_status_bar_ongoing_title" = "Viditelnost probíhající události:";
-"preferences_tab_links" = "Odkazy";
 "preferences_advanced_script_link_only_help" = "Spouští se pouze pro události s odkazy na schůzky.";
 "preferences_meeting_opening_mode_google_meet_pwa" = "Google Meet PWA (Chrome)";
 "preferences_meeting_opening_mode_google_meet_pwa_help" = "Otevírá Google Meet prostřednictvím nainstalovaného Chrome PWA, je-li k dispozici. Jinak se vrátí k prohlížeči.";
@@ -459,7 +384,6 @@
 "preferences_meeting_opening_mode_zoom_web_app_help" = "Otevírá podporované odkaze na schůzky Zoom ve webovém klientovi Zoom.";
 "preferences_services_link_modes_help" = "Možnosti aplikace, webové aplikace a PWA jsou volitelné. Stávající chování prohlížeče zůstane nezměněno, dokud nevyberete.";
 "preferences_sidebar_experience" = "Prostředí";
-"preferences_sidebar_maintenance" = "Údržba";
 "preferences_sidebar_setup" = "Nastavení";
 "status_bar_control_current_meeting" = "Aktuální schůzka";
 "status_bar_control_next_meeting" = "Další schůzka";

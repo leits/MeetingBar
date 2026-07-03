@@ -11,7 +11,6 @@
 "window_title_preferences" = "MeetingBar instellingen";
 "window_title_onboarding" = "Welkom bij MeetingBar";
 "windows_title_changelog" = "MeetingBar – Wat is er nieuw";
-"preferences_tab_appearance" = "Verschijning";
 "preferences_tab_bookmarks" = "Bladwijzers";
 "preferences_tab_calendars" = "Agenda's";
 "preferences_tab_advanced" = "Geavanceerd";
@@ -21,10 +20,8 @@
 "preferences_general_option_login_launch" = "Openen na inloggen";
 "preferences_general_option_preferred_language_title" = "Taal:";
 "preferences_general_option_preferred_language_system_value" = "Systeem";
-"preferences_general_option_shortcuts" = "Sneltoetsen";
 "general_meeting" = "Meeting";
 "general_when_event_starts" = "wanneer meeting start";
-"preferences_general_all_shortcut" = "Alle sneltoetsen";
 "preferences_general_shortcut_open_menu" = "Menu openen:";
 "preferences_general_patron_three_months" = "3 maanden – 2,99 USD";
 "preferences_general_patron_six_months" = "6 maanden – 5,99 USD";
@@ -59,7 +56,6 @@
 "preferences_appearance_menu_show_event_title" = "Toon meeting:";
 "preferences_appearance_menu_show_event_details_value" = "details als submenu";
 "preferences_services_link_default_browser_value" = "Standaard webbrowser";
-"preferences_services_supported_links_list" = "Ondersteunde links voor diensten:\n%@";
 "general_ok" = "Oke";
 "general_cancel" = "Annuleren";
 "general_close" = "Sluiten";
@@ -72,12 +68,9 @@
 "preferences_tab_general" = "Algemeen";
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "Schakel de zichtbaarheid van titels in de statusbalk:";
 "preferences_general_meeting_bar_description" = "MeetingBar is een open-source app\nGemaakt door Andrii Leitsius 🇺🇦\nVoor sneller en makkelijker online meetings";
-"preferences_general_external_patronage" = "Sponsor";
 "preferences_general_patron_title" = "Word een sponsor";
 "preferences_general_patron_thank_for_purchase" = "Bedankt! Je hebt MeetingBar gesteund voor % van de maanden";
 "preferences_general_patron_restore_purchases" = "Aankopen herstellen";
-"preferences_general_feedback_title" = "Als je vragen of feedback hebt,\nVoel je vrij om in contact te komen:";
-"preferences_general_feedback_email" = "E-mailadres";
 "preferences_appearance_events_show_events_for_today_tomorrow_value" = "vandaag en morgen";
 "preferences_appearance_events_show_events_for_today_value" = "vandaag";
 "preferences_appearance_events_without_guest_title" = "Meetings zonder deelnemers:";
@@ -99,7 +92,6 @@
 // MARK: - Preferences Services
 
 "preferences_services_link_meeting_title" = "Open alle meeting links in";
-"preferences_services_supported_links_mailback" = "Als de dienst die u gebruikt niet wordt ondersteund, kunt u een e-mail sturen naar de ontwikkelaars";
 "create_meeting_error_title" = "Kan geen nieuwe meeting maken";
 "next_meeting_empty_title" = "Er zijn vandaag geen geplande meetings";
 "preferences_appearance_events_declined_title" = "Afgewezen meetings:";
@@ -139,11 +131,7 @@
 "preferences_bookmarks_add_bookmark_button" = "Bladwijzer toevoegen";
 "preferences_bookmarks_new_bookmark_link_phone" = "Link/telefoonnummer";
 "preferences_bookmarks_new_bookmark_error_title" = "Kan bladwijzer niet toevoegen";
-"preferences_calendars_add_account_description" = "Kan je de agenda niet vinden die je nodig hebt?";
-"preferences_calendars_provider_section_title" = "Agenda's provider";
 "preferences_calendars_provider_gcalendar_change_account" = "Verander Google-account";
-"preferences_calendars_provider_macos_switch" = "Schakel over naar macOS Agenda";
-"preferences_calendars_provider_gcalendar_switch" = "Schakel over naar de Google Calendar-API";
 
 // MARK: - Preferences Advanced
 
@@ -165,7 +153,6 @@
 
 "status_bar_section_today" = "Vandaag";
 "status_bar_section_tomorrow" = "Morgen";
-"status_bar_empty_calendar_message" = "Selecteer je agenda's in de instellingen\nom je meetings te zien";
 "status_bar_section_join_next_meeting" = "Direct deelnemen aan volgende meeting";
 "status_bar_section_join_from_clipboard" = "Meeting openen vanaf klembord";
 "status_bar_menu_dismiss_next_meeting" = "Volgende meeting afwijzen";
@@ -194,8 +181,6 @@
 // MARK: - Preferences Calendars
 
 "preferences_calendars_select_calendars_title" = "Kies agenda's die meetings laten zien in de statusbalk";
-"preferences_calendars_add_account_button" = "Voeg agenda account toe";
-"preferences_calendars_add_account_modal" = "Om externe agendas toe te voegen:\n1. Open de standaard macOS Agenda-app\n2. Klik 'Account toevoegen' in het menu\n3. Kies en verbind je account";
 "preferences_advanced_run_script_on_event_start" = "Voer AppleScript automatisch uit";
 "preferences_advanced_wrong_location_button" = "Begrepen!";
 "preferences_advanced_regex_edit_button" = "bewerken";
@@ -203,8 +188,6 @@
 "status_bar_section_refresh_sources" = "Ververs bronnen";
 "notification_next_meeting_dismissed_message" = "Je kan afgewezen niet verwijderen uit snelle acties";
 "status_bar_submenu_status_accepted" = " 👍 Geaccepteerd";
-"access_screen_provider_gcalendar_sign_in_title" = "Google Sign In";
-"access_screen_provider_gcalendar_sign_in_description" = "Geef MeetingBar toegang tot je agenda in het venster van de webbrowser";
 
 // MARK: - Shared
 
@@ -213,7 +196,6 @@
 "status_bar_submenu_status_pending" = " ⏳ In behandeling";
 "status_bar_submenu_status_unknown" = " ❔ Onbekend";
 "status_bar_submenu_status_default_extended" = " ❔ (%@)";
-"status_bar_submenu_status_default_simple" = " ❔ (Onbekend)";
 "status_bar_submenu_organizer_title" = "Organisator: %@";
 "status_bar_submenu_notes_title" = "Notities:";
 "status_bar_submenu_attendees_title" = "Deelnemers (%d)";
@@ -231,37 +213,26 @@
 "status_bar_event_status_now" = "nu (nog %@)";
 "status_bar_error_app_link_title" = "Oeps! Kan de link in de %@ niet openen";
 "status_bar_error_app_link_message" = "Zorg ervoor dat u de %@ hebt geïnstalleerd, of open dergelijke links in een webbrowser vanuit de voorkeuren.";
-"calendars_screen_start_button" = "Begin met het gebruiken van de app";
 "status_bar_error_link_missed_title" = "Oeps! Kan niet deelnemen aan de %@";
 "status_bar_error_link_missed_message" = "Link niet gevonden of je dienst wordt nog niet ondersteund";
 "constants_meeting_service_phone" = "Telefoonnummer";
 "constants_meeting_service_zoom_native" = "Zoom native";
 "constants_meeting_service_other" = "Andere";
-
-// MARK: - Access screen
-
-"access_screen_access_denied_title" = "Oeps! Het lijkt erop dat je de toegang tot agenda's hebt geweigerd.";
 "access_screen_access_screen_access_denied_go_to_title" = "Ga naar";
-"access_screen_access_denied_checkbox_title" = "en kies een checkbox in de buurt van MeetingBar.";
 "access_screen_access_denied_relaunch_title" = "Start vervolgens de app handmatig om door te gaan met de installatie.";
-"access_screen_access_granted_title" = "Toegang tot agenda's aanvragen…";
 "access_screen_provider_picker_label" = "Selecteer agendaprovider";
-"access_screen_provider_macos_recommended" = "(aanbevolen)";
 "access_screen_provider_macos_data_source" = "Gegevens ophalen uit de macOS Agenda-app";
 "access_screen_provider_macos_number_of_accounts" = "Een willekeurig aantal verbonden accounts";
 "access_screen_provider_gcalendar_number_of_accounts" = "Slechts één Google-account";
-"access_screen_access_granted_click_ok_title" = "Klik op \"OK\" in de macOS pop-up.";
 
 // MARK: - Constants
 "constants_create_meeting_service_url" = "Gepersonaliseerde webadres";
 "constants_meeting_service_url" = "Webadres";
 "shared_send_notification_no_alert_style_tip" = "Opmerking: Meldingen zijn ingesteld op Stroken, dus ze verschijnen kort en verdwijnen daarna weer. Om ze op het scherm te houden totdat je ze zelf sluit, schakel je over naar Waarschuwingen in de meldingsinstellingen van macOS.";
-"access_screen_provider_macos_title" = "macOS Agenda-app";
 "shared_automatic_event_join_toggle" = "Neem automatisch deel aan de volgende meeting";
 "store_patronage_restore_nothing_message" = "Niets om te herstellen";
 "store_patronage_purchase_success_message" = "Gekocht. Bedankt voor je steun!";
 "store_patronage_purchase_unknown_message" = "Onbekende fout. Neem contact op met de ondersteuning.";
-"store_patronage_purchase_payment_invalid_message" = "Ongeldige aankoop-ID";
 "store_patronage_purchase_payment_not_allowed_message" = "Het apparaat mag de betaling niet uitvoeren";
 "store_patronage_purchase_cloud_service_network_connection_failed" = "Kan geen verbinding maken met het netwerk";
 "notifications_snooze_until_start" = "Snooze tot de starttijd";
@@ -283,12 +254,8 @@
 // MARK: - Store
 
 "store_patronage_title" = "MeetingBar sponsoring";
-"constants_browser_defaultBrowser" = "Standaard webbrowser";
 "store_patronage_restore_success_message" = "Hersteld";
-"store_patronage_purchase_client_invalid_message" = "Het is niet toegestaan om de betaling uit te voeren";
 "store_patronage_purchase_store_product_not_available_message" = "Het product is niet beschikbaar in de huidige winkel";
-"store_patronage_purchase_cloud_service_permission_denied_message" = "Toegang tot cloudservice-informatie is niet toegestaan";
-"store_patronage_purchase_cloud_service_revoked_message" = "Gebruiker heeft de toestemming voor het gebruik van deze clouddienst ingetrokken";
 
 
 // MARK: - Link open
@@ -307,18 +274,9 @@
 
 "calendars_screen_select_calendar_title" = "Selecteer minimaal één agenda";
 "access_screen_access_denied_system_preferences_button" = "Systeeminstellingen";
-"welcome_screen_shortcut_ad_hoc_meeting_title" = "met jouw snelkoppeling:";
 "status_bar_no_title" = "Geen titel";
 "status_bar_error_apple_script_title" = "AppleScrift fout";
 "status_bar_event_status_in" = "in %@";
-// MARK: - Welcome screen
-
-"welcome_screen_greeting_main_title" = "Hi! MeetingBar is zo'n eenvoudige app dat alles bijna klaar is.";
-"welcome_screen_shortcut_next_meeting_title" = "Neem deel aan de volgende meeting met je snelkoppeling:";
-"welcome_screen_greeting_additional_title" = "Laten we het 100% van jou maken!";
-"welcome_screen_ad_hoc_meeting_title" = "Creëer ad-hocmeeting in ";
-"welcome_screen_login_launch_toggle_title" = "Start MeetingBar bij inloggen";
-"welcome_screen_setup_calendar_title" = "Agenda's instellen";
 "access_screen_provider_gcalendar_data_source" = "Ontvang gegevens rechtstreeks uit Google Calendar";
 "shared_send_notification_disabled_tip" = "⚠️ Je macOS meldingsinstellingen voor MeetingBar zijn uitgeschakeld. Schakel meldingen in de macOS systeeminstellingen in om meetings bij te houden.";
 "shared_automatic_event_join_tip" = "Met deze instelling wordt je volgende meeting automatisch geopend in je geconfigureerde app of webbrowser";
@@ -328,7 +286,6 @@
 "preferences_appearance_status_bar_ongoing_time_ten_before_next_value" = "verberg 10 minuten voor volgende evenement";
 "preferences_appearance_menu_show_timeline_toggle" = "Toon visuele tijdlijn van de dag";
 "notifications_meetingbar_dismiss_event_action" = "Afwijzen";
-"preferences_tab_links" = "Links";
 
 "general_refresh" = "Vernieuwen";
 "general_when_event_ends" = "wanneer de meeting eindigt";
@@ -347,26 +304,15 @@
 "preferences_tab_meeting_opening" = "Meetinglinks";
 "preferences_tab_menu_bar" = "Weergave & Meetings";
 "preferences_tab_notifications" = "Meldingen";
-"preferences_tab_status" = "Status";
 "preferences_section_general_settings_title" = "Algemene instellingen";
-"preferences_section_event_notifications_title" = "Meetingmeldingen";
 "preferences_section_shortcuts_title" = "Sneltoetsen";
-"preferences_section_about_title" = "Over & Ondersteuning";
-"preferences_section_menu_title" = "Menu";
-"preferences_section_data_source_title" = "Gegevensbron";
-"preferences_section_open_title" = "Openen";
 "preferences_section_create_title" = "Meetings maken";
 "preferences_section_apple_script_hooks_title" = "AppleScript-hooks";
 "preferences_section_regex_filters_title" = "Regex-filters";
 "preferences_calendar_source_title" = "Agendabron";
-"preferences_calendars_selection_summary" = "%d van %d beschikbare agenda's geselecteerd";
-"preferences_calendars_select_all" = "Alles selecteren";
-"preferences_calendars_deselect_all" = "Alles deselecteren";
 "preferences_meeting_opening_behavior_title" = "Meetinglinks openen";
 "preferences_notifications_alerts_title" = "Meetingmeldingen";
 "preferences_notifications_automation_title" = "Automatisch deelnemen";
-"preferences_status_provider_status_title" = "Providerstatus";
-"preferences_status_diagnostics_title" = "Diagnose";
 "preferences_status_state_ok" = "Bijgewerkt";
 "preferences_status_state_stale" = "Gecachte gegevens worden weergegeven";
 "preferences_status_state_error" = "Laatste vernieuwing mislukt";
@@ -375,21 +321,7 @@
 "preferences_status_state_initializing" = "Initialiseren";
 "preferences_status_reconnect" = "Opnieuw verbinden";
 "preferences_status_open_calendar_settings" = "Agenda-instellingen openen";
-"preferences_status_last_successful_refresh" = "Laatste succesvolle vernieuwing:";
-"preferences_status_last_error" = "Laatste fout:";
-"preferences_status_refresh_now" = "Nu vernieuwen";
 "preferences_status_copy_diagnostics" = "Diagnose kopiëren";
-"preferences_status_diagnostics_hint" = "Kopieert de app-versie, provider, vernieuwingsstatus en laatste fout naar het klembord voor probleemrapporten.";
-"preferences_status_permissions_title" = "Machtigingen";
-"preferences_status_permission_calendar" = "Agenda";
-"preferences_status_permission_notifications" = "Meldingen";
-"preferences_status_permission_google" = "Google-account";
-"preferences_status_permission_authorized" = "Geautoriseerd";
-"preferences_status_permission_denied" = "Geweigerd";
-"preferences_status_permission_restricted" = "Beperkt";
-"preferences_status_permission_not_determined" = "Niet aangevraagd";
-"preferences_status_permission_not_authorized" = "Niet geautoriseerd";
-"preferences_status_permission_provisional" = "Voorlopig";
 "preferences_configure_browsers_help" = "Voeg aangepaste browsers, profielen of apps toe voor het openen van meetinglinks.";
 "preferences_services_link_default_help" = "Deze browser wordt gebruikt tenzij een provider-specifieke overschrijving is ingesteld.";
 "preferences_services_link_overrides_title" = "Provider-overschrijvingen";
@@ -403,7 +335,6 @@
 "onboarding_progress" = "Stap %@ van %@";
 "onboarding_continue" = "Doorgaan";
 "onboarding_done" = "Klaar";
-"onboarding_connect" = "Verbinden";
 "onboarding_choose_different_source" = "Een andere bron kiezen";
 "onboarding_welcome_title" = "Welkom bij MeetingBar";
 "onboarding_welcome_description" = "MeetingBar helpt je je volgende meeting te zien en eraan deel te nemen direct vanuit de menubalk.";
@@ -422,14 +353,9 @@
 "onboarding_calendar_selection_empty" = "Geen agenda's gevonden. Vernieuw of controleer je agenda-accounts.";
 "onboarding_calendar_selection_permission" = "Agendamachtiging vereist. Verleen toegang in Systeeminstellingen en vernieuw dan.";
 "onboarding_calendar_selection_reconnect" = "Google Calendar moet opnieuw worden verbonden.";
-"onboarding_meeting_opening_title" = "Kies hoe meetings worden geopend";
-"onboarding_meeting_opening_description" = "Stel de standaard-app of browser in voor je meestgebruikte meetingdiensten.";
 "onboarding_success_title" = "Je bent klaar";
 "onboarding_success_description" = "Je volgende meeting verschijnt in de menubalk.";
 "access_screen_provider_authorization_cancelled" = "Autorisatie is geannuleerd. Probeer opnieuw om je agenda te verbinden.";
-"status_bar_control_join_current" = "Deelnemen aan huidige meeting";
-"status_bar_control_join_next" = "Deelnemen aan volgende meeting";
-"status_bar_control_no_meeting_link" = "Geen meetinglink beschikbaar";
 "status_bar_control_actions" = "Meetingacties";
 "status_bar_control_stale" = "Agenda vernieuwen mislukt — laatste bekende gegevens worden weergegeven";
 "status_bar_control_auth_required" = "Google Calendar moet opnieuw worden verbonden";
@@ -459,7 +385,6 @@
 "preferences_meeting_opening_mode_zoom_web_app_help" = "Opent ondersteunde Zoom-vergaderlinks in de webclient van Zoom.";
 "preferences_services_link_modes_help" = "App-, web-app- en PWA-opties zijn optioneel. Bestaand browsergedrag blijft ongewijzigd totdat u een keuze maakt.";
 "preferences_sidebar_experience" = "Ervaring";
-"preferences_sidebar_maintenance" = "Onderhoud";
 "preferences_sidebar_setup" = "Instelling";
 "status_bar_control_current_meeting" = "Huidige vergadering";
 "status_bar_control_next_meeting" = "Volgende vergadering";
