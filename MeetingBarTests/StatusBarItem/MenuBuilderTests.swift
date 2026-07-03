@@ -1452,7 +1452,7 @@ final class StatusBarItemControllerPresentationTests: BaseTestCase {
         XCTAssertEqual(button.attributedTitle.string, "")
     }
 
-    func test_updateTitleCompactsLongTitleAndShowsFallbackMeetingIcon() throws {
+    func test_updateTitleCompactsLongVisibleTitleWithoutForcingFallbackIcon() throws {
         configureStatusBarDefaults()
         Defaults[.eventTitleIconFormat] = .none
         Defaults[.statusbarEventTitleLength] = statusbarEventTitleLengthLimits.max
@@ -1470,7 +1470,7 @@ final class StatusBarItemControllerPresentationTests: BaseTestCase {
         controller.updateTitle()
 
         let button = try XCTUnwrap(controller.statusItem.button)
-        XCTAssertNotNil(button.image)
+        XCTAssertNil(button.image)
         XCTAssertEqual(button.imagePosition, .imageLeft)
         XCTAssertTrue(button.attributedTitle.string.contains("..."))
         XCTAssertLessThan(button.attributedTitle.string.count, longTitle.count)
