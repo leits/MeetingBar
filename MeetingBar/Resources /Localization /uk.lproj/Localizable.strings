@@ -27,7 +27,6 @@
 // MARK: - Preferences tabs
 
 "preferences_tab_general" = "Загальні";
-"preferences_tab_appearance" = "Вигляд";
 "preferences_tab_bookmarks" = "Закладки";
 "preferences_tab_calendars" = "Календарі";
 "preferences_tab_advanced" = "Розширені";
@@ -37,15 +36,12 @@
 "preferences_general_option_login_launch" = "Запускати після входу";
 "preferences_general_option_preferred_language_title" = "Мова:";
 "preferences_general_option_preferred_language_system_value" = "Системна";
-"preferences_general_option_shortcuts" = "Скорочення";
-"preferences_general_all_shortcut" = "Усі скорочення";
 "preferences_general_shortcut_open_menu" = "Відкрити меню:";
 "preferences_general_shortcut_create_meeting" = "Створити зустріч:";
 "preferences_general_shortcut_join_next" = "Долучитись до наступної зустрічі:";
 "preferences_general_shortcut_join_from_clipboard" = "Долучитись до зустрічі з буфера обміну:";
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "Показати/сховати заголовок у смузі меню:";
 "preferences_general_meeting_bar_description" = "MeetingBar – це застосунок з відкритим кодом,\nстворений Андрієм Лейцюсь 🇺🇦\nДля більш плавних та зручних онлайн-зустрічей";
-"preferences_general_external_patronage" = "Підтримати";
 "preferences_general_external_contact" = "Зв'язатись";
 "preferences_general_patron_title" = "Стати патроном";
 "preferences_general_patron_three_months" = "3 місяці – 2,99 USD";
@@ -54,8 +50,6 @@
 "preferences_general_patron_description" = "Це одноразові платежі, які не будуть повторюватись автоматично.";
 "preferences_general_patron_thank_for_purchase" = "Дякую! Ви підтримали MeetingBar на %d місяців 🎉";
 "preferences_general_patron_restore_purchases" = "Відновити платежі";
-"preferences_general_feedback_title" = "Якщо у Вас є запитання або ідеї,\nпросто напишіть мені:";
-"preferences_general_feedback_email" = "Ел. пошта";
 
 // MARK: - Preferences Appearance
 
@@ -110,8 +104,6 @@
 "preferences_services_link_meeting_title" = "Відкривати усі посилання в";
 "preferences_services_link_service_title" = "Відкривати посилання %@ у";
 "preferences_services_link_default_browser_value" = "основному браузері";
-"preferences_services_supported_links_list" = "Розпізнаються посилання для сервісів:\n%@";
-"preferences_services_supported_links_mailback" = "Якщо сервіс, який Ви використовуєте для зустрічей, не підтримується, напишіть мені";
 "preferences_services_create_meeting_title" = "Створювати зустрічі в";
 "preferences_services_create_meeting_custom_url_value" = "Власне посилання";
 "preferences_services_create_meeting_custom_url_placeholder" = "Будь ласка, введіть коректне посилання (з url-схемою, напр. https://)";
@@ -151,13 +143,7 @@
 // MARK: - Preferences Calendars
 
 "preferences_calendars_select_calendars_title" = "Виберіть календарі, щоб показати події у смузі меню";
-"preferences_calendars_add_account_description" = "Потрібного календаря немає у списку?";
-"preferences_calendars_add_account_button" = "Додати об. запис календаря";
-"preferences_calendars_add_account_modal" = "Щоб додати нові календарі:\n1. Відкрийте застосунок Календар (Calendar App)\n2. Натисніть Додати Акаунт (Add Account) у меню\n3. Виберіть сервіс і приєднайте свій акаунт";
-"preferences_calendars_provider_section_title" = "Постачальник календарів";
 "preferences_calendars_provider_gcalendar_change_account" = "Змінити об. запис Google";
-"preferences_calendars_provider_macos_switch" = "Перемкнути на macOS Календар";
-"preferences_calendars_provider_gcalendar_switch" = "Перемкнути на Google Calendar API";
 
 // MARK: - Preferences Advanced
 
@@ -183,7 +169,6 @@
 
 "status_bar_section_today" = "Сьогодні";
 "status_bar_section_tomorrow" = "Завтра";
-"status_bar_empty_calendar_message" = "Виберіть календарі у Налаштуваннях\nщоб побачити Ваші зустрічі";
 "status_bar_section_join_next_meeting" = "Долучитись до наступної зустрічі";
 "status_bar_section_join_current_meeting" = "Долучитись до поточної зустрічі";
 "status_bar_section_join_from_clipboard" = "Відкрити зустріч із буфера обміну";
@@ -201,7 +186,6 @@
 "status_bar_submenu_status_pending" = " ⏳ Очікується";
 "status_bar_submenu_status_unknown" = " ❔ Невідомо";
 "status_bar_submenu_status_default_extended" = " ❔ (%@)";
-"status_bar_submenu_status_default_simple" = " ❔ (Невідомо)";
 "status_bar_submenu_location_title" = "Розташування:";
 "status_bar_submenu_organizer_title" = "Організатор: %@";
 "status_bar_submenu_notes_title" = "Нотатки:";
@@ -232,39 +216,17 @@
 "status_bar_error_app_link_title" = "Ой леле! Не вдалось відкрити посилання на зустріч у застосунку %@";
 "status_bar_error_app_link_message" = "Переконайтеся, що у вас встановлений застосунок %@, або відкривайте такі посилання у веб-браузері з налаштувань.";
 
-// MARK: - Welcome screen
-
-"welcome_screen_greeting_main_title" = "Привіт! MeetingBar настільки простий, що майже все вже готово.";
-"welcome_screen_greeting_additional_title" = "Зробімо його на 100% вашим!";
-"welcome_screen_login_launch_toggle_title" = "Запускати MeetingBar при логіні";
-"welcome_screen_shortcut_next_meeting_title" = "Приєднуватись до зустрічей з наступної події зі скороченням:";
-"welcome_screen_ad_hoc_meeting_title" = "Створювати зустріч у ";
-"welcome_screen_shortcut_ad_hoc_meeting_title" = "зі скороченням:";
-"welcome_screen_setup_calendar_title" = "Налаштувати календарі";
-
 // MARK: - Calendars screen
 
 "calendars_screen_select_calendar_title" = "Виберіть хоча б один календар";
-"calendars_screen_start_button" = "Закінчити налаштування";
-
-// MARK: - Access screen
-
-"access_screen_access_denied_title" = "Ой леле! Схоже, Ви не дозволили доступ до календарів.";
 "access_screen_access_screen_access_denied_go_to_title" = "Відкрийте";
 "access_screen_access_denied_system_preferences_button" = "Системні параметри";
-"access_screen_access_denied_checkbox_title" = "і поставте прапорець біля MeetingBar.";
 "access_screen_access_denied_relaunch_title" = "Після цього вам потрібно перезапустити застосунок, щоб продовжити налаштування.";
-"access_screen_access_granted_title" = "Запит на доступ до календарів…";
-"access_screen_access_granted_click_ok_title" = "Натисніть \"OK\" у вікні від MacOS.";
 "access_screen_provider_picker_label" = "Виберіть постачальника календарів";
-"access_screen_provider_macos_title" = "Системний Календар";
-"access_screen_provider_macos_recommended" = "(рекомендований)";
 "access_screen_provider_macos_data_source" = "Використовувати дані із системного Календаря";
 "access_screen_provider_macos_number_of_accounts" = "Будь-яка кількість під'єднаних об. записів до системного Календаря";
 "access_screen_provider_gcalendar_data_source" = "Використовувати дані напряму з Google Calendar";
 "access_screen_provider_gcalendar_number_of_accounts" = "Лише один об. запис Google";
-"access_screen_provider_gcalendar_sign_in_title" = "Вхід через Google";
-"access_screen_provider_gcalendar_sign_in_description" = "Надайте MeetingBar доступ до вашого календаря у вікні браузеру";
 "access_screen_try_again" = "Спробувати знову";
 
 // MARK: - Shared
@@ -286,7 +248,6 @@
 "constants_meeting_service_zoom_native" = "Zoom native";
 "constants_meeting_service_other" = "інше";
 "constants_meeting_service_url" = "URL";
-"constants_browser_defaultBrowser" = "основному браузері";
 
 // MARK: - Store
 
@@ -295,13 +256,9 @@
 "store_patronage_restore_nothing_message" = "Нічого відновлювати";
 "store_patronage_purchase_success_message" = "Успішно оплачено. Дякую за підтримку!";
 "store_patronage_purchase_unknown_message" = "Невідома помилка. Будь ласка, зв'яжіться з підтримкою.";
-"store_patronage_purchase_client_invalid_message" = "Платіж недозволений";
-"store_patronage_purchase_payment_invalid_message" = "Ідентифікатор покупки хибний";
 "store_patronage_purchase_payment_not_allowed_message" = "Цьому пристрою не дозволено здійснювати платежі";
 "store_patronage_purchase_store_product_not_available_message" = "Цей продукт зараз недоступний";
-"store_patronage_purchase_cloud_service_permission_denied_message" = "Доступ до інформації хмарних служб заборонений";
 "store_patronage_purchase_cloud_service_network_connection_failed" = "Не вдалося підключитися до мережі";
-"store_patronage_purchase_cloud_service_revoked_message" = "Користувач відкликав дозвіл на використання цієї хмарної служби";
 
 // MARK: - Notifications
 
@@ -332,7 +289,6 @@
 "notification_all_dismissals_removed_message" = "Всі пропущені зустрічі знову у календарі";
 "notifications_event_started_body" = "Подія розпочалась";
 "notifications_meetingbar_dismiss_event_action" = "Відхилити";
-"preferences_tab_links" = "Посилання";
 "preferences_appearance_status_bar_ongoing_time_immediate_value" = "приховати після запуску";
 "preferences_appearance_status_bar_ongoing_title" = "Поточна видимість події:";
 "preferences_appearance_status_bar_ongoing_time_ten_before_next_value" = "приховати за 10 хвилин до наступної події";
@@ -356,26 +312,15 @@
 "preferences_tab_meeting_opening" = "Посилання на зустрічі";
 "preferences_tab_menu_bar" = "Вигляд і події";
 "preferences_tab_notifications" = "Сповіщення";
-"preferences_tab_status" = "Статус";
 "preferences_section_general_settings_title" = "Загальні налаштування";
-"preferences_section_event_notifications_title" = "Сповіщення про події";
 "preferences_section_shortcuts_title" = "Клавіатурні скорочення";
-"preferences_section_about_title" = "Про застосунок та підтримка";
-"preferences_section_menu_title" = "Меню";
-"preferences_section_data_source_title" = "Джерело даних";
-"preferences_section_open_title" = "Відкрити";
 "preferences_section_create_title" = "Створити зустрічі";
 "preferences_section_apple_script_hooks_title" = "AppleScript хуки";
 "preferences_section_regex_filters_title" = "Regex фільтри";
 "preferences_calendar_source_title" = "Джерело календаря";
-"preferences_calendars_selection_summary" = "%d вибрано з %d доступних календарів";
-"preferences_calendars_select_all" = "Вибрати всі";
-"preferences_calendars_deselect_all" = "Зняти вибір";
 "preferences_meeting_opening_behavior_title" = "Відкривати посилання на зустрічі";
 "preferences_notifications_alerts_title" = "Сповіщення про зустрічі";
 "preferences_notifications_automation_title" = "Автоматичне приєднання";
-"preferences_status_provider_status_title" = "Статус постачальника";
-"preferences_status_diagnostics_title" = "Діагностика";
 "preferences_status_state_ok" = "Актуально";
 "preferences_status_state_stale" = "Відображаються кешовані дані";
 "preferences_status_state_error" = "Останнє оновлення не вдалось";
@@ -384,21 +329,7 @@
 "preferences_status_state_initializing" = "Ініціалізація";
 "preferences_status_reconnect" = "Перепідключитись";
 "preferences_status_open_calendar_settings" = "Відкрити налаштування Календаря";
-"preferences_status_last_successful_refresh" = "Останнє успішне оновлення:";
-"preferences_status_last_error" = "Остання помилка:";
-"preferences_status_refresh_now" = "Оновити зараз";
 "preferences_status_copy_diagnostics" = "Скопіювати діагностику";
-"preferences_status_diagnostics_hint" = "Копіює версію застосунку, постачальника, статус оновлення та останню помилку до буфера обміну для звітів про проблеми.";
-"preferences_status_permissions_title" = "Дозволи";
-"preferences_status_permission_calendar" = "Календар";
-"preferences_status_permission_notifications" = "Сповіщення";
-"preferences_status_permission_google" = "Google акаунт";
-"preferences_status_permission_authorized" = "Авторизовано";
-"preferences_status_permission_denied" = "Відхилено";
-"preferences_status_permission_restricted" = "Обмежено";
-"preferences_status_permission_not_determined" = "Не запитувалось";
-"preferences_status_permission_not_authorized" = "Не авторизовано";
-"preferences_status_permission_provisional" = "Тимчасово";
 "preferences_services_link_default_help" = "Цей браузер використовується, якщо не встановлено окреме правило для постачальника.";
 "preferences_services_link_overrides_title" = "Правила для постачальників";
 "preferences_services_link_overrides_help" = "Ці вибори замінюють основний браузер для кожного сервісу зустрічей.";
@@ -410,9 +341,6 @@
 "preferences_advanced_regex_test_match" = "Знайдено збіг: %@";
 "preferences_advanced_regex_test_no_match" = "Збігів не знайдено";
 "status_bar_join_with_other_link" = "Приєднатись з іншим посиланням";
-"status_bar_control_join_current" = "Приєднатись до поточної зустрічі";
-"status_bar_control_join_next" = "Приєднатись до наступної зустрічі";
-"status_bar_control_no_meeting_link" = "Посилання на зустріч відсутнє";
 "status_bar_control_actions" = "Дії зі зустріччю";
 "status_bar_control_stale" = "Оновлення не вдалось — відображаються останні відомі дані";
 "status_bar_control_auth_required" = "Google Calendar потребує повторного підключення";
@@ -426,7 +354,6 @@
 "onboarding_progress" = "Крок %@ з %@";
 "onboarding_continue" = "Продовжити";
 "onboarding_done" = "Готово";
-"onboarding_connect" = "Підключити";
 "onboarding_choose_different_source" = "Вибрати інше джерело";
 "onboarding_welcome_title" = "Ласкаво просимо у MeetingBar";
 "onboarding_welcome_description" = "MeetingBar допомагає бачити та приєднуватись до наступної зустрічі прямо зі смуги меню.";
@@ -445,13 +372,8 @@
 "onboarding_calendar_selection_empty" = "Календарів не знайдено. Оновіть або перевірте свої акаунти.";
 "onboarding_calendar_selection_permission" = "Потрібен дозвіл на доступ до Календаря. Надайте дозвіл у Системних налаштуваннях, потім оновіть.";
 "onboarding_calendar_selection_reconnect" = "Google Calendar потребує повторного підключення.";
-"onboarding_meeting_opening_title" = "Виберіть, як відкриваються зустрічі";
-"onboarding_meeting_opening_description" = "Встановіть застосунок або браузер за замовчуванням для найпоширеніших сервісів зустрічей.";
 "onboarding_essentials_title" = "Налаштуйте щоденну поведінку";
 "onboarding_essentials_description" = "Оберіть кілька типових дій для відкриття зустрічей і нагадувань.";
-"onboarding_essentials_availability_title" = "Доступність";
-"onboarding_essentials_joining_title" = "Приєднання";
-"onboarding_essentials_reminders_title" = "Нагадування";
 "onboarding_essentials_hint" = "Усі деталі можна змінити пізніше в Налаштуваннях.";
 "onboarding_start_using" = "Почати користуватись MeetingBar";
 "onboarding_success_title" = "Ви готові";
@@ -475,7 +397,6 @@
 "preferences_meeting_opening_mode_zoom_web_app_help" = "Відкриває підтримувані посилання на зустрічі Zoom у веб-клієнті Zoom.";
 "preferences_services_link_modes_help" = "Параметри додатка, веб-додатка та PWA є необов'язковими. Існуюча поведінка браузера залишається незмінною, поки ви не зробите вибір.";
 "preferences_sidebar_experience" = "Досвід";
-"preferences_sidebar_maintenance" = "Обслуговування";
 "preferences_sidebar_setup" = "Налаштування";
 "status_bar_control_current_meeting" = "Поточна зустріч";
 "status_bar_control_next_meeting" = "Наступна зустріч";
