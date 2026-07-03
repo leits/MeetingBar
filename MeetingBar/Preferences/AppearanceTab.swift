@@ -190,6 +190,8 @@ struct StatusBarSection: View {
             ) {
                 Text("preferences_appearance_status_bar_title_event_title_value".loco())
                     .tag(EventTitleFormat.show)
+                Text("preferences_appearance_status_bar_title_generic_value".loco())
+                    .tag(EventTitleFormat.generic)
                 Text("preferences_appearance_status_bar_title_dot_value".loco())
                     .tag(EventTitleFormat.dot)
                 Text("preferences_appearance_status_bar_title_hide_value".loco())

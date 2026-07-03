@@ -99,7 +99,7 @@ final class StatusBarItemController {
             .shortenEventTitle, .menuEventTitleLength,
             .showEventEndTime, .showMeetingServiceIcon,
             .showEventCalendarColor,
-            .timeFormat, .bookmarks, .eventTitleFormat,
+            .timeFormat, .bookmarks,
             .personalEventsAppereance, .pastEventsAppereance,
             .declinedEventsAppereance, .ongoingEventVisibility,
             .showTimelineInMenu,
@@ -112,7 +112,7 @@ final class StatusBarItemController {
         }
         .store(in: &cancellables)
 
-        Defaults.publisher(.hideMeetingTitle, options: [])
+        Defaults.publisher(.eventTitleFormat, options: [])
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 self?.updateMenu()
