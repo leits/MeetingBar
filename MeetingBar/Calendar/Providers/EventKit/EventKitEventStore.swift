@@ -76,7 +76,6 @@ extension EKEventStore: AuthenticatedEventStore {
     }
 }
 
-// swiftlint:disable:next cyclomatic_complexity
 private func fetchEventsOffMain(knownCalendars: [MBCalendar], dateFrom: Date, dateTo: Date) -> [MBEvent] {
     let selectedCalendars = EKEventStore.shared.calendars(for: .event).filter { knownCalendars.map(\.id).contains($0.calendarIdentifier) }
 
@@ -85,6 +84,7 @@ private func fetchEventsOffMain(knownCalendars: [MBCalendar], dateFrom: Date, da
     }
 
     let predicate = EKEventStore.shared.predicateForEvents(withStart: dateFrom, end: dateTo, calendars: selectedCalendars)
+    let customRegexes = Defaults[.customRegexes]
 
     var events: [MBEvent] = []
     for rawEvent in EKEventStore.shared.events(matching: predicate) {
@@ -94,75 +94,83 @@ private func fetchEventsOffMain(knownCalendars: [MBCalendar], dateFrom: Date, da
             )
             continue
         }
-        var status: MBEventStatus
-        switch rawEvent.status {
-        case .confirmed:
-            status = .confirmed
-        case .tentative:
-            status = .tentative
-        case .canceled:
-            status = .canceled
-        default:
-            status = .none
-        }
-
-        let organizer = MBEventOrganizer(email: rawEvent.organizer?.url.absoluteString, name: rawEvent.organizer?.name)
-
-        var attendees: [MBEventAttendee] = []
-
-        for rawAttendee in rawEvent.attendees ?? [] {
-            if rawAttendee.participantType != .person {
-                continue
-            }
-            var attendeeStatus: MBEventAttendeeStatus
-            switch rawAttendee.participantStatus {
-            case .pending:
-                attendeeStatus = .pending
-            case .accepted:
-                attendeeStatus = .accepted
-            case .declined:
-                attendeeStatus = .declined
-            case .tentative:
-                attendeeStatus = .tentative
-            case .delegated:
-                attendeeStatus = .delegated
-            case .completed:
-                attendeeStatus = .completed
-            case .inProcess:
-                attendeeStatus = .inProcess
-            default:
-                attendeeStatus = .unknown
-            }
-
-            let optional = rawAttendee.participantRole == .optional
-            let email = rawAttendee.safeNSURL?.resourceSpecifier
-            let attendee = MBEventAttendee(email: email, name: rawAttendee.name, status: attendeeStatus, optional: optional, isCurrentUser: rawAttendee.isCurrentUser)
-
-            attendees.append(attendee)
-        }
-
-        let event = MBEvent(
-            id: rawEvent.calendarItemIdentifier,
-            lastModifiedDate: rawEvent.lastModifiedDate,
-            title: rawEvent.title,
-            status: status,
-            notes: rawEvent.notes,
-            location: rawEvent.location,
-            url: rawEvent.url,
-            calendarOpenURL: eventKitCalendarOpenURL(for: rawEvent.calendarItemIdentifier),
-            organizer: organizer,
-            attendees: attendees,
-            startDate: rawEvent.startDate,
-            endDate: rawEvent.endDate,
-            isAllDay: rawEvent.isAllDay,
-            recurrent: rawEvent.hasRecurrenceRules,
-            calendar: calendar,
-            customRegexes: Defaults[.customRegexes]
-        )
-        events.append(event)
+        events.append(mbEvent(from: rawEvent, calendar: calendar, customRegexes: customRegexes))
     }
     let deduplicated = Dictionary(events.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first }).values
     return Array(deduplicated)
+}
+
+func mbEvent(from rawEvent: EKEvent, calendar: MBCalendar, customRegexes: [String]) -> MBEvent {
+    var status: MBEventStatus
+    switch rawEvent.status {
+    case .confirmed:
+        status = .confirmed
+    case .tentative:
+        status = .tentative
+    case .canceled:
+        status = .canceled
+    default:
+        status = .none
+    }
+
+    let organizer = MBEventOrganizer(email: rawEvent.organizer?.url.absoluteString, name: rawEvent.organizer?.name)
+
+    var attendees: [MBEventAttendee] = []
+
+    for rawAttendee in rawEvent.attendees ?? [] {
+        if rawAttendee.participantType != .person {
+            continue
+        }
+        var attendeeStatus: MBEventAttendeeStatus
+        switch rawAttendee.participantStatus {
+        case .pending:
+            attendeeStatus = .pending
+        case .accepted:
+            attendeeStatus = .accepted
+        case .declined:
+            attendeeStatus = .declined
+        case .tentative:
+            attendeeStatus = .tentative
+        case .delegated:
+            attendeeStatus = .delegated
+        case .completed:
+            attendeeStatus = .completed
+        case .inProcess:
+            attendeeStatus = .inProcess
+        default:
+            attendeeStatus = .unknown
+        }
+
+        let optional = rawAttendee.participantRole == .optional
+        let email = rawAttendee.safeNSURL?.resourceSpecifier
+        let attendee = MBEventAttendee(email: email, name: rawAttendee.name, status: attendeeStatus, optional: optional, isCurrentUser: rawAttendee.isCurrentUser)
+
+        attendees.append(attendee)
+    }
+
+    // EventKit reuses calendarItemIdentifier for every occurrence of a
+    // recurring event, so suffix the start date to give each occurrence its
+    // own id — mirroring Google's per-instance event ids. True duplicates
+    // (same item, same start) still share an id, which keeps the id-keyed
+    // dedup collapsing them (34293d6) without eating recurring occurrences.
+    return MBEvent(
+        id: "\(rawEvent.calendarItemIdentifier):\(Int(rawEvent.startDate.timeIntervalSince1970))",
+        lastModifiedDate: rawEvent.lastModifiedDate,
+        title: rawEvent.title,
+        status: status,
+        notes: rawEvent.notes,
+        location: rawEvent.location,
+        url: rawEvent.url,
+        calendarOpenURL: eventKitCalendarOpenURL(for: rawEvent.calendarItemIdentifier),
+        organizer: organizer,
+        attendees: attendees,
+        startDate: rawEvent.startDate,
+        endDate: rawEvent.endDate,
+        isAllDay: rawEvent.isAllDay,
+        recurrent: rawEvent.hasRecurrenceRules,
+        calendar: calendar,
+        customRegexes: customRegexes
+    )
 }
 
 func eventKitCalendarOpenURL(for identifier: String) -> URL? {
