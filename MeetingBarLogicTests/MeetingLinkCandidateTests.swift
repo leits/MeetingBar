@@ -73,6 +73,37 @@ final class MeetingLinkCandidateTests: XCTestCase {
         XCTAssertEqual(MeetingLinkCandidatePolicy.best(from: [longNotes, shortConf]), shortConf)
     }
 
+    func testMeetBeatsLongerYouTubeWithinSameSource() {
+        // Headline bug: an incidental agenda link in the notes (YouTube) must
+        // not beat the real meeting link (Meet) just because its URL is longer.
+        // Same source, different services -> catalogue order decides.
+        let youtube = make(
+            "https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=PL2026-team-agenda-recordings",
+            service: .youtube, source: .notes)
+        let meet = make("https://meet.google.com/abc-defg-hij", service: .meet, source: .notes)
+        XCTAssertEqual(MeetingLinkCandidatePolicy.best(from: [youtube, meet]), meet)
+    }
+
+    func testSourcePriorityWinsOverCatalogueOrder() {
+        // Catalogue order only breaks ties WITHIN a source: a YouTube link the
+        // provider explicitly tagged as the conference still beats a Meet link
+        // found in free-text notes.
+        let youtubeConf = make("https://www.youtube.com/watch?v=abc123", service: .youtube, source: .providerConferenceData)
+        let meetNotes = make("https://meet.google.com/abc-defg-hij", service: .meet, source: .notes)
+        XCTAssertEqual(MeetingLinkCandidatePolicy.best(from: [meetNotes, youtubeConf]), youtubeConf)
+    }
+
+    func testCataloguedServiceBeatsNilServiceWithinSameSource() {
+        // A candidate matched by any catalogued service — even .other, the
+        // last case — outranks an untagged (service: nil) candidate from the
+        // same source, regardless of URL length.
+        let untagged = make(
+            "https://example.com/some/very/long/incidental/link/found/in/notes",
+            service: nil, source: .notes)
+        let catalogued = make("https://example.com/x", service: .other, source: .notes)
+        XCTAssertEqual(MeetingLinkCandidatePolicy.best(from: [untagged, catalogued]), catalogued)
+    }
+
     // MARK: - ranked(from:)
 
     func testRankedSortsByPriorityDescending() {
@@ -94,6 +125,17 @@ final class MeetingLinkCandidateTests: XCTestCase {
         let ranked = MeetingLinkCandidatePolicy.ranked(from: [notesSame, confSame])
         XCTAssertEqual(ranked.count, 1, "duplicates by URL string collapse to one entry")
         XCTAssertEqual(ranked.first?.source, .providerConferenceData)
+    }
+
+    func testRankedOrdersSameSourceByCatalogueOrderNotLength() {
+        // Within one source, ranked(from:) must order by catalogue position
+        // (.meet before .youtube), not by URL length.
+        let youtube = make(
+            "https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=PL2026-team-agenda-recordings",
+            service: .youtube, source: .notes)
+        let meet = make("https://meet.google.com/abc", service: .meet, source: .notes)
+        let ranked = MeetingLinkCandidatePolicy.ranked(from: [youtube, meet])
+        XCTAssertEqual(ranked.map(\.service), [.meet, .youtube])
     }
 
     func testRankedReturnsEmptyForEmptyInput() {

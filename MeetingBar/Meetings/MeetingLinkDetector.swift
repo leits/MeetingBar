@@ -151,30 +151,44 @@ enum MeetingLinkCandidatePolicy {
     /// Picks the best candidate for an event:
     ///
     /// 1. by source priority — provider conference data beats notes;
-    /// 2. within the same source, the longer URL wins so a Zoom link that
+    /// 2. within the same source, catalogue order (`MeetingServices.allCases`)
+    ///    decides between different services, so an incidental YouTube link in
+    ///    the notes cannot shadow the real Meet link;
+    /// 3. within the same service, the longer URL wins so a Zoom link that
     ///    carries a password/token suffix beats a truncated form of the
     ///    same URL found in another source slot.
     static func best(from candidates: [MeetingLinkCandidate]) -> MeetingLinkCandidate? {
-        candidates.max { lhs, rhs in
-            if lhs.source.priority != rhs.source.priority {
-                return lhs.source.priority < rhs.source.priority
-            }
-            return lhs.url.absoluteString.count < rhs.url.absoluteString.count
-        }
+        candidates.min(by: isRankedBefore)
     }
 
     /// Returns candidates ranked best-to-worst, deduplicated by URL string.
     /// Useful for a "open with another link" menu without re-running detection.
     static func ranked(from candidates: [MeetingLinkCandidate]) -> [MeetingLinkCandidate] {
-        let unique = Dictionary(grouping: candidates, by: { $0.url.absoluteString })
+        Dictionary(grouping: candidates, by: { $0.url.absoluteString })
             .compactMapValues { best(from: $0) }
             .values
-        return Array(unique).sorted { lhs, rhs in
-            if lhs.source.priority != rhs.source.priority {
-                return lhs.source.priority > rhs.source.priority
-            }
-            return lhs.url.absoluteString.count > rhs.url.absoluteString.count
+            .sorted(by: isRankedBefore)
+    }
+
+    /// True when `lhs` outranks `rhs`. Candidates with a `nil` service rank
+    /// after every catalogued service.
+    private static func isRankedBefore(_ lhs: MeetingLinkCandidate, _ rhs: MeetingLinkCandidate) -> Bool {
+        if lhs.source.priority != rhs.source.priority {
+            return lhs.source.priority > rhs.source.priority
         }
+        if lhs.service != rhs.service {
+            return catalogueRank(of: lhs.service) < catalogueRank(of: rhs.service)
+        }
+        return lhs.url.absoluteString.count > rhs.url.absoluteString.count
+    }
+
+    private static let catalogueRanks: [MeetingServices: Int] = Dictionary(
+        uniqueKeysWithValues: MeetingServices.allCases.enumerated().map { ($0.element, $0.offset) }
+    )
+
+    private static func catalogueRank(of service: MeetingServices?) -> Int {
+        guard let service else { return Int.max }
+        return catalogueRanks[service, default: Int.max]
     }
 }
 
