@@ -65,10 +65,18 @@ final class EventKitEventMappingTests: XCTestCase {
         )
     }
 
-    func testDistinctEventsAtSameStartMapToDistinctIds() {
+    func testDistinctEventsAtSameStartMapToDistinctIds() throws {
         let start = Date(timeIntervalSince1970: 1_751_610_600)
-        let first = map(makeRawEvent(start: start))
-        let second = map(makeRawEvent(start: start))
+        let firstRawEvent = makeRawEvent(start: start)
+        let secondRawEvent = makeRawEvent(start: start)
+
+        try XCTSkipIf(
+            firstRawEvent.calendarItemIdentifier == secondRawEvent.calendarItemIdentifier,
+            "EventKit assigned no distinct identifiers to unsaved events in this environment; cannot exercise distinct-item id mapping"
+        )
+
+        let first = map(firstRawEvent)
+        let second = map(secondRawEvent)
 
         XCTAssertNotEqual(
             first.id,
