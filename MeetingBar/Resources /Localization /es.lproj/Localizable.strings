@@ -297,9 +297,9 @@
 "general_end_of_event_notification_toggle" = "Enviar una notificación cuando termine el evento";
 "timeline_accessibility_label" = "Línea de tiempo con %d eventos";
 "message_clipboard_invalid_title" = "URL no válida";
-"message_clipboard_invalid_text" = "El portapapeles no contiene un enlace de reunión válido, por lo que no se puede iniciar la reunión.";
+"message_clipboard_invalid_text" = "El portapapeles no contiene un enlace de reunión válido por lo que no se puede iniciar la reunión.";
 "message_clipboard_empty_title" = "El portapapeles está vacío";
-"message_clipboard_empty_text" = "El portapapeles no tiene contenido, por lo que no se puede iniciar la reunión.";
+"message_clipboard_empty_text" = "El portapapeles no tiene contenido por lo que no se puede iniciar la reunión.";
 "message_event_script_execution_failed_title" = "Error al ejecutar AppleScript";
 "message_event_script_execution_failed_text" = "El script en %@ falló: %@";
 "message_event_script_file_missing_title" = "Archivo AppleScript no encontrado";
