@@ -171,6 +171,9 @@ final class WindowCoordinator {
         changelogWindow.center()
     }
 
+    /// Presents the borderless fullscreen alert for an event on the preferred
+    /// screen, and tracks it so it can be moved if the display layout changes
+    /// while it is showing.
     func openFullscreenNotificationWindow(event: MBEvent) {
         let screenFrame = preferredFullscreenScreen()?.frame
             ?? NSRect(x: 0, y: 0, width: 800, height: 600)
@@ -207,8 +210,8 @@ final class WindowCoordinator {
         window.orderFrontRegardless()
     }
 
-    /// Picks the screen a fullscreen notification should appear on, using the
-    /// same precedence whether the window is being opened or repositioned.
+    /// Uses the same precedence whether the window is being opened or
+    /// repositioned, so both paths land on the same screen.
     private func preferredFullscreenScreen() -> NSScreen? {
         let screens = NSScreen.screens
         // AppKit already guarantees `NSWindow.screen` / `NSScreen.main` are
@@ -229,6 +232,8 @@ final class WindowCoordinator {
         )
     }
 
+    /// Registers the screen-parameter observer on first use. Idempotent, so
+    /// repeated fullscreen notifications don't stack duplicate observers.
     private func startObservingScreenParametersIfNeeded() {
         guard !isObservingScreenParameters else { return }
         isObservingScreenParameters = true
