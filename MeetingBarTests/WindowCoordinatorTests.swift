@@ -77,6 +77,20 @@ final class WindowCoordinatorTests: XCTestCase {
         XCTAssertFalse(FullscreenNotificationKeyboardPolicy.shouldDismiss(keyCode: 36))
     }
 
+    func testOnboardingWindowPolicyAllowsNormalMovableResizableWindow() {
+        XCTAssertEqual(OnboardingWindowPresentationPolicy.level, .normal)
+        XCTAssertTrue(OnboardingWindowPresentationPolicy.styleMask.contains(.resizable))
+        XCTAssertTrue(OnboardingWindowPresentationPolicy.isMovableByWindowBackground)
+        XCTAssertLessThan(
+            OnboardingWindowPresentationPolicy.minimumSize.width,
+            OnboardingWindowPresentationPolicy.contentRect.width
+        )
+        XCTAssertLessThan(
+            OnboardingWindowPresentationPolicy.minimumSize.height,
+            OnboardingWindowPresentationPolicy.contentRect.height
+        )
+    }
+
     func testFullscreenPresentationShowsJoinForJoinableEvent() {
         let event = makeFakeEvent(
             id: "joinable",

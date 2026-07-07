@@ -12,12 +12,10 @@ final class StatusBarTitlePolicyTests: XCTestCase {
 
     private func settings(
         titleFormat: StatusBarEventTitleFormat = .show,
-        hideMeetingTitle: Bool = false,
         titleLength: Int = 55
     ) -> StatusBarTitleSettings {
         StatusBarTitleSettings(
             titleFormat: titleFormat,
-            hideMeetingTitle: hideMeetingTitle,
             titleLength: titleLength,
             labels: StatusBarTitleLabels(
                 genericMeetingTitle: "Meeting",
@@ -59,8 +57,8 @@ final class StatusBarTitlePolicyTests: XCTestCase {
         XCTAssertEqual(result.title, "Very long m...")
     }
 
-    func testHiddenMeetingTitleUsesGenericLabel() {
-        let result = text(settings: settings(hideMeetingTitle: true))
+    func testGenericTitleFormatUsesGenericLabel() {
+        let result = text(settings: settings(titleFormat: .generic))
 
         XCTAssertEqual(result.title, "Meeting")
     }

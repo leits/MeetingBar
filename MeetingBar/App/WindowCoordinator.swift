@@ -75,6 +75,14 @@ final class OnboardingWindow: NSWindow {
     }
 }
 
+enum OnboardingWindowPresentationPolicy {
+    static let contentRect = NSRect(x: 0, y: 0, width: 760, height: 520)
+    static let minimumSize = NSSize(width: 640, height: 460)
+    static let styleMask: NSWindow.StyleMask = [.resizable]
+    static let level: NSWindow.Level = .normal
+    static let isMovableByWindowBackground = true
+}
+
 private enum WindowStylePolicy {
     @MainActor
     static func applyRoundedCorners(to window: NSWindow, radius: CGFloat = 12) {
@@ -128,19 +136,24 @@ final class WindowCoordinator {
         onboardingHandler = handler
         let contentView = OnboardingView().environmentObject(handler)
         let onboardingWindow = OnboardingWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 760, height: 520),
-            styleMask: [],
+            contentRect: OnboardingWindowPresentationPolicy.contentRect,
+            styleMask: OnboardingWindowPresentationPolicy.styleMask,
             backing: .buffered,
             defer: false
         )
 
         onboardingWindow.title = WindowTitles.onboarding
         onboardingWindow.contentView = NSHostingView(rootView: contentView)
+        onboardingWindow.minSize = OnboardingWindowPresentationPolicy.minimumSize
+        onboardingWindow.isMovableByWindowBackground =
+            OnboardingWindowPresentationPolicy.isMovableByWindowBackground
         WindowStylePolicy.applyRoundedCorners(to: onboardingWindow)
         let controller = NSWindowController(window: onboardingWindow)
         controller.showWindow(self)
 
-        onboardingWindow.level = .floating
+        // Standard level: onboarding should open focused, but it must not stay
+        // above Chrome or other apps during provider authorization.
+        onboardingWindow.level = OnboardingWindowPresentationPolicy.level
         onboardingWindow.center()
         // MeetingBar is a menu-bar agent, so it isn't the active app when the
         // setup window opens. Without activating, the window never becomes key
@@ -148,6 +161,9 @@ final class WindowCoordinator {
         // without their fill — making the Continue button look absent.
         NSApp.activate(ignoringOtherApps: true)
         onboardingWindow.makeKeyAndOrderFront(nil)
+        // `activate` is async for an accessory app, so force initial ordering
+        // only once. The standard window level still lets other apps cover it.
+        onboardingWindow.orderFrontRegardless()
     }
 
     func openChangelogWindow() {

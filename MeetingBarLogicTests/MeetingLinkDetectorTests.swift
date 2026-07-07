@@ -123,6 +123,39 @@ final class MeetingLinkDetectorTests: XCTestCase {
         }
     }
 
+    func testDetectsZhumuMeetingLinkVariants() {
+        // Real Zhumu/WeMeeting join formats: a `/j/` link with an optional
+        // `?pwd=` passcode, and the web-client `/wc/join/` link with a `?wpk=`
+        // key. The original pattern used `[0-9]+?pwd=` (a lazy quantifier that
+        // ate the `?`), so it never matched a real link.
+        let urls = [
+            "https://welink.zhumu.com/j/154051242?pwd=abc123",
+            "https://welink.zhumu.com/j/150525986",
+            "https://welink.zhumu.com/wc/join/150525986?wpk=wcpk5b53"
+        ]
+
+        for url in urls {
+            let link = detectMeetingLink(url)
+
+            XCTAssertEqual(link?.service, .zhumu, url)
+            XCTAssertEqual(link?.url.absoluteString, url, url)
+        }
+    }
+
+    func testDoesNotMatchNonMeetingZhumuPages() {
+        let urls = [
+            "https://welink.zhumu.com/download",
+            "https://welink.zhumu.com/j/",
+            // The web-client form is only a real meeting link with its `?wpk=`
+            // key; a bare `/wc/join/<id>` is not.
+            "https://welink.zhumu.com/wc/join/150525986"
+        ]
+
+        for url in urls {
+            XCTAssertNil(detectMeetingLink(url), url)
+        }
+    }
+
     func testDetectsCustomRegexLinkFromNotes() {
         let link = MeetingLinkDetector.detect(
             location: nil,
@@ -344,12 +377,29 @@ final class MeetingLinkDetectorTests: XCTestCase {
         )
     }
 
-    func testGoogleMeetFallsBackToCurrentUserEmail() {
+    func testGoogleMeetAppendsAuthuserFromCurrentUserEmail() {
         let link = MeetingLinkDetector.detect(
             location: "https://meet.google.com/abc-defg-hij",
             eventURL: nil,
             notes: nil,
             calendarEmail: nil,
+            currentUserEmail: "me@example.com"
+        )
+        XCTAssertEqual(
+            link?.url.absoluteString,
+            "https://meet.google.com/abc-defg-hij?authuser=me@example.com"
+        )
+    }
+
+    func testGoogleMeetPrefersCurrentUserEmailOverCalendarEmail() {
+        // With multiple calendars connected to one account, the current-user
+        // attendee identity resolves the correct Google account better than
+        // the calendar's own email.
+        let link = MeetingLinkDetector.detect(
+            location: "https://meet.google.com/abc-defg-hij",
+            eventURL: nil,
+            notes: nil,
+            calendarEmail: "calendar@example.com",
             currentUserEmail: "me@example.com"
         )
         XCTAssertEqual(
@@ -388,20 +438,6 @@ final class MeetingLinkDetectorTests: XCTestCase {
             .queryItems?
             .filter { $0.name == "authuser" }
         XCTAssertEqual(authuserItems?.map(\.value), ["owner@example.com"])
-    }
-
-    func testCalendarEmailWinsOverCurrentUserEmail() {
-        let link = MeetingLinkDetector.detect(
-            location: "https://meet.google.com/abc-defg-hij",
-            eventURL: nil,
-            notes: nil,
-            calendarEmail: "owner@example.com",
-            currentUserEmail: "me@example.com"
-        )
-        XCTAssertEqual(
-            link?.url.absoluteString,
-            "https://meet.google.com/abc-defg-hij?authuser=owner@example.com"
-        )
     }
 
     func testZoomURLDoesNotGetAuthuser() {
