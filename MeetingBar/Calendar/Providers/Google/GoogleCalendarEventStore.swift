@@ -297,7 +297,7 @@ final class GCEventStore: NSObject,
 
         let task = Task<Void, Error> {
             defer { signInTask = nil }
-            try await TimeoutGuardedCompletion.run(timeout: Self.signInTimeout) { [weak self] completion in
+            try await TimeoutGuardedCompletion.run(timeout: Self.signInTimeout) { [weak self] (completion: @escaping @Sendable (Result<Void, Error>) -> Void) in
                 guard let self else {
                     completion(.failure(AuthError.cancelled))
                     return
