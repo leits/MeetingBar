@@ -83,7 +83,7 @@
 "preferences_appearance_status_bar_title_dot_value" = "punto (•)";
 "preferences_appearance_status_bar_title_hide_value" = "ocultar";
 "preferences_appearance_status_bar_title_shorten_stepper" = "acortar a %d caracteres";
-"preferences_appearance_status_bar_time_title" = "Hora";
+"preferences_appearance_status_bar_time_title" = "Mostrar hora";
 "preferences_appearance_status_bar_time_show_value" = "mostrar";
 "preferences_appearance_status_bar_time_show_under_title_value" = "mostrar bajo título";
 "preferences_appearance_status_bar_time_hide_value" = "ocultar";
@@ -102,8 +102,8 @@
 
 // MARK: - Preferences Services
 
-"preferences_services_link_meeting_title" = "Abrir todos los enlaces de reunión en";
-"preferences_services_link_service_title" = "Abrir enlaces %@ en";
+"preferences_services_link_meeting_title" = "Navegador por defecto para enlaces de reunión";
+"preferences_services_link_service_title" = "%@";
 "preferences_services_link_default_browser_value" = "Navegador web por defecto";
 "preferences_services_create_meeting_title" = "Crear reuniones vía";
 "preferences_services_create_meeting_custom_url_value" = "URL personalizada";
@@ -292,16 +292,16 @@
 "preferences_appearance_status_bar_ongoing_time_ten_before_next_value" = "esconder 10 min antes del próximo evento";
 "preferences_appearance_menu_show_timeline_toggle" = "Mostrar la linea de tiempo del dia";
 
-"general_refresh" = "Actualizar";
+"general_refresh" = "Recargar";
 "general_when_event_ends" = "cuando termine el evento";
-"general_end_of_event_notification_toggle" = "Enviar una notificación cuando termine el evento";
+"general_end_of_event_notification_toggle" = "Enviar una notificación cuando finalice el evento";
 "timeline_accessibility_label" = "Línea de tiempo con %d eventos";
 "message_clipboard_invalid_title" = "URL no válida";
 "message_clipboard_invalid_text" = "El portapapeles no contiene un enlace de reunión válido por lo que no se puede iniciar la reunión.";
 "message_clipboard_empty_title" = "El portapapeles está vacío";
 "message_clipboard_empty_text" = "El portapapeles no tiene contenido por lo que no se puede iniciar la reunión.";
-"message_event_script_execution_failed_title" = "Error al ejecutar AppleScript";
-"message_event_script_execution_failed_text" = "El script en %@ falló: %@";
+"message_event_script_execution_failed_title" = "Ejecución de AppleScript incorrecta";
+"message_event_script_execution_failed_text" = "El script en %@ ha fallado: %@";
 "message_event_script_file_missing_title" = "Archivo AppleScript no encontrado";
 "message_event_script_file_missing_text" = "El archivo eventStartScript.scpt no existe en %@.";
 "message_google_account_connected_title" = "Cuenta de Google conectada";
@@ -309,27 +309,27 @@
 "preferences_tab_meeting_opening" = "Enlaces de reunión";
 "preferences_tab_menu_bar" = "Pantalla y eventos";
 "preferences_tab_notifications" = "Notificaciones";
-"preferences_section_general_settings_title" = "Configuración general";
+"preferences_section_general_settings_title" = "Ajustes generales";
 "preferences_section_shortcuts_title" = "Atajos de teclado";
 "preferences_section_create_title" = "Crear reuniones";
-"preferences_section_apple_script_hooks_title" = "Hooks de AppleScript";
-"preferences_section_regex_filters_title" = "Filtros de regex";
-"preferences_calendar_source_title" = "Fuente del calendario";
+"preferences_section_apple_script_hooks_title" = "Ganchos de AppleScript";
+"preferences_section_regex_filters_title" = "Filtros de exreg";
+"preferences_calendar_source_title" = "Inicio del calendario";
 "preferences_meeting_opening_behavior_title" = "Abrir enlaces de reunión";
 "preferences_notifications_alerts_title" = "Alertas de reunión";
 "preferences_notifications_automation_title" = "Unión automática";
 "preferences_status_state_ok" = "Actualizado";
 "preferences_status_state_stale" = "Mostrando datos en caché";
-"preferences_status_state_error" = "Falló la última actualización";
-"preferences_status_state_auth_required" = "Se requiere autorización";
+"preferences_status_state_error" = "Última recarga incorrecta";
+"preferences_status_state_auth_required" = "Autorización requerida";
 "preferences_status_state_permission_required" = "Se requiere permiso del calendario";
 "preferences_status_state_initializing" = "Inicializando";
 "preferences_status_reconnect" = "Reconectar";
 "preferences_status_open_calendar_settings" = "Abrir ajustes del calendario";
 "preferences_status_copy_diagnostics" = "Copiar diagnóstico";
 "preferences_services_link_default_help" = "Este navegador se usa a menos que se establezca una anulación específica del proveedor.";
-"preferences_services_link_overrides_title" = "Anulaciones por proveedor";
-"preferences_services_link_overrides_help" = "Estas opciones anulan el navegador predeterminado para cada servicio de reunión.";
+"preferences_services_link_overrides_title" = "Apertura específica del servicio";
+"preferences_services_link_overrides_help" = "Estas elecciones anulan el navegador predeterminado para cada servicio de reunión.";
 "preferences_configure_browsers_help" = "Agrega navegadores, perfiles o aplicaciones personalizados para abrir enlaces de reunión.";
 "preferences_advanced_regex_duplicate_error" = "Esta expresión regular ya existe.";
 "preferences_advanced_regex_test_title" = "Probar regex de enlace de reunión";
@@ -377,7 +377,7 @@
 "shared_fullscreen_notification_without_link_help" = "Los eventos sin enlace de reunión muestran un recordatorio en pantalla completa con solo la acción Cerrar.";
 "preferences_advanced_script_link_only_help" = "Se ejecuta solo para eventos con enlaces de reunión.";
 "preferences_meeting_opening_mode_google_meet_pwa" = "Google Meet PWA (Chrome)";
-"preferences_meeting_opening_mode_google_meet_pwa_help" = "Abre Google Meet a través del PWA de Chrome instalado cuando está disponible. Recurre al navegador en caso contrario.";
+"preferences_meeting_opening_mode_google_meet_pwa_help" = "Abre Google Meet a través del PWA de Chrome instalado cuando está disponible. Se redirige a su navegador.";
 "preferences_meeting_opening_mode_jitsi_app" = "Jitsi App";
 "preferences_meeting_opening_mode_meetinone" = "MeetInOne";
 "preferences_meeting_opening_mode_riverside_app" = "Riverside App";
@@ -395,3 +395,5 @@
 "status_bar_control_next_meeting" = "Próxima reunión";
 "preferences_appearance_events_no_meeting_link_title" = "Eventos sin enlace de reunión";
 "preferences_appearance_menu_show_event_calendar_color_value" = "color del calendario";
+"preferences_sidebar_advanced" = "Avanzado";
+"preferences_appearance_status_bar_title_generic_value" = "título genérico (Encuentro)";
