@@ -98,7 +98,7 @@ struct OperationTimedOut: Error {}
 enum TimeoutGuardedCompletion {
     static func run<T: Sendable>(
         timeout: TimeInterval,
-        operation: @escaping (@escaping @Sendable (Result<T, Error>) -> Void) -> Void
+        operation: sending @escaping (@escaping @Sendable (Result<T, Error>) -> Void) -> Void
     ) async throws -> T {
         try await withCheckedThrowingContinuation { continuation in
             let resumer = SingleResume(continuation)
