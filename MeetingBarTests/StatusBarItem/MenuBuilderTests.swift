@@ -1607,6 +1607,22 @@ final class StatusBarItemControllerPresentationTests: BaseTestCase {
         Defaults[.nonAllDayEvents] = .show
     }
 
+    func test_renderStatusBarPreservesProviderIconSize() throws {
+        let controller = StatusBarItemController()
+        defer { NSStatusBar.system.removeStatusItem(controller.statusItem) }
+
+        for provider in MeetingProvider.all {
+            guard let service = MeetingServices(rawValue: provider.id) else { continue }
+
+            controller.renderStatusBar(makePresentation(icon: .meetingService(service)))
+
+            let button = try XCTUnwrap(controller.statusItem.button)
+            let expected = NSSize(width: provider.iconWidth, height: provider.iconHeight)
+            XCTAssertEqual(button.image?.size, expected)
+            XCTAssertEqual(getIconForMeetingService(service).size, expected)
+        }
+    }
+
     private func makePresentation(
         mode: StatusBarTitleMode = .nextEvent,
         title: String = "",
