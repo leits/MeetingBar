@@ -1,11 +1,11 @@
 //
 //  GoogleAuthTimeoutTests.swift
-//  MeetingBarLogicTests
+//  MeetingBarTests
 //
 
 import XCTest
 
-@testable import MeetingBarLogic
+@testable import MeetingBar
 
 final class GoogleAuthTimeoutTests: XCTestCase {
     private struct StubError: Error {}
