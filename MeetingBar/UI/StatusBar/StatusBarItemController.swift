@@ -229,12 +229,12 @@ final class StatusBarItemController {
         switch presentation.icon {
         case .asset(let name):
             button.image = MenuStyleConstants.iconNamed(name)
+            button.image?.size = MenuStyleConstants.iconSize
         case .meetingService(let service):
             button.image = getIconForMeetingService(service)
         case .none:
             break
         }
-        button.image?.size = MenuStyleConstants.iconSize
         button.imagePosition = button.image?.name() == "no_online_session" ? .noImage : .imageLeft
 
         if presentation.mode == .nextEvent {
