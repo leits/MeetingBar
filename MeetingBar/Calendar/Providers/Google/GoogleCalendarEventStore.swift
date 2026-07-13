@@ -68,7 +68,6 @@ final class GCEventStore: NSObject,
 
     private var signInTask: Task<Void, Error>?
     private var refreshTask: Task<String, Error>?
-    private let authTransport = GoogleAuthTransport()
 
     // Shared URLSession to leverage connection reuse
     private static let session: URLSession = {
@@ -180,8 +179,14 @@ final class GCEventStore: NSObject,
     func cancelPendingOperations() {
         signInTask?.cancel()
         signInTask = nil
+
+        // Dropping the in-memory AppAuth state also drops its pending callback queue.
+        if refreshTask != nil, let state = authState {
+            _ = recoverAuthState(afterInterruptedRefresh: state)
+        }
         refreshTask?.cancel()
-        refreshTask = nil
+        // The task clears itself after cancellation. Keeping it here prevents a
+        // replacement refresh from starting before the cancelled task exits.
 
         let flow = currentAuthorizationFlow
         currentAuthorizationFlow = nil
@@ -339,23 +344,21 @@ final class GCEventStore: NSObject,
                         throw AuthError.notSignedIn
                     }
 
-                    let timedOut = error is GoogleAuthOperationTimedOut
-                        || GoogleAuthErrorPolicy.isNetworkTimeout(error)
-                    guard timedOut else { throw error }
+                    guard error is GoogleAuthOperationTimedOut else { throw error }
 
-                    guard let recoveredState = recoverAuthState(afterTimedOutRefresh: state) else {
+                    guard let recoveredState = recoverAuthState(afterInterruptedRefresh: state) else {
                         throw AuthError.notSignedIn
                     }
-                    state = recoveredState
 
                     if attempt + 1 < Self.tokenRefreshAttempts {
+                        state = recoveredState
                         MeetingBarLogger.calendar.warning(
-                            "Google token refresh timed out; reset auth transport and retrying"
+                            "Google token refresh timed out; restored auth state and retrying"
                         )
                         continue
                     }
 
-                    throw AuthError.refreshTimedOut
+                    throw AuthError.refreshFailed
                 }
             }
 
@@ -385,40 +388,20 @@ final class GCEventStore: NSObject,
         }
     }
 
-    private func recoverAuthState(afterTimedOutRefresh state: OIDAuthState) -> OIDAuthState? {
-        do {
-            let data = try NSKeyedArchiver.archivedData(
-                withRootObject: state,
-                requiringSecureCoding: true
-            )
-            guard let replacement = try NSKeyedUnarchiver.unarchivedObject(
-                ofClass: OIDAuthState.self,
-                from: data
-            ) else {
-                throw AuthError.refreshFailed
-            }
+    private func recoverAuthState(afterInterruptedRefresh state: OIDAuthState) -> OIDAuthState? {
+        // AppAuth's unresolved pending-action queue belongs to this instance and
+        // is not archived. Reopening the persisted state starts the retry cleanly.
+        state.stateChangeDelegate = nil
+        state.errorDelegate = nil
 
-            // The old AppAuth state owns the unresolved pending-action queue.
-            // Detach it before cancelling its transport so a late callback cannot
-            // persist or clear the replacement state.
-            state.stateChangeDelegate = nil
-            state.errorDelegate = nil
-            authTransport.reset()
-
-            userEmail = replacement.userEmail
-            authState = replacement
-            return replacement
-        } catch {
-            let errorDescription = String(describing: error)
-            MeetingBarLogger.calendar.error(
-                "Could not recover Google auth after a token refresh timeout: \(errorDescription, privacy: .private)"
-            )
-            state.stateChangeDelegate = nil
-            state.errorDelegate = nil
-            authTransport.reset()
+        guard authState === state else { return nil }
+        guard let replacement = restoreAuthState() else {
             clearAuthState()
             return nil
         }
+
+        authState = replacement
+        return replacement
     }
 
     // MARK: Keychain persistence

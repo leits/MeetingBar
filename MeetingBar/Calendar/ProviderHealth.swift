@@ -67,7 +67,7 @@ extension ProviderHealth {
             switch authError {
             case .notSignedIn:
                 return true
-            case .cancelled, .refreshFailed, .refreshTimedOut:
+            case .cancelled, .refreshFailed:
                 return false
             }
         }

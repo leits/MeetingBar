@@ -149,20 +149,6 @@ final class GoogleCalendarPolicyTests: XCTestCase {
     func testAuthErrorDescriptionsExplainRequiredAction() {
         XCTAssertEqual(AuthError.notSignedIn.errorDescription, "Google Calendar authorization is required")
         XCTAssertEqual(AuthError.refreshFailed.errorDescription, "Google Calendar token refresh failed")
-        XCTAssertEqual(AuthError.refreshTimedOut.errorDescription, "Google Calendar token refresh timed out")
-    }
-
-    func testAuthErrorPolicyFindsDirectAndWrappedNetworkTimeouts() {
-        let timeout = URLError(.timedOut)
-        let wrapped = NSError(
-            domain: "org.openid.appauth.general",
-            code: -5,
-            userInfo: [NSUnderlyingErrorKey: timeout]
-        )
-
-        XCTAssertTrue(GoogleAuthErrorPolicy.isNetworkTimeout(timeout))
-        XCTAssertTrue(GoogleAuthErrorPolicy.isNetworkTimeout(wrapped))
-        XCTAssertFalse(GoogleAuthErrorPolicy.isNetworkTimeout(URLError(.notConnectedToInternet)))
     }
 
     func testGoogleCalendarErrorDescriptionsIncludeUsefulContext() {

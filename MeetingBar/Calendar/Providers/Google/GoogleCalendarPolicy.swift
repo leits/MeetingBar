@@ -9,7 +9,6 @@ enum AuthError: LocalizedError {
     case cancelled
     case notSignedIn
     case refreshFailed
-    case refreshTimedOut
 
     var errorDescription: String? {
         switch self {
@@ -19,28 +18,7 @@ enum AuthError: LocalizedError {
             return "Google Calendar authorization is required"
         case .refreshFailed:
             return "Google Calendar token refresh failed"
-        case .refreshTimedOut:
-            return "Google Calendar token refresh timed out"
         }
-    }
-}
-
-enum GoogleAuthErrorPolicy {
-    static func isNetworkTimeout(_ error: Error) -> Bool {
-        var current: NSError? = error as NSError
-
-        // AppAuth wraps URLSession failures in OIDGeneralErrorDomain and keeps
-        // the original URLError under NSUnderlyingErrorKey.
-        for _ in 0..<8 {
-            guard let candidate = current else { return false }
-            if candidate.domain == NSURLErrorDomain,
-               candidate.code == URLError.timedOut.rawValue {
-                return true
-            }
-            current = candidate.userInfo[NSUnderlyingErrorKey] as? NSError
-        }
-
-        return false
     }
 }
 
