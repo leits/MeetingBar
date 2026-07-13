@@ -103,7 +103,7 @@ public class CalendarSync: ObservableObject {
                 return .cancelled
             case .notSignedIn:
                 return .authRequired(error.localizedDescription)
-            case .refreshFailed:
+            case .refreshFailed, .refreshTimedOut:
                 return .failed(error.localizedDescription)
             }
         }

@@ -50,6 +50,8 @@ final class GCEventStore: NSObject,
     private static let kClientSecret = googleClientSecret
     private static let kRedirectURI  = "com.googleusercontent.apps.\(googleClientNumber):/oauthredirect"
     private static let kKeychainName = googleAuthKeychainName
+    private static let tokenRefreshTimeout: TimeInterval = 35
+    private static let tokenRefreshAttempts = 2
 
     // MARK: Stored properties
     @MainActor var currentAuthorizationFlow: OIDExternalUserAgentSession?
@@ -66,6 +68,7 @@ final class GCEventStore: NSObject,
 
     private var signInTask: Task<Void, Error>?
     private var refreshTask: Task<String, Error>?
+    private let authTransport = GoogleAuthTransport()
 
     // Shared URLSession to leverage connection reuse
     private static let session: URLSession = {
@@ -308,11 +311,11 @@ final class GCEventStore: NSObject,
     }
 
     private func validAccessToken(forceRefresh: Bool = false) async throws -> String {
-        guard let state = authState else { throw AuthError.notSignedIn }
+        guard let initialState = authState else { throw AuthError.notSignedIn }
 
         if !forceRefresh,
-           state.isTokenFresh,
-           let token = state.lastTokenResponse?.accessToken {
+           initialState.isTokenFresh,
+           let token = initialState.lastTokenResponse?.accessToken {
             return token
         }
 
@@ -320,30 +323,102 @@ final class GCEventStore: NSObject,
 
         let task = Task<String, Error> {
             defer { refreshTask = nil }
-            return try await withCheckedThrowingContinuation { cont in
-                if forceRefresh { state.setNeedsTokenRefresh() }
+            var state = initialState
 
-                state.performAction { [weak self] accessToken, _, error in
-                    guard let self else { return }
-                    if let token = accessToken {
-                        cont.resume(returning: token) // stateChangeDelegate persists new tokens
-                    } else if let error {
-                        let nsError = error as NSError
-                        if nsError.domain == OIDOAuthTokenErrorDomain {
-                            self.clearAuthState()
-                            cont.resume(throwing: AuthError.notSignedIn)
-                        } else {
-                            cont.resume(throwing: error)
-                        }
-                    } else {
-                        cont.resume(throwing: AuthError.refreshFailed)
+            for attempt in 0..<Self.tokenRefreshAttempts {
+                do {
+                    if forceRefresh { state.setNeedsTokenRefresh() }
+                    return try await Self.performTokenRefresh(
+                        state: state,
+                        timeout: Self.tokenRefreshTimeout
+                    )
+                } catch {
+                    let nsError = error as NSError
+                    if nsError.domain == OIDOAuthTokenErrorDomain {
+                        clearAuthState()
+                        throw AuthError.notSignedIn
                     }
+
+                    let timedOut = error is GoogleAuthOperationTimedOut
+                        || GoogleAuthErrorPolicy.isNetworkTimeout(error)
+                    guard timedOut else { throw error }
+
+                    guard let recoveredState = recoverAuthState(afterTimedOutRefresh: state) else {
+                        throw AuthError.notSignedIn
+                    }
+                    state = recoveredState
+
+                    if attempt + 1 < Self.tokenRefreshAttempts {
+                        MeetingBarLogger.calendar.warning(
+                            "Google token refresh timed out; reset auth transport and retrying"
+                        )
+                        continue
+                    }
+
+                    throw AuthError.refreshTimedOut
                 }
             }
+
+            throw AuthError.refreshFailed
         }
 
         refreshTask = task
         return try await task.value
+    }
+
+    private static func performTokenRefresh(
+        state: OIDAuthState,
+        timeout: TimeInterval
+    ) async throws -> String {
+        try await GoogleAuthTimeout.run(timeout: timeout) { completion in
+            state.performAction { accessToken, _, error in
+                // AppAuth can return the previous (expired) access token together
+                // with a transient refresh error, so the error must win.
+                if let error {
+                    completion(.failure(error))
+                } else if let token = accessToken {
+                    completion(.success(token))
+                } else {
+                    completion(.failure(AuthError.refreshFailed))
+                }
+            }
+        }
+    }
+
+    private func recoverAuthState(afterTimedOutRefresh state: OIDAuthState) -> OIDAuthState? {
+        do {
+            let data = try NSKeyedArchiver.archivedData(
+                withRootObject: state,
+                requiringSecureCoding: true
+            )
+            guard let replacement = try NSKeyedUnarchiver.unarchivedObject(
+                ofClass: OIDAuthState.self,
+                from: data
+            ) else {
+                throw AuthError.refreshFailed
+            }
+
+            // The old AppAuth state owns the unresolved pending-action queue.
+            // Detach it before cancelling its transport so a late callback cannot
+            // persist or clear the replacement state.
+            state.stateChangeDelegate = nil
+            state.errorDelegate = nil
+            authTransport.reset()
+
+            userEmail = replacement.userEmail
+            authState = replacement
+            return replacement
+        } catch {
+            let errorDescription = String(describing: error)
+            MeetingBarLogger.calendar.error(
+                "Could not recover Google auth after a token refresh timeout: \(errorDescription, privacy: .private)"
+            )
+            state.stateChangeDelegate = nil
+            state.errorDelegate = nil
+            authTransport.reset()
+            clearAuthState()
+            return nil
+        }
     }
 
     // MARK: Keychain persistence

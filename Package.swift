@@ -32,6 +32,7 @@ let package = Package(
                 // Calendar
                 "Calendar/EventFiltering.swift",
                 "Calendar/EventSelection.swift",
+                "Calendar/Providers/Google/GoogleAuthTimeout.swift",
                 "Calendar/Providers/Google/GoogleCalendarPolicy.swift",
                 // Meetings
                 "Meetings/MeetingLinkDetector.swift",
