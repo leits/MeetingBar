@@ -55,6 +55,13 @@ public struct MBEventAttendee: Hashable, Sendable {
 public struct MBEvent: Identifiable, Hashable, Sendable {
     public var id: String
 
+    /// Identifier handed to `meetingStart` AppleScripts. Defaults to `id`, but
+    /// EventKit overrides it with the raw `calendarItemIdentifier` (shared
+    /// across a recurring series) so existing user scripts keep seeing the
+    /// identifier format they were written against, even though `id` is now
+    /// per-occurrence for internal dedup.
+    public let scriptIdentifier: String
+
     public let lastModifiedDate: Date?
     public let calendar: MBCalendar
     public let title: String
@@ -84,6 +91,7 @@ public struct MBEvent: Identifiable, Hashable, Sendable {
     public var attendees: [MBEventAttendee] = []
 
     init(id: String,
+         scriptIdentifier: String? = nil,
          lastModifiedDate: Date?,
          title: String?,
          status: MBEventStatus,
@@ -102,6 +110,7 @@ public struct MBEvent: Identifiable, Hashable, Sendable {
          customRegexes: [String] = []) {
         self.calendar = calendar
         self.id = id
+        self.scriptIdentifier = scriptIdentifier ?? id
         self.lastModifiedDate = lastModifiedDate
         self.title = title ?? "status_bar_no_title".loco()
         self.status = status

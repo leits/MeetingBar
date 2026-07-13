@@ -51,6 +51,38 @@ final class ScriptsTests: XCTestCase {
         XCTAssertEqual(parameters.atIndex(1)?.stringValue, "test-id", "Event ID parameter position")
     }
 
+    func testEventIdParameterUsesScriptIdentifierNotInternalId() {
+        // scriptIdentifier diverges from id for EventKit occurrences: id carries
+        // a per-occurrence suffix for dedup, but meetingStart scripts must still
+        // receive the raw identifier they were written against.
+        let calendar = MBCalendar(title: "Work Calendar", id: "x", source: "iCloud", email: nil, color: .black)
+        let event = MBEvent(
+            id: "raw-id:1751610600",
+            scriptIdentifier: "raw-id",
+            lastModifiedDate: nil,
+            title: "Standup",
+            status: .confirmed,
+            notes: nil,
+            location: nil,
+            url: nil,
+            organizer: nil,
+            startDate: Date(),
+            endDate: Date().addingTimeInterval(1800),
+            isAllDay: false,
+            recurrent: true,
+            calendar: calendar
+        )
+
+        let parameters = createAppleScriptParametersForEvent(event: event)
+
+        XCTAssertEqual(
+            parameters.atIndex(1)?.stringValue,
+            "raw-id",
+            "meetingStart eventId must be scriptIdentifier (raw), not the occurrence-composed id"
+        )
+        XCTAssertNotEqual(parameters.atIndex(1)?.stringValue, event.id)
+    }
+
     func testCreateAppleScriptParametersWithEmptyCalendarInfo() {
         // Given: Create a test event with minimal calendar information
         let calendar = MBCalendar(title: "", id: "", source: "", email: nil, color: .black)
@@ -122,7 +154,7 @@ final class ScriptsTests: XCTestCase {
             appleEvent.paramDescriptor(forKeyword: AEKeyword(keyASSubroutineName))?.stringValue,
             ScriptType.meetingStart.rawValue
         )
-        XCTAssertEqual(parameters?.atIndex(1)?.stringValue, event.id)
+        XCTAssertEqual(parameters?.atIndex(1)?.stringValue, event.scriptIdentifier)
         XCTAssertEqual(parameters?.atIndex(2)?.stringValue, event.title)
         XCTAssertEqual(parameters?.atIndex(3)?.booleanValue, event.isAllDay)
         XCTAssertEqual(parameters?.atIndex(4)?.dateValue, start)

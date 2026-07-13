@@ -153,8 +153,11 @@ func mbEvent(from rawEvent: EKEvent, calendar: MBCalendar, customRegexes: [Strin
     // own id — mirroring Google's per-instance event ids. True duplicates
     // (same item, same start) still share an id, which keeps the id-keyed
     // dedup collapsing them (34293d6) without eating recurring occurrences.
+    // The raw calendarItemIdentifier is still handed to meetingStart scripts
+    // via scriptIdentifier so existing user scripts keep their id format.
     return MBEvent(
         id: "\(rawEvent.calendarItemIdentifier):\(Int(rawEvent.startDate.timeIntervalSince1970))",
+        scriptIdentifier: rawEvent.calendarItemIdentifier,
         lastModifiedDate: rawEvent.lastModifiedDate,
         title: rawEvent.title,
         status: status,

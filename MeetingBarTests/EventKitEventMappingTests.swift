@@ -96,4 +96,21 @@ final class EventKitEventMappingTests: XCTestCase {
             "Open-in-calendar URL must use the raw calendarItemIdentifier, not the occurrence-composed id"
         )
     }
+
+    func testScriptIdentifierUsesRawCalendarItemIdentifier() {
+        let rawEvent = makeRawEvent(start: Date(timeIntervalSince1970: 1_751_610_600))
+
+        let event = map(rawEvent)
+
+        XCTAssertEqual(
+            event.scriptIdentifier,
+            rawEvent.calendarItemIdentifier,
+            "meetingStart scripts must receive the raw calendarItemIdentifier so existing user scripts keep working"
+        )
+        XCTAssertNotEqual(
+            event.scriptIdentifier,
+            event.id,
+            "scriptIdentifier must stay the raw identifier while id is occurrence-composed for internal dedup"
+        )
+    }
 }
