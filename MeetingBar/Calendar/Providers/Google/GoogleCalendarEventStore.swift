@@ -179,11 +179,6 @@ final class GCEventStore: NSObject,
     func cancelPendingOperations() {
         signInTask?.cancel()
         signInTask = nil
-
-        // Dropping the in-memory AppAuth state also drops its pending callback queue.
-        if refreshTask != nil, let state = authState {
-            _ = recoverAuthState(afterInterruptedRefresh: state)
-        }
         refreshTask?.cancel()
         // The task clears itself after cancellation. Keeping it here prevents a
         // replacement refresh from starting before the cancelled task exits.
@@ -342,6 +337,11 @@ final class GCEventStore: NSObject,
                     if nsError.domain == OIDOAuthTokenErrorDomain {
                         clearAuthState()
                         throw AuthError.notSignedIn
+                    }
+
+                    if error is CancellationError {
+                        _ = recoverAuthState(afterInterruptedRefresh: state)
+                        throw error
                     }
 
                     guard error is GoogleAuthOperationTimedOut else { throw error }

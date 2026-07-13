@@ -68,11 +68,15 @@ final class GoogleAuthTimeoutTests: XCTestCase {
         XCTAssertEqual(value, "fresh-token")
     }
 
-    func testCancellationFinishesWithoutWaitingForTimeout() async {
+    func testCancellationFinishesStartedOperationWithoutWaitingForTimeout() async {
+        let started = expectation(description: "operation started")
         let task = Task<String, Error> {
-            try await GoogleAuthTimeout.run(timeout: 10) { _ in }
+            try await GoogleAuthTimeout.run(timeout: 10) { _ in
+                started.fulfill()
+            }
         }
 
+        await fulfillment(of: [started], timeout: 1)
         task.cancel()
 
         do {
