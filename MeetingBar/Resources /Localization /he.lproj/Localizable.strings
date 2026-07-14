@@ -52,7 +52,7 @@
 "preferences_appearance_status_bar_icon_no_icon_value" = " ללא סמל";
 "preferences_appearance_status_bar_title_title" = "כותרת";
 "preferences_appearance_status_bar_title_event_title_value" = "כותרת אירוע";
-"preferences_appearance_status_bar_time_title" = "שעה";
+"preferences_appearance_status_bar_time_title" = "הצגת השעה";
 "preferences_appearance_status_bar_time_hide_value" = "הסתרה";
 "preferences_appearance_menu_title" = "תפריט";
 "preferences_appearance_menu_shorten_event_title_toggle" = "קיצור כותרות אירועים לאורך";
@@ -62,8 +62,8 @@
 "preferences_appearance_menu_show_event_end_time_value" = "זמן הסיום";
 "preferences_appearance_menu_show_event_icon_value" = "סמל";
 "preferences_appearance_menu_show_event_details_value" = "פרטים כתת־תפריט";
-"preferences_services_link_service_title" = "לפתוח קישורי %@ עם";
-"preferences_services_link_default_browser_value" = "דפדפן בררת המחדל";
+"preferences_services_link_service_title" = "%@";
+"preferences_services_link_default_browser_value" = "דפדפן ברירת המחדל";
 "preferences_services_create_meeting_title" = "יצירת פגישות דרך";
 "preferences_services_create_meeting_custom_url_value" = "כתובת משלך";
 "preferences_services_google_meet_tip" = "עצה: Google Meet תומך בבחירת חשבון בכתובת, למשל: https://meet.google.com/new?authuser=1";
@@ -221,7 +221,7 @@
 
 // MARK: - Preferences Services
 
-"preferences_services_link_meeting_title" = "לפתוח את כל קישורי הפגישות עם";
+"preferences_services_link_meeting_title" = "דפדפן ברירת מחדל לקישורי פגישות";
 "preferences_appearance_status_bar_title_hide_value" = "הסתרה";
 "preferences_appearance_status_bar_next_event_toggle" = "להציג רק אירועים שמתחילים בעוד";
 "preferences_services_create_meeting_custom_url_placeholder" = "לא למלא כתובת תקפה (http://‎ או https://‎)";
@@ -336,7 +336,7 @@
 "preferences_section_general_settings_title" = "הגדרות כלליות";
 "preferences_section_regex_filters_title" = "מסנני Regex";
 "preferences_section_shortcuts_title" = "קיצורי מקלדת";
-"preferences_services_link_default_help" = "דפדפן זה משמש אלא אם כן הוגדרה עקיפה ספציפית לספק.";
+"preferences_services_link_default_help" = "הדפדפן הזה משמש אלא אם כן הוגדרה עקיפה נקודתית לספק.";
 "preferences_services_link_overrides_help" = "בחירות אלו מחליפות את הדפדפן ברירת המחדל עבור כל שירות פגישות.";
 "preferences_services_link_overrides_title" = "עקיפות לפי ספק";
 "preferences_status_copy_diagnostics" = "העתק אבחון";
