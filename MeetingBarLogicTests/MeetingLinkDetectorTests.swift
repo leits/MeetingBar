@@ -568,6 +568,23 @@ final class MeetingLinkDetectorTests: XCTestCase {
         XCTAssertEqual(stripped, "First line\nSecond line")
     }
 
+    func testHTMLStripDropsScriptAndStyleBodies() {
+        // Only the tags were stripped before, leaking CSS/JS text into notes.
+        let stripped = htmlTagsStrippedForMeetingLinks(
+            "<style>body{color:red}</style><p>Meeting</p><script>alert(1)</script>"
+        )
+
+        XCTAssertEqual(stripped, "Meeting")
+    }
+
+    func testHTMLStripDecodesEntityNearEnd() {
+        // The bounded entity scan must still decode an entity that sits within
+        // fewer than 13 characters of the end of the string.
+        let stripped = htmlTagsStrippedForMeetingLinks("<p>5&euro;</p>")
+
+        XCTAssertEqual(stripped, "5€")
+    }
+
     func testHTMLStripDoesNotLeakMachPorts() {
         // Regression guard for the EXC_GUARD mach-port exhaustion crash:
         // NSAttributedString(html:) leaked ~2 mach ports per call via TextKit's

@@ -315,7 +315,14 @@ extension String {
 /// entities outside this table are left as written; numeric coverage is total.
 enum HTMLPlainText {
     static func from(_ html: String) -> String {
+        // Drop <script>/<style> elements entirely (tag *and* body); stripping
+        // only the tags would leak their CSS/JS text into the output.
         var text = html.replacingOccurrences(
+            of: #"(?is)<(script|style)\b[^>]*>.*?</\1>"#,
+            with: "",
+            options: .regularExpression
+        )
+        text = text.replacingOccurrences(
             of: #"(?i)<br\s*/?>|</p>|</div>|</li>|</tr>|</h[1-6]>|</blockquote>"#,
             with: "\n",
             options: .regularExpression
@@ -333,13 +340,21 @@ enum HTMLPlainText {
         result.reserveCapacity(text.count)
         var cursor = text.startIndex
         while cursor < text.endIndex {
-            guard text[cursor] == "&",
-                  let semicolon = text[cursor...].firstIndex(of: ";"),
-                  text.distance(from: cursor, to: semicolon) <= 12,
-                  let decoded = decode(entity: text[text.index(after: cursor)..<semicolon])
-            else {
+            guard text[cursor] == "&" else {
                 result.append(text[cursor])
                 cursor = text.index(after: cursor)
+                continue
+            }
+            // Bound the `;` search to a short window (`&` + up to 12 chars) so
+            // pathological input with many stray `&` stays linear, not quadratic.
+            let windowEnd = text.index(cursor, offsetBy: 13, limitedBy: text.endIndex)
+                ?? text.endIndex
+            let afterAmp = text.index(after: cursor)
+            guard let semicolon = text[afterAmp..<windowEnd].firstIndex(of: ";"),
+                  let decoded = decode(entity: text[afterAmp..<semicolon])
+            else {
+                result.append(text[cursor])
+                cursor = afterAmp
                 continue
             }
             result.append(decoded)
