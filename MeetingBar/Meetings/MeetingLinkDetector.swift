@@ -287,29 +287,86 @@ func getMatch(text: String, regex: NSRegularExpression) -> String? {
     return match
 }
 
+/// Converts an HTML notes fragment to plain text.
+///
+/// Deliberately avoids `NSAttributedString(html:)`: that initializer spins up
+/// TextKit's `com.apple.textkit.nsattributedstringagent` XPC service and leaks
+/// ~2 mach ports per call that are never reclaimed. Meeting-link detection runs
+/// this for every event with HTML notes on every calendar refresh, so over a
+/// day of refreshes the process port table fills and the kernel kills the app
+/// with EXC_GUARD ("allocating too many mach ports"). `HTMLPlainText` is a
+/// pure-Foundation strip with no XPC.
 func htmlTagsStrippedForMeetingLinks(_ text: String) -> String {
-    if !text.containsHTMLTags {
-        return text
-    }
-
-    return autoreleasepool {
-        guard let dataUTF16 = text.data(using: .utf16) else {
-            return text
-        }
-
-        let attributedString = NSAttributedString(
-            html: dataUTF16,
-            options: [.documentType: NSAttributedString.DocumentType.html],
-            documentAttributes: nil
-        )
-        return attributedString?.string ?? text
-    }
+    guard text.containsHTMLTags else { return text }
+    return HTMLPlainText.from(text)
 }
 
 extension String {
     fileprivate var containsHTMLTags: Bool {
         range(of: #"</?[A-z][ \t\S]*>"#, options: .regularExpression) != nil
     }
+}
+
+/// Pure-Foundation HTML→plain-text conversion (no TextKit / XPC). Maps
+/// block-level tags to newlines, removes every other tag, and decodes HTML
+/// entities including decimal (`&#123;`) and hex (`&#x7B;`) numeric forms.
+enum HTMLPlainText {
+    static func from(_ html: String) -> String {
+        var text = html.replacingOccurrences(
+            of: #"(?i)<br\s*/?>|</p>|</div>|</li>|</tr>|</h[1-6]>|</blockquote>"#,
+            with: "\n",
+            options: .regularExpression
+        )
+        text = text.replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression)
+        text = decodeEntities(in: text)
+        text = text.replacingOccurrences(of: #"[ \t]+\n"#, with: "\n", options: .regularExpression)
+        text = text.replacingOccurrences(of: #"\n{3,}"#, with: "\n\n", options: .regularExpression)
+        return text.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private static func decodeEntities(in text: String) -> String {
+        guard text.contains("&") else { return text }
+        var result = ""
+        result.reserveCapacity(text.count)
+        var cursor = text.startIndex
+        while cursor < text.endIndex {
+            guard text[cursor] == "&",
+                  let semicolon = text[cursor...].firstIndex(of: ";"),
+                  text.distance(from: cursor, to: semicolon) <= 12,
+                  let decoded = decode(entity: text[text.index(after: cursor)..<semicolon])
+            else {
+                result.append(text[cursor])
+                cursor = text.index(after: cursor)
+                continue
+            }
+            result.append(decoded)
+            cursor = text.index(after: semicolon)
+        }
+        return result
+    }
+
+    private static func decode(entity: Substring) -> Character? {
+        if entity.first == "#" {
+            let digits = entity.dropFirst()
+            let value: UInt32?
+            if let marker = digits.first, marker == "x" || marker == "X" {
+                value = UInt32(digits.dropFirst(), radix: 16)
+            } else {
+                value = UInt32(digits, radix: 10)
+            }
+            guard let value, let scalar = Unicode.Scalar(value) else { return nil }
+            return Character(scalar)
+        }
+        return namedEntities[String(entity)]
+    }
+
+    private static let namedEntities: [String: Character] = [
+        "amp": "&", "lt": "<", "gt": ">", "quot": "\"", "apos": "'",
+        "nbsp": " ", "copy": "\u{00A9}", "reg": "\u{00AE}", "trade": "\u{2122}",
+        "mdash": "\u{2014}", "ndash": "\u{2013}", "hellip": "\u{2026}",
+        "lsquo": "\u{2018}", "rsquo": "\u{2019}", "ldquo": "\u{201C}",
+        "rdquo": "\u{201D}", "middot": "\u{00B7}", "bull": "\u{2022}"
+    ]
 }
 
 // MARK: - Detector

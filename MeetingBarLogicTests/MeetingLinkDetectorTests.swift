@@ -3,6 +3,7 @@
 //  MeetingBarLogicTests
 //
 
+import Darwin.Mach
 import XCTest
 
 @testable import MeetingBarLogic
@@ -530,6 +531,66 @@ final class MeetingLinkDetectorTests: XCTestCase {
 
         XCTAssertTrue(stripped.contains("https://meet.google.com/abc-defg-hij"))
         XCTAssertFalse(stripped.contains("<p>"))
+    }
+
+    func testHTMLStripReconnectsAmpEncodedURL() {
+        // The whole point of stripping notes for link detection: HTML-encoded
+        // query separators (&amp;) must decode so the URL regex sees one link.
+        let stripped = htmlTagsStrippedForMeetingLinks(
+            "<p>Join https://us02web.zoom.us/j/123?pwd=abc&amp;uname=sam</p>"
+        )
+
+        XCTAssertTrue(stripped.contains("https://us02web.zoom.us/j/123?pwd=abc&uname=sam"))
+        XCTAssertFalse(stripped.contains("&amp;"))
+    }
+
+    func testHTMLStripDecodesNamedAndNumericEntities() {
+        let stripped = htmlTagsStrippedForMeetingLinks(
+            "<div>A&nbsp;&amp;&nbsp;B &#64; &#x43;o&mdash;end</div>"
+        )
+
+        XCTAssertEqual(stripped, "A & B @ Co—end")
+    }
+
+    func testHTMLStripConvertsBlockTagsToNewlines() {
+        let stripped = htmlTagsStrippedForMeetingLinks("<p>First line</p><p>Second line</p>")
+
+        XCTAssertEqual(stripped, "First line\nSecond line")
+    }
+
+    func testHTMLStripDoesNotLeakMachPorts() {
+        // Regression guard for the EXC_GUARD mach-port exhaustion crash:
+        // NSAttributedString(html:) leaked ~2 mach ports per call via TextKit's
+        // nsattributedstringagent XPC service. The pure-Foundation strip must
+        // allocate none. Reintroducing the XPC-backed parser makes the port
+        // table grow ~800 over this loop and fails the assertion.
+        let html = "<p>Join <a href=\"https://x\">https://us02web.zoom.us/j/1?a=1&amp;b=2</a></p>"
+        _ = htmlTagsStrippedForMeetingLinks(html) // warm up any one-time caches
+
+        let before = machPortCount()
+        for _ in 0..<400 {
+            _ = htmlTagsStrippedForMeetingLinks(html)
+        }
+        let after = machPortCount()
+
+        XCTAssertGreaterThanOrEqual(before, 0, "mach_port_names failed")
+        XCTAssertGreaterThanOrEqual(after, 0, "mach_port_names failed")
+        let growth = after - before
+
+        XCTAssertLessThan(
+            growth, 100,
+            "HTML stripping leaked \(growth) mach ports over 400 calls — an XPC-backed parser was reintroduced"
+        )
+    }
+
+    private func machPortCount() -> Int {
+        var names: mach_port_name_array_t?
+        var namesCount: mach_msg_type_number_t = 0
+        var types: mach_port_type_array_t?
+        var typesCount: mach_msg_type_number_t = 0
+        guard mach_port_names(mach_task_self_, &names, &namesCount, &types, &typesCount) == KERN_SUCCESS
+        else { return -1 }
+        return Int(namesCount)
     }
 
     func testCleanupOutlookSafeLinksUnwrapsValidLink() {
