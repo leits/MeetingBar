@@ -314,24 +314,40 @@ extension String {
 /// symbols, and the full Latin-1 accented-letter set (café, München, …). Named
 /// entities outside this table are left as written; numeric coverage is total.
 enum HTMLPlainText {
+    private static let scriptStyleRegex = makeRegex(#"(?is)<(script|style)\b[^>]*>.*?</\1>"#)
+    private static let blockTagRegex =
+        makeRegex(#"(?i)<br\s*/?>|</p>|</div>|</li>|</tr>|</h[1-6]>|</blockquote>"#)
+    private static let anyTagRegex = makeRegex("<[^>]+>")
+    private static let trailingSpaceRegex = makeRegex(#"[ \t]+\n"#)
+    private static let blankLinesRegex = makeRegex(#"\n{3,}"#)
+
     static func from(_ html: String) -> String {
         // Drop <script>/<style> elements entirely (tag *and* body); stripping
         // only the tags would leak their CSS/JS text into the output.
-        var text = html.replacingOccurrences(
-            of: #"(?is)<(script|style)\b[^>]*>.*?</\1>"#,
-            with: "",
-            options: .regularExpression
-        )
-        text = text.replacingOccurrences(
-            of: #"(?i)<br\s*/?>|</p>|</div>|</li>|</tr>|</h[1-6]>|</blockquote>"#,
-            with: "\n",
-            options: .regularExpression
-        )
-        text = text.replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression)
+        var text = replacingMatches(scriptStyleRegex, in: html, with: "")
+        // Block-level boundaries become newlines so notes keep their structure.
+        text = replacingMatches(blockTagRegex, in: text, with: "\n")
+        text = replacingMatches(anyTagRegex, in: text, with: "")
         text = decodeEntities(in: text)
-        text = text.replacingOccurrences(of: #"[ \t]+\n"#, with: "\n", options: .regularExpression)
-        text = text.replacingOccurrences(of: #"\n{3,}"#, with: "\n\n", options: .regularExpression)
+        text = replacingMatches(trailingSpaceRegex, in: text, with: "\n")
+        text = replacingMatches(blankLinesRegex, in: text, with: "\n\n")
         return text.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    /// Patterns are compile-time constants (a bad one is a programmer error), so
+    /// compile once at first use and reuse — `from(_:)` runs per event on every
+    /// calendar refresh, and recompiling each call was pure overhead.
+    private static func makeRegex(_ pattern: String) -> NSRegularExpression {
+        try! NSRegularExpression(pattern: pattern)
+    }
+
+    private static func replacingMatches(
+        _ regex: NSRegularExpression,
+        in text: String,
+        with template: String
+    ) -> String {
+        let range = NSRange(text.startIndex..., in: text)
+        return regex.stringByReplacingMatches(in: text, range: range, withTemplate: template)
     }
 
     private static func decodeEntities(in text: String) -> String {
