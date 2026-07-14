@@ -91,6 +91,18 @@ enum MeetingServices: String, Codable, CaseIterable, Sendable {
     case streamyard = "StreamYard"
     case riverside = "Riverside"
     case other = "Other"
+
+    /// Ranking tier used to break same-source ties between different services.
+    /// Known conferencing services (0) beat content links (1) such as YouTube
+    /// or Vimeo, which beat generic catch-alls like "Any Link"/"Other" (2). An
+    /// untagged (`nil`) service ranks below all of these at the call site.
+    var rankTier: Int {
+        switch self {
+        case .youtube, .vimeo: return 1
+        case .url, .other: return 2
+        default: return 0
+        }
+    }
 }
 
 public struct MeetingLink: Hashable, Equatable, Sendable {
@@ -145,50 +157,122 @@ struct MeetingLinkCandidate: Hashable, Sendable {
     let url: URL
     let service: MeetingServices?
     let source: MeetingLinkSource
+    /// Character offset of the match within its source field's text. Breaks
+    /// same-tier ties in appearance order. Non-scan sources (provider
+    /// conference data, custom regex) use 0.
+    var matchLocation: Int = 0
+
+    // `matchLocation` is ranking metadata, not identity: exclude it from
+    // equality/hashing so candidate identity stays (url, service, source) and
+    // `MBEvent` equality doesn't shift when a link's position in the text moves.
+    static func == (lhs: MeetingLinkCandidate, rhs: MeetingLinkCandidate) -> Bool {
+        lhs.url == rhs.url && lhs.service == rhs.service && lhs.source == rhs.source
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(url)
+        hasher.combine(service)
+        hasher.combine(source)
+    }
 }
 
 enum MeetingLinkCandidatePolicy {
     /// Picks the best candidate for an event:
     ///
     /// 1. by source priority — provider conference data beats notes;
-    /// 2. within the same source, catalogue order (`MeetingServices.allCases`)
-    ///    decides between different services, so an incidental YouTube link in
-    ///    the notes cannot shadow the real Meet link;
-    /// 3. within the same service, the longer URL wins so a Zoom link that
-    ///    carries a password/token suffix beats a truncated form of the
-    ///    same URL found in another source slot.
+    /// 2. within the same source, a lower service tier wins — known
+    ///    conferencing links beat content links (YouTube, Vimeo), which beat
+    ///    generic catch-alls, which beat untagged links, so an incidental
+    ///    YouTube link in the notes cannot shadow the real Meet link;
+    /// 3. within the same tier, the service appearing earliest in the field
+    ///    wins, preserving the author's ordering between different services;
+    /// 4. within the same service, the longer URL wins so a Zoom link that
+    ///    carries a password/token suffix beats a truncated form of it.
+    ///
+    /// Position is compared per service group (a service's earliest match), so
+    /// the ordering stays a strict weak ordering: candidates of one service
+    /// cluster together and order among themselves by URL length, while
+    /// distinct services order by first appearance.
     static func best(from candidates: [MeetingLinkCandidate]) -> MeetingLinkCandidate? {
-        candidates.min(by: isRankedBefore)
+        let positions = serviceEarliestPositions(candidates)
+        return candidates.min { isRankedBefore($0, $1, servicePositions: positions) }
     }
 
     /// Returns candidates ranked best-to-worst, deduplicated by URL string.
     /// Useful for a "open with another link" menu without re-running detection.
     static func ranked(from candidates: [MeetingLinkCandidate]) -> [MeetingLinkCandidate] {
-        Dictionary(grouping: candidates, by: { $0.url.absoluteString })
-            .compactMapValues { best(from: $0) }
-            .values
-            .sorted(by: isRankedBefore)
+        let deduped = Array(
+            Dictionary(grouping: candidates, by: { $0.url.absoluteString })
+                .compactMapValues { best(from: $0) }
+                .values
+        )
+        let positions = serviceEarliestPositions(deduped)
+        return deduped.sorted { isRankedBefore($0, $1, servicePositions: positions) }
     }
 
-    /// True when `lhs` outranks `rhs`. Candidates with a `nil` service rank
-    /// after every catalogued service.
-    private static func isRankedBefore(_ lhs: MeetingLinkCandidate, _ rhs: MeetingLinkCandidate) -> Bool {
+    /// Identifies a service within one source field, so a service's earliest
+    /// match position is computed per source (positions from different fields
+    /// are never comparable — source priority separates them first).
+    private struct ServiceGroupKey: Hashable {
+        let source: MeetingLinkSource
+        let service: MeetingServices?
+    }
+
+    /// Earliest `matchLocation` per (source, service) across `candidates`.
+    private static func serviceEarliestPositions(
+        _ candidates: [MeetingLinkCandidate]
+    ) -> [ServiceGroupKey: Int] {
+        var positions: [ServiceGroupKey: Int] = [:]
+        for candidate in candidates {
+            let key = ServiceGroupKey(source: candidate.source, service: candidate.service)
+            positions[key] = Swift.min(positions[key] ?? candidate.matchLocation, candidate.matchLocation)
+        }
+        return positions
+    }
+
+    /// True when `lhs` outranks `rhs`. A total lexicographic ordering over
+    /// (source priority, service tier, service group position, URL length, URL
+    /// string), satisfying the strict-weak-ordering contract `min`/`sorted`
+    /// require. Candidates with a `nil` service rank below every catalogued
+    /// conferencing, content, and generic service.
+    private static func isRankedBefore(
+        _ lhs: MeetingLinkCandidate,
+        _ rhs: MeetingLinkCandidate,
+        servicePositions: [ServiceGroupKey: Int]
+    ) -> Bool {
         if lhs.source.priority != rhs.source.priority {
             return lhs.source.priority > rhs.source.priority
         }
-        if lhs.service != rhs.service {
-            return catalogueRank(of: lhs.service) < catalogueRank(of: rhs.service)
+        let lhsTier = rankTier(of: lhs.service)
+        let rhsTier = rankTier(of: rhs.service)
+        if lhsTier != rhsTier {
+            return lhsTier < rhsTier
         }
-        return lhs.url.absoluteString.count > rhs.url.absoluteString.count
+        let lhsPos = groupPosition(of: lhs, in: servicePositions)
+        let rhsPos = groupPosition(of: rhs, in: servicePositions)
+        if lhsPos != rhsPos {
+            return lhsPos < rhsPos
+        }
+        let lhsLength = lhs.url.absoluteString.count
+        let rhsLength = rhs.url.absoluteString.count
+        if lhsLength != rhsLength {
+            return lhsLength > rhsLength
+        }
+        return lhs.url.absoluteString < rhs.url.absoluteString
     }
 
-    private static let catalogueRanks: [MeetingServices: Int] = Dictionary(
-        uniqueKeysWithValues: MeetingServices.allCases.enumerated().map { ($0.element, $0.offset) }
-    )
+    private static func groupPosition(
+        of candidate: MeetingLinkCandidate,
+        in servicePositions: [ServiceGroupKey: Int]
+    ) -> Int {
+        let key = ServiceGroupKey(source: candidate.source, service: candidate.service)
+        return servicePositions[key] ?? candidate.matchLocation
+    }
 
-    private static func catalogueRank(of service: MeetingServices?) -> Int {
-        guard let service else { return Int.max }
-        return catalogueRanks[service, default: Int.max]
+    /// Untagged (`nil`) services rank below the generic tier; otherwise the
+    /// service's own tier.
+    private static func rankTier(of service: MeetingServices?) -> Int {
+        service?.rankTier ?? 3
     }
 }
 
@@ -331,9 +415,11 @@ extension String {
 /// Picks the best meeting link from an event's available fields.
 ///
 /// Each available field becomes a `MeetingLinkCandidate` tagged with its
-/// `MeetingLinkSource`. Candidates are then ranked by source priority and
-/// — within the same source — by URL length, so a Zoom URL with a
-/// password/token suffix beats a truncated form of the same link.
+/// `MeetingLinkSource`. Candidates are then ranked by source priority and,
+/// within the same source, by service tier (conferencing beats content beats
+/// generic), then URL length for same-service links so a Zoom URL with a
+/// password/token suffix beats a truncated form, and finally the order the
+/// links appear in the field.
 ///
 /// Source order (highest priority first):
 ///
@@ -508,7 +594,8 @@ enum MeetingLinkDetector {
                 return MeetingLinkCandidate(
                     url: url,
                     service: service,
-                    source: source
+                    source: source,
+                    matchLocation: match.range.location
                 )
             }
         }
@@ -539,7 +626,8 @@ enum MeetingLinkDetector {
         return MeetingLinkCandidate(
             url: urlWithAuth,
             service: candidate.service,
-            source: candidate.source
+            source: candidate.source,
+            matchLocation: candidate.matchLocation
         )
     }
 
