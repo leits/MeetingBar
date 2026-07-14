@@ -617,7 +617,19 @@ final class MeetingLinkDetectorTests: XCTestCase {
         var typesCount: mach_msg_type_number_t = 0
         guard mach_port_names(task_self_trap(), &names, &namesCount, &types, &typesCount) == KERN_SUCCESS
         else { return -1 }
+        // mach_port_names allocates out-of-line memory for both arrays; free it
+        // so this leak-detection helper doesn't itself leak.
+        defer {
+            vmDeallocate(names, count: namesCount, stride: MemoryLayout<mach_port_name_t>.stride)
+            vmDeallocate(types, count: typesCount, stride: MemoryLayout<mach_port_type_t>.stride)
+        }
         return Int(namesCount)
+    }
+
+    private func vmDeallocate<T>(_ pointer: UnsafeMutablePointer<T>?, count: mach_msg_type_number_t, stride: Int) {
+        guard let pointer, count > 0 else { return }
+        let address = vm_address_t(UInt(bitPattern: UnsafeMutableRawPointer(pointer)))
+        _ = vm_deallocate(task_self_trap(), address, vm_size_t(Int(count) * stride))
     }
 
     func testCleanupOutlookSafeLinksUnwrapsValidLink() {
