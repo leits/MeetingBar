@@ -47,7 +47,7 @@ class HelpersTests: XCTestCase {
         let rawNotes = "<p>description</p>"
 
         let result = cleanUpNotes(rawNotes)
-        XCTAssertEqual(result, "description\n")
+        XCTAssertEqual(result, "description")
     }
 
     func test_cleanUpNotes_inputMeetDivider_returnClean() throws {

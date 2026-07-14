@@ -287,29 +287,154 @@ func getMatch(text: String, regex: NSRegularExpression) -> String? {
     return match
 }
 
+/// Converts an HTML notes fragment to plain text.
+///
+/// Deliberately avoids `NSAttributedString(html:)`: that initializer spins up
+/// TextKit's `com.apple.textkit.nsattributedstringagent` XPC service and leaks
+/// ~2 mach ports per call that are never reclaimed. Meeting-link detection runs
+/// this for every event with HTML notes on every calendar refresh, so over a
+/// day of refreshes the process port table fills and the kernel kills the app
+/// with EXC_GUARD ("allocating too many mach ports"). `HTMLPlainText` is a
+/// pure-Foundation strip with no XPC.
 func htmlTagsStrippedForMeetingLinks(_ text: String) -> String {
-    if !text.containsHTMLTags {
-        return text
-    }
-
-    return autoreleasepool {
-        guard let dataUTF16 = text.data(using: .utf16) else {
-            return text
-        }
-
-        let attributedString = NSAttributedString(
-            html: dataUTF16,
-            options: [.documentType: NSAttributedString.DocumentType.html],
-            documentAttributes: nil
-        )
-        return attributedString?.string ?? text
-    }
+    guard text.containsHTMLTags else { return text }
+    return HTMLPlainText.from(text)
 }
 
 extension String {
     fileprivate var containsHTMLTags: Bool {
         range(of: #"</?[A-z][ \t\S]*>"#, options: .regularExpression) != nil
     }
+}
+
+/// Pure-Foundation HTML→plain-text conversion (no TextKit / XPC). Maps
+/// block-level tags to newlines, removes every other tag, and decodes HTML
+/// entities: any numeric entity (decimal `&#123;` or hex `&#x7B;`), plus the
+/// named entities below — the five XML predefined names, common typographic
+/// symbols, and the full Latin-1 accented-letter set (café, München, …). Named
+/// entities outside this table are left as written; numeric coverage is total.
+enum HTMLPlainText {
+    private static let scriptStyleRegex = makeRegex(#"(?is)<(script|style)\b[^>]*>.*?</\1>"#)
+    private static let blockTagRegex =
+        makeRegex(#"(?i)<br\s*/?>|</p>|</div>|</li>|</tr>|</h[1-6]>|</blockquote>"#)
+    private static let anyTagRegex = makeRegex("<[^>]+>")
+    private static let trailingSpaceRegex = makeRegex(#"[ \t]+\n"#)
+    private static let blankLinesRegex = makeRegex(#"\n{3,}"#)
+
+    static func from(_ html: String) -> String {
+        // Drop <script>/<style> elements entirely (tag *and* body); stripping
+        // only the tags would leak their CSS/JS text into the output.
+        var text = replacingMatches(scriptStyleRegex, in: html, with: "")
+        // Block-level boundaries become newlines so notes keep their structure.
+        text = replacingMatches(blockTagRegex, in: text, with: "\n")
+        text = replacingMatches(anyTagRegex, in: text, with: "")
+        text = decodeEntities(in: text)
+        text = replacingMatches(trailingSpaceRegex, in: text, with: "\n")
+        text = replacingMatches(blankLinesRegex, in: text, with: "\n\n")
+        return text.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    /// Patterns are compile-time constants (a bad one is a programmer error), so
+    /// compile once at first use and reuse — `from(_:)` runs per event on every
+    /// calendar refresh, and recompiling each call was pure overhead.
+    private static func makeRegex(_ pattern: String) -> NSRegularExpression {
+        try! NSRegularExpression(pattern: pattern)
+    }
+
+    private static func replacingMatches(
+        _ regex: NSRegularExpression,
+        in text: String,
+        with template: String
+    ) -> String {
+        let range = NSRange(text.startIndex..., in: text)
+        return regex.stringByReplacingMatches(in: text, range: range, withTemplate: template)
+    }
+
+    private static func decodeEntities(in text: String) -> String {
+        guard text.contains("&") else { return text }
+        var result = ""
+        result.reserveCapacity(text.count)
+        var cursor = text.startIndex
+        while cursor < text.endIndex {
+            guard text[cursor] == "&" else {
+                result.append(text[cursor])
+                cursor = text.index(after: cursor)
+                continue
+            }
+            // Bound the `;` search to a short window (`&` + up to 12 chars) so
+            // pathological input with many stray `&` stays linear, not quadratic.
+            let windowEnd = text.index(cursor, offsetBy: 13, limitedBy: text.endIndex)
+                ?? text.endIndex
+            let afterAmp = text.index(after: cursor)
+            guard let semicolon = text[afterAmp..<windowEnd].firstIndex(of: ";"),
+                  let decoded = decode(entity: text[afterAmp..<semicolon])
+            else {
+                result.append(text[cursor])
+                cursor = afterAmp
+                continue
+            }
+            result.append(decoded)
+            cursor = text.index(after: semicolon)
+        }
+        return result
+    }
+
+    private static func decode(entity: Substring) -> Character? {
+        if entity.first == "#" {
+            let digits = entity.dropFirst()
+            let value: UInt32?
+            if let marker = digits.first, marker == "x" || marker == "X" {
+                value = UInt32(digits.dropFirst(), radix: 16)
+            } else {
+                value = UInt32(digits, radix: 10)
+            }
+            guard let value, let scalar = Unicode.Scalar(value) else { return nil }
+            return Character(scalar)
+        }
+        return namedEntities[String(entity)]
+    }
+
+    private static let namedEntities: [String: Character] = [
+        // XML predefined + structural
+        "amp": "&", "lt": "<", "gt": ">", "quot": "\"", "apos": "'", "nbsp": " ",
+        // Typographic symbols
+        "copy": "\u{00A9}", "reg": "\u{00AE}", "trade": "\u{2122}",
+        "mdash": "\u{2014}", "ndash": "\u{2013}", "hellip": "\u{2026}",
+        "lsquo": "\u{2018}", "rsquo": "\u{2019}", "ldquo": "\u{201C}",
+        "rdquo": "\u{201D}", "middot": "\u{00B7}", "bull": "\u{2022}",
+        "euro": "\u{20AC}", "pound": "\u{00A3}", "cent": "\u{00A2}",
+        "yen": "\u{00A5}", "sect": "\u{00A7}", "para": "\u{00B6}",
+        "deg": "\u{00B0}", "plusmn": "\u{00B1}", "times": "\u{00D7}",
+        "divide": "\u{00F7}", "micro": "\u{00B5}", "laquo": "\u{00AB}",
+        "raquo": "\u{00BB}", "iexcl": "\u{00A1}", "iquest": "\u{00BF}",
+        "frac12": "\u{00BD}", "frac14": "\u{00BC}", "frac34": "\u{00BE}",
+        "ordm": "\u{00BA}", "ordf": "\u{00AA}", "sup1": "\u{00B9}",
+        "sup2": "\u{00B2}", "sup3": "\u{00B3}",
+        // Latin-1 accented letters (uppercase)
+        "Agrave": "\u{00C0}", "Aacute": "\u{00C1}", "Acirc": "\u{00C2}",
+        "Atilde": "\u{00C3}", "Auml": "\u{00C4}", "Aring": "\u{00C5}",
+        "AElig": "\u{00C6}", "Ccedil": "\u{00C7}", "Egrave": "\u{00C8}",
+        "Eacute": "\u{00C9}", "Ecirc": "\u{00CA}", "Euml": "\u{00CB}",
+        "Igrave": "\u{00CC}", "Iacute": "\u{00CD}", "Icirc": "\u{00CE}",
+        "Iuml": "\u{00CF}", "ETH": "\u{00D0}", "Ntilde": "\u{00D1}",
+        "Ograve": "\u{00D2}", "Oacute": "\u{00D3}", "Ocirc": "\u{00D4}",
+        "Otilde": "\u{00D5}", "Ouml": "\u{00D6}", "Oslash": "\u{00D8}",
+        "Ugrave": "\u{00D9}", "Uacute": "\u{00DA}", "Ucirc": "\u{00DB}",
+        "Uuml": "\u{00DC}", "Yacute": "\u{00DD}", "THORN": "\u{00DE}",
+        "szlig": "\u{00DF}",
+        // Latin-1 accented letters (lowercase)
+        "agrave": "\u{00E0}", "aacute": "\u{00E1}", "acirc": "\u{00E2}",
+        "atilde": "\u{00E3}", "auml": "\u{00E4}", "aring": "\u{00E5}",
+        "aelig": "\u{00E6}", "ccedil": "\u{00E7}", "egrave": "\u{00E8}",
+        "eacute": "\u{00E9}", "ecirc": "\u{00EA}", "euml": "\u{00EB}",
+        "igrave": "\u{00EC}", "iacute": "\u{00ED}", "icirc": "\u{00EE}",
+        "iuml": "\u{00EF}", "eth": "\u{00F0}", "ntilde": "\u{00F1}",
+        "ograve": "\u{00F2}", "oacute": "\u{00F3}", "ocirc": "\u{00F4}",
+        "otilde": "\u{00F5}", "ouml": "\u{00F6}", "oslash": "\u{00F8}",
+        "ugrave": "\u{00F9}", "uacute": "\u{00FA}", "ucirc": "\u{00FB}",
+        "uuml": "\u{00FC}", "yacute": "\u{00FD}", "thorn": "\u{00FE}",
+        "yuml": "\u{00FF}"
+    ]
 }
 
 // MARK: - Detector
