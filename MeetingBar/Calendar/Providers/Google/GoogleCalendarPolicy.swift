@@ -86,3 +86,56 @@ enum GoogleCalendarBatchPolicy {
         return events
     }
 }
+
+/// Thrown by `TimeoutGuardedCompletion.run` when `operation` doesn't call back in time.
+struct OperationTimedOut: Error {}
+
+/// Runs a completion-callback-based `operation`, racing it against a hard timeout so a
+/// callback that never fires (e.g. AppAuth's token refresh parked across sleep/wake)
+/// can't wedge the awaiting call forever. Whichever of the real callback or the timeout
+/// fires first wins; the other is a no-op, so `operation`'s completion is safe to invoke
+/// late without double-resuming the caller.
+enum TimeoutGuardedCompletion {
+    static func run<T: Sendable>(
+        timeout: TimeInterval,
+        operation: sending @escaping (@escaping @Sendable (Result<T, Error>) -> Void) -> Void
+    ) async throws -> T {
+        try await withCheckedThrowingContinuation { continuation in
+            let resumer = SingleResume(continuation)
+
+            let timeoutTask = Task {
+                try? await Task.sleep(nanoseconds: UInt64(timeout * 1_000_000_000))
+                resumer.resume(with: .failure(OperationTimedOut()))
+            }
+
+            operation { result in
+                timeoutTask.cancel()
+                resumer.resume(with: result)
+            }
+        }
+    }
+}
+
+/// Resumes a `CheckedContinuation` at most once, even when the real completion and the
+/// timeout race to resume it concurrently.
+private final class SingleResume<T: Sendable>: @unchecked Sendable {
+    private let lock = NSLock()
+    private var continuation: CheckedContinuation<T, Error>?
+
+    init(_ continuation: CheckedContinuation<T, Error>) {
+        self.continuation = continuation
+    }
+
+    func resume(with result: Result<T, Error>) {
+        lock.lock()
+        let pending = continuation
+        continuation = nil
+        lock.unlock()
+
+        guard let pending else { return }
+        switch result {
+        case let .success(value): pending.resume(returning: value)
+        case let .failure(error): pending.resume(throwing: error)
+        }
+    }
+}

@@ -50,6 +50,13 @@ final class GCEventStore: NSObject,
     private static let kClientSecret = googleClientSecret
     private static let kRedirectURI  = "com.googleusercontent.apps.\(googleClientNumber):/oauthredirect"
     private static let kKeychainName = googleAuthKeychainName
+    /// A stuck AppAuth token-refresh callback (observed parked across sleep/wake)
+    /// must not wedge every future refresh attempt forever.
+    private static let tokenRefreshTimeout: TimeInterval = 30
+    /// Interactive sign-in can legitimately take minutes, so it gets a much longer
+    /// leash than a token refresh, but still must eventually give up and let the
+    /// next attempt start fresh rather than being awaited forever.
+    private static let signInTimeout: TimeInterval = 300
 
     // MARK: Stored properties
     @MainActor var currentAuthorizationFlow: OIDExternalUserAgentSession?
@@ -288,11 +295,24 @@ final class GCEventStore: NSObject,
         let forceConsent = authState?.refreshToken == nil
         if let running = signInTask { return try await running.value }
 
-        let task = Task {
-            try await signIn(forcePrompt: forceConsent)
+        let task = Task<Void, Error> {
+            defer { signInTask = nil }
+            try await TimeoutGuardedCompletion.run(timeout: Self.signInTimeout) { [weak self] (completion: @escaping @Sendable (Result<Void, Error>) -> Void) in
+                guard let self else {
+                    completion(.failure(AuthError.cancelled))
+                    return
+                }
+                Task {
+                    do {
+                        try await self.signIn(forcePrompt: forceConsent)
+                        completion(.success(()))
+                    } catch {
+                        completion(.failure(error))
+                    }
+                }
+            }
         }
         signInTask = task
-        defer { signInTask = nil }
         try await task.value
     }
 
@@ -320,25 +340,29 @@ final class GCEventStore: NSObject,
 
         let task = Task<String, Error> {
             defer { refreshTask = nil }
-            return try await withCheckedThrowingContinuation { cont in
-                if forceRefresh { state.setNeedsTokenRefresh() }
+            if forceRefresh { state.setNeedsTokenRefresh() }
 
-                state.performAction { [weak self] accessToken, _, error in
-                    guard let self else { return }
-                    if let token = accessToken {
-                        cont.resume(returning: token) // stateChangeDelegate persists new tokens
-                    } else if let error {
-                        let nsError = error as NSError
-                        if nsError.domain == OIDOAuthTokenErrorDomain {
-                            self.clearAuthState()
-                            cont.resume(throwing: AuthError.notSignedIn)
+            do {
+                return try await TimeoutGuardedCompletion.run(timeout: Self.tokenRefreshTimeout) { completion in
+                    state.performAction { accessToken, _, error in
+                        if let token = accessToken {
+                            completion(.success(token)) // stateChangeDelegate persists new tokens
+                        } else if let error {
+                            completion(.failure(error))
                         } else {
-                            cont.resume(throwing: error)
+                            completion(.failure(AuthError.refreshFailed))
                         }
-                    } else {
-                        cont.resume(throwing: AuthError.refreshFailed)
                     }
                 }
+            } catch is OperationTimedOut {
+                throw AuthError.refreshFailed
+            } catch {
+                let nsError = error as NSError
+                if nsError.domain == OIDOAuthTokenErrorDomain {
+                    self.clearAuthState()
+                    throw AuthError.notSignedIn
+                }
+                throw error
             }
         }
 
