@@ -50,6 +50,8 @@ final class GCEventStore: NSObject,
     private static let kClientSecret = googleClientSecret
     private static let kRedirectURI  = "com.googleusercontent.apps.\(googleClientNumber):/oauthredirect"
     private static let kKeychainName = googleAuthKeychainName
+    private static let tokenRefreshTimeout: TimeInterval = 35
+    private static let tokenRefreshAttempts = 2
 
     // MARK: Stored properties
     @MainActor var currentAuthorizationFlow: OIDExternalUserAgentSession?
@@ -178,7 +180,8 @@ final class GCEventStore: NSObject,
         signInTask?.cancel()
         signInTask = nil
         refreshTask?.cancel()
-        refreshTask = nil
+        // The task clears itself after cancellation. Keeping it here prevents a
+        // replacement refresh from starting before the cancelled task exits.
 
         let flow = currentAuthorizationFlow
         currentAuthorizationFlow = nil
@@ -308,11 +311,11 @@ final class GCEventStore: NSObject,
     }
 
     private func validAccessToken(forceRefresh: Bool = false) async throws -> String {
-        guard let state = authState else { throw AuthError.notSignedIn }
+        guard let initialState = authState else { throw AuthError.notSignedIn }
 
         if !forceRefresh,
-           state.isTokenFresh,
-           let token = state.lastTokenResponse?.accessToken {
+           initialState.isTokenFresh,
+           let token = initialState.lastTokenResponse?.accessToken {
             return token
         }
 
@@ -320,30 +323,85 @@ final class GCEventStore: NSObject,
 
         let task = Task<String, Error> {
             defer { refreshTask = nil }
-            return try await withCheckedThrowingContinuation { cont in
-                if forceRefresh { state.setNeedsTokenRefresh() }
+            var state = initialState
 
-                state.performAction { [weak self] accessToken, _, error in
-                    guard let self else { return }
-                    if let token = accessToken {
-                        cont.resume(returning: token) // stateChangeDelegate persists new tokens
-                    } else if let error {
-                        let nsError = error as NSError
-                        if nsError.domain == OIDOAuthTokenErrorDomain {
-                            self.clearAuthState()
-                            cont.resume(throwing: AuthError.notSignedIn)
-                        } else {
-                            cont.resume(throwing: error)
-                        }
-                    } else {
-                        cont.resume(throwing: AuthError.refreshFailed)
+            for attempt in 0..<Self.tokenRefreshAttempts {
+                do {
+                    if forceRefresh { state.setNeedsTokenRefresh() }
+                    return try await Self.performTokenRefresh(
+                        state: state,
+                        timeout: Self.tokenRefreshTimeout
+                    )
+                } catch {
+                    let nsError = error as NSError
+                    if nsError.domain == OIDOAuthTokenErrorDomain {
+                        clearAuthState()
+                        throw AuthError.notSignedIn
                     }
+
+                    if error is CancellationError {
+                        _ = recoverAuthState(afterInterruptedRefresh: state)
+                        throw error
+                    }
+
+                    guard error is GoogleAuthOperationTimedOut else { throw error }
+
+                    guard let recoveredState = recoverAuthState(afterInterruptedRefresh: state) else {
+                        throw AuthError.notSignedIn
+                    }
+
+                    if attempt + 1 < Self.tokenRefreshAttempts {
+                        state = recoveredState
+                        MeetingBarLogger.calendar.warning(
+                            "Google token refresh timed out; restored auth state and retrying"
+                        )
+                        continue
+                    }
+
+                    throw AuthError.refreshFailed
                 }
             }
+
+            throw AuthError.refreshFailed
         }
 
         refreshTask = task
         return try await task.value
+    }
+
+    private static func performTokenRefresh(
+        state: OIDAuthState,
+        timeout: TimeInterval
+    ) async throws -> String {
+        try await GoogleAuthTimeout.run(timeout: timeout) { completion in
+            state.performAction { accessToken, _, error in
+                // AppAuth can return the previous (expired) access token together
+                // with a transient refresh error, so the error must win.
+                if let error {
+                    completion(.failure(error))
+                } else if let token = accessToken {
+                    completion(.success(token))
+                } else {
+                    completion(.failure(AuthError.refreshFailed))
+                }
+            }
+        }
+    }
+
+    private func recoverAuthState(afterInterruptedRefresh state: OIDAuthState) -> OIDAuthState? {
+        // AppAuth's unresolved pending-action queue belongs to this instance and
+        // is not archived. Reopening the persisted state starts the retry cleanly.
+        state.stateChangeDelegate = nil
+        state.errorDelegate = nil
+
+        guard authState === state else { return nil }
+        guard let replacement = restoreAuthState() else {
+            clearAuthState()
+            return nil
+        }
+
+        authState = replacement
+        return replacement
     }
 
     // MARK: Keychain persistence
