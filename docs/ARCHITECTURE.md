@@ -284,7 +284,7 @@ providerConferenceData  (Google conferenceData.entryPoints)
       > customRegex     (user-defined fallback)
 ```
 
-Within one source, longer URLs win when one is a prefix of another (Zoom truncation case). The chosen candidate becomes `MBEvent.meetingLinkCandidate`; the rest stay as `MBEvent.alternateMeetingLinkCandidates` so the menu can offer "join with another link".
+Within one source, candidates are ranked by service tier (known conferencing services beat content links like YouTube/Vimeo, which beat generic catch-alls, which beat untagged links), then by the order services first appear in the field, and finally — between links of the same service — the longer URL wins so a Zoom link keeps its `?pwd=` token. The chosen candidate becomes `MBEvent.meetingLinkCandidate`; the rest stay as `MBEvent.alternateMeetingLinkCandidates` so the menu can offer "join with another link".
 
 **Do not put link-choosing logic in `MBEvent.init`.** Models are data; the detector is a policy.
 
