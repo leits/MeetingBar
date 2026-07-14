@@ -552,6 +552,16 @@ final class MeetingLinkDetectorTests: XCTestCase {
         XCTAssertEqual(stripped, "A & B @ Co—end")
     }
 
+    func testHTMLStripDecodesLatin1NamedEntities() {
+        // The expanded named-entity table must decode accented letters and
+        // symbols so notes like a Paris/Munich meeting render as written.
+        let stripped = htmlTagsStrippedForMeetingLinks(
+            "<p>Caf&eacute; sync in M&uuml;nchen &mdash; 5&nbsp;&euro;</p>"
+        )
+
+        XCTAssertEqual(stripped, "Café sync in München — 5 €")
+    }
+
     func testHTMLStripConvertsBlockTagsToNewlines() {
         let stripped = htmlTagsStrippedForMeetingLinks("<p>First line</p><p>Second line</p>")
 
@@ -588,7 +598,7 @@ final class MeetingLinkDetectorTests: XCTestCase {
         var namesCount: mach_msg_type_number_t = 0
         var types: mach_port_type_array_t?
         var typesCount: mach_msg_type_number_t = 0
-        guard mach_port_names(mach_task_self_, &names, &namesCount, &types, &typesCount) == KERN_SUCCESS
+        guard mach_port_names(task_self_trap(), &names, &namesCount, &types, &typesCount) == KERN_SUCCESS
         else { return -1 }
         return Int(namesCount)
     }
