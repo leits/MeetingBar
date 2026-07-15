@@ -605,12 +605,18 @@ enum StatusBarTitleRenderer {
         let titleSize = measure(titleString)
         let timeSize = measure(timeString)
 
+        // An empty string still measures to a full line height, so treat a blank
+        // line as absent (zero height). Otherwise the space reserved for the
+        // missing line pushes the remaining line off true center.
+        let titleHeight = title.isEmpty ? 0 : titleSize.height
+        let timeHeight = time.isEmpty ? 0 : timeSize.height
+
         // Overlap the two lines' leading so the block is compact. `draw(with:)` does
         // not clip glyphs to their rect, so positioning the rects closer than their
         // natural heights just tightens the line spacing. Only applied when both
         // lines are present so a single line stays centered.
         let overlap: CGFloat = (title.isEmpty || time.isEmpty) ? 0 : 4
-        let blockHeight = titleSize.height + timeSize.height - overlap
+        let blockHeight = titleHeight + timeHeight - overlap
 
         let iconSize = icon?.size ?? .zero
         let iconGap: CGFloat = icon == nil ? 0 : 3
@@ -641,16 +647,21 @@ enum StatusBarTitleRenderer {
             }
             // Non-flipped context (y grows up): countdown at the bottom of the
             // block, title above it. Each string draws in a rect of its measured
-            // size so `.usesLineFragmentOrigin` fills it from the top down.
-            timeString.draw(
-                with: NSRect(x: textX, y: blockBottom, width: textWidth, height: timeSize.height),
-                options: [.usesLineFragmentOrigin, .usesFontLeading]
-            )
-            titleString.draw(
-                with: NSRect(x: textX, y: blockBottom + timeSize.height - overlap,
-                             width: textWidth, height: titleSize.height),
-                options: [.usesLineFragmentOrigin, .usesFontLeading]
-            )
+            // size so `.usesLineFragmentOrigin` fills it from the top down. A blank
+            // line is skipped and contributes no height (see titleHeight/timeHeight).
+            if !time.isEmpty {
+                timeString.draw(
+                    with: NSRect(x: textX, y: blockBottom, width: textWidth, height: timeSize.height),
+                    options: [.usesLineFragmentOrigin, .usesFontLeading]
+                )
+            }
+            if !title.isEmpty {
+                titleString.draw(
+                    with: NSRect(x: textX, y: blockBottom + timeHeight - overlap,
+                                 width: textWidth, height: titleSize.height),
+                    options: [.usesLineFragmentOrigin, .usesFontLeading]
+                )
+            }
             return true
         }
         image.isTemplate = false

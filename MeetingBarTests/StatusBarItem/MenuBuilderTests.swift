@@ -1327,6 +1327,57 @@ final class StatusBarTitleRendererTests: BaseTestCase {
         }
     }
 
+    /// Rasterizes the image and returns the transparent margin above the first
+    /// inked row and below the last inked row, so tests can assert the drawn block
+    /// is vertically centered rather than merely present.
+    private func inkVerticalMargins(of image: NSImage) -> (top: Int, bottom: Int)? {
+        guard let tiff = image.tiffRepresentation,
+              let rep = NSBitmapImageRep(data: tiff) else { return nil }
+        var firstInk = -1
+        var lastInk = -1
+        for y in 0 ..< rep.pixelsHigh {
+            var rowHasInk = false
+            for x in 0 ..< rep.pixelsWide where (rep.colorAt(x: x, y: y)?.alphaComponent ?? 0) > 0.01 {
+                rowHasInk = true
+                break
+            }
+            if rowHasInk {
+                if firstInk < 0 { firstInk = y }
+                lastInk = y
+            }
+        }
+        guard firstInk >= 0 else { return nil }
+        return (top: firstInk, bottom: rep.pixelsHigh - 1 - lastInk)
+    }
+
+    func test_stackedImageVerticallyCentersBothLines() {
+        let image = StatusBarTitleRenderer.stackedImage(
+            title: "Weekly sync", time: "in 5 min", icon: nil, style: .normal
+        )
+        guard let margins = inkVerticalMargins(of: image) else {
+            return XCTFail("stacked image had no visible ink")
+        }
+        XCTAssertLessThanOrEqual(
+            abs(margins.top - margins.bottom), 4,
+            "stacked title block should be vertically centered (top \(margins.top) vs bottom \(margins.bottom))"
+        )
+    }
+
+    func test_stackedImageEmptyTitleStaysCentered() {
+        // A blank title must not reserve a phantom line that pushes the lone
+        // countdown off center (regression guard for the centering fix).
+        let image = StatusBarTitleRenderer.stackedImage(
+            title: "", time: "in 5 min", icon: nil, style: .normal
+        )
+        guard let margins = inkVerticalMargins(of: image) else {
+            return XCTFail("stacked image had no visible ink")
+        }
+        XCTAssertLessThanOrEqual(
+            abs(margins.top - margins.bottom), 4,
+            "lone countdown line should be vertically centered (top \(margins.top) vs bottom \(margins.bottom))"
+        )
+    }
+
     func test_inlineTitleIncludesTimeAndUnderlineStyle() {
         let title = StatusBarTitleRenderer.attributedTitle(
             for: makePresentation(
