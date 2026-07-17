@@ -223,19 +223,51 @@ final class StatusBarItemController {
         button.title = ""
         button.attributedTitle = NSAttributedString(string: "")
         button.toolTip = nil
+        button.setAccessibilityLabel(nil)
         button.alignment = .center
         button.cell?.lineBreakMode = .byTruncatingTail
 
+        let iconImage: NSImage?
         switch presentation.icon {
         case .asset(let name):
-            button.image = MenuStyleConstants.iconNamed(name)
-            button.image?.size = MenuStyleConstants.iconSize
+            // Named assets (calendar/app icon) are normalized to the menu-bar
+            // icon size; meeting-service icons keep the provider's own size.
+            let image = MenuStyleConstants.iconNamed(name)
+            image.size = MenuStyleConstants.iconSize
+            iconImage = image
         case .meetingService(let service):
-            button.image = getIconForMeetingService(service)
+            iconImage = getIconForMeetingService(service)
         case .none:
-            break
+            iconImage = nil
         }
-        button.imagePosition = button.image?.name() == "no_online_session" ? .noImage : .imageLeft
+        // "no_online_session" is the sentinel asset meaning "show no icon".
+        let hasNoSessionIcon = iconImage?.name() == "no_online_session"
+
+        // Stacked layout (title over countdown): NSStatusBarButton is an NSButton
+        // whose cell only reliably centers a SINGLE line — a two-line
+        // attributedTitle is top-aligned/off-center and can only be faked with
+        // brittle, per-machine magic numbers. Instead we draw the icon and both
+        // lines into one image and center it ourselves against the real menu-bar
+        // height. The button centers a single image by its bounds, so this is
+        // correct on every menu-bar height, macOS version and display scale.
+        if presentation.mode == .nextEvent, presentation.layout == .stacked,
+           !(presentation.title.isEmpty && presentation.time.isEmpty) {
+            button.image = StatusBarTitleRenderer.stackedImage(
+                title: presentation.title,
+                time: presentation.time,
+                icon: hasNoSessionIcon ? nil : iconImage,
+                style: presentation.titleStyle
+            )
+            button.imagePosition = .imageOnly
+            button.toolTip = presentation.tooltip
+            // VoiceOver reads the full (untruncated) title; the visible title may be shortened.
+            button.setAccessibilityLabel("\(presentation.tooltip ?? presentation.title), \(presentation.time)")
+            ensureStatusBarButtonIsVisible(button)
+            return
+        }
+
+        button.image = iconImage
+        button.imagePosition = hasNoSessionIcon ? .noImage : .imageLeft
 
         if presentation.mode == .nextEvent {
             button.attributedTitle = StatusBarTitleRenderer.attributedTitle(for: presentation)
@@ -518,49 +550,135 @@ enum StatusBarTitleRenderer {
                 )
             )
         case .stacked:
-            return stackedTitle(for: presentation)
+            // The stacked layout is drawn as a self-centered image in
+            // StatusBarItemController.renderStatusBar (NSStatusBarButton cannot
+            // vertically center a multi-line title), so it never routes through here.
+            return NSAttributedString(string: "")
         }
     }
 
-    private static func stackedTitle(for presentation: StatusBarPresentation) -> NSAttributedString {
-        let title = NSMutableAttributedString(
-            string: presentation.title,
-            attributes: titleAttributes(
-                style: presentation.titleStyle,
-                font: NSFont.systemFont(ofSize: 12),
-                baselineOffset: -3
-            )
-        )
-        title.append(
-            NSAttributedString(
-                string: "\n" + presentation.time,
-                attributes: [
-                    NSAttributedString.Key.font: NSFont.systemFont(ofSize: 9),
-                    NSAttributedString.Key.foregroundColor: NSColor.lightGray
-                ]
-            ))
+    /// Renders the icon plus the two stacked lines (title over countdown) into a
+    /// single image, vertically centered within the menu bar (using at least the
+    /// current menu-bar height). Used instead of a two-line `attributedTitle`
+    /// because `NSStatusBarButton`'s cell does not vertically center multi-line
+    /// titles.
+    ///
+    /// Text uses dynamic system colors and *template* icons (e.g. the calendar
+    /// icon) are tinted at draw time, so the image adapts to the menu bar's
+    /// light/dark appearance; colored (non-template) meeting-service icons are
+    /// preserved as-is. `cacheMode = .never` guarantees the drawing handler re-runs
+    /// on every draw so an appearance change is picked up immediately.
+    static func stackedImage(
+        title: String,
+        time: String,
+        icon: NSImage?,
+        style: StatusBarTitleStyle
+    ) -> NSImage {
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.alignment = .center
+        paragraph.lineBreakMode = .byTruncatingTail
 
-        let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineHeightMultiple = 0.7
-        paragraphStyle.alignment = .center
-        title.addAttributes(
-            [NSAttributedString.Key.paragraphStyle: paragraphStyle],
-            range: NSRange(location: 0, length: title.length)
-        )
-        return title
+        // Reuse the inline styling (inactive colour, dotted underline); add the
+        // paragraph and an explicit label colour for the .normal/.underlined cases
+        // that the helper leaves to the control's default.
+        var titleAttrs = titleAttributes(style: style, font: NSFont.systemFont(ofSize: 11))
+        titleAttrs[.paragraphStyle] = paragraph
+        if titleAttrs[.foregroundColor] == nil {
+            titleAttrs[.foregroundColor] = NSColor.labelColor
+        }
+        let timeAttrs: [NSAttributedString.Key: Any] = [
+            .font: NSFont.systemFont(ofSize: 9),
+            .foregroundColor: NSColor.secondaryLabelColor,
+            .paragraphStyle: paragraph
+        ]
+
+        let titleString = NSAttributedString(string: title, attributes: titleAttrs)
+        let timeString = NSAttributedString(string: time, attributes: timeAttrs)
+
+        // Cap the measured width so very long titles truncate rather than growing
+        // the status item without bound.
+        let maxTextWidth: CGFloat = 260
+        let measure: (NSAttributedString) -> NSSize = { string in
+            let rect = string.boundingRect(
+                with: NSSize(width: maxTextWidth, height: CGFloat.greatestFiniteMagnitude),
+                options: [.usesLineFragmentOrigin, .usesFontLeading]
+            )
+            return NSSize(width: ceil(rect.width), height: ceil(rect.height))
+        }
+        let titleSize = measure(titleString)
+        let timeSize = measure(timeString)
+
+        // An empty string still measures to a full line height, so treat a blank
+        // line as absent (zero height). Otherwise the space reserved for the
+        // missing line pushes the remaining line off true center.
+        let titleHeight = title.isEmpty ? 0 : titleSize.height
+        let timeHeight = time.isEmpty ? 0 : timeSize.height
+
+        // Overlap the two lines' leading so the block is compact. `draw(with:)` does
+        // not clip glyphs to their rect, so positioning the rects closer than their
+        // natural heights just tightens the line spacing. Only applied when both
+        // lines are present so a single line stays centered.
+        let overlap: CGFloat = (title.isEmpty || time.isEmpty) ? 0 : 4
+        let blockHeight = titleHeight + timeHeight - overlap
+
+        let iconSize = icon?.size ?? .zero
+        let iconGap: CGFloat = icon == nil ? 0 : 3
+        let textWidth = max(titleSize.width, timeSize.width)
+        // Clamp so tall scripts or a thinner-than-expected bar never clip the glyphs.
+        let height = max(NSStatusBar.system.thickness, ceil(blockHeight))
+        let width = ceil(iconSize.width + iconGap + textWidth)
+
+        let textX = iconSize.width + iconGap
+        let blockBottom = ((height - blockHeight) / 2).rounded()
+
+        // Copy the icon: iconNamed / getIconForMeetingService return shared named
+        // NSImage instances and the drawing handler may run off the main thread.
+        let iconCopy = icon?.copy() as? NSImage
+
+        let image = NSImage(size: NSSize(width: max(width, 1), height: height), flipped: false) { _ in
+            if let iconCopy {
+                let iconRect = NSRect(
+                    x: 0, y: ((height - iconSize.height) / 2).rounded(),
+                    width: iconSize.width, height: iconSize.height
+                )
+                iconCopy.draw(in: iconRect, from: .zero, operation: .sourceOver, fraction: 1.0)
+                if iconCopy.isTemplate {
+                    // Tint template icons to the resolved menu-bar text color.
+                    NSColor.labelColor.set()
+                    iconRect.fill(using: .sourceAtop)
+                }
+            }
+            // Non-flipped context (y grows up): countdown at the bottom of the
+            // block, title above it. Each string draws in a rect of its measured
+            // size so `.usesLineFragmentOrigin` fills it from the top down. A blank
+            // line is skipped and contributes no height (see titleHeight/timeHeight).
+            if !time.isEmpty {
+                timeString.draw(
+                    with: NSRect(x: textX, y: blockBottom, width: textWidth, height: timeSize.height),
+                    options: [.usesLineFragmentOrigin, .usesFontLeading]
+                )
+            }
+            if !title.isEmpty {
+                titleString.draw(
+                    with: NSRect(x: textX, y: blockBottom + timeHeight - overlap,
+                                 width: textWidth, height: titleSize.height),
+                    options: [.usesLineFragmentOrigin, .usesFontLeading]
+                )
+            }
+            return true
+        }
+        image.isTemplate = false
+        image.cacheMode = .never
+        return image
     }
 
     private static func titleAttributes(
         style: StatusBarTitleStyle,
-        font: NSFont,
-        baselineOffset: CGFloat? = nil
+        font: NSFont
     ) -> [NSAttributedString.Key: Any] {
         var attributes: [NSAttributedString.Key: Any] = [
             .font: font
         ]
-        if let baselineOffset {
-            attributes[.baselineOffset] = baselineOffset
-        }
         switch style {
         case .normal:
             break
