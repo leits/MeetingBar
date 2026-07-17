@@ -102,6 +102,8 @@ struct VisualEffect: NSViewRepresentable {
     func updateNSView(_: NSView, context _: Context) {}
 }
 
+#if DEBUG
 #Preview {
     FullscreenNotification(event: generateFakeEvent(), window: nil)
 }
+#endif

@@ -30,9 +30,7 @@
 // MARK: - Preferences tabs
 
 "preferences_tab_general" = "Общи";
-"preferences_tab_appearance" = "Външен вид";
 "preferences_tab_bookmarks" = "Отметки";
-"preferences_tab_links" = "Връзки";
 "preferences_tab_calendars" = "Календари";
 "preferences_tab_advanced" = "Разширени";
 
@@ -41,15 +39,12 @@
 "preferences_general_option_login_launch" = "Стартиране при вход";
 "preferences_general_option_preferred_language_title" = "Език:";
 "preferences_general_option_preferred_language_system_value" = "Системен";
-"preferences_general_option_shortcuts" = "Клавишни комбинации";
-"preferences_general_all_shortcut" = "Всички комбинации";
 "preferences_general_shortcut_open_menu" = "Отвори менюто:";
 "preferences_general_shortcut_create_meeting" = "Създай среща:";
 "preferences_general_shortcut_join_next" = "Влез в следващата среща:";
 "preferences_general_shortcut_join_from_clipboard" = "Отвори среща от клипборда:";
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "Покажи/скрий заглавието в лентата:";
 "preferences_general_meeting_bar_description" = "MeetingBar е приложение с отворен код,\nсъздадено от Andrii Leitsius 🇺🇦\nза по-лесни и по-плавни онлайн срещи";
-"preferences_general_external_patronage" = "Подкрепа";
 "preferences_general_external_contact" = "Контакт";
 "preferences_general_patron_title" = "Стани патрон";
 "preferences_general_patron_three_months" = "3 месеца - 2.99 USD";
@@ -58,8 +53,6 @@
 "preferences_general_patron_description" = "Това са еднократни покупки и не се подновяват автоматично.";
 "preferences_general_patron_thank_for_purchase" = "Благодарим! Подкрепата за MeetingBar е активна за %d месеца 🎉";
 "preferences_general_patron_restore_purchases" = "Възстанови покупки";
-"preferences_general_feedback_title" = "Въпроси и обратна връзка:\n";
-"preferences_general_feedback_email" = "Имейл";
 
 // MARK: - Preferences Appearance
 
@@ -117,8 +110,6 @@
 "preferences_services_link_meeting_title" = "Отваряй всички връзки за срещи в";
 "preferences_services_link_service_title" = "Отваряй връзките за %@ в";
 "preferences_services_link_default_browser_value" = "уеб браузъра по подразбиране";
-"preferences_services_supported_links_list" = "Поддържани връзки за услуги:\n%@";
-"preferences_services_supported_links_mailback" = "Ако услугата не се поддържа, изпрати имейл до разработчиците";
 "preferences_services_create_meeting_title" = "Създавай срещи чрез";
 "preferences_services_create_meeting_custom_url_value" = "Персонализиран URL";
 "preferences_services_create_meeting_custom_url_placeholder" = "Въведи валиден URL (с http:// или https://)";
@@ -158,13 +149,7 @@
 // MARK: - Preferences Calendars
 
 "preferences_calendars_select_calendars_title" = "Избери календари, чиито събития да се показват в лентата";
-"preferences_calendars_add_account_description" = "Липсва нужният календар?";
-"preferences_calendars_add_account_button" = "Добави календарен акаунт";
-"preferences_calendars_add_account_modal" = "За да добавиш външни календари:\n1. Отвори приложението Calendar\n2. Избери \"Add Account\" от менюто\n3. Избери и свържи акаунт";
-"preferences_calendars_provider_section_title" = "Доставчик на календари";
 "preferences_calendars_provider_gcalendar_change_account" = "Смени Google акаунта";
-"preferences_calendars_provider_macos_switch" = "Превключи към macOS Calendar";
-"preferences_calendars_provider_gcalendar_switch" = "Превключи към Google Calendar API";
 
 // MARK: - Preferences Advanced
 
@@ -189,7 +174,6 @@
 
 "status_bar_section_today" = "Днес";
 "status_bar_section_tomorrow" = "Утре";
-"status_bar_empty_calendar_message" = "Избери календарите си в настройките,\nза да виждаш срещите си";
 "status_bar_section_join_next_meeting" = "Влез в следващата среща";
 "status_bar_section_join_current_meeting" = "Влез в текущата среща";
 "status_bar_section_join_from_clipboard" = "Отвори среща от клипборда";
@@ -216,7 +200,6 @@
 "status_bar_submenu_status_pending" = " ⏳ Без отговор";
 "status_bar_submenu_status_unknown" = " ❔ Неизвестно";
 "status_bar_submenu_status_default_extended" = " ❔ (%@)";
-"status_bar_submenu_status_default_simple" = " ❔ (Неизвестно)";
 "status_bar_submenu_location_title" = "Местоположение:";
 "status_bar_submenu_organizer_title" = "Организатор: %@";
 "status_bar_submenu_notes_title" = "Бележки:";
@@ -247,39 +230,17 @@
 "status_bar_error_app_link_title" = "Връзката не може да се отвори в %@";
 "status_bar_error_app_link_message" = "Провери дали %@ е инсталиран, или отвори такива връзки в браузър от настройките.";
 
-// MARK: - Welcome screen
-
-"welcome_screen_greeting_main_title" = "MeetingBar е почти готов за работа.";
-"welcome_screen_greeting_additional_title" = "Остават само няколко настройки.";
-"welcome_screen_login_launch_toggle_title" = "Стартирай MeetingBar при вход";
-"welcome_screen_shortcut_next_meeting_title" = "Влизане в следващата среща с клавишна комбинация:";
-"welcome_screen_ad_hoc_meeting_title" = "Създавай незабавни срещи в ";
-"welcome_screen_shortcut_ad_hoc_meeting_title" = "с клавишна комбинация:";
-"welcome_screen_setup_calendar_title" = "Настрой календарите";
-
 // MARK: - Calendars screen
 
 "calendars_screen_select_calendar_title" = "Избери поне един календар";
-"calendars_screen_start_button" = "Продължи";
-
-// MARK: - Access screen
-
-"access_screen_access_denied_title" = "Достъпът до календарите е отказан.";
 "access_screen_access_screen_access_denied_go_to_title" = "Отиди в";
 "access_screen_access_denied_system_preferences_button" = "Системни настройки";
-"access_screen_access_denied_checkbox_title" = "и избери отметката до MeetingBar.";
 "access_screen_access_denied_relaunch_title" = "След това стартирай приложението отново, за да продължиш настройката.";
-"access_screen_access_granted_title" = "Изискване на достъп до календарите…";
-"access_screen_access_granted_click_ok_title" = "Натисни \"OK\" в прозореца на macOS.";
 "access_screen_provider_picker_label" = "Избери източник на календари";
-"access_screen_provider_macos_title" = "Приложението Calendar на macOS";
-"access_screen_provider_macos_recommended" = "(препоръчително)";
 "access_screen_provider_macos_data_source" = "Вземай данни от приложението Calendar на macOS";
 "access_screen_provider_macos_number_of_accounts" = "Неограничен брой свързани акаунти";
 "access_screen_provider_gcalendar_data_source" = "Вземай данни директно от Google Calendar";
 "access_screen_provider_gcalendar_number_of_accounts" = "Само един Google акаунт";
-"access_screen_provider_gcalendar_sign_in_title" = "Вход с Google";
-"access_screen_provider_gcalendar_sign_in_description" = "Разреши на MeetingBar достъп до календара в прозореца на браузъра";
 "access_screen_try_again" = "Опитай отново";
 
 // MARK: - Shared
@@ -297,7 +258,6 @@
 "constants_meeting_service_zoom_native" = "Zoom native";
 "constants_meeting_service_other" = "Друго";
 "constants_meeting_service_url" = "URL";
-"constants_browser_defaultBrowser" = "Браузър по подразбиране";
 
 // MARK: - Store
 
@@ -306,13 +266,9 @@
 "store_patronage_restore_nothing_message" = "Няма нищо за възстановяване";
 "store_patronage_purchase_success_message" = "Покупката е завършена. Благодарим за подкрепата!";
 "store_patronage_purchase_unknown_message" = "Неизвестна грешка. Свържи се с поддръжката.";
-"store_patronage_purchase_client_invalid_message" = "Плащането не е разрешено";
-"store_patronage_purchase_payment_invalid_message" = "Невалиден идентификатор на покупката";
 "store_patronage_purchase_payment_not_allowed_message" = "Устройството няма право да извърши плащането";
 "store_patronage_purchase_store_product_not_available_message" = "Продуктът не е наличен в текущия storefront";
-"store_patronage_purchase_cloud_service_permission_denied_message" = "Достъпът до информацията за облачната услуга не е разрешен";
 "store_patronage_purchase_cloud_service_network_connection_failed" = "Неуспешна връзка с мрежата";
-"store_patronage_purchase_cloud_service_revoked_message" = "Потребителят е отнел разрешението за ползване на тази облачна услуга";
 
 // MARK: - Notifications
 
@@ -362,13 +318,10 @@
 "onboarding_calendar_source_description" = "Изберете как MeetingBar чете данните от календара. И двете опции могат да включват календари на Google.";
 "onboarding_calendar_source_title" = "Изберете вашия източник на календар";
 "onboarding_choose_different_source" = "Избери различен източник";
-"onboarding_connect" = "Свържи";
 "onboarding_continue" = "Продължи";
 "onboarding_done" = "Готово";
 "onboarding_google_calendar_description" = "Свързва MeetingBar директно с Google Календар без използване на приложението Календар на macOS.";
 "onboarding_google_calendar_title" = "Google Calendar API";
-"onboarding_meeting_opening_description" = "Задайте приложението или браузъра по подразбиране за най-честите услуги за срещи.";
-"onboarding_meeting_opening_title" = "Избери как се отварят срещите";
 "onboarding_progress" = "Стъпка %@ от %@";
 "onboarding_success_description" = "Следващата ви среща ще се появи в лентата с менюта.";
 "onboarding_success_title" = "Готови сте";
@@ -381,45 +334,21 @@
 "preferences_advanced_regex_test_placeholder" = "Поставете примерен текст на събитие";
 "preferences_advanced_regex_test_title" = "Тествай regex на връзка към среща";
 "preferences_calendar_source_title" = "Източник на календар";
-"preferences_calendars_deselect_all" = "Премахни избора от всички";
-"preferences_calendars_select_all" = "Избери всички";
-"preferences_calendars_selection_summary" = "%d избрани от %d налични календара";
 "preferences_configure_browsers_help" = "Добавете персонализирани браузъри, профили или приложения за отваряне на връзки към срещи.";
 "preferences_meeting_opening_behavior_title" = "Отвори връзки към срещи";
 "preferences_notifications_alerts_title" = "Сигнали за срещи";
 "preferences_notifications_automation_title" = "Автоматично присъединяване";
-"preferences_section_about_title" = "Относно и поддръжка";
 "preferences_section_apple_script_hooks_title" = "AppleScript куки";
 "preferences_section_create_title" = "Създай срещи";
-"preferences_section_data_source_title" = "Източник на данни";
-"preferences_section_event_notifications_title" = "Известия за събития";
 "preferences_section_general_settings_title" = "Общи настройки";
-"preferences_section_menu_title" = "Меню";
-"preferences_section_open_title" = "Отвори";
 "preferences_section_regex_filters_title" = "Regex филтри";
 "preferences_section_shortcuts_title" = "Клавишни комбинации";
 "preferences_services_link_default_help" = "Този браузър се използва, освен ако не е зададено заместване за конкретен доставчик.";
 "preferences_services_link_overrides_help" = "Тези избори заместват браузъра по подразбиране за всяка услуга за срещи.";
 "preferences_services_link_overrides_title" = "Замествания по доставчик";
 "preferences_status_copy_diagnostics" = "Копирай диагностика";
-"preferences_status_diagnostics_hint" = "Копира версията на приложението, доставчика, статуса на обновяване и последната грешка в клипборда за доклади за проблеми.";
-"preferences_status_diagnostics_title" = "Диагностика";
-"preferences_status_last_error" = "Последна грешка:";
-"preferences_status_last_successful_refresh" = "Последно успешно обновяване:";
 "preferences_status_open_calendar_settings" = "Отвори настройките на календара";
-"preferences_status_permission_authorized" = "Упълномощен";
-"preferences_status_permission_calendar" = "Календар";
-"preferences_status_permission_denied" = "Отказан";
-"preferences_status_permission_google" = "Google акаунт";
-"preferences_status_permission_not_authorized" = "Не е упълномощен";
-"preferences_status_permission_not_determined" = "Не е поискан";
-"preferences_status_permission_notifications" = "Известия";
-"preferences_status_permission_provisional" = "Временен";
-"preferences_status_permission_restricted" = "Ограничен";
-"preferences_status_permissions_title" = "Разрешения";
-"preferences_status_provider_status_title" = "Статус на доставчика";
 "preferences_status_reconnect" = "Свържи отново";
-"preferences_status_refresh_now" = "Обнови сега";
 "preferences_status_state_auth_required" = "Необходимо е упълномощаване";
 "preferences_status_state_error" = "Последното обновяване се провали";
 "preferences_status_state_initializing" = "Инициализация";
@@ -429,14 +358,10 @@
 "preferences_tab_meeting_opening" = "Връзки към срещи";
 "preferences_tab_menu_bar" = "Дисплей и събития";
 "preferences_tab_notifications" = "Известия";
-"preferences_tab_status" = "Статус";
 "status_bar_control_actions" = "Действия за среща";
 "status_bar_control_auth_required" = "Google Календар трябва да бъде свързан отново";
 "status_bar_control_grant_permission" = "Дай разрешение за календар";
-"status_bar_control_join_current" = "Присъедини се към текущата среща";
-"status_bar_control_join_next" = "Присъедини се към следващата среща";
 "status_bar_control_no_calendars" = "Няма избрани календари";
-"status_bar_control_no_meeting_link" = "Няма налична връзка към среща";
 "status_bar_control_no_upcoming" = "Няма предстоящи срещи";
 "status_bar_control_permission_required" = "Необходимо е разрешение за календар";
 "status_bar_control_reconnect" = "Свържи отново Google Календар";
@@ -463,7 +388,6 @@
 "preferences_meeting_opening_mode_zoom_web_app_help" = "Отваря поддържани линкове за срещи в Zoom в уеб клиента на Zoom.";
 "preferences_services_link_modes_help" = "Опциите за приложение, уеб приложение и PWA са незадължителни. Съществуващото поведение на браузъра остава непроменено, докато не изберете.";
 "preferences_sidebar_experience" = "Преживяване";
-"preferences_sidebar_maintenance" = "Поддръжка";
 "preferences_sidebar_setup" = "Настройка";
 "status_bar_control_current_meeting" = "Текуща среща";
 "status_bar_control_next_meeting" = "Следваща среща";

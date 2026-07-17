@@ -421,10 +421,11 @@ extension MeetingProvider {
                 icon: "no_online_session",
                 pattern: #"https?://jam\.systems/[^\s]*"#),
 
-            // Discord (no custom icon)
+            // Discord
             make(
                 .discord,
-                icon: "no_online_session",
+                icon: "discord_icon",
+                height: 12.13,
                 pattern:
                     #"(http|https|discord)://(www\.)?(canary\.)?discord(app)?\.([a-zA-Z]{2,})(.+)?"#
             ),

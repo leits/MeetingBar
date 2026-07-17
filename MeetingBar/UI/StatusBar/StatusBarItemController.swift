@@ -99,7 +99,7 @@ final class StatusBarItemController {
             .shortenEventTitle, .menuEventTitleLength,
             .showEventEndTime, .showMeetingServiceIcon,
             .showEventCalendarColor,
-            .timeFormat, .bookmarks, .eventTitleFormat,
+            .timeFormat, .bookmarks,
             .personalEventsAppereance, .pastEventsAppereance,
             .declinedEventsAppereance, .ongoingEventVisibility,
             .showTimelineInMenu,
@@ -112,7 +112,7 @@ final class StatusBarItemController {
         }
         .store(in: &cancellables)
 
-        Defaults.publisher(.hideMeetingTitle, options: [])
+        Defaults.publisher(.eventTitleFormat, options: [])
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 self?.updateMenu()
@@ -230,13 +230,16 @@ final class StatusBarItemController {
         let iconImage: NSImage?
         switch presentation.icon {
         case .asset(let name):
-            iconImage = MenuStyleConstants.iconNamed(name)
+            // Named assets (calendar/app icon) are normalized to the menu-bar
+            // icon size; meeting-service icons keep the provider's own size.
+            let image = MenuStyleConstants.iconNamed(name)
+            image.size = MenuStyleConstants.iconSize
+            iconImage = image
         case .meetingService(let service):
             iconImage = getIconForMeetingService(service)
         case .none:
             iconImage = nil
         }
-        iconImage?.size = MenuStyleConstants.iconSize
         // "no_online_session" is the sentinel asset meaning "show no icon".
         let hasNoSessionIcon = iconImage?.name() == "no_online_session"
 

@@ -52,6 +52,7 @@ enum EventTitleIconFormat: String, Defaults.Serializable, Codable, CaseIterable 
 
 enum EventTitleFormat: String, Defaults.Serializable, Codable, CaseIterable {
     case show
+    case generic
     case dot
     case none
 }

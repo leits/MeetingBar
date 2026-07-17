@@ -99,6 +99,18 @@ struct AppSettings: Equatable {
     var advanced: AdvancedSettings
 }
 
+enum StatusBarTitleFormatMigration {
+    @MainActor
+    static func migrateDefaultsIfNeeded() {
+        guard Defaults[.hideMeetingTitle] else { return }
+
+        if Defaults[.eventTitleFormat] == .show {
+            Defaults[.eventTitleFormat] = .generic
+        }
+        Defaults[.hideMeetingTitle] = false
+    }
+}
+
 // MARK: - Defaults factory
 
 extension AppSettings {
@@ -106,7 +118,9 @@ extension AppSettings {
     /// Other code should receive `AppSettings` (or sub-structs) by value.
     @MainActor
     static var current: AppSettings {
-        AppSettings(
+        let eventTitleFormat = Defaults[.eventTitleFormat]
+
+        return AppSettings(
             calendar: CalendarSettings(
                 selectedCalendarIDs: Defaults[.selectedCalendarIDs],
                 eventStoreProvider: Defaults[.eventStoreProvider]
@@ -127,11 +141,11 @@ extension AppSettings {
                 showEventMaxTimeUntilEventThreshold: Defaults[.showEventMaxTimeUntilEventThreshold]
             ),
             statusBar: StatusBarSettings(
-                eventTitleFormat: Defaults[.eventTitleFormat],
+                eventTitleFormat: eventTitleFormat,
                 eventTimeFormat: Defaults[.eventTimeFormat],
                 eventTitleIconFormat: Defaults[.eventTitleIconFormat],
                 statusbarEventTitleLength: Defaults[.statusbarEventTitleLength],
-                hideMeetingTitle: Defaults[.hideMeetingTitle],
+                hideMeetingTitle: eventTitleFormat == .generic,
                 showEventEndTime: Defaults[.showEventEndTime]
             ),
             menu: MenuSettings(
@@ -272,7 +286,8 @@ extension AppSettings {
 
     @MainActor
     static func toggleMeetingTitleVisibility() {
-        Defaults[.hideMeetingTitle].toggle()
+        Defaults[.eventTitleFormat] = Defaults[.eventTitleFormat] == .show ? .generic : .show
+        Defaults[.hideMeetingTitle] = false
     }
 
     @MainActor

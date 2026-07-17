@@ -194,6 +194,7 @@ final class MenuBuilderTests: BaseTestCase {
         state.nextEvent = event
         state.showTimeline = true
         state.settings = .empty
+        state.settings.statusBar.eventTitleFormat = .generic
 
         let items = MenuBuilder(target: Dummy(), state: state, now: now)
             .buildTopSection()
@@ -211,6 +212,10 @@ final class MenuBuilderTests: BaseTestCase {
         )
         XCTAssertTrue(
             hosting.rootView.segments.first { $0.id == event.id }?.isHighlighted ?? false
+        )
+        XCTAssertEqual(
+            hosting.rootView.segments.first { $0.id == event.id }?.title,
+            event.title
         )
     }
 
@@ -359,6 +364,24 @@ final class MenuBuilderTests: BaseTestCase {
             presentation.sectionTitle,
             "status_bar_control_next_meeting".loco()
         )
+    }
+
+    func testMeetingSummaryKeepsEventTitleWhenStatusBarUsesGenericTitle() {
+        let now = Date()
+        let event = makeFakeEvent(
+            id: "privacy-title",
+            start: now.addingTimeInterval(300),
+            end: now.addingTimeInterval(1800),
+            withLink: true
+        )
+        var state = StatusBarMenuState()
+        state.settings = .empty
+        state.settings.statusBar.eventTitleFormat = .generic
+
+        let presentation = MenuBuilder(target: Dummy(), state: state, now: now)
+            .meetingSummaryPresentation(for: event)
+
+        XCTAssertEqual(presentation.eventTitle, event.title)
     }
 
     func testMeetingControlShowsAuthWarningAlongsideCachedNextEvent() {
@@ -1262,6 +1285,23 @@ final class MenuBuilderQuickActionsTests: BaseTestCase {
         })
     }
 
+    func testQuickActionsOfferShowTitleWhenStatusBarUsesGenericTitle() throws {
+        var state = StatusBarMenuState()
+        state.settings = .empty
+        state.settings.statusBar.eventTitleFormat = .generic
+
+        let items = MenuBuilder(target: Dummy(), state: state)
+            .buildJoinSection(nextEvent: nil)
+        let quickActions = try XCTUnwrap(items.first {
+            $0.title == "status_bar_quick_actions".loco()
+        }?.submenu?.items)
+
+        XCTAssertTrue(quickActions.contains {
+            $0.title == "status_bar_show_meeting_names".loco()
+                && $0.action == #selector(StatusBarItemController.toggleMeetingTitleVisibility)
+        })
+    }
+
     func testUtilitySectionKeepsDismissForTopCardEventWithoutDuplicateJoin() throws {
         let event = makeFakeEvent(
             id: "top-card",
@@ -1410,7 +1450,6 @@ final class StatusBarTitleRendererTests: BaseTestCase {
             icon: .none,
             layout: layout,
             titleStyle: titleStyle,
-            compactFallback: false,
             removeDeliveredNotifications: false
         )
     }
@@ -1475,7 +1514,7 @@ final class StatusBarItemControllerPresentationTests: BaseTestCase {
         XCTAssertEqual(button.attributedTitle.string, "")
     }
 
-    func test_updateTitleCompactsLongTitleAndShowsFallbackMeetingIcon() throws {
+    func test_updateTitleCompactsLongVisibleTitleWithoutForcingFallbackIcon() throws {
         configureStatusBarDefaults()
         Defaults[.eventTitleIconFormat] = .none
         Defaults[.statusbarEventTitleLength] = statusbarEventTitleLengthLimits.max
@@ -1493,7 +1532,7 @@ final class StatusBarItemControllerPresentationTests: BaseTestCase {
         controller.updateTitle()
 
         let button = try XCTUnwrap(controller.statusItem.button)
-        XCTAssertNotNil(button.image)
+        XCTAssertNil(button.image)
         XCTAssertEqual(button.imagePosition, .imageLeft)
         XCTAssertTrue(button.attributedTitle.string.contains("..."))
         XCTAssertLessThan(button.attributedTitle.string.count, longTitle.count)
@@ -1635,6 +1674,22 @@ final class StatusBarItemControllerPresentationTests: BaseTestCase {
         Defaults[.nonAllDayEvents] = .show
     }
 
+    func test_renderStatusBarPreservesProviderIconSize() throws {
+        let controller = StatusBarItemController()
+        defer { NSStatusBar.system.removeStatusItem(controller.statusItem) }
+
+        for provider in MeetingProvider.all {
+            guard let service = MeetingServices(rawValue: provider.id) else { continue }
+
+            controller.renderStatusBar(makePresentation(icon: .meetingService(service)))
+
+            let button = try XCTUnwrap(controller.statusItem.button)
+            let expected = NSSize(width: provider.iconWidth, height: provider.iconHeight)
+            XCTAssertEqual(button.image?.size, expected)
+            XCTAssertEqual(getIconForMeetingService(service).size, expected)
+        }
+    }
+
     private func makePresentation(
         mode: StatusBarTitleMode = .nextEvent,
         title: String = "",
@@ -1649,7 +1704,6 @@ final class StatusBarItemControllerPresentationTests: BaseTestCase {
             icon: icon,
             layout: layout,
             titleStyle: .normal,
-            compactFallback: false,
             removeDeliveredNotifications: false
         )
     }

@@ -68,12 +68,9 @@ struct MenuBuilder {
 
     func meetingSummaryPresentation(for event: MBEvent) -> MeetingSummaryPresentation {
         let isCurrent = event.startDate <= now && event.endDate > now
-        let displayTitle = state.statusBar.hideMeetingTitle
-            ? "general_meeting".loco()
-            : event.title
-        let eventTitle = displayTitle.isEmpty
+        let eventTitle = event.title.isEmpty
             ? "status_bar_no_title".loco()
-            : displayTitle
+            : event.title
         let time = eventTimePresentation(for: event)
         let timeRange = event.isAllDay
             ? time.start
@@ -216,14 +213,15 @@ struct MenuBuilder {
         let today = Calendar.current.startOfDay(for: now)
         let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today)!
         let highlightedEventID = state.nextEvent?.id
-        let segments = state.todayEvents.map {
-            DaySegment(
-                id: $0.id,
-                start: max($0.startDate, today),
-                end: min($0.endDate, tomorrow),
-                color: Color($0.calendar.color),
-                isHighlighted: $0.id == highlightedEventID,
-                title: state.statusBar.hideMeetingTitle ? nil : $0.title
+        let segments = state.todayEvents.compactMap { event -> DaySegment? in
+            guard shouldRenderEvent(event) else { return nil }
+            return DaySegment(
+                id: event.id,
+                start: max(event.startDate, today),
+                end: min(event.endDate, tomorrow),
+                color: Color(event.calendar.color),
+                isHighlighted: event.id == highlightedEventID,
+                title: event.title
             )
         }
         let timeline = DayRelativeTimelineView(
@@ -456,9 +454,10 @@ struct MenuBuilder {
         openLinkFromClipboardItem.setShortcut(for: .openClipboardShortcut)
 
         // MENU ITEM: QUICK ACTIONS: Toggle meeting name visibility
-        if state.statusBar.eventTitleFormat == .show {
+        if state.statusBar.eventTitleFormat == .show
+            || state.statusBar.eventTitleFormat == .generic {
             let title =
-                state.statusBar.hideMeetingTitle
+                state.statusBar.eventTitleFormat == .generic
                 ? "status_bar_show_meeting_names".loco()
                 : "status_bar_hide_meeting_names".loco()
 

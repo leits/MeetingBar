@@ -79,7 +79,6 @@ struct StatusBarPresenterSettings: Equatable {
     let iconAssets: StatusBarIconAssets
     let pendingDisplay: StatusBarParticipationDisplay
     let tentativeDisplay: StatusBarParticipationDisplay
-    let compactTitleLimit: Int
 }
 
 struct StatusBarPresentation: Equatable {
@@ -90,7 +89,6 @@ struct StatusBarPresentation: Equatable {
     let icon: StatusBarIcon
     let layout: StatusBarTitleLayout
     let titleStyle: StatusBarTitleStyle
-    let compactFallback: Bool
     let removeDeliveredNotifications: Bool
 }
 
@@ -136,53 +134,30 @@ enum StatusBarPresenter {
                 icon: nonEventIcon(mode: mode, settings: settings),
                 layout: .none,
                 titleStyle: .normal,
-                compactFallback: false,
                 removeDeliveredNotifications: mode == .noUpcoming
             )
         }
 
-        let rawTitleCount = nextEvent.title?.count ?? 0
-        let needsCompactTitle = settings.title.titleFormat == .show
-            && !settings.title.hideMeetingTitle
-            && rawTitleCount > settings.compactTitleLimit
-        let titleSettings = needsCompactTitle
-            ? StatusBarTitleSettings(
-                titleFormat: settings.title.titleFormat,
-                hideMeetingTitle: settings.title.hideMeetingTitle,
-                titleLength: settings.compactTitleLimit,
-                labels: settings.title.labels
-            )
-            : settings.title
         let text = StatusBarTitlePolicy.text(
             eventTitle: nextEvent.title,
             startDate: nextEvent.startDate,
             endDate: nextEvent.endDate,
-            settings: titleSettings,
+            settings: settings.title,
             now: now,
             calendar: calendar
         )
 
-        var icon = StatusBarIconPolicy.icon(
+        let icon = StatusBarIconPolicy.icon(
             mode: mode,
             format: settings.iconFormat,
             formatAssetName: settings.iconFormatAssetName,
             meetingService: nextEvent.meetingService,
             assets: settings.iconAssets
         )
-        var title = text.title
-        var compactFallback = false
-
-        if (needsCompactTitle && icon == .none) || (title.isEmpty && icon == .none) {
-            icon = .meetingService(nextEvent.meetingService)
-            if title.isEmpty {
-                title = "•"
-            }
-            compactFallback = true
-        }
 
         return StatusBarPresentation(
             mode: mode,
-            title: title,
+            title: text.title,
             time: text.time,
             tooltip: nextEvent.title,
             icon: icon,
@@ -193,7 +168,6 @@ enum StatusBarPresenter {
                 pendingDisplay: settings.pendingDisplay,
                 tentativeDisplay: settings.tentativeDisplay
             ),
-            compactFallback: compactFallback,
             removeDeliveredNotifications: false
         )
     }
@@ -259,6 +233,7 @@ enum StatusBarPresenter {
 
 enum StatusBarEventTitleFormat: Equatable {
     case show
+    case generic
     case dot
     case none
 }
@@ -272,7 +247,6 @@ struct StatusBarTitleLabels: Equatable {
 
 struct StatusBarTitleSettings: Equatable {
     let titleFormat: StatusBarEventTitleFormat
-    let hideMeetingTitle: Bool
     let titleLength: Int
     let labels: StatusBarTitleLabels
 }
@@ -316,15 +290,14 @@ enum StatusBarTitlePolicy {
     private static func formattedTitle(_ rawTitle: String?, settings: StatusBarTitleSettings) -> String {
         switch settings.titleFormat {
         case .show:
-            if settings.hideMeetingTitle {
-                return settings.labels.genericMeetingTitle
-            }
             return shortenTitle(
                 rawTitle,
                 limit: settings.titleLength,
                 noTitle: settings.labels.noTitle
             )
             .replacingOccurrences(of: "\n", with: " ")
+        case .generic:
+            return settings.labels.genericMeetingTitle
         case .dot:
             return "•"
         case .none:
