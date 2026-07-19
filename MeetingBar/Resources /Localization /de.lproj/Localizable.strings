@@ -389,3 +389,7 @@
 "status_bar_control_next_meeting" = "Nächstes Meeting";
 "preferences_appearance_events_no_meeting_link_title" = "Termine ohne Meeting-Link";
 "preferences_appearance_menu_show_event_calendar_color_value" = "Kalenderfarbe";
+"preferences_sidebar_advanced" = "Erweitert";
+"preferences_appearance_status_bar_title_generic_value" = "Generischer Titel (Meeting)";
+"onboarding_setup_title" = "MeetingBar Einrichtung";
+"onboarding_back" = "Zurück";
