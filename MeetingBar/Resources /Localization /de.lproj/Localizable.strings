@@ -56,7 +56,7 @@
 "preferences_appearance_status_bar_time_hide_value" = "ausblenden";
 "preferences_appearance_status_bar_time_show_under_title_value" = "unter Titel anzeigen";
 "preferences_appearance_status_bar_time_show_value" = "anzeigen";
-"preferences_appearance_status_bar_time_title" = "Uhrzeit";
+"preferences_appearance_status_bar_time_title" = "Zeige Uhrzeit";
 "preferences_appearance_status_bar_title_shorten_stepper" = "auf %d Zeichen kürzen";
 "preferences_appearance_status_bar_title_hide_value" = "ausblenden";
 "preferences_appearance_status_bar_title_dot_value" = "Punkt (•)";
@@ -178,14 +178,14 @@
 "preferences_advanced_wrong_location_title" = "Falscher Ort";
 "preferences_advanced_save_script_button" = "Skript speichern";
 "preferences_advanced_apple_script_placeholder" = "# Schreibe Dein Skript hier\ntell application \"Music\" to pause";
-"preferences_advanced_run_script_on_event_start" = "Starte das AppleScript automatisch";
+"preferences_advanced_run_script_on_event_start" = "Starte das AppleScript vor betretbarem Meeting";
 "preferences_advanced_test_script_on_next_event" = "Teste beim nächsten Termin";
 "preferences_advanced_edit_script" = "Bearbeite das Script";
-"preferences_advanced_apple_script_checkmark" = "AppleScript beim Betreten eines Meetings ausführen";
+"preferences_advanced_apple_script_checkmark" = "AppleScript beim Betreten ausführen";
 
 // MARK: - Preferences Advanced
 
-"preferences_advanced_setting_warning" = "⚠️ Verwende diese Einstellungen nur, wenn Du verstehst was sie bewirken";
+"preferences_advanced_setting_warning" = "Diese Einstellungen sind für Fortgeschrittene Benutzer vorgesehen";
 "preferences_calendars_provider_gcalendar_change_account" = "Ändere den Google Account";
 
 // MARK: - Preferences Calendars
@@ -208,11 +208,11 @@
 "preferences_services_create_meeting_custom_url_placeholder" = "Bitte eine gültige URL angeben (mit http:// oder https://)";
 "preferences_services_create_meeting_custom_url_value" = "Benutzerdefinierte URL";
 "preferences_services_create_meeting_title" = "Meetings erstellen mit";
-"preferences_services_link_service_title" = "%@-Links öffnen in";
+"preferences_services_link_service_title" = "%@";
 
 // MARK: - Preferences Services
 
-"preferences_services_link_meeting_title" = "Meeting-Links öffnen mit";
+"preferences_services_link_meeting_title" = "Standard-Browser für Meeting-Links";
 "preferences_appearance_menu_show_event_details_value" = "Details als Untermenü";
 "preferences_appearance_menu_show_event_icon_value" = "symbol";
 "preferences_appearance_menu_show_event_end_time_value" = "Endzeit";
@@ -249,11 +249,11 @@
 "access_screen_access_screen_access_denied_go_to_title" = "Gehe zu";
 "shared_automatic_event_join_toggle" = "Automatisch zum nächsten Meeting beitreten";
 "shared_automatic_event_join_tip" = "Diese Einstellung wird automatisch das nächste Meeting in ihrer voreingestellten App oder dem Browser öffnen";
-"access_screen_provider_picker_label" = "Wähle den Kalender Anbieter aus";
-"access_screen_provider_macos_data_source" = "Hole Daten von der MacOS Kalender App";
-"access_screen_provider_macos_number_of_accounts" = "Beliebig viele verbundene Konten";
-"access_screen_provider_gcalendar_data_source" = "Hole Daten direkt vom Google Kalender";
-"access_screen_provider_gcalendar_number_of_accounts" = "Nur ein Google Account";
+"access_screen_provider_picker_label" = "Wähle eine Kalenderquelle aus";
+"access_screen_provider_macos_data_source" = "Nutzt die MacOS Kalender App als Quelle der Daten";
+"access_screen_provider_macos_number_of_accounts" = "Alle konfigurieren Konten: iCloud, Google, Exchange, CalDAV, und weitere";
+"access_screen_provider_gcalendar_data_source" = "Verbindet direkt durch die Google Kalender API";
+"access_screen_provider_gcalendar_number_of_accounts" = "Nur ein Google Account gleichzeitig";
 "access_screen_try_again" = "Neuer Versuch";
 
 // MARK: - Calendars screen
@@ -287,13 +287,13 @@
 "preferences_appearance_menu_show_timeline_toggle" = "Visuellen Zeitstrahl für den Tag anzeigen";
 
 "general_refresh" = "Aktualisieren";
-"general_when_event_ends" = "wenn das Ereignis endet";
-"general_end_of_event_notification_toggle" = "Benachrichtigung senden, wenn das Ereignis endet";
+"general_when_event_ends" = "Ende des Ereignisses";
+"general_end_of_event_notification_toggle" = "Benachrichtigen am Ende des Ereignisses";
 "timeline_accessibility_label" = "Zeitleiste mit %d Ereignissen";
-"message_clipboard_invalid_title" = "Keine gültige URL";
-"message_clipboard_invalid_text" = "Die Zwischenablage enthält keinen Meeting-Link, daher kann das Meeting nicht gestartet werden.";
+"message_clipboard_invalid_title" = "Kein gültiger Link";
+"message_clipboard_invalid_text" = "Kein Meeting-Link in der Zwischenablage, kann nicht gestartet werden.";
 "message_clipboard_empty_title" = "Zwischenablage ist leer";
-"message_clipboard_empty_text" = "Die Zwischenablage enthält keinen Inhalt, daher kann das Meeting nicht gestartet werden.";
+"message_clipboard_empty_text" = "Zwischenablage ist leer, kann kein Meeting starten.";
 "message_event_script_execution_failed_title" = "AppleScript-Ausführung fehlgeschlagen";
 "message_event_script_execution_failed_text" = "Das Skript in %@ ist fehlgeschlagen: %@";
 "message_event_script_file_missing_title" = "AppleScript-Datei nicht gefunden";
@@ -341,8 +341,8 @@
 "onboarding_calendar_source_description" = "Wählen Sie, wie MeetingBar Kalenderdaten liest. Beide Optionen können Google-Kalender einschließen.";
 "onboarding_apple_calendar_title" = "macOS Kalender-App";
 "onboarding_apple_calendar_description" = "Liest Kalender aus der Kalender-App auf diesem Mac, einschließlich aller dort konfigurierten Konten.";
-"onboarding_google_calendar_title" = "Google Calendar API";
-"onboarding_google_calendar_description" = "Verbindet MeetingBar direkt mit Google Calendar, ohne die macOS Kalender-App zu verwenden.";
+"onboarding_google_calendar_title" = "Google Kalendar API";
+"onboarding_google_calendar_description" = "Verbindet MeetingBar direkt mit Google Kalendar, ohne die macOS Kalender-App zu verwenden.";
 "onboarding_authorization_title" = "Kalenderzugriff bestätigen";
 "onboarding_authorization_waiting" = "Warte auf Autorisierung…";
 "onboarding_authorization_apple_description" = "MeetingBar erlauben, Ereignisse aus der Kalender-App auf diesem Mac zu lesen.";
@@ -355,7 +355,7 @@
 "onboarding_success_title" = "Sie sind startklar";
 "onboarding_success_description" = "Ihr nächstes Meeting erscheint in der Menüleiste.";
 "access_screen_provider_authorization_cancelled" = "Autorisierung wurde abgebrochen. Versuchen Sie es erneut, um Ihren Kalender zu verbinden.";
-"status_bar_control_actions" = "Meeting-Aktionen";
+"status_bar_control_actions" = "Weitere Aktionen";
 "status_bar_control_stale" = "Kalenderaktualisierung fehlgeschlagen – zeigt zuletzt bekannte Daten";
 "status_bar_control_auth_required" = "Google Calendar muss erneut verbunden werden";
 "status_bar_control_reconnect" = "Google Calendar erneut verbinden";
@@ -387,9 +387,13 @@
 "preferences_sidebar_setup" = "Einrichtung";
 "status_bar_control_current_meeting" = "Aktuelles Meeting";
 "status_bar_control_next_meeting" = "Nächstes Meeting";
-"preferences_appearance_events_no_meeting_link_title" = "Termine ohne Meeting-Link";
+"preferences_appearance_events_no_meeting_link_title" = "Ereignisse ohne Meeting-Link";
 "preferences_appearance_menu_show_event_calendar_color_value" = "Kalenderfarbe";
 "preferences_sidebar_advanced" = "Erweitert";
 "preferences_appearance_status_bar_title_generic_value" = "Generischer Titel (Meeting)";
 "onboarding_setup_title" = "MeetingBar Einrichtung";
 "onboarding_back" = "Zurück";
+"onboarding_essentials_title" = "Wähle das tägliche Verhalten";
+"onboarding_essentials_description" = "Wähle Standards für öffnen von Meetings und im Zeitplan zu bleiben.";
+"onboarding_essentials_hint" = "Du kannst jedes Detail in den Einstellungen später ändern.";
+"onboarding_start_using" = "Beginne MeetingBar zu nutzen";
