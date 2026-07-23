@@ -44,7 +44,7 @@
 "preferences_general_shortcut_join_next" = "次のミーティングに参加:";
 "preferences_general_shortcut_join_from_clipboard" = "クリップボードからミーティングに参加:";
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "ステータスバーのタイトル表示をトグルする:";
-"preferences_general_meeting_bar_description" = "MeetingBar は Andrii Leitsius 🇺🇦 によって開発されたオープンソースアプリケーションです。\nオンラインミーティングをスムーズで簡単にします。";
+"preferences_general_meeting_bar_description" = "MeetingBar は Andrii Leitsius 🇺🇦 によって\n開発されたオープンソースアプリケーションです。\nオンラインミーティングをスムーズで簡単にします。";
 "preferences_general_external_contact" = "お問い合わせ";
 "preferences_general_patron_title" = "パトロンになる";
 "preferences_general_patron_three_months" = "3ヶ月 - 2.99 USD";
@@ -84,7 +84,7 @@
 "preferences_appearance_status_bar_title_dot_value" = "ドット (•)";
 "preferences_appearance_status_bar_title_hide_value" = "非表示";
 "preferences_appearance_status_bar_title_shorten_stepper" = "%d 文字に切り詰める";
-"preferences_appearance_status_bar_time_title" = "時刻";
+"preferences_appearance_status_bar_time_title" = "時間の表示";
 "preferences_appearance_status_bar_time_show_value" = "表示";
 "preferences_appearance_status_bar_time_show_under_title_value" = "タイトルの下に表示";
 "preferences_appearance_status_bar_time_hide_value" = "非表示";
@@ -104,8 +104,8 @@
 // MARK: - Preferences Services
 
 
-"preferences_services_link_meeting_title" = "すべてのミーティングリンクを開くアプリ";
-"preferences_services_link_service_title" = "%@でリンクを開く";
+"preferences_services_link_meeting_title" = "ミーティングリンクを開くブラウザ";
+"preferences_services_link_service_title" = "%@";
 "preferences_services_link_default_browser_value" = "標準のウェブブラウザー";
 "preferences_services_create_meeting_title" = "ミーティングを作成するサービス";
 "preferences_services_create_meeting_custom_url_value" = "カスタム URL";
@@ -116,7 +116,7 @@
 // MARK: - Preferences Services Browsers Configuration
 
 
-"preferences_configure_browsers_button" = "ウェブブラウザー設定";
+"preferences_configure_browsers_button" = "ウェブブラウザーの設定";
 "preferences_configure_browsers_delete_alert_title" = "ウェブブラウザー設定を削除しますか？";
 "preferences_configure_browsers_delete_alert_message" = "%@ のウェブブラウザー設定を削除しますか？";
 "preferences_configure_browsers_add_button_browser_title" = "ウェブブラウザー";
@@ -127,9 +127,9 @@
 "preferences_configure_browsers_modal_add_browser_path" = "パス";
 "preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "ウェブブラウザーの選択";
 "preferences_configure_browsers_modal_alert_title" = "ブラウザー設定を追加できませんでした";
-"preferences_configure_browsers_choose_browser_panel_title" = "ウェブブラウザーアプリを選択してください";
-"preferences_configure_browsers_choose_browser_panel_prompt" = "ウェブブラウザーの選択";
-"preferences_configure_browsers_choose_browser_panel_message" = "ウェブブラウザーをどこから起動するか選択します。";
+"preferences_configure_browsers_choose_browser_panel_title" = "ブラウザーアプリを選択してください";
+"preferences_configure_browsers_choose_browser_panel_prompt" = "ブラウザーの選択";
+"preferences_configure_browsers_choose_browser_panel_message" = "ブラウザーをどこから起動するか選択します。";
 
 // MARK: - Preferences Bookmarks
 
@@ -154,10 +154,10 @@
 // MARK: - Preferences Advanced
 
 
-"preferences_advanced_setting_warning" = "⚠️ これらの設定は、内容をご理解の上でご利用ください";
-"preferences_advanced_apple_script_checkmark" = "ミーティング参加時に AppleScript を実行する";
+"preferences_advanced_setting_warning" = "⚠️ これらの設定は、内容をご理解の上でご利用ください。";
+"preferences_advanced_apple_script_checkmark" = "参加時にAppleScriptを実行する";
 "preferences_advanced_apple_script_placeholder" = "# ここにスクリプトを書いてください\ntell application \"Music\" to pause";
-"preferences_advanced_run_script_on_event_start" = "AppleScript自動で実行する";
+"preferences_advanced_run_script_on_event_start" = "参加可能な会議の前にAppleScriptを実行";
 "preferences_advanced_test_script_on_next_event" = "次のイベントをテストする";
 "preferences_advanced_edit_script" = "スクリプトを編集";
 "preferences_advanced_save_script_button" = "保存";
@@ -201,7 +201,7 @@
 "status_bar_submenu_attendees_status_tentative" = " [名無しさん]";
 "status_bar_submenu_attendees_status_unknown" = " [?]";
 "status_bar_submenu_copy_meeting_link" = "ミーティングリンクをコピー";
-"status_bar_submenu_dismiss_meeting" = "Dismiss meeting";
+"status_bar_submenu_dismiss_meeting" = "ミーティングを閉じる";
 "status_bar_submenu_undismiss_meeting" = "Remove dismissal";
 "status_bar_submenu_email_attendees" = "参加者にメールを送信";
 "status_bar_submenu_open_in_calendar" = "カレンダーアプリで開く";
@@ -229,26 +229,26 @@
 "access_screen_access_screen_access_denied_go_to_title" = "Go to";
 "access_screen_access_denied_system_preferences_button" = "システム設定";
 "access_screen_access_denied_relaunch_title" = "手動でアプリを起動して設定を続ける必要があります。";
-"access_screen_provider_picker_label" = "カレンダーサービスを選択します";
-"access_screen_provider_macos_data_source" = "macOSのカレンダーアプリからデータを取得";
-"access_screen_provider_macos_number_of_accounts" = "Any number of any connected accounts";
-"access_screen_provider_gcalendar_data_source" = "Get data directly from Google Calendar";
-"access_screen_provider_gcalendar_number_of_accounts" = "Only one Google account";
+"access_screen_provider_picker_label" = "カレンダーソースを選択";
+"access_screen_provider_macos_data_source" = "macOSカレンダーアプリをデータソースとして使用";
+"access_screen_provider_macos_number_of_accounts" = "すべての構成アカウント:iCloud、Google、Exchange、CalDAVなど";
+"access_screen_provider_gcalendar_data_source" = "Google Calendar API から直接接続";
+"access_screen_provider_gcalendar_number_of_accounts" = "一度に1つのGoogleアカウント";
 "access_screen_try_again" = "もう一度試してください";
 
 // MARK: - Shared
 
 
-"shared_send_notification_toggle" = "イベント開始前に通知する";
+"shared_send_notification_toggle" = "システム通知を送信する";
 "shared_fullscreen_notification_toggle" = "全画面通知";
-"general_when_event_starts" = "イベントが始まったとき";
+"general_when_event_starts" = "イベント開始時";
 "general_one_minute_before" = "1分前";
 "general_three_minute_before" = "3分前";
 "general_five_minute_before" = "5分前";
-"shared_send_notification_no_alert_style_tip" = "⚠️ MeetingBar の macOS の通知設定は、通知パネルに設定されていません。持続的な通知を利用する場合は、通知パネルに設定してください。";
+"shared_send_notification_no_alert_style_tip" = "注意: 通知はバナーにセットされますので、消失する前に簡単に表示されます。 それらを却下するまで、それらを画面に保つには、macOS通知設定でアラートに切り替えます.";
 "shared_send_notification_disabled_tip" = "⚠️ MeetingBar の macOS の通知設定が現在オフになっています。ミーティングを見逃さないために、 macOS のシステム設定で通知を有効にしてください。";
 "shared_automatic_event_join_toggle" = "自動的に次のイベントを開く";
-"shared_automatic_event_join_tip" = "設定したアプリやブラウザで次のイベントを自動的に開きます。";
+"shared_automatic_event_join_tip" = "設定したアプリやブラウザで次のイベントを自動的に開きます";
 
 // MARK: - Constants
 "constants_create_meeting_service_url" = "カスタム URL";
@@ -301,7 +301,7 @@
 "status_bar_section_refresh_sources" = "ソースを更新";
 "access_screen_provider_authorization_cancelled" = "認証がキャンセルされました。カレンダーを接続するためにもう一度お試しください。";
 "general_end_of_event_notification_toggle" = "イベント終了時に通知を送信する";
-"general_refresh" = "更新";
+"general_refresh" = "再読み込み";
 "general_when_event_ends" = "イベント終了時";
 "message_clipboard_empty_text" = "クリップボードに内容がないため、ミーティングを開始できません。";
 "message_clipboard_empty_title" = "クリップボードが空です";
@@ -315,7 +315,7 @@
 "message_google_account_connected_title" = "Googleアカウントが接続されました";
 "onboarding_apple_calendar_description" = "このMacのカレンダーアプリからカレンダーを読み取ります。設定済みのすべてのアカウントが含まれます。";
 "onboarding_apple_calendar_title" = "macOSカレンダーアプリ";
-"onboarding_authorization_apple_description" = "MeetingBarがこのMacのカレンダーアプリからイベントを読み取ることを許可してください。";
+"onboarding_authorization_apple_description" = "MeetingBarがMacのカレンダーアプリからイベントを読み取ることを許可してください。";
 "onboarding_authorization_google_description" = "ブラウザでGoogleサインインを完了してから、MeetingBarに戻ってください。";
 "onboarding_authorization_title" = "カレンダーアクセスを確認";
 "onboarding_authorization_waiting" = "認証を待っています…";
@@ -340,7 +340,7 @@
 "preferences_advanced_regex_test_button" = "正規表現をテスト";
 "preferences_advanced_regex_test_match" = "%@ が一致しました";
 "preferences_advanced_regex_test_no_match" = "一致なし";
-"preferences_advanced_regex_test_placeholder" = "サンプルイベントテキストを貼り付け";
+"preferences_advanced_regex_test_placeholder" = "サンプルイベントテキストを貼り付ける";
 "preferences_advanced_regex_test_title" = "ミーティングリンク正規表現をテスト";
 "preferences_calendar_source_title" = "カレンダーソース";
 "preferences_configure_browsers_help" = "ミーティングリンクを開くためのカスタムブラウザ、プロファイル、またはアプリを追加します。";
@@ -352,13 +352,13 @@
 "preferences_section_general_settings_title" = "一般設定";
 "preferences_section_regex_filters_title" = "正規表現フィルター";
 "preferences_section_shortcuts_title" = "キーボードショートカット";
-"preferences_services_link_default_help" = "プロバイダー固有の上書きが設定されていない場合、このブラウザが使用されます。";
+"preferences_services_link_default_help" = "プロバイダー固有の上書きが設定されている場合を除き、このブラウザが使用されます。";
 "preferences_services_link_overrides_help" = "これらの設定は各ミーティングサービスのデフォルトブラウザを上書きします。";
-"preferences_services_link_overrides_title" = "プロバイダー別上書き";
+"preferences_services_link_overrides_title" = "サービス固有のオープン";
 "preferences_status_copy_diagnostics" = "診断情報をコピー";
 "preferences_status_open_calendar_settings" = "カレンダー設定を開く";
 "preferences_status_reconnect" = "再接続";
-"preferences_status_state_auth_required" = "認証が必要";
+"preferences_status_state_auth_required" = "認証が必要です";
 "preferences_status_state_error" = "最後の更新が失敗しました";
 "preferences_status_state_initializing" = "初期化中";
 "preferences_status_state_ok" = "最新";
@@ -367,16 +367,16 @@
 "preferences_tab_meeting_opening" = "ミーティングリンク";
 "preferences_tab_menu_bar" = "表示とイベント";
 "preferences_tab_notifications" = "通知";
-"status_bar_control_actions" = "ミーティングアクション";
+"status_bar_control_actions" = "その他のアクション";
 "status_bar_control_auth_required" = "Google カレンダーを再接続する必要があります";
 "status_bar_control_grant_permission" = "カレンダーの許可を付与";
 "status_bar_control_no_calendars" = "カレンダーが選択されていません";
-"status_bar_control_no_upcoming" = "次のミーティングはありません";
+"status_bar_control_no_upcoming" = "今後の会議はありません";
 "status_bar_control_permission_required" = "カレンダーの許可が必要です";
 "status_bar_control_reconnect" = "Google カレンダーを再接続";
 "status_bar_control_refresh_failed" = "カレンダーの更新に失敗しました";
 "status_bar_control_select_calendars" = "環境設定でカレンダーを選択";
-"status_bar_control_stale" = "カレンダーの更新に失敗しました — 最後の既知データを表示中";
+"status_bar_control_stale" = "カレンダーの更新に失敗しました — 最後のデータを表示中";
 "status_bar_join_with_other_link" = "別のリンクで参加";
 "timeline_accessibility_label" = "%d 件のイベントのタイムライン";
 "fullscreen_notification_dismiss_action" = "閉じる";
@@ -394,17 +394,25 @@
 "preferences_meeting_opening_mode_jitsi_app" = "Jitsi App";
 "preferences_meeting_opening_mode_meetinone" = "MeetInOne";
 "preferences_meeting_opening_mode_riverside_app" = "Riverside App";
-"preferences_meeting_opening_mode_slack_app" = "Slack App";
-"preferences_meeting_opening_mode_teams_app" = "Teams App";
+"preferences_meeting_opening_mode_slack_app" = "Slackアプリ";
+"preferences_meeting_opening_mode_teams_app" = "Teams アプリ";
 "preferences_meeting_opening_mode_workplace_app" = "Workplace App";
 "preferences_meeting_opening_mode_workplace_app_help" = "利用可能な場合、サポートされているWorkplace通話をネイティブのWorkchatアプリで開きます。";
-"preferences_meeting_opening_mode_zoom_app" = "Zoom App";
-"preferences_meeting_opening_mode_zoom_web_app" = "Zoom Web App";
+"preferences_meeting_opening_mode_zoom_app" = "Zoom アプリ";
+"preferences_meeting_opening_mode_zoom_web_app" = "Zoom Web アプリ";
 "preferences_meeting_opening_mode_zoom_web_app_help" = "サポートされているZoomミーティングリンクをZoomのWebクライアントで開きます。";
-"preferences_services_link_modes_help" = "アプリ、ウェブアプリ、PWAのオプションはオプションです。選択するまで、既存のブラウザの動作は変わりません。";
+"preferences_services_link_modes_help" = "アプリ、ウェブアプリ、PWAはオプションです。 既存のブラウザの動作は、選択するまで変更されません.";
 "preferences_sidebar_experience" = "エクスペリエンス";
 "preferences_sidebar_setup" = "セットアップ";
 "status_bar_control_current_meeting" = "現在のミーティング";
 "status_bar_control_next_meeting" = "次のミーティング";
 "preferences_appearance_events_no_meeting_link_title" = "会議リンクのないイベント";
 "preferences_appearance_menu_show_event_calendar_color_value" = "カレンダーの色";
+"onboarding_setup_title" = "MeetingBar セットアップ";
+"onboarding_back" = "もどる";
+"onboarding_essentials_hint" = "後からすべての詳細を調整できます。";
+"onboarding_start_using" = "MeetingBarを使い始める";
+"preferences_sidebar_advanced" = "詳細設定";
+"preferences_appearance_status_bar_title_generic_value" = "一般的なタイトル（会議）";
+"onboarding_essentials_title" = "毎日の振る舞い";
+"onboarding_essentials_description" = "ミーティングを開き、スケジュールに滞在するためのいくつかのデフォルトを選択します.";
