@@ -519,14 +519,36 @@ enum MeetingLinkDetector {
         currentUserEmail: String?
     ) -> MeetingLinkCandidate {
         guard candidate.service == .meet,
-              let authAccount = currentUserEmail ?? calendarEmail,
-              let urlWithAuth = url(candidate.url, appendingAuthuser: authAccount)
+              let rawAccount = currentUserEmail ?? calendarEmail,
+              let urlWithAuth = url(candidate.url, appendingAuthuser: canonicalAuthuser(from: rawAccount))
         else { return candidate }
         return MeetingLinkCandidate(
             url: urlWithAuth,
             service: candidate.service,
             source: candidate.source
         )
+    }
+
+    /// Returns the canonical account email to use as the Meet `authuser`.
+    ///
+    /// Google "plus-addresses" such as `yuri+work@gmail.com` are mail-delivery
+    /// aliases of the base account (`yuri@gmail.com`), not separate sign-in
+    /// identities. The `authuser` parameter must name the account you are
+    /// actually signed in with, so a `+suffix` in the local-part is stripped
+    /// before the email is used to switch accounts. Without this, Google can't
+    /// match the alias to a signed-in account and the Meet link opens in the
+    /// wrong account (or no account at all), so the meeting is effectively
+    /// missed.
+    private static func canonicalAuthuser(from email: String) -> String {
+        // Only the local-part (before the first `@`) can carry a `+tag`. Bound
+        // on the domain boundary first so a `+` inside a (pathological) domain
+        // is left alone and an address with no `@` is returned unchanged.
+        guard let atIndex = email.firstIndex(of: "@") else { return email }
+        let localPart = email[..<atIndex]
+        guard let plusIndex = localPart.firstIndex(of: "+") else { return email }
+        let baseLocalPart = localPart[..<plusIndex]
+        guard !baseLocalPart.isEmpty else { return email }
+        return String(baseLocalPart) + String(email[atIndex...])
     }
 
     private static func url(_ url: URL, appendingAuthuser authAccount: String) -> URL? {

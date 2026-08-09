@@ -408,6 +408,54 @@ final class MeetingLinkDetectorTests: XCTestCase {
         )
     }
 
+    func testGoogleMeetStripsGmailPlusAddressSuffixFromCalendarEmail() {
+        // Gmail "plus-addresses" such as `yuri+work@gmail.com` are mail
+        // aliases of the base account `yuri@gmail.com`, not a separate sign-in
+        // identity. The `authuser` must name the signed-in account, so the
+        // `+suffix` is stripped — otherwise Google can't match the address and
+        // the Meet link opens in the wrong account.
+        let link = MeetingLinkDetector.detect(
+            location: "https://meet.google.com/abc-defg-hij",
+            eventURL: nil,
+            notes: nil,
+            calendarEmail: "yuri+work@gmail.com",
+            currentUserEmail: nil
+        )
+        XCTAssertEqual(
+            link?.url.absoluteString,
+            "https://meet.google.com/abc-defg-hij?authuser=yuri@gmail.com"
+        )
+    }
+
+    func testGoogleMeetStripsGmailPlusAddressSuffixFromCurrentUserEmail() {
+        let link = MeetingLinkDetector.detect(
+            location: "https://meet.google.com/abc-defg-hij",
+            eventURL: nil,
+            notes: nil,
+            calendarEmail: nil,
+            currentUserEmail: "yuri+work@gmail.com"
+        )
+        XCTAssertEqual(
+            link?.url.absoluteString,
+            "https://meet.google.com/abc-defg-hij?authuser=yuri@gmail.com"
+        )
+    }
+
+    func testGoogleMeetLeavesPlainAddressWithoutPlusSuffixUnchanged() {
+        // No `+suffix` -> the address is used verbatim.
+        let link = MeetingLinkDetector.detect(
+            location: "https://meet.google.com/abc-defg-hij",
+            eventURL: nil,
+            notes: nil,
+            calendarEmail: "user@gmail.com",
+            currentUserEmail: nil
+        )
+        XCTAssertEqual(
+            link?.url.absoluteString,
+            "https://meet.google.com/abc-defg-hij?authuser=user@gmail.com"
+        )
+    }
+
     func testGoogleMeetConferenceURLPreservesExistingQueryWhenAddingAuthuser() {
         let link = MeetingLinkDetector.detect(
             conferenceURL: URL(string: "https://meet.google.com/abc-defg-hij?pli=1"),
