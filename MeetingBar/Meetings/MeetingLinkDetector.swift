@@ -245,9 +245,10 @@ func detectMeetingLink(_ rawText: String, customRegexes: [String] = []) -> Meeti
 /// targets, so meeting-link detection sees the underlying URL rather than the
 /// `…safelinks.protection.outlook.com/…url=<encoded>` redirect.
 ///
-/// Unwrapping behaviour — per-pass splicing, skipping undecodable escapes, and
-/// what the depth cap does and does not bound — is documented once on
-/// `unwrappingRedirects`, which this shares with `cleanupGoogleRedirects`.
+/// Shares its unwrapping machinery with `cleanupGoogleRedirects`:
+/// `unwrappingRedirects` owns the bounded loop, `rewritingRedirects` the
+/// per-pass splicing and the skipping of undecodable escapes, and
+/// `maxRedirectNestingDepth` documents what the cap does and does not bound.
 ///
 /// The previous loop rewrote one match per pass with a global
 /// `replacingOccurrences` and aborted on the first undecodable escape, so a
@@ -271,8 +272,10 @@ func cleanupOutlookSafeLinks(rawText: String) -> String {
 /// Links Calendar generates itself, such as the add-on's "Joining
 /// instructions", appear wrapped only; those never had a plain form to lose to.
 ///
-/// Unwrapping behaviour is documented once on `unwrappingRedirects`, which this
-/// shares with `cleanupOutlookSafeLinks`.
+/// Shares its unwrapping machinery with `cleanupOutlookSafeLinks`:
+/// `unwrappingRedirects` owns the bounded loop, `rewritingRedirects` the
+/// per-pass splicing and the skipping of undecodable escapes, and
+/// `maxRedirectNestingDepth` documents what the cap does and does not bound.
 func cleanupGoogleRedirects(rawText: String) -> String {
     guard let googleRedirectRegex else { return rawText }
     return unwrappingRedirects(in: rawText, using: googleRedirectRegex)

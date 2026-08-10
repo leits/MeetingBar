@@ -113,11 +113,9 @@ final class OutlookSafeLinkCleanupTests: XCTestCase {
             .queryItems?.first { $0.name == "pwd" }?.value
         XCTAssertEqual(pwd, "AbC.1")
 
-        let candidates = MeetingLinkDetector.allCandidates(
-            location: nil, eventURL: nil, notes: notes,
-            calendarEmail: nil, currentUserEmail: nil)
-        XCTAssertTrue(
-            candidates.allSatisfy { !$0.url.absoluteString.contains("safelinks.protection.outlook.com") },
-            "no wrapped candidate may survive into the alternates menu")
+        // No "no wrapped candidate survives" assertion here, deliberately: it
+        // is the Google sibling's guard and does not transfer. A SafeLink host
+        // matches no service regex, so a wrapper can never become a candidate
+        // and the assertion would be vacuously true over an empty array.
     }
 }

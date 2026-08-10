@@ -71,7 +71,7 @@ final class GoogleRedirectCleanupTests: XCTestCase {
         XCTAssertTrue(out.contains("%ZZbroken"), "the malformed one is left as-is; got: \(out)")
     }
 
-    /// `maxNestingDepth` must bound nesting depth, not link count. Filler IDs
+    /// `maxRedirectNestingDepth` must bound nesting depth, not link count. Filler IDs
     /// are zero-padded so no wrapper is a prefix of another — otherwise a
     /// global-replace implementation clears several per pass and the cap never
     /// bites.
