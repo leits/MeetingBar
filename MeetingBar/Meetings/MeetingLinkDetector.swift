@@ -245,11 +245,9 @@ func detectMeetingLink(_ rawText: String, customRegexes: [String] = []) -> Meeti
 /// targets, so meeting-link detection sees the underlying URL rather than the
 /// `…safelinks.protection.outlook.com/…url=<encoded>` redirect.
 ///
-/// Shares `rewritingRedirects` with `cleanupGoogleRedirects`, so all three of
-/// its properties apply here too: every match is spliced in a single pass, an
-/// undecodable `%` escape skips its own match instead of aborting the pass,
-/// and the cap bounds *nesting depth* — a SafeLink wrapping a SafeLink —
-/// rather than how many SafeLinks a body may contain.
+/// Unwrapping behaviour — per-pass splicing, skipping undecodable escapes, and
+/// what the depth cap does and does not bound — is documented once on
+/// `unwrappingRedirects`, which this shares with `cleanupGoogleRedirects`.
 ///
 /// The previous loop rewrote one match per pass with a global
 /// `replacingOccurrences` and aborted on the first undecodable escape, so a
@@ -273,14 +271,8 @@ func cleanupOutlookSafeLinks(rawText: String) -> String {
 /// Links Calendar generates itself, such as the add-on's "Joining
 /// instructions", appear wrapped only; those never had a plain form to lose to.
 ///
-/// Every match is rewritten in a single pass, so `maxNestingDepth` bounds
-/// *nesting depth* — a redirect whose target is itself a redirect — rather than
-/// how many links a body may contain. An earlier version rewrote one match per pass,
-/// which silently left the tail of a link-heavy invite wrapped.
-///
-/// An undecodable `%` escape skips that match and leaves it as-is; it must not
-/// abort the pass, or one malformed link anywhere earlier in the body would
-/// reinstate the bug for the meeting link after it.
+/// Unwrapping behaviour is documented once on `unwrappingRedirects`, which this
+/// shares with `cleanupOutlookSafeLinks`.
 func cleanupGoogleRedirects(rawText: String) -> String {
     guard let googleRedirectRegex else { return rawText }
     return unwrappingRedirects(in: rawText, using: googleRedirectRegex)

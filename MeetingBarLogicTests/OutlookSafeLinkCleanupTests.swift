@@ -94,12 +94,16 @@ final class OutlookSafeLinkCleanupTests: XCTestCase {
 
     // MARK: - Selection consequence
 
-    func testDetectionPrefersTheUnwrappedTargetOverAWrappedCompetitor() throws {
-        // Both forms present, so the length tie-break in
-        // `MeetingLinkCandidatePolicy` is actually exercised: the wrapped form
-        // is longer and would win if it survived cleanup.
-        let notes = "Join https://acme.zoom.us/j/9?pwd=AbC.1\n"
-            + "Safe: " + safeLink("https%3A%2F%2Facme.zoom.us%2Fj%2F9%3Fpwd%3DAbC.1") + "\n"
+    /// The SafeLink is the ONLY link in the body — deliberately. Unlike a
+    /// Google redirect, which leaves its target unencoded so the Zoom regex
+    /// matches inside the wrapper and produces a genuine longer competitor, a
+    /// SafeLink percent-encodes its target, so nothing matches inside it and
+    /// there is no second candidate to out-rank. With cleanup broken this
+    /// event yields no link at all, which is what makes the single-link
+    /// fixture the stronger guard: an earlier revision added a plain link
+    /// "competitor" and the test then passed with cleanup stubbed out.
+    func testDetectionYieldsTheUnwrappedTargetWithAParseablePasscode() throws {
+        let notes = "Join " + safeLink("https%3A%2F%2Facme.zoom.us%2Fj%2F9%3Fpwd%3DAbC.1") + "\n"
 
         let link = try XCTUnwrap(MeetingLinkDetector.detect(
             location: nil, eventURL: nil, notes: notes,
@@ -108,5 +112,12 @@ final class OutlookSafeLinkCleanupTests: XCTestCase {
         let pwd = URLComponents(url: link.url, resolvingAgainstBaseURL: false)?
             .queryItems?.first { $0.name == "pwd" }?.value
         XCTAssertEqual(pwd, "AbC.1")
+
+        let candidates = MeetingLinkDetector.allCandidates(
+            location: nil, eventURL: nil, notes: notes,
+            calendarEmail: nil, currentUserEmail: nil)
+        XCTAssertTrue(
+            candidates.allSatisfy { !$0.url.absoluteString.contains("safelinks.protection.outlook.com") },
+            "no wrapped candidate may survive into the alternates menu")
     }
 }
