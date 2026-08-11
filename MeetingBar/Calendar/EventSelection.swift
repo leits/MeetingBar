@@ -79,6 +79,12 @@ enum EventSelection {
             futureEvents = futureEvents.filter(\.hasAttendees)
         }
 
+        // The selection loop terminates on the first candidate beyond the
+        // 10-minute window and hands off from a running event to the next one,
+        // both of which assume ascending start order. `CalendarSync` sorts in
+        // production, but the policy must not depend on the caller doing so.
+        futureEvents.sort { $0.startDate < $1.startDate }
+
         var result: EventSelectionEvent?
 
         for event in futureEvents {
@@ -126,7 +132,17 @@ enum EventSelection {
                 result = event
                 continue
             } else {
-                if event.startDate < now.addingTimeInterval(600), settings.ongoingEventVisibility == .showTenMinBeforeNext {
+                // `.showTenMinBeforeNext` means "keep the running event until a
+                // nearer event enters the 10-minute window". That hand-off only
+                // makes sense while the held result is still an ongoing event;
+                // once the soonest upcoming event has been selected there is no
+                // running event left to defer, so stop and return it. Without
+                // this guard the loop keeps advancing to every later event that
+                // also starts within the window and the soonest one is skipped.
+                let heldResultIsOngoing = result!.startDate <= now
+                if heldResultIsOngoing,
+                   event.startDate < now.addingTimeInterval(600),
+                   settings.ongoingEventVisibility == .showTenMinBeforeNext {
                     result = event
                 } else {
                     break
