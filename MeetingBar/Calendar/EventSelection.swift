@@ -79,12 +79,6 @@ enum EventSelection {
             futureEvents = futureEvents.filter(\.hasAttendees)
         }
 
-        // The selection loop terminates on the first candidate beyond the
-        // 10-minute window and hands off from a running event to the next one,
-        // both of which assume ascending start order. `CalendarSync` sorts in
-        // production, but the policy must not depend on the caller doing so.
-        futureEvents.sort { $0.startDate < $1.startDate }
-
         var result: EventSelectionEvent?
 
         for event in futureEvents {
@@ -132,17 +126,16 @@ enum EventSelection {
                 result = event
                 continue
             } else {
-                // `.showTenMinBeforeNext` means "keep the running event until a
-                // nearer event enters the 10-minute window". That hand-off only
-                // makes sense while the held result is still an ongoing event;
-                // once the soonest upcoming event has been selected there is no
-                // running event left to defer, so stop and return it. Without
-                // this guard the loop keeps advancing to every later event that
-                // also starts within the window and the soonest one is skipped.
-                let heldResultIsOngoing = result!.startDate <= now
-                if heldResultIsOngoing,
-                   event.startDate < now.addingTimeInterval(600),
-                   settings.ongoingEventVisibility == .showTenMinBeforeNext {
+                // `.showTenMinBeforeNext` hands the held slot to any later
+                // candidate that starts within the 10-minute window — including
+                // an ongoing event claiming it back, and a running event handing
+                // off to the next meeting. The one transition it must NOT make
+                // is advancing from an earlier future event to a later one,
+                // which is exactly the bug where the status bar skipped the
+                // soonest upcoming meeting and showed a later one instead.
+                if event.startDate < now.addingTimeInterval(600),
+                   settings.ongoingEventVisibility == .showTenMinBeforeNext,
+                   !(result!.startDate > now && event.startDate > result!.startDate) {
                     result = event
                 } else {
                     break
