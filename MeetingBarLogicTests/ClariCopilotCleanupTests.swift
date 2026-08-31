@@ -15,9 +15,12 @@ final class ClariCopilotCleanupTests: XCTestCase {
     }
 
     func testLeavesNonMeetCodeSlugsAlone() {
-        // Any suffix after the code means the slug is not a Meet code; a
-        // partial rewrite would point at the wrong meeting.
-        for slug in ["abc-defg-hijk", "abc-defg-hij1", "abc-defg-hij_x", "abc-defg-hijX"] {
+        // A longer slug or a deeper path is not a Meet code link; a partial
+        // rewrite would point at the wrong meeting.
+        for slug in [
+            "abc-defg-hijk", "abc-defg-hij1", "abc-defg-hij_x", "abc-defg-hijX",
+            "abc-defg-hij/notes"
+        ] {
             let text = "https://go.copilot.clari.com/hangout/\(slug)"
             XCTAssertEqual(cleanupClariCopilotLinks(rawText: text), text)
         }
