@@ -214,12 +214,22 @@ private let googleRedirectRegex = try? NSRegularExpression(
     pattern: #"https://(?:www\.)?google\.[a-z]{2,}(?:\.[a-z]{2,})?/url\?q=([^\s&"'<>]+)"#
         + #"(?:&(?:amp;)?[A-Za-z][A-Za-z0-9_]*=[^\s&"'<>]*)*"#)
 
+/// Matches Clari Copilot's Google Meet wrapper,
+/// `go.copilot.clari.com/hangout/<meet code>`, where the slug is the
+/// meeting's own Meet code. Restricted to the exact `xxx-xxxx-xxx` shape,
+/// with a lookahead rejecting any further slug character, so a longer slug
+/// is never partially rewritten and nothing else on that host — e.g. Zoom
+/// wrappers, which carry no reconstructible target — is touched.
+private let clariCopilotRegex = try? NSRegularExpression(
+    pattern: #"https?://go\.copilot\.clari\.com/hangout/([a-z]{3}-[a-z]{4}-[a-z]{3})(?![A-Za-z0-9_-])/?"#)
+
 func regex(for service: MeetingServices) -> NSRegularExpression? {
     meetingLinkRegexes[service]
 }
 
 func detectMeetingLink(_ rawText: String, customRegexes: [String] = []) -> MeetingLink? {
-    let text = cleanupGoogleRedirects(rawText: cleanupOutlookSafeLinks(rawText: rawText))
+    let text = cleanupClariCopilotLinks(
+        rawText: cleanupGoogleRedirects(rawText: cleanupOutlookSafeLinks(rawText: rawText)))
 
     for pattern in customRegexes {
         if let regex = try? NSRegularExpression(pattern: pattern),
@@ -376,6 +386,24 @@ private func rewritingRedirects(
     return result == text ? nil : result
 }
 
+/// Rewrites Clari Copilot notetaker wrappers in `rawText` to the
+/// `https://meet.google.com/<code>` link they stand for, so the event gets
+/// the regular Google Meet treatment (icon, opening modes, authuser).
+///
+/// Unlike the SafeLink and redirect cleanups a single pass is enough: the
+/// target is built from the matched code, not decoded from the text, so
+/// there is no nesting to chase and no failure mode that stalls progress.
+func cleanupClariCopilotLinks(rawText: String) -> String {
+    guard let clariCopilotRegex, rawText.contains("go.copilot.clari.com") else {
+        return rawText
+    }
+    return clariCopilotRegex.stringByReplacingMatches(
+        in: rawText,
+        range: NSRange(rawText.startIndex..., in: rawText),
+        withTemplate: "https://meet.google.com/$1"
+    )
+}
+
 func getMatch(text: String, regex: NSRegularExpression) -> String? {
     var match: String?
 
@@ -520,12 +548,17 @@ enum MeetingLinkDetector {
 
         // 1. Provider conference data.
         if let conferenceURL {
+            // Rewrite Clari wrappers before building the candidate, so the
+            // `.meet` classification and the authuser parameter attach to the
+            // real Meet URL rather than the wrapper host.
+            let url = URL(string: cleanupClariCopilotLinks(rawText: conferenceURL.absoluteString))
+                ?? conferenceURL
             // Run through the regex catalog so we know whether it's Google Meet,
             // Zoom, etc. If it doesn't match any built-in service, classify as
             // `.other` so it still scores at the providerConferenceData priority.
-            let service = detectMeetingLink(conferenceURL.absoluteString)?.service ?? .other
+            let service = detectMeetingLink(url.absoluteString)?.service ?? .other
             candidates.append(MeetingLinkCandidate(
-                url: conferenceURL,
+                url: url,
                 service: service,
                 source: .providerConferenceData
             ))
@@ -574,11 +607,13 @@ enum MeetingLinkDetector {
             // matches the wrapped redirect and yields a URL whose `pwd` cannot
             // be parsed. That candidate is also what the "open with another
             // link" menu and the preferences regex tester display.
-            let combined = cleanupGoogleRedirects(
-                rawText: cleanupOutlookSafeLinks(
-                    rawText: [location, eventURL?.absoluteString, notes]
-                        .compactMap { $0 }
-                        .joined(separator: "\n")
+            let combined = cleanupClariCopilotLinks(
+                rawText: cleanupGoogleRedirects(
+                    rawText: cleanupOutlookSafeLinks(
+                        rawText: [location, eventURL?.absoluteString, notes]
+                            .compactMap { $0 }
+                            .joined(separator: "\n")
+                    )
                 )
             )
             if let detected = detectCustomRegexLink(text: combined, patterns: customRegexes) {
@@ -597,7 +632,8 @@ enum MeetingLinkDetector {
         in rawText: String,
         source: MeetingLinkSource
     ) -> [MeetingLinkCandidate] {
-        let text = cleanupGoogleRedirects(rawText: cleanupOutlookSafeLinks(rawText: rawText))
+        let text = cleanupClariCopilotLinks(
+            rawText: cleanupGoogleRedirects(rawText: cleanupOutlookSafeLinks(rawText: rawText)))
         guard text.contains("://") else { return [] }
 
         let range = NSRange(text.startIndex..., in: text)
