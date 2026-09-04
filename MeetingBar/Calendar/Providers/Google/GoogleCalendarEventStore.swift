@@ -64,13 +64,23 @@ final class GCEventStore: NSObject,
         }
     }
 
-    private var refreshTask: Task<String, Error>?
-    /// Identifies which task currently owns `refreshTask`. A forced refresh
-    /// replaces the slot while an ordinary refresh may still be running, and
-    /// without this the finishing ordinary task would clear the slot out from
-    /// under its replacement — losing the handle `cancelPendingOperations` needs
-    /// and letting the next caller start a third refresh instead of joining.
-    private var refreshTaskGeneration = 0
+    /// The refresh currently occupying the slot, and what it is refreshing.
+    ///
+    /// Two things have to be distinguished, and neither implies the other.
+    /// `state` identity says *which account*: re-authorization installs a new
+    /// `OIDAuthState`, and a refresh started for the previous one can only ever
+    /// return the previous account's token. `generation` says *which attempt*:
+    /// a forced refresh takes the slot from an ordinary refresh of the same
+    /// state, and the superseded task must not then clear or discard on behalf
+    /// of its replacement.
+    private struct PendingRefresh {
+        let task: Task<String, Error>
+        let state: OIDAuthState
+        let generation: Int
+    }
+
+    private var pendingRefresh: PendingRefresh?
+    private var refreshGeneration = 0
     /// Upper bound on one AppAuth token refresh.
     ///
     /// AppAuth issues token requests on `OIDURLSessionProvider.session`, which
@@ -214,8 +224,8 @@ final class GCEventStore: NSObject,
     }
 
     func cancelPendingOperations() {
-        refreshTask?.cancel()
-        refreshTask = nil
+        pendingRefresh?.task.cancel()
+        pendingRefresh = nil
 
         let flow = currentAuthorizationFlow
         currentAuthorizationFlow = nil
@@ -353,15 +363,19 @@ final class GCEventStore: NSObject,
             return token
         }
 
-        // A forced refresh is only ever requested because the token we just
-        // used was rejected, so it must not be answered by an in-flight
-        // ordinary refresh — that task can only hand back the same bad token.
-        if !forceRefresh, let running = refreshTask { return try await running.value }
+        // Join an in-flight refresh only when it is refreshing this very state.
+        // A forced refresh never joins: it exists because the token the pending
+        // refresh will return was already rejected. A refresh belonging to a
+        // superseded `OIDAuthState` never joins either, or re-authorizing to a
+        // different account would hand that account's caller the old one's token.
+        if !forceRefresh, let pending = pendingRefresh, pending.state === state {
+            return try await pending.task.value
+        }
 
-        refreshTaskGeneration += 1
-        let generation = refreshTaskGeneration
+        refreshGeneration += 1
+        let generation = refreshGeneration
         let task = Task<String, Error> {
-            defer { if refreshTaskGeneration == generation { refreshTask = nil } }
+            defer { if pendingRefresh?.generation == generation { pendingRefresh = nil } }
             return try await withCheckedThrowingContinuation { cont in
                 // `performAction` owns its URLSession task internally and offers
                 // no way to cancel it, and this is an unstructured Task, so
@@ -387,7 +401,7 @@ final class GCEventStore: NSObject,
                     // that object later succeeds, `didChange` persists whatever
                     // `authState` now holds, so the fresh token is dropped from
                     // memory and the keychain both.
-                    if self.refreshTaskGeneration == generation {
+                    if self.pendingRefresh?.generation == generation, state === self.authState {
                         self.discardStuckAuthState()
                     }
                     cont.resume(
@@ -434,17 +448,18 @@ final class GCEventStore: NSObject,
             }
         }
 
-        refreshTask = task
+        pendingRefresh = PendingRefresh(task: task, state: state, generation: generation)
         return try await task.value
     }
 
     // MARK: Keychain persistence
 
     private func persistAuthState() {
-        guard let state = authState else {
-            Keychain.delete(for: Self.kKeychainName)
-            return
-        }
+        // Only save here. Deleting the persisted session is an explicit act
+        // (`clearAuthState`), never a side effect of dropping the in-memory
+        // state — `discardStuckAuthState` relies on being able to do the latter
+        // without the former.
+        guard let state = authState else { return }
         do {
             let data = try NSKeyedArchiver.archivedData(withRootObject: state, requiringSecureCoding: true)
             Keychain.save(data: data, for: Self.kKeychainName)
@@ -481,11 +496,15 @@ final class GCEventStore: NSObject,
     /// once to failing slowly forever. Rebuilding from the persisted session
     /// leaves the stuck queue behind while keeping the user signed in.
     private func discardStuckAuthState() {
-        guard let restored = restoreAuthState() else { return }
-        // Detach the object we are walking away from. It still holds a pending
-        // AppAuth request, and `didChange` persists `authState` rather than the
-        // instance that changed, so a late callback on an abandoned state would
-        // otherwise write over the session we just restored.
+        // Retiring the stuck object must not depend on the restore succeeding.
+        // Keeping it installed because the keychain read failed would park every
+        // later refresh behind the same dead request — the failure this exists to
+        // end. With no state installed, `requireReusableSession` reports
+        // "reconnect required" and the next sign-in builds a clean one. The
+        // persisted session is deliberately left alone: only an explicit sign-out
+        // deletes it, so a transient restore failure cannot cost the user
+        // their grant.
+        let restored = restoreAuthState()
         authState?.stateChangeDelegate = nil
         authState?.errorDelegate = nil
         authState = restored
@@ -551,11 +570,19 @@ final class GCEventStore: NSObject,
 
     // MARK: - OIDAuthState Delegates
     func didChange(_ state: OIDAuthState) {
+        // An abandoned state can still complete its pending request. Persisting
+        // then would write out whatever `authState` currently holds, discarding
+        // the very token that just arrived, so only the installed state counts.
+        guard state === authState else { return }
         // persist every change (e.g., refreshed token)
         persistAuthState()
     }
 
     func authState(_ state: OIDAuthState, didEncounterAuthorizationError error: Error) {
+        // A failure reported by a state we have already replaced says nothing
+        // about the session in use, and signing the user out over it would end
+        // an account because a different one failed.
+        guard state === authState else { return }
         let nsErr = error as NSError
         if nsErr.domain == OIDOAuthTokenErrorDomain {
             // refresh token invalid → clean state & notify
