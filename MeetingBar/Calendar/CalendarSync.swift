@@ -170,10 +170,14 @@ public class CalendarSync: ObservableObject {
 
     /// Runs `operation` under `refreshTimeout`, cancelling it on expiry.
     ///
-    /// Providers are expected to bound their own network work, but this is the
-    /// backstop that lets the serialized refresh pipeline assume a cycle always
-    /// terminates — including for hangs that never surface as a network error,
-    /// such as an authorization callback that is never delivered.
+    /// Providers are expected to bound their own network work; this is the
+    /// backstop that lets the serialized refresh pipeline assume a cycle
+    /// terminates. Note the bound only covers work that *responds* to
+    /// cancellation: a task group awaits its remaining children before
+    /// unwinding, so an operation that ignores cancellation still holds this
+    /// call open. That is sufficient here because every provider path bottoms
+    /// out in a cancellation-aware `URLSession` call under an explicit request
+    /// timeout — it is not a guard against an arbitrary non-cancellable hang.
     private func withRefreshTimeout<T: Sendable>(
         _ operation: @escaping @Sendable @MainActor () async throws -> T
     ) async throws -> T {

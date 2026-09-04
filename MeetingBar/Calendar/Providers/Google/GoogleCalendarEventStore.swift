@@ -65,6 +65,12 @@ final class GCEventStore: NSObject,
     }
 
     private var refreshTask: Task<String, Error>?
+    /// Identifies which task currently owns `refreshTask`. A forced refresh
+    /// replaces the slot while an ordinary refresh may still be running, and
+    /// without this the finishing ordinary task would clear the slot out from
+    /// under its replacement — losing the handle `cancelPendingOperations` needs
+    /// and letting the next caller start a third refresh instead of joining.
+    private var refreshTaskGeneration = 0
 
     // Shared URLSession to leverage connection reuse
     private static let session: URLSession = {
@@ -103,6 +109,23 @@ final class GCEventStore: NSObject,
             return
         }
 
+        try await performAuthorization(forcePrompt: forcePrompt)
+
+        // Google only issues a refresh token when the user actually walks
+        // through the consent screen. An account that still holds a grant from
+        // a previous install authorizes silently and returns none, which leaves
+        // `hasReusableSession` false forever: no unattended refresh can run, and
+        // because the provider switch fails before the active provider is set,
+        // Preferences hides the Reconnect button that would otherwise recover.
+        // Re-run the flow once demanding consent so the refresh token comes back.
+        guard !forcePrompt, authState?.refreshToken == nil else { return }
+        MeetingBarLogger.calendar.warning(
+            "Google authorization returned no refresh token; retrying with forced consent"
+        )
+        try await performAuthorization(forcePrompt: true)
+    }
+
+    private func performAuthorization(forcePrompt: Bool) async throws {
         // discover configuration for Google issuer
         let config = try await withCheckedThrowingContinuation { cont in
             OIDAuthorizationService.discoverConfiguration(forIssuer: URL(string: Self.kIssuer)!) { cfg, err in
@@ -327,8 +350,10 @@ final class GCEventStore: NSObject,
         // ordinary refresh — that task can only hand back the same bad token.
         if !forceRefresh, let running = refreshTask { return try await running.value }
 
+        refreshTaskGeneration += 1
+        let generation = refreshTaskGeneration
         let task = Task<String, Error> {
-            defer { refreshTask = nil }
+            defer { if refreshTaskGeneration == generation { refreshTask = nil } }
             return try await withCheckedThrowingContinuation { cont in
                 if forceRefresh { state.setNeedsTokenRefresh() }
 

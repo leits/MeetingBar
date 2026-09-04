@@ -36,6 +36,12 @@ final class LifecycleObserver {
     /// `nil` until the first path update, so becoming reachable at launch does
     /// not duplicate the refresh that launch already triggers.
     private var isNetworkReachable: Bool?
+    private var lastReachabilityCallback: Date?
+    /// Floor between reachability-driven refreshes. A roaming Wi-Fi link or a
+    /// reconnecting VPN can flap through several satisfied transitions in a
+    /// row, and each one would otherwise cost a full calendarList plus a
+    /// per-calendar events fetch.
+    private static let reachabilityRefreshInterval: TimeInterval = 60
 
     func start() {
         startNetworkMonitor()
@@ -110,9 +116,14 @@ final class LifecycleObserver {
     }
 
     func stop() {
+        // Clear the handler before cancelling: a path update already dispatched
+        // on the monitor queue would otherwise still enqueue its main-actor hop
+        // and fire a refresh during teardown.
+        pathMonitor?.pathUpdateHandler = nil
         pathMonitor?.cancel()
         pathMonitor = nil
         isNetworkReachable = nil
+        lastReachabilityCallback = nil
 
         let dnc = DistributedNotificationCenter.default()
         for observer in observers {
@@ -133,6 +144,12 @@ final class LifecycleObserver {
                 let wasReachable = self.isNetworkReachable
                 self.isNetworkReachable = reachable
                 guard reachable, wasReachable == false else { return }
+                let now = Date()
+                if let last = self.lastReachabilityCallback,
+                   now.timeIntervalSince(last) < Self.reachabilityRefreshInterval {
+                    return
+                }
+                self.lastReachabilityCallback = now
                 self.onNetworkBecameReachable()
             }
         }
