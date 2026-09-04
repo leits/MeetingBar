@@ -380,7 +380,16 @@ final class GCEventStore: NSObject,
                     MeetingBarLogger.calendar.error(
                         "Google token refresh did not return within \(Int(Self.tokenRefreshTimeout))s"
                     )
-                    self.discardStuckAuthState()
+                    // Only the refresh that still owns the slot may do this. A
+                    // superseded ordinary refresh timing out after a forced one
+                    // took over would otherwise swap in a stale state while the
+                    // forced refresh is still driving the old object — and when
+                    // that object later succeeds, `didChange` persists whatever
+                    // `authState` now holds, so the fresh token is dropped from
+                    // memory and the keychain both.
+                    if self.refreshTaskGeneration == generation {
+                        self.discardStuckAuthState()
+                    }
                     cont.resume(
                         throwing: AuthError.temporarilyUnavailable(
                             underlying: URLError(.timedOut)
@@ -473,6 +482,12 @@ final class GCEventStore: NSObject,
     /// leaves the stuck queue behind while keeping the user signed in.
     private func discardStuckAuthState() {
         guard let restored = restoreAuthState() else { return }
+        // Detach the object we are walking away from. It still holds a pending
+        // AppAuth request, and `didChange` persists `authState` rather than the
+        // instance that changed, so a late callback on an abandoned state would
+        // otherwise write over the session we just restored.
+        authState?.stateChangeDelegate = nil
+        authState?.errorDelegate = nil
         authState = restored
     }
 
