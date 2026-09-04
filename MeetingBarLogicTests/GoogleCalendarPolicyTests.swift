@@ -187,3 +187,32 @@ final class GoogleCalendarPolicyTests: XCTestCase {
         )
     }
 }
+
+final class SingleResumeGuardTests: XCTestCase {
+    func testFirstClaimSucceedsAndEveryLaterClaimFails() {
+        let guardBox = SingleResumeGuard()
+
+        XCTAssertTrue(guardBox.claim())
+        XCTAssertFalse(guardBox.claim())
+        XCTAssertFalse(guardBox.claim())
+    }
+
+    /// The guard exists to arbitrate a token-refresh completion racing its
+    /// timeout, and those two callbacks are not guaranteed to share a queue.
+    /// Exactly one contender may ever resume the continuation.
+    func testExactlyOneClaimWinsUnderConcurrentContention() {
+        let contenders = 500
+        let guardBox = SingleResumeGuard()
+        let winners = NSCountedSet()
+        let winnersLock = NSLock()
+
+        DispatchQueue.concurrentPerform(iterations: contenders) { _ in
+            guard guardBox.claim() else { return }
+            winnersLock.lock()
+            winners.add("won")
+            winnersLock.unlock()
+        }
+
+        XCTAssertEqual(winners.count(for: "won"), 1)
+    }
+}

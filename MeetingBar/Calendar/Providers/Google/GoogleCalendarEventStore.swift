@@ -71,6 +71,10 @@ final class GCEventStore: NSObject,
     /// under its replacement — losing the handle `cancelPendingOperations` needs
     /// and letting the next caller start a third refresh instead of joining.
     private var refreshTaskGeneration = 0
+    /// Upper bound on one AppAuth token refresh. Comfortably longer than the
+    /// 60s request timeout of the session AppAuth uses, so this only fires when
+    /// the callback genuinely never arrives.
+    private static let tokenRefreshTimeout: TimeInterval = 90
 
     // Shared URLSession to leverage connection reuse
     private static let session: URLSession = {
@@ -355,9 +359,35 @@ final class GCEventStore: NSObject,
         let task = Task<String, Error> {
             defer { if refreshTaskGeneration == generation { refreshTask = nil } }
             return try await withCheckedThrowingContinuation { cont in
+                // `performAction` owns its URLSession task internally and offers
+                // no way to cancel it, and this is an unstructured Task, so
+                // cancelling whoever awaits it does not reach in here. A
+                // continuation that AppAuth never resumes would therefore
+                // outlive every timeout the refresh cycle can apply and strand
+                // the serialized pipeline — the exact failure this change set
+                // exists to remove. Settle the wait on our own deadline instead
+                // and let a late callback find the resume already claimed.
+                let resumeGuard = SingleResumeGuard()
+                let deadline = Task {
+                    try? await Task.sleep(
+                        nanoseconds: UInt64(Self.tokenRefreshTimeout * Double(NSEC_PER_SEC))
+                    )
+                    guard !Task.isCancelled, resumeGuard.claim() else { return }
+                    MeetingBarLogger.calendar.error(
+                        "Google token refresh did not return within \(Int(Self.tokenRefreshTimeout))s"
+                    )
+                    cont.resume(
+                        throwing: AuthError.temporarilyUnavailable(
+                            underlying: URLError(.timedOut)
+                        )
+                    )
+                }
+
                 if forceRefresh { state.setNeedsTokenRefresh() }
 
                 state.performAction { accessToken, _, error in
+                    guard resumeGuard.claim() else { return }
+                    deadline.cancel()
                     // `error` must be inspected before `accessToken`. When the
                     // token endpoint is unreachable, AppAuth reports the failure
                     // as a transient error but still passes back the *previous*,

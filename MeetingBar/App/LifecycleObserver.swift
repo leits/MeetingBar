@@ -37,6 +37,12 @@ final class LifecycleObserver {
     /// not duplicate the refresh that launch already triggers.
     private var isNetworkReachable: Bool?
     private var lastReachabilityCallback: Date?
+    private var trailingReachabilityTask: Task<Void, Never>?
+    /// Invalidates path updates from a superseded or stopped monitor. Clearing
+    /// `pathUpdateHandler` cannot recall a handler invocation that already
+    /// enqueued its main-actor hop, and two such updates (unsatisfied then
+    /// satisfied) would otherwise reconstruct a transition after `stop()`.
+    private var monitorGeneration = 0
     /// Floor between reachability-driven refreshes. A roaming Wi-Fi link or a
     /// reconnecting VPN can flap through several satisfied transitions in a
     /// row, and each one would otherwise cost a full calendarList plus a
@@ -122,8 +128,11 @@ final class LifecycleObserver {
         pathMonitor?.pathUpdateHandler = nil
         pathMonitor?.cancel()
         pathMonitor = nil
+        monitorGeneration += 1
         isNetworkReachable = nil
         lastReachabilityCallback = nil
+        trailingReachabilityTask?.cancel()
+        trailingReachabilityTask = nil
 
         let dnc = DistributedNotificationCenter.default()
         for observer in observers {
@@ -135,25 +144,62 @@ final class LifecycleObserver {
     }
 
     private func startNetworkMonitor() {
+        pathMonitor?.pathUpdateHandler = nil
         pathMonitor?.cancel()
+        trailingReachabilityTask?.cancel()
+        trailingReachabilityTask = nil
+        monitorGeneration += 1
+        let generation = monitorGeneration
         let monitor = NWPathMonitor()
         monitor.pathUpdateHandler = { [weak self] path in
             let reachable = path.status == .satisfied
             Task { @MainActor [weak self] in
-                guard let self else { return }
+                guard let self, generation == self.monitorGeneration else { return }
                 let wasReachable = self.isNetworkReachable
                 self.isNetworkReachable = reachable
                 guard reachable, wasReachable == false else { return }
-                let now = Date()
-                if let last = self.lastReachabilityCallback,
-                   now.timeIntervalSince(last) < Self.reachabilityRefreshInterval {
-                    return
-                }
-                self.lastReachabilityCallback = now
-                self.onNetworkBecameReachable()
+                self.handleReachableTransition(generation: generation)
             }
         }
         monitor.start(queue: .global(qos: .utility))
         pathMonitor = monitor
+    }
+
+    /// Fires the refresh immediately outside the throttle window, otherwise
+    /// defers it to the end of that window.
+    ///
+    /// A flapping link must not cost one full fetch per transition, but it must
+    /// also not swallow the transition that finally restored the connection —
+    /// dropping that one strands the app on stale events until the periodic
+    /// timer comes round, which is the delay this trigger exists to avoid.
+    /// Deferring keeps at most one refresh in flight per window and always acts
+    /// on the most recent transition.
+    private func handleReachableTransition(generation: Int) {
+        let now = Date()
+        guard let last = lastReachabilityCallback else {
+            lastReachabilityCallback = now
+            onNetworkBecameReachable()
+            return
+        }
+
+        let elapsed = now.timeIntervalSince(last)
+        guard elapsed < Self.reachabilityRefreshInterval else {
+            lastReachabilityCallback = now
+            onNetworkBecameReachable()
+            return
+        }
+
+        let remaining = Self.reachabilityRefreshInterval - elapsed
+        trailingReachabilityTask?.cancel()
+        trailingReachabilityTask = Task { @MainActor [weak self] in
+            try? await Task.sleep(nanoseconds: UInt64(remaining * Double(NSEC_PER_SEC)))
+            guard let self,
+                  !Task.isCancelled,
+                  generation == self.monitorGeneration,
+                  self.isNetworkReachable == true else { return }
+            self.trailingReachabilityTask = nil
+            self.lastReachabilityCallback = Date()
+            self.onNetworkBecameReachable()
+        }
     }
 }

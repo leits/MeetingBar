@@ -5,6 +5,27 @@
 
 import Foundation
 
+/// Arbitrates a single resume between two racing callbacks.
+///
+/// A continuation must be resumed exactly once. When a wait is settled by
+/// whichever of two independent callbacks arrives first — a library completion
+/// handler and a timeout — the loser has to know to stay silent, and neither
+/// side can assume which one that is. `claim()` returns `true` to the first
+/// caller and `false` to every caller after it.
+final class SingleResumeGuard: @unchecked Sendable {
+    private let lock = NSLock()
+    private var isClaimed = false
+
+    /// `true` for the first caller only; every later caller gets `false`.
+    func claim() -> Bool {
+        lock.lock()
+        defer { lock.unlock() }
+        if isClaimed { return false }
+        isClaimed = true
+        return true
+    }
+}
+
 enum AuthError: LocalizedError {
     case cancelled
     case notSignedIn
