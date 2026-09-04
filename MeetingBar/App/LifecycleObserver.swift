@@ -176,14 +176,16 @@ final class LifecycleObserver {
     /// on the most recent transition.
     private func handleReachableTransition(generation: Int) {
         let now = Date()
-        guard let last = lastReachabilityCallback else {
-            lastReachabilityCallback = now
-            onNetworkBecameReachable()
-            return
-        }
+        let elapsed = lastReachabilityCallback.map { now.timeIntervalSince($0) }
 
-        let elapsed = now.timeIntervalSince(last)
-        guard elapsed < Self.reachabilityRefreshInterval else {
+        // Refreshing now makes any deferred refresh redundant, and it has to be
+        // dropped rather than left to fire: `Task.sleep` runs on a clock that
+        // does not advance while the system sleeps, so a trailing task queued
+        // before a long sleep is still pending when the wake transition arrives
+        // and takes this branch — and would then fire a second, duplicate fetch.
+        guard let elapsed, elapsed < Self.reachabilityRefreshInterval else {
+            trailingReachabilityTask?.cancel()
+            trailingReachabilityTask = nil
             lastReachabilityCallback = now
             onNetworkBecameReachable()
             return

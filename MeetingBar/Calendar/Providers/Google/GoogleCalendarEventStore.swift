@@ -71,9 +71,13 @@ final class GCEventStore: NSObject,
     /// under its replacement — losing the handle `cancelPendingOperations` needs
     /// and letting the next caller start a third refresh instead of joining.
     private var refreshTaskGeneration = 0
-    /// Upper bound on one AppAuth token refresh. Comfortably longer than the
-    /// 60s request timeout of the session AppAuth uses, so this only fires when
-    /// the callback genuinely never arrives.
+    /// Upper bound on one AppAuth token refresh.
+    ///
+    /// AppAuth issues token requests on `OIDURLSessionProvider.session`, which
+    /// defaults to `URLSession.shared` — *not* the hardened session below, so
+    /// none of its configuration applies to the refresh path. `URLSession`'s
+    /// own 60s default request timeout still bounds that call, so this deadline
+    /// sits beyond it and fires only when the callback never arrives at all.
     private static let tokenRefreshTimeout: TimeInterval = 90
 
     // Shared URLSession to leverage connection reuse
@@ -376,6 +380,7 @@ final class GCEventStore: NSObject,
                     MeetingBarLogger.calendar.error(
                         "Google token refresh did not return within \(Int(Self.tokenRefreshTimeout))s"
                     )
+                    self.discardStuckAuthState()
                     cont.resume(
                         throwing: AuthError.temporarilyUnavailable(
                             underlying: URLError(.timedOut)
@@ -455,6 +460,20 @@ final class GCEventStore: NSObject,
             )
             return nil
         }
+    }
+
+    /// Replaces the `OIDAuthState` whose token request never came back.
+    ///
+    /// AppAuth serializes refreshes through `_pendingActions`, which only that
+    /// request's own callback clears. A request that never completes therefore
+    /// parks every later refresh behind it for the lifetime of the state
+    /// object: each one enqueues, is never called back, and waits out its own
+    /// deadline. Timing out alone would only downgrade the failure from hanging
+    /// once to failing slowly forever. Rebuilding from the persisted session
+    /// leaves the stuck queue behind while keeping the user signed in.
+    private func discardStuckAuthState() {
+        guard let restored = restoreAuthState() else { return }
+        authState = restored
     }
 
     private func clearAuthState() {

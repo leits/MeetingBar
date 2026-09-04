@@ -12,6 +12,11 @@ import Foundation
 /// handler and a timeout — the loser has to know to stay silent, and neither
 /// side can assume which one that is. `claim()` returns `true` to the first
 /// caller and `false` to every caller after it.
+///
+/// It lives in this file, rather than a utilities module, because only the
+/// sources listed in `Package.swift` are reachable from `MeetingBarLogicTests`,
+/// and a primitive whose whole job is to be correct under contention is worth
+/// keeping under test.
 final class SingleResumeGuard: @unchecked Sendable {
     private let lock = NSLock()
     private var isClaimed = false
