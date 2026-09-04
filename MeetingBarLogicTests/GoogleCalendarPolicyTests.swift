@@ -58,7 +58,11 @@ final class GoogleCalendarPolicyTests: XCTestCase {
         )
     }
 
-    func testHTTP401AfterRetryClearsAuthAndThrowsAuthRequired() {
+    /// A 401 from the Calendar API proves only that this access token was
+    /// refused. Discarding the stored session here turned a proxy or captive
+    /// portal into a forced re-consent, so the decision must stay "ask the user
+    /// to reconnect" and leave the refresh token alone.
+    func testHTTP401AfterRetryAsksForAuthWithoutClearingSession() {
         let decision = GoogleHTTPStatusPolicy.classify(
             statusCode: 401,
             url: calendarListURL,
@@ -66,7 +70,7 @@ final class GoogleCalendarPolicyTests: XCTestCase {
             retrying: true
         )
 
-        XCTAssertEqual(decision, .clearAuthAndThrowAuthRequired)
+        XCTAssertEqual(decision, .throwAuthRequired)
     }
 
     func testHTTP403AfterRetryWithCalendarIDIsForbiddenCalendar() {
@@ -149,6 +153,15 @@ final class GoogleCalendarPolicyTests: XCTestCase {
     func testAuthErrorDescriptionsExplainRequiredAction() {
         XCTAssertEqual(AuthError.notSignedIn.errorDescription, "Google Calendar authorization is required")
         XCTAssertEqual(AuthError.refreshFailed.errorDescription, "Google Calendar token refresh failed")
+    }
+
+    func testTemporarilyUnavailableDescriptionNamesTheUnderlyingFailure() {
+        let underlying = URLError(.notConnectedToInternet)
+
+        XCTAssertEqual(
+            AuthError.temporarilyUnavailable(underlying: underlying).errorDescription,
+            "Google Calendar is temporarily unreachable: \(underlying.localizedDescription)"
+        )
     }
 
     func testGoogleCalendarErrorDescriptionsIncludeUsefulContext() {

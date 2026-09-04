@@ -196,7 +196,7 @@ final class GoogleCalendarParserTests: XCTestCase {
         )
     }
 
-    func testHTTP401AfterRetryRequiresAuthClear() {
+    func testHTTP401AfterRetryRequiresAuthWithoutClearingSession() {
         let url = URL(string: "https://www.googleapis.com/calendar/v3/users/me/calendarList")!
 
         let decision = GoogleHTTPStatusPolicy.classify(
@@ -206,7 +206,7 @@ final class GoogleCalendarParserTests: XCTestCase {
             retrying: true
         )
 
-        XCTAssertEqual(decision, .clearAuthAndThrowAuthRequired)
+        XCTAssertEqual(decision, .throwAuthRequired)
     }
 
     func testHTTP403AfterRetryIsForbiddenCalendarWithoutAuthClear() {

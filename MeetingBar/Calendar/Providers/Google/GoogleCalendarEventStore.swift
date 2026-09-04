@@ -64,14 +64,22 @@ final class GCEventStore: NSObject,
         }
     }
 
-    private var signInTask: Task<Void, Error>?
     private var refreshTask: Task<String, Error>?
 
     // Shared URLSession to leverage connection reuse
     private static let session: URLSession = {
         let cfg = URLSessionConfiguration.default
         cfg.httpMaximumConnectionsPerHost = 6
-        cfg.waitsForConnectivity          = true
+        // Every request must fail within a bounded time so the next refresh
+        // cycle can retry. `waitsForConnectivity` suppresses
+        // `timeoutIntervalForRequest` entirely and lets a request issued while
+        // offline (wake from sleep before Wi-Fi/VPN is up) park for
+        // `timeoutIntervalForResource` — seven days by default. That is not a
+        // slow refresh, it is a refresh that never reports back, which leaves
+        // the menu bar showing yesterday's events indefinitely.
+        cfg.waitsForConnectivity          = false
+        cfg.timeoutIntervalForRequest     = 30
+        cfg.timeoutIntervalForResource    = 90
         return URLSession(configuration: cfg)
     }()
     private var urlSession: URLSession { Self.session }
@@ -175,8 +183,6 @@ final class GCEventStore: NSObject,
     }
 
     func cancelPendingOperations() {
-        signInTask?.cancel()
-        signInTask = nil
         refreshTask?.cancel()
         refreshTask = nil
 
@@ -188,7 +194,7 @@ final class GCEventStore: NSObject,
     func refreshSources() async {}
 
     func fetchAllCalendars() async throws -> [MBCalendar] {
-        try await ensureSignedIn()
+        try requireReusableSession()
 
         let url = URL(string: "https://www.googleapis.com/calendar/v3/users/me/calendarList?maxResults=250&showHidden=true")!
         let items = try await fetchJSON(url)
@@ -248,7 +254,7 @@ final class GCEventStore: NSObject,
     func fetchEventsForDateRange(for calendars: [MBCalendar],
                                  from: Date,
                                  to: Date) async throws -> [MBEvent] {
-        try await ensureSignedIn()
+        try requireReusableSession()
         var result: [MBEvent] = []
         var forbiddenErrors: [Error] = []
         var successfulCalendars = 0
@@ -279,20 +285,21 @@ final class GCEventStore: NSObject,
     }
 
     // MARK: - Private helpers
-    private func ensureSignedIn() async throws {
-        if Self.hasReusableSession(authState) {
-            return
-        }
 
-        let forceConsent = authState?.refreshToken == nil
-        if let running = signInTask { return try await running.value }
-
-        let task = Task {
-            try await signIn(forcePrompt: forceConsent)
+    /// Gate for fetches, which always originate from an unattended refresh
+    /// cycle (timer, wake, day change) rather than from a user gesture.
+    ///
+    /// This deliberately never starts an interactive sign-in. Doing so from a
+    /// background refresh opened a browser tab nobody was watching and then
+    /// awaited its callback forever, so the refresh never completed and every
+    /// later one queued behind it. Interactive authorization belongs to the
+    /// explicit `signIn(forcePrompt:)` entry point that provider selection and
+    /// the Reconnect button call; here we surface "reconnect required" and let
+    /// the user act on it.
+    private func requireReusableSession() throws {
+        guard Self.hasReusableSession(authState) else {
+            throw AuthError.notSignedIn
         }
-        signInTask = task
-        defer { signInTask = nil }
-        try await task.value
     }
 
     nonisolated static func hasReusableSession(_ state: OIDAuthState?) -> Bool {
@@ -315,25 +322,42 @@ final class GCEventStore: NSObject,
             return token
         }
 
-        if let running = refreshTask { return try await running.value }
+        // A forced refresh is only ever requested because the token we just
+        // used was rejected, so it must not be answered by an in-flight
+        // ordinary refresh — that task can only hand back the same bad token.
+        if !forceRefresh, let running = refreshTask { return try await running.value }
 
         let task = Task<String, Error> {
             defer { refreshTask = nil }
             return try await withCheckedThrowingContinuation { cont in
                 if forceRefresh { state.setNeedsTokenRefresh() }
 
-                state.performAction { [weak self] accessToken, _, error in
-                    guard let self else { return }
-                    if let token = accessToken {
-                        cont.resume(returning: token) // stateChangeDelegate persists new tokens
-                    } else if let error {
+                state.performAction { accessToken, _, error in
+                    // `error` must be inspected before `accessToken`. When the
+                    // token endpoint is unreachable, AppAuth reports the failure
+                    // as a transient error but still passes back the *previous*,
+                    // already-expired access token (OIDAuthState only nils it out
+                    // once the grant itself is rejected). Treating that as a
+                    // success sends a known-expired token to Google, which
+                    // answers 401 → forced refresh → 401 again → "sign the user
+                    // out", so a few seconds without network destroyed the
+                    // stored refresh token and forced a full re-consent.
+                    if let error {
                         let nsError = error as NSError
                         if nsError.domain == OIDOAuthTokenErrorDomain {
-                            self.clearAuthState()
+                            // Google rejected the refresh token itself. Clearing
+                            // the session is handled by the errorDelegate.
                             cont.resume(throwing: AuthError.notSignedIn)
                         } else {
-                            cont.resume(throwing: error)
+                            cont.resume(
+                                throwing: AuthError.temporarilyUnavailable(underlying: error)
+                            )
                         }
+                        return
+                    }
+
+                    if let token = accessToken {
+                        cont.resume(returning: token) // stateChangeDelegate persists new tokens
                     } else {
                         cont.resume(throwing: AuthError.refreshFailed)
                     }
@@ -405,8 +429,12 @@ final class GCEventStore: NSObject,
             case .retryWithForcedTokenRefresh:
                 _ = try await validAccessToken(forceRefresh: true)
                 return try await fetchJSON(url, calendarID: calendarID, retrying: true)
-            case .clearAuthAndThrowAuthRequired:
-                clearAuthState()
+            case .throwAuthRequired:
+                // Deliberately keeps the stored session. A 401 from the
+                // Calendar API only proves this access token was refused, and
+                // a proxy or captive portal can produce one against a healthy
+                // grant. The session is discarded only when the token endpoint
+                // rejects the refresh token, via the errorDelegate below.
                 throw AuthError.notSignedIn
             case let .throwError(error):
                 throw error
