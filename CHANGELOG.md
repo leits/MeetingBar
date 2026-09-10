@@ -23,6 +23,9 @@ a safer foundation for calendar providers and future integrations.
   Menu Bar, Notifications, and Advanced.
 * Added provider health and refresh information to application state so
   onboarding, the menu, and Preferences show consistent status.
+* Replaced the app icon with an Icon Composer version that renders as a
+  layered glass icon on macOS 26 and as a flat image on earlier releases.
+  The About block in Preferences now shows the live app icon.
 
 ### Calendar reliability
 
@@ -75,6 +78,8 @@ a safer foundation for calendar providers and future integrations.
 * Contributor documentation now consolidates architecture, dependency,
   and release-sensitive guidance, with obsolete planning, migration, and
   checklist drafts removed.
+* CI builds with Xcode 26.3. Xcode 26 or later is required to compile the
+  Icon Composer app icon.
 
 ### Validation
 

@@ -19,7 +19,7 @@ defaults:
     shell: bash
 
 env:
-  DEVELOPER_DIR: /Applications/Xcode_16.2.app/Contents/Developer
+  DEVELOPER_DIR: /Applications/Xcode_26.3.app/Contents/Developer
   CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
 jobs:

@@ -101,9 +101,7 @@ struct PatronageAppSection: View {
             }
 
             HStack(alignment: .top, spacing: 16) {
-                Image("appIconForAbout")
-                    .resizable()
-                    .frame(width: 72, height: 72)
+                AppIconView(size: 72)
                 VStack(alignment: .leading, spacing: 6) {
                     HStack(alignment: .firstTextBaseline, spacing: 8) {
                         Text("MeetingBar")
