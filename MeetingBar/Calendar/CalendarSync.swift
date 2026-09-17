@@ -164,14 +164,12 @@ public class CalendarSync: ObservableObject {
             throw CalendarSyncError.eventFetchFailed(error)
         }
 
-        let deduplicatedEvents = Dictionary(
-            rawEvents.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first }
-        ).values
+        let deduplicatedEvents = rawEvents.deduplicatedPreferringResolvedAttendee()
 
         if !AppSettings.current.events.dismissedEvents.isEmpty {
-            AppSettings.refreshDismissedEvents(using: Array(deduplicatedEvents))
+            AppSettings.refreshDismissedEvents(using: deduplicatedEvents)
         }
-        return Array(deduplicatedEvents).filtered().sorted { $0.startDate < $1.startDate }
+        return deduplicatedEvents.filtered().sorted { $0.startDate < $1.startDate }
     }
 
     private func setupPublishers() {
