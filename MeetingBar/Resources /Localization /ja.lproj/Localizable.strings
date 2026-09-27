@@ -202,7 +202,7 @@
 "status_bar_submenu_attendees_status_unknown" = " [?]";
 "status_bar_submenu_copy_meeting_link" = "ミーティングリンクをコピー";
 "status_bar_submenu_dismiss_meeting" = "ミーティングを閉じる";
-"status_bar_submenu_undismiss_meeting" = "Remove dismissal";
+"status_bar_submenu_undismiss_meeting" = "ミーティングを元に戻す";
 "status_bar_submenu_email_attendees" = "参加者にメールを送信";
 "status_bar_submenu_open_in_calendar" = "カレンダーアプリで開く";
 "status_bar_submenu_open_in_fantastical" = "Fantastical で開く";
@@ -226,7 +226,7 @@
 
 
 "calendars_screen_select_calendar_title" = "カレンダーが選択されていません";
-"access_screen_access_screen_access_denied_go_to_title" = "Go to";
+"access_screen_access_screen_access_denied_go_to_title" = "以下を開く";
 "access_screen_access_denied_system_preferences_button" = "システム設定";
 "access_screen_access_denied_relaunch_title" = "手動でアプリを起動して設定を続ける必要があります。";
 "access_screen_provider_picker_label" = "カレンダーソースを選択";
@@ -292,12 +292,12 @@
 "preferences_advanced_event_regex_title" = "ミーティングをフィルターするための正規表現";
 "status_bar_menu_dismiss_curent_meeting" = "現在のミーティングを閉じる";
 "status_bar_menu_dismiss_next_meeting" = "次のミーティングを閉じる";
-"status_bar_menu_remove_all_dismissals" = "Remove all dismissals";
-"status_bar_event_dismissed_mark" = "dismissed";
-"notification_next_meeting_dismissed_title" = "Dismissed %@";
-"notification_next_meeting_dismissed_message" = "You can remove dismissal from Quick Actions";
-"notification_all_dismissals_removed_title" = "Removed all dismissals";
-"notification_all_dismissals_removed_message" = "All dismissed meetings are back in action";
+"status_bar_menu_remove_all_dismissals" = "閉じたミーティングをすべて元に戻す";
+"status_bar_event_dismissed_mark" = "閉じた";
+"notification_next_meeting_dismissed_title" = "%@を閉じました";
+"notification_next_meeting_dismissed_message" = "クイックアクションから元に戻せます";
+"notification_all_dismissals_removed_title" = "すべて元に戻しました";
+"notification_all_dismissals_removed_message" = "閉じたミーティングがすべて元に戻りました";
 "status_bar_section_refresh_sources" = "ソースを更新";
 "access_screen_provider_authorization_cancelled" = "認証がキャンセルされました。カレンダーを接続するためにもう一度お試しください。";
 "general_end_of_event_notification_toggle" = "イベント終了時に通知を送信する";
