@@ -219,7 +219,7 @@
 "status_bar_error_apple_script_title" = "AppleScriptエラー";
 "status_bar_error_link_missed_title" = "ギャー！%@ に参加できませんでした";
 "status_bar_error_link_missed_message" = "ミーティングリンクが登録されていないか、サポートされていないサービスです";
-"status_bar_error_app_link_title" = "グオー！ %@ アプリでリンクを開けません";
+"status_bar_error_app_link_title" = "おっと！ %@ アプリでリンクを開けません";
 "status_bar_error_app_link_message" = "%@ アプリがインストールされていることを確認するか、代わりにウェブブラウザーでリンクを開いてください。";
 
 // MARK: - Calendars screen
