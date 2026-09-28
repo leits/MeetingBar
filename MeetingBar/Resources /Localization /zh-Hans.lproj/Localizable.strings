@@ -344,3 +344,4 @@
 "onboarding_setup_title" = "MeetingBar 配置";
 "onboarding_back" = "返回";
 "onboarding_start_using" = "开始使用MeetingBar";
+"onboarding_essentials_hint" = "你可以稍后在偏好设置中微调每处细节。";
