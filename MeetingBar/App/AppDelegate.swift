@@ -183,6 +183,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         lifecycleObserver.onDidWake = { [weak self] in
             self?.appModel?.handleWake()
         }
+        lifecycleObserver.onNetworkBecameReachable = { [weak self] in
+            self?.appModel?.handleNetworkBecameReachable()
+        }
         lifecycleObserver.onSystemClockChanged = { [weak self] in
             self?.handleSystemClockChange()
         }

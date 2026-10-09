@@ -5,10 +5,40 @@
 
 import Foundation
 
+/// Arbitrates a single resume between two racing callbacks.
+///
+/// A continuation must be resumed exactly once. When a wait is settled by
+/// whichever of two independent callbacks arrives first — a library completion
+/// handler and a timeout — the loser has to know to stay silent, and neither
+/// side can assume which one that is. `claim()` returns `true` to the first
+/// caller and `false` to every caller after it.
+///
+/// It lives in this file, rather than a utilities module, because only the
+/// sources listed in `Package.swift` are reachable from `MeetingBarLogicTests`,
+/// and a primitive whose whole job is to be correct under contention is worth
+/// keeping under test.
+final class SingleResumeGuard: @unchecked Sendable {
+    private let lock = NSLock()
+    private var isClaimed = false
+
+    /// `true` for the first caller only; every later caller gets `false`.
+    func claim() -> Bool {
+        lock.lock()
+        defer { lock.unlock() }
+        if isClaimed { return false }
+        isClaimed = true
+        return true
+    }
+}
+
 enum AuthError: LocalizedError {
     case cancelled
     case notSignedIn
     case refreshFailed
+    /// The token endpoint could not be reached (offline, VPN still connecting,
+    /// captive portal). The stored refresh token is still presumed valid, so
+    /// callers must retry later rather than signing the user out.
+    case temporarilyUnavailable(underlying: Error)
 
     var errorDescription: String? {
         switch self {
@@ -18,6 +48,8 @@ enum AuthError: LocalizedError {
             return "Google Calendar authorization is required"
         case .refreshFailed:
             return "Google Calendar token refresh failed"
+        case let .temporarilyUnavailable(underlying):
+            return "Google Calendar is temporarily unreachable: \(underlying.localizedDescription)"
         }
     }
 }
@@ -48,7 +80,13 @@ enum GoogleCalendarError: LocalizedError, Equatable {
 enum GoogleHTTPDecision: Equatable {
     case proceed
     case retryWithForcedTokenRefresh
-    case clearAuthAndThrowAuthRequired
+    /// Surface "reconnect required" to the user without discarding the stored
+    /// session. A 401 from the Calendar API only proves the *access* token was
+    /// rejected; it says nothing about the refresh token, and a proxy or
+    /// captive portal can produce one while the grant is perfectly valid.
+    /// Only the token endpoint rejecting the refresh token (which AppAuth
+    /// reports through `didEncounterAuthorizationError`) may clear the session.
+    case throwAuthRequired
     case throwError(GoogleCalendarError)
 }
 
@@ -63,7 +101,7 @@ enum GoogleHTTPStatusPolicy {
         case 200...299:
             return .proceed
         case 401:
-            return retrying ? .clearAuthAndThrowAuthRequired : .retryWithForcedTokenRefresh
+            return retrying ? .throwAuthRequired : .retryWithForcedTokenRefresh
         case 403:
             return retrying
                 ? .throwError(.forbiddenCalendar(calendarID: calendarID, url: url))
