@@ -442,6 +442,78 @@ final class FailedRefreshTests: BaseTestCase {
         await fulfillment(of: [preservedExp], timeout: 1.0)
     }
 
+    func test_timedOutRefreshPreservesEventsAndNextRefreshRecovers() async throws {
+        let previousEvent = makeFakeEvent(
+            id: "OLD",
+            start: Date().addingTimeInterval(60),
+            end: Date().addingTimeInterval(3600)
+        )
+        let recoveredEvent = makeFakeEvent(
+            id: "NEW",
+            start: Date().addingTimeInterval(120),
+            end: Date().addingTimeInterval(3600)
+        )
+        let store = FakeEventStore(calendars: [fakeCal], events: [previousEvent])
+        Defaults[.selectedCalendarIDs] = [fakeCal.id]
+        let manager = CalendarSync(
+            provider: store,
+            refreshInterval: 0,
+            refreshTimeout: 0.05
+        )
+
+        let initialExp = expectation(description: "initial events loaded")
+        manager.$events
+            .drop(while: { $0 != [previousEvent] })
+            .first()
+            .sink { _ in initialExp.fulfill() }
+            .store(in: &cancellables)
+        await fulfillment(of: [initialExp], timeout: 1.0)
+
+        store.fetchDelay = 0.2
+        let staleExp = expectation(description: "timed out refresh marks data stale")
+        manager.$providerHealth
+            .drop(while: { !$0.isStale })
+            .first()
+            .sink { health in
+                XCTAssertTrue(health.lastErrorDescription?.contains("did not finish") == true)
+                staleExp.fulfill()
+            }
+            .store(in: &cancellables)
+
+        try await manager.refreshSources()
+        await fulfillment(of: [staleExp], timeout: 1.0)
+
+        XCTAssertEqual(manager.events, [previousEvent])
+        XCTAssertTrue(manager.providerHealth.isStale)
+        let fetchCountAfterTimeout = store.fetchCallCount
+
+        // CalendarSync throttles triggers for 200 ms. Move beyond that window
+        // so this is a distinct refresh cycle, matching a later manual/network trigger.
+        try await Task.sleep(nanoseconds: 250_000_000)
+        store.fetchDelay = 0
+        store.stubbedEvents = [recoveredEvent]
+
+        let recoveredEventsExp = expectation(description: "next refresh publishes recovered events")
+        manager.$events
+            .drop(while: { $0 != [recoveredEvent] })
+            .first()
+            .sink { _ in recoveredEventsExp.fulfill() }
+            .store(in: &cancellables)
+        let healthyExp = expectation(description: "next refresh clears stale health")
+        manager.$providerHealth
+            .drop(while: { $0.isStale || $0.lastSuccessfulRefresh == nil })
+            .first()
+            .sink { _ in healthyExp.fulfill() }
+            .store(in: &cancellables)
+
+        try await manager.refreshSources()
+        await fulfillment(of: [recoveredEventsExp, healthyExp], timeout: 1.0)
+
+        XCTAssertEqual(manager.events, [recoveredEvent])
+        XCTAssertFalse(manager.providerHealth.isStale)
+        XCTAssertGreaterThan(store.fetchCallCount, fetchCountAfterTimeout)
+    }
+
     func test_failedInitialRefreshDoesNotCrash() {
         let store = FakeEventStore()
         store.stubbedError = NSError(domain: "test", code: 1)
