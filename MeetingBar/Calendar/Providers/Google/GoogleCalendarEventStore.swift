@@ -271,9 +271,8 @@ final class GCEventStore: NSObject,
                 throw error
             }
         }
-        let deduplicated = Dictionary(result.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first }).values
         return try GoogleCalendarBatchPolicy.finish(
-            events: Array(deduplicated),
+            events: result.deduplicatedPreferringResolvedAttendee(),
             successfulCalendars: successfulCalendars,
             forbiddenErrors: forbiddenErrors
         )

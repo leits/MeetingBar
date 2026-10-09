@@ -28,6 +28,26 @@ func getEventDateString(_ event: MBEvent) -> String {
 // MARK: - Filtering / next-event helpers
 
 public extension Array where Element == MBEvent {
+    /// Deduplicates events by `id`, keeping the copy that actually resolved
+    /// the current user's attendee entry.
+    ///
+    /// The same event can be fetched twice when it's visible through more
+    /// than one selected calendar (e.g. a work calendar also subscribed to
+    /// from a personal account). Both copies share the same event `id`, but
+    /// only the copy fetched through the calendar the user was actually
+    /// invited on resolves their attendee record — the other calendar's copy
+    /// has no matching attendee, so its `participationStatus` falls back to
+    /// `.unknown`/`.active` instead of the user's real RSVP. Picking whichever
+    /// copy happened to be fetched first (as a plain `Dictionary` uniquing
+    /// would) silently keeps the wrong one at random.
+    func deduplicatedPreferringResolvedAttendee() -> [MBEvent] {
+        Array(Dictionary(map { ($0.id, $0) }, uniquingKeysWith: { first, second in
+            let firstResolved = first.attendees.contains { $0.isCurrentUser }
+            let secondResolved = second.attendees.contains { $0.isCurrentUser }
+            return (secondResolved && !firstResolved) ? second : first
+        }).values)
+    }
+
     /// Returns only those events that pass all the user's Defaults filters.
     func filtered() -> [MBEvent] {
         let candidates = enumerated().map { index, event in
