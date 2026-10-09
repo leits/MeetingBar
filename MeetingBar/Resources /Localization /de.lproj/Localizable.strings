@@ -187,6 +187,7 @@
 
 "preferences_advanced_setting_warning" = "Diese Einstellungen sind für Fortgeschrittene Benutzer vorgesehen";
 "preferences_calendars_provider_gcalendar_change_account" = "Ändere den Google Account";
+"preferences_calendars_provider_microsoft_change_account" = "Microsoft-Konto wechseln";
 
 // MARK: - Preferences Calendars
 
@@ -254,6 +255,8 @@
 "access_screen_provider_macos_number_of_accounts" = "Alle konfigurieren Konten: iCloud, Google, Exchange, CalDAV, und weitere";
 "access_screen_provider_gcalendar_data_source" = "Verbindet direkt durch die Google Kalender API";
 "access_screen_provider_gcalendar_number_of_accounts" = "Nur ein Google Account gleichzeitig";
+"access_screen_provider_microsoft_data_source" = "Verbindet direkt über die Microsoft Graph API";
+"access_screen_provider_microsoft_number_of_accounts" = "Nur ein Microsoft-Konto gleichzeitig (Geschäfts-, Schul- oder Privatkonto)";
 "access_screen_try_again" = "Neuer Versuch";
 
 // MARK: - Calendars screen
@@ -300,6 +303,8 @@
 "message_event_script_file_missing_text" = "Die Datei eventStartScript.scpt existiert nicht in %@.";
 "message_google_account_connected_title" = "Google-Konto verbunden";
 "message_google_account_connected_text" = "%@ ist verbunden";
+"message_microsoft_account_connected_title" = "Microsoft-Konto verbunden";
+"message_microsoft_account_connected_text" = "%@ ist verbunden";
 "preferences_tab_meeting_opening" = "Meeting-Links";
 "preferences_tab_menu_bar" = "Anzeige & Ereignisse";
 "preferences_tab_notifications" = "Benachrichtigungen";
@@ -338,20 +343,26 @@
 "onboarding_welcome_title" = "Willkommen bei MeetingBar";
 "onboarding_welcome_description" = "MeetingBar zeigt Ihnen das nächste Meeting direkt in der Menüleiste an und ermöglicht den Beitritt mit einem Klick.";
 "onboarding_calendar_source_title" = "Kalenderquelle wählen";
-"onboarding_calendar_source_description" = "Wählen Sie, wie MeetingBar Kalenderdaten liest. Beide Optionen können Google-Kalender einschließen.";
+"onboarding_calendar_source_description" = "Wählen Sie, wie MeetingBar Kalenderdaten liest.";
 "onboarding_apple_calendar_title" = "macOS Kalender-App";
 "onboarding_apple_calendar_description" = "Liest Kalender aus der Kalender-App auf diesem Mac, einschließlich aller dort konfigurierten Konten.";
 "onboarding_google_calendar_title" = "Google Kalendar API";
 "onboarding_google_calendar_description" = "Verbindet MeetingBar direkt mit Google Kalendar, ohne die macOS Kalender-App zu verwenden.";
+"onboarding_microsoft_calendar_title" = "Microsoft 365";
+"onboarding_microsoft_calendar_description" = "Verbindet MeetingBar über Microsoft Graph direkt mit Outlook- und Exchange Online-Kalendern, ohne die macOS Kalender-App zu verwenden.";
 "onboarding_authorization_title" = "Kalenderzugriff bestätigen";
 "onboarding_authorization_waiting" = "Warte auf Autorisierung…";
 "onboarding_authorization_apple_description" = "MeetingBar erlauben, Ereignisse aus der Kalender-App auf diesem Mac zu lesen.";
 "onboarding_authorization_google_description" = "Schließen Sie die Google-Anmeldung in Ihrem Browser ab und kehren Sie dann zu MeetingBar zurück.";
+"onboarding_authorization_microsoft_description" = "Schließen Sie die Microsoft-Anmeldung in Ihrem Browser ab und kehren Sie dann zu MeetingBar zurück.";
+"onboarding_authorization_microsoft_waiting" = "Setzen Sie die Microsoft-Anmeldung in Ihrem Browser fort…";
+"onboarding_authorization_microsoft_window_title" = "Microsoft-Anmeldung";
 "onboarding_calendar_selection_title" = "Kalender auswählen";
 "onboarding_calendar_selection_description" = "Wählen Sie die Kalender aus, deren Meetings in MeetingBar erscheinen sollen.";
 "onboarding_calendar_selection_empty" = "Keine Kalender gefunden. Aktualisieren Sie oder überprüfen Sie Ihre Kalenderkonten.";
 "onboarding_calendar_selection_permission" = "Kalenderberechtigung erforderlich. Gewähren Sie den Zugriff in den Systemeinstellungen und aktualisieren Sie dann.";
 "onboarding_calendar_selection_reconnect" = "Google Calendar muss erneut verbunden werden.";
+"onboarding_calendar_selection_reconnect_microsoft" = "Microsoft 365 muss erneut verbunden werden.";
 "onboarding_success_title" = "Sie sind startklar";
 "onboarding_success_description" = "Ihr nächstes Meeting erscheint in der Menüleiste.";
 "access_screen_provider_authorization_cancelled" = "Autorisierung wurde abgebrochen. Versuchen Sie es erneut, um Ihren Kalender zu verbinden.";
@@ -359,6 +370,8 @@
 "status_bar_control_stale" = "Kalenderaktualisierung fehlgeschlagen – zeigt zuletzt bekannte Daten";
 "status_bar_control_auth_required" = "Google Calendar muss erneut verbunden werden";
 "status_bar_control_reconnect" = "Google Calendar erneut verbinden";
+"status_bar_control_auth_required_microsoft" = "Microsoft 365 muss erneut verbunden werden";
+"status_bar_control_reconnect_microsoft" = "Microsoft 365 erneut verbinden";
 "status_bar_control_permission_required" = "Kalenderberechtigung erforderlich";
 "status_bar_control_grant_permission" = "Kalenderberechtigung erteilen";
 "status_bar_control_no_calendars" = "Keine Kalender ausgewählt";

@@ -7,7 +7,7 @@
 
 **MeetingBar** is a lightweight macOS menu-bar app that shows your current or next calendar meeting and lets you join it in one click.
 
-It keeps meetings visible in the status bar, detects meeting links from calendar events, supports macOS Calendar and Google Calendar, and works with 50+ meeting services including Google Meet, Zoom, Microsoft Teams, Webex, and Discord.
+It keeps meetings visible in the status bar, detects meeting links from calendar events, supports macOS Calendar, Google Calendar, and Microsoft 365, and works with 50+ meeting services including Google Meet, Zoom, Microsoft Teams, Webex, and Discord.
 
 MeetingBar is free, open source, and privacy-respecting.
 
@@ -43,6 +43,7 @@ MeetingBar works with:
 
 * **macOS Calendar**: use any calendar account synchronized with Calendar.app, including iCloud, Google, Exchange, Office 365, Yahoo, AOL, and others.
 * **Google Calendar**: connect Google Calendar directly from MeetingBar.
+* **Microsoft 365**: connect Exchange Online or Outlook.com directly through the Microsoft Graph API. On managed Macs the sign-in can use the Microsoft Enterprise SSO plug-in.
 
 After installation, open MeetingBar and go through onboarding to choose your calendar source and preferences.
 
@@ -134,6 +135,7 @@ MeetingBar also uses these resources:
 * [Defaults](https://github.com/sindresorhus/Defaults) for managing user settings
 * [LaunchAtLogin](https://github.com/sindresorhus/LaunchAtLogin) for launch-at-login integration
 * [AppAuth-iOS](https://github.com/openid/AppAuth-iOS) for Google Calendar OAuth
+* [MSAL for iOS and macOS](https://github.com/AzureAD/microsoft-authentication-library-for-objc) for Microsoft 365 sign-in and token management (Keychain-backed cache and silent refresh), including Microsoft Enterprise SSO plug-in support on managed Macs
 
 App logo made by [Miroslav Rajkovic](https://www.rajkovic.co/).
 

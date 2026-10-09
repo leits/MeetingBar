@@ -9,7 +9,7 @@ If anything below disagrees with the actual code, the code wins — and the doc 
 
 ## What MeetingBar is, in one paragraph
 
-MeetingBar is a macOS menu-bar app that reads calendars (Apple Calendar via EventKit, Google Calendar via OAuth2), shows the next event in the system status bar, opens the right meeting URL when you click "Join", and fires notifications around event start/end. It is `NSApplicationDelegate`-based (AppKit) with SwiftUI used for Preferences/Onboarding/Fullscreen views. macOS 12+ minimum, Swift 6.
+MeetingBar is a macOS menu-bar app that reads calendars (Apple Calendar via EventKit, Google Calendar via OAuth2, Microsoft 365 via Microsoft Graph + MSAL), shows the next event in the system status bar, opens the right meeting URL when you click "Join", and fires notifications around event start/end. It is `NSApplicationDelegate`-based (AppKit) with SwiftUI used for Preferences/Onboarding/Fullscreen views. macOS 12+ minimum, Swift 6.
 
 The product principle is reliability first: **show the correct meeting, stay fresh, stay visible, open the right link**. New settings are a last resort — improve the default behavior instead.
 
@@ -18,10 +18,10 @@ The product principle is reliability first: **show the correct meeting, stay fre
 ## Top-level data flow
 
 ```
-                ┌──────────────────────────────────────────────┐
-                │                Calendar providers            │
-                │   EKEventStore (Apple)   GCEventStore (GCal) │
-                └───────────────▲──────────────────────────────┘
+                ┌───────────────────────────────────────────────────────────────┐
+                │                       Calendar providers                      │
+                │ EKEventStore (Apple)   GCEventStore (Google)   MSGraph (M365) │
+                └──────────────────────────────▲────────────────────────────────┘
                                 │ fetchAllCalendars / fetchEventsForDateRange
                                 │
             ┌───────────────────┴────────────────────┐
@@ -92,9 +92,13 @@ MeetingBar/                         (~76 .swift files)
 │   └── Providers/
 │       ├── EventKit/
 │       │   └── EventKitEventStore.swift    — Apple Calendar via EventKit
-│       └── Google/
-│           ├── GoogleCalendarEventStore.swift — Google Calendar via AppAuth + REST
-│           └── GoogleCalendarPolicy.swift     — auth/error classification [SPM]
+│       ├── Google/
+│       │   ├── GoogleCalendarEventStore.swift — Google Calendar via AppAuth + REST
+│       │   └── GoogleCalendarPolicy.swift     — auth/error classification [SPM]
+│       └── Microsoft/
+│           ├── MicrosoftGraphEventStore.swift  — Microsoft 365 via MSAL + Graph REST
+│           ├── MicrosoftGraphPolicy.swift      — HTTP classification, mapping, dates, config [SPM]
+│           └── MicrosoftAuthPresentation.swift — anchor window for the MSAL sign-in sheet
 │
 ├── Meetings/                       — meeting URL detection, opening, services catalog
 │   ├── MeetingProvider.swift       — struct + static all (single source of provider metadata) [SPM]
@@ -333,6 +337,7 @@ Long-running or delayed work must have one stored owner and an explicit cancella
 | Calendar refresh cycle and store-change refresh | `CalendarSync` | `stop()` |
 | Active provider operations | `CalendarRepository` / `EventStore` | provider switch and `stop()` call `cancelPendingOperations()` |
 | Google OAuth sign-in, token refresh, external authorization session | `GCEventStore` | sign-out, provider switch, app termination |
+| Microsoft 365 sign-in (MSAL), silent token refresh, ASWebAuthenticationSession presentation anchor | `MicrosoftGraphEventStore` | sign-out, provider switch, app termination |
 | Delayed fullscreen, auto-join, and event-start script actions | `NotificationScheduler` | reconcile removes stale plans; `stop()` cancels all |
 | StoreKit transaction update listener | `PatronageService` | `stop()` |
 | Lifecycle notification registrations | `LifecycleObserver` | `stop()` |
@@ -370,14 +375,15 @@ The policy itself takes the snapshot and never imports `Defaults`. This is what 
 
 ## Provider abstraction
 
-`EventStore` (`Calendar/EventStore.swift`) is the seam between the app and a calendar provider. Two implementations ship today:
+`EventStore` (`Calendar/EventStore.swift`) is the seam between the app and a calendar provider. Three implementations ship today:
 
 - **`EKEventStore`** — wraps EventKit. Always available; permission prompt the first time. No OAuth.
 - **`GCEventStore`** — wraps Google Calendar API via AppAuth-iOS. OAuth2 flow with refresh tokens persisted in Keychain. Per-calendar 403 handling so one inaccessible calendar does not disconnect the account.
+- **`MicrosoftGraphEventStore`** — wraps Microsoft Graph via MSAL against the `common` authority (work, school, and personal Microsoft accounts). MSAL is used instead of a generic OIDC library for two reasons: the **Microsoft Enterprise SSO plug-in** works on MDM-managed Macs, and MSAL owns the **token lifecycle** — access and refresh tokens live in MSAL's Keychain-backed cache (scoped to the app's own access group via `keychainSharingGroup`), silent refresh, expiry/revocation handling and multi-account storage are all inside the SDK, so the app persists only the opaque account identifier and never handles a refresh token (the Google/AppAuth path, by contrast, serialises `OIDAuthState` including the refresh token into an app-owned Keychain item). Signs in through ASWebAuthenticationSession, so no URL scheme or `URLHandler` callback is needed. Per-calendar 403/404 handling mirrors the Google store. Pure decisions live in `MicrosoftGraphPolicy.swift` (hostless-tested).
 
 `EventStore` contains provider-neutral fetch and cancellation operations. `AuthenticatedEventStore` extends it with explicit authorization/sign-out. Google uses that boundary for OAuth; EventKit uses it for calendar permission.
 
-**Adding a third provider** (e.g. Microsoft Graph in 5.x): implement `EventStore`, map provider events into `MBEvent`, expose calendars as `MBCalendar`. Do not push provider-specific types past the store boundary — the rest of the app must remain provider-agnostic.
+**Adding a fourth provider**: implement `EventStore`, map provider events into `MBEvent`, expose calendars as `MBCalendar`. Do not push provider-specific types past the store boundary — the rest of the app must remain provider-agnostic. Keep pure decisions (HTTP classification, field mapping, date parsing, configuration resolution) in a `*Policy.swift` file added to `Package.swift` sources so they get fast hostless tests, exactly like `GoogleCalendarPolicy.swift` and `MicrosoftGraphPolicy.swift`.
 
 ---
 
@@ -448,6 +454,7 @@ Direct app dependencies are declared as Xcode Swift Package references in `Meeti
 | Defaults | `9.0.2 ..< 9.1.0` | `9.0.3` | Typed user defaults |
 | LaunchAtLogin | `5.0.2 ..< 6.0.0` | `5.0.2` | Login item integration |
 | AppAuth-iOS | `2.0.0 ..< 3.0.0` | `2.0.0` | Google OAuth |
+| MSAL (microsoft-authentication-library-for-objc) | `2.14.1 ..< 2.15.0` | `2.14.1` | Microsoft 365 OAuth. Chosen over AppAuth because MSAL integrates with the Microsoft Enterprise SSO plug-in on managed Macs and manages the token cache (Keychain storage, silent refresh, revocation) itself, so the app never touches refresh tokens. Pinned below 2.15.0, which raised its minimum to macOS 14. |
 
 `swift-syntax 601.0.1` is currently transitive. StoreKit 2 is an Apple system framework used by `PatronageService`; it is not an external package dependency, and no external StoreKit package is used.
 
@@ -473,7 +480,7 @@ Treat these as release-sensitive files. Changes should be named in PR notes and 
 - `Scripts/**`
 - `MeetingBar/Resources /Localization /en.lproj/Localizable.strings`
 
-Before a signed release, verify the configuration that unsigned local Debug builds cannot prove: signing team and provisioning, hardened runtime, sandbox capabilities, URL schemes, Google OAuth placeholders and callback scheme, App Store receipt classification, StoreKit 2 patronage products, launch-at-login helper behavior, and localization validation.
+Before a signed release, verify the configuration that unsigned local Debug builds cannot prove: signing team and provisioning, hardened runtime, sandbox capabilities, URL schemes, Google OAuth placeholders and callback scheme, the `MICROSOFT_CLIENT_ID` placeholder plus, on a signed build, production Entra `Calendars.Read` consent and MSAL keychain cache behavior, App Store receipt classification, StoreKit 2 patronage products, launch-at-login helper behavior, and localization validation.
 
 Standard release validation starts with:
 
@@ -484,7 +491,7 @@ make test
 make build-release
 ```
 
-Then manually smoke-test first launch/onboarding for EventKit and Google Calendar, provider switching and Google sign-out, wake/screen-lock/timezone/day-change refreshes, status-bar/menu states, meeting-link opening, notifications, fullscreen reminders, scripts, Preferences, diagnostics copy, app URL routes, and app termination while refresh, OAuth, delayed actions, or StoreKit updates are active.
+Then manually smoke-test first launch/onboarding for EventKit, Google Calendar, and Microsoft 365; provider switching, Google sign-out, and Microsoft 365 connect / reconnect / silent refresh / sign-out / account switching; wake/screen-lock/timezone/day-change refreshes; status-bar/menu states; meeting-link opening; notifications; fullscreen reminders; scripts; Preferences; diagnostics copy; app URL routes; and app termination while refresh, OAuth, delayed actions, or StoreKit updates are active.
 
 ---
 

@@ -46,6 +46,7 @@
 "preferences_calendars_select_calendars_title" = "Vyber kalendáre na zobrazenie udalostí v lište";
 "preferences_bookmarks_new_bookmark_already_exist" = "%@ už má tento odkaz/telefónne číslo:\n%@";
 "preferences_calendars_provider_gcalendar_change_account" = "Zmeniť Google účet";
+"preferences_calendars_provider_microsoft_change_account" = "Zmeniť Microsoft účet";
 "preferences_advanced_regex_title" = "Vlastné regexy pre odkaz na stretnutie";
 
 // MARK: - Status bar
@@ -239,6 +240,8 @@
 "status_bar_error_apple_script_title" = "Chyba AppleScriptu";
 "status_bar_error_link_missed_message" = "Odkaz sa nenašiel alebo poskytovateľ vášho stretnutia ešte nie je podporovaný";
 "access_screen_provider_gcalendar_data_source" = "Získať údaje priamo z Google kalendára";
+"access_screen_provider_microsoft_number_of_accounts" = "Iba jeden pracovný, školský alebo osobný Microsoft účet naraz";
+"access_screen_provider_microsoft_data_source" = "Pripája sa priamo cez Microsoft Graph API";
 "access_screen_try_again" = "Skús to znova";
 "constants_meeting_service_phone" = "Telefónne číslo";
 
@@ -300,24 +303,32 @@
 "message_event_script_file_missing_title" = "Súbor AppleScript sa nenašiel";
 "message_google_account_connected_text" = "%@ je pripojený";
 "message_google_account_connected_title" = "Účet Google pripojený";
+"message_microsoft_account_connected_text" = "%@ je pripojený";
+"message_microsoft_account_connected_title" = "Účet Microsoft pripojený";
 "onboarding_apple_calendar_description" = "Číta kalendáre z aplikácie Kalendár na tomto Macu vrátane všetkých nakonfigurovaných účtov.";
 "onboarding_apple_calendar_title" = "Aplikácia Kalendár macOS";
 "onboarding_authorization_apple_description" = "Povoľte aplikácii MeetingBar čítať udalosti z aplikácie Kalendár na tomto Macu.";
 "onboarding_authorization_google_description" = "Dokončite prihlásenie Google v prehliadači a vráťte sa do MeetingBar.";
+"onboarding_authorization_microsoft_description" = "Dokončite prihlásenie do Microsoftu v prehliadači a vráťte sa do MeetingBar.";
+"onboarding_authorization_microsoft_waiting" = "Pokračujte v prihlásení do Microsoftu v prehliadači…";
+"onboarding_authorization_microsoft_window_title" = "Prihlásenie do Microsoftu";
 "onboarding_authorization_title" = "Overiť prístup ku kalendáru";
 "onboarding_authorization_waiting" = "Čaká sa na autorizáciu…";
 "onboarding_calendar_selection_description" = "Vyberte kalendáre, ktorých stretnutia sa majú zobrazovať v MeetingBar.";
 "onboarding_calendar_selection_empty" = "Nenašli sa žiadne kalendáre. Obnovte alebo skontrolujte svoje účty kalendára.";
 "onboarding_calendar_selection_permission" = "Je potrebné povolenie kalendára. Udeľte prístup v Systémových nastaveniach a obnovte.";
 "onboarding_calendar_selection_reconnect" = "Google Kalendár je potrebné znova pripojiť.";
+"onboarding_calendar_selection_reconnect_microsoft" = "Microsoft 365 je potrebné znova pripojiť.";
 "onboarding_calendar_selection_title" = "Vybrať kalendáre";
-"onboarding_calendar_source_description" = "Vyberte, ako MeetingBar číta kalendárne dáta. Obe možnosti môžu zahŕňať kalendáre Google.";
+"onboarding_calendar_source_description" = "Vyberte, ako MeetingBar číta kalendárne dáta.";
 "onboarding_calendar_source_title" = "Vyberte zdroj kalendára";
 "onboarding_choose_different_source" = "Vybrať iný zdroj";
 "onboarding_continue" = "Pokračovať";
 "onboarding_done" = "Hotovo";
 "onboarding_google_calendar_description" = "Pripojí MeetingBar priamo ku Google Kalendáru bez použitia aplikácie Kalendár macOS.";
 "onboarding_google_calendar_title" = "Google Calendar API";
+"onboarding_microsoft_calendar_description" = "Pripojí MeetingBar priamo ku kalendárom Outlook a Exchange Online cez Microsoft Graph bez použitia aplikácie Kalendár macOS.";
+"onboarding_microsoft_calendar_title" = "Microsoft 365";
 "onboarding_progress" = "Krok %@ z %@";
 "onboarding_success_description" = "Vaše ďalšie stretnutie sa zobrazí v paneli s ponukami.";
 "onboarding_success_title" = "Ste pripravený";
@@ -361,6 +372,8 @@
 "status_bar_control_no_upcoming" = "Žiadne nadchádzajúce stretnutia";
 "status_bar_control_permission_required" = "Vyžaduje sa povolenie kalendára";
 "status_bar_control_reconnect" = "Znova pripojiť Google Kalendár";
+"status_bar_control_auth_required_microsoft" = "Microsoft 365 je potrebné znova pripojiť";
+"status_bar_control_reconnect_microsoft" = "Znova pripojiť Microsoft 365";
 "status_bar_control_refresh_failed" = "Obnova kalendára zlyhala";
 "status_bar_control_select_calendars" = "Vybrať kalendáre v Predvoľbách";
 "status_bar_control_stale" = "Obnova kalendára zlyhala — zobrazujú sa naposledy známe údaje";

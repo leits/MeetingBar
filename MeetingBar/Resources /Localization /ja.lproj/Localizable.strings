@@ -150,6 +150,7 @@
 
 "preferences_calendars_select_calendars_title" = "表示するカレンダーの選択";
 "preferences_calendars_provider_gcalendar_change_account" = "Googleアカウントの変更";
+"preferences_calendars_provider_microsoft_change_account" = "Microsoftアカウントを変更";
 
 // MARK: - Preferences Advanced
 
@@ -234,6 +235,8 @@
 "access_screen_provider_macos_number_of_accounts" = "すべての構成アカウント:iCloud、Google、Exchange、CalDAVなど";
 "access_screen_provider_gcalendar_data_source" = "Google Calendar API から直接接続";
 "access_screen_provider_gcalendar_number_of_accounts" = "一度に1つのGoogleアカウント";
+"access_screen_provider_microsoft_data_source" = "Microsoft Graph APIを通じて直接接続";
+"access_screen_provider_microsoft_number_of_accounts" = "一度に1つのMicrosoftアカウント（職場、学校、または個人）";
 "access_screen_try_again" = "もう一度試してください";
 
 // MARK: - Shared
@@ -313,24 +316,32 @@
 "message_event_script_file_missing_title" = "AppleScriptファイルが見つかりません";
 "message_google_account_connected_text" = "%@ が接続されました";
 "message_google_account_connected_title" = "Googleアカウントが接続されました";
+"message_microsoft_account_connected_text" = "%@ が接続されました";
+"message_microsoft_account_connected_title" = "Microsoftアカウントが接続されました";
 "onboarding_apple_calendar_description" = "このMacのカレンダーアプリからカレンダーを読み取ります。設定済みのすべてのアカウントが含まれます。";
 "onboarding_apple_calendar_title" = "macOSカレンダーアプリ";
 "onboarding_authorization_apple_description" = "MeetingBarがMacのカレンダーアプリからイベントを読み取ることを許可してください。";
 "onboarding_authorization_google_description" = "ブラウザでGoogleサインインを完了してから、MeetingBarに戻ってください。";
+"onboarding_authorization_microsoft_description" = "ブラウザでMicrosoftサインインを完了してから、MeetingBarに戻ってください。";
+"onboarding_authorization_microsoft_waiting" = "ブラウザでMicrosoftへのサインインを続けてください…";
+"onboarding_authorization_microsoft_window_title" = "Microsoftサインイン";
 "onboarding_authorization_title" = "カレンダーアクセスを確認";
 "onboarding_authorization_waiting" = "認証を待っています…";
 "onboarding_calendar_selection_description" = "MeetingBarに表示するミーティングのカレンダーを選択してください。";
 "onboarding_calendar_selection_empty" = "カレンダーが見つかりません。更新するかカレンダーアカウントを確認してください。";
 "onboarding_calendar_selection_permission" = "カレンダーの許可が必要です。システム設定でアクセスを許可してから更新してください。";
 "onboarding_calendar_selection_reconnect" = "Google カレンダーを再接続する必要があります。";
+"onboarding_calendar_selection_reconnect_microsoft" = "Microsoft 365を再接続する必要があります。";
 "onboarding_calendar_selection_title" = "カレンダーを選択";
-"onboarding_calendar_source_description" = "MeetingBarがカレンダーデータを読み取る方法を選択してください。どちらのオプションもGoogleカレンダーを含めることができます。";
+"onboarding_calendar_source_description" = "MeetingBarがカレンダーデータを読み取る方法を選択してください。";
 "onboarding_calendar_source_title" = "カレンダーソースを選択";
 "onboarding_choose_different_source" = "別のソースを選択";
 "onboarding_continue" = "続ける";
 "onboarding_done" = "完了";
 "onboarding_google_calendar_description" = "macOSカレンダーアプリを使わずに、MeetingBarをGoogle カレンダーに直接接続します。";
 "onboarding_google_calendar_title" = "Google Calendar API";
+"onboarding_microsoft_calendar_description" = "macOSカレンダーアプリを使わずに、Microsoft Graph経由でMeetingBarをOutlookとExchange Onlineのカレンダーに直接接続します。";
+"onboarding_microsoft_calendar_title" = "Microsoft 365";
 "onboarding_progress" = "ステップ %@ / %@";
 "onboarding_success_description" = "次のミーティングがメニューバーに表示されます。";
 "onboarding_success_title" = "準備完了";
@@ -374,6 +385,8 @@
 "status_bar_control_no_upcoming" = "今後の会議はありません";
 "status_bar_control_permission_required" = "カレンダーの許可が必要です";
 "status_bar_control_reconnect" = "Google カレンダーを再接続";
+"status_bar_control_auth_required_microsoft" = "Microsoft 365を再接続する必要があります";
+"status_bar_control_reconnect_microsoft" = "Microsoft 365を再接続";
 "status_bar_control_refresh_failed" = "カレンダーの更新に失敗しました";
 "status_bar_control_select_calendars" = "環境設定でカレンダーを選択";
 "status_bar_control_stale" = "カレンダーの更新に失敗しました — 最後のデータを表示中";

@@ -84,6 +84,7 @@ final class DiagnosticsAdapterTests: BaseTestCase {
     func test_providerMappingUsesProductionEventStoreProvider() {
         XCTAssertEqual(DiagnosticsProvider(provider: .macOSEventKit), .macOSEventKit)
         XCTAssertEqual(DiagnosticsProvider(provider: .googleCalendar), .googleCalendar)
+        XCTAssertEqual(DiagnosticsProvider(provider: .microsoftGraph), .microsoftGraph)
     }
 
     func test_healthMappingCopiesProviderHealthFields() {

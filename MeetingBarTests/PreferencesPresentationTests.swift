@@ -11,7 +11,7 @@ final class PreferencesPresentationTests: XCTestCase {
     func testCalendarSourcesExplainDistinctDataSourcesAndAccountScopes() {
         XCTAssertEqual(
             CalendarSourcePresentation.all.map(\.provider),
-            [.macOSEventKit, .googleCalendar]
+            [.macOSEventKit, .googleCalendar, .microsoftGraph]
         )
 
         let macOSSource = CalendarSourcePresentation.make(for: .macOSEventKit)
@@ -34,6 +34,41 @@ final class PreferencesPresentationTests: XCTestCase {
         XCTAssertEqual(
             googleSource.accountScopeKey,
             "access_screen_provider_gcalendar_number_of_accounts"
+        )
+
+        let microsoftSource = CalendarSourcePresentation.make(for: .microsoftGraph)
+        XCTAssertEqual(microsoftSource.titleKey, "onboarding_microsoft_calendar_title")
+        XCTAssertEqual(
+            microsoftSource.dataSourceKey,
+            "access_screen_provider_microsoft_data_source"
+        )
+        XCTAssertEqual(
+            microsoftSource.accountScopeKey,
+            "access_screen_provider_microsoft_number_of_accounts"
+        )
+        XCTAssertEqual(
+            microsoftSource.changeAccountTitleKey,
+            "preferences_calendars_provider_microsoft_change_account"
+        )
+        XCTAssertNil(CalendarSourcePresentation.make(for: .macOSEventKit).changeAccountTitleKey)
+    }
+
+    func testMicrosoftProviderCanReconnectWhenAuthRequired() {
+        var state = AppState()
+        state.activeProvider = .microsoftGraph
+        state.providerHealth = ProviderHealth.failure(
+            previous: ProviderHealth(),
+            attempted: Date(),
+            error: MicrosoftAuthError.notSignedIn
+        )
+
+        let presentation = PreferencesCalendarPresentation.make(from: state)
+
+        XCTAssertEqual(presentation.connectionState, .authRequired)
+        XCTAssertTrue(presentation.canReconnect)
+        XCTAssertEqual(
+            presentation.emptyStateTextKey,
+            "onboarding_calendar_selection_reconnect_microsoft"
         )
     }
 

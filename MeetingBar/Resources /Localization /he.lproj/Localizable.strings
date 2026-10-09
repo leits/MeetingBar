@@ -151,6 +151,8 @@
 "access_screen_provider_macos_number_of_accounts" = "כל מספר של כל חשבון שהוא שמחובר";
 "access_screen_provider_gcalendar_data_source" = "משיכת נתונים ישירות מ־Google Calendar";
 "access_screen_provider_gcalendar_number_of_accounts" = "חשבון Google אחד בלבד";
+"access_screen_provider_microsoft_data_source" = "מתחבר ישירות דרך Microsoft Graph API";
+"access_screen_provider_microsoft_number_of_accounts" = "חשבון Microsoft אחד בלבד בכל פעם – חשבון עבודה, בית ספר או חשבון אישי";
 "access_screen_try_again" = "לנסות שוב";
 
 // MARK: - Shared
@@ -234,6 +236,7 @@
 
 "preferences_calendars_select_calendars_title" = "נא לבחור לוחות שנה כדי לצפות באירועים בסרגל המצב";
 "preferences_calendars_provider_gcalendar_change_account" = "החלפת חשבון Google";
+"preferences_calendars_provider_microsoft_change_account" = "החלפת חשבון Microsoft";
 "preferences_advanced_wrong_location_message" = "נא לבחור את תיקיית משתמש ← ספרייה ← סקריפטים של יישומים ← leits.MeetingBar";
 "status_bar_section_bookmarks_menu" = "תפריט סימניות";
 "status_bar_section_date_nothing" = "שום דבר עבור %@";
@@ -297,24 +300,32 @@
 "message_event_script_file_missing_title" = "קובץ AppleScript לא נמצא";
 "message_google_account_connected_text" = "%@ מחובר";
 "message_google_account_connected_title" = "חשבון Google חובר";
+"message_microsoft_account_connected_text" = "%@ מחובר";
+"message_microsoft_account_connected_title" = "חשבון Microsoft חובר";
 "onboarding_apple_calendar_description" = "קורא לוחות שנה מיישום ה‑Calendars ב‑Mac זה, כולל כל החשבונות המוגדרים.";
 "onboarding_apple_calendar_title" = "יישום Calendars של macOS";
 "onboarding_authorization_apple_description" = "אפשר ל‑MeetingBar לקרוא אירועים מיישום ה‑Calendars ב‑Mac זה.";
 "onboarding_authorization_google_description" = "השלם את כניסת Google בדפדפן שלך, ולאחר מכן חזור ל‑MeetingBar.";
+"onboarding_authorization_microsoft_description" = "השלם את כניסת Microsoft בדפדפן שלך, ולאחר מכן חזור ל‑MeetingBar.";
+"onboarding_authorization_microsoft_waiting" = "המשך את הכניסה ל‑Microsoft בדפדפן שלך…";
+"onboarding_authorization_microsoft_window_title" = "כניסה ל‑Microsoft";
 "onboarding_authorization_title" = "אמת גישה ללוח שנה";
 "onboarding_authorization_waiting" = "ממתין להרשאה…";
 "onboarding_calendar_selection_description" = "בחר את לוחות השנה שפגישותיהם יופיעו ב‑MeetingBar.";
 "onboarding_calendar_selection_empty" = "לא נמצאו לוחות שנה. רענן או בדוק את חשבונות לוח השנה שלך.";
 "onboarding_calendar_selection_permission" = "נדרשת הרשאה ללוח שנה. הענק גישה בהגדרות המערכת, ולאחר מכן רענן.";
 "onboarding_calendar_selection_reconnect" = "יש לחבר מחדש את Google Calendar.";
+"onboarding_calendar_selection_reconnect_microsoft" = "יש לחבר מחדש את Microsoft 365.";
 "onboarding_calendar_selection_title" = "בחר לוחות שנה";
-"onboarding_calendar_source_description" = "בחר כיצד MeetingBar קורא נתוני לוח שנה. שתי האפשרויות יכולות לכלול לוחות שנה של Google.";
+"onboarding_calendar_source_description" = "בחר כיצד MeetingBar קורא נתוני לוח שנה.";
 "onboarding_calendar_source_title" = "בחר את מקור לוח השנה שלך";
 "onboarding_choose_different_source" = "בחר מקור אחר";
 "onboarding_continue" = "המשך";
 "onboarding_done" = "סיים";
 "onboarding_google_calendar_description" = "מחבר את MeetingBar ישירות ל‑Google Calendar מבלי להשתמש ביישום Calendars של macOS.";
 "onboarding_google_calendar_title" = "Google Calendar API";
+"onboarding_microsoft_calendar_description" = "מחבר את MeetingBar ישירות ללוחות השנה של Outlook ו‑Exchange Online דרך Microsoft Graph, מבלי להשתמש ביישום Calendars של macOS.";
+"onboarding_microsoft_calendar_title" = "Microsoft 365";
 "onboarding_progress" = "שלב %@ מתוך %@";
 "onboarding_success_description" = "הפגישה הבאה שלך תופיע בסרגל התפריטים.";
 "onboarding_success_title" = "אתה מוכן";
@@ -358,6 +369,8 @@
 "status_bar_control_no_upcoming" = "אין פגישות קרובות";
 "status_bar_control_permission_required" = "נדרשת הרשאת לוח שנה";
 "status_bar_control_reconnect" = "חבר מחדש את Google Calendar";
+"status_bar_control_auth_required_microsoft" = "יש לחבר מחדש את Microsoft 365";
+"status_bar_control_reconnect_microsoft" = "חבר מחדש את Microsoft 365";
 "status_bar_control_refresh_failed" = "רענון לוח השנה נכשל";
 "status_bar_control_select_calendars" = "בחר לוחות שנה בהעדפות";
 "status_bar_control_stale" = "רענון לוח השנה נכשל — מציג נתונים אחרונים ידועים";

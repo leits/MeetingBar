@@ -179,11 +179,12 @@ struct ProviderPicker: View {
             )
         }
 
-        if appModel.state.activeProvider == .googleCalendar {
+        let activeProvider = appModel.state.activeProvider
+        if let changeAccountTitleKey = CalendarSourcePresentation.make(for: activeProvider).changeAccountTitleKey {
             HStack {
                 Spacer()
-                Button("preferences_calendars_provider_gcalendar_change_account".loco()) {
-                    appModel.send(.changeProvider(.googleCalendar, signOut: true))
+                Button(changeAccountTitleKey.loco()) {
+                    appModel.send(.changeProvider(activeProvider, signOut: true))
                 }
                 .disabled(appModel.state.providerChangeInProgress)
             }

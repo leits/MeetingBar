@@ -115,7 +115,9 @@ private struct CalendarSelectionContent: View {
 
     private var emptyStateText: String {
         if appModel.state.providerHealth.authRequired {
-            return "onboarding_calendar_selection_reconnect".loco()
+            return PreferencesCalendarPresentation
+                .reconnectTextKey(for: appModel.state.activeProvider)
+                .loco()
         }
         if appModel.state.activeProvider == .macOSEventKit,
            appModel.state.providerHealth.lastErrorDescription != nil {

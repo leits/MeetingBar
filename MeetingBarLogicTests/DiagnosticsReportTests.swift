@@ -39,6 +39,28 @@ final class DiagnosticsReportTests: XCTestCase {
         XCTAssertTrue(report.contains("Provider: Google Calendar"))
     }
 
+    func testReportLabelsMicrosoftProvider() {
+        let report = DiagnosticsReport.text(from: context(provider: .microsoftGraph))
+        XCTAssertTrue(report.contains("Provider: Microsoft 365 (Graph)"))
+    }
+
+    func testReportIncludesMicrosoftPermissionLines() {
+        let permissions = PermissionSnapshot(
+            calendarAccess: .authorized,
+            notificationAccess: .authorized,
+            googleAuthStatus: .notActive,
+            microsoftAuthStatus: .authorized,
+            microsoftConfigurationSource: "build setting",
+            scriptFileExists: false,
+            isAppStoreBuild: false
+        )
+        var ctx = context(provider: .microsoftGraph)
+        ctx.permissions = permissions
+        let report = DiagnosticsReport.text(from: ctx)
+        XCTAssertTrue(report.contains("Microsoft auth: authorized"))
+        XCTAssertTrue(report.contains("Microsoft config: build setting"))
+    }
+
     func testReportShowsCalendarAndEventCounts() {
         let report = DiagnosticsReport.text(from: context())
         XCTAssertTrue(report.contains("Calendars: 3 selected / 7 available"))

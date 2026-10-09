@@ -83,6 +83,15 @@ extension ProviderHealth {
             }
         }
 
+        if let microsoftAuthError = error as? MicrosoftAuthError {
+            switch microsoftAuthError {
+            case .notSignedIn:
+                return true
+            case .cancelled, .refreshFailed, .configurationMissing, .configurationInvalid:
+                return false
+            }
+        }
+
         switch error {
         case let CalendarSyncError.calendarAccessFailed(underlying):
             return isAuthRequired(underlying)

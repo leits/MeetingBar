@@ -12,6 +12,12 @@ import Defaults
 public enum EventStoreProvider: String, Defaults.Serializable, Codable, Sendable {
     case macOSEventKit = "MacOS Calendar App"
     case googleCalendar = "Google Calendar API"
+    case microsoftGraph = "Microsoft Graph API"
+
+    /// Providers that hold an account session (OAuth sign-in) rather than a
+    /// system permission. Drives account-scoped UI such as "Change account"
+    /// and "Reconnect" without naming individual providers.
+    public var requiresAccountSignIn: Bool { self != .macOSEventKit }
 }
 
 /// Base contract for a calendar provider. Not main-actor isolated so providers

@@ -16,7 +16,7 @@ Use GitHub issues for public bugs and feature requests. Keep pull requests small
 Good bug reports include:
 
 * MeetingBar version and macOS version
-* Calendar provider: macOS Calendar or Google Calendar
+* Calendar provider: macOS Calendar, Google Calendar, or Microsoft 365
 * Meeting service when relevant: Zoom, Google Meet, Microsoft Teams, Webex, etc.
 * Steps to reproduce
 * Expected behavior and actual behavior

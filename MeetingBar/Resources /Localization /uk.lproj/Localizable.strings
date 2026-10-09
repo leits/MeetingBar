@@ -144,6 +144,7 @@
 
 "preferences_calendars_select_calendars_title" = "Виберіть календарі, щоб показати події у смузі меню";
 "preferences_calendars_provider_gcalendar_change_account" = "Змінити об. запис Google";
+"preferences_calendars_provider_microsoft_change_account" = "Змінити об. запис Microsoft";
 
 // MARK: - Preferences Advanced
 
@@ -227,6 +228,8 @@
 "access_screen_provider_macos_number_of_accounts" = "Будь-яка кількість під'єднаних об. записів до системного Календаря";
 "access_screen_provider_gcalendar_data_source" = "Використовувати дані напряму з Google Calendar";
 "access_screen_provider_gcalendar_number_of_accounts" = "Лише один об. запис Google";
+"access_screen_provider_microsoft_data_source" = "Підключається напряму через Microsoft Graph API";
+"access_screen_provider_microsoft_number_of_accounts" = "Лише один робочий, навчальний або особистий об. запис Microsoft одночасно";
 "access_screen_try_again" = "Спробувати знову";
 
 // MARK: - Shared
@@ -309,6 +312,8 @@
 "message_event_script_file_missing_text" = "Файл eventStartScript.scpt не існує в %@.";
 "message_google_account_connected_title" = "Google акаунт підключено";
 "message_google_account_connected_text" = "%@ підключено";
+"message_microsoft_account_connected_title" = "Microsoft акаунт підключено";
+"message_microsoft_account_connected_text" = "%@ підключено";
 "preferences_tab_meeting_opening" = "Посилання на зустрічі";
 "preferences_tab_menu_bar" = "Вигляд і події";
 "preferences_tab_notifications" = "Сповіщення";
@@ -345,6 +350,8 @@
 "status_bar_control_stale" = "Оновлення не вдалось — відображаються останні відомі дані";
 "status_bar_control_auth_required" = "Google Calendar потребує повторного підключення";
 "status_bar_control_reconnect" = "Перепідключити Google Calendar";
+"status_bar_control_auth_required_microsoft" = "Microsoft 365 потребує повторного підключення";
+"status_bar_control_reconnect_microsoft" = "Перепідключити Microsoft 365";
 "status_bar_control_permission_required" = "Потрібен дозвіл на доступ до Календаря";
 "status_bar_control_grant_permission" = "Надати дозвіл до Календаря";
 "status_bar_control_no_calendars" = "Жодного календаря не вибрано";
@@ -358,20 +365,26 @@
 "onboarding_welcome_title" = "Ласкаво просимо у MeetingBar";
 "onboarding_welcome_description" = "MeetingBar допомагає бачити та приєднуватись до наступної зустрічі прямо зі смуги меню.";
 "onboarding_calendar_source_title" = "Виберіть джерело календаря";
-"onboarding_calendar_source_description" = "Виберіть, як MeetingBar читатиме дані календаря. Обидва варіанти можуть включати Google Calendar.";
+"onboarding_calendar_source_description" = "Виберіть, як MeetingBar читатиме дані календаря.";
 "onboarding_apple_calendar_title" = "Застосунок macOS Calendar";
 "onboarding_apple_calendar_description" = "Читає календарі з застосунку Calendar на цьому Mac, включаючи всі налаштовані там акаунти.";
 "onboarding_google_calendar_title" = "Google Calendar API";
 "onboarding_google_calendar_description" = "Підключає MeetingBar напряму до Google Calendar без використання застосунку macOS Calendar.";
+"onboarding_microsoft_calendar_title" = "Microsoft 365";
+"onboarding_microsoft_calendar_description" = "Підключає MeetingBar напряму до календарів Outlook та Exchange Online через Microsoft Graph без використання застосунку macOS Calendar.";
 "onboarding_authorization_title" = "Перевірте доступ до календаря";
 "onboarding_authorization_waiting" = "Очікування авторизації…";
 "onboarding_authorization_apple_description" = "Дозвольте MeetingBar читати події з застосунку Calendar на цьому Mac.";
 "onboarding_authorization_google_description" = "Завершіть вхід через Google у браузері, потім поверніться до MeetingBar.";
+"onboarding_authorization_microsoft_description" = "Завершіть вхід через Microsoft у браузері, потім поверніться до MeetingBar.";
+"onboarding_authorization_microsoft_waiting" = "Продовжте вхід до Microsoft у браузері…";
+"onboarding_authorization_microsoft_window_title" = "Вхід через Microsoft";
 "onboarding_calendar_selection_title" = "Виберіть календарі";
 "onboarding_calendar_selection_description" = "Оберіть календарі, події яких мають відображатись у MeetingBar.";
 "onboarding_calendar_selection_empty" = "Календарів не знайдено. Оновіть або перевірте свої акаунти.";
 "onboarding_calendar_selection_permission" = "Потрібен дозвіл на доступ до Календаря. Надайте дозвіл у Системних налаштуваннях, потім оновіть.";
 "onboarding_calendar_selection_reconnect" = "Google Calendar потребує повторного підключення.";
+"onboarding_calendar_selection_reconnect_microsoft" = "Microsoft 365 потребує повторного підключення.";
 "onboarding_essentials_title" = "Налаштуйте щоденну поведінку";
 "onboarding_essentials_description" = "Оберіть кілька типових дій для відкриття зустрічей і нагадувань.";
 "onboarding_essentials_hint" = "Усі деталі можна змінити пізніше в Налаштуваннях.";

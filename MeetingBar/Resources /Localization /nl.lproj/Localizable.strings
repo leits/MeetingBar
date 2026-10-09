@@ -132,6 +132,7 @@
 "preferences_bookmarks_new_bookmark_link_phone" = "Link/telefoonnummer";
 "preferences_bookmarks_new_bookmark_error_title" = "Kan bladwijzer niet toevoegen";
 "preferences_calendars_provider_gcalendar_change_account" = "Verander Google-account";
+"preferences_calendars_provider_microsoft_change_account" = "Verander Microsoft-account";
 
 // MARK: - Preferences Advanced
 
@@ -278,6 +279,8 @@
 "status_bar_error_apple_script_title" = "AppleScrift fout";
 "status_bar_event_status_in" = "in %@";
 "access_screen_provider_gcalendar_data_source" = "Ontvang gegevens rechtstreeks uit Google Calendar";
+"access_screen_provider_microsoft_data_source" = "Verbindt rechtstreeks via de Microsoft Graph API";
+"access_screen_provider_microsoft_number_of_accounts" = "Slechts één Microsoft-account (werk, school of persoonlijk) tegelijk";
 "shared_send_notification_disabled_tip" = "⚠️ Je macOS meldingsinstellingen voor MeetingBar zijn uitgeschakeld. Schakel meldingen in de macOS systeeminstellingen in om meetings bij te houden.";
 "shared_automatic_event_join_tip" = "Met deze instelling wordt je volgende meeting automatisch geopend in je geconfigureerde app of webbrowser";
 "preferences_appearance_status_bar_ongoing_title" = "Zichtbaarheid van lopende evenementen:";
@@ -301,6 +304,8 @@
 "message_event_script_file_missing_text" = "Het bestand eventStartScript.scpt bestaat niet in %@.";
 "message_google_account_connected_title" = "Google-account verbonden";
 "message_google_account_connected_text" = "%@ is verbonden";
+"message_microsoft_account_connected_title" = "Microsoft-account verbonden";
+"message_microsoft_account_connected_text" = "%@ is verbonden";
 "preferences_tab_meeting_opening" = "Meetinglinks";
 "preferences_tab_menu_bar" = "Weergave & Meetings";
 "preferences_tab_notifications" = "Meldingen";
@@ -339,20 +344,26 @@
 "onboarding_welcome_title" = "Welkom bij MeetingBar";
 "onboarding_welcome_description" = "MeetingBar helpt je je volgende meeting te zien en eraan deel te nemen direct vanuit de menubalk.";
 "onboarding_calendar_source_title" = "Kies je agendabron";
-"onboarding_calendar_source_description" = "Kies hoe MeetingBar agendagegevens leest. Beide opties kunnen Google-agenda's bevatten.";
+"onboarding_calendar_source_description" = "Kies hoe MeetingBar agendagegevens leest.";
 "onboarding_apple_calendar_title" = "macOS Agenda-app";
 "onboarding_apple_calendar_description" = "Leest agenda's uit de Agenda-app op deze Mac, inclusief elk account dat daar is geconfigureerd.";
 "onboarding_google_calendar_title" = "Google Calendar API";
 "onboarding_google_calendar_description" = "Verbindt MeetingBar rechtstreeks met Google Calendar zonder de macOS Agenda-app te gebruiken.";
+"onboarding_microsoft_calendar_title" = "Microsoft 365";
+"onboarding_microsoft_calendar_description" = "Verbindt MeetingBar via Microsoft Graph rechtstreeks met Outlook- en Exchange Online-agenda's, zonder de macOS Agenda-app te gebruiken.";
 "onboarding_authorization_title" = "Toegang tot agenda bevestigen";
 "onboarding_authorization_waiting" = "Wachten op autorisatie…";
 "onboarding_authorization_apple_description" = "Geef MeetingBar toestemming om meetings te lezen uit de Agenda-app op deze Mac.";
 "onboarding_authorization_google_description" = "Voltooi de Google-aanmelding in je browser en keer dan terug naar MeetingBar.";
+"onboarding_authorization_microsoft_description" = "Voltooi de Microsoft-aanmelding in je browser en keer dan terug naar MeetingBar.";
+"onboarding_authorization_microsoft_waiting" = "Ga verder met aanmelden bij Microsoft in je browser…";
+"onboarding_authorization_microsoft_window_title" = "Microsoft-aanmelding";
 "onboarding_calendar_selection_title" = "Agenda's kiezen";
 "onboarding_calendar_selection_description" = "Selecteer de agenda's waarvan meetings in MeetingBar moeten verschijnen.";
 "onboarding_calendar_selection_empty" = "Geen agenda's gevonden. Vernieuw of controleer je agenda-accounts.";
 "onboarding_calendar_selection_permission" = "Agendamachtiging vereist. Verleen toegang in Systeeminstellingen en vernieuw dan.";
 "onboarding_calendar_selection_reconnect" = "Google Calendar moet opnieuw worden verbonden.";
+"onboarding_calendar_selection_reconnect_microsoft" = "Microsoft 365 moet opnieuw worden verbonden.";
 "onboarding_success_title" = "Je bent klaar";
 "onboarding_success_description" = "Je volgende meeting verschijnt in de menubalk.";
 "access_screen_provider_authorization_cancelled" = "Autorisatie is geannuleerd. Probeer opnieuw om je agenda te verbinden.";
@@ -360,6 +371,8 @@
 "status_bar_control_stale" = "Agenda vernieuwen mislukt — laatste bekende gegevens worden weergegeven";
 "status_bar_control_auth_required" = "Google Calendar moet opnieuw worden verbonden";
 "status_bar_control_reconnect" = "Google Calendar opnieuw verbinden";
+"status_bar_control_auth_required_microsoft" = "Microsoft 365 moet opnieuw worden verbonden";
+"status_bar_control_reconnect_microsoft" = "Microsoft 365 opnieuw verbinden";
 "status_bar_control_permission_required" = "Agendamachtiging is vereist";
 "status_bar_control_grant_permission" = "Agendamachtiging verlenen";
 "status_bar_control_no_calendars" = "Geen agenda's geselecteerd";

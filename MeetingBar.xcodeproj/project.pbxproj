@@ -13,6 +13,7 @@
 		4616E3A729BB62D100665FE0 /* LaunchAtLogin in Frameworks */ = {isa = PBXBuildFile; productRef = 4616E3A629BB62D100665FE0 /* LaunchAtLogin */; };
 		467D98092DDB501F00EB205C /* AppAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 467D98082DDB501F00EB205C /* AppAuth */; };
 		467D980B2DDB501F00EB205C /* AppAuthCore in Frameworks */ = {isa = PBXBuildFile; productRef = 467D980A2DDB501F00EB205C /* AppAuthCore */; };
+		4AB5A10000000000000001A1 /* MSAL in Frameworks */ = {isa = PBXBuildFile; productRef = 4AB5A10000000000000001A2 /* MSAL */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,6 +67,7 @@
 				467D980B2DDB501F00EB205C /* AppAuthCore in Frameworks */,
 				1418907C26F23CCD00DCD9B1 /* KeyboardShortcuts in Frameworks */,
 				1418907F26F23CF600DCD9B1 /* Defaults in Frameworks */,
+				4AB5A10000000000000001A1 /* MSAL in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -135,6 +137,7 @@
 				4616E3A629BB62D100665FE0 /* LaunchAtLogin */,
 				467D98082DDB501F00EB205C /* AppAuth */,
 				467D980A2DDB501F00EB205C /* AppAuthCore */,
+				4AB5A10000000000000001A2 /* MSAL */,
 			);
 			productName = MeetingBar;
 			productReference = 144C01792462D0C3000C9FFC /* MeetingBar.app */;
@@ -217,6 +220,7 @@
 				1418907D26F23CF600DCD9B1 /* XCRemoteSwiftPackageReference "Defaults" */,
 				4616E3A529BB62D100665FE0 /* XCRemoteSwiftPackageReference "LaunchAtLogin" */,
 				467D98072DDB4ED700EB205C /* XCRemoteSwiftPackageReference "AppAuth-iOS" */,
+				4AB5A10000000000000001A0 /* XCRemoteSwiftPackageReference "microsoft-authentication-library-for-objc" */,
 			);
 			productRefGroup = 144C017A2462D0C3000C9FFC /* Products */;
 			projectDirPath = "";
@@ -615,6 +619,14 @@
 				minimumVersion = 2.0.0;
 			};
 		};
+		4AB5A10000000000000001A0 /* XCRemoteSwiftPackageReference "microsoft-authentication-library-for-objc" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/AzureAD/microsoft-authentication-library-for-objc";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 2.14.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -642,6 +654,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 467D98072DDB4ED700EB205C /* XCRemoteSwiftPackageReference "AppAuth-iOS" */;
 			productName = AppAuthCore;
+		};
+		4AB5A10000000000000001A2 /* MSAL */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4AB5A10000000000000001A0 /* XCRemoteSwiftPackageReference "microsoft-authentication-library-for-objc" */;
+			productName = MSAL;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

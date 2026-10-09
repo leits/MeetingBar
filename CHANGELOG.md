@@ -2,6 +2,19 @@
 
 For next releases info look here: <https://github.com/leits/MeetingBar/releases>
 
+## Unreleased
+
+* Added a Microsoft 365 calendar provider that connects directly to Exchange
+  Online and Outlook.com through the Microsoft Graph API, alongside the
+  existing macOS Calendar and Google Calendar sources. This replaces the
+  EWS-based macOS Internet Accounts path that Microsoft retires in October
+  2026.
+* Sign-in uses MSAL (Microsoft Authentication Library) rather than a generic
+  OAuth library so the Microsoft Enterprise SSO plug-in works on MDM-managed
+  Macs, and so token storage and silent refresh are handled by the SDK's
+  Keychain-backed cache instead of app code. The app bundle grows by the
+  MSAL framework.
+
 ## 5.0.0 (2026-06-19)
 
 MeetingBar 5 is an architecture and product refresh. It improves the

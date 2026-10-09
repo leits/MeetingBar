@@ -34,6 +34,8 @@
 "message_event_script_file_missing_text" = "The eventStartScript.scpt file does not exist in %@.";
 "message_google_account_connected_title" = "Google Account connected";
 "message_google_account_connected_text" = "%@ is connected";
+"message_microsoft_account_connected_title" = "Microsoft Account connected";
+"message_microsoft_account_connected_text" = "%@ is connected";
 
 // MARK: - Window titles
 
@@ -214,6 +216,7 @@
 
 "preferences_calendars_select_calendars_title" = "Select calendars to show meetings in the menu bar";
 "preferences_calendars_provider_gcalendar_change_account" = "Change Google Account";
+"preferences_calendars_provider_microsoft_change_account" = "Change Microsoft Account";
 
 // MARK: - Preferences Advanced
 
@@ -265,6 +268,8 @@
 "status_bar_control_stale" = "Calendar refresh failed — showing last known data";
 "status_bar_control_auth_required" = "Google Calendar needs to be reconnected";
 "status_bar_control_reconnect" = "Reconnect Google Calendar";
+"status_bar_control_auth_required_microsoft" = "Microsoft 365 needs to be reconnected";
+"status_bar_control_reconnect_microsoft" = "Reconnect Microsoft 365";
 "status_bar_control_permission_required" = "Calendar permission is required";
 "status_bar_control_grant_permission" = "Grant Calendar Permission";
 "status_bar_control_no_calendars" = "No calendars selected";
@@ -324,20 +329,26 @@
 "onboarding_welcome_title" = "Welcome to MeetingBar";
 "onboarding_welcome_description" = "MeetingBar helps you see and join your next meeting directly from the menu bar.";
 "onboarding_calendar_source_title" = "Choose your calendar source";
-"onboarding_calendar_source_description" = "Choose how MeetingBar reads calendar data. Both options can include Google calendars.";
+"onboarding_calendar_source_description" = "Choose how MeetingBar reads calendar data.";
 "onboarding_apple_calendar_title" = "macOS Calendar app";
 "onboarding_apple_calendar_description" = "Reads calendars from the Calendar app on this Mac, including every account configured there.";
 "onboarding_google_calendar_title" = "Google Calendar API";
 "onboarding_google_calendar_description" = "Connects MeetingBar directly to Google Calendar without using the macOS Calendar app.";
+"onboarding_microsoft_calendar_title" = "Microsoft 365";
+"onboarding_microsoft_calendar_description" = "Connects MeetingBar directly to Outlook and Exchange Online calendars through Microsoft Graph, without using the macOS Calendar app.";
 "onboarding_authorization_title" = "Verify calendar access";
 "onboarding_authorization_waiting" = "Waiting for authorization…";
 "onboarding_authorization_apple_description" = "Allow MeetingBar to read events from the Calendar app on this Mac.";
 "onboarding_authorization_google_description" = "Complete Google sign-in in your browser, then return to MeetingBar.";
+"onboarding_authorization_microsoft_description" = "Complete Microsoft sign-in in your browser, then return to MeetingBar.";
+"onboarding_authorization_microsoft_waiting" = "Continue signing in to Microsoft in your browser…";
+"onboarding_authorization_microsoft_window_title" = "Microsoft Sign-In";
 "onboarding_calendar_selection_title" = "Choose calendars";
 "onboarding_calendar_selection_description" = "Select the calendars whose meetings should appear in MeetingBar.";
 "onboarding_calendar_selection_empty" = "No calendars found. Refresh or check your calendar accounts.";
 "onboarding_calendar_selection_permission" = "Calendar permission is required. Grant access in System Settings, then refresh.";
 "onboarding_calendar_selection_reconnect" = "Google Calendar needs to be reconnected.";
+"onboarding_calendar_selection_reconnect_microsoft" = "Microsoft 365 needs to be reconnected.";
 "onboarding_essentials_title" = "Choose daily behavior";
 "onboarding_essentials_description" = "Choose a few defaults for opening meetings and staying on schedule.";
 "onboarding_essentials_hint" = "You can tune every detail later in Preferences.";
@@ -360,6 +371,8 @@
 "access_screen_provider_macos_number_of_accounts" = "All configured accounts: iCloud, Google, Exchange, CalDAV, and more";
 "access_screen_provider_gcalendar_data_source" = "Connects directly through the Google Calendar API";
 "access_screen_provider_gcalendar_number_of_accounts" = "One Google account at a time";
+"access_screen_provider_microsoft_data_source" = "Connects directly through the Microsoft Graph API";
+"access_screen_provider_microsoft_number_of_accounts" = "One Microsoft work, school, or personal account at a time";
 "access_screen_try_again" = "Try again";
 "access_screen_provider_authorization_cancelled" = "Authorization was cancelled. Try again to connect your calendar.";
 

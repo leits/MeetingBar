@@ -146,6 +146,7 @@
 
 "preferences_calendars_select_calendars_title" = "Selecione os calendários para mostrar eventos na barra de status";
 "preferences_calendars_provider_gcalendar_change_account" = "Alterar Conta do Google";
+"preferences_calendars_provider_microsoft_change_account" = "Alterar Conta Microsoft";
 
 // MARK: - Preferences Advanced
 
@@ -237,6 +238,8 @@
 "access_screen_provider_macos_number_of_accounts" = "Qualquer número de contas conectadas";
 "access_screen_provider_gcalendar_data_source" = "Obter dados diretamente do Google Calendar";
 "access_screen_provider_gcalendar_number_of_accounts" = "Apenas uma conta do Google";
+"access_screen_provider_microsoft_data_source" = "Conecta diretamente por meio da API do Microsoft Graph";
+"access_screen_provider_microsoft_number_of_accounts" = "Apenas uma conta Microsoft (corporativa, de estudante ou pessoal) por vez";
 "access_screen_try_again" = "Tentar novamente";
 
 // MARK: - Shared
@@ -309,24 +312,32 @@
 "message_event_script_file_missing_title" = "Arquivo AppleScript não encontrado";
 "message_google_account_connected_text" = "%@ está conectado";
 "message_google_account_connected_title" = "Conta Google conectada";
+"message_microsoft_account_connected_text" = "%@ está conectado";
+"message_microsoft_account_connected_title" = "Conta Microsoft conectada";
 "onboarding_apple_calendar_description" = "Lê calendários do app Calendário neste Mac, incluindo todas as contas configuradas.";
 "onboarding_apple_calendar_title" = "App Calendário do macOS";
 "onboarding_authorization_apple_description" = "Permita que o MeetingBar leia eventos do app Calendário neste Mac.";
 "onboarding_authorization_google_description" = "Conclua o login do Google no seu navegador e retorne ao MeetingBar.";
+"onboarding_authorization_microsoft_description" = "Conclua o login da Microsoft no seu navegador e retorne ao MeetingBar.";
+"onboarding_authorization_microsoft_waiting" = "Continue o login da Microsoft no seu navegador…";
+"onboarding_authorization_microsoft_window_title" = "Login da Microsoft";
 "onboarding_authorization_title" = "Verificar acesso ao calendário";
 "onboarding_authorization_waiting" = "Aguardando autorização…";
 "onboarding_calendar_selection_description" = "Selecione os calendários cujas reuniões devem aparecer no MeetingBar.";
 "onboarding_calendar_selection_empty" = "Nenhum calendário encontrado. Atualize ou verifique suas contas de calendário.";
 "onboarding_calendar_selection_permission" = "A permissão do calendário é necessária. Conceda acesso nas Configurações do Sistema e atualize.";
 "onboarding_calendar_selection_reconnect" = "O Google Agenda precisa ser reconectado.";
+"onboarding_calendar_selection_reconnect_microsoft" = "O Microsoft 365 precisa ser reconectado.";
 "onboarding_calendar_selection_title" = "Escolher calendários";
-"onboarding_calendar_source_description" = "Escolha como o MeetingBar lê os dados do calendário. Ambas as opções podem incluir calendários do Google.";
+"onboarding_calendar_source_description" = "Escolha como o MeetingBar lê os dados do calendário.";
 "onboarding_calendar_source_title" = "Escolha sua fonte de calendário";
 "onboarding_choose_different_source" = "Escolher outra fonte";
 "onboarding_continue" = "Continuar";
 "onboarding_done" = "Concluído";
 "onboarding_google_calendar_description" = "Conecta o MeetingBar diretamente ao Google Agenda sem usar o app Calendário do macOS.";
 "onboarding_google_calendar_title" = "API do Google Agenda";
+"onboarding_microsoft_calendar_description" = "Conecta o MeetingBar diretamente aos calendários do Outlook e do Exchange Online por meio do Microsoft Graph, sem usar o app Calendário do macOS.";
+"onboarding_microsoft_calendar_title" = "Microsoft 365";
 "onboarding_progress" = "Etapa %@ de %@";
 "onboarding_success_description" = "Sua próxima reunião aparecerá na barra de menus.";
 "onboarding_success_title" = "Você está pronto";
@@ -370,6 +381,8 @@
 "status_bar_control_no_upcoming" = "Nenhuma reunião próxima";
 "status_bar_control_permission_required" = "A permissão do calendário é necessária";
 "status_bar_control_reconnect" = "Reconectar Google Agenda";
+"status_bar_control_auth_required_microsoft" = "O Microsoft 365 precisa ser reconectado";
+"status_bar_control_reconnect_microsoft" = "Reconectar Microsoft 365";
 "status_bar_control_refresh_failed" = "Falha na atualização do calendário";
 "status_bar_control_select_calendars" = "Selecionar calendários nas Preferências";
 "status_bar_control_stale" = "Atualização do calendário falhou — exibindo últimos dados conhecidos";

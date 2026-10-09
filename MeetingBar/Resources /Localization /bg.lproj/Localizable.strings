@@ -150,6 +150,7 @@
 
 "preferences_calendars_select_calendars_title" = "Избери календари, чиито събития да се показват в лентата";
 "preferences_calendars_provider_gcalendar_change_account" = "Смени Google акаунта";
+"preferences_calendars_provider_microsoft_change_account" = "Смени Microsoft акаунта";
 
 // MARK: - Preferences Advanced
 
@@ -241,6 +242,8 @@
 "access_screen_provider_macos_number_of_accounts" = "Неограничен брой свързани акаунти";
 "access_screen_provider_gcalendar_data_source" = "Вземай данни директно от Google Calendar";
 "access_screen_provider_gcalendar_number_of_accounts" = "Само един Google акаунт";
+"access_screen_provider_microsoft_data_source" = "Свързва се директно чрез Microsoft Graph API";
+"access_screen_provider_microsoft_number_of_accounts" = "Само един служебен, учебен или личен Microsoft акаунт наведнъж";
 "access_screen_try_again" = "Опитай отново";
 
 // MARK: - Shared
@@ -304,24 +307,32 @@
 "message_event_script_file_missing_title" = "Файлът AppleScript не е намерен";
 "message_google_account_connected_text" = "%@ е свързан";
 "message_google_account_connected_title" = "Google акаунтът е свързан";
+"message_microsoft_account_connected_text" = "%@ е свързан";
+"message_microsoft_account_connected_title" = "Microsoft акаунтът е свързан";
 "onboarding_apple_calendar_description" = "Чете календари от приложението Календар на този Mac, включително всички конфигурирани акаунти.";
 "onboarding_apple_calendar_title" = "Приложение Календар на macOS";
 "onboarding_authorization_apple_description" = "Разрешете на MeetingBar да чете събития от приложението Календар на този Mac.";
 "onboarding_authorization_google_description" = "Завършете влизането в Google в браузъра си, след което се върнете в MeetingBar.";
+"onboarding_authorization_microsoft_description" = "Завършете влизането в Microsoft в браузъра си, след което се върнете в MeetingBar.";
+"onboarding_authorization_microsoft_waiting" = "Продължете влизането в Microsoft в браузъра си…";
+"onboarding_authorization_microsoft_window_title" = "Вход в Microsoft";
 "onboarding_authorization_title" = "Потвърди достъпа до календара";
 "onboarding_authorization_waiting" = "Изчакване на упълномощаване…";
 "onboarding_calendar_selection_description" = "Изберете календарите, чиито срещи трябва да се показват в MeetingBar.";
 "onboarding_calendar_selection_empty" = "Не са намерени календари. Обновете или проверете акаунтите на календара.";
 "onboarding_calendar_selection_permission" = "Необходимо е разрешение за календар. Дайте достъп в Системни настройки, след което обновете.";
 "onboarding_calendar_selection_reconnect" = "Google Календар трябва да бъде свързан отново.";
+"onboarding_calendar_selection_reconnect_microsoft" = "Microsoft 365 трябва да бъде свързан отново.";
 "onboarding_calendar_selection_title" = "Избери календари";
-"onboarding_calendar_source_description" = "Изберете как MeetingBar чете данните от календара. И двете опции могат да включват календари на Google.";
+"onboarding_calendar_source_description" = "Изберете как MeetingBar чете данните от календара.";
 "onboarding_calendar_source_title" = "Изберете вашия източник на календар";
 "onboarding_choose_different_source" = "Избери различен източник";
 "onboarding_continue" = "Продължи";
 "onboarding_done" = "Готово";
 "onboarding_google_calendar_description" = "Свързва MeetingBar директно с Google Календар без използване на приложението Календар на macOS.";
 "onboarding_google_calendar_title" = "Google Calendar API";
+"onboarding_microsoft_calendar_description" = "Свързва MeetingBar директно с календарите на Outlook и Exchange Online чрез Microsoft Graph, без използване на приложението Календар на macOS.";
+"onboarding_microsoft_calendar_title" = "Microsoft 365";
 "onboarding_progress" = "Стъпка %@ от %@";
 "onboarding_success_description" = "Следващата ви среща ще се появи в лентата с менюта.";
 "onboarding_success_title" = "Готови сте";
@@ -365,6 +376,8 @@
 "status_bar_control_no_upcoming" = "Няма предстоящи срещи";
 "status_bar_control_permission_required" = "Необходимо е разрешение за календар";
 "status_bar_control_reconnect" = "Свържи отново Google Календар";
+"status_bar_control_auth_required_microsoft" = "Microsoft 365 трябва да бъде свързан отново";
+"status_bar_control_reconnect_microsoft" = "Свържи отново Microsoft 365";
 "status_bar_control_refresh_failed" = "Обновяването на календара се провали";
 "status_bar_control_select_calendars" = "Избери календари в Предпочитания";
 "status_bar_control_stale" = "Обновяването на календара се провали — показват се последните известни данни";

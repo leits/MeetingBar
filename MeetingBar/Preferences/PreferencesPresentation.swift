@@ -13,12 +13,16 @@ struct CalendarSourcePresentation: Equatable, Identifiable {
     let accountScopeKey: String
     let authorizationDescriptionKey: String
     let systemImage: String
+    /// Title for the "switch to a different account" action, or `nil` for
+    /// providers without an account session (macOS Calendar).
+    let changeAccountTitleKey: String?
 
     var id: EventStoreProvider { provider }
 
     static let all: [CalendarSourcePresentation] = [
         make(for: .macOSEventKit),
-        make(for: .googleCalendar)
+        make(for: .googleCalendar),
+        make(for: .microsoftGraph)
     ]
 
     static func make(for provider: EventStoreProvider) -> CalendarSourcePresentation {
@@ -31,7 +35,8 @@ struct CalendarSourcePresentation: Equatable, Identifiable {
                 dataSourceKey: "access_screen_provider_macos_data_source",
                 accountScopeKey: "access_screen_provider_macos_number_of_accounts",
                 authorizationDescriptionKey: "onboarding_authorization_apple_description",
-                systemImage: "calendar"
+                systemImage: "calendar",
+                changeAccountTitleKey: nil
             )
         case .googleCalendar:
             CalendarSourcePresentation(
@@ -41,7 +46,19 @@ struct CalendarSourcePresentation: Equatable, Identifiable {
                 dataSourceKey: "access_screen_provider_gcalendar_data_source",
                 accountScopeKey: "access_screen_provider_gcalendar_number_of_accounts",
                 authorizationDescriptionKey: "onboarding_authorization_google_description",
-                systemImage: "globe"
+                systemImage: "globe",
+                changeAccountTitleKey: "preferences_calendars_provider_gcalendar_change_account"
+            )
+        case .microsoftGraph:
+            CalendarSourcePresentation(
+                provider: provider,
+                titleKey: "onboarding_microsoft_calendar_title",
+                descriptionKey: "onboarding_microsoft_calendar_description",
+                dataSourceKey: "access_screen_provider_microsoft_data_source",
+                accountScopeKey: "access_screen_provider_microsoft_number_of_accounts",
+                authorizationDescriptionKey: "onboarding_authorization_microsoft_description",
+                systemImage: "building.2",
+                changeAccountTitleKey: "preferences_calendars_provider_microsoft_change_account"
             )
         }
     }
@@ -218,7 +235,7 @@ struct PreferencesCalendarPresentation: Equatable {
 
         let emptyStateTextKey = switch connectionState {
         case .authRequired:
-            "onboarding_calendar_selection_reconnect"
+            reconnectTextKey(for: state.activeProvider)
         case .permissionRequired:
             "onboarding_calendar_selection_permission"
         case .initializing, .connected, .stale, .error:
@@ -237,7 +254,7 @@ struct PreferencesCalendarPresentation: Equatable {
             statusTone: statusTone,
             selectedCalendarCount: selectedCalendarCount,
             availableCalendarCount: availableCalendarCount,
-            canReconnect: state.activeProvider == .googleCalendar
+            canReconnect: state.activeProvider.requiresAccountSignIn
                 && connectionState == .authRequired,
             canOpenCalendarSettings: state.activeProvider == .macOSEventKit
                 && connectionState == .permissionRequired,
@@ -247,6 +264,15 @@ struct PreferencesCalendarPresentation: Equatable {
             statusTextKey: statusTextKey,
             emptyStateTextKey: emptyStateTextKey
         )
+    }
+
+    /// Reconnect copy names the account provider so the user knows which
+    /// sign-in expired. Google keeps the historical key so existing
+    /// translations stay valid.
+    static func reconnectTextKey(for provider: EventStoreProvider) -> String {
+        provider == .microsoftGraph
+            ? "onboarding_calendar_selection_reconnect_microsoft"
+            : "onboarding_calendar_selection_reconnect"
     }
 }
 
