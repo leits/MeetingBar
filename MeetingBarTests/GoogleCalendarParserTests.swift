@@ -343,6 +343,22 @@ final class GoogleAuthStateTests: XCTestCase {
         XCTAssertFalse(GCEventStore.shouldSkipSignIn(forcePrompt: false, state: state))
     }
 
+    func testTransientRefreshErrorWinsOverReturnedStaleAccessToken() {
+        let networkError = URLError(.notConnectedToInternet)
+
+        XCTAssertThrowsError(
+            try GCEventStore.resolveTokenRefresh(
+                accessToken: "expired-access-token",
+                error: networkError
+            )
+        ) { error in
+            guard case let AuthError.temporarilyUnavailable(underlying) = error else {
+                return XCTFail("Expected temporarilyUnavailable, got \(error)")
+            }
+            XCTAssertEqual((underlying as? URLError)?.code, .notConnectedToInternet)
+        }
+    }
+
     private func authorizationRequest() -> OIDAuthorizationRequest {
         let configuration = OIDServiceConfiguration(
             authorizationEndpoint: URL(string: "https://accounts.google.com/o/oauth2/v2/auth")!,
