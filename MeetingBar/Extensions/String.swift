@@ -28,20 +28,16 @@ extension String {
     }
 
     /// Returns a version of the string with all HTML tags removed, if any.
+    ///
+    /// Uses the pure-Foundation `HTMLPlainText` strip rather than
+    /// `NSAttributedString(html:)`, which leaks mach ports via TextKit's
+    /// `nsattributedstringagent` XPC service (see `htmlTagsStrippedForMeetingLinks`).
     /// - Returns: The string without HTML tags.
     func htmlTagsStripped() -> String {
         if !containsHTML {
             return self
         }
-        return autoreleasepool {
-            guard let dataUTF16 = self.data(using: .utf16) else {
-                return self
-            }
-
-            let attributedString = NSAttributedString(html: dataUTF16, options: [.documentType: NSAttributedString.DocumentType.html], documentAttributes: nil)
-
-            return attributedString?.string ?? self
-        }
+        return HTMLPlainText.from(self)
     }
 
     func fileName() -> String {
