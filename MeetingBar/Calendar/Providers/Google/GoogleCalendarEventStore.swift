@@ -64,14 +64,46 @@ final class GCEventStore: NSObject,
         }
     }
 
-    private var signInTask: Task<Void, Error>?
-    private var refreshTask: Task<String, Error>?
+    /// The refresh currently occupying the slot, and what it is refreshing.
+    ///
+    /// Two things have to be distinguished, and neither implies the other.
+    /// `state` identity says *which account*: re-authorization installs a new
+    /// `OIDAuthState`, and a refresh started for the previous one can only ever
+    /// return the previous account's token. `generation` says *which attempt*:
+    /// a forced refresh takes the slot from an ordinary refresh of the same
+    /// state, and the superseded task must not then clear or discard on behalf
+    /// of its replacement.
+    private struct PendingRefresh {
+        let task: Task<String, Error>
+        let state: OIDAuthState
+        let generation: Int
+    }
+
+    private var pendingRefresh: PendingRefresh?
+    private var refreshGeneration = 0
+    /// Upper bound on one AppAuth token refresh.
+    ///
+    /// AppAuth issues token requests on `OIDURLSessionProvider.session`, which
+    /// defaults to `URLSession.shared` — *not* the hardened session below, so
+    /// none of its configuration applies to the refresh path. `URLSession`'s
+    /// own 60s default request timeout still bounds that call, so this deadline
+    /// sits beyond it and fires only when the callback never arrives at all.
+    private static let tokenRefreshTimeout: TimeInterval = 90
 
     // Shared URLSession to leverage connection reuse
     private static let session: URLSession = {
         let cfg = URLSessionConfiguration.default
         cfg.httpMaximumConnectionsPerHost = 6
-        cfg.waitsForConnectivity          = true
+        // Every request must fail within a bounded time so the next refresh
+        // cycle can retry. `waitsForConnectivity` suppresses
+        // `timeoutIntervalForRequest` entirely and lets a request issued while
+        // offline (wake from sleep before Wi-Fi/VPN is up) park for
+        // `timeoutIntervalForResource` — seven days by default. That is not a
+        // slow refresh, it is a refresh that never reports back, which leaves
+        // the menu bar showing yesterday's events indefinitely.
+        cfg.waitsForConnectivity          = false
+        cfg.timeoutIntervalForRequest     = 30
+        cfg.timeoutIntervalForResource    = 90
         return URLSession(configuration: cfg)
     }()
     private var urlSession: URLSession { Self.session }
@@ -95,6 +127,23 @@ final class GCEventStore: NSObject,
             return
         }
 
+        try await performAuthorization(forcePrompt: forcePrompt)
+
+        // Google only issues a refresh token when the user actually walks
+        // through the consent screen. An account that still holds a grant from
+        // a previous install authorizes silently and returns none, which leaves
+        // `hasReusableSession` false forever: no unattended refresh can run, and
+        // because the provider switch fails before the active provider is set,
+        // Preferences hides the Reconnect button that would otherwise recover.
+        // Re-run the flow once demanding consent so the refresh token comes back.
+        guard !forcePrompt, authState?.refreshToken == nil else { return }
+        MeetingBarLogger.calendar.warning(
+            "Google authorization returned no refresh token; retrying with forced consent"
+        )
+        try await performAuthorization(forcePrompt: true)
+    }
+
+    private func performAuthorization(forcePrompt: Bool) async throws {
         // discover configuration for Google issuer
         let config = try await withCheckedThrowingContinuation { cont in
             OIDAuthorizationService.discoverConfiguration(forIssuer: URL(string: Self.kIssuer)!) { cfg, err in
@@ -175,10 +224,8 @@ final class GCEventStore: NSObject,
     }
 
     func cancelPendingOperations() {
-        signInTask?.cancel()
-        signInTask = nil
-        refreshTask?.cancel()
-        refreshTask = nil
+        pendingRefresh?.task.cancel()
+        pendingRefresh = nil
 
         let flow = currentAuthorizationFlow
         currentAuthorizationFlow = nil
@@ -188,7 +235,7 @@ final class GCEventStore: NSObject,
     func refreshSources() async {}
 
     func fetchAllCalendars() async throws -> [MBCalendar] {
-        try await ensureSignedIn()
+        try requireReusableSession()
 
         let url = URL(string: "https://www.googleapis.com/calendar/v3/users/me/calendarList?maxResults=250&showHidden=true")!
         let items = try await fetchJSON(url)
@@ -248,7 +295,7 @@ final class GCEventStore: NSObject,
     func fetchEventsForDateRange(for calendars: [MBCalendar],
                                  from: Date,
                                  to: Date) async throws -> [MBEvent] {
-        try await ensureSignedIn()
+        try requireReusableSession()
         var result: [MBEvent] = []
         var forbiddenErrors: [Error] = []
         var successfulCalendars = 0
@@ -271,29 +318,29 @@ final class GCEventStore: NSObject,
                 throw error
             }
         }
-        let deduplicated = Dictionary(result.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first }).values
         return try GoogleCalendarBatchPolicy.finish(
-            events: Array(deduplicated),
+            events: result.deduplicatedPreferringResolvedAttendee(),
             successfulCalendars: successfulCalendars,
             forbiddenErrors: forbiddenErrors
         )
     }
 
     // MARK: - Private helpers
-    private func ensureSignedIn() async throws {
-        if Self.hasReusableSession(authState) {
-            return
-        }
 
-        let forceConsent = authState?.refreshToken == nil
-        if let running = signInTask { return try await running.value }
-
-        let task = Task {
-            try await signIn(forcePrompt: forceConsent)
+    /// Gate for fetches, which always originate from an unattended refresh
+    /// cycle (timer, wake, day change) rather than from a user gesture.
+    ///
+    /// This deliberately never starts an interactive sign-in. Doing so from a
+    /// background refresh opened a browser tab nobody was watching and then
+    /// awaited its callback forever, so the refresh never completed and every
+    /// later one queued behind it. Interactive authorization belongs to the
+    /// explicit `signIn(forcePrompt:)` entry point that provider selection and
+    /// the Reconnect button call; here we surface "reconnect required" and let
+    /// the user act on it.
+    private func requireReusableSession() throws {
+        guard Self.hasReusableSession(authState) else {
+            throw AuthError.notSignedIn
         }
-        signInTask = task
-        defer { signInTask = nil }
-        try await task.value
     }
 
     nonisolated static func hasReusableSession(_ state: OIDAuthState?) -> Bool {
@@ -307,6 +354,27 @@ final class GCEventStore: NSObject,
         !forcePrompt && hasReusableSession(state)
     }
 
+    /// Resolves the AppAuth refresh callback without letting a stale token mask an error.
+    /// AppAuth can return the previous access token alongside a transient refresh error,
+    /// so the error must always win.
+    nonisolated static func resolveTokenRefresh(
+        accessToken: String?,
+        error: Error?
+    ) throws -> String {
+        if let error {
+            let nsError = error as NSError
+            if nsError.domain == OIDOAuthTokenErrorDomain {
+                throw AuthError.notSignedIn
+            }
+            throw AuthError.temporarilyUnavailable(underlying: error)
+        }
+
+        guard let accessToken else {
+            throw AuthError.refreshFailed
+        }
+        return accessToken
+    }
+
     private func validAccessToken(forceRefresh: Bool = false) async throws -> String {
         guard let state = authState else { throw AuthError.notSignedIn }
 
@@ -316,43 +384,93 @@ final class GCEventStore: NSObject,
             return token
         }
 
-        if let running = refreshTask { return try await running.value }
+        // Join an in-flight refresh only when it is refreshing this very state.
+        // A forced refresh never joins: it exists because the token the pending
+        // refresh will return was already rejected. A refresh belonging to a
+        // superseded `OIDAuthState` never joins either, or re-authorizing to a
+        // different account would hand that account's caller the old one's token.
+        if !forceRefresh, let pending = pendingRefresh, pending.state === state {
+            return try await pending.task.value
+        }
 
+        refreshGeneration += 1
+        let generation = refreshGeneration
         let task = Task<String, Error> {
-            defer { refreshTask = nil }
+            defer { if pendingRefresh?.generation == generation { pendingRefresh = nil } }
             return try await withCheckedThrowingContinuation { cont in
+                // `performAction` owns its URLSession task internally and offers
+                // no way to cancel it, and this is an unstructured Task, so
+                // cancelling whoever awaits it does not reach in here. A
+                // continuation that AppAuth never resumes would therefore
+                // outlive every timeout the refresh cycle can apply and strand
+                // the serialized pipeline — the exact failure this change set
+                // exists to remove. Settle the wait on our own deadline instead
+                // and let a late callback find the resume already claimed.
+                let resumeGuard = SingleResumeGuard()
+                let deadline = Task {
+                    try? await Task.sleep(
+                        nanoseconds: UInt64(Self.tokenRefreshTimeout * Double(NSEC_PER_SEC))
+                    )
+                    guard !Task.isCancelled, resumeGuard.claim() else { return }
+                    MeetingBarLogger.calendar.error(
+                        "Google token refresh did not return within \(Int(Self.tokenRefreshTimeout))s"
+                    )
+                    // Only the refresh that still owns the slot may do this. A
+                    // superseded ordinary refresh timing out after a forced one
+                    // took over would otherwise swap in a stale state while the
+                    // forced refresh is still driving the old object — and when
+                    // that object later succeeds, `didChange` persists whatever
+                    // `authState` now holds, so the fresh token is dropped from
+                    // memory and the keychain both.
+                    if self.pendingRefresh?.generation == generation, state === self.authState {
+                        self.discardStuckAuthState()
+                    }
+                    cont.resume(
+                        throwing: AuthError.temporarilyUnavailable(
+                            underlying: URLError(.timedOut)
+                        )
+                    )
+                }
+
                 if forceRefresh { state.setNeedsTokenRefresh() }
 
-                state.performAction { [weak self] accessToken, _, error in
-                    guard let self else { return }
-                    if let token = accessToken {
+                state.performAction { accessToken, _, error in
+                    guard resumeGuard.claim() else { return }
+                    deadline.cancel()
+                    // `error` must be inspected before `accessToken`. When the
+                    // token endpoint is unreachable, AppAuth reports the failure
+                    // as a transient error but still passes back the *previous*,
+                    // already-expired access token (OIDAuthState only nils it out
+                    // once the grant itself is rejected). Treating that as a
+                    // success sends a known-expired token to Google, which
+                    // answers 401 → forced refresh → 401 again → "sign the user
+                    // out", so a few seconds without network destroyed the
+                    // stored refresh token and forced a full re-consent.
+                    do {
+                        let token = try Self.resolveTokenRefresh(
+                            accessToken: accessToken,
+                            error: error
+                        )
                         cont.resume(returning: token) // stateChangeDelegate persists new tokens
-                    } else if let error {
-                        let nsError = error as NSError
-                        if nsError.domain == OIDOAuthTokenErrorDomain {
-                            self.clearAuthState()
-                            cont.resume(throwing: AuthError.notSignedIn)
-                        } else {
-                            cont.resume(throwing: error)
-                        }
-                    } else {
-                        cont.resume(throwing: AuthError.refreshFailed)
+                    } catch {
+                        cont.resume(throwing: error)
                     }
                 }
             }
         }
 
-        refreshTask = task
+        pendingRefresh = PendingRefresh(task: task, state: state, generation: generation)
         return try await task.value
     }
 
     // MARK: Keychain persistence
 
     private func persistAuthState() {
-        guard let state = authState else {
-            Keychain.delete(for: Self.kKeychainName)
-            return
-        }
+        // Only save here. Deleting the persisted session is an explicit act
+        // (`clearAuthState`), never a side effect of dropping the in-memory
+        // state — `discardStuckAuthState` relies on being able to do the latter
+        // without the former.
+        guard let state = authState else { return }
         do {
             let data = try NSKeyedArchiver.archivedData(withRootObject: state, requiringSecureCoding: true)
             Keychain.save(data: data, for: Self.kKeychainName)
@@ -377,6 +495,30 @@ final class GCEventStore: NSObject,
             )
             return nil
         }
+    }
+
+    /// Replaces the `OIDAuthState` whose token request never came back.
+    ///
+    /// AppAuth serializes refreshes through `_pendingActions`, which only that
+    /// request's own callback clears. A request that never completes therefore
+    /// parks every later refresh behind it for the lifetime of the state
+    /// object: each one enqueues, is never called back, and waits out its own
+    /// deadline. Timing out alone would only downgrade the failure from hanging
+    /// once to failing slowly forever. Rebuilding from the persisted session
+    /// leaves the stuck queue behind while keeping the user signed in.
+    private func discardStuckAuthState() {
+        // Retiring the stuck object must not depend on the restore succeeding.
+        // Keeping it installed because the keychain read failed would park every
+        // later refresh behind the same dead request — the failure this exists to
+        // end. With no state installed, `requireReusableSession` reports
+        // "reconnect required" and the next sign-in builds a clean one. The
+        // persisted session is deliberately left alone: only an explicit sign-out
+        // deletes it, so a transient restore failure cannot cost the user
+        // their grant.
+        let restored = restoreAuthState()
+        authState?.stateChangeDelegate = nil
+        authState?.errorDelegate = nil
+        authState = restored
     }
 
     private func clearAuthState() {
@@ -406,8 +548,12 @@ final class GCEventStore: NSObject,
             case .retryWithForcedTokenRefresh:
                 _ = try await validAccessToken(forceRefresh: true)
                 return try await fetchJSON(url, calendarID: calendarID, retrying: true)
-            case .clearAuthAndThrowAuthRequired:
-                clearAuthState()
+            case .throwAuthRequired:
+                // Deliberately keeps the stored session. A 401 from the
+                // Calendar API only proves this access token was refused, and
+                // a proxy or captive portal can produce one against a healthy
+                // grant. The session is discarded only when the token endpoint
+                // rejects the refresh token, via the errorDelegate below.
                 throw AuthError.notSignedIn
             case let .throwError(error):
                 throw error
@@ -435,11 +581,19 @@ final class GCEventStore: NSObject,
 
     // MARK: - OIDAuthState Delegates
     func didChange(_ state: OIDAuthState) {
+        // An abandoned state can still complete its pending request. Persisting
+        // then would write out whatever `authState` currently holds, discarding
+        // the very token that just arrived, so only the installed state counts.
+        guard state === authState else { return }
         // persist every change (e.g., refreshed token)
         persistAuthState()
     }
 
     func authState(_ state: OIDAuthState, didEncounterAuthorizationError error: Error) {
+        // A failure reported by a state we have already replaced says nothing
+        // about the session in use, and signing the user out over it would end
+        // an account because a different one failed.
+        guard state === authState else { return }
         let nsErr = error as NSError
         if nsErr.domain == OIDOAuthTokenErrorDomain {
             // refresh token invalid → clean state & notify

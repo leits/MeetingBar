@@ -15,6 +15,7 @@ public enum CalendarSyncError: LocalizedError {
     case eventStoreNotAvailable
     case calendarAccessFailed(Error)
     case eventFetchFailed(Error)
+    case refreshTimedOut(TimeInterval)
 
     public var errorDescription: String? {
         switch self {
@@ -22,6 +23,8 @@ public enum CalendarSyncError: LocalizedError {
             return "Event store is not available"
         case let .calendarAccessFailed(error), let .eventFetchFailed(error):
             return error.localizedDescription
+        case let .refreshTimedOut(seconds):
+            return "Calendar refresh did not finish within \(Int(seconds)) seconds"
         }
     }
 }
@@ -50,6 +53,16 @@ public class CalendarSync: ObservableObject {
     private var refreshCycleTask: Task<Void, Never>?
     private var providerGeneration = 0
     let refreshSubject = PassthroughSubject<Void, Never>()
+
+    /// Upper bound on a single refresh cycle.
+    ///
+    /// `flatMap(maxPublishers: .max(1))` below serializes fetches, which means
+    /// a cycle that never finishes stops *every* later trigger — the periodic
+    /// timer, settings changes and the Refresh button alike — for as long as
+    /// the app runs. Bounding the cycle keeps that serialization safe: the
+    /// pipeline always gets its value back, the failure is reported as stale
+    /// data, and the next trigger starts a clean attempt.
+    private var refreshTimeout: TimeInterval = 120
 
     // MARK: - Initialization
 
@@ -103,7 +116,7 @@ public class CalendarSync: ObservableObject {
                 return .cancelled
             case .notSignedIn:
                 return .authRequired(error.localizedDescription)
-            case .refreshFailed:
+            case .refreshFailed, .temporarilyUnavailable:
                 return .failed(error.localizedDescription)
             }
         }
@@ -155,6 +168,34 @@ public class CalendarSync: ObservableObject {
         refreshSubject.send()
     }
 
+    /// Runs `operation` under `refreshTimeout`, cancelling it on expiry.
+    ///
+    /// Providers are expected to bound their own network work; this is the
+    /// backstop that lets the serialized refresh pipeline assume a cycle
+    /// terminates. Note the bound only covers work that *responds* to
+    /// cancellation: a task group awaits its remaining children before
+    /// unwinding, so an operation that ignores cancellation still holds this
+    /// call open. That is sufficient here because every provider path bottoms
+    /// out in a cancellation-aware `URLSession` call under an explicit request
+    /// timeout — it is not a guard against an arbitrary non-cancellable hang.
+    private func withRefreshTimeout<T: Sendable>(
+        _ operation: @escaping @Sendable @MainActor () async throws -> T
+    ) async throws -> T {
+        let timeout = refreshTimeout
+        return try await withThrowingTaskGroup(of: T.self) { group in
+            group.addTask { try await operation() }
+            group.addTask {
+                try await Task.sleep(nanoseconds: UInt64(timeout * Double(NSEC_PER_SEC)))
+                throw CalendarSyncError.refreshTimedOut(timeout)
+            }
+            defer { group.cancelAll() }
+            guard let result = try await group.next() else {
+                throw CalendarSyncError.refreshTimedOut(timeout)
+            }
+            return result
+        }
+    }
+
     /// Fetches events for the selected calendars within the specified date range
     private func fetchEvents(fromCalendars: [MBCalendar]) async throws -> [MBEvent] {
         let rawEvents: [MBEvent]
@@ -164,14 +205,12 @@ public class CalendarSync: ObservableObject {
             throw CalendarSyncError.eventFetchFailed(error)
         }
 
-        let deduplicatedEvents = Dictionary(
-            rawEvents.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first }
-        ).values
+        let deduplicatedEvents = rawEvents.deduplicatedPreferringResolvedAttendee()
 
         if !AppSettings.current.events.dismissedEvents.isEmpty {
-            AppSettings.refreshDismissedEvents(using: Array(deduplicatedEvents))
+            AppSettings.refreshDismissedEvents(using: deduplicatedEvents)
         }
-        return Array(deduplicatedEvents).filtered().sorted { $0.startDate < $1.startDate }
+        return deduplicatedEvents.filtered().sorted { $0.startDate < $1.startDate }
     }
 
     private func setupPublishers() {
@@ -234,12 +273,27 @@ public class CalendarSync: ObservableObject {
                 return Deferred {
                     Future<RefreshResult, Never> { promise in
                         self.refreshCycleTask = Task { [weak self] in
-                            guard let self else { return }
                             let attempted = Date()
+                            // Every exit path below must fulfil `promise`,
+                            // including this one: an unfulfilled Future stalls
+                            // the serialized pipeline permanently.
+                            guard let self else {
+                                promise(.success(RefreshResult(
+                                    calendars: preservedCalendars,
+                                    events: preservedEvents,
+                                    health: previousHealth,
+                                    providerGeneration: providerGeneration
+                                )))
+                                return
+                            }
                             do {
-                                let cals = try await self.repository.fetchAllCalendars()
+                                let cals = try await self.withRefreshTimeout {
+                                    try await self.repository.fetchAllCalendars()
+                                }
                                 try Task.checkCancellation()
-                                let evts = try await self.fetchEvents(fromCalendars: cals)
+                                let evts = try await self.withRefreshTimeout {
+                                    try await self.fetchEvents(fromCalendars: cals)
+                                }
                                 let health = ProviderHealth.success(attempted: attempted)
                                 promise(.success(RefreshResult(
                                     calendars: cals,
@@ -295,8 +349,10 @@ public class CalendarSync: ObservableObject {
         /// Test-only initializer: inject your own store and skip
         /// the async system-store configuration.
         public init(provider: EventStore,
-                    refreshInterval: TimeInterval = 0) {
+                    refreshInterval: TimeInterval = 0,
+                    refreshTimeout: TimeInterval = 120) {
             self.refreshInterval = refreshInterval
+            self.refreshTimeout = refreshTimeout
             self.repository = CalendarRepository(store: provider)
             setupPublishers()
             refreshSubject.send()
@@ -305,8 +361,10 @@ public class CalendarSync: ObservableObject {
         /// Test-only initializer: inject a repository that can switch between
         /// deterministic fake providers.
         public init(repository: CalendarRepository,
-                    refreshInterval: TimeInterval = 0) {
+                    refreshInterval: TimeInterval = 0,
+                    refreshTimeout: TimeInterval = 120) {
             self.refreshInterval = refreshInterval
+            self.refreshTimeout = refreshTimeout
             self.repository = repository
             subscribeToRepositoryStoreChanges()
             setupPublishers()

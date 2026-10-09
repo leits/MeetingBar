@@ -90,6 +90,7 @@ enum AppAction {
     case systemClockChanged
     case timezoneChanged
     case dayChanged
+    case networkBecameReachable
 
     // Calendar
     case calendarStoreChanged
@@ -331,7 +332,8 @@ final class AppModel: ObservableObject {
     func send(_ action: AppAction) {
         switch action {
         case .launched, .willTerminate, .screenLocked, .screenUnlocked,
-             .didWake, .systemClockChanged, .timezoneChanged, .dayChanged:
+             .didWake, .systemClockChanged, .timezoneChanged, .dayChanged,
+             .networkBecameReachable:
             handleLifecycleAction(action)
         case .calendarStoreChanged, .refreshCalendars, .calendarsLoaded,
              .eventsLoaded, .selectedCalendarsChanged, .providerHealthChanged,
@@ -363,6 +365,7 @@ final class AppModel: ObservableObject {
     func handleSystemClockChange() { send(.systemClockChanged) }
     func handleTimezoneChange() { send(.timezoneChanged) }
     func handleDayChange() { send(.dayChanged) }
+    func handleNetworkBecameReachable() { send(.networkBecameReachable) }
     func handleCalendarStoreChange() { send(.calendarStoreChanged) }
     func requestRefresh() { send(.refreshCalendars) }
     func reconcileNotifications() { send(.reconcileNotifications) }
@@ -425,7 +428,7 @@ final class AppModel: ObservableObject {
             state.timeContextRevision += 1
             reconcileNotificationsFromState()
             scheduleRefresh()
-        case .didWake, .dayChanged:
+        case .didWake, .dayChanged, .networkBecameReachable:
             scheduleRefresh()
         default:
             break

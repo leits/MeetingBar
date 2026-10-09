@@ -91,6 +91,18 @@ enum MeetingServices: String, Codable, CaseIterable, Sendable {
     case streamyard = "StreamYard"
     case riverside = "Riverside"
     case other = "Other"
+
+    /// Ranking tier used to break same-source ties between different services.
+    /// Known conferencing services (0) beat content links (1) such as YouTube
+    /// or Vimeo, which beat generic catch-alls like "Any Link"/"Other" (2). An
+    /// untagged (`nil`) service ranks below all of these at the call site.
+    var rankTier: Int {
+        switch self {
+        case .youtube, .vimeo: return 1
+        case .url, .other: return 2
+        default: return 0
+        }
+    }
 }
 
 public struct MeetingLink: Hashable, Equatable, Sendable {
@@ -145,36 +157,122 @@ struct MeetingLinkCandidate: Hashable, Sendable {
     let url: URL
     let service: MeetingServices?
     let source: MeetingLinkSource
+    /// Character offset of the match within its source field's text. Breaks
+    /// same-tier ties in appearance order. Non-scan sources (provider
+    /// conference data, custom regex) use 0.
+    var matchLocation: Int = 0
+
+    // `matchLocation` is ranking metadata, not identity: exclude it from
+    // equality/hashing so candidate identity stays (url, service, source) and
+    // `MBEvent` equality doesn't shift when a link's position in the text moves.
+    static func == (lhs: MeetingLinkCandidate, rhs: MeetingLinkCandidate) -> Bool {
+        lhs.url == rhs.url && lhs.service == rhs.service && lhs.source == rhs.source
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(url)
+        hasher.combine(service)
+        hasher.combine(source)
+    }
 }
 
 enum MeetingLinkCandidatePolicy {
     /// Picks the best candidate for an event:
     ///
     /// 1. by source priority — provider conference data beats notes;
-    /// 2. within the same source, the longer URL wins so a Zoom link that
-    ///    carries a password/token suffix beats a truncated form of the
-    ///    same URL found in another source slot.
+    /// 2. within the same source, a lower service tier wins — known
+    ///    conferencing links beat content links (YouTube, Vimeo), which beat
+    ///    generic catch-alls, which beat untagged links, so an incidental
+    ///    YouTube link in the notes cannot shadow the real Meet link;
+    /// 3. within the same tier, the service appearing earliest in the field
+    ///    wins, preserving the author's ordering between different services;
+    /// 4. within the same service, the longer URL wins so a Zoom link that
+    ///    carries a password/token suffix beats a truncated form of it.
+    ///
+    /// Position is compared per service group (a service's earliest match), so
+    /// the ordering stays a strict weak ordering: candidates of one service
+    /// cluster together and order among themselves by URL length, while
+    /// distinct services order by first appearance.
     static func best(from candidates: [MeetingLinkCandidate]) -> MeetingLinkCandidate? {
-        candidates.max { lhs, rhs in
-            if lhs.source.priority != rhs.source.priority {
-                return lhs.source.priority < rhs.source.priority
-            }
-            return lhs.url.absoluteString.count < rhs.url.absoluteString.count
-        }
+        let positions = serviceEarliestPositions(candidates)
+        return candidates.min { isRankedBefore($0, $1, servicePositions: positions) }
     }
 
     /// Returns candidates ranked best-to-worst, deduplicated by URL string.
     /// Useful for a "open with another link" menu without re-running detection.
     static func ranked(from candidates: [MeetingLinkCandidate]) -> [MeetingLinkCandidate] {
-        let unique = Dictionary(grouping: candidates, by: { $0.url.absoluteString })
-            .compactMapValues { best(from: $0) }
-            .values
-        return Array(unique).sorted { lhs, rhs in
-            if lhs.source.priority != rhs.source.priority {
-                return lhs.source.priority > rhs.source.priority
-            }
-            return lhs.url.absoluteString.count > rhs.url.absoluteString.count
+        let deduped = Array(
+            Dictionary(grouping: candidates, by: { $0.url.absoluteString })
+                .compactMapValues { best(from: $0) }
+                .values
+        )
+        let positions = serviceEarliestPositions(deduped)
+        return deduped.sorted { isRankedBefore($0, $1, servicePositions: positions) }
+    }
+
+    /// Identifies a service within one source field, so a service's earliest
+    /// match position is computed per source (positions from different fields
+    /// are never comparable — source priority separates them first).
+    private struct ServiceGroupKey: Hashable {
+        let source: MeetingLinkSource
+        let service: MeetingServices?
+    }
+
+    /// Earliest `matchLocation` per (source, service) across `candidates`.
+    private static func serviceEarliestPositions(
+        _ candidates: [MeetingLinkCandidate]
+    ) -> [ServiceGroupKey: Int] {
+        var positions: [ServiceGroupKey: Int] = [:]
+        for candidate in candidates {
+            let key = ServiceGroupKey(source: candidate.source, service: candidate.service)
+            positions[key] = Swift.min(positions[key] ?? candidate.matchLocation, candidate.matchLocation)
         }
+        return positions
+    }
+
+    /// True when `lhs` outranks `rhs`. A total lexicographic ordering over
+    /// (source priority, service tier, service group position, URL length, URL
+    /// string), satisfying the strict-weak-ordering contract `min`/`sorted`
+    /// require. Candidates with a `nil` service rank below every catalogued
+    /// conferencing, content, and generic service.
+    private static func isRankedBefore(
+        _ lhs: MeetingLinkCandidate,
+        _ rhs: MeetingLinkCandidate,
+        servicePositions: [ServiceGroupKey: Int]
+    ) -> Bool {
+        if lhs.source.priority != rhs.source.priority {
+            return lhs.source.priority > rhs.source.priority
+        }
+        let lhsTier = rankTier(of: lhs.service)
+        let rhsTier = rankTier(of: rhs.service)
+        if lhsTier != rhsTier {
+            return lhsTier < rhsTier
+        }
+        let lhsPos = groupPosition(of: lhs, in: servicePositions)
+        let rhsPos = groupPosition(of: rhs, in: servicePositions)
+        if lhsPos != rhsPos {
+            return lhsPos < rhsPos
+        }
+        let lhsLength = lhs.url.absoluteString.count
+        let rhsLength = rhs.url.absoluteString.count
+        if lhsLength != rhsLength {
+            return lhsLength > rhsLength
+        }
+        return lhs.url.absoluteString < rhs.url.absoluteString
+    }
+
+    private static func groupPosition(
+        of candidate: MeetingLinkCandidate,
+        in servicePositions: [ServiceGroupKey: Int]
+    ) -> Int {
+        let key = ServiceGroupKey(source: candidate.source, service: candidate.service)
+        return servicePositions[key] ?? candidate.matchLocation
+    }
+
+    /// Untagged (`nil`) services rank below the generic tier; otherwise the
+    /// service's own tier.
+    private static func rankTier(of service: MeetingServices?) -> Int {
+        service?.rankTier ?? 3
     }
 }
 
@@ -394,23 +492,18 @@ func getMatch(text: String, regex: NSRegularExpression) -> String? {
     return match
 }
 
+/// Converts an HTML notes fragment to plain text.
+///
+/// Deliberately avoids `NSAttributedString(html:)`: that initializer spins up
+/// TextKit's `com.apple.textkit.nsattributedstringagent` XPC service and leaks
+/// ~2 mach ports per call that are never reclaimed. Meeting-link detection runs
+/// this for every event with HTML notes on every calendar refresh, so over a
+/// day of refreshes the process port table fills and the kernel kills the app
+/// with EXC_GUARD ("allocating too many mach ports"). `HTMLPlainText` is a
+/// pure-Foundation strip with no XPC.
 func htmlTagsStrippedForMeetingLinks(_ text: String) -> String {
-    if !text.containsHTMLTags {
-        return text
-    }
-
-    return autoreleasepool {
-        guard let dataUTF16 = text.data(using: .utf16) else {
-            return text
-        }
-
-        let attributedString = NSAttributedString(
-            html: dataUTF16,
-            options: [.documentType: NSAttributedString.DocumentType.html],
-            documentAttributes: nil
-        )
-        return attributedString?.string ?? text
-    }
+    guard text.containsHTMLTags else { return text }
+    return HTMLPlainText.from(text)
 }
 
 extension String {
@@ -419,14 +512,146 @@ extension String {
     }
 }
 
+/// Pure-Foundation HTML→plain-text conversion (no TextKit / XPC). Maps
+/// block-level tags to newlines, removes every other tag, and decodes HTML
+/// entities: any numeric entity (decimal `&#123;` or hex `&#x7B;`), plus the
+/// named entities below — the five XML predefined names, common typographic
+/// symbols, and the full Latin-1 accented-letter set (café, München, …). Named
+/// entities outside this table are left as written; numeric coverage is total.
+enum HTMLPlainText {
+    private static let scriptStyleRegex = makeRegex(#"(?is)<(script|style)\b[^>]*>.*?</\1>"#)
+    private static let blockTagRegex =
+        makeRegex(#"(?i)<br\s*/?>|</p>|</div>|</li>|</tr>|</h[1-6]>|</blockquote>"#)
+    private static let anyTagRegex = makeRegex("<[^>]+>")
+    private static let trailingSpaceRegex = makeRegex(#"[ \t]+\n"#)
+    private static let blankLinesRegex = makeRegex(#"\n{3,}"#)
+
+    static func from(_ html: String) -> String {
+        // Drop <script>/<style> elements entirely (tag *and* body); stripping
+        // only the tags would leak their CSS/JS text into the output.
+        var text = replacingMatches(scriptStyleRegex, in: html, with: "")
+        // Block-level boundaries become newlines so notes keep their structure.
+        text = replacingMatches(blockTagRegex, in: text, with: "\n")
+        text = replacingMatches(anyTagRegex, in: text, with: "")
+        text = decodeEntities(in: text)
+        text = replacingMatches(trailingSpaceRegex, in: text, with: "\n")
+        text = replacingMatches(blankLinesRegex, in: text, with: "\n\n")
+        return text.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    /// Patterns are compile-time constants (a bad one is a programmer error), so
+    /// compile once at first use and reuse — `from(_:)` runs per event on every
+    /// calendar refresh, and recompiling each call was pure overhead.
+    private static func makeRegex(_ pattern: String) -> NSRegularExpression {
+        try! NSRegularExpression(pattern: pattern)
+    }
+
+    private static func replacingMatches(
+        _ regex: NSRegularExpression,
+        in text: String,
+        with template: String
+    ) -> String {
+        let range = NSRange(text.startIndex..., in: text)
+        return regex.stringByReplacingMatches(in: text, range: range, withTemplate: template)
+    }
+
+    private static func decodeEntities(in text: String) -> String {
+        guard text.contains("&") else { return text }
+        var result = ""
+        result.reserveCapacity(text.count)
+        var cursor = text.startIndex
+        while cursor < text.endIndex {
+            guard text[cursor] == "&" else {
+                result.append(text[cursor])
+                cursor = text.index(after: cursor)
+                continue
+            }
+            // Bound the `;` search to a short window (`&` + up to 12 chars) so
+            // pathological input with many stray `&` stays linear, not quadratic.
+            let windowEnd = text.index(cursor, offsetBy: 13, limitedBy: text.endIndex)
+                ?? text.endIndex
+            let afterAmp = text.index(after: cursor)
+            guard let semicolon = text[afterAmp..<windowEnd].firstIndex(of: ";"),
+                  let decoded = decode(entity: text[afterAmp..<semicolon])
+            else {
+                result.append(text[cursor])
+                cursor = afterAmp
+                continue
+            }
+            result.append(decoded)
+            cursor = text.index(after: semicolon)
+        }
+        return result
+    }
+
+    private static func decode(entity: Substring) -> Character? {
+        if entity.first == "#" {
+            let digits = entity.dropFirst()
+            let value: UInt32?
+            if let marker = digits.first, marker == "x" || marker == "X" {
+                value = UInt32(digits.dropFirst(), radix: 16)
+            } else {
+                value = UInt32(digits, radix: 10)
+            }
+            guard let value, let scalar = Unicode.Scalar(value) else { return nil }
+            return Character(scalar)
+        }
+        return namedEntities[String(entity)]
+    }
+
+    private static let namedEntities: [String: Character] = [
+        // XML predefined + structural
+        "amp": "&", "lt": "<", "gt": ">", "quot": "\"", "apos": "'", "nbsp": " ",
+        // Typographic symbols
+        "copy": "\u{00A9}", "reg": "\u{00AE}", "trade": "\u{2122}",
+        "mdash": "\u{2014}", "ndash": "\u{2013}", "hellip": "\u{2026}",
+        "lsquo": "\u{2018}", "rsquo": "\u{2019}", "ldquo": "\u{201C}",
+        "rdquo": "\u{201D}", "middot": "\u{00B7}", "bull": "\u{2022}",
+        "euro": "\u{20AC}", "pound": "\u{00A3}", "cent": "\u{00A2}",
+        "yen": "\u{00A5}", "sect": "\u{00A7}", "para": "\u{00B6}",
+        "deg": "\u{00B0}", "plusmn": "\u{00B1}", "times": "\u{00D7}",
+        "divide": "\u{00F7}", "micro": "\u{00B5}", "laquo": "\u{00AB}",
+        "raquo": "\u{00BB}", "iexcl": "\u{00A1}", "iquest": "\u{00BF}",
+        "frac12": "\u{00BD}", "frac14": "\u{00BC}", "frac34": "\u{00BE}",
+        "ordm": "\u{00BA}", "ordf": "\u{00AA}", "sup1": "\u{00B9}",
+        "sup2": "\u{00B2}", "sup3": "\u{00B3}",
+        // Latin-1 accented letters (uppercase)
+        "Agrave": "\u{00C0}", "Aacute": "\u{00C1}", "Acirc": "\u{00C2}",
+        "Atilde": "\u{00C3}", "Auml": "\u{00C4}", "Aring": "\u{00C5}",
+        "AElig": "\u{00C6}", "Ccedil": "\u{00C7}", "Egrave": "\u{00C8}",
+        "Eacute": "\u{00C9}", "Ecirc": "\u{00CA}", "Euml": "\u{00CB}",
+        "Igrave": "\u{00CC}", "Iacute": "\u{00CD}", "Icirc": "\u{00CE}",
+        "Iuml": "\u{00CF}", "ETH": "\u{00D0}", "Ntilde": "\u{00D1}",
+        "Ograve": "\u{00D2}", "Oacute": "\u{00D3}", "Ocirc": "\u{00D4}",
+        "Otilde": "\u{00D5}", "Ouml": "\u{00D6}", "Oslash": "\u{00D8}",
+        "Ugrave": "\u{00D9}", "Uacute": "\u{00DA}", "Ucirc": "\u{00DB}",
+        "Uuml": "\u{00DC}", "Yacute": "\u{00DD}", "THORN": "\u{00DE}",
+        "szlig": "\u{00DF}",
+        // Latin-1 accented letters (lowercase)
+        "agrave": "\u{00E0}", "aacute": "\u{00E1}", "acirc": "\u{00E2}",
+        "atilde": "\u{00E3}", "auml": "\u{00E4}", "aring": "\u{00E5}",
+        "aelig": "\u{00E6}", "ccedil": "\u{00E7}", "egrave": "\u{00E8}",
+        "eacute": "\u{00E9}", "ecirc": "\u{00EA}", "euml": "\u{00EB}",
+        "igrave": "\u{00EC}", "iacute": "\u{00ED}", "icirc": "\u{00EE}",
+        "iuml": "\u{00EF}", "eth": "\u{00F0}", "ntilde": "\u{00F1}",
+        "ograve": "\u{00F2}", "oacute": "\u{00F3}", "ocirc": "\u{00F4}",
+        "otilde": "\u{00F5}", "ouml": "\u{00F6}", "oslash": "\u{00F8}",
+        "ugrave": "\u{00F9}", "uacute": "\u{00FA}", "ucirc": "\u{00FB}",
+        "uuml": "\u{00FC}", "yacute": "\u{00FD}", "thorn": "\u{00FE}",
+        "yuml": "\u{00FF}"
+    ]
+}
+
 // MARK: - Detector
 
 /// Picks the best meeting link from an event's available fields.
 ///
 /// Each available field becomes a `MeetingLinkCandidate` tagged with its
-/// `MeetingLinkSource`. Candidates are then ranked by source priority and
-/// — within the same source — by URL length, so a Zoom URL with a
-/// password/token suffix beats a truncated form of the same link.
+/// `MeetingLinkSource`. Candidates are then ranked by source priority and,
+/// within the same source, by service tier (conferencing beats content beats
+/// generic), then URL length for same-service links so a Zoom URL with a
+/// password/token suffix beats a truncated form, and finally the order the
+/// links appear in the field.
 ///
 /// Source order (highest priority first):
 ///
@@ -610,7 +835,8 @@ enum MeetingLinkDetector {
                 return MeetingLinkCandidate(
                     url: url,
                     service: service,
-                    source: source
+                    source: source,
+                    matchLocation: match.range.location
                 )
             }
         }
@@ -641,7 +867,8 @@ enum MeetingLinkDetector {
         return MeetingLinkCandidate(
             url: urlWithAuth,
             service: candidate.service,
-            source: candidate.source
+            source: candidate.source,
+            matchLocation: candidate.matchLocation
         )
     }
 
