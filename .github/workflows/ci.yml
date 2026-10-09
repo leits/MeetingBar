@@ -91,7 +91,7 @@ jobs:
 
       - name: Install Slather
         if: ${{ !cancelled() && env.CODECOV_TOKEN != '' }}
-        run: gem install slather
+        run: gem install slather -v 2.8.5 --no-document
 
       - name: Generate coverage report
         if: ${{ !cancelled() && env.CODECOV_TOKEN != '' }}
