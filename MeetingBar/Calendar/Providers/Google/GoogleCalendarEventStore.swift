@@ -354,6 +354,27 @@ final class GCEventStore: NSObject,
         !forcePrompt && hasReusableSession(state)
     }
 
+    /// Resolves the AppAuth refresh callback without letting a stale token mask an error.
+    /// AppAuth can return the previous access token alongside a transient refresh error,
+    /// so the error must always win.
+    nonisolated static func resolveTokenRefresh(
+        accessToken: String?,
+        error: Error?
+    ) throws -> String {
+        if let error {
+            let nsError = error as NSError
+            if nsError.domain == OIDOAuthTokenErrorDomain {
+                throw AuthError.notSignedIn
+            }
+            throw AuthError.temporarilyUnavailable(underlying: error)
+        }
+
+        guard let accessToken else {
+            throw AuthError.refreshFailed
+        }
+        return accessToken
+    }
+
     private func validAccessToken(forceRefresh: Bool = false) async throws -> String {
         guard let state = authState else { throw AuthError.notSignedIn }
 
@@ -425,24 +446,14 @@ final class GCEventStore: NSObject,
                     // answers 401 → forced refresh → 401 again → "sign the user
                     // out", so a few seconds without network destroyed the
                     // stored refresh token and forced a full re-consent.
-                    if let error {
-                        let nsError = error as NSError
-                        if nsError.domain == OIDOAuthTokenErrorDomain {
-                            // Google rejected the refresh token itself. Clearing
-                            // the session is handled by the errorDelegate.
-                            cont.resume(throwing: AuthError.notSignedIn)
-                        } else {
-                            cont.resume(
-                                throwing: AuthError.temporarilyUnavailable(underlying: error)
-                            )
-                        }
-                        return
-                    }
-
-                    if let token = accessToken {
+                    do {
+                        let token = try Self.resolveTokenRefresh(
+                            accessToken: accessToken,
+                            error: error
+                        )
                         cont.resume(returning: token) // stateChangeDelegate persists new tokens
-                    } else {
-                        cont.resume(throwing: AuthError.refreshFailed)
+                    } catch {
+                        cont.resume(throwing: error)
                     }
                 }
             }
