@@ -191,6 +191,19 @@ final class WindowCoordinatorTests: XCTestCase {
         )
     }
 
+    func testRepositionNotNeededForClosedAlert() {
+        let builtIn = CGRect(x: 0, y: 0, width: 1440, height: 900)
+        let alertOnDisconnectedScreen = CGRect(x: 1440, y: 0, width: 1920, height: 1080)
+
+        XCTAssertFalse(
+            FullscreenNotificationRepositionPolicy.needsReposition(
+                windowFrame: alertOnDisconnectedScreen,
+                screenFrames: [builtIn],
+                isVisible: false
+            )
+        )
+    }
+
     /// A partially off-screen alert (overlapping a connected screen but not
     /// fully contained) is still considered stranded and is repositioned.
     func testRepositionNeededWhenAlertOnlyPartiallyOnScreen() {
