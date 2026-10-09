@@ -62,7 +62,7 @@ public class CalendarSync: ObservableObject {
     /// the app runs. Bounding the cycle keeps that serialization safe: the
     /// pipeline always gets its value back, the failure is reported as stale
     /// data, and the next trigger starts a clean attempt.
-    private static let refreshTimeout: TimeInterval = 120
+    private var refreshTimeout: TimeInterval = 120
 
     // MARK: - Initialization
 
@@ -181,7 +181,7 @@ public class CalendarSync: ObservableObject {
     private func withRefreshTimeout<T: Sendable>(
         _ operation: @escaping @Sendable @MainActor () async throws -> T
     ) async throws -> T {
-        let timeout = Self.refreshTimeout
+        let timeout = refreshTimeout
         return try await withThrowingTaskGroup(of: T.self) { group in
             group.addTask { try await operation() }
             group.addTask {
@@ -349,8 +349,10 @@ public class CalendarSync: ObservableObject {
         /// Test-only initializer: inject your own store and skip
         /// the async system-store configuration.
         public init(provider: EventStore,
-                    refreshInterval: TimeInterval = 0) {
+                    refreshInterval: TimeInterval = 0,
+                    refreshTimeout: TimeInterval = 120) {
             self.refreshInterval = refreshInterval
+            self.refreshTimeout = refreshTimeout
             self.repository = CalendarRepository(store: provider)
             setupPublishers()
             refreshSubject.send()
@@ -359,8 +361,10 @@ public class CalendarSync: ObservableObject {
         /// Test-only initializer: inject a repository that can switch between
         /// deterministic fake providers.
         public init(repository: CalendarRepository,
-                    refreshInterval: TimeInterval = 0) {
+                    refreshInterval: TimeInterval = 0,
+                    refreshTimeout: TimeInterval = 120) {
             self.refreshInterval = refreshInterval
+            self.refreshTimeout = refreshTimeout
             self.repository = repository
             subscribeToRepositoryStoreChanges()
             setupPublishers()
