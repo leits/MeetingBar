@@ -67,7 +67,9 @@ extension ProviderHealth {
             switch authError {
             case .notSignedIn:
                 return true
-            case .cancelled, .refreshFailed:
+            // A refresh that could not reach Google says nothing about the
+            // grant, so it must not push the UI into a reconnect state.
+            case .cancelled, .refreshFailed, .temporarilyUnavailable:
                 return false
             }
         }
