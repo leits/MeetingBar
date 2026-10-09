@@ -35,9 +35,11 @@ enum FullscreenNotificationRepositionPolicy {
     /// benign change elsewhere doesn't yank it to another display.
     static func needsReposition(
         windowFrame: CGRect,
-        screenFrames: [CGRect]
+        screenFrames: [CGRect],
+        isVisible: Bool = true
     ) -> Bool {
-        !screenFrames.contains { $0.contains(windowFrame) }
+        guard isVisible else { return false }
+        return !screenFrames.contains { $0.contains(windowFrame) }
     }
 }
 
@@ -273,7 +275,8 @@ final class WindowCoordinator {
         for case let window as NSWindow in fullscreenNotificationWindows.allObjects {
             guard FullscreenNotificationRepositionPolicy.needsReposition(
                 windowFrame: window.frame,
-                screenFrames: screenFrames
+                screenFrames: screenFrames,
+                isVisible: window.isVisible
             ) else { continue }
             window.setFrame(targetFrame, display: true)
             window.orderFrontRegardless()
