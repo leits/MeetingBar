@@ -70,7 +70,10 @@ enum EventActionPolicy {
         let timeInterval = event.startDate.timeIntervalSince(now)
         let lowerBound = config.allowsRecentlyStarted ? -15.0 : 0.0
         let withinWindow = timeInterval > lowerBound && timeInterval <= config.actionTime
-        let allDayActive = event.isAllDay && (event.startDate ... event.endDate).contains(now)
+        // All-day events carry an EXCLUSIVE endDate (midnight of the next day
+        // per EventKit / Google Calendar), so treat the range as half-open —
+        // matching cleanupExpired, which drops entries once now >= endDate.
+        let allDayActive = event.isAllDay && event.startDate <= now && now < event.endDate
         guard withinWindow || allDayActive else { return nil }
 
         let matched = processed.first { $0.id == event.id }

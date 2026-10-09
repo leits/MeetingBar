@@ -1452,6 +1452,22 @@ final class StatusBarItemControllerPresentationTests: BaseTestCase {
         XCTAssertEqual(button.attributedTitle.string, "")
     }
 
+    func test_renderStatusBarUsesFallbackWhenSentinelIconIsHidden() throws {
+        let controller = StatusBarItemController()
+        defer { NSStatusBar.system.removeStatusItem(controller.statusItem) }
+
+        // A next event without a meeting service resolves to the hidden
+        // "no_online_session" sentinel (imagePosition == .noImage). With an empty
+        // title that would leave the item completely blank, so it must fall back
+        // to a visible icon instead.
+        controller.renderStatusBar(makePresentation(icon: .meetingService(nil)))
+
+        let button = try XCTUnwrap(controller.statusItem.button)
+        XCTAssertEqual(button.imagePosition, .imageLeft)
+        XCTAssertNotEqual(button.image?.name(), "no_online_session")
+        XCTAssertEqual(button.attributedTitle.string, "")
+    }
+
     func test_updateTitleCompactsLongVisibleTitleWithoutForcingFallbackIcon() throws {
         configureStatusBarDefaults()
         Defaults[.eventTitleIconFormat] = .none

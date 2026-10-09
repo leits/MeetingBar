@@ -37,13 +37,13 @@
 
 // MARK: - Preferences General
 
-"preferences_general_option_login_launch" = "Abrir após o login";
+"preferences_general_option_login_launch" = "Iniciar após o login";
 "preferences_general_option_preferred_language_title" = "Idioma:";
 "preferences_general_option_preferred_language_system_value" = "Sistema";
 "preferences_general_shortcut_open_menu" = "Abrir menu:";
 "preferences_general_shortcut_create_meeting" = "Criar reunião:";
 "preferences_general_shortcut_join_next" = "Entrar na próxima reunião:";
-"preferences_general_shortcut_join_from_clipboard" = "Entrar na reunião pelo link na área de transferência:";
+"preferences_general_shortcut_join_from_clipboard" = "Entrar na reunião a partir da área de transferência:";
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "Alternar visibilidade do título na barra de status:";
 "preferences_general_meeting_bar_description" = "MeetingBar é um aplicativo Open Source\ncriado por Andrii Leitsius 🇺🇦\nPara reuniões mais fluidas e fáceis";
 "preferences_general_external_contact" = "Contato";
@@ -66,7 +66,7 @@
 "preferences_appearance_events_past_title" = "Eventos passados:";
 "preferences_appearance_events_pending_title" = "Eventos pendentes";
 "preferences_appearance_events_declined_title" = "Eventos recusados:";
-"preferences_appearance_events_tentative_title" = "Eventos provisórios:";
+"preferences_appearance_events_tentative_title" = "Eventos sem confirmação:";
 "preferences_appearance_events_value_show" = "mostrar";
 "preferences_appearance_events_value_hide" = "ocultar";
 "preferences_appearance_events_value_as_inactive" = "mostrar como inativo";
@@ -114,7 +114,7 @@
 
 // MARK: - Preferences Services Browsers Configuration
 
-"preferences_configure_browsers_button" = "Configurar navegadores da web";
+"preferences_configure_browsers_button" = "Configurar navegadores…";
 "preferences_configure_browsers_delete_alert_title" = "Excluir configurações de navegador da web?";
 "preferences_configure_browsers_delete_alert_message" = "Excluir a configuração do navegador %@?";
 "preferences_configure_browsers_add_button_browser_title" = "Navegador da Web";
@@ -149,7 +149,7 @@
 
 // MARK: - Preferences Advanced
 
-"preferences_advanced_setting_warning" = "⚠️ Apenas use essas configurações se você entender o que elas fazem";
+"preferences_advanced_setting_warning" = "Essas configurações são para usuários avançados.";
 "preferences_advanced_apple_script_checkmark" = "Executar AppleScript ao entrar em uma reunião";
 "preferences_advanced_apple_script_placeholder" = "# escreva seu script aqui\ndiga à aplicação \"Música\" para pausar";
 "preferences_advanced_run_script_on_event_start" = "Executar AppleScript automaticamente";
@@ -326,7 +326,7 @@
 "onboarding_continue" = "Continuar";
 "onboarding_done" = "Concluído";
 "onboarding_google_calendar_description" = "Conecta o MeetingBar diretamente ao Google Agenda sem usar o app Calendário do macOS.";
-"onboarding_google_calendar_title" = "Google Calendar API";
+"onboarding_google_calendar_title" = "API do Google Agenda";
 "onboarding_progress" = "Etapa %@ de %@";
 "onboarding_success_description" = "Sua próxima reunião aparecerá na barra de menus.";
 "onboarding_success_title" = "Você está pronto";
@@ -379,14 +379,14 @@
 "shared_fullscreen_notification_without_link_toggle" = "Também exibir notificações em tela cheia para eventos sem link de reunião";
 "shared_fullscreen_notification_without_link_help" = "Eventos sem link de reunião mostram um lembrete em tela cheia apenas com a ação Dispensar.";
 "preferences_advanced_script_link_only_help" = "Executa apenas para eventos com links de reunião.";
-"preferences_meeting_opening_mode_google_meet_pwa" = "Google Meet PWA (Chrome)";
+"preferences_meeting_opening_mode_google_meet_pwa" = "Google Meet (Chrome)";
 "preferences_meeting_opening_mode_google_meet_pwa_help" = "Abre o Google Meet pelo PWA do Chrome instalado quando disponível. Usa o navegador como alternativa.";
-"preferences_meeting_opening_mode_jitsi_app" = "Jitsi App";
-"preferences_meeting_opening_mode_meetinone" = "MeetInOne";
-"preferences_meeting_opening_mode_riverside_app" = "Riverside App";
+"preferences_meeting_opening_mode_jitsi_app" = "App Jitsi";
+"preferences_meeting_opening_mode_meetinone" = "Meet In One";
+"preferences_meeting_opening_mode_riverside_app" = "App Riverside";
 "preferences_meeting_opening_mode_slack_app" = "Slack App";
 "preferences_meeting_opening_mode_teams_app" = "Teams App";
-"preferences_meeting_opening_mode_workplace_app" = "Workplace App";
+"preferences_meeting_opening_mode_workplace_app" = "App Workplace";
 "preferences_meeting_opening_mode_workplace_app_help" = "Abre chamadas do Workplace suportadas no aplicativo nativo Workchat quando disponível.";
 "preferences_meeting_opening_mode_zoom_app" = "Zoom App";
 "preferences_meeting_opening_mode_zoom_web_app" = "Zoom Web App";
@@ -398,3 +398,7 @@
 "status_bar_control_next_meeting" = "Próxima reunião";
 "preferences_appearance_events_no_meeting_link_title" = "Eventos sem link de reunião";
 "preferences_appearance_menu_show_event_calendar_color_value" = "cor do calendário";
+"preferences_sidebar_advanced" = "Avançado";
+"onboarding_back" = "Voltar";
+"onboarding_start_using" = "Começar a utilizar o MeetingBar";
+"preferences_appearance_status_bar_title_generic_value" = "Título genérico (Reunião)";

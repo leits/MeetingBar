@@ -50,7 +50,9 @@ let meetings = [
     MeetingLink(service: .webex, url: URL(string: "https://yourmeetingsite.webex.com/yourbusinessID/j.php?MTID=aO5678eFGH")!),
     // streamyard
     MeetingLink(service: .streamyard, url: URL(string: "https://streamyard.com/jexample29t")!),
-    MeetingLink(service: .streamyard, url: URL(string: "https://streamyard.com/guest/u6qes7i8cj?utm_source=test")!)
+    MeetingLink(service: .streamyard, url: URL(string: "https://streamyard.com/guest/u6qes7i8cj?utm_source=test")!),
+    // Microsoft Teams (personal / consumer — teams.live.com)
+    MeetingLink(service: .teams, url: URL(string: "https://teams.live.com/meet/9425716001426?p=0SystrMw2goKHi8LK6")!)
 ]
 
 class MeetingLinkDetectionTests: XCTestCase {

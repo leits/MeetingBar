@@ -148,6 +148,27 @@ final class EventActionPolicyTests: XCTestCase {
         XCTAssertNotNil(decision)
     }
 
+    func testEvaluateAllDayEventInactiveAtExclusiveEndDate() {
+        // All-day events carry an EXCLUSIVE endDate (midnight of the next day,
+        // per EventKit / Google Calendar). At that instant the event is already
+        // over, so no action should fire — matching cleanupExpired, which drops
+        // entries once now >= endDate.
+        let allDay = EventActionEvent(
+            id: "all-day-ended",
+            lastModifiedDate: nil,
+            startDate: now.addingTimeInterval(-86_400),
+            endDate: now,
+            isAllDay: true,
+            hasMeetingLink: true
+        )
+        let decision = EventActionPolicy.evaluate(
+            event: allDay, config: fullscreenLikeConfig, processed: [], now: now
+        )
+        XCTAssertNil(
+            decision,
+            "an all-day event that has reached its exclusive endDate is no longer active")
+    }
+
     func testEvaluateSkipsAlreadyProcessedEvent() {
         let event = eventStartingIn(30)
         let processed = [

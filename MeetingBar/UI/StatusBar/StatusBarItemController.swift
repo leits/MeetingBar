@@ -246,7 +246,10 @@ final class StatusBarItemController {
     }
 
     private func ensureStatusBarButtonIsVisible(_ button: NSStatusBarButton) {
-        guard button.image == nil,
+        // A set-but-suppressed image (imagePosition == .noImage, e.g. the
+        // "no_online_session" sentinel) is not visible, so treat it the same as a
+        // missing image — otherwise the status item can render completely blank.
+        guard button.image == nil || button.imagePosition == .noImage,
               button.title.isEmpty,
               button.attributedTitle.string.isEmpty
         else { return }

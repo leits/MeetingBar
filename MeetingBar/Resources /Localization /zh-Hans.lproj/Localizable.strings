@@ -172,7 +172,7 @@
 "preferences_appearance_status_bar_time_hide_value" = "隐藏";
 "preferences_appearance_status_bar_time_show_under_title_value" = "显示在标题下方";
 "preferences_appearance_status_bar_time_show_value" = "显示";
-"preferences_appearance_status_bar_time_title" = "时间";
+"preferences_appearance_status_bar_time_title" = "显示时间";
 "preferences_appearance_status_bar_title" = "状态栏";
 "preferences_appearance_status_bar_title_dot_value" = "点（•）";
 "preferences_appearance_status_bar_title_event_title_value" = "事件标题";
@@ -339,3 +339,4 @@
 "timeline_accessibility_label" = "包含 %d 个事件的时间轴";
 "preferences_appearance_events_no_meeting_link_title" = "无会议链接的事件";
 "preferences_appearance_menu_show_event_calendar_color_value" = "日历颜色";
+"preferences_appearance_status_bar_title_generic_value" = "通用标题（会议）";

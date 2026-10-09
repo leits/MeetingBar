@@ -47,7 +47,7 @@ class HelpersTests: XCTestCase {
         let rawNotes = "<p>description</p>"
 
         let result = cleanUpNotes(rawNotes)
-        XCTAssertEqual(result, "description\n")
+        XCTAssertEqual(result, "description")
     }
 
     func test_cleanUpNotes_inputMeetDivider_returnClean() throws {
@@ -491,14 +491,11 @@ final class MeetingOpenSettingsTests: BaseTestCase {
 }
 
 final class ProviderOpeningPolicyTests: BaseTestCase {
-    private enum TestError: Error {
-        case failed
-    }
-
     private final class OpeningSpy: @unchecked Sendable {
         var nativeURLs: [URL] = []
         var browserOpens: [(URL, Browser)] = []
         var defaultURLs: [URL] = []
+        var pwaLaunchResults: [Bool] = []
     }
 
     func test_workplaceNativeURLPercentEncodesOriginalURL() {
@@ -589,66 +586,62 @@ final class ProviderOpeningPolicyTests: BaseTestCase {
         )
     }
 
-    func test_googleMeetPWAPlanBuildsChromeArguments() {
+    func test_googleMeetPWAPlanUsesInstalledAppShim() {
         let meetURL = URL(string: "https://meet.google.com/abc-defg-hij?authuser=me")!
-        let chromeURL = URL(
-            fileURLWithPath: "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
-        )
+        let pwaURL = URL(fileURLWithPath: "/Users/test/Applications/Google Meet.app")
 
         XCTAssertEqual(
             GoogleMeetPWAOpenPolicy.plan(
                 for: meetURL,
-                chromeExecutableURL: chromeURL,
-                pwaAppID: "abcdefghijklmnopabcdefghijklmnop"
+                pwaApplicationURL: pwaURL
             ),
             GoogleMeetPWAOpenPlan(
-                executableURL: chromeURL,
-                arguments: [
-                    "--app-id=abcdefghijklmnopabcdefghijklmnop",
-                    "--app-launch-url-for-shortcuts-menu-item=\(meetURL.absoluteString)"
-                ]
+                applicationURL: pwaURL,
+                meetingURL: meetURL
             )
         )
     }
 
     func test_googleMeetPWAPlanFallsBackWhenInputOrInstallationIsUnavailable() {
         let meetURL = URL(string: "https://meet.google.com/abc-defg-hij")!
-        let chromeURL = URL(fileURLWithPath: "/Applications/Google Chrome")
+        let pwaURL = URL(fileURLWithPath: "/Users/test/Applications/Google Meet.app")
 
         XCTAssertNil(
             GoogleMeetPWAOpenPolicy.plan(
                 for: URL(string: "https://example.com/abc-defg-hij")!,
-                chromeExecutableURL: chromeURL,
-                pwaAppID: "abcdefghijklmnopabcdefghijklmnop"
+                pwaApplicationURL: pwaURL
             )
         )
         XCTAssertNil(
             GoogleMeetPWAOpenPolicy.plan(
                 for: meetURL,
-                chromeExecutableURL: nil,
-                pwaAppID: "abcdefghijklmnopabcdefghijklmnop"
-            )
-        )
-        XCTAssertNil(
-            GoogleMeetPWAOpenPolicy.plan(
-                for: meetURL,
-                chromeExecutableURL: chromeURL,
-                pwaAppID: nil
+                pwaApplicationURL: nil
             )
         )
     }
 
-    func test_googleMeetPWALaunchFailureReturnsFalse() {
+    func test_googleMeetPWALaunchFailureReportsCompletionResult() {
+        let spy = OpeningSpy()
         let plan = GoogleMeetPWAOpenPlan(
-            executableURL: URL(fileURLWithPath: "/missing/chrome"),
-            arguments: []
+            applicationURL: URL(fileURLWithPath: "/missing/Google Meet.app"),
+            meetingURL: URL(string: "https://meet.google.com/abc-defg-hij")!
+        )
+        GoogleMeetPWALauncher.launch(
+            plan,
+            applicationOpener: { _, completion in
+                completion(nil, CocoaError(.fileNoSuchFile))
+            },
+            completion: { spy.pwaLaunchResults.append($0) }
         )
 
-        XCTAssertFalse(
-            GoogleMeetPWALauncher.launch(plan) { _ in
-                throw TestError.failed
-            }
-        )
+        XCTAssertEqual(spy.pwaLaunchResults, [false])
+    }
+
+    func test_googleMeetPWALaunchDoesNotAddMeetingToRecentItems() {
+        let configuration = GoogleMeetPWALauncher.openConfiguration()
+
+        XCTAssertTrue(configuration.activates)
+        XCTAssertFalse(configuration.addsToRecentItems)
     }
 
     func test_googleMeetPWAModeFallsBackToOriginalURLWhenLaunchFails() {
@@ -656,12 +649,12 @@ final class ProviderOpeningPolicyTests: BaseTestCase {
         let meetURL = URL(string: "https://meet.google.com/abc-defg-hij")!
         let browser = Browser(name: "Safari", path: "/Applications/Safari.app")
         let plan = GoogleMeetPWAOpenPlan(
-            executableURL: URL(fileURLWithPath: "/Applications/Google Chrome"),
-            arguments: []
+            applicationURL: URL(fileURLWithPath: "/Applications/Google Meet.app"),
+            meetingURL: meetURL
         )
         let strategy = GoogleMeetOpenStrategy(
             pwaPlanBuilder: { _ in plan },
-            pwaLauncher: { _ in false },
+            pwaLauncher: { _, completion in completion(false) },
             browserOpener: {
                 spy.browserOpens.append(($0, $1))
             },
@@ -681,13 +674,36 @@ final class ProviderOpeningPolicyTests: BaseTestCase {
         XCTAssertTrue(spy.defaultURLs.isEmpty)
     }
 
+    func test_googleMeetPWAModeDoesNotOpenBrowserWhenLaunchSucceeds() {
+        let spy = OpeningSpy()
+        let meetURL = URL(string: "https://meet.google.com/abc-defg-hij")!
+        let browser = Browser(name: "Safari", path: "/Applications/Safari.app")
+        let plan = GoogleMeetPWAOpenPlan(
+            applicationURL: URL(fileURLWithPath: "/Applications/Google Meet.app"),
+            meetingURL: meetURL
+        )
+        let strategy = GoogleMeetOpenStrategy(
+            pwaPlanBuilder: { _ in plan },
+            pwaLauncher: { _, completion in completion(true) },
+            browserOpener: { spy.browserOpens.append(($0, $1)) }
+        )
+
+        strategy.open(
+            url: meetURL,
+            opening: ResolvedMeetingOpening(mode: .googleMeetPWA, browser: browser),
+            defaultBrowser: systemDefaultBrowser
+        )
+
+        XCTAssertTrue(spy.browserOpens.isEmpty)
+    }
+
     func test_googleMeetDefaultBrowserAndMeetInOneBehaviorRemainUnchanged() {
         let spy = OpeningSpy()
         let meetURL = URL(string: "https://meet.google.com/abc-defg-hij")!
         let browser = Browser(name: "Safari", path: "/Applications/Safari.app")
         let strategy = GoogleMeetOpenStrategy(
             pwaPlanBuilder: { _ in nil },
-            pwaLauncher: { _ in false },
+            pwaLauncher: { _, completion in completion(false) },
             browserOpener: {
                 spy.browserOpens.append(($0, $1))
             },
