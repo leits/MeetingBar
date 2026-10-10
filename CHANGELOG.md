@@ -2,6 +2,12 @@
 
 For next releases info look here: <https://github.com/leits/MeetingBar/releases>
 
+## Unreleased
+
+* Fixed vertical centering of the two-line menu bar title (event name over the
+  countdown), which appeared off-center; it is now centered consistently across
+  menu-bar heights, macOS versions, and display scales.
+
 ## 5.0.0 (2026-06-19)
 
 MeetingBar 5 is an architecture and product refresh. It improves the
