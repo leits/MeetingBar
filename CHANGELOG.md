@@ -39,6 +39,8 @@ a safer foundation for calendar providers and future integrations.
   stale or reconnect warnings instead of silently showing empty data.
 * Provider warnings remain visible in the menu even when a cached next
   meeting is available.
+* Google Calendar reads every calendar and event result page, so large
+  accounts and busy date ranges no longer silently lose later results.
 
 ### Meeting reliability
 

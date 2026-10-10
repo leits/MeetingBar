@@ -78,7 +78,7 @@ extension ProviderHealth {
             switch googleError {
             case .unauthorized:
                 return true
-            case .forbiddenCalendar, .httpStatus, .missingItems:
+            case .forbiddenCalendar, .httpStatus, .missingItems, .invalidPagination:
                 return false
             }
         }

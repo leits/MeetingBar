@@ -528,7 +528,13 @@ final class GCEventStore: NSObject,
     }
 
     // MARK: Networking helper
-    private func fetchJSON(_ url: URL, calendarID: String? = nil, retrying: Bool = false) async throws -> [[String: Any]] {
+    private func fetchJSON(_ url: URL, calendarID: String? = nil) async throws -> [[String: Any]] {
+        try await GoogleCalendarPagination.fetchAll(from: url) { pageURL in
+            try await self.fetchJSONPage(pageURL, calendarID: calendarID)
+        }
+    }
+
+    private func fetchJSONPage(_ url: URL, calendarID: String?, retrying: Bool = false) async throws -> GoogleCalendarPage {
         let token = try await validAccessToken()
 
         var req = URLRequest(url: url)
@@ -547,7 +553,7 @@ final class GCEventStore: NSObject,
                 break
             case .retryWithForcedTokenRefresh:
                 _ = try await validAccessToken(forceRefresh: true)
-                return try await fetchJSON(url, calendarID: calendarID, retrying: true)
+                return try await fetchJSONPage(url, calendarID: calendarID, retrying: true)
             case .throwAuthRequired:
                 // Deliberately keeps the stored session. A 401 from the
                 // Calendar API only proves this access token was refused, and
@@ -560,11 +566,7 @@ final class GCEventStore: NSObject,
             }
         }
 
-        let root = try JSONSerialization.jsonObject(with: data) as? [String: Any] ?? [:]
-        guard let items = root["items"] as? [[String: Any]] else {
-            throw GoogleCalendarError.missingItems(url)
-        }
-        return items
+        return try GoogleCalendarPage(data: data, url: url)
     }
 
     private func revoke(token: String) async throws {
