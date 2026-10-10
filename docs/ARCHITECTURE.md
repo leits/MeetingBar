@@ -251,6 +251,10 @@ NotificationScheduler.reconcile(events:settings:now:)   ← side-effecting servi
 
 **`NotificationActionRunner`** handles in-app actions (fullscreen, auto-join, on-start script) triggered at event start. The scheduler owns delayed `Task`s for these actions and dispatches to the runner; the runner persists processed-event records (a fileprivate `NotificationRecordStore`) to avoid re-firing on re-reconcile.
 
+`AppModel` owns the subscription to `AppSettings.notificationChanges`. Notification preferences, dismissal writes (including calendar-refresh pruning), title privacy and language changes reconcile through that one subscription. A dismissal action writes via `AppEnvironment`; the resulting settings event invalidates presentation and reconciles notifications. Menu handlers, notification responses and AppIntents therefore use the same path, even without a status bar controller. Language is applied before notification content is regenerated. Termination cancels the subscription.
+
+`StatusBarItemController` subscribes to the model state supplied at configuration and observes display-only settings. It does not initiate notification reconciliation. The E2E tests use this same state subscription and check automatic redraws; headless settings-flow tests exercise the production `AppEnvironment.live` wiring without constructing a controller.
+
 ---
 
 ## Status bar rendering
@@ -412,7 +416,7 @@ You want to add "do not notify for events shorter than 5 minutes".
 3. **Update the policy.** Inside `NotificationPlanner.plan(for:settings:now:)`, return `[]` when `event.duration < settings.minDurationForNotifications`.
 4. **Test it hostless.** Add a case in `MeetingBarLogicTests/NotificationPlanningPolicyTests.swift`: short event -> empty plan; long event -> plan unchanged.
 5. **Update the UI.** Add a toggle in the relevant Preferences tab. Localize the label and add the key to `en.lproj/Localizable.strings`. Run `make validate-strings`.
-6. **Reconcile triggers.** Make sure `StatusBarItemController.setupDefaultsObservers()` (or wherever the watcher list lives) listens to your new key so flipping it triggers a notification reconcile.
+6. **Reconcile triggers.** Add the key to `AppSettings.notificationChanges` so AppModel observes it. Test the Defaults change through the live wiring without manually calling `reconcile`.
 7. **Open a small PR.** Body: rule, why a default tweak alone is not enough, screenshots if UI, test names.
 
 The whole change should be ~50 lines and no changes to `CalendarSync` or `AppDelegate`.

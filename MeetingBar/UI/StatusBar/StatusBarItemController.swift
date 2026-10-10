@@ -35,6 +35,7 @@ enum MenuStyleConstants {
 }
 
 struct StatusBarDependencies {
+    var states: AnyPublisher<AppState, Never> = Empty().eraseToAnyPublisher()
     var appState: @MainActor () -> AppState = { AppState() }
     var events: @MainActor () -> [MBEvent] = { [] }
     var send: @MainActor (AppAction) -> Void = { _ in }
@@ -63,6 +64,7 @@ final class StatusBarItemController {
     private var dependencies = StatusBarDependencies()
 
     private var cancellables = Set<AnyCancellable>()
+    private var stateCancellable: AnyCancellable?
 
     init() {
         statusItem = NSStatusBar.system.statusItem(
@@ -102,7 +104,7 @@ final class StatusBarItemController {
             .timeFormat, .bookmarks,
             .personalEventsAppereance, .pastEventsAppereance,
             .declinedEventsAppereance, .ongoingEventVisibility,
-            .showTimelineInMenu,
+            .showTimelineInMenu, .eventTitleFormat,
             options: []
         )
         .receive(on: DispatchQueue.main)
@@ -111,52 +113,6 @@ final class StatusBarItemController {
             self?.updateMenu()
         }
         .store(in: &cancellables)
-
-        Defaults.publisher(.eventTitleFormat, options: [])
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                self?.updateMenu()
-                self?.updateTitle()
-                self?.reconcileNotifications()
-            }
-            .store(in: &cancellables)
-
-        Defaults.publisher(.preferredLanguage, options: [.initial])
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] change in
-                if I18N.instance.changeLanguage(to: change.newValue) {
-                    self?.updateMenu()
-                    self?.updateTitle()
-                    self?.reconcileNotifications()
-                }
-            }
-            .store(in: &cancellables)
-
-        Defaults.publisher(
-            keys: .joinEventNotification,
-            .joinEventNotificationTime,
-            .endOfEventNotification,
-            .endOfEventNotificationTime,
-            .fullscreenNotification,
-            .fullscreenNotificationTime,
-            .fullscreenNotificationsForEventsWithoutMeetingLink,
-            .automaticEventJoin,
-            .automaticEventJoinTime,
-            .runEventStartScript,
-            .eventStartScriptTime,
-            .eventStartScriptLocation,
-            .dismissedEvents,
-            options: []
-        )
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] _ in
-            self?.reconcileNotifications()
-        }
-        .store(in: &cancellables)
-    }
-
-    private func reconcileNotifications() {
-        dependencies.send(.reconcileNotifications)
     }
 
     private func setupKeyboardShortcuts() {
@@ -198,6 +154,13 @@ final class StatusBarItemController {
 
     func configure(dependencies: StatusBarDependencies) {
         self.dependencies = dependencies
+        stateCancellable = dependencies.states
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.updateTitle()
+                self?.updateMenu()
+            }
     }
 
     func updateTitle() {
@@ -354,10 +317,6 @@ final class StatusBarItemController {
         if let nextEvent = events.nextEvent(settings: .current, now: Date()) {
             dependencies.send(.dismissMeeting(eventID: nextEvent.id))
             AppMessageCenter.shared.post(.meetingDismissed(title: nextEvent.title))
-
-            updateTitle()
-            updateMenu()
-            reconcileNotifications()
         }
     }
 
@@ -365,10 +324,6 @@ final class StatusBarItemController {
     func undismissMeetingsActions() {
         dependencies.send(.clearDismissedMeetings)
         AppMessageCenter.shared.post(.allDismissalsRemoved)
-
-        updateTitle()
-        updateMenu()
-        reconcileNotifications()
     }
 
     @objc
@@ -439,20 +394,12 @@ final class StatusBarItemController {
 
     func dismiss(event: MBEvent) {
         dependencies.send(.dismissMeeting(eventID: event.id))
-
-        updateTitle()
-        updateMenu()
-        reconcileNotifications()
     }
 
     @objc
     func undismissEvent(sender: NSMenuItem) {
         if let event: MBEvent = sender.representedObject as? MBEvent {
             dependencies.send(.undismissMeeting(eventID: event.id))
-
-            updateTitle()
-            updateMenu()
-            reconcileNotifications()
         }
     }
 

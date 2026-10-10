@@ -46,6 +46,10 @@ a safer foundation for calendar providers and future integrations.
 
 ### Meeting reliability
 
+* Dismissing or restoring meetings updates the menu and notification plans
+  through one settings-observation path, including actions outside the menu.
+* Notification preferences and language changes are applied independently
+  of the status bar controller.
 * AppleScript save failures no longer crash the app or silently fail;
   the editor keeps unsaved changes and reports the error without changing
   saved script settings.

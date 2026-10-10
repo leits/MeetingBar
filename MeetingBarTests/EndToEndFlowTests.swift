@@ -106,11 +106,14 @@ private final class EndToEndHarness {
             },
             resumeOAuthFlow: { _ in },
             clock: .live,
-            eventSelectionSettings: { .current }
+            eventSelectionSettings: { .current },
+            notificationSettingsPublisher: AppSettings.notificationChanges,
+            applyLanguage: { I18N.instance.changeLanguage(to: $0) }
         )
         model = AppModel(environment: environment)
 
         controller.configure(dependencies: StatusBarDependencies(
+            states: model.$state.eraseToAnyPublisher(),
             appState: { [weak self] in self?.model.state ?? AppState() },
             events: { [weak self] in self?.model.state.events ?? [] },
             send: { [weak self] action in self?.model.send(action) },
@@ -138,6 +141,7 @@ private final class EndToEndHarness {
     }
 
     func stop() {
+        model.handleWillTerminate()
         NSStatusBar.system.removeStatusItem(controller.statusItem)
         scheduler.stop()
         sync.stop()
@@ -402,20 +406,56 @@ final class StatusBarEndToEndFlowTests: EndToEndFlowTestCase {
         await waitForState(of: harness, description: "events reach AppModel") {
             $0.events.count == 2
         }
-        XCTAssertTrue(try renderTitle(harness).attributedTitle.string.hasPrefix("Event E1"))
+        try await waitUntil("initial title is rendered automatically") {
+            harness.controller.statusItem.button?.attributedTitle.string.hasPrefix("Event E1") == true
+        }
 
-        let dismissItem = try XCTUnwrap(flatten(rebuildMenu(harness)).first {
+        let dismissItem = try XCTUnwrap(flatten(harness.controller.statusItemMenu.items).first {
             $0.action == #selector(StatusBarItemController.dismissNextMeetingAction)
         })
         performClick(dismissItem)
 
         XCTAssertEqual(Defaults[.dismissedEvents].map(\.id), ["E1"])
-        XCTAssertTrue(try renderTitle(harness).attributedTitle.string.hasPrefix("Event E2"))
+        try await waitUntil("dismissal updates the title without a manual redraw") {
+            harness.controller.statusItem.button?.attributedTitle.string.hasPrefix("Event E2") == true
+        }
 
-        let summary = flatten(rebuildMenu(harness)).first {
+        let summary = flatten(harness.controller.statusItemMenu.items).first {
             $0.identifier == MenuBuilder.meetingSummaryItemIdentifier
         }
         XCTAssertEqual((summary?.representedObject as? MBEvent)?.id, "E2")
+    }
+
+    func testNotificationDismissAndRestoreAutomaticallyUpdateMenuTitleAndJoinTarget() async throws {
+        configureDisplayDefaults()
+        let harness = makeHarness(events: [
+            makeEvent(id: "E1", startingIn: 300),
+            makeEvent(id: "E2", startingIn: 1800)
+        ])
+        defer { harness.stop() }
+        try await waitUntil("initial automatic render") {
+            harness.controller.statusItem.button?.attributedTitle.string.hasPrefix("Event E1") == true
+        }
+
+        harness.model.send(.notificationResponse(.dismiss(eventID: "E1")))
+        try await waitUntil("notification dismissal updates title") {
+            harness.controller.statusItem.button?.attributedTitle.string.hasPrefix("Event E2") == true
+        }
+        let summary = flatten(harness.controller.statusItemMenu.items).first {
+            $0.identifier == MenuBuilder.meetingSummaryItemIdentifier
+        }
+        XCTAssertEqual((summary?.representedObject as? MBEvent)?.id, "E2")
+        harness.model.send(.joinNearestMeeting)
+        XCTAssertEqual(harness.openedMeetingIDs, ["E2"])
+
+        harness.model.send(.clearDismissedMeetings)
+        try await waitUntil("restoring dismissals updates title") {
+            harness.controller.statusItem.button?.attributedTitle.string.hasPrefix("Event E1") == true
+        }
+        let restoredSummary = flatten(harness.controller.statusItemMenu.items).first {
+            $0.identifier == MenuBuilder.meetingSummaryItemIdentifier
+        }
+        XCTAssertEqual((restoredSummary?.representedObject as? MBEvent)?.id, "E1")
     }
 
     func testToggleTitleVisibilityFromMenuSwitchesToGenericTitle() async throws {
