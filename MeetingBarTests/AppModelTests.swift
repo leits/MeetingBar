@@ -277,6 +277,57 @@ final class AppModelTests: BaseTestCase {
         ])
     }
 
+    func testDismissMeetingImmediatelyReconcilesNotifications() async {
+        let harness = AppModelTestHarness()
+        let event = makeFakeEvent(
+            id: "dismiss",
+            start: harness.fixedNow,
+            end: harness.fixedNow.addingTimeInterval(1800)
+        )
+        harness.model.send(.eventsLoaded([event]))
+        await harness.flushAsyncActions()
+
+        harness.model.send(.dismissMeeting(eventID: event.id))
+        await harness.flushAsyncActions()
+
+        XCTAssertEqual(harness.dismissedEventIDs, [event.id])
+        XCTAssertEqual(harness.reconciledEventIDs, [[event.id], [event.id]])
+    }
+
+    func testUndismissMeetingImmediatelyReconcilesNotifications() async {
+        let harness = AppModelTestHarness()
+        let event = makeFakeEvent(
+            id: "undismiss",
+            start: harness.fixedNow,
+            end: harness.fixedNow.addingTimeInterval(1800)
+        )
+        harness.model.send(.eventsLoaded([event]))
+        await harness.flushAsyncActions()
+
+        harness.model.send(.undismissMeeting(eventID: event.id))
+        await harness.flushAsyncActions()
+
+        XCTAssertEqual(harness.undismissedEventIDs, [event.id])
+        XCTAssertEqual(harness.reconciledEventIDs, [[event.id], [event.id]])
+    }
+
+    func testClearDismissedMeetingsImmediatelyReconcilesNotifications() async {
+        let harness = AppModelTestHarness()
+        let event = makeFakeEvent(
+            id: "clear-dismissals",
+            start: harness.fixedNow,
+            end: harness.fixedNow.addingTimeInterval(1800)
+        )
+        harness.model.send(.eventsLoaded([event]))
+        await harness.flushAsyncActions()
+
+        harness.model.send(.clearDismissedMeetings)
+        await harness.flushAsyncActions()
+
+        XCTAssertEqual(harness.clearDismissedEventsCallCount, 1)
+        XCTAssertEqual(harness.reconciledEventIDs, [[event.id], [event.id]])
+    }
+
     func testNotificationResponsesRouteThroughMeetingActions() async {
         let harness = AppModelTestHarness()
         let event = makeFakeEvent(

@@ -496,15 +496,19 @@ final class AppModel: ObservableObject {
         case .dismissMeeting(let eventID):
             performWithEvent(id: eventID) { event in
                 environment.dismissEvent(event)
+                reconcileNotificationsFromState()
             }
         case .dismissNearestMeeting:
             if let event = state.nextEvent(now: environment.clock.now()) {
                 environment.dismissEvent(event)
+                reconcileNotificationsFromState()
             }
         case .undismissMeeting(let eventID):
             environment.undismissEvent(eventID)
+            reconcileNotificationsFromState()
         case .clearDismissedMeetings:
             environment.clearDismissedEvents()
+            reconcileNotificationsFromState()
         case .snoozeMeeting(let eventID, let action):
             scheduleSnooze(eventID: eventID, action: action)
         default:
