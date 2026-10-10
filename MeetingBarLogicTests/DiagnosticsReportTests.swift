@@ -115,4 +115,29 @@ final class DiagnosticsReportTests: XCTestCase {
         XCTAssertTrue(report.contains("Stale data: yes"))
         XCTAssertTrue(report.contains("Auth required: yes"))
     }
+
+    func testReportDistinguishesWriteOnlyFromReadableCalendarPermission() {
+        let cases: [(PermissionSnapshot.CalendarAccess, String)] = [
+            (.authorized, "authorized"),
+            (.writeOnly, "write-only (cannot read events)"),
+            (.denied, "denied"),
+            (.restricted, "restricted"),
+            (.notDetermined, "not determined")
+        ]
+        for (access, label) in cases {
+            var input = context()
+            input.permissions = PermissionSnapshot(
+                calendarAccess: access,
+                notificationAccess: .authorized,
+                googleAuthStatus: .notActive,
+                scriptFileExists: false,
+                isAppStoreBuild: false
+            )
+            let report = DiagnosticsReport.text(from: input)
+            XCTAssertTrue(report.contains("Calendar permission: \(label)"))
+            if access == .writeOnly {
+                XCTAssertFalse(report.contains("Calendar permission: authorized"))
+            }
+        }
+    }
 }
