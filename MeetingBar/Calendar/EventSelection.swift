@@ -126,7 +126,16 @@ enum EventSelection {
                 result = event
                 continue
             } else {
-                if event.startDate < now.addingTimeInterval(600), settings.ongoingEventVisibility == .showTenMinBeforeNext {
+                // `.showTenMinBeforeNext` hands the held slot to any later
+                // candidate that starts within the 10-minute window — including
+                // an ongoing event claiming it back, and a running event handing
+                // off to the next meeting. The one transition it must NOT make
+                // is advancing from an earlier future event to a later one,
+                // which is exactly the bug where the status bar skipped the
+                // soonest upcoming meeting and showed a later one instead.
+                if event.startDate < now.addingTimeInterval(600),
+                   settings.ongoingEventVisibility == .showTenMinBeforeNext,
+                   !(result!.startDate > now && event.startDate > result!.startDate) {
                     result = event
                 } else {
                     break

@@ -271,4 +271,30 @@ final class NextEventTests: XCTestCase {
             running
         )
     }
+
+    func testShowTenMinBeforeNextPicksSoonestFutureEventWhenNoneRunning() {
+        // No event is currently running, so "show running until 10 min before
+        // next" has nothing to keep alive — the soonest upcoming event must win.
+        let soon = event(id: "SOON", startsIn: 120)
+        let later = event(id: "LATER", startsIn: 300)
+
+        XCTAssertEqual(
+            nextEvent([soon, later], settings: settings(ongoingEventVisibility: .showTenMinBeforeNext)),
+            soon
+        )
+    }
+
+    func testShowTenMinBeforeNextStopsSwitchingOnceFutureEventIsPicked() {
+        // The running event is kept until a nearer event enters the 10-min
+        // window; once that nearer event is selected, selection must stop
+        // instead of advancing to a later event inside the same window.
+        let running = event(id: "RUNNING", startsIn: -300)
+        let soon = event(id: "SOON", startsIn: 120)
+        let later = event(id: "LATER", startsIn: 300)
+
+        XCTAssertEqual(
+            nextEvent([running, soon, later], settings: settings(ongoingEventVisibility: .showTenMinBeforeNext)),
+            soon
+        )
+    }
 }
