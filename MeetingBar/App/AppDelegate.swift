@@ -64,7 +64,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             andEventID: AEEventID(kAEGetURL)
         )
 
-        launchTask = Task { [weak self] in
+        startLaunch { [weak self] in
             guard let self else { return }
             let manager = await CalendarSync()
             guard !Task.isCancelled else {
@@ -78,6 +78,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 setup(triggerInitialRefresh: false)
                 presentOnboardingWindow()
             }
+        }
+    }
+
+    /// Owns launch initialization and the handoff of reopen requests received
+    /// while initialization is suspended. The operation is injectable for tests.
+    func startLaunch(initialization: @escaping @MainActor () async -> Void) {
+        guard launchTask == nil else { return }
+        launchTask = Task { [weak self] in
+            await initialization()
+            guard let self, !Task.isCancelled else { return }
             if reopenRequestedDuringLaunch {
                 reopenRequestedDuringLaunch = false
                 handleReopen()
@@ -349,4 +359,3 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         cancellables.removeAll()
     }
 }
-

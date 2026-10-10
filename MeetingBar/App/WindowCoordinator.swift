@@ -112,8 +112,8 @@ private enum WindowStylePolicy {
 @MainActor
 final class WindowCoordinator {
     private weak var preferencesWindow: NSWindow?
-    private weak var onboardingWindow: NSWindow?
-    private weak var onboardingHandler: OnboardingHandler?
+    private(set) weak var onboardingWindow: NSWindow?
+    private(set) weak var onboardingHandler: OnboardingHandler?
 
     /// Open fullscreen notification windows, tracked so they can be moved onto
     /// the appropriate screen when the display configuration changes (e.g. an
@@ -385,4 +385,3 @@ final class WindowCoordinator {
         }
     }
 }
-
