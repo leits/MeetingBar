@@ -123,10 +123,13 @@ struct EditScriptModal: View {
     @Binding var script: String
     @Binding var scriptLocation: URL?
     var scriptName: String
+    var fileSaver = ScriptFileSaver()
 
     @State var editedScript: String = ""
 
     @State private var showingAlert = false
+    @State private var alertTitle = ""
+    @State private var alertMessage = ""
 
     var body: some View {
         VStack {
@@ -150,14 +153,21 @@ struct EditScriptModal: View {
             .onAppear { self.editedScript = self.script }
             .alert(isPresented: $showingAlert) {
                 Alert(
-                    title: Text("preferences_advanced_wrong_location_title".loco()),
-                    message: Text("preferences_advanced_wrong_location_message".loco()),
-                    dismissButton: .default(
-                        Text("preferences_advanced_wrong_location_button".loco())))
+                    title: Text(alertTitle),
+                    message: Text(alertMessage),
+                    dismissButton: .default(Text("general_ok".loco())))
             }
     }
 
     func saveScript() {
+        let scriptPath: URL
+        do {
+            scriptPath = try fileSaver.scriptsDirectory()
+        } catch {
+            showSaveError(error)
+            return
+        }
+
         let openPanel = NSOpenPanel()
         openPanel.canChooseFiles = false
         openPanel.canChooseDirectories = true
@@ -165,28 +175,36 @@ struct EditScriptModal: View {
         openPanel.allowsOtherFileTypes = false
         openPanel.prompt = "preferences_advanced_save_script_button".loco()
         openPanel.message = "preferences_advanced_wrong_location_message".loco()
-        let scriptPath = try! FileManager.default.url(
-            for: .applicationScriptsDirectory, in: .userDomainMask, appropriateFor: nil,
-            create: true)
         openPanel.directoryURL = scriptPath
         openPanel.begin { response in
-            if response == .OK {
-                if openPanel.url != scriptPath {
-                    showingAlert = true
-                    return
+            defer { openPanel.close() }
+            guard response == .OK, let directory = openPanel.url else { return }
+            do {
+                try fileSaver.save(
+                    source: editedScript,
+                    name: scriptName,
+                    directory: directory,
+                    expectedDirectory: scriptPath
+                ) { savedScript, savedDirectory in
+                    script = savedScript
+                    scriptLocation = savedDirectory
+                    presentationMode.wrappedValue.dismiss()
                 }
-                scriptLocation = openPanel.url
-                if let filepath = openPanel.url?.appendingPathComponent(scriptName) {
-                    do {
-                        try editedScript.write(
-                            to: filepath, atomically: true, encoding: String.Encoding.utf8)
-                        script = editedScript
-                        presentationMode.wrappedValue.dismiss()
-                    } catch {}
-                }
+            } catch {
+                showSaveError(error)
             }
-            openPanel.close()
         }
+    }
+
+    private func showSaveError(_ error: Error) {
+        if let saveError = error as? ScriptFileSaveError, case .wrongDirectory = saveError {
+            alertTitle = "preferences_advanced_wrong_location_title".loco()
+            alertMessage = "preferences_advanced_wrong_location_message".loco()
+        } else {
+            alertTitle = "preferences_advanced_script_save_failed_title".loco()
+            alertMessage = "preferences_advanced_script_save_failed_message".loco(error.localizedDescription)
+        }
+        showingAlert = true
     }
 
     func cancel() {
@@ -466,3 +484,4 @@ struct EditRegexModal: View {
 #Preview {
     AdvancedTab().padding().frame(width: 700, height: 620)
 }
+
