@@ -42,6 +42,9 @@ a safer foundation for calendar providers and future integrations.
 
 ### Meeting reliability
 
+* AppleScript save failures no longer crash the app or silently fail;
+  the editor keeps unsaved changes and reports the error without changing
+  saved script settings.
 * Open in Calendar is source-aware: Apple Calendar events use their
   EventKit identifier, while Google events use the Google Calendar web
   link when available.
