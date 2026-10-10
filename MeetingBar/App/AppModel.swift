@@ -30,12 +30,11 @@ struct AppClock {
 
 // MARK: - State
 
-/// Complete observable state of the application at a point in time.
+/// Observable calendar and lifecycle state of the application.
 ///
 /// `AppState` is value-typed and derived from lower-level sources of truth
-/// (`CalendarSync`, `AppSettings`, system state). Renderers (status bar,
-/// menus, notifications) read from `AppState` rather than reaching through
-/// managers directly.
+/// (`CalendarSync`, system state). Settings are sampled at workflow boundaries
+/// and passed explicitly to decisions; they are not cached in this value.
 struct AppState: Equatable {
     // MARK: Calendar
 
@@ -58,8 +57,8 @@ struct AppState: Equatable {
     // MARK: Derived
 
     /// Next upcoming event that has not been dismissed and is not all-day.
-    func nextEvent(now: Date, linkRequired: Bool = false) -> MBEvent? {
-        events.nextEvent(linkRequired: linkRequired, now: now)
+    func nextEvent(settings: EventSelectionSettings, now: Date, linkRequired: Bool = false) -> MBEvent? {
+        events.nextEvent(settings: settings, linkRequired: linkRequired, now: now)
     }
 }
 
@@ -199,6 +198,9 @@ struct AppEnvironment {
     /// Current wall-clock time for workflow decisions.
     var clock: AppClock
 
+    /// Sample current selection settings when an action runs, not when the model is created.
+    var eventSelectionSettings: @MainActor () -> EventSelectionSettings
+
     @MainActor
     static func live(
         calendarSync: CalendarSync,
@@ -269,7 +271,8 @@ struct AppEnvironment {
             },
             openPreferences: openPreferences,
             resumeOAuthFlow: resumeOAuthFlow,
-            clock: .live
+            clock: .live,
+            eventSelectionSettings: { .current }
         )
     }
 }
@@ -377,7 +380,11 @@ final class AppModel: ObservableObject {
     }
 
     func nextEvent(linkRequired: Bool = false) -> MBEvent? {
-        state.nextEvent(now: environment.clock.now(), linkRequired: linkRequired)
+        state.nextEvent(
+            settings: environment.eventSelectionSettings(),
+            now: environment.clock.now(),
+            linkRequired: linkRequired
+        )
     }
 
     /// Onboarding is an async workflow because provider authorization can
@@ -490,7 +497,7 @@ final class AppModel: ObservableObject {
                 environment.openMeeting(event)
             }
         case .joinNearestMeeting:
-            if let event = state.nextEvent(now: environment.clock.now()) {
+            if let event = nextEvent() {
                 environment.openMeeting(event)
             }
         case .dismissMeeting(let eventID):
@@ -498,7 +505,7 @@ final class AppModel: ObservableObject {
                 environment.dismissEvent(event)
             }
         case .dismissNearestMeeting:
-            if let event = state.nextEvent(now: environment.clock.now()) {
+            if let event = nextEvent() {
                 environment.dismissEvent(event)
             }
         case .undismissMeeting(let eventID):

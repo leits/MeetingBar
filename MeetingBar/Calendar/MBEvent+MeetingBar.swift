@@ -59,14 +59,18 @@ public extension Array where Element == MBEvent {
     }
 
     /// From a pre-filtered, sorted array, find the nearest upcoming MBEvent.
-    func nextEvent(linkRequired: Bool = false, now: Date = Date()) -> MBEvent? {
+    internal func nextEvent(
+        settings: EventSelectionSettings,
+        linkRequired: Bool = false,
+        now: Date
+    ) -> MBEvent? {
         let candidates = enumerated().map { index, event in
             EventSelectionEvent(event: event, sourceIndex: index)
         }
         guard let selected = EventSelection.nextEvent(
             from: candidates,
             linkRequired: linkRequired,
-            settings: .current,
+            settings: settings,
             now: now
         ) else {
             return nil
