@@ -54,6 +54,9 @@ struct AppState: Equatable {
     /// re-renders even when the calendar data itself has not changed.
     var timeContextRevision = 0
 
+    /// Invalidates UI after a dismissal or language change without duplicating settings in state.
+    var presentationRevision = 0
+
     // MARK: Derived
 
     /// Next upcoming event that has not been dismissed and is not all-day.
@@ -105,6 +108,7 @@ enum AppAction {
     // Settings
     case settingsChanged
     case toggleMeetingTitleVisibility
+    case notificationSettingsChanged(NotificationSettingsChange)
 
     // Provider
     /// Switch the active calendar provider.  `signOut = true` drops the current OAuth session first.
@@ -200,6 +204,8 @@ struct AppEnvironment {
 
     /// Sample current selection settings when an action runs, not when the model is created.
     var eventSelectionSettings: @MainActor () -> EventSelectionSettings
+    var notificationSettingsPublisher: AnyPublisher<NotificationSettingsChange, Never>
+    var applyLanguage: @MainActor (AppLanguage) -> Bool
 
     @MainActor
     static func live(
@@ -272,7 +278,9 @@ struct AppEnvironment {
             openPreferences: openPreferences,
             resumeOAuthFlow: resumeOAuthFlow,
             clock: .live,
-            eventSelectionSettings: { .current }
+            eventSelectionSettings: { .current },
+            notificationSettingsPublisher: AppSettings.notificationChanges,
+            applyLanguage: { I18N.instance.changeLanguage(to: $0) }
         )
     }
 }
@@ -328,6 +336,13 @@ final class AppModel: ObservableObject {
                 self?.send(.selectedCalendarsChanged(selectedCalendarIDs))
             }
             .store(in: &cancellables)
+
+        environment.notificationSettingsPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] change in
+                self?.send(.notificationSettingsChanged(change))
+            }
+            .store(in: &cancellables)
     }
 
     // MARK: Action dispatch
@@ -351,6 +366,17 @@ final class AppModel: ObservableObject {
         case .onboardingCompleted, .openRoute:
             handleExternalAction(action)
         case .reconcileNotifications:
+            reconcileNotificationsFromState()
+        case .notificationSettingsChanged(let change):
+            switch change {
+            case .plan:
+                break
+            case .dismissals:
+                state.presentationRevision += 1
+            case .language(let language):
+                guard environment.applyLanguage(language) else { return }
+                state.presentationRevision += 1
+            }
             reconcileNotificationsFromState()
         }
     }

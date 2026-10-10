@@ -31,7 +31,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private var reopenRequestedDuringLaunch = false
     private var notificationSetupTask: Task<Void, Never>?
     private var statusLoopTask: Task<Void, Never>?
-    private var cancellables = Set<AnyCancellable>()
 
     func applicationDidFinishLaunching(_: Notification) {
         // When launched as a test host, skip the entire launch flow so tests
@@ -172,6 +171,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         notificationScheduler.setActionSink(actionHandler)
 
         statusBarItem.configure(dependencies: StatusBarDependencies(
+            states: model.$state.eraseToAnyPublisher(),
             appState: { [weak model] in model?.state ?? AppState() },
             events: { [weak model] in model?.state.events ?? [] },
             send: { [weak model] action in model?.send(action) },
@@ -179,17 +179,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             openChangelog: { [weak self] in self?.openChangelogWindow(nil) },
             quit: { [weak self] in self?.quit(nil) }
         ))
-
-        // Drive status bar from AppModel state: update title and menu whenever
-        // events change.
-        model.$state
-            .removeDuplicates()
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                self?.statusBarItem.updateTitle()
-                self?.statusBarItem.updateMenu()
-            }
-            .store(in: &cancellables)
 
         let ncDelegate = NotificationCenterDelegate { [weak model] response in
             model?.send(.notificationResponse(response))
@@ -356,6 +345,5 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         notificationScheduler.stop()
         calendarSync?.stop()
         patronageService.stop()
-        cancellables.removeAll()
     }
 }

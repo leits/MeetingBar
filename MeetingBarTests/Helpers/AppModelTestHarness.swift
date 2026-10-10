@@ -36,6 +36,7 @@ final class AppModelTestHarness {
 
     let fixedNow: Date
     var selectionSettings: EventSelectionSettings?
+    let notificationSettingsSubject = PassthroughSubject<NotificationSettingsChange, Never>()
     private let asyncOperationDelayNanoseconds: UInt64
 
     private lazy var environment = AppEnvironment(
@@ -99,7 +100,9 @@ final class AppModelTestHarness {
             self?.resumedOAuthURLs.append(url)
         },
         clock: .fixed(fixedNow),
-        eventSelectionSettings: { [weak self] in self?.selectionSettings ?? .current }
+        eventSelectionSettings: { [weak self] in self?.selectionSettings ?? .current },
+        notificationSettingsPublisher: notificationSettingsSubject.eraseToAnyPublisher(),
+        applyLanguage: { _ in true }
     )
 
     lazy var model = AppModel(environment: environment)
