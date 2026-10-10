@@ -78,6 +78,8 @@ a safer foundation for calendar providers and future integrations.
 
 ### Validation
 
+* Calendar diagnostics distinguish write-only permission from full access
+  and explain that write-only access cannot read events.
 * Added focused hostless and app-hosted regression tests for provider
   switching, Google authentication, shared calendar selection, menu
   status, meeting-link priority, ongoing meetings, and automatic join.
@@ -323,3 +325,4 @@ Recognize links for:
 *   New status bar icon for Big Sur
 
 For previous versions see https://github.com/leits/MeetingBar/releases
+

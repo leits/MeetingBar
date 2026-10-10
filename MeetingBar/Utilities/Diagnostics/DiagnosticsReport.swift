@@ -17,6 +17,7 @@ struct PermissionSnapshot: Equatable {
         case restricted
         case denied
         case authorized
+        case writeOnly
     }
 
     enum NotificationAccess: Equatable {
@@ -114,6 +115,7 @@ enum DiagnosticsReport {
         let calendar: String
         switch perms.calendarAccess {
         case .authorized: calendar = "authorized"
+        case .writeOnly: calendar = "write-only (cannot read events)"
         case .denied: calendar = "denied"
         case .restricted: calendar = "restricted"
         case .notDetermined: calendar = "not determined"
@@ -160,3 +162,4 @@ enum DiagnosticsReport {
         return "initializing"
     }
 }
+
