@@ -91,6 +91,42 @@ final class WindowCoordinatorTests: XCTestCase {
         )
     }
 
+    func testReopeningOnboardingRetainsTheExistingWindowAndFlow() async throws {
+        let coordinator = WindowCoordinator()
+        let harness = AppModelTestHarness()
+        var originalCompletionCount = 0
+        coordinator.openOnboardingWindow(
+            appModel: harness.model,
+            onProviderSelected: { _ in .success },
+            onComplete: { _ in
+                originalCompletionCount += 1
+                return .success
+            }
+        )
+        let originalWindow = try XCTUnwrap(coordinator.onboardingWindow)
+        let originalHandler = try XCTUnwrap(coordinator.onboardingHandler)
+        defer { originalWindow.close() }
+
+        coordinator.openOnboardingWindow(
+            appModel: harness.model,
+            onProviderSelected: { _ in
+                XCTFail("Must retain the original flow")
+                return .cancelled
+            },
+            onComplete: { _ in
+                XCTFail("Must retain the original flow")
+                return .cancelled
+            }
+        )
+
+        XCTAssertTrue(coordinator.onboardingWindow === originalWindow)
+        XCTAssertTrue(coordinator.onboardingHandler === originalHandler)
+        XCTAssertTrue(originalWindow.isVisible)
+        let result = await originalHandler.onComplete(.macOSEventKit)
+        XCTAssertEqual(result, .success)
+        XCTAssertEqual(originalCompletionCount, 1)
+    }
+
     func testFullscreenPresentationShowsJoinForJoinableEvent() {
         let event = makeFakeEvent(
             id: "joinable",

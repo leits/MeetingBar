@@ -21,6 +21,8 @@ a safer foundation for calendar providers and future integrations.
   meeting actions.
 * Reorganized Preferences around General, Calendars, Meeting Opening,
   Menu Bar, Notifications, and Advanced.
+* Reopening an already-running app opens Preferences, even when its menu
+  bar item is hidden; unfinished onboarding is brought back to the front.
 * Added provider health and refresh information to application state so
   onboarding, the menu, and Preferences show consistent status.
 
