@@ -242,12 +242,14 @@ struct StatusBarTitleLabels: Equatable {
     let genericMeetingTitle: String
     let noTitle: String
     let activeEventTimeFormat: String
+    let activeEventTimeLeftFormat: String
     let upcomingEventTimeFormat: String
 }
 
 struct StatusBarTitleSettings: Equatable {
     let titleFormat: StatusBarEventTitleFormat
     let titleLength: Int
+    let showNowForActiveEvent: Bool
     let labels: StatusBarTitleLabels
 }
 
@@ -271,7 +273,10 @@ enum StatusBarTitlePolicy {
         let isActiveEvent = startDate <= now && endDate > now
         let eventDate = isActiveEvent ? endDate : startDate
         let timeLeft = formattedTimeLeft(from: now.addingTimeInterval(-60), to: eventDate, calendar: calendar)
-        let timeFormat = isActiveEvent ? settings.labels.activeEventTimeFormat : settings.labels.upcomingEventTimeFormat
+        let activeEventTimeFormat = settings.showNowForActiveEvent
+            ? settings.labels.activeEventTimeFormat
+            : settings.labels.activeEventTimeLeftFormat
+        let timeFormat = isActiveEvent ? activeEventTimeFormat : settings.labels.upcomingEventTimeFormat
         let time = String(format: timeFormat, timeLeft)
         return StatusBarTitleText(title: title, time: time, isActiveEvent: isActiveEvent)
     }

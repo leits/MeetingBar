@@ -133,6 +133,7 @@
 "preferences_appearance_status_bar_time_show_value" = "show";
 "preferences_appearance_status_bar_time_show_under_title_value" = "show under title";
 "preferences_appearance_status_bar_time_hide_value" = "hide";
+"preferences_appearance_status_bar_time_show_now_toggle" = "Show \"now\" for ongoing events";
 "preferences_appearance_status_bar_ongoing_title" = "Ongoing event visibility:";
 "preferences_appearance_status_bar_ongoing_time_immediate_value" = "hide after start";
 "preferences_appearance_status_bar_ongoing_time_ten_after_value" = "hide 10 min  after start";
@@ -307,6 +308,7 @@
 "status_bar_quit" = "Quit MeetingBar";
 "status_bar_no_title" = "No title";
 "status_bar_event_status_now" = "now (%@ left)";
+"status_bar_event_status_left" = "(%@ left)";
 "status_bar_event_status_in" = "in %@";
 "status_bar_error_apple_script_title" = "AppleScript error";
 "status_bar_error_link_missed_title" = "Ouch! Can't join the %@";
