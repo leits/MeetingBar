@@ -59,6 +59,7 @@ enum GoogleCalendarError: LocalizedError, Equatable {
     case forbiddenCalendar(calendarID: String?, url: URL)
     case httpStatus(Int, url: URL)
     case missingItems(URL)
+    case invalidPagination(URL)
 
     var errorDescription: String? {
         switch self {
@@ -73,6 +74,8 @@ enum GoogleCalendarError: LocalizedError, Equatable {
             return "Google Calendar request failed with HTTP \(statusCode): \(url.absoluteString)"
         case let .missingItems(url):
             return "Google Calendar response did not contain an items array: \(url.absoluteString)"
+        case let .invalidPagination(url):
+            return "Google Calendar returned an invalid or repeated page token: \(url.absoluteString)"
         }
     }
 }

@@ -788,6 +788,23 @@ final class ProviderHealthTests: BaseTestCase {
         XCTAssertEqual(health.lastSuccessfulRefresh, previousSuccess)
     }
 
+    func test_invalidPaginationKeepsLastSuccessAndDoesNotRequireReconnect() {
+        let attempted = Date()
+        let previousSuccess = attempted.addingTimeInterval(-60)
+        let url = URL(string: "https://www.googleapis.com/calendar/v3/users/me/calendarList")!
+        let error = GoogleCalendarError.invalidPagination(url)
+        let health = ProviderHealth.failure(
+            previous: ProviderHealth(lastSuccessfulRefresh: previousSuccess),
+            attempted: attempted,
+            error: CalendarSyncError.eventFetchFailed(error)
+        )
+
+        XCTAssertFalse(health.authRequired)
+        XCTAssertTrue(health.isStale)
+        XCTAssertEqual(health.lastSuccessfulRefresh, previousSuccess)
+        XCTAssertEqual(health.lastErrorDescription, error.errorDescription)
+    }
+
     func test_refreshFailureIsStaleButDoesNotRequireReauthorization() {
         let attempted = Date()
         let previousSuccess = attempted.addingTimeInterval(-60)
