@@ -1329,31 +1329,15 @@ final class MenuBuilderQuickActionsTests: BaseTestCase {
 @MainActor
 final class StatusBarTitleRendererTests: BaseTestCase {
 
-    func test_stackedTitleCentersBothLinesAndUsesCompactFonts() {
+    func test_stackedLayoutRendersEmptyAttributedTitle() {
+        // The stacked (time-under-title) layout is drawn by
+        // `StatusBarStackedTitleView` in an NSHostingView, so the attributed
+        // title is intentionally empty for this layout.
         let title = StatusBarTitleRenderer.attributedTitle(
             for: makePresentation(layout: .stacked)
         )
 
-        XCTAssertEqual(title.string, "Weekly sync\nnow")
-
-        let paragraphStyle =
-            title.attribute(
-                .paragraphStyle,
-                at: 0,
-                effectiveRange: nil
-            ) as? NSParagraphStyle
-        XCTAssertEqual(paragraphStyle?.alignment, .center)
-        XCTAssertEqual(paragraphStyle?.lineHeightMultiple ?? 0, 0.7, accuracy: 0.001)
-
-        let titleFont = title.attribute(.font, at: 0, effectiveRange: nil) as? NSFont
-        let timeFont =
-            title.attribute(
-                .font,
-                at: title.length - 1,
-                effectiveRange: nil
-            ) as? NSFont
-        XCTAssertEqual(titleFont?.pointSize ?? 0, 12, accuracy: 0.001)
-        XCTAssertEqual(timeFont?.pointSize ?? 0, 9, accuracy: 0.001)
+        XCTAssertEqual(title.string, "")
     }
 
     func test_inlineTitleIncludesTimeAndUnderlineStyle() {
@@ -1513,7 +1497,7 @@ final class StatusBarItemControllerPresentationTests: BaseTestCase {
         XCTAssertNotNil(button.image)
     }
 
-    func test_updateTitleUsesCenteredStackedTimeUnderTitle() throws {
+    func test_updateTitleUsesHostingViewForStackedTimeUnderTitle() throws {
         configureStatusBarDefaults()
         Defaults[.eventTimeFormat] = .show_under_title
 
@@ -1523,16 +1507,39 @@ final class StatusBarItemControllerPresentationTests: BaseTestCase {
         controller.updateTitle()
 
         let button = try XCTUnwrap(controller.statusItem.button)
-        XCTAssertTrue(button.attributedTitle.string.contains("\n"))
+        // The stacked layout is drawn by a SwiftUI hosting view, so the
+        // button's own title is empty and its image is an empty (zero-size)
+        // placeholder that keeps the button in its normal drawing mode (so the
+        // item dims with the menu bar); the item is sized from the hosting
+        // view's intrinsic width.
+        XCTAssertEqual(button.attributedTitle.string, "")
+        XCTAssertEqual(button.image?.size, NSSize.zero)
 
-        let paragraphStyle =
-            button.attributedTitle.attribute(
-                .paragraphStyle,
-                at: 0,
-                effectiveRange: nil
-            ) as? NSParagraphStyle
-        XCTAssertEqual(paragraphStyle?.alignment, .center)
-        XCTAssertEqual(paragraphStyle?.lineHeightMultiple ?? 0, 0.7, accuracy: 0.001)
+        let hostingView = try XCTUnwrap(controller.stackedHostingView)
+        XCTAssertFalse(hostingView.rootView.title.isEmpty)
+        XCTAssertFalse(hostingView.rootView.time.isEmpty)
+        XCTAssertGreaterThan(controller.statusItem.length, 0)
+    }
+
+    func test_updateTitleRemovesHostingViewWhenLeavingStackedLayout() throws {
+        configureStatusBarDefaults()
+        Defaults[.eventTimeFormat] = .show_under_title
+
+        let controller = StatusBarItemController()
+        defer { NSStatusBar.system.removeStatusItem(controller.statusItem) }
+        controller.events = [makeStatusEvent()]
+        controller.updateTitle()
+        XCTAssertNotNil(controller.stackedHostingView)
+
+        // Switch to an inline layout: the hosting view must be torn down and
+        // the status item returned to its automatic (variable) width.
+        Defaults[.eventTimeFormat] = .show
+        controller.updateTitle()
+
+        XCTAssertNil(controller.stackedHostingView)
+        XCTAssertEqual(controller.statusItem.length, NSStatusItem.variableLength)
+        let button = try XCTUnwrap(controller.statusItem.button)
+        XCTAssertFalse(button.attributedTitle.string.isEmpty)
     }
 
     func test_actionsUseInjectedAppActionSender() {

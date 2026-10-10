@@ -10,6 +10,7 @@ import Cocoa
 import Combine
 import Defaults
 import KeyboardShortcuts
+import SwiftUI
 
 enum MenuStyleConstants {
     static let defaultFontSize: CGFloat = 13
@@ -59,6 +60,11 @@ final class StatusBarItemController {
     }
 
     let installationDate = getInstallationDate()
+
+    /// Hosting view used to render the stacked (time-under-title) layout. Kept
+    /// around so successive updates reuse the same view (and its Auto Layout
+    /// constraints) instead of re-adding a subview on every refresh.
+    var stackedHostingView: NSHostingView<StatusBarStackedTitleView>?
 
     private var dependencies = StatusBarDependencies()
 
@@ -226,6 +232,16 @@ final class StatusBarItemController {
         button.alignment = .center
         button.cell?.lineBreakMode = .byTruncatingTail
 
+        // The stacked (time-under-title) layout is drawn by a SwiftUI hosting
+        // view for crisp two-line rendering; every other layout uses the
+        // button's own image + (attributed) title.
+        if presentation.mode == .nextEvent, presentation.layout == .stacked {
+            renderStackedTitle(presentation, button: button)
+            return
+        }
+
+        removeStackedHostingView()
+
         switch presentation.icon {
         case .asset(let name):
             button.image = MenuStyleConstants.iconNamed(name)
@@ -243,6 +259,72 @@ final class StatusBarItemController {
         }
 
         ensureStatusBarButtonIsVisible(button)
+    }
+
+    /// Renders the stacked layout into an `NSHostingView` centered in the
+    /// status button. Because the hosting view carries the whole visual (icon
+    /// + both text lines), the button's own image/title are left empty and the
+    /// status item is sized from the hosting view's intrinsic width.
+    private func renderStackedTitle(_ presentation: StatusBarPresentation, button: NSStatusBarButton) {
+        let rootView = StatusBarStackedTitleView(
+            icon: stackedIcon(for: presentation.icon),
+            title: presentation.title,
+            time: presentation.time,
+            style: presentation.titleStyle
+        )
+
+        let hostingView: NSHostingView<StatusBarStackedTitleView>
+        if let existing = stackedHostingView {
+            hostingView = existing
+            hostingView.rootView = rootView
+            hostingView.isHidden = false
+        } else {
+            hostingView = NSHostingView(rootView: rootView)
+            hostingView.translatesAutoresizingMaskIntoConstraints = false
+            button.addSubview(hostingView)
+            NSLayoutConstraint.activate([
+                hostingView.centerXAnchor.constraint(equalTo: button.centerXAnchor),
+                hostingView.centerYAnchor.constraint(equalTo: button.centerYAnchor)
+            ])
+            stackedHostingView = hostingView
+        }
+
+        // Keep an empty (zero-size) image rather than clearing it to nil. A
+        // status button that hosts a custom subview but has a nil image does
+        // not pick up the menu bar's inactive-display dimming, so its content
+        // stays bright on secondary monitors; an empty image keeps the button
+        // in its normal image-drawing mode (matching how SpotMenu configures
+        // its hosting-view status item) so the whole item dims like native ones.
+        button.image = NSImage()
+        button.toolTip = presentation.tooltip
+
+        hostingView.layoutSubtreeIfNeeded()
+        statusItem.length = hostingView.intrinsicContentSize.width
+    }
+
+    /// Resolves the icon shown alongside the stacked title. Returns `nil` for
+    /// the "no icon" case and for the hidden `no_online_session` sentinel, so
+    /// the hosting view simply omits the image.
+    private func stackedIcon(for icon: StatusBarIcon) -> NSImage? {
+        let image: NSImage?
+        switch icon {
+        case .asset(let name):
+            let asset = MenuStyleConstants.iconNamed(name)
+            asset.size = MenuStyleConstants.iconSize
+            image = asset
+        case .meetingService(let service):
+            image = getIconForMeetingService(service)
+        case .none:
+            image = nil
+        }
+        return image?.name() == "no_online_session" ? nil : image
+    }
+
+    private func removeStackedHostingView() {
+        guard stackedHostingView != nil else { return }
+        stackedHostingView?.removeFromSuperview()
+        stackedHostingView = nil
+        statusItem.length = NSStatusItem.variableLength
     }
 
     private func ensureStatusBarButtonIsVisible(_ button: NSStatusBarButton) {
@@ -521,49 +603,20 @@ enum StatusBarTitleRenderer {
                 )
             )
         case .stacked:
-            return stackedTitle(for: presentation)
+            // The stacked layout is rendered by `StatusBarStackedTitleView`
+            // through an NSHostingView (see `StatusBarItemController`), so the
+            // attributed title is intentionally empty here.
+            return NSAttributedString(string: "")
         }
-    }
-
-    private static func stackedTitle(for presentation: StatusBarPresentation) -> NSAttributedString {
-        let title = NSMutableAttributedString(
-            string: presentation.title,
-            attributes: titleAttributes(
-                style: presentation.titleStyle,
-                font: NSFont.systemFont(ofSize: 12),
-                baselineOffset: -3
-            )
-        )
-        title.append(
-            NSAttributedString(
-                string: "\n" + presentation.time,
-                attributes: [
-                    NSAttributedString.Key.font: NSFont.systemFont(ofSize: 9),
-                    NSAttributedString.Key.foregroundColor: NSColor.lightGray
-                ]
-            ))
-
-        let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineHeightMultiple = 0.7
-        paragraphStyle.alignment = .center
-        title.addAttributes(
-            [NSAttributedString.Key.paragraphStyle: paragraphStyle],
-            range: NSRange(location: 0, length: title.length)
-        )
-        return title
     }
 
     private static func titleAttributes(
         style: StatusBarTitleStyle,
-        font: NSFont,
-        baselineOffset: CGFloat? = nil
+        font: NSFont
     ) -> [NSAttributedString.Key: Any] {
         var attributes: [NSAttributedString.Key: Any] = [
             .font: font
         ]
-        if let baselineOffset {
-            attributes[.baselineOffset] = baselineOffset
-        }
         switch style {
         case .normal:
             break
