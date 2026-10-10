@@ -6,6 +6,7 @@
 import Foundation
 
 extension EventSelectionSettings {
+    @MainActor
     static var current: EventSelectionSettings {
         EventSelectionSettings(AppSettings.current.events)
     }

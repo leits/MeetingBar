@@ -114,7 +114,7 @@ enum StatusBarTitleFormatMigration {
 // MARK: - Defaults factory
 
 extension AppSettings {
-    /// The single boundary that reads `Defaults` for app-level feature logic.
+    /// App-wide snapshot; feature-specific adapters also read `Defaults` at boundaries.
     /// Other code should receive `AppSettings` (or sub-structs) by value.
     @MainActor
     static var current: AppSettings {
