@@ -77,4 +77,3 @@ enum PermissionReporter {
         return FileManager.default.fileExists(atPath: dir.appendingPathComponent("eventStartScript.scpt").path)
     }
 }
-
