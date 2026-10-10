@@ -3,21 +3,24 @@
 //  MeetingBar
 //
 
-import Defaults
 import Foundation
 
 extension EventSelectionSettings {
     static var current: EventSelectionSettings {
-        EventSelectionSettings(
-            period: EventSelectionPeriod(Defaults[.showEventsForPeriod]),
-            includesPersonalEvents: Defaults[.personalEventsAppereance] == .show_active,
-            dismissedEvents: Set(Defaults[.dismissedEvents].map {
+        EventSelectionSettings(AppSettings.current.events)
+    }
+
+    init(_ settings: EventDisplaySettings) {
+        self.init(
+            period: EventSelectionPeriod(settings.showEventsForPeriod),
+            includesPersonalEvents: settings.personalEventsAppearance == .show_active,
+            dismissedEvents: Set(settings.dismissedEvents.map {
                 EventSelectionDismissal(id: $0.id, lastModifiedDate: $0.lastModifiedDate)
             }),
-            requiresMeetingLinkForNonAllDayEvents: Defaults[.nonAllDayEvents].requiresMeetingLink,
-            hidesPendingEvents: Defaults[.showPendingEvents].hidesFromNextEvent,
-            hidesTentativeEvents: Defaults[.showTentativeEvents].hidesFromNextEvent,
-            ongoingEventVisibility: EventSelectionOngoingVisibility(Defaults[.ongoingEventVisibility])
+            requiresMeetingLinkForNonAllDayEvents: settings.nonAllDayEvents.requiresMeetingLink,
+            hidesPendingEvents: settings.showPendingEvents.hidesFromNextEvent,
+            hidesTentativeEvents: settings.showTentativeEvents.hidesFromNextEvent,
+            ongoingEventVisibility: EventSelectionOngoingVisibility(settings.ongoingEventVisibility)
         )
     }
 }

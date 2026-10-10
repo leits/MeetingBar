@@ -67,6 +67,8 @@ a safer foundation for calendar providers and future integrations.
 
 ### Architecture
 
+* Next-meeting decisions take explicit settings and time inputs; menu
+  selection uses the same settings snapshot as the displayed menu.
 * `AppModel`, `AppState`, `AppAction`, and `AppEnvironment` now provide
   the central application-state boundary.
 * Calendar providers are isolated behind `CalendarRepository`,

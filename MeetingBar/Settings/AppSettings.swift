@@ -3,8 +3,8 @@
 //  MeetingBar
 //
 //  Value-type snapshot of all user-configurable settings.
-//  `AppSettings.current` is the single boundary that reads `Defaults`.
-//  Feature logic should consume an `AppSettings` (or sub-struct) by value.
+//  `AppSettings.current` and feature-specific adapters read `Defaults` at
+//  workflow boundaries. Feature decisions consume their snapshots by value.
 //
 
 import Defaults
