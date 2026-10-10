@@ -174,7 +174,8 @@ final class PreferencesPresentationTests: XCTestCase {
         state.providerHealth = ProviderHealth(
             lastAttemptedRefresh: Date(timeIntervalSince1970: 1_700_000_000),
             lastErrorDescription: "Access denied",
-            isStale: true
+            isStale: true,
+            calendarPermissionRequired: true
         )
 
         let presentation = PreferencesCalendarPresentation.make(from: state)
@@ -186,6 +187,35 @@ final class PreferencesPresentationTests: XCTestCase {
         )
         XCTAssertTrue(presentation.canOpenCalendarSettings)
         XCTAssertFalse(presentation.canReconnect)
+    }
+
+    func testEventKitPermissionFailureAfterSuccessfulRefreshIsExplicit() {
+        var state = AppState()
+        state.activeProvider = .macOSEventKit
+        state.providerHealth = ProviderHealth(
+            lastSuccessfulRefresh: Date(timeIntervalSince1970: 1_700_000_000),
+            lastErrorDescription: "Calendar access denied",
+            isStale: true,
+            calendarPermissionRequired: true
+        )
+
+        let presentation = PreferencesCalendarPresentation.make(from: state)
+        XCTAssertEqual(presentation.connectionState, .permissionRequired)
+        XCTAssertTrue(presentation.canOpenCalendarSettings)
+        XCTAssertFalse(presentation.canReconnect)
+    }
+
+    func testUnrelatedEventKitFailureDoesNotClaimMissingPermission() {
+        var state = AppState()
+        state.activeProvider = .macOSEventKit
+        state.providerHealth = ProviderHealth(
+            lastErrorDescription: "EventKit refresh failed",
+            isStale: true
+        )
+
+        let presentation = PreferencesCalendarPresentation.make(from: state)
+        XCTAssertEqual(presentation.connectionState, .stale)
+        XCTAssertFalse(presentation.canOpenCalendarSettings)
     }
 
     func testFailedRefreshWithCachedDataIsPresentedAsStale() {

@@ -189,6 +189,9 @@ extension StatusBarMenuState {
         provider: EventStoreProvider,
         health: ProviderHealth
     ) -> StatusBarProviderStatus {
+        if provider == .macOSEventKit, health.calendarPermissionRequired {
+            return .permissionRequired(message: health.lastErrorDescription)
+        }
         if health.authRequired {
             return .authRequired(message: health.lastErrorDescription)
         }
@@ -199,9 +202,6 @@ extension StatusBarMenuState {
             )
         }
         if let error = health.lastErrorDescription {
-            if provider == .macOSEventKit, health.lastSuccessfulRefresh == nil {
-                return .permissionRequired(message: error)
-            }
             return .refreshFailed(message: error)
         }
         if health.lastSuccessfulRefresh != nil {
