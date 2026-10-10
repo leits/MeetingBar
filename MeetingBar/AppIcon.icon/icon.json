@@ -1,0 +1,120 @@
+{
+  "fill": {
+    "linear-gradient": [
+      "extended-srgb:0.35686,0.35686,0.38824,1.00000",
+      "extended-srgb:0.71765,0.72157,0.74902,1.00000"
+    ]
+  },
+  "groups": [
+    {
+      "name": "Glyph",
+      "layers": [
+        {
+          "blend-mode": "normal",
+          "fill": "none",
+          "glass": true,
+          "hidden": false,
+          "image-name": "glyph-top.svg",
+          "name": "M top",
+          "opacity": 1
+        },
+        {
+          "blend-mode": "normal",
+          "fill": "none",
+          "glass": true,
+          "hidden": false,
+          "image-name": "glyph-bottom.svg",
+          "name": "M bottom",
+          "opacity": 1
+        }
+      ],
+      "shadow": {
+        "kind": "neutral",
+        "opacity": 0.45
+      },
+      "translucency": {
+        "enabled": true,
+        "value": 0.3
+      },
+      "specular": true
+    },
+    {
+      "name": "Card",
+      "layers": [
+        {
+          "blend-mode": "normal",
+          "fill": "none",
+          "glass": true,
+          "hidden": false,
+          "image-name": "pins.svg",
+          "name": "Pins",
+          "opacity": 1
+        },
+        {
+          "blend-mode": "normal",
+          "fill": "none",
+          "glass": true,
+          "hidden": false,
+          "image-name": "flap-bottom.svg",
+          "name": "Bottom flap",
+          "opacity": 1
+        },
+        {
+          "blend-mode": "normal",
+          "fill": "none",
+          "glass": true,
+          "hidden": false,
+          "image-name": "flap-top.svg",
+          "name": "Top flap",
+          "opacity": 1
+        }
+      ],
+      "shadow": {
+        "kind": "neutral",
+        "opacity": 0.6
+      },
+      "translucency": {
+        "enabled": true,
+        "value": 0.2
+      },
+      "specular": true
+    },
+    {
+      "name": "Stack",
+      "layers": [
+        {
+          "blend-mode": "normal",
+          "fill": "none",
+          "glass": true,
+          "hidden": false,
+          "image-name": "card-middle.svg",
+          "name": "Middle card",
+          "opacity": 1
+        },
+        {
+          "blend-mode": "normal",
+          "fill": "none",
+          "glass": true,
+          "hidden": false,
+          "image-name": "card-back.svg",
+          "name": "Back card",
+          "opacity": 1
+        }
+      ],
+      "shadow": {
+        "kind": "neutral",
+        "opacity": 0.5
+      },
+      "translucency": {
+        "enabled": true,
+        "value": 0.2
+      },
+      "specular": true
+    }
+  ],
+  "supported-platforms": {
+    "squares": [
+      "macOS"
+    ]
+  }
+}

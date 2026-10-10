@@ -21,7 +21,7 @@ defaults:
     shell: bash
 
 env:
-  DEVELOPER_DIR: /Applications/Xcode_16.2.app/Contents/Developer
+  DEVELOPER_DIR: /Applications/Xcode_26.3.app/Contents/Developer
 
 jobs:
   dependency-review:
@@ -45,7 +45,7 @@ jobs:
   codeql:
     name: CodeQL Swift
     if: github.event_name != 'pull_request'
-    runs-on: macos-15
+    runs-on: macos-26
     timeout-minutes: 60
     permissions:
       actions: read

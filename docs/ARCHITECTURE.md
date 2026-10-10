@@ -141,6 +141,8 @@ MeetingBar/                         (~76 .swift files)
 │   ├── DefaultsKeys.swift          — every persistent setting key
 │   └── KeyboardShortcutsNames.swift
 │
+├── AppIcon.icon/                   — Icon Composer app icon; layered on macOS 26+, flat render on earlier releases
+│
 └── Resources /Localization /       — Localizable.strings, 20+ locales (Weblate)
 ```
 
@@ -310,6 +312,8 @@ Current logic coverage baseline, recorded when strict concurrency was made expli
 ## Strict concurrency and CI expectations
 
 Swift 6 strict concurrency is explicit in both Xcode settings and the SwiftPM logic package. Framework interop exceptions (`@unchecked Sendable`, `nonisolated(unsafe)`) are allowed only where Apple or third-party types require them, and touched exceptions need a short owner comment.
+
+CI selects Xcode 26.3 (`DEVELOPER_DIR` in the workflows). Xcode 26 or later is required because `MeetingBar/AppIcon.icon` is an Icon Composer bundle that older `actool` versions cannot compile.
 
 CI is split by responsibility:
 
