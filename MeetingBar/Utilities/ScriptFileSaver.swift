@@ -20,6 +20,15 @@ struct ScriptFileSaver {
         try source.write(to: url, atomically: true, encoding: .utf8)
     }
 
+    func prepareDirectory(onFailure: (Error) -> Void) -> URL? {
+        do {
+            return try scriptsDirectory()
+        } catch {
+            onFailure(error)
+            return nil
+        }
+    }
+
     func save(
         source: String,
         name: String,

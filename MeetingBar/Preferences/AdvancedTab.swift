@@ -160,13 +160,7 @@ struct EditScriptModal: View {
     }
 
     func saveScript() {
-        let scriptPath: URL
-        do {
-            scriptPath = try fileSaver.scriptsDirectory()
-        } catch {
-            showSaveError(error)
-            return
-        }
+        guard let scriptPath = fileSaver.prepareDirectory(onFailure: showSaveError) else { return }
 
         let openPanel = NSOpenPanel()
         openPanel.canChooseFiles = false
@@ -484,4 +478,3 @@ struct EditRegexModal: View {
 #Preview {
     AdvancedTab().padding().frame(width: 700, height: 620)
 }
-

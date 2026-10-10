@@ -73,15 +73,28 @@ final class ScriptFileSaverTests: XCTestCase {
         }
     }
 
-    func testDirectoryLookupPermissionFailureIsThrownInsteadOfCrashing() {
+    func testDirectoryPreparationSurfacesPermissionFailure() {
         var saver = ScriptFileSaver()
+        var presentedError: NSError?
         saver.scriptsDirectory = {
             throw NSError(domain: NSCocoaErrorDomain, code: NSFileWriteNoPermissionError)
         }
 
-        XCTAssertThrowsError(try saver.scriptsDirectory()) { error in
-            XCTAssertEqual((error as NSError).code, NSFileWriteNoPermissionError)
+        saver.writeScript = { _, _ in XCTFail("Must not write after directory lookup fails") }
+        let preparedDirectory = saver.prepareDirectory { error in
+            presentedError = error as NSError
         }
+
+        XCTAssertNil(preparedDirectory)
+        XCTAssertEqual(presentedError?.domain, NSCocoaErrorDomain)
+        XCTAssertEqual(presentedError?.code, NSFileWriteNoPermissionError)
+    }
+
+    func testDirectoryPreparationReturnsTheDirectoryWithoutPresentingAnError() {
+        var saver = ScriptFileSaver()
+        saver.scriptsDirectory = { self.directory }
+
+        XCTAssertEqual(saver.prepareDirectory { _ in XCTFail("Unexpected directory failure") }, directory)
     }
 
     func testDefaultWriterAtomicallyReplacesUTF8Script() throws {
