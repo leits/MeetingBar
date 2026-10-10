@@ -716,6 +716,21 @@ final class ProviderHealthTests: BaseTestCase {
         XCTAssertEqual(health.lastErrorDescription, "Google Calendar authorization is required")
     }
 
+    func test_eventKitReadPermissionFailureIsNotGoogleAuth() {
+        let lastSuccess = Date(timeIntervalSince1970: 1_700_000_000)
+        let health = ProviderHealth.failure(
+            previous: ProviderHealth(lastSuccessfulRefresh: lastSuccess),
+            attempted: lastSuccess.addingTimeInterval(60),
+            error: CalendarSyncError.eventFetchFailed(EventKitReadAccessError.denied)
+        )
+        XCTAssertTrue(health.calendarPermissionRequired)
+        XCTAssertFalse(health.authRequired)
+        XCTAssertTrue(health.isStale)
+        XCTAssertEqual(health.lastSuccessfulRefresh, lastSuccess)
+        XCTAssertNotNil(health.lastErrorDescription)
+        XCTAssertFalse(ProviderHealth.success(attempted: lastSuccess).calendarPermissionRequired)
+    }
+
     func test_wrappedAuthErrorSetsAuthRequired() {
         let attempted = Date()
         let previousSuccess = attempted.addingTimeInterval(-60)

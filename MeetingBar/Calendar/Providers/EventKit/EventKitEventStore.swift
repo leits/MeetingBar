@@ -17,6 +17,48 @@ extension EKParticipant {
 
 extension EKEventStore: @unchecked @retroactive Sendable {}
 
+// Reading a calendar requires full access; write-only access is insufficient.
+enum EventKitReadAccessError: LocalizedError, Equatable {
+    case notDetermined
+    case denied
+    case restricted
+    case writeOnly
+
+    static func current() -> Self? {
+        from(EKEventStore.authorizationStatus(for: .event))
+    }
+
+    static func from(_ status: EKAuthorizationStatus) -> Self? {
+        if #available(macOS 14, *) {
+            switch status {
+            case .fullAccess, .authorized: return nil
+            case .notDetermined: return .notDetermined
+            case .denied: return .denied
+            case .restricted: return .restricted
+            case .writeOnly: return .writeOnly
+            @unknown default: return .restricted
+            }
+        }
+
+        switch status {
+        case .authorized: return nil
+        case .notDetermined: return .notDetermined
+        case .denied: return .denied
+        case .restricted: return .restricted
+        default: return .restricted
+        }
+    }
+
+    var errorDescription: String? {
+        switch self {
+        case .notDetermined: return "MeetingBar needs permission to read calendars"
+        case .denied: return "Calendar access is denied. Enable MeetingBar in macOS Calendar privacy settings"
+        case .restricted: return "Calendar access is restricted by macOS"
+        case .writeOnly: return "MeetingBar needs full calendar access to read meetings"
+        }
+    }
+}
+
 extension EKEventStore: AuthenticatedEventStore {
     nonisolated(unsafe) static var shared = EKEventStore()
 
@@ -29,7 +71,11 @@ extension EKEventStore: AuthenticatedEventStore {
 
                     EKEventStore.shared = EKEventStore(sources: sources)
                     cont.resume()
-                } else { cont.resume(throwing: error ?? NSError(domain: "EKEventStore", code: 0)) }
+                } else if let accessError = EventKitReadAccessError.current() {
+                    cont.resume(throwing: accessError)
+                } else {
+                    cont.resume(throwing: error ?? NSError(domain: "EKEventStore", code: 0))
+                }
             }
 
             if #available(macOS 14, *) {
@@ -49,12 +95,15 @@ extension EKEventStore: AuthenticatedEventStore {
     }
 
     public func fetchAllCalendars() async throws -> [MBCalendar] {
+        if let accessError = EventKitReadAccessError.current() {
+            throw accessError
+        }
         // Move enumeration off the main thread so a large source/calendar
         // list does not hang the UI. EKEventStore is @unchecked Sendable
         // (declared at the top of this file), so accessing `shared` from a
         // detached task is safe. A future iteration can promote this into a
         // dedicated actor that owns its own EKEventStore instance.
-        await Task.detached(priority: .userInitiated) {
+        return await Task.detached(priority: .userInitiated) {
             EKEventStore.shared.calendars(for: .event).map { ekCalendar in
                 MBCalendar(
                     title: ekCalendar.title,
@@ -68,9 +117,12 @@ extension EKEventStore: AuthenticatedEventStore {
     }
 
     public func fetchEventsForDateRange(for calendars: [MBCalendar], from dateFrom: Date, to dateTo: Date) async throws -> [MBEvent] {
+        if let accessError = EventKitReadAccessError.current() {
+            throw accessError
+        }
         // events(matching:) blocks while EventKit walks the store. For users
         // with thousands of events this hung the menu bar. Push it off main.
-        await Task.detached(priority: .userInitiated) {
+        return await Task.detached(priority: .userInitiated) {
             fetchEventsOffMain(knownCalendars: calendars, dateFrom: dateFrom, dateTo: dateTo)
         }.value
     }

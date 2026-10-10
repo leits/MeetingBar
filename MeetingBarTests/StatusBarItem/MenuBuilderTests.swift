@@ -73,7 +73,8 @@ final class MenuBuilderTests: BaseTestCase {
         var appState = AppState()
         appState.activeProvider = .macOSEventKit
         appState.providerHealth = ProviderHealth(
-            lastErrorDescription: "Calendar access denied"
+            lastErrorDescription: "Calendar access denied",
+            calendarPermissionRequired: true
         )
 
         let state = StatusBarMenuState.make(from: appState, settings: .empty)
@@ -83,6 +84,24 @@ final class MenuBuilderTests: BaseTestCase {
             .permissionRequired(message: "Calendar access denied")
         )
         XCTAssertEqual(state.emptyStateReason, .permissionRequired)
+    }
+
+    func testMenuStateMapsEventKitPermissionLossAfterSuccessfulRefresh() {
+        var appState = AppState()
+        appState.activeProvider = .macOSEventKit
+        appState.providerHealth = ProviderHealth(
+            lastSuccessfulRefresh: Date(timeIntervalSince1970: 1_700_000_000),
+            lastErrorDescription: "Calendar access denied",
+            isStale: true,
+            calendarPermissionRequired: true
+        )
+
+        let state = StatusBarMenuState.make(from: appState, settings: .empty)
+        XCTAssertEqual(
+            state.providerStatus,
+            .permissionRequired(message: "Calendar access denied")
+        )
+        XCTAssertEqual(state.providerWarning, .permissionRequired)
     }
 
     func testMenuStateMapsNoCalendarsSelected() {
