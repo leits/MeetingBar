@@ -112,6 +112,7 @@ private enum WindowStylePolicy {
 @MainActor
 final class WindowCoordinator {
     private weak var preferencesWindow: NSWindow?
+    private weak var onboardingWindow: NSWindow?
     private weak var onboardingHandler: OnboardingHandler?
 
     /// Open fullscreen notification windows, tracked so they can be moved onto
@@ -130,6 +131,12 @@ final class WindowCoordinator {
         onComplete:
             @escaping @MainActor (EventStoreProvider) async -> ProviderSelectionResult
     ) {
+        if let onboardingWindow {
+            NSApp.activate(ignoringOtherApps: true)
+            onboardingWindow.makeKeyAndOrderFront(nil)
+            onboardingWindow.orderFrontRegardless()
+            return
+        }
         let handler = OnboardingHandler(
             onProviderSelected: onProviderSelected,
             onComplete: onComplete
@@ -166,6 +173,7 @@ final class WindowCoordinator {
         // `activate` is async for an accessory app, so force initial ordering
         // only once. The standard window level still lets other apps cover it.
         onboardingWindow.orderFrontRegardless()
+        self.onboardingWindow = onboardingWindow
     }
 
     func openChangelogWindow() {
@@ -367,10 +375,14 @@ final class WindowCoordinator {
     ) {
         guard let windowTitle else { return }
 
-        if windowTitle == WindowTitles.onboarding, !onboardingCompleted {
-            onIncompleteOnboardingClosed()
+        if windowTitle == WindowTitles.onboarding {
+            onboardingWindow = nil
+            if !onboardingCompleted {
+                onIncompleteOnboardingClosed()
+            }
         } else if windowTitle == WindowTitles.changelog {
             onChangelogClosed()
         }
     }
 }
+

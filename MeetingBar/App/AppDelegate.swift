@@ -28,6 +28,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private let windowCoordinator = WindowCoordinator()
 
     private var launchTask: Task<Void, Never>?
+    private var reopenRequestedDuringLaunch = false
     private var notificationSetupTask: Task<Void, Never>?
     private var statusLoopTask: Task<Void, Never>?
     private var cancellables = Set<AnyCancellable>()
@@ -77,7 +78,30 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 setup(triggerInitialRefresh: false)
                 presentOnboardingWindow()
             }
+            if reopenRequestedDuringLaunch {
+                reopenRequestedDuringLaunch = false
+                handleReopen()
+            }
             launchTask = nil
+        }
+    }
+
+    func applicationShouldHandleReopen(_: NSApplication, hasVisibleWindows _: Bool) -> Bool {
+        // Reopening a menu-bar agent is an escape hatch when its status item
+        // is hidden. Do not wait for all windows to disappear before routing it.
+        if launchTask != nil {
+            reopenRequestedDuringLaunch = true
+        } else {
+            handleReopen()
+        }
+        return false // WindowCoordinator handled presentation; skip AppKit's default.
+    }
+
+    private func handleReopen() {
+        if Defaults[.onboardingCompleted] {
+            openPreferencesWindow(nil)
+        } else {
+            presentOnboardingWindow()
         }
     }
 
@@ -325,3 +349,4 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         cancellables.removeAll()
     }
 }
+
