@@ -291,7 +291,7 @@ private let meetingLinkRegexes: [MeetingServices: NSRegularExpression] =
 private let outlookSafeLinkRegex = try? NSRegularExpression(
     // Only the encoded `url` value belongs to the target. Parameters after it
     // (including HTML-escaped separators) belong to SafeLinks, not the meeting.
-    pattern: #"https://[^\s/"'<>]+\.safelinks\.protection\.outlook\.com/[^\s"'<>]*?[?&](?:amp;)?url=([^\s&"'<>]+)"#
+    pattern: #"https://[^\s/?#"'<>]+\.safelinks\.protection\.outlook\.com/[^\s"'<>]*?[?&](?:amp;)?url=([^\s&"'<>]+)"#
         + #"(?:&(?:amp;)?[A-Za-z][A-Za-z0-9_]*=[^\s&"'<>]*)*"#)
 
 /// Matches Google's `google.<tld>/url?q=<percent-encoded target>` redirect
