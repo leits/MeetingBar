@@ -558,6 +558,71 @@ final class ProviderOpeningPolicyTests: BaseTestCase {
         XCTAssertEqual(spy.browserOpens.first?.1, browser)
     }
 
+    func test_tupleNativeURLPreservesCallPathQueryAndFragment() {
+        let nativeURL = TupleNativeURLPolicy.nativeURL(
+            for: URL(string: "https://tuple.app/c/abc123?source=calendar#room")!
+        )
+
+        XCTAssertEqual(nativeURL?.absoluteString, "tuple://c/abc123?source=calendar#room")
+    }
+
+    func test_tupleNativeURLRejectsUnsupportedLinks() {
+        XCTAssertNil(TupleNativeURLPolicy.nativeURL(for: URL(string: "https://tuple.app/")!))
+        XCTAssertNil(TupleNativeURLPolicy.nativeURL(for: URL(string: "https://tuple.app/c/")!))
+        XCTAssertNil(TupleNativeURLPolicy.nativeURL(for: URL(string: "https://example.com/c/abc")!))
+    }
+
+    func test_tupleNativeFailureFallsBackToOriginalURLInBrowser() {
+        let spy = OpeningSpy()
+        let original = URL(string: "https://tuple.app/c/abc123")!
+        let browser = Browser(name: "Safari", path: "/Applications/Safari.app")
+        let strategy = TupleOpenStrategy(
+            nativeOpener: {
+                spy.nativeURLs.append($0)
+                return false
+            },
+            browserOpener: {
+                spy.browserOpens.append(($0, $1))
+            }
+        )
+
+        strategy.open(
+            url: original,
+            opening: ResolvedMeetingOpening(mode: .tupleApp, browser: browser),
+            defaultBrowser: systemDefaultBrowser
+        )
+
+        XCTAssertEqual(spy.nativeURLs.map(\.absoluteString), ["tuple://c/abc123"])
+        XCTAssertEqual(spy.browserOpens.first?.0, original)
+        XCTAssertEqual(spy.browserOpens.first?.1, browser)
+    }
+
+    func test_tupleNativeSuccessDoesNotOpenBrowser() {
+        let spy = OpeningSpy()
+        let original = URL(string: "https://tuple.app/c/abc123")!
+        let strategy = TupleOpenStrategy(
+            nativeOpener: {
+                spy.nativeURLs.append($0)
+                return true
+            },
+            browserOpener: {
+                spy.browserOpens.append(($0, $1))
+            }
+        )
+
+        strategy.open(
+            url: original,
+            opening: ResolvedMeetingOpening(
+                mode: .tupleApp,
+                browser: Browser(name: "Safari", path: "/Applications/Safari.app")
+            ),
+            defaultBrowser: systemDefaultBrowser
+        )
+
+        XCTAssertEqual(spy.nativeURLs.map(\.absoluteString), ["tuple://c/abc123"])
+        XCTAssertTrue(spy.browserOpens.isEmpty)
+    }
+
     func test_zoomWebAppTransformsMeetingURLAndPreservesQuery() {
         let transformed = ZoomWebAppURLPolicy.webAppURL(
             for: URL(string: "https://company.zoom.us/j/123456789?pwd=abc&uname=Sam")!

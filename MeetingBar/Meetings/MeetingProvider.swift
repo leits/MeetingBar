@@ -23,6 +23,7 @@ enum MeetingOpeningMode: String, CaseIterable, Codable, Sendable {
     case jitsiApp
     case slackApp
     case riversideApp
+    case tupleApp
 
     var titleKey: String {
         switch self {
@@ -44,6 +45,8 @@ enum MeetingOpeningMode: String, CaseIterable, Codable, Sendable {
             "preferences_meeting_opening_mode_slack_app"
         case .riversideApp:
             "preferences_meeting_opening_mode_riverside_app"
+        case .tupleApp:
+            "preferences_meeting_opening_mode_tuple_app"
         }
     }
 
@@ -55,7 +58,7 @@ enum MeetingOpeningMode: String, CaseIterable, Codable, Sendable {
             "preferences_meeting_opening_mode_zoom_web_app_help"
         case .workplaceApp:
             "preferences_meeting_opening_mode_workplace_app_help"
-        case .meetInOne, .zoomApp, .teamsApp, .jitsiApp, .slackApp, .riversideApp:
+        case .meetInOne, .zoomApp, .teamsApp, .jitsiApp, .slackApp, .riversideApp, .tupleApp:
             nil
         }
     }
@@ -572,7 +575,8 @@ extension MeetingProvider {
             make(
                 .tuple,
                 icon: "tuple_icon",
-                pattern: #"https://tuple\.app/c/[^\s]*"#),
+                pattern: #"https://tuple\.app/c/[^\s]*"#,
+                openingModes: [.tupleApp]),
 
             // Pumble
             make(
