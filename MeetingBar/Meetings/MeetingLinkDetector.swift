@@ -289,7 +289,10 @@ private let meetingLinkRegexes: [MeetingServices: NSRegularExpression] =
     }
 
 private let outlookSafeLinkRegex = try? NSRegularExpression(
-    pattern: #"https://[\S]+\.safelinks\.protection\.outlook\.com/[\S]+url=([\S]*)"#)
+    // Only the encoded `url` value belongs to the target. Parameters after it
+    // (including HTML-escaped separators) belong to SafeLinks, not the meeting.
+    pattern: #"https://[^\s/?#"'<>]+\.safelinks\.protection\.outlook\.com/[^\s"'<>]*?[?&](?:amp;)?url=([^\s&"'<>]+)"#
+        + #"(?:&(?:amp;)?[A-Za-z][A-Za-z0-9_]*=[^\s&"'<>]*)*"#)
 
 /// Matches Google's `google.<tld>/url?q=<percent-encoded target>` redirect
 /// together with the tracking parameters Google appends after it, whether they
@@ -317,7 +320,7 @@ func regex(for service: MeetingServices) -> NSRegularExpression? {
 }
 
 func detectMeetingLink(_ rawText: String, customRegexes: [String] = []) -> MeetingLink? {
-    let text = cleanupGoogleRedirects(rawText: cleanupOutlookSafeLinks(rawText: rawText))
+    let text = cleanupMeetingRedirects(rawText: rawText)
 
     for pattern in customRegexes {
         if let regex = try? NSRegularExpression(pattern: pattern),
@@ -341,51 +344,11 @@ func detectMeetingLink(_ rawText: String, customRegexes: [String] = []) -> Meeti
 
 /// Rewrites Outlook SafeLink wrappers in `rawText` back to their real
 /// targets, so meeting-link detection sees the underlying URL rather than the
-/// `…safelinks.protection.outlook.com/…url=<encoded>` redirect. Each pass
-/// unwraps the first SafeLink and re-scans, which also resolves SafeLinks
-/// nested inside one another.
-///
-/// The loop is deliberately bounded and only continues while it makes forward
-/// progress. It stops when:
-///
-/// 1. the `url=` value can't be percent-decoded — a malformed or truncated
-///    `%` escape, which `removingPercentEncoding` reports as `nil`;
-/// 2. a rewrite leaves the text unchanged, so the same match would be found
-///    again; or
-/// 3. a hard pass cap is reached, as a final backstop.
-///
-/// Without these guards a single event carrying a malformed SafeLink would
-/// loop forever and wedge calendar sync.
+/// `…safelinks.protection.outlook.com/…url=<encoded>` redirect.
+/// Uses the same bounded, per-match rewriting as Google redirects.
 func cleanupOutlookSafeLinks(rawText: String) -> String {
     guard let outlookSafeLinkRegex else { return rawText }
-
-    var text = rawText
-    autoreleasepool {
-        // Each pass unwraps the first remaining SafeLink and re-scans, which
-        // also handles nested SafeLinks. The loop MUST make forward progress on
-        // every iteration or it spins forever: if the `url=` value can't be
-        // percent-decoded (an invalid `%` sequence) or the rewrite leaves the
-        // text unchanged, the same match is found again every pass. Bound it by
-        // a no-progress break and a hard cap so a single malformed SafeLink can
-        // never wedge calendar sync.
-        let maxPasses = 32
-        for _ in 0 ..< maxPasses {
-            let matches = outlookSafeLinkRegex.matches(
-                in: text, range: NSRange(text.startIndex..., in: text))
-            guard let match = matches.first,
-                  let fullRange = Range(match.range, in: text)
-            else { break }
-
-            let safeLink = String(text[fullRange])
-            let encodedTarget = (text as NSString).substring(with: match.range(at: 1))
-            guard let decodedTarget = encodedTarget.removingPercentEncoding else { break }
-
-            let updated = text.replacingOccurrences(of: safeLink, with: decodedTarget)
-            guard updated != text else { break }
-            text = updated
-        }
-    }
-    return text
+    return unwrappingRedirects(in: rawText, using: [outlookSafeLinkRegex])
 }
 
 /// Rewrites Google Calendar's `google.<tld>/url?q=…` redirects in `rawText`
@@ -411,20 +374,33 @@ func cleanupOutlookSafeLinks(rawText: String) -> String {
 /// reinstate the bug for the meeting link after it.
 func cleanupGoogleRedirects(rawText: String) -> String {
     guard let googleRedirectRegex else { return rawText }
+    return unwrappingRedirects(in: rawText, using: [googleRedirectRegex])
+}
 
+/// Detection must unwrap both kinds to a fixed point: a Google redirect can
+/// contain a SafeLink (and vice versa), including several alternating layers.
+func cleanupMeetingRedirects(rawText: String) -> String {
+    unwrappingRedirects(
+        in: rawText,
+        using: [outlookSafeLinkRegex, googleRedirectRegex].compactMap { $0 }
+    )
+}
+
+/// Bounds nesting work, not link count: each regex rewrites every decodable
+/// match in a pass. Malformed matches are preserved without blocking later
+/// matches. Stop when no rewrite makes progress, with a hard cap as a backstop.
+private func unwrappingRedirects(in rawText: String, using regexes: [NSRegularExpression]) -> String {
     var text = rawText
     autoreleasepool {
-        // Bounds nesting depth. The loop must make forward progress on every
-        // iteration or it spins: `rewritingRedirects` returns nil once no
-        // redirects remain (the usual exit) or when no match decoded
-        // successfully, and otherwise the text strictly shrinks —
-        // unwrapping removes a prefix and percent-decoding never lengthens.
         let maxNestingDepth = 32
         for _ in 0 ..< maxNestingDepth {
-            guard let rewritten = rewritingRedirects(in: text, using: googleRedirectRegex) else {
-                break
+            let previous = text
+            for regex in regexes {
+                if let rewritten = rewritingRedirects(in: text, using: regex) {
+                    text = rewritten
+                }
             }
-            text = rewritten
+            guard text != previous else { break }
         }
     }
     return text
@@ -799,12 +775,10 @@ enum MeetingLinkDetector {
             // matches the wrapped redirect and yields a URL whose `pwd` cannot
             // be parsed. That candidate is also what the "open with another
             // link" menu and the preferences regex tester display.
-            let combined = cleanupGoogleRedirects(
-                rawText: cleanupOutlookSafeLinks(
-                    rawText: [location, eventURL?.absoluteString, notes]
-                        .compactMap { $0 }
-                        .joined(separator: "\n")
-                )
+            let combined = cleanupMeetingRedirects(
+                rawText: [location, eventURL?.absoluteString, notes]
+                    .compactMap { $0 }
+                    .joined(separator: "\n")
             )
             if let detected = detectCustomRegexLink(text: combined, patterns: customRegexes) {
                 candidates.append(MeetingLinkCandidate(
@@ -822,7 +796,7 @@ enum MeetingLinkDetector {
         in rawText: String,
         source: MeetingLinkSource
     ) -> [MeetingLinkCandidate] {
-        let text = cleanupGoogleRedirects(rawText: cleanupOutlookSafeLinks(rawText: rawText))
+        let text = cleanupMeetingRedirects(rawText: rawText)
         guard text.contains("://") else { return [] }
 
         let range = NSRange(text.startIndex..., in: text)
