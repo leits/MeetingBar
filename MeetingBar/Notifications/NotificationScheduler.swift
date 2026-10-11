@@ -53,6 +53,7 @@ final class NotificationScheduler {
     /// keyed by notification identifier. Reconciled on every refresh — stale
     /// tasks are cancelled, missing ones are scheduled.
     private var actionTasks: [String: Task<Void, Never>] = [:]
+    private var systemReconcileTask: Task<Void, Never>?
     private var isStopped = false
 
     init(
@@ -69,6 +70,7 @@ final class NotificationScheduler {
 
     func stop() {
         isStopped = true
+        systemReconcileTask?.cancel()
         actionTasks.values.forEach { $0.cancel() }
         actionTasks.removeAll()
         runner.setActionSink(nil)
@@ -89,6 +91,29 @@ final class NotificationScheduler {
 
         reconcileActions(events: events, plans: actionPlans, settings: settings, now: now)
 
+        // OS writes may finish after cancellation. Serialize only those writes:
+        // in-app actions above must react without waiting for the notification center.
+        let previous = systemReconcileTask
+        previous?.cancel()
+        let task = Task { [weak self] in
+            await previous?.value
+            guard !Task.isCancelled, let self, !self.isStopped else { return }
+            await self.reconcileSystemRequests(events: events, plans: systemPlans, settings: settings, now: now)
+        }
+        systemReconcileTask = task
+        await withTaskCancellationHandler {
+            await task.value
+        } onCancel: {
+            task.cancel()
+        }
+    }
+
+    private func reconcileSystemRequests(
+        events: [MBEvent],
+        plans systemPlans: [PlannedNotification],
+        settings: NotificationPlanningSettings,
+        now: Date
+    ) async {
         let eventByID = Dictionary(
             events.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
 

@@ -178,6 +178,34 @@ final class NotificationSettingsFlowTests: BaseTestCase {
         try await waitUntil { sink.finishedAdds > 0 }
         try await waitUntil { sink.pendingIDs.isEmpty }
     }
+
+    func testDisablingActionsDoesNotWaitForSuspendedSystemWrite() async throws {
+        Defaults[.joinEventNotification] = true
+        Defaults[.joinEventNotificationTime] = .atStart
+        Defaults[.endOfEventNotification] = false
+        Defaults[.fullscreenNotification] = true
+        Defaults[.fullscreenNotificationTime] = .atStart
+        Defaults[.automaticEventJoin] = true
+        Defaults[.automaticEventJoinTime] = .atStart
+        let sink = PausingNotificationSink()
+        let harness = NotificationSettingsHarness(startsIn: 8, sinkOverride: sink)
+        defer {
+            sink.resumeAdd()
+            harness.stop()
+        }
+        try await waitUntil { sink.isAddPaused }
+
+        Defaults[.fullscreenNotification] = false
+        Defaults[.automaticEventJoin] = false
+        Defaults[.joinEventNotification] = false
+        let delay = max(harness.event.startDate.timeIntervalSinceNow + 0.2, 0)
+        try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+
+        XCTAssertTrue(sink.isAddPaused, "The system write must still be blocked at action time")
+        XCTAssertTrue(harness.actions.attempts.isEmpty)
+        sink.resumeAdd()
+        try await waitUntil { sink.finishedAdds > 0 && sink.pendingIDs.isEmpty }
+    }
 }
 
 /// Models a non-cancellable OS write. All fields are protected by the lock.
