@@ -460,6 +460,48 @@ final class StatusBarEndToEndFlowTests: EndToEndFlowTestCase {
         XCTAssertEqual((restoredSummary?.representedObject as? MBEvent)?.id, "E1")
     }
 
+    func testDismissalFromNotificationResponseUpdatesMenuAndPendingAlerts() async throws {
+        configureDisplayDefaults()
+        Defaults[.joinEventNotification] = true
+        Defaults[.joinEventNotificationTime] = .minuteBefore
+        Defaults[.endOfEventNotification] = false
+        let harness = makeHarness(events: [
+            makeEvent(id: "E1", startingIn: 300),
+            makeEvent(id: "E2", startingIn: 1800)
+        ])
+        defer { harness.stop() }
+
+        try await waitUntil("two events loaded and pending notifications planned") {
+            harness.model.state.events.count == 2
+                && self.scheduledEventIDs(harness) == ["E1", "E2"]
+        }
+        try await waitUntil("first meeting shown automatically") {
+            harness.controller.statusItem.button?.attributedTitle.string.hasPrefix("Event E1") == true
+        }
+
+        harness.model.send(.notificationResponse(.dismiss(eventID: "E1")))
+
+        try await waitUntil("dismissal cancels only the first pending alert") {
+            self.scheduledEventIDs(harness) == ["E2"]
+        }
+        try await waitUntil("dismissal updates title without UI action") {
+            harness.controller.statusItem.button?.attributedTitle.string.hasPrefix("Event E2") == true
+        }
+        let summary = flatten(harness.controller.statusItemMenu.items).first {
+            $0.identifier == MenuBuilder.meetingSummaryItemIdentifier
+        }
+        XCTAssertEqual((summary?.representedObject as? MBEvent)?.id, "E2")
+
+        harness.model.send(.undismissMeeting(eventID: "E1"))
+
+        try await waitUntil("restoring dismissal re-plans alerts") {
+            self.scheduledEventIDs(harness) == ["E1", "E2"]
+        }
+        try await waitUntil("restoring dismissal updates title") {
+            harness.controller.statusItem.button?.attributedTitle.string.hasPrefix("Event E1") == true
+        }
+    }
+
     func testToggleTitleVisibilityFromMenuSwitchesToGenericTitle() async throws {
         configureDisplayDefaults()
         let now = Date()

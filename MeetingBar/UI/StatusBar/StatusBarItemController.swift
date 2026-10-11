@@ -149,6 +149,8 @@ final class StatusBarItemController {
         statusItem.menu = statusItemMenu
         statusItem.button?.performClick(nil)  // ...and click
         statusItem.menu = nil
+        // Updates were intentionally deferred while the menu was tracking.
+        updateMenu()
     }
 
     func configure(dependencies: StatusBarDependencies) {
