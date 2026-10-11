@@ -598,12 +598,8 @@ final class AppModel: ObservableObject {
 
     private func reconcileNotificationsFromState() {
         let events = state.events
-        let previous = notificationReconcileTask
-        previous?.cancel()
+        notificationReconcileTask?.cancel()
         notificationReconcileTask = Task { [weak self] in
-            // Cancellation cannot retract an in-flight UNUserNotificationCenter.add.
-            // Let that write finish before the next plan reads pending requests.
-            await previous?.value
             guard !Task.isCancelled, let self else { return }
             await environment.reconcileNotifications(events)
         }
