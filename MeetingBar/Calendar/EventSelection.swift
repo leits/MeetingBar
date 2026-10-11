@@ -73,7 +73,13 @@ enum EventSelection {
             endPeriod = Calendar.current.date(byAdding: .day, value: 2, to: todayMidnight)!
         }
 
+        // Provider results need not arrive chronologically. Ties keep the
+        // original source order for a deterministic next-meeting choice.
         var futureEvents = events.filter { $0.endDate > startPeriod && $0.startDate < endPeriod }
+        futureEvents.sort {
+            if $0.startDate == $1.startDate { return $0.sourceIndex < $1.sourceIndex }
+            return $0.startDate < $1.startDate
+        }
 
         if !settings.includesPersonalEvents {
             futureEvents = futureEvents.filter(\.hasAttendees)
@@ -122,15 +128,20 @@ enum EventSelection {
                 continue
             }
 
-            if result == nil {
+            guard let selected = result else {
                 result = event
                 continue
+            }
+
+            // An ongoing meeting hands off to the next meeting only when
+            // that meeting begins within ten minutes. A future selection
+            // must never be replaced by a later future meeting.
+            if settings.ongoingEventVisibility == .showTenMinBeforeNext,
+               selected.startDate <= now,
+               event.startDate < now.addingTimeInterval(600) {
+                result = event
             } else {
-                if event.startDate < now.addingTimeInterval(600), settings.ongoingEventVisibility == .showTenMinBeforeNext {
-                    result = event
-                } else {
-                    break
-                }
+                break
             }
         }
         return result

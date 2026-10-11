@@ -263,6 +263,40 @@ final class NextEventTests: XCTestCase {
         )
     }
 
+    func testShowTenMinBeforeNextChoosesSoonestFutureMeeting() {
+        let soon = event(id: "SOON", startsIn: 120)
+        let later = event(id: "LATER", startsIn: 300)
+
+        XCTAssertEqual(nextEvent([soon, later]), soon)
+        XCTAssertEqual(nextEvent([later, soon]), soon)
+    }
+
+    func testShowTenMinBeforeNextDoesNotAdvanceBeyondFirstFutureMeeting() {
+        let running = event(id: "RUNNING", startsIn: -300)
+        let soon = event(id: "SOON", startsIn: 120)
+        let later = event(id: "LATER", startsIn: 300)
+
+        XCTAssertEqual(nextEvent([running, soon, later]), soon)
+        XCTAssertEqual(nextEvent([later, running, soon]), soon)
+    }
+
+    func testUnsortedFutureCandidatesCannotHideNearestMeeting() {
+        let far = event(id: "FAR", startsIn: 900)
+        let middle = event(id: "MIDDLE", startsIn: 720)
+        let near = event(id: "NEAR", startsIn: 120)
+
+        XCTAssertEqual(nextEvent([middle, far, near]), near)
+    }
+
+    func testOverlappingOngoingMeetingsHandOffToSoonestUpcomingMeeting() {
+        let first = event(id: "FIRST", startsIn: -300)
+        let second = event(id: "SECOND", startsIn: -120)
+        let near = event(id: "NEAR", startsIn: 120)
+        let later = event(id: "LATER", startsIn: 240)
+
+        XCTAssertEqual(nextEvent([later, second, near, first]), near)
+    }
+
     func testShowTenMinBeforeNextDoesNotHideRunningEventWithoutNextEvent() {
         let running = event(id: "RUNNING", startsIn: -300)
 

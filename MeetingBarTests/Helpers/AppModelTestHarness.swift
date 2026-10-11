@@ -36,6 +36,7 @@ final class AppModelTestHarness {
 
     let fixedNow: Date
     var selectionSettings: EventSelectionSettings?
+    let dismissalChangesSubject = PassthroughSubject<Void, Never>()
     private let asyncOperationDelayNanoseconds: UInt64
 
     private lazy var environment = AppEnvironment(
@@ -43,6 +44,7 @@ final class AppModelTestHarness {
         calendarsPublisher: calendarsSubject.eraseToAnyPublisher(),
         providerHealthPublisher: providerHealthSubject.eraseToAnyPublisher(),
         selectedCalendarIDsPublisher: selectedCalendarIDsSubject.eraseToAnyPublisher(),
+        dismissalChanges: dismissalChangesSubject.eraseToAnyPublisher(),
         triggerRefresh: { [weak self] in
             self?.refreshCallCount += 1
         },
@@ -127,6 +129,10 @@ final class AppModelTestHarness {
 
     func publishSelectedCalendarIDs(_ ids: [String]) {
         selectedCalendarIDsSubject.send(ids)
+    }
+
+    func publishDismissalChange() {
+        dismissalChangesSubject.send()
     }
 
     func flushAsyncActions() async {

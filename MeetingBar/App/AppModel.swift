@@ -54,6 +54,9 @@ struct AppState: Equatable {
     /// re-renders even when the calendar data itself has not changed.
     var timeContextRevision = 0
 
+    /// Invalidates status-bar presentation when dismissal settings change.
+    var dismissalRevision = 0
+
     // MARK: Derived
 
     /// Next upcoming event that has not been dismissed and is not all-day.
@@ -148,6 +151,9 @@ struct AppEnvironment {
     /// Live selected-calendar IDs for the active provider.
     var selectedCalendarIDsPublisher: AnyPublisher<[String], Never>
 
+    /// Persisted dismissal changes from any entry point, including notification actions.
+    var dismissalChanges: AnyPublisher<Void, Never>
+
     /// Trigger a fresh calendar + event fetch from the active provider.
     /// Results flow back through `eventsPublisher` / `calendarsPublisher`.
     var triggerRefresh: @MainActor () -> Void
@@ -223,6 +229,9 @@ struct AppEnvironment {
             )
             .map(\.newValue)
             .eraseToAnyPublisher(),
+            dismissalChanges: Defaults.publisher(.dismissedEvents, options: [])
+                .map { _ in () }
+                .eraseToAnyPublisher(),
             triggerRefresh: {
                 calendarSync.refreshSubject.send()
             },
@@ -326,6 +335,17 @@ final class AppModel: ObservableObject {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] selectedCalendarIDs in
                 self?.send(.selectedCalendarsChanged(selectedCalendarIDs))
+            }
+            .store(in: &cancellables)
+
+        // The model, not the status-bar controller, owns dismissal reconciliation.
+        // This also covers notification actions and other non-menu callers.
+        environment.dismissalChanges
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in
+                guard let self else { return }
+                self.state.dismissalRevision += 1
+                self.reconcileNotificationsFromState()
             }
             .store(in: &cancellables)
     }

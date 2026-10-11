@@ -316,7 +316,29 @@ final class AppModelTests: BaseTestCase {
         XCTAssertEqual(harness.dismissedEventIDs, ["next"])
     }
 
-    func testJoinNearestPrefersOngoingMeetingOverFutureMeeting() {
+    func testJoinNearestPrefersOngoingMeetingWhenNextIsMoreThanTenMinutesAway() {
+        let now = Date(timeIntervalSince1970: 1_700_000_000)
+        let harness = AppModelTestHarness(now: now)
+        let ongoing = makeFakeEvent(
+            id: "ongoing",
+            start: now.addingTimeInterval(-300),
+            end: now.addingTimeInterval(900),
+            withLink: true
+        )
+        let future = makeFakeEvent(
+            id: "future",
+            start: now.addingTimeInterval(700),
+            end: now.addingTimeInterval(1800),
+            withLink: true
+        )
+        harness.model.send(.eventsLoaded([future, ongoing]))
+
+        harness.model.send(.joinNearestMeeting)
+
+        XCTAssertEqual(harness.openedMeetingIDs, ["ongoing"])
+    }
+
+    func testJoinNearestHandsOffToNextMeetingWithinTenMinutes() {
         let now = Date(timeIntervalSince1970: 1_700_000_000)
         let harness = AppModelTestHarness(now: now)
         let ongoing = makeFakeEvent(
@@ -331,11 +353,12 @@ final class AppModelTests: BaseTestCase {
             end: now.addingTimeInterval(1800),
             withLink: true
         )
+        // Join must match the same upcoming meeting that the status bar
+        // selects during the 10-minute running-to-next handoff.
         harness.model.send(.eventsLoaded([future, ongoing]))
-
         harness.model.send(.joinNearestMeeting)
 
-        XCTAssertEqual(harness.openedMeetingIDs, ["ongoing"])
+        XCTAssertEqual(harness.openedMeetingIDs, ["future"])
     }
 
     func testToggleMeetingTitleVisibilityDelegatesToEnvironment() {
