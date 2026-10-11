@@ -46,6 +46,8 @@ a safer foundation for calendar providers and future integrations.
 
 ### Meeting reliability
 
+* Outlook SafeLinks unwrap every valid link despite malformed neighbors,
+  preserve meeting passcodes, and resolve mixed Google/Outlook redirect nesting.
 * Dismissing or restoring meetings updates the menu and notification plans
   through one settings-observation path, including actions outside the menu.
 * Notification preferences and language changes are applied independently
