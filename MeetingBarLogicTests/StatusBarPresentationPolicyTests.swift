@@ -233,11 +233,10 @@ final class StatusBarPresentationTests: XCTestCase {
         XCTAssertEqual(presentation.time, "")
         XCTAssertNil(presentation.tooltip)
         XCTAssertEqual(presentation.layout, .none)
-        XCTAssertFalse(presentation.removeDeliveredNotifications)
     }
 
     func testPresenterReturnsEmptyPresentationForNoUpcomingMode() {
-        // nil nextEvent → mode = .noUpcoming; removeDeliveredNotifications must be true
+        // No next event produces an empty presentation; cleanup belongs to AppModel.
         let presentation = StatusBarPresenter.presentation(
             nextEvent: nil,
             settings: presenterSettings(),
@@ -247,9 +246,6 @@ final class StatusBarPresentationTests: XCTestCase {
 
         XCTAssertEqual(presentation.mode, .noUpcoming)
         XCTAssertEqual(presentation.title, "")
-        XCTAssertTrue(
-            presentation.removeDeliveredNotifications,
-            "noUpcoming mode should trigger removal of delivered notifications")
     }
 
     func testPresenterReturnsEmptyPresentationForAfterThresholdMode() {
@@ -285,7 +281,6 @@ final class StatusBarPresentationTests: XCTestCase {
 
         XCTAssertEqual(presentation.mode, .afterThreshold)
         XCTAssertEqual(presentation.title, "")
-        XCTAssertFalse(presentation.removeDeliveredNotifications)
     }
 
     // MARK: - titleStyle: tentative + underlined

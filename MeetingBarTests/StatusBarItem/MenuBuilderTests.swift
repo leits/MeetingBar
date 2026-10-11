@@ -1406,8 +1406,7 @@ final class StatusBarTitleRendererTests: BaseTestCase {
             tooltip: "Weekly sync",
             icon: .none,
             layout: layout,
-            titleStyle: titleStyle,
-            removeDeliveredNotifications: false
+            titleStyle: titleStyle
         )
     }
 }
@@ -1671,8 +1670,7 @@ final class StatusBarItemControllerPresentationTests: BaseTestCase {
             tooltip: nil,
             icon: icon,
             layout: layout,
-            titleStyle: .normal,
-            removeDeliveredNotifications: false
+            titleStyle: .normal
         )
     }
 

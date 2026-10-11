@@ -12,6 +12,7 @@ protocol NotificationRequestSink: AnyObject, Sendable {
     func pendingRequests() async -> [UNNotificationRequest]
     func add(_ request: UNNotificationRequest) async throws
     func removePending(identifiers: [String])
+    func removeAllDelivered()
 }
 
 @MainActor
@@ -29,6 +30,10 @@ extension UNUserNotificationCenter: NotificationRequestSink {
 
     func removePending(identifiers: [String]) {
         removePendingNotificationRequests(withIdentifiers: identifiers)
+    }
+
+    func removeAllDelivered() {
+        removeAllDeliveredNotifications()
     }
 }
 
@@ -66,6 +71,11 @@ final class NotificationScheduler {
 
     func setActionSink(_ actionSink: NotificationActionSink?) {
         runner.setActionSink(actionSink)
+    }
+
+    func clearDeliveredNotifications() {
+        guard !isStopped else { return }
+        sink.removeAllDelivered()
     }
 
     func stop() {

@@ -89,7 +89,6 @@ struct StatusBarPresentation: Equatable {
     let icon: StatusBarIcon
     let layout: StatusBarTitleLayout
     let titleStyle: StatusBarTitleStyle
-    let removeDeliveredNotifications: Bool
 }
 
 /// Picks the status bar mode for the current next-event candidate.
@@ -133,8 +132,7 @@ enum StatusBarPresenter {
                 tooltip: nil,
                 icon: nonEventIcon(mode: mode, settings: settings),
                 layout: .none,
-                titleStyle: .normal,
-                removeDeliveredNotifications: mode == .noUpcoming
+                titleStyle: .normal
             )
         }
 
@@ -167,8 +165,7 @@ enum StatusBarPresenter {
                 layout: titleLayout(timeDisplay: settings.timeDisplay, titleFormat: settings.title.titleFormat),
                 pendingDisplay: settings.pendingDisplay,
                 tentativeDisplay: settings.tentativeDisplay
-            ),
-            removeDeliveredNotifications: false
+            )
         )
     }
 

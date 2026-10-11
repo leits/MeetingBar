@@ -160,6 +160,19 @@ final class NotificationSettingsFlowTests: BaseTestCase {
         }
     }
 
+    func testDismissalClearsDeliveredNotificationsThroughLiveWiring() async throws {
+        Defaults[.joinEventNotification] = true
+        Defaults[.endOfEventNotification] = false
+        let harness = NotificationSettingsHarness()
+        defer { harness.stop() }
+        try await waitUntil { harness.sink.currentPendingRequests().count == 1 }
+        let clearsBeforeDismissal = harness.sink.deliveredClearCount
+
+        harness.model.send(.dismissNearestMeeting)
+        try await waitUntil { harness.sink.deliveredClearCount > clearsBeforeDismissal }
+        XCTAssertNil(harness.model.nextEvent())
+    }
+
     func testLatestSettingsWinWhenCancelledRequestFinishesLate() async throws {
         Defaults[.joinEventNotification] = true
         Defaults[.endOfEventNotification] = false
@@ -245,6 +258,8 @@ private final class PausingNotificationSink: NotificationRequestSink, @unchecked
     func removePending(identifiers: [String]) {
         lock.withLock { pending.removeAll { identifiers.contains($0.identifier) } }
     }
+
+    func removeAllDelivered() {}
 
     func resumeAdd() {
         let saved = lock.withLock {

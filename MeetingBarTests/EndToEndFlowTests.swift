@@ -108,7 +108,9 @@ private final class EndToEndHarness {
             clock: .live,
             eventSelectionSettings: { .current },
             notificationSettingsPublisher: AppSettings.notificationChanges,
-            applyLanguage: { I18N.instance.changeLanguage(to: $0) }
+            applyLanguage: { I18N.instance.changeLanguage(to: $0) },
+            joinNotificationsEnabled: { Defaults[.joinEventNotification] },
+            clearDeliveredNotifications: { [weak self] in self?.scheduler.clearDeliveredNotifications() }
         )
         model = AppModel(environment: environment)
 
