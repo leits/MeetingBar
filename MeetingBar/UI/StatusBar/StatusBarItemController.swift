@@ -145,7 +145,6 @@ final class StatusBarItemController {
             .runEventStartScript,
             .eventStartScriptTime,
             .eventStartScriptLocation,
-            .dismissedEvents,
             options: []
         )
         .receive(on: DispatchQueue.main)
@@ -194,6 +193,8 @@ final class StatusBarItemController {
         statusItem.menu = statusItemMenu
         statusItem.button?.performClick(nil)  // ...and click
         statusItem.menu = nil
+        // Updates were intentionally deferred while the menu was tracking.
+        updateMenu()
     }
 
     func configure(dependencies: StatusBarDependencies) {
@@ -357,7 +358,6 @@ final class StatusBarItemController {
 
             updateTitle()
             updateMenu()
-            reconcileNotifications()
         }
     }
 
@@ -368,7 +368,6 @@ final class StatusBarItemController {
 
         updateTitle()
         updateMenu()
-        reconcileNotifications()
     }
 
     @objc
@@ -442,7 +441,6 @@ final class StatusBarItemController {
 
         updateTitle()
         updateMenu()
-        reconcileNotifications()
     }
 
     @objc
@@ -452,7 +450,6 @@ final class StatusBarItemController {
 
             updateTitle()
             updateMenu()
-            reconcileNotifications()
         }
     }
 

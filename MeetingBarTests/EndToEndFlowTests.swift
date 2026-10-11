@@ -50,6 +50,7 @@ private final class EndToEndHarness {
     /// Strong reference to the installed in-app action sink. The scheduler's
     /// runner keeps only a weak reference, so the harness owns it for the test.
     private var actionSink: NotificationActionSink?
+    private var modelStateCancellable: AnyCancellable?
 
     convenience init(store: FakeEventStore) {
         self.init(sync: CalendarSync(provider: store, refreshInterval: 0), store: store)
@@ -73,6 +74,9 @@ private final class EndToEndHarness {
             )
             .map(\.newValue)
             .eraseToAnyPublisher(),
+            dismissalChanges: Defaults.publisher(.dismissedEvents, options: [])
+                .map { _ in () }
+                .eraseToAnyPublisher(),
             triggerRefresh: {
                 sync.refreshSubject.send()
             },
@@ -116,6 +120,14 @@ private final class EndToEndHarness {
             openPreferences: { [weak self] in self?.openPreferencesCallCount += 1 },
             openChangelog: { [weak self] in self?.openChangelogCallCount += 1 }
         ))
+        // Mirror AppDelegate's production state subscription: no manual redraw
+        // calls in these dismissal regression tests.
+        modelStateCancellable = model.$state.removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.controller.updateTitle()
+                self?.controller.updateMenu()
+            }
     }
 
     /// Installs the real in-app action sink (`NotificationActionHandler`) wired
@@ -137,6 +149,8 @@ private final class EndToEndHarness {
     }
 
     func stop() {
+        modelStateCancellable?.cancel()
+        model.handleWillTerminate()
         NSStatusBar.system.removeStatusItem(controller.statusItem)
         scheduler.stop()
         sync.stop()
@@ -409,12 +423,56 @@ final class StatusBarEndToEndFlowTests: EndToEndFlowTestCase {
         performClick(dismissItem)
 
         XCTAssertEqual(Defaults[.dismissedEvents].map(\.id), ["E1"])
-        XCTAssertTrue(try renderTitle(harness).attributedTitle.string.hasPrefix("Event E2"))
+        try await waitUntil("menu dismissal updates title automatically") {
+            harness.controller.statusItem.button?.attributedTitle.string.hasPrefix("Event E2") == true
+        }
 
-        let summary = flatten(rebuildMenu(harness)).first {
+        let summary = flatten(harness.controller.statusItemMenu.items).first {
             $0.identifier == MenuBuilder.meetingSummaryItemIdentifier
         }
         XCTAssertEqual((summary?.representedObject as? MBEvent)?.id, "E2")
+    }
+
+    func testDismissalFromNotificationResponseUpdatesMenuAndPendingAlerts() async throws {
+        configureDisplayDefaults()
+        Defaults[.joinEventNotification] = true
+        Defaults[.joinEventNotificationTime] = .minuteBefore
+        Defaults[.endOfEventNotification] = false
+        let harness = makeHarness(events: [
+            makeEvent(id: "E1", startingIn: 300),
+            makeEvent(id: "E2", startingIn: 1800)
+        ])
+        defer { harness.stop() }
+
+        try await waitUntil("two events loaded and pending notifications planned") {
+            harness.model.state.events.count == 2
+                && self.scheduledEventIDs(harness) == ["E1", "E2"]
+        }
+        try await waitUntil("first meeting shown automatically") {
+            harness.controller.statusItem.button?.attributedTitle.string.hasPrefix("Event E1") == true
+        }
+
+        harness.model.send(.notificationResponse(.dismiss(eventID: "E1")))
+
+        try await waitUntil("dismissal cancels only the first pending alert") {
+            self.scheduledEventIDs(harness) == ["E2"]
+        }
+        try await waitUntil("dismissal updates title without UI action") {
+            harness.controller.statusItem.button?.attributedTitle.string.hasPrefix("Event E2") == true
+        }
+        let summary = flatten(harness.controller.statusItemMenu.items).first {
+            $0.identifier == MenuBuilder.meetingSummaryItemIdentifier
+        }
+        XCTAssertEqual((summary?.representedObject as? MBEvent)?.id, "E2")
+
+        harness.model.send(.undismissMeeting(eventID: "E1"))
+
+        try await waitUntil("restoring dismissal re-plans alerts") {
+            self.scheduledEventIDs(harness) == ["E1", "E2"]
+        }
+        try await waitUntil("restoring dismissal updates title") {
+            harness.controller.statusItem.button?.attributedTitle.string.hasPrefix("Event E1") == true
+        }
     }
 
     func testToggleTitleVisibilityFromMenuSwitchesToGenericTitle() async throws {
