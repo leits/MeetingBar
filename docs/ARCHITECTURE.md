@@ -322,7 +322,12 @@ CI is split by responsibility:
 
 - `ci.yml` validates localization keys, runs SwiftPM logic tests, and runs the Xcode app-hosted build/test path with coverage artifacts.
 - `lint.yml` runs SwiftLint.
-- `security.yml` runs Dependency Review on pull requests, CodeQL Swift analysis on trusted refs, and the optional Codacy SARIF upload when its token is configured.
+- `dependency-review.yml` checks dependency changes on pull requests.
+- `security.yml` runs CodeQL Swift and the optional Codacy SARIF upload on master pushes, the weekly schedule, and manual dispatches.
+
+CI and lint run once per PR revision, on master pushes, or by manual dispatch. Feature-branch pushes do not also start duplicate runs. New PR revisions cancel older runs of that same workflow and PR; master, scheduled, and manual runs remain independent. Workflow run titles show the PR/ref and trigger.
+
+`Build and Test` and `SwiftLint` remain the required check names. Test failures fail the build job directly. Test details and coverage are published in the workflow summary and artifacts rather than in a second test-report check. Cancelled runs do not publish partial reports; failed test runs still retain diagnostic summaries and artifacts. Coverage conversion/upload requires successful app tests, while existing JUnit results can still be uploaded after test failures.
 
 The local unsigned Debug build may print the entitlements/code-signing warning when `CODE_SIGNING_REQUIRED=NO`; that is not a Swift warning and is expected for local verification.
 
