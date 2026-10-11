@@ -7,8 +7,17 @@
 //  workflow boundaries. Feature decisions consume their snapshots by value.
 //
 
+import Combine
 import Defaults
 import Foundation
+
+/// Changes that affect notification plans or whether a current/next meeting remains visible.
+enum NotificationSettingsChange {
+    case plan
+    case dismissals
+    case selection
+    case language(AppLanguage)
+}
 
 // MARK: - Sub-structs
 
@@ -97,6 +106,31 @@ struct AppSettings: Equatable {
     var notifications: NotificationSettings
     var meetings: MeetingSettings
     var advanced: AdvancedSettings
+}
+
+extension AppSettings {
+    /// Observed by AppModel, independently of whether a status bar controller exists.
+    static var notificationChanges: AnyPublisher<NotificationSettingsChange, Never> {
+        let plan = Defaults.publisher(
+            keys: .joinEventNotification, .joinEventNotificationTime,
+            .endOfEventNotification, .endOfEventNotificationTime,
+            .fullscreenNotification, .fullscreenNotificationTime,
+            .fullscreenNotificationsForEventsWithoutMeetingLink,
+            .automaticEventJoin, .automaticEventJoinTime,
+            .runEventStartScript, .eventStartScriptTime, .eventStartScriptLocation,
+            .eventTitleFormat,
+            options: []
+        ).map { _ in NotificationSettingsChange.plan }
+        let dismissals = Defaults.publisher(.dismissedEvents, options: [])
+            .map { _ in NotificationSettingsChange.dismissals }
+        let selection = Defaults.publisher(
+            keys: .personalEventsAppereance, .ongoingEventVisibility,
+            options: []
+        ).map { _ in NotificationSettingsChange.selection }
+        let language = Defaults.publisher(.preferredLanguage, options: [.initial])
+            .map { NotificationSettingsChange.language($0.newValue) }
+        return Publishers.Merge4(plan, dismissals, selection, language).eraseToAnyPublisher()
+    }
 }
 
 enum StatusBarTitleFormatMigration {

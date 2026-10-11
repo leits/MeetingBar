@@ -12,6 +12,7 @@ protocol NotificationRequestSink: AnyObject, Sendable {
     func pendingRequests() async -> [UNNotificationRequest]
     func add(_ request: UNNotificationRequest) async throws
     func removePending(identifiers: [String])
+    func removeAllDelivered()
 }
 
 @MainActor
@@ -29,6 +30,10 @@ extension UNUserNotificationCenter: NotificationRequestSink {
 
     func removePending(identifiers: [String]) {
         removePendingNotificationRequests(withIdentifiers: identifiers)
+    }
+
+    func removeAllDelivered() {
+        removeAllDeliveredNotifications()
     }
 }
 
@@ -53,6 +58,7 @@ final class NotificationScheduler {
     /// keyed by notification identifier. Reconciled on every refresh — stale
     /// tasks are cancelled, missing ones are scheduled.
     private var actionTasks: [String: Task<Void, Never>] = [:]
+    private var systemReconcileTask: Task<Void, Never>?
     private var isStopped = false
 
     init(
@@ -67,8 +73,14 @@ final class NotificationScheduler {
         runner.setActionSink(actionSink)
     }
 
+    func clearDeliveredNotifications() {
+        guard !isStopped else { return }
+        sink.removeAllDelivered()
+    }
+
     func stop() {
         isStopped = true
+        systemReconcileTask?.cancel()
         actionTasks.values.forEach { $0.cancel() }
         actionTasks.removeAll()
         runner.setActionSink(nil)
@@ -79,7 +91,7 @@ final class NotificationScheduler {
         settings: NotificationPlanningSettings,
         now: Date = Date()
     ) async {
-        guard !isStopped else { return }
+        guard !isStopped, !Task.isCancelled else { return }
         let planningEvents = events.map(NotificationPlanningEvent.init(event:))
         let plans =
             NotificationPlanner
@@ -89,11 +101,34 @@ final class NotificationScheduler {
 
         reconcileActions(events: events, plans: actionPlans, settings: settings, now: now)
 
+        // OS writes may finish after cancellation. Serialize only those writes:
+        // in-app actions above must react without waiting for the notification center.
+        let previous = systemReconcileTask
+        previous?.cancel()
+        let task = Task { [weak self] in
+            await previous?.value
+            guard !Task.isCancelled, let self, !self.isStopped else { return }
+            await self.reconcileSystemRequests(events: events, plans: systemPlans, settings: settings, now: now)
+        }
+        systemReconcileTask = task
+        await withTaskCancellationHandler {
+            await task.value
+        } onCancel: {
+            task.cancel()
+        }
+    }
+
+    private func reconcileSystemRequests(
+        events: [MBEvent],
+        plans systemPlans: [PlannedNotification],
+        settings: NotificationPlanningSettings,
+        now: Date
+    ) async {
         let eventByID = Dictionary(
             events.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
 
         let pending = await sink.pendingRequests()
-        guard !isStopped else { return }
+        guard !isStopped, !Task.isCancelled else { return }
         let pendingMine =
             pending
             .filter { $0.identifier.hasPrefix(Self.identifierPrefix) }
@@ -109,7 +144,7 @@ final class NotificationScheduler {
         }
 
         for plan in systemPlans {
-            guard !isStopped else { return }
+            guard !isStopped, !Task.isCancelled else { return }
             guard let event = eventByID[plan.eventID] else { continue }
             let request = NotificationContent.request(
                 for: plan, event: event, settings: settings, now: now)
@@ -122,7 +157,7 @@ final class NotificationScheduler {
 
             do {
                 try await sink.add(request)
-                guard !isStopped else { return }
+                guard !isStopped, !Task.isCancelled else { return }
             } catch {
                 let errorDescription = String(describing: error)
                 MeetingBarLogger.notifications.error(

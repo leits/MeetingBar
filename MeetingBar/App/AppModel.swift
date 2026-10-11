@@ -54,8 +54,8 @@ struct AppState: Equatable {
     /// re-renders even when the calendar data itself has not changed.
     var timeContextRevision = 0
 
-    /// Invalidates status-bar presentation when dismissal settings change.
-    var dismissalRevision = 0
+    /// Invalidates UI after a dismissal or language change without duplicating settings in state.
+    var presentationRevision = 0
 
     // MARK: Derived
 
@@ -93,6 +93,7 @@ enum AppAction {
     case timezoneChanged
     case dayChanged
     case networkBecameReachable
+    case minuteElapsed
 
     // Calendar
     case calendarStoreChanged
@@ -108,6 +109,7 @@ enum AppAction {
     // Settings
     case settingsChanged
     case toggleMeetingTitleVisibility
+    case notificationSettingsChanged(NotificationSettingsChange)
 
     // Provider
     /// Switch the active calendar provider.  `signOut = true` drops the current OAuth session first.
@@ -150,9 +152,6 @@ struct AppEnvironment {
 
     /// Live selected-calendar IDs for the active provider.
     var selectedCalendarIDsPublisher: AnyPublisher<[String], Never>
-
-    /// Persisted dismissal changes from any entry point, including notification actions.
-    var dismissalChanges: AnyPublisher<Void, Never>
 
     /// Trigger a fresh calendar + event fetch from the active provider.
     /// Results flow back through `eventsPublisher` / `calendarsPublisher`.
@@ -206,6 +205,10 @@ struct AppEnvironment {
 
     /// Sample current selection settings when an action runs, not when the model is created.
     var eventSelectionSettings: @MainActor () -> EventSelectionSettings
+    var notificationSettingsPublisher: AnyPublisher<NotificationSettingsChange, Never>
+    var applyLanguage: @MainActor (AppLanguage) -> Bool
+    var joinNotificationsEnabled: @MainActor () -> Bool
+    var clearDeliveredNotifications: @MainActor () -> Void
 
     @MainActor
     static func live(
@@ -229,9 +232,6 @@ struct AppEnvironment {
             )
             .map(\.newValue)
             .eraseToAnyPublisher(),
-            dismissalChanges: Defaults.publisher(.dismissedEvents, options: [])
-                .map { _ in () }
-                .eraseToAnyPublisher(),
             triggerRefresh: {
                 calendarSync.refreshSubject.send()
             },
@@ -281,7 +281,11 @@ struct AppEnvironment {
             openPreferences: openPreferences,
             resumeOAuthFlow: resumeOAuthFlow,
             clock: .live,
-            eventSelectionSettings: { .current }
+            eventSelectionSettings: { .current },
+            notificationSettingsPublisher: AppSettings.notificationChanges,
+            applyLanguage: { I18N.instance.changeLanguage(to: $0) },
+            joinNotificationsEnabled: { Defaults[.joinEventNotification] },
+            clearDeliveredNotifications: { notificationScheduler.clearDeliveredNotifications() }
         )
     }
 }
@@ -338,15 +342,20 @@ final class AppModel: ObservableObject {
             }
             .store(in: &cancellables)
 
-        // The model, not the status-bar controller, owns dismissal reconciliation.
-        // This also covers notification actions and other non-menu callers.
-        environment.dismissalChanges
+        environment.notificationSettingsPublisher
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] in
-                guard let self else { return }
-                self.state.dismissalRevision += 1
-                self.reconcileNotificationsFromState()
+            .sink { [weak self] change in
+                self?.send(.notificationSettingsChanged(change))
             }
+            .store(in: &cancellables)
+
+        // Observe on the same queue as presentation, after the state mutation completes.
+        // Read the latest state when delivered so queued intermediate snapshots cannot
+        // clear notifications after newer events have already arrived.
+        $state
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in self?.clearObsoleteDeliveredNotifications() }
             .store(in: &cancellables)
     }
 
@@ -356,7 +365,7 @@ final class AppModel: ObservableObject {
         switch action {
         case .launched, .willTerminate, .screenLocked, .screenUnlocked,
              .didWake, .systemClockChanged, .timezoneChanged, .dayChanged,
-             .networkBecameReachable:
+             .networkBecameReachable, .minuteElapsed:
             handleLifecycleAction(action)
         case .calendarStoreChanged, .refreshCalendars, .calendarsLoaded,
              .eventsLoaded, .selectedCalendarsChanged, .providerHealthChanged,
@@ -371,6 +380,20 @@ final class AppModel: ObservableObject {
         case .onboardingCompleted, .openRoute:
             handleExternalAction(action)
         case .reconcileNotifications:
+            reconcileNotificationsFromState()
+        case .notificationSettingsChanged(let change):
+            switch change {
+            case .plan:
+                clearObsoleteDeliveredNotifications()
+            case .dismissals:
+                state.presentationRevision += 1
+            case .selection:
+                state.presentationRevision += 1
+                return
+            case .language(let language):
+                guard environment.applyLanguage(language) else { return }
+                state.presentationRevision += 1
+            }
             reconcileNotificationsFromState()
         }
     }
@@ -389,6 +412,7 @@ final class AppModel: ObservableObject {
     func handleTimezoneChange() { send(.timezoneChanged) }
     func handleDayChange() { send(.dayChanged) }
     func handleNetworkBecameReachable() { send(.networkBecameReachable) }
+    func handleMinuteTick() { send(.minuteElapsed) }
     func handleCalendarStoreChange() { send(.calendarStoreChanged) }
     func requestRefresh() { send(.refreshCalendars) }
     func reconcileNotifications() { send(.reconcileNotifications) }
@@ -446,6 +470,8 @@ final class AppModel: ObservableObject {
             scheduleRefresh()
         case .willTerminate:
             cancelPendingOperations()
+        case .minuteElapsed:
+            state.timeContextRevision += 1
         case .screenLocked:
             state.screenIsLocked = true
         case .screenUnlocked:
@@ -574,9 +600,18 @@ final class AppModel: ObservableObject {
         let events = state.events
         notificationReconcileTask?.cancel()
         notificationReconcileTask = Task { [weak self] in
-            guard let self else { return }
+            guard !Task.isCancelled, let self else { return }
             await environment.reconcileNotifications(events)
         }
+    }
+
+    private func clearObsoleteDeliveredNotifications() {
+        // Preserve the former .noUpcoming presentation rule: idle (no selected
+        // calendars) and an event beyond the title threshold must not clear.
+        guard environment.joinNotificationsEnabled(),
+              !state.selectedCalendarIDs.isEmpty,
+              nextEvent() == nil else { return }
+        environment.clearDeliveredNotifications()
     }
 
     private func resetProviderState(to provider: EventStoreProvider) {
