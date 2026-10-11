@@ -16,7 +16,8 @@ import UserNotifications
 class HelpersTests: XCTestCase {
     func test_cleanupOutlookSafeLinks_withSafeLink_returnCleanLink() throws {
         let safeLink = "https://nam12.safelinks.protection.outlook.com/ap/t-59584e83/?url=https%3A%2F%2Fteams.microsoft.com%2Fl%2Fmeetup-join%2F19%253ameeting_[obfuscated]&data=[obfuscated]"
-        let cleanLink = "https://teams.microsoft.com/l/meetup-join/19%3ameeting_[obfuscated]&data=[obfuscated]"
+        // SafeLinks tracking belongs to the wrapper, not the Teams meeting URL.
+        let cleanLink = "https://teams.microsoft.com/l/meetup-join/19%3ameeting_[obfuscated]"
 
         let result = cleanupOutlookSafeLinks(rawText: safeLink)
         XCTAssertNotNil(result)
