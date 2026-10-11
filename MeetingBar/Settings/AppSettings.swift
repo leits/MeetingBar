@@ -3,8 +3,8 @@
 //  MeetingBar
 //
 //  Value-type snapshot of all user-configurable settings.
-//  `AppSettings.current` is the single boundary that reads `Defaults`.
-//  Feature logic should consume an `AppSettings` (or sub-struct) by value.
+//  `AppSettings.current` and feature-specific adapters read `Defaults` at
+//  workflow boundaries. Feature decisions consume their snapshots by value.
 //
 
 import Defaults
@@ -114,7 +114,7 @@ enum StatusBarTitleFormatMigration {
 // MARK: - Defaults factory
 
 extension AppSettings {
-    /// The single boundary that reads `Defaults` for app-level feature logic.
+    /// App-wide snapshot; feature-specific adapters also read `Defaults` at boundaries.
     /// Other code should receive `AppSettings` (or sub-structs) by value.
     @MainActor
     static var current: AppSettings {

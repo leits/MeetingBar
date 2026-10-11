@@ -109,7 +109,8 @@ private final class EndToEndHarness {
                 self?.openPreferencesCallCount += 1
             },
             resumeOAuthFlow: { _ in },
-            clock: .live
+            clock: .live,
+            eventSelectionSettings: { .current }
         )
         model = AppModel(environment: environment)
 

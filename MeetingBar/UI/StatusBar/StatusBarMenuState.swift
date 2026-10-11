@@ -154,7 +154,7 @@ extension StatusBarMenuState {
         }
 
         let selectedCount = selectedCalendarIDs.count
-        let nextEvent = events.nextEvent(now: now)
+        let nextEvent = events.nextEvent(settings: EventSelectionSettings(settings.events), now: now)
         let providerStatus = providerStatus(
             provider: activeProvider,
             health: providerHealth

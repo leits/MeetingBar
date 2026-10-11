@@ -35,6 +35,7 @@ final class AppModelTestHarness {
     private var calendarSnapshot: ([MBCalendar], EventStoreProvider) = ([], .macOSEventKit)
 
     let fixedNow: Date
+    var selectionSettings: EventSelectionSettings?
     let dismissalChangesSubject = PassthroughSubject<Void, Never>()
     private let asyncOperationDelayNanoseconds: UInt64
 
@@ -99,7 +100,8 @@ final class AppModelTestHarness {
         resumeOAuthFlow: { [weak self] url in
             self?.resumedOAuthURLs.append(url)
         },
-        clock: .fixed(fixedNow)
+        clock: .fixed(fixedNow),
+        eventSelectionSettings: { [weak self] in self?.selectionSettings ?? .current }
     )
 
     lazy var model = AppModel(environment: environment)

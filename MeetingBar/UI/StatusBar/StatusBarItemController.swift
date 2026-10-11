@@ -204,7 +204,7 @@ final class StatusBarItemController {
     func updateTitle() {
         let now = Date()
         let presentation = StatusBarPresenter.presentation(
-            nextEvent: events.nextEvent().map(StatusBarEventPresentationInput.init),
+            nextEvent: events.nextEvent(settings: .current, now: now).map(StatusBarEventPresentationInput.init),
             settings: .current,
             now: now,
             calendar: statusBarCalendar()
@@ -334,7 +334,7 @@ final class StatusBarItemController {
 
     @objc
     func joinNextMeeting() {
-        if let nextEvent = events.nextEvent() {
+        if let nextEvent = events.nextEvent(settings: .current, now: Date()) {
             dependencies.send(.joinMeeting(eventID: nextEvent.id))
         } else {
             AppMessageCenter.shared.post(.nextMeetingMissing)
@@ -352,7 +352,7 @@ final class StatusBarItemController {
 
     @objc
     func dismissNextMeetingAction() {
-        if let nextEvent = events.nextEvent() {
+        if let nextEvent = events.nextEvent(settings: .current, now: Date()) {
             dependencies.send(.dismissMeeting(eventID: nextEvent.id))
             AppMessageCenter.shared.post(.meetingDismissed(title: nextEvent.title))
 

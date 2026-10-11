@@ -115,7 +115,7 @@ MeetingBar/                         (~76 .swift files)
 │   └── SnoozeService.swift               — schedules and cancels event-snooze reminders
 │
 ├── Settings/
-│   └── AppSettings.swift           — value-type settings groups + AppSettings.current factory (single Defaults boundary)
+│   └── AppSettings.swift           — value-type settings groups, Defaults snapshots and writes
 │
 ├── Preferences/                    — SwiftUI Settings window tabs (General, Calendars, Meeting Opening, Menu Bar, Notifications, Advanced)
 ├── Onboarding/                     — multi-screen first-launch flow
@@ -363,6 +363,8 @@ extension StatusBarPresentationSettings {
 ```
 
 The policy itself takes the snapshot and never imports `Defaults`. This is what keeps the policy hostless-testable.
+
+Event selection requires explicit `EventSelectionSettings` and `now`, including the `MBEvent` array helper and `AppState.nextEvent`. `AppState` contains calendar and lifecycle state, not a cached settings snapshot. `AppModel` samples selection settings through `AppEnvironment.eventSelectionSettings` for each action; the menu uses the same supplied `AppSettings` snapshot for selection and display. UI and script boundaries sample current settings when invoked. This keeps settings changes immediate without adding another settings store.
 
 **When to add a new setting.** Add one only when the behavior is genuinely subjective, common, easy to explain, and low-risk. First try improving the default. A "fix" that adds two new toggles is usually the wrong fix.
 
