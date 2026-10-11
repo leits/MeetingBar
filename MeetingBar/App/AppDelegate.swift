@@ -255,10 +255,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     return
                 }
 
-                // Once we hit hh:mm:00, redraw
+                // Advance time-derived state; rendering and notification cleanup observe it.
                 await MainActor.run {
-                    self.statusBarItem.updateTitle()
-                    self.statusBarItem.updateMenu()
+                    self.appModel?.handleMinuteTick()
                 }
             }
         }

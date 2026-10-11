@@ -71,6 +71,8 @@ a safer foundation for calendar providers and future integrations.
 
 ### Architecture
 
+* Delivered-notification cleanup follows application state and the existing
+  minute tick instead of running as a side effect of status bar rendering.
 * Next-meeting decisions take explicit settings and time inputs; menu
   selection uses the same settings snapshot as the displayed menu.
 * `AppModel`, `AppState`, `AppAction`, and `AppEnvironment` now provide

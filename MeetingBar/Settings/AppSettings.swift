@@ -11,10 +11,11 @@ import Combine
 import Defaults
 import Foundation
 
-/// Changes that affect notification plans; dismissals and language also invalidate presentation.
+/// Changes that affect notification plans or whether a current/next meeting remains visible.
 enum NotificationSettingsChange {
     case plan
     case dismissals
+    case selection
     case language(AppLanguage)
 }
 
@@ -122,9 +123,13 @@ extension AppSettings {
         ).map { _ in NotificationSettingsChange.plan }
         let dismissals = Defaults.publisher(.dismissedEvents, options: [])
             .map { _ in NotificationSettingsChange.dismissals }
+        let selection = Defaults.publisher(
+            keys: .personalEventsAppereance, .ongoingEventVisibility,
+            options: []
+        ).map { _ in NotificationSettingsChange.selection }
         let language = Defaults.publisher(.preferredLanguage, options: [.initial])
             .map { NotificationSettingsChange.language($0.newValue) }
-        return Publishers.Merge3(plan, dismissals, language).eraseToAnyPublisher()
+        return Publishers.Merge4(plan, dismissals, selection, language).eraseToAnyPublisher()
     }
 }
 

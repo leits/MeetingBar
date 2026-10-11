@@ -102,8 +102,7 @@ final class StatusBarItemController {
             .showEventEndTime, .showMeetingServiceIcon,
             .showEventCalendarColor,
             .timeFormat, .bookmarks,
-            .personalEventsAppereance, .pastEventsAppereance,
-            .declinedEventsAppereance, .ongoingEventVisibility,
+            .pastEventsAppereance, .declinedEventsAppereance,
             .showTimelineInMenu, .eventTitleFormat,
             options: []
         )
@@ -171,10 +170,6 @@ final class StatusBarItemController {
             now: now,
             calendar: statusBarCalendar()
         )
-
-        if presentation.removeDeliveredNotifications, Defaults[.joinEventNotification] {
-            removeDeliveredNotifications()
-        }
 
         renderStatusBar(presentation)
     }

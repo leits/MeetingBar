@@ -15,6 +15,7 @@ final class FakeNotificationRequestSink: NotificationRequestSink, @unchecked Sen
     private var pending: [UNNotificationRequest] = []
     private(set) var addedIdentifiers: [String] = []
     private(set) var removedBatches: [[String]] = []
+    private(set) var deliveredClearCount = 0
 
     init(initialPending: [UNNotificationRequest] = []) {
         self.pending = initialPending
@@ -40,6 +41,10 @@ final class FakeNotificationRequestSink: NotificationRequestSink, @unchecked Sen
 
     func currentPendingRequests() -> [UNNotificationRequest] {
         pending
+    }
+
+    func removeAllDelivered() {
+        deliveredClearCount += 1
     }
 }
 
