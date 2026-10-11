@@ -255,6 +255,8 @@ NotificationScheduler.reconcile(events:settings:now:)   ← side-effecting servi
 
 `StatusBarItemController` subscribes to the model state supplied at configuration and observes display-only settings. It does not initiate notification reconciliation. The E2E tests use this same state subscription and check automatic redraws; headless settings-flow tests exercise the production `AppEnvironment.live` wiring without constructing a controller.
 
+AppModel serializes notification reconciliations: a replacement cancels superseded work and awaits its completion before reading pending requests. The scheduler checks cancellation around its asynchronous sink calls. This lets the newest plan remove an obsolete OS write that could not be cancelled once started; a suspended-write regression test covers that ordering.
+
 ---
 
 ## Status bar rendering

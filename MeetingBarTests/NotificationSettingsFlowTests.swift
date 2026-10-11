@@ -1,4 +1,5 @@
 import Defaults
+import UserNotifications
 import XCTest
 
 @testable import MeetingBar
@@ -14,7 +15,7 @@ private final class NotificationSettingsHarness {
     let scheduler: NotificationScheduler
     let model: AppModel
 
-    init(startsIn: TimeInterval = 600) {
+    init(startsIn: TimeInterval = 600, sinkOverride: NotificationRequestSink? = nil) {
         let now = Date()
         event = makeFakeEvent(
             id: "settings-flow", start: now.addingTimeInterval(startsIn),
@@ -25,7 +26,7 @@ private final class NotificationSettingsHarness {
         Defaults[.showEventsForPeriod] = .today_n_tomorrow
         store = FakeEventStore(calendars: [event.calendar], events: [event])
         sync = CalendarSync(provider: store, refreshInterval: 0)
-        scheduler = NotificationScheduler(sink: sink, actionSink: actions)
+        scheduler = NotificationScheduler(sink: sinkOverride ?? sink, actionSink: actions)
         model = AppModel(environment: .live(
             calendarSync: sync, notificationScheduler: scheduler,
             snoozeService: SnoozeService(sink: sink)
@@ -41,12 +42,18 @@ private final class NotificationSettingsHarness {
 
 @MainActor
 final class NotificationSettingsFlowTests: BaseTestCase {
-    private func waitUntil(_ condition: @escaping @MainActor () -> Bool) async throws {
+    private enum WaitError: Error { case timeout }
+
+    private func waitUntil(
+        file: StaticString = #filePath,
+        line: UInt = #line,
+        _ condition: @escaping @MainActor () -> Bool
+    ) async throws {
         let deadline = Date().addingTimeInterval(3)
         while !condition() {
             guard Date() < deadline else {
-                XCTFail("Settings did not propagate through AppModel and NotificationScheduler")
-                return
+                XCTFail("Settings did not propagate through AppModel and NotificationScheduler", file: file, line: line)
+                throw WaitError.timeout
             }
             try await Task.sleep(nanoseconds: 20_000_000)
         }
@@ -117,7 +124,7 @@ final class NotificationSettingsFlowTests: BaseTestCase {
         Defaults[.runEventStartScript] = true
         Defaults[.eventStartScriptTime] = .atStart
         Defaults[.eventStartScriptLocation] = URL(fileURLWithPath: "/tmp/meetingbar-settings-test.scpt")
-        let harness = NotificationSettingsHarness(startsIn: 2)
+        let harness = NotificationSettingsHarness(startsIn: 8)
         defer { harness.stop() }
         // A system request is added after the same reconcile schedules the in-app tasks.
         try await waitUntil { harness.sink.currentPendingRequests().count == 1 }
@@ -151,5 +158,72 @@ final class NotificationSettingsFlowTests: BaseTestCase {
             return I18N.instance.locale.identifier == "fr" && body != englishBody
                 && body == "notifications_event_start_one_minute_body".loco()
         }
+    }
+
+    func testLatestSettingsWinWhenCancelledRequestFinishesLate() async throws {
+        Defaults[.joinEventNotification] = true
+        Defaults[.endOfEventNotification] = false
+        let sink = PausingNotificationSink()
+        let harness = NotificationSettingsHarness(sinkOverride: sink)
+        defer {
+            sink.resumeAdd()
+            harness.stop()
+        }
+        try await waitUntil { sink.isAddPaused }
+
+        // An OS write already in progress need not respond to task cancellation.
+        Defaults[.joinEventNotification] = false
+        try await Task.sleep(nanoseconds: 30_000_000)
+        sink.resumeAdd()
+        try await waitUntil { sink.finishedAdds > 0 }
+        try await waitUntil { sink.pendingIDs.isEmpty }
+    }
+}
+
+/// Models a non-cancellable OS write. All fields are protected by the lock.
+private final class PausingNotificationSink: NotificationRequestSink, @unchecked Sendable {
+    private let lock = NSLock()
+    private var pending: [UNNotificationRequest] = []
+    private var continuation: CheckedContinuation<Void, Never>?
+    private var didPause = false
+    private var addCount = 0
+
+    var isAddPaused: Bool { lock.withLock { continuation != nil } }
+    var finishedAdds: Int { lock.withLock { addCount } }
+    var pendingIDs: [String] { lock.withLock { pending.map(\.identifier) } }
+
+    func pendingRequests() async -> [UNNotificationRequest] {
+        lock.withLock { pending }
+    }
+
+    func add(_ request: UNNotificationRequest) async throws {
+        let shouldPause = lock.withLock {
+            if didPause { return false }
+            didPause = true
+            return true
+        }
+        if shouldPause {
+            await withCheckedContinuation { continuation in
+                lock.withLock { self.continuation = continuation }
+            }
+        }
+        lock.withLock {
+            pending.removeAll { $0.identifier == request.identifier }
+            pending.append(request)
+            addCount += 1
+        }
+    }
+
+    func removePending(identifiers: [String]) {
+        lock.withLock { pending.removeAll { identifiers.contains($0.identifier) } }
+    }
+
+    func resumeAdd() {
+        let saved = lock.withLock {
+            let saved = continuation
+            continuation = nil
+            return saved
+        }
+        saved?.resume()
     }
 }

@@ -79,7 +79,7 @@ final class NotificationScheduler {
         settings: NotificationPlanningSettings,
         now: Date = Date()
     ) async {
-        guard !isStopped else { return }
+        guard !isStopped, !Task.isCancelled else { return }
         let planningEvents = events.map(NotificationPlanningEvent.init(event:))
         let plans =
             NotificationPlanner
@@ -93,7 +93,7 @@ final class NotificationScheduler {
             events.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
 
         let pending = await sink.pendingRequests()
-        guard !isStopped else { return }
+        guard !isStopped, !Task.isCancelled else { return }
         let pendingMine =
             pending
             .filter { $0.identifier.hasPrefix(Self.identifierPrefix) }
@@ -109,7 +109,7 @@ final class NotificationScheduler {
         }
 
         for plan in systemPlans {
-            guard !isStopped else { return }
+            guard !isStopped, !Task.isCancelled else { return }
             guard let event = eventByID[plan.eventID] else { continue }
             let request = NotificationContent.request(
                 for: plan, event: event, settings: settings, now: now)
@@ -122,7 +122,7 @@ final class NotificationScheduler {
 
             do {
                 try await sink.add(request)
-                guard !isStopped else { return }
+                guard !isStopped, !Task.isCancelled else { return }
             } catch {
                 let errorDescription = String(describing: error)
                 MeetingBarLogger.notifications.error(
