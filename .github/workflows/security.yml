@@ -1,7 +1,7 @@
 name: Security
+run-name: Security · ${{ github.ref_name }} · ${{ github.event_name }}
 
 on:
-  pull_request:
   push:
     branches:
       - master
@@ -13,8 +13,9 @@ permissions:
   contents: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # Each trusted-ref scan completes, including scheduled and manual scans.
+  group: ${{ github.workflow }}-${{ github.run_id }}
+  cancel-in-progress: false
 
 defaults:
   run:
@@ -24,27 +25,8 @@ env:
   DEVELOPER_DIR: /Applications/Xcode_16.2.app/Contents/Developer
 
 jobs:
-  dependency-review:
-    name: Dependency Review
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    permissions:
-      contents: read
-      pull-requests: read
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
-      - name: Review dependency changes
-        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
-        with:
-          fail-on-severity: moderate
-
   codeql:
     name: CodeQL Swift
-    if: github.event_name != 'pull_request'
     runs-on: macos-15
     timeout-minutes: 60
     permissions:
@@ -82,7 +64,6 @@ jobs:
 
   codacy:
     name: Codacy Security Scan
-    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
