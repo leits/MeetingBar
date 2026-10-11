@@ -341,51 +341,20 @@ func detectMeetingLink(_ rawText: String, customRegexes: [String] = []) -> Meeti
 
 /// Rewrites Outlook SafeLink wrappers in `rawText` back to their real
 /// targets, so meeting-link detection sees the underlying URL rather than the
-/// `…safelinks.protection.outlook.com/…url=<encoded>` redirect. Each pass
-/// unwraps the first SafeLink and re-scans, which also resolves SafeLinks
-/// nested inside one another.
+/// `…safelinks.protection.outlook.com/…url=<encoded>` redirect.
 ///
-/// The loop is deliberately bounded and only continues while it makes forward
-/// progress. It stops when:
+/// Shares its unwrapping machinery with `cleanupGoogleRedirects`:
+/// `unwrappingRedirects` owns the bounded loop, `rewritingRedirects` the
+/// per-pass splicing and the skipping of undecodable escapes, and
+/// `maxRedirectNestingDepth` documents what the cap does and does not bound.
 ///
-/// 1. the `url=` value can't be percent-decoded — a malformed or truncated
-///    `%` escape, which `removingPercentEncoding` reports as `nil`;
-/// 2. a rewrite leaves the text unchanged, so the same match would be found
-///    again; or
-/// 3. a hard pass cap is reached, as a final backstop.
-///
-/// Without these guards a single event carrying a malformed SafeLink would
-/// loop forever and wedge calendar sync.
+/// The previous loop rewrote one match per pass with a global
+/// `replacingOccurrences` and aborted on the first undecodable escape, so a
+/// single malformed SafeLink left every later one wrapped, and a body with
+/// more than 32 of them left the tail wrapped.
 func cleanupOutlookSafeLinks(rawText: String) -> String {
     guard let outlookSafeLinkRegex else { return rawText }
-
-    var text = rawText
-    autoreleasepool {
-        // Each pass unwraps the first remaining SafeLink and re-scans, which
-        // also handles nested SafeLinks. The loop MUST make forward progress on
-        // every iteration or it spins forever: if the `url=` value can't be
-        // percent-decoded (an invalid `%` sequence) or the rewrite leaves the
-        // text unchanged, the same match is found again every pass. Bound it by
-        // a no-progress break and a hard cap so a single malformed SafeLink can
-        // never wedge calendar sync.
-        let maxPasses = 32
-        for _ in 0 ..< maxPasses {
-            let matches = outlookSafeLinkRegex.matches(
-                in: text, range: NSRange(text.startIndex..., in: text))
-            guard let match = matches.first,
-                  let fullRange = Range(match.range, in: text)
-            else { break }
-
-            let safeLink = String(text[fullRange])
-            let encodedTarget = (text as NSString).substring(with: match.range(at: 1))
-            guard let decodedTarget = encodedTarget.removingPercentEncoding else { break }
-
-            let updated = text.replacingOccurrences(of: safeLink, with: decodedTarget)
-            guard updated != text else { break }
-            text = updated
-        }
-    }
-    return text
+    return unwrappingRedirects(in: rawText, using: outlookSafeLinkRegex)
 }
 
 /// Rewrites Google Calendar's `google.<tld>/url?q=…` redirects in `rawText`
@@ -401,29 +370,36 @@ func cleanupOutlookSafeLinks(rawText: String) -> String {
 /// Links Calendar generates itself, such as the add-on's "Joining
 /// instructions", appear wrapped only; those never had a plain form to lose to.
 ///
-/// Every match is rewritten in a single pass, so `maxNestingDepth` bounds
-/// *nesting depth* — a redirect whose target is itself a redirect — rather than
-/// how many links a body may contain. An earlier version rewrote one match per pass,
-/// which silently left the tail of a link-heavy invite wrapped.
-///
-/// An undecodable `%` escape skips that match and leaves it as-is; it must not
-/// abort the pass, or one malformed link anywhere earlier in the body would
-/// reinstate the bug for the meeting link after it.
+/// Shares its unwrapping machinery with `cleanupOutlookSafeLinks`:
+/// `unwrappingRedirects` owns the bounded loop, `rewritingRedirects` the
+/// per-pass splicing and the skipping of undecodable escapes, and
+/// `maxRedirectNestingDepth` documents what the cap does and does not bound.
 func cleanupGoogleRedirects(rawText: String) -> String {
     guard let googleRedirectRegex else { return rawText }
+    return unwrappingRedirects(in: rawText, using: googleRedirectRegex)
+}
 
-    var text = rawText
+/// Bound on redirect *nesting* — a redirect whose decoded target is itself a
+/// redirect. Not a bound on how many redirects a body may contain: every match
+/// is rewritten per pass, so link count costs no passes at all.
+private let maxRedirectNestingDepth = 32
+
+/// Repeatedly unwraps `regex`-matched redirects in `text` until none remain.
+///
+/// Shared by `cleanupOutlookSafeLinks` and `cleanupGoogleRedirects` so the two
+/// cannot drift apart — they previously held separate copies of this loop, and
+/// defects fixed in one sat untouched in the other.
+///
+/// Terminates three ways: `rewritingRedirects` returns nil once no redirects
+/// remain (the usual exit) or when no match decoded successfully, and failing
+/// both, the text strictly shrinks on every rewriting pass — unwrapping removes
+/// a prefix and percent-decoding never lengthens — so the depth cap is a
+/// backstop rather than the mechanism.
+private func unwrappingRedirects(in text: String, using regex: NSRegularExpression) -> String {
+    var text = text
     autoreleasepool {
-        // Bounds nesting depth. The loop must make forward progress on every
-        // iteration or it spins: `rewritingRedirects` returns nil once no
-        // redirects remain (the usual exit) or when no match decoded
-        // successfully, and otherwise the text strictly shrinks —
-        // unwrapping removes a prefix and percent-decoding never lengthens.
-        let maxNestingDepth = 32
-        for _ in 0 ..< maxNestingDepth {
-            guard let rewritten = rewritingRedirects(in: text, using: googleRedirectRegex) else {
-                break
-            }
+        for _ in 0 ..< maxRedirectNestingDepth {
+            guard let rewritten = rewritingRedirects(in: text, using: regex) else { break }
             text = rewritten
         }
     }
