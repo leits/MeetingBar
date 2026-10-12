@@ -46,6 +46,10 @@ a safer foundation for calendar providers and future integrations.
 
 ### Meeting reliability
 
+* Add an opt-in Tuple app opener with browser fallback when the app is unavailable.
+
+* Google Meet selects the base account for personal Gmail `+tag` aliases,
+  while preserving account addresses on other domains.
 * Outlook SafeLinks unwrap every valid link despite malformed neighbors,
   preserve meeting passcodes, and resolve mixed Google/Outlook redirect nesting.
 * Dismissing or restoring meetings updates the menu and notification plans

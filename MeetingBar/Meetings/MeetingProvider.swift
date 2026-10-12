@@ -77,7 +77,7 @@ enum MeetingOpeningMode: String, CaseIterable, Codable, Sendable {
             "Slack"
         case .riversideApp:
             "Riverside"
-        case .googleMeetPWA, .zoomWebApp, .workplaceApp:
+        case .googleMeetPWA, .zoomWebApp, .workplaceApp, .tupleApp:
             nil
         }
     }

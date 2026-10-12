@@ -597,6 +597,29 @@ final class ProviderOpeningPolicyTests: BaseTestCase {
         XCTAssertEqual(spy.browserOpens.first?.1, browser)
     }
 
+    func test_tupleBrowserModeDoesNotTryNativeApp() {
+        let spy = OpeningSpy()
+        let original = URL(string: "https://tuple.app/c/abc123")!
+        let browser = Browser(name: "Safari", path: "/Applications/Safari.app")
+        let strategy = TupleOpenStrategy(
+            nativeOpener: {
+                spy.nativeURLs.append($0)
+                return true
+            },
+            browserOpener: { spy.browserOpens.append(($0, $1)) }
+        )
+
+        strategy.open(
+            url: original,
+            opening: ResolvedMeetingOpening(mode: nil, browser: browser),
+            defaultBrowser: systemDefaultBrowser
+        )
+
+        XCTAssertTrue(spy.nativeURLs.isEmpty)
+        XCTAssertEqual(spy.browserOpens.first?.0, original)
+        XCTAssertEqual(spy.browserOpens.first?.1, browser)
+    }
+
     func test_tupleNativeSuccessDoesNotOpenBrowser() {
         let spy = OpeningSpy()
         let original = URL(string: "https://tuple.app/c/abc123")!
@@ -971,6 +994,72 @@ final class SnoozeNotificationRequestFactoryTests: BaseTestCase {
         let trigger = try XCTUnwrap(request.trigger as? UNTimeIntervalNotificationTrigger)
         XCTAssertEqual(request.content.title, "general_meeting".loco())
         XCTAssertEqual(trigger.timeInterval, 900, accuracy: 0.001)
+    }
+}
+
+final class GoogleMeetAccountIntegrationTests: XCTestCase {
+    private func event(calendarEmail: String, currentUserEmail: String? = nil) -> MBEvent {
+        var attendees = [MBEventAttendee(email: "guest+tag@gmail.com", status: .accepted)]
+        if let currentUserEmail {
+            attendees.append(MBEventAttendee(email: currentUserEmail, status: .accepted, isCurrentUser: true))
+        }
+        return MBEvent(
+            id: "MEET-ACCOUNT", lastModifiedDate: nil, title: "Account selection", status: .confirmed,
+            notes: "https://meet.google.com/backup", location: nil,
+            url: URL(string: "https://zoom.us/j/5551112222"),
+            conferenceURL: URL(string: "https://meet.google.com/abc-defg-hij?pli=1&authuser=old#details"),
+            organizer: nil, attendees: attendees,
+            startDate: Date(timeIntervalSince1970: 1_730_000_000),
+            endDate: Date(timeIntervalSince1970: 1_730_003_600),
+            isAllDay: false, recurrent: false,
+            calendar: makeFakeCalendar(email: calendarEmail)
+        )
+    }
+
+    private func assertMeetIdentity(in event: MBEvent, expected: String) throws {
+        let link = try XCTUnwrap(event.meetingLink)
+        XCTAssertEqual(link.service, .meet)
+        XCTAssertEqual(event.meetingLinkCandidate?.source, .providerConferenceData)
+        let primary = try XCTUnwrap(URLComponents(url: link.url, resolvingAgainstBaseURL: false))
+        XCTAssertEqual(primary.queryItems?.filter { $0.name == "authuser" }.map(\.value), [expected])
+        XCTAssertEqual(primary.queryItems?.first { $0.name == "pli" }?.value, "1")
+        XCTAssertEqual(primary.fragment, "details")
+
+        let alternateMeet = try XCTUnwrap(event.alternateMeetingLinkCandidates.first { $0.service == .meet })
+        let alternate = try XCTUnwrap(URLComponents(url: alternateMeet.url, resolvingAgainstBaseURL: false))
+        XCTAssertEqual(alternate.queryItems?.first { $0.name == "authuser" }?.value, expected)
+        let alternateZoom = try XCTUnwrap(event.alternateMeetingLinkCandidates.first { $0.service == .zoom })
+        XCTAssertEqual(alternateZoom.url.absoluteString, "https://zoom.us/j/5551112222")
+    }
+
+    func testCalendarOwnerIdentityReachesPrimaryAndAlternateMeetingLinks() throws {
+        let cases = [
+            ("User.Name+work@GMAIL.COM", "User.Name@GMAIL.COM"),
+            ("user+work@googlemail.com", "user@googlemail.com"),
+            ("user+work@corp.example", "user+work@corp.example"),
+            ("user@gmail.com", "user@gmail.com"),
+            ("user+work", "user+work"),
+            ("+work@gmail.com", "+work@gmail.com"),
+            ("user+@gmail.com", "user+@gmail.com")
+        ]
+        for (email, expected) in cases {
+            let event = event(calendarEmail: email)
+            try assertMeetIdentity(in: event, expected: expected)
+            XCTAssertEqual(event.calendar.email, email)
+            XCTAssertFalse(event.attendees.contains { $0.isCurrentUser })
+        }
+    }
+
+    func testCurrentUserAttendeeIdentityWinsWithoutMutatingEventEmails() throws {
+        for (email, expected) in [
+            ("person+work@gmail.com", "person@gmail.com"),
+            ("person+work@corp.example", "person+work@corp.example")
+        ] {
+            let event = event(calendarEmail: "calendar+tag@gmail.com", currentUserEmail: email)
+            try assertMeetIdentity(in: event, expected: expected)
+            XCTAssertEqual(event.attendees.first { $0.isCurrentUser }?.email, email)
+            XCTAssertEqual(event.calendar.email, "calendar+tag@gmail.com")
+        }
     }
 }
 
