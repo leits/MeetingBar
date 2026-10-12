@@ -750,7 +750,7 @@ enum MeetingLinkDetector {
 
         // 1. Provider conference data.
         if let conferenceURL {
-            let url = URL(string: cleanupClariCopilotLinks(rawText: conferenceURL.absoluteString))
+            let url = URL(string: cleanupMeetingRedirects(rawText: conferenceURL.absoluteString))
                 ?? conferenceURL
             // Run through the regex catalog so we know whether it's Google Meet,
             // Zoom, etc. If it doesn't match any built-in service, classify as

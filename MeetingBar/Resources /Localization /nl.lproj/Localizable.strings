@@ -55,7 +55,7 @@
 "preferences_appearance_menu_shorten_event_title_toggle" = "Verkort de titel van de meeting tot";
 "preferences_appearance_menu_show_event_title" = "Toon meeting:";
 "preferences_appearance_menu_show_event_details_value" = "details als submenu";
-"preferences_services_link_default_browser_value" = "Standaard browser";
+"preferences_services_link_default_browser_value" = "Standaardbrowser";
 "general_ok" = "Oke";
 "general_cancel" = "Annuleren";
 "general_close" = "Sluiten";
@@ -91,7 +91,7 @@
 
 // MARK: - Preferences Services
 
-"preferences_services_link_meeting_title" = "Standaard browser voor alle meeting links";
+"preferences_services_link_meeting_title" = "Standaardbrowser voor alle meeting links";
 "create_meeting_error_title" = "Kan geen nieuwe meeting maken";
 "next_meeting_empty_title" = "Er zijn vandaag geen geplande meetings";
 "preferences_appearance_events_declined_title" = "Afgewezen meetings:";
@@ -109,17 +109,17 @@
 // MARK: - Preferences Services Browsers Configuration
 
 "preferences_configure_browsers_button" = "Configureer browsers…";
-"preferences_configure_browsers_delete_alert_message" = "De %@ browser configuratie verwijderen?";
+"preferences_configure_browsers_delete_alert_message" = "De %@ browserconfiguratie verwijderen?";
 "preferences_configure_browsers_add_button_browser_title" = "Browser";
-"preferences_configure_browsers_add_button_all_system_title" = "Alle systeem browsers";
+"preferences_configure_browsers_add_button_all_system_title" = "Alle systeembrowsers";
 "preferences_configure_browsers_modal_edit_browser_title" = "Browser bewerken";
-"preferences_configure_browsers_modal_alert_title" = "Kan browser configuratie niet toevoegen";
-"preferences_configure_browsers_delete_alert_title" = "Browser configuratie verwijderen?";
+"preferences_configure_browsers_modal_alert_title" = "Kan browserconfiguratie niet toevoegen";
+"preferences_configure_browsers_delete_alert_title" = "Browserconfiguratie verwijderen?";
 "preferences_configure_browsers_modal_add_browser_title" = "Browser toevoegen";
 "preferences_configure_browsers_modal_add_browser_name" = "Naam";
 "preferences_configure_browsers_modal_add_browser_path" = "Locatie";
 "preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "Kies browser";
-"preferences_configure_browsers_choose_browser_panel_title" = "Kies een browser app";
+"preferences_configure_browsers_choose_browser_panel_title" = "Kies een browserapp";
 "preferences_configure_browsers_choose_browser_panel_prompt" = "Kies een browser";
 "preferences_configure_browsers_choose_browser_panel_message" = "Selecteer waar de browser start.";
 
@@ -367,7 +367,7 @@
 "status_bar_control_refresh_failed" = "Agenda vernieuwen mislukt";
 "status_bar_control_no_upcoming" = "Geen aankomende meetings";
 "status_bar_join_with_other_link" = "Deelnemen met andere link";
-"fullscreen_notification_dismiss_action" = "Afwijzen";
+"fullscreen_notification_dismiss_action" = "Sluiten";
 "shared_fullscreen_notification_without_link_toggle" = "Toon ook schermvullende meldingen voor evenementen zonder vergaderlink";
 "shared_fullscreen_notification_without_link_help" = "Evenementen zonder vergaderlink tonen een schermvullende herinnering met alleen de actie Sluiten.";
 "preferences_advanced_script_link_only_help" = "Wordt alleen uitgevoerd voor evenementen met vergaderlinks.";

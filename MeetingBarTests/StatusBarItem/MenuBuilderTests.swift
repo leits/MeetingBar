@@ -1723,6 +1723,35 @@ final class StatusBarItemControllerPresentationTests: BaseTestCase {
         XCTAssertTrue(didQuit)
     }
 
+    func test_showNowPreferenceRedrawsActiveEventWithoutManualUpdate() async throws {
+        configureStatusBarDefaults()
+        Defaults[.showNowForOngoingEvent] = true
+        let controller = StatusBarItemController()
+        defer { NSStatusBar.system.removeStatusItem(controller.statusItem) }
+        controller.events = [makeStatusEvent()]
+        controller.updateTitle()
+        let button = try XCTUnwrap(controller.statusItem.button)
+        let originalTitle = button.attributedTitle.string
+        XCTAssertFalse(originalTitle.isEmpty)
+
+        Defaults[.showNowForOngoingEvent] = false
+        let deadline = Date().addingTimeInterval(2)
+        while button.attributedTitle.string == originalTitle && Date() < deadline {
+            try await Task.sleep(nanoseconds: 20_000_000)
+        }
+
+        let expected = StatusBarTitlePolicy.text(
+            eventTitle: controller.events[0].title,
+            startDate: controller.events[0].startDate,
+            endDate: controller.events[0].endDate,
+            settings: .current,
+            now: Date(),
+            calendar: Calendar.current
+        )
+        XCTAssertNotEqual(button.attributedTitle.string, originalTitle)
+        XCTAssertTrue(button.attributedTitle.string.contains(expected.time))
+    }
+
     func test_showNowPreferenceUpdatesSettingsAndTitleAdapter() {
         Defaults[.showNowForOngoingEvent] = true
         XCTAssertTrue(AppSettings.current.statusBar.showNowForOngoingEvent)

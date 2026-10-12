@@ -15,11 +15,11 @@ This is a candidate integration, not a published or signed release. Review and m
 | Change | PR | Reviewed integration input |
 | --- | --- | --- |
 | Stacked status title | [#1004](https://github.com/leits/MeetingBar/pull/1004) | `fe4361c700d54785795bcac3adc0e3c784951f68` |
-| Clari | [#1005](https://github.com/leits/MeetingBar/pull/1005) | `804e7b4a352ed03dd8e7f42339187445b294d2cb` |
+| Clari | [#1005](https://github.com/leits/MeetingBar/pull/1005) | `abc7eaaf42daefc7e5575416ae2bcbb7978baa69` |
 | Tuple | [#1001](https://github.com/leits/MeetingBar/pull/1001) | `308e33dcbead276c1ed1975f85f8009d484aeed8` |
-| Hide now | [#1006](https://github.com/leits/MeetingBar/pull/1006) | `64ede36817f9b006956b988bf5ac240d670078ad` |
+| Hide now | [#1006](https://github.com/leits/MeetingBar/pull/1006) | `9b6607d5ca886727315d2f750a7ea2a3fb6ccdee` |
 | Event-start scripts | [#1007](https://github.com/leits/MeetingBar/pull/1007) | `565a78cf5c89d435bf0d0c59831a60cfe48fe5ec` |
-| Translations | [#1008](https://github.com/leits/MeetingBar/pull/1008) | `6251119483145514f4ac512edae7c8122e0e8bfe` |
+| Translations | [#1008](https://github.com/leits/MeetingBar/pull/1008) | `980f61036a17a3805a08f9ae8dd53416cc660197` |
 
 The integration is based on master `c6b3b6fedb69dd049cadcbbf60349c1c96838be6`. Rejected PR #1003 is excluded.
 
