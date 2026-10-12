@@ -46,6 +46,8 @@ a safer foundation for calendar providers and future integrations.
 
 ### Meeting reliability
 
+* Run event-start scripts for eligible events without a meeting link, passing `EMPTY` as the URL.
+
 * Google Meet selects the base account for personal Gmail `+tag` aliases,
   while preserving account addresses on other domains.
 * Outlook SafeLinks unwrap every valid link despite malformed neighbors,
