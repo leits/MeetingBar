@@ -46,6 +46,8 @@ a safer foundation for calendar providers and future integrations.
 
 ### Meeting reliability
 
+* Update Czech, Dutch, Japanese and Simplified Chinese translations.
+
 * Google Meet selects the base account for personal Gmail `+tag` aliases,
   while preserving account addresses on other domains.
 * Outlook SafeLinks unwrap every valid link despite malformed neighbors,
