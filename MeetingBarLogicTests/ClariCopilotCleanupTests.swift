@@ -93,4 +93,18 @@ final class ClariCopilotCleanupTests: XCTestCase {
         }
     }
 
+
+    func testSafeLinkedConferenceDataStoresDirectMeetURLWithAuthuser() {
+        let wrapper = "https://eur04.safelinks.protection.outlook.com/?url="
+            + "https%3A%2F%2Fgo.copilot.clari.com%2Fhangout%2Fabc-defg-hij%2F"
+        let candidate = MeetingLinkDetector.bestCandidate(
+            conferenceURL: URL(string: wrapper),
+            location: nil, eventURL: nil, notes: nil,
+            calendarEmail: "user@example.com", currentUserEmail: nil
+        )
+        XCTAssertEqual(candidate?.source, .providerConferenceData)
+        XCTAssertEqual(candidate?.service, .meet)
+        XCTAssertEqual(candidate?.url.absoluteString, "https://meet.google.com/abc-defg-hij?authuser=user@example.com")
+    }
+
 }
