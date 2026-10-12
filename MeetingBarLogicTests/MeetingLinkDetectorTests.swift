@@ -466,6 +466,140 @@ final class MeetingLinkDetectorTests: XCTestCase {
         )
     }
 
+    func testGoogleMeetStripsGmailPlusAddressSuffixFromCalendarEmail() throws {
+        let link = try XCTUnwrap(MeetingLinkDetector.detect(
+            location: "https://meet.google.com/abc-defg-hij",
+            eventURL: nil, notes: nil,
+            calendarEmail: "user+work@gmail.com", currentUserEmail: nil
+        ))
+        XCTAssertEqual(link.url.absoluteString, "https://meet.google.com/abc-defg-hij?authuser=user@gmail.com")
+    }
+
+    func testGoogleMeetStripsGmailPlusAddressSuffixFromCurrentUserEmail() throws {
+        let link = try XCTUnwrap(MeetingLinkDetector.detect(
+            location: "https://meet.google.com/abc-defg-hij",
+            eventURL: nil, notes: nil,
+            calendarEmail: nil, currentUserEmail: "user+work@gmail.com"
+        ))
+        XCTAssertEqual(link.url.absoluteString, "https://meet.google.com/abc-defg-hij?authuser=user@gmail.com")
+    }
+
+    func testGoogleMeetLeavesPlainAccountAddressesUnchanged() throws {
+        for email in ["user@gmail.com", "User.Name@GOOGLEMAIL.COM", "user@example.com"] {
+            let link = try XCTUnwrap(MeetingLinkDetector.detect(
+                location: "https://meet.google.com/abc-defg-hij",
+                eventURL: nil, notes: nil,
+                calendarEmail: email, currentUserEmail: nil
+            ))
+            let items = URLComponents(url: link.url, resolvingAgainstBaseURL: false)?.queryItems
+            XCTAssertEqual(items?.first { $0.name == "authuser" }?.value, email)
+        }
+    }
+
+    func testGoogleMeetSupportsPersonalGmailDomainsWithoutChangingDotsOrCase() throws {
+        let cases = [
+            ("User.Name+work@GMAIL.COM", "User.Name@GMAIL.COM"),
+            ("user.name+work@googlemail.com", "user.name@googlemail.com"),
+            ("user+work+calendar@GoogleMail.Com", "user@GoogleMail.Com")
+        ]
+        for (email, expected) in cases {
+            let link = try XCTUnwrap(MeetingLinkDetector.detect(
+                location: "https://meet.google.com/abc-defg-hij",
+                eventURL: nil, notes: nil,
+                calendarEmail: email, currentUserEmail: nil
+            ))
+            let items = URLComponents(url: link.url, resolvingAgainstBaseURL: false)?.queryItems
+            XCTAssertEqual(items?.first { $0.name == "authuser" }?.value, expected)
+        }
+    }
+
+    func testGoogleMeetPreservesPlusAddressesOnOtherDomainsAndInvalidAliasShapes() throws {
+        let emails = [
+            "user+work@example.com",
+            "user+work@corp.example",
+            "user+work@sub.gmail.com",
+            "user+work@gmail.com.example",
+            "user+work@notgmail.com",
+            "user+work@googlemail.com.example",
+            "user@gmail.com+work",
+            "user+work@@gmail.com",
+            "user+work",
+            "+work@gmail.com",
+            "user+@gmail.com"
+        ]
+        // Exercise both identity sources: EventKit can supply arbitrary domains.
+        for email in emails {
+            for useCurrentUser in [false, true] {
+                let link = try XCTUnwrap(MeetingLinkDetector.detect(
+                    location: "https://meet.google.com/abc-defg-hij",
+                    eventURL: nil, notes: nil,
+                    calendarEmail: useCurrentUser ? nil : email,
+                    currentUserEmail: useCurrentUser ? email : nil
+                ))
+                let items = URLComponents(url: link.url, resolvingAgainstBaseURL: false)?.queryItems
+                XCTAssertEqual(items?.first { $0.name == "authuser" }?.value, email, email)
+            }
+        }
+    }
+
+    func testGoogleMeetKeepsCurrentUserPriorityWhenNormalizingAliases() throws {
+        let cases = [
+            ("person+work@gmail.com", "calendar+tag@example.com", "person@gmail.com"),
+            ("person+work@corp.example", "calendar+tag@gmail.com", "person+work@corp.example")
+        ]
+        for (currentUser, calendar, expected) in cases {
+            let link = try XCTUnwrap(MeetingLinkDetector.detect(
+                location: "https://meet.google.com/abc-defg-hij",
+                eventURL: nil, notes: nil,
+                calendarEmail: calendar, currentUserEmail: currentUser
+            ))
+            let items = URLComponents(url: link.url, resolvingAgainstBaseURL: false)?.queryItems
+            XCTAssertEqual(items?.first { $0.name == "authuser" }?.value, expected)
+        }
+    }
+
+    func testGoogleMeetAliasReplacesAuthuserWithoutLosingQueryOrFragment() throws {
+        let link = try XCTUnwrap(MeetingLinkDetector.detect(
+            conferenceURL: URL(string: "https://meet.google.com/abc-defg-hij?pli=1&authuser=old&authuser=older#details"),
+            location: nil, eventURL: nil, notes: nil,
+            calendarEmail: "user+work@gmail.com", currentUserEmail: nil
+        ))
+        let components = try XCTUnwrap(URLComponents(url: link.url, resolvingAgainstBaseURL: false))
+        XCTAssertEqual(components.queryItems?.filter { $0.name == "authuser" }.map(\.value), ["user@gmail.com"])
+        XCTAssertEqual(components.queryItems?.first { $0.name == "pli" }?.value, "1")
+        XCTAssertEqual(components.fragment, "details")
+    }
+
+    func testGoogleMeetAliasesApplyToEveryCandidateAndPreserveOtherServices() {
+        let candidates = MeetingLinkDetector.allCandidates(
+            conferenceURL: URL(string: "https://meet.google.com/provider"),
+            location: "https://meet.google.com/location",
+            eventURL: URL(string: "https://meet.google.com/event-url"),
+            notes: "https://meet.google.com/notes https://us02web.zoom.us/j/12345?pwd=example",
+            calendarEmail: "user+work@gmail.com", currentUserEmail: nil
+        )
+        let meetCandidates = candidates.filter { $0.service == .meet }
+        XCTAssertEqual(meetCandidates.map(\.source), [.providerConferenceData, .eventURL, .location, .notes])
+        for candidate in meetCandidates {
+            let items = URLComponents(url: candidate.url, resolvingAgainstBaseURL: false)?.queryItems
+            XCTAssertEqual(items?.first { $0.name == "authuser" }?.value, "user@gmail.com")
+        }
+        XCTAssertEqual(candidates.filter { $0.service == .zoom }.map(\.url.absoluteString),
+                       ["https://us02web.zoom.us/j/12345?pwd=example"])
+    }
+
+    func testWrappedGoogleMeetAliasIsNormalizedAfterRedirectCleanup() throws {
+        let wrapped = outlookSafeLink(for: "https://meet.google.com/abc-defg-hij?pli=1")
+        let link = try XCTUnwrap(MeetingLinkDetector.detect(
+            location: nil, eventURL: nil, notes: wrapped,
+            calendarEmail: "user+work@gmail.com", currentUserEmail: nil
+        ))
+        let items = URLComponents(url: link.url, resolvingAgainstBaseURL: false)?.queryItems
+        XCTAssertEqual(items?.first { $0.name == "authuser" }?.value, "user@gmail.com")
+        XCTAssertEqual(items?.first { $0.name == "pli" }?.value, "1")
+        XCTAssertEqual(link.service, .meet)
+    }
+
     func testGoogleMeetConferenceURLPreservesExistingQueryWhenAddingAuthuser() {
         let link = MeetingLinkDetector.detect(
             conferenceURL: URL(string: "https://meet.google.com/abc-defg-hij?pli=1"),
