@@ -421,8 +421,61 @@ struct GoogleMeetOpenStrategy: MeetingOpenStrategy, Sendable {
                 }
             }
         case .zoomApp, .zoomWebApp, .teamsApp, .workplaceApp, .jitsiApp,
-             .slackApp, .riversideApp, nil:
+             .slackApp, .riversideApp, .tupleApp, nil:
             browserOpener(url, opening.browser)
+        }
+    }
+}
+
+enum TupleNativeURLPolicy {
+    static func nativeURL(for url: URL) -> URL? {
+        guard url.scheme == "https",
+              url.host?.lowercased() == "tuple.app",
+              url.pathComponents.count >= 3,
+              url.pathComponents[1] == "c",
+              !url.pathComponents[2].isEmpty,
+              var components = URLComponents(url: url, resolvingAgainstBaseURL: false)
+        else { return nil }
+
+        components.scheme = "tuple"
+        components.host = "c"
+        components.path = String(url.path.dropFirst(2))
+        return components.url
+    }
+}
+
+struct TupleOpenStrategy: MeetingOpenStrategy, Sendable {
+    private let nativeOpener: @Sendable (URL) -> Bool
+    private let browserOpener: @Sendable (URL, Browser) -> Void
+
+    init(
+        nativeOpener: @escaping @Sendable (URL) -> Bool = {
+            $0.openInDefaultBrowser()
+        },
+        browserOpener: @escaping @Sendable (URL, Browser) -> Void = {
+            $0.openIn(browser: $1)
+        }
+    ) {
+        self.nativeOpener = nativeOpener
+        self.browserOpener = browserOpener
+    }
+
+    func open(
+        url: URL,
+        opening: ResolvedMeetingOpening,
+        defaultBrowser _: Browser
+    ) {
+        guard opening.mode == .tupleApp,
+              let nativeURL = TupleNativeURLPolicy.nativeURL(for: url)
+        else {
+            browserOpener(url, opening.browser)
+            return
+        }
+
+        guard nativeOpener(nativeURL) else {
+            AppMessageCenter.shared.post(.meetingAppUnavailable(name: "Tuple"))
+            browserOpener(url, opening.browser)
+            return
         }
     }
 }
@@ -729,6 +782,9 @@ private let strategiesByService: [MeetingServices: any MeetingOpenStrategy] = [
 
     // Riverside
     .riverside: RiversideOpenStrategy(),
+
+    // Tuple
+    .tuple: TupleOpenStrategy(),
 
     // FaceTime
     .facetime: NativeSchemeOpenStrategy(schemePrefix: "facetime://"),

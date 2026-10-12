@@ -199,7 +199,7 @@ final class NotificationActionHandlerTests: XCTestCase {
         XCTAssertEqual(actionCount, 0)
     }
 
-    func testScriptOnStartRejectsEventWithoutMeetingLink() {
+    func testScriptOnStartAcceptsEventWithoutMeetingLink() {
         let now = Date(timeIntervalSinceReferenceDate: 800_000_000)
         let event = makeFakeEvent(
             id: "no-link",
@@ -215,8 +215,8 @@ final class NotificationActionHandlerTests: XCTestCase {
             runEventStartScript: { scriptedEventIDs.append($0.id) }
         )
 
-        XCTAssertFalse(handler.performNotificationAction(.scriptOnStart, event: event))
-        XCTAssertTrue(scriptedEventIDs.isEmpty)
+        XCTAssertTrue(handler.performNotificationAction(.scriptOnStart, event: event))
+        XCTAssertEqual(scriptedEventIDs, [event.id])
     }
 
     private func makeEvent() -> MBEvent {

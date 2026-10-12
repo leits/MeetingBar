@@ -54,7 +54,7 @@ struct ScriptSection: View {
 
     var body: some View {
         Toggle(
-            "preferences_advanced_run_script_on_event_start".loco(),
+            "preferences_advanced_run_script_before_event_start".loco(),
             isOn: $runEventStartScript
         )
         .sheet(isPresented: $showingRunEventStartScriptModal) {

@@ -46,6 +46,14 @@ a safer foundation for calendar providers and future integrations.
 
 ### Meeting reliability
 
+* The time-under-title status bar layout uses a dedicated two-line view to
+  avoid clipped text, with native button clicks and accessible title/time.
+* Resolve Clari Copilot Google Meet wrappers to the direct meeting URL.
+* Add an opt-in Tuple app opener with browser fallback when the app is unavailable.
+* Add an option to hide “now” in ongoing-event menu bar times; the default is unchanged.
+* Run event-start scripts for eligible events without a meeting link, passing `EMPTY` as the URL.
+* Update Czech, Dutch, Japanese and Simplified Chinese translations.
+
 * Google Meet selects the base account for personal Gmail `+tag` aliases,
   while preserving account addresses on other domains.
 * Outlook SafeLinks unwrap every valid link despite malformed neighbors,
