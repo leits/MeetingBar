@@ -835,8 +835,8 @@ enum MeetingLinkDetector {
         currentUserEmail: String?
     ) -> MeetingLinkCandidate {
         guard candidate.service == .meet,
-              let authAccount = currentUserEmail ?? calendarEmail,
-              let urlWithAuth = url(candidate.url, appendingAuthuser: authAccount)
+              let rawAccount = currentUserEmail ?? calendarEmail,
+              let urlWithAuth = url(candidate.url, appendingAuthuser: canonicalMeetAuthuser(from: rawAccount))
         else { return candidate }
         return MeetingLinkCandidate(
             url: urlWithAuth,
@@ -844,6 +844,23 @@ enum MeetingLinkDetector {
             source: candidate.source,
             matchLocation: candidate.matchLocation
         )
+    }
+
+    /// Personal Gmail plus-addresses are delivery aliases, not separate sign-in
+    /// accounts. Preserve other domains: an address alone cannot establish
+    /// whether a custom domain uses Google Workspace or supports these aliases.
+    private static func canonicalMeetAuthuser(from email: String) -> String {
+        guard let atIndex = email.firstIndex(of: "@") else { return email }
+        let domain = email[email.index(after: atIndex)...].lowercased()
+        guard domain == "gmail.com" || domain == "googlemail.com" else { return email }
+
+        let localPart = email[..<atIndex]
+        guard let plusIndex = localPart.firstIndex(of: "+"),
+              plusIndex > email.startIndex,
+              email.index(after: plusIndex) < atIndex
+        else { return email }
+        // Keep dots, capitalization and the original domain spelling intact.
+        return String(email[..<plusIndex]) + String(email[atIndex...])
     }
 
     private static func url(_ url: URL, appendingAuthuser authAccount: String) -> URL? {
