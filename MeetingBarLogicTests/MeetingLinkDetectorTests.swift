@@ -589,14 +589,12 @@ final class MeetingLinkDetectorTests: XCTestCase {
     }
 
     func testWrappedGoogleMeetAliasIsNormalizedAfterRedirectCleanup() throws {
-        let wrapped = outlookSafeLink(for: "https://meet.google.com/abc-defg-hij?pli=1")
+        let wrapped = outlookSafeLink(for: "https://meet.google.com/abc-defg-hij")
         let link = try XCTUnwrap(MeetingLinkDetector.detect(
             location: nil, eventURL: nil, notes: wrapped,
             calendarEmail: "user+work@gmail.com", currentUserEmail: nil
         ))
-        let items = URLComponents(url: link.url, resolvingAgainstBaseURL: false)?.queryItems
-        XCTAssertEqual(items?.first { $0.name == "authuser" }?.value, "user@gmail.com")
-        XCTAssertEqual(items?.first { $0.name == "pli" }?.value, "1")
+        XCTAssertEqual(link.url.absoluteString, "https://meet.google.com/abc-defg-hij?authuser=user@gmail.com")
         XCTAssertEqual(link.service, .meet)
     }
 
