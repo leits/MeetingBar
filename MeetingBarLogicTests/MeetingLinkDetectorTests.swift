@@ -641,22 +641,33 @@ final class MeetingLinkDetectorTests: XCTestCase {
 
     func testMeetHTMLAttributesDecodeQuerySeparatorsWithoutConsumingMarkup() throws {
         let target = "https://meet.google.com/abc-defg-hij?pli=1&ref=example%2Fdocs%3D&authuser=old#details"
-        let encoded = target.replacingOccurrences(of: "&ref", with: "&amp;ref")
-            .replacingOccurrences(of: "&authuser", with: "&#38;authuser")
-        for quote in ["\"", "'"] {
-            let notes = "<a href=\(quote)\(encoded)\(quote)>Join</a><p>Other details</p>"
-            let clipboard = try XCTUnwrap(detectMeetingLink(notes))
-            XCTAssertEqual(clipboard.url.absoluteString, target)
+        for separator in ["&amp;", "&#38;", "&amp;amp;", "&amp;#38;", "&amp;#x26;"] {
+            let encoded = target.replacingOccurrences(of: "&", with: separator)
+            for quote in ["\"", "'"] {
+                let notes = "<a href=\(quote)\(encoded)\(quote)>Join</a><p>Other details</p>"
+                let clipboard = try XCTUnwrap(detectMeetingLink(notes))
+                XCTAssertEqual(clipboard.url.absoluteString, target, separator)
 
-            let link = try XCTUnwrap(MeetingLinkDetector.detect(
-                location: nil, eventURL: nil, notes: notes,
-                calendarEmail: "user+work@gmail.com", currentUserEmail: nil
-            ))
-            let components = try XCTUnwrap(URLComponents(url: link.url, resolvingAgainstBaseURL: false))
-            XCTAssertEqual(components.queryItems?.map(\.name), ["pli", "ref", "authuser"])
-            XCTAssertEqual(components.queryItems?.last?.value, "user@gmail.com")
-            XCTAssertEqual(components.fragment, "details")
+                let link = try XCTUnwrap(MeetingLinkDetector.detect(
+                    location: nil, eventURL: nil, notes: notes,
+                    calendarEmail: "user+work@gmail.com", currentUserEmail: nil
+                ))
+                let components = try XCTUnwrap(URLComponents(url: link.url, resolvingAgainstBaseURL: false))
+                XCTAssertEqual(components.queryItems?.map(\.name), ["pli", "ref", "authuser"])
+                XCTAssertEqual(components.queryItems?.last?.value, "user@gmail.com")
+                XCTAssertEqual(components.fragment, "details")
+            }
         }
+    }
+
+    func testNestedMeetHTMLSeparatorsDoNotRecursivelyDecodeValuesOrFragments() throws {
+        let notes = "<a href=\"https://meet.google.com/abc-defg-hij?ref=%26amp%3B&amp;amp;pli=1#literal&amp;amp;flag=1\">Join</a>"
+        let link = try XCTUnwrap(detectMeetingLink(notes))
+        XCTAssertEqual(link.url.absoluteString,
+                       "https://meet.google.com/abc-defg-hij?ref=%26amp%3B&pli=1#literal&amp;flag=1")
+        let components = try XCTUnwrap(URLComponents(url: link.url, resolvingAgainstBaseURL: false))
+        XCTAssertEqual(components.queryItems?.first { $0.name == "ref" }?.value, "&amp;")
+        XCTAssertEqual(components.fragment, "literal&amp;flag=1")
     }
 
     func testMeetRedirectTargetsKeepQueryAndFragment() throws {

@@ -931,14 +931,28 @@ final class GoogleMeetTextURLIntegrationTests: XCTestCase {
     }
 
     func testHTMLNotesKeepMeetingParametersWhileSelectingTheAccount() throws {
-        let notes = "<a href=\"https://meet.google.com/abc-defg-hij?pli=1&amp;ref=example%2Fdocs%3D&amp;authuser=old#details\">Join</a>"
-        let event = event(notes: notes, calendarEmail: "user+work@gmail.com")
+        for separator in ["&amp;", "&amp;amp;", "&amp;#38;", "&amp;#x26;"] {
+            let target = "https://meet.google.com/abc-defg-hij?pli=1&ref=example%2Fdocs%3D&authuser=old#details"
+            let notes = "<a href=\"\(target.replacingOccurrences(of: "&", with: separator))\">Join</a>"
+            let event = event(notes: notes, calendarEmail: "user+work@gmail.com")
+            let link = try XCTUnwrap(event.meetingLink)
+            let components = try XCTUnwrap(URLComponents(url: link.url, resolvingAgainstBaseURL: false))
+            XCTAssertEqual(components.queryItems?.map(\.name), ["pli", "ref", "authuser"])
+            XCTAssertEqual(components.queryItems?.first { $0.name == "ref" }?.value, "example/docs=")
+            XCTAssertEqual(components.queryItems?.last?.value, "user@gmail.com")
+            XCTAssertEqual(components.fragment, "details")
+            XCTAssertEqual(event.notes, notes)
+        }
+    }
+
+    func testHTMLNotesDecodeOnlyQuerySeparatorsBeyondOneHTMLLayer() throws {
+        let notes = "<a href=\"https://meet.google.com/abc-defg-hij?ref=%26amp%3B&amp;amp;pli=1#literal&amp;amp;flag=1\">Join</a>"
+        let event = event(notes: notes, calendarEmail: nil)
         let link = try XCTUnwrap(event.meetingLink)
         let components = try XCTUnwrap(URLComponents(url: link.url, resolvingAgainstBaseURL: false))
-        XCTAssertEqual(components.queryItems?.map(\.name), ["pli", "ref", "authuser"])
-        XCTAssertEqual(components.queryItems?.first { $0.name == "ref" }?.value, "example/docs=")
-        XCTAssertEqual(components.queryItems?.last?.value, "user@gmail.com")
-        XCTAssertEqual(components.fragment, "details")
+        XCTAssertEqual(components.queryItems?.map(\.name), ["ref", "pli"])
+        XCTAssertEqual(components.queryItems?.first?.value, "&amp;")
+        XCTAssertEqual(components.fragment, "literal&amp;flag=1")
         XCTAssertEqual(event.notes, notes)
     }
 }

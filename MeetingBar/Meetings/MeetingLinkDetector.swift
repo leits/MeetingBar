@@ -345,8 +345,32 @@ func detectMeetingLink(_ rawText: String, customRegexes: [String] = []) -> Meeti
 /// Meet query separators in HTML attributes are entity-escaped. Decode them
 /// only in HTML context; plain URLs retain their literal query values.
 private func detectedMeetingURL(_ match: String, service: MeetingServices, sourceText: String) -> URL? {
-    let urlText = service == .meet && sourceText.containsHTMLTags ? HTMLPlainText.from(match) : match
-    return URL(string: urlText)
+    guard service == .meet, sourceText.containsHTMLTags else { return URL(string: match) }
+    return URL(string: normalizingMeetHTMLQuerySeparators(in: HTMLPlainText.from(match)))
+}
+
+private let meetHTMLQuerySeparatorRegex = try? NSRegularExpression(
+    pattern: #"&(?:(?:amp;)+(?:#(?:0*38|[xX]0*26);)?|#(?:0*38|[xX]0*26);)(?=[A-Za-z0-9_.%+-]+=)"#)
+
+/// Resolve nested separator entities after the ordinary single HTML pass.
+/// A separator must precede a query-item name; percent-encoded values and the
+/// fragment remain intact. Matched numeric entities can themselves contain `#`.
+private func normalizingMeetHTMLQuerySeparators(in text: String) -> String {
+    guard let meetHTMLQuerySeparatorRegex, let queryStart = text.firstIndex(of: "?") else { return text }
+    let range = NSRange(text.index(after: queryStart)..., in: text)
+    var result = ""
+    var copiedUpTo = text.startIndex
+    for match in meetHTMLQuerySeparatorRegex.matches(in: text, range: range) {
+        guard let matchRange = Range(match.range, in: text) else { continue }
+        let unchanged = text[copiedUpTo..<matchRange.lowerBound]
+        // A `#` outside a matched separator starts the real fragment.
+        guard !unchanged.contains("#") else { break }
+        result += unchanged
+        result += "&"
+        copiedUpTo = matchRange.upperBound
+    }
+    result += text[copiedUpTo...]
+    return result
 }
 
 /// Rewrites Outlook SafeLink wrappers in `rawText` back to their real
