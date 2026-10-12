@@ -589,13 +589,103 @@ final class MeetingLinkDetectorTests: XCTestCase {
     }
 
     func testWrappedGoogleMeetAliasIsNormalizedAfterRedirectCleanup() throws {
-        let wrapped = outlookSafeLink(for: "https://meet.google.com/abc-defg-hij")
+        let wrapped = outlookSafeLink(for: "https://meet.google.com/abc-defg-hij?pli=1")
         let link = try XCTUnwrap(MeetingLinkDetector.detect(
             location: nil, eventURL: nil, notes: wrapped,
             calendarEmail: "user+work@gmail.com", currentUserEmail: nil
         ))
-        XCTAssertEqual(link.url.absoluteString, "https://meet.google.com/abc-defg-hij?authuser=user@gmail.com")
+        let items = URLComponents(url: link.url, resolvingAgainstBaseURL: false)?.queryItems
+        XCTAssertEqual(items?.first { $0.name == "authuser" }?.value, "user@gmail.com")
+        XCTAssertEqual(items?.first { $0.name == "pli" }?.value, "1")
         XCTAssertEqual(link.service, .meet)
+    }
+
+    func testStandaloneMeetLinksKeepQueryFragmentAndEncoding() throws {
+        let urls = [
+            "https://meet.google.com/abc-defg-hij?pli=1&ref=example%2Fdocs%3D#details",
+            "https://meet.google.com/abc-defg-hij#details",
+            "http://meet.google.com/_meet/abc-defg-hij?pli=1",
+            "https://meet.google.com/abc-defg-hij?ref=left&amp;right=2"
+        ]
+        for url in urls {
+            let link = try XCTUnwrap(detectMeetingLink("Join \(url)\nSee you there"))
+            XCTAssertEqual(link.service, .meet)
+            XCTAssertEqual(link.url.absoluteString, url)
+        }
+    }
+
+    func testMeetTextSourcesKeepParametersWhenReplacingAuthuser() throws {
+        let url = "https://meet.google.com/abc-defg-hij?pli=1&ref=example%2Fdocs%3D&authuser=old&authuser=older#details"
+        for source in [MeetingLinkSource.location, .eventURL, .notes] {
+            let unmodified = try XCTUnwrap(MeetingLinkDetector.detect(
+                location: source == .location ? url : nil,
+                eventURL: source == .eventURL ? URL(string: url) : nil,
+                notes: source == .notes ? url : nil,
+                calendarEmail: nil, currentUserEmail: nil
+            ))
+            XCTAssertEqual(unmodified.url.absoluteString, url)
+
+            let link = try XCTUnwrap(MeetingLinkDetector.detect(
+                location: source == .location ? url : nil,
+                eventURL: source == .eventURL ? URL(string: url) : nil,
+                notes: source == .notes ? url : nil,
+                calendarEmail: nil, currentUserEmail: "user+work@gmail.com"
+            ))
+            let components = try XCTUnwrap(URLComponents(url: link.url, resolvingAgainstBaseURL: false))
+            XCTAssertEqual(components.queryItems?.filter { $0.name == "authuser" }.map(\.value), ["user@gmail.com"])
+            XCTAssertEqual(components.queryItems?.first { $0.name == "pli" }?.value, "1")
+            XCTAssertEqual(components.queryItems?.first { $0.name == "ref" }?.value, "example/docs=")
+            XCTAssertEqual(components.fragment, "details")
+        }
+    }
+
+    func testMeetHTMLAttributesDecodeQuerySeparatorsWithoutConsumingMarkup() throws {
+        let target = "https://meet.google.com/abc-defg-hij?pli=1&ref=example%2Fdocs%3D&authuser=old#details"
+        let encoded = target.replacingOccurrences(of: "&ref", with: "&amp;ref")
+            .replacingOccurrences(of: "&authuser", with: "&#38;authuser")
+        for quote in ["\"", "'"] {
+            let notes = "<a href=\(quote)\(encoded)\(quote)>Join</a><p>Other details</p>"
+            let clipboard = try XCTUnwrap(detectMeetingLink(notes))
+            XCTAssertEqual(clipboard.url.absoluteString, target)
+
+            let link = try XCTUnwrap(MeetingLinkDetector.detect(
+                location: nil, eventURL: nil, notes: notes,
+                calendarEmail: "user+work@gmail.com", currentUserEmail: nil
+            ))
+            let components = try XCTUnwrap(URLComponents(url: link.url, resolvingAgainstBaseURL: false))
+            XCTAssertEqual(components.queryItems?.map(\.name), ["pli", "ref", "authuser"])
+            XCTAssertEqual(components.queryItems?.last?.value, "user@gmail.com")
+            XCTAssertEqual(components.fragment, "details")
+        }
+    }
+
+    func testMeetRedirectTargetsKeepQueryAndFragment() throws {
+        let target = "https://meet.google.com/abc-defg-hij?pli=1&ref=example%2Fdocs%3D#details"
+        // All fixture URLs are ASCII and therefore always percent-encodable.
+        let encoded = target.addingPercentEncoding(withAllowedCharacters: .alphanumerics)!
+        let google = "https://www.google.com/url?q=\(encoded)&sa=D"
+        let safe = outlookSafeLink(for: target)
+        let inputs = [google, safe, outlookSafeLink(for: google)]
+        for input in inputs {
+            let clipboard = try XCTUnwrap(detectMeetingLink(input))
+            XCTAssertEqual(clipboard.url.absoluteString, target)
+            let notes = try XCTUnwrap(MeetingLinkDetector.detect(
+                location: nil, eventURL: nil, notes: input,
+                calendarEmail: nil, currentUserEmail: nil
+            ))
+            XCTAssertEqual(notes.url.absoluteString, target)
+        }
+    }
+
+    func testMeetQueriesDoNotTurnLookalikeHostsIntoMeetLinks() {
+        let inputs = [
+            "https://meetXgoogleYcom/abc-defg-hij?pli=1",
+            "https://meet.google.com.example/abc-defg-hij?pli=1",
+            "https://meet.google.com@other.example/abc-defg-hij?pli=1"
+        ]
+        for input in inputs {
+            XCTAssertNil(detectMeetingLink(input), input)
+        }
     }
 
     func testGoogleMeetConferenceURLPreservesExistingQueryWhenAddingAuthuser() {

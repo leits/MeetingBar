@@ -334,12 +334,19 @@ func detectMeetingLink(_ rawText: String, customRegexes: [String] = []) -> Meeti
         for (svc, regex) in meetingLinkRegexes {
             if let match = regex.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)),
                 let range = Range(match.range, in: text),
-                let url = URL(string: String(text[range])) {
+                let url = detectedMeetingURL(String(text[range]), service: svc, sourceText: text) {
                 return MeetingLink(service: svc, url: url)
             }
         }
     }
     return nil
+}
+
+/// Meet query separators in HTML attributes are entity-escaped. Decode them
+/// only in HTML context; plain URLs retain their literal query values.
+private func detectedMeetingURL(_ match: String, service: MeetingServices, sourceText: String) -> URL? {
+    let urlText = service == .meet && sourceText.containsHTMLTags ? HTMLPlainText.from(match) : match
+    return URL(string: urlText)
 }
 
 /// Rewrites Outlook SafeLink wrappers in `rawText` back to their real
@@ -804,7 +811,7 @@ enum MeetingLinkDetector {
             guard let regex = regex(for: service) else { return [] }
             return regex.matches(in: text, range: range).compactMap { match in
                 guard let matchRange = Range(match.range, in: text),
-                      let url = URL(string: String(text[matchRange]))
+                      let url = detectedMeetingURL(String(text[matchRange]), service: service, sourceText: text)
                 else { return nil }
                 return MeetingLinkCandidate(
                     url: url,

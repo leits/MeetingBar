@@ -909,6 +909,40 @@ final class SnoozeNotificationRequestFactoryTests: BaseTestCase {
     }
 }
 
+final class GoogleMeetTextURLIntegrationTests: XCTestCase {
+    private func event(notes: String, calendarEmail: String?) -> MBEvent {
+        MBEvent(
+            id: "MEET-TEXT", lastModifiedDate: nil, title: "Text meeting URL", status: .confirmed,
+            notes: notes, location: nil, url: nil, organizer: nil,
+            startDate: Date(timeIntervalSince1970: 1_730_000_000),
+            endDate: Date(timeIntervalSince1970: 1_730_003_600),
+            isAllDay: false, recurrent: false,
+            calendar: makeFakeCalendar(email: calendarEmail)
+        )
+    }
+
+    func testNotesMeetingLinkRetainsOriginalQueryAndFragmentWithoutAccount() throws {
+        let target = "https://meet.google.com/abc-defg-hij?pli=1&ref=example%2Fdocs%3D#details"
+        let event = event(notes: "Join \(target)\nAgenda follows", calendarEmail: nil)
+        let link = try XCTUnwrap(event.meetingLink)
+        XCTAssertEqual(link.service, .meet)
+        XCTAssertEqual(link.url.absoluteString, target)
+        XCTAssertEqual(event.meetingLinkCandidate?.source, .notes)
+    }
+
+    func testHTMLNotesKeepMeetingParametersWhileSelectingTheAccount() throws {
+        let notes = "<a href=\"https://meet.google.com/abc-defg-hij?pli=1&amp;ref=example%2Fdocs%3D&amp;authuser=old#details\">Join</a>"
+        let event = event(notes: notes, calendarEmail: "user+work@gmail.com")
+        let link = try XCTUnwrap(event.meetingLink)
+        let components = try XCTUnwrap(URLComponents(url: link.url, resolvingAgainstBaseURL: false))
+        XCTAssertEqual(components.queryItems?.map(\.name), ["pli", "ref", "authuser"])
+        XCTAssertEqual(components.queryItems?.first { $0.name == "ref" }?.value, "example/docs=")
+        XCTAssertEqual(components.queryItems?.last?.value, "user@gmail.com")
+        XCTAssertEqual(components.fragment, "details")
+        XCTAssertEqual(event.notes, notes)
+    }
+}
+
 final class GoogleMeetAccountIntegrationTests: XCTestCase {
     private func event(calendarEmail: String, currentUserEmail: String? = nil) -> MBEvent {
         var attendees = [MBEventAttendee(email: "guest+tag@gmail.com", status: .accepted)]

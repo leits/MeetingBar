@@ -182,7 +182,7 @@ extension MeetingProvider {
                 .meet,
                 icon: "google_meet_icon",
                 height: 13.2,
-                pattern: #"https?://meet.google.com/(_meet/)?[a-z-]+"#,
+                pattern: #"https?://meet\.google\.com/(?:_meet/)?[a-z-]+(?:[?#][^\s"'<>]*)?"#,
                 openingModes: [.meetInOne, .googleMeetPWA]),
 
             // Proton Meet
