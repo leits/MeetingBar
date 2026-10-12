@@ -45,6 +45,7 @@ struct EventDisplaySettings: Equatable {
 struct StatusBarSettings: Equatable {
     var eventTitleFormat: EventTitleFormat
     var eventTimeFormat: EventTimeFormat
+    var showNowForOngoingEvent: Bool
     var eventTitleIconFormat: EventTitleIconFormat
     var statusbarEventTitleLength: Int
     var hideMeetingTitle: Bool
@@ -177,6 +178,7 @@ extension AppSettings {
             statusBar: StatusBarSettings(
                 eventTitleFormat: eventTitleFormat,
                 eventTimeFormat: Defaults[.eventTimeFormat],
+                showNowForOngoingEvent: Defaults[.showNowForOngoingEvent],
                 eventTitleIconFormat: Defaults[.eventTitleIconFormat],
                 statusbarEventTitleLength: Defaults[.statusbarEventTitleLength],
                 hideMeetingTitle: eventTitleFormat == .generic,
@@ -250,6 +252,7 @@ extension AppSettings {
             statusBar: StatusBarSettings(
                 eventTitleFormat: .show,
                 eventTimeFormat: .show,
+                showNowForOngoingEvent: true,
                 eventTitleIconFormat: .none,
                 statusbarEventTitleLength: statusbarEventTitleLengthLimits.max,
                 hideMeetingTitle: false,

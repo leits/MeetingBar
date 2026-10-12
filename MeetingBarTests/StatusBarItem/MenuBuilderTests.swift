@@ -1630,6 +1630,16 @@ final class StatusBarItemControllerPresentationTests: BaseTestCase {
         XCTAssertTrue(didQuit)
     }
 
+    func test_showNowPreferenceUpdatesSettingsAndTitleAdapter() {
+        Defaults[.showNowForOngoingEvent] = true
+        XCTAssertTrue(AppSettings.current.statusBar.showNowForOngoingEvent)
+        XCTAssertTrue(StatusBarTitleSettings.current.showNowForActiveEvent)
+
+        Defaults[.showNowForOngoingEvent] = false
+        XCTAssertFalse(AppSettings.current.statusBar.showNowForOngoingEvent)
+        XCTAssertFalse(StatusBarTitleSettings.current.showNowForActiveEvent)
+    }
+
     private func configureStatusBarDefaults() {
         Defaults[.selectedCalendarIDs] = [Self.calendarID]
         Defaults[.showEventsForPeriod] = .today_n_tomorrow
