@@ -641,7 +641,7 @@ final class MeetingLinkDetectorTests: XCTestCase {
 
     func testMeetHTMLAttributesDecodeQuerySeparatorsWithoutConsumingMarkup() throws {
         let target = "https://meet.google.com/abc-defg-hij?pli=1&ref=example%2Fdocs%3D&authuser=old#details"
-        for separator in ["&amp;", "&#38;", "&amp;amp;", "&amp;#38;", "&amp;#x26;"] {
+        for separator in ["&amp;", "&#38;"] {
             let encoded = target.replacingOccurrences(of: "&", with: separator)
             for quote in ["\"", "'"] {
                 let notes = "<a href=\(quote)\(encoded)\(quote)>Join</a><p>Other details</p>"
@@ -660,14 +660,33 @@ final class MeetingLinkDetectorTests: XCTestCase {
         }
     }
 
-    func testNestedMeetHTMLSeparatorsDoNotRecursivelyDecodeValuesOrFragments() throws {
+    func testMeetHTMLDecodesExactlyOneLayer() throws {
         let notes = "<a href=\"https://meet.google.com/abc-defg-hij?ref=%26amp%3B&amp;amp;pli=1#literal&amp;amp;flag=1\">Join</a>"
         let link = try XCTUnwrap(detectMeetingLink(notes))
         XCTAssertEqual(link.url.absoluteString,
-                       "https://meet.google.com/abc-defg-hij?ref=%26amp%3B&pli=1#literal&amp;flag=1")
+                       "https://meet.google.com/abc-defg-hij?ref=%26amp%3B&amp;pli=1#literal&amp;flag=1")
         let components = try XCTUnwrap(URLComponents(url: link.url, resolvingAgainstBaseURL: false))
+        XCTAssertEqual(components.queryItems?.map(\.name), ["ref", "amp;pli"])
         XCTAssertEqual(components.queryItems?.first { $0.name == "ref" }?.value, "&amp;")
         XCTAssertEqual(components.fragment, "literal&amp;flag=1")
+    }
+
+    func testMeetParenthesizedLinksPreservePunctuationInsideQueryValues() throws {
+        let cases = [
+            ("(https://meet.google.com/abc-defg-hij?authuser=2)", "https://meet.google.com/abc-defg-hij?authuser=2"),
+            ("(https://meet.google.com/abc-defg-hij?ref=topic(weekly))", "https://meet.google.com/abc-defg-hij?ref=topic(weekly)"),
+            ("https://meet.google.com/abc-defg-hij?ref=topic(weekly)", "https://meet.google.com/abc-defg-hij?ref=topic(weekly)"),
+            ("(https://meet.google.com/abc-defg-hij?ref=topic(weekly)", "https://meet.google.com/abc-defg-hij?ref=topic(weekly)"),
+            ("<a href=\"https://meet.google.com/abc-defg-hij?ref=)\">Join</a>", "https://meet.google.com/abc-defg-hij?ref=)")
+        ]
+        for (input, expected) in cases {
+            XCTAssertEqual(try XCTUnwrap(detectMeetingLink(input)).url.absoluteString, expected)
+            let eventLink = try XCTUnwrap(MeetingLinkDetector.detect(
+                location: nil, eventURL: nil, notes: input,
+                calendarEmail: nil, currentUserEmail: nil
+            ))
+            XCTAssertEqual(eventLink.url.absoluteString, expected)
+        }
     }
 
     func testMeetRedirectTargetsKeepQueryAndFragment() throws {
