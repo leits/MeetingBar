@@ -447,17 +447,20 @@ enum TupleNativeURLPolicy {
 struct TupleOpenStrategy: MeetingOpenStrategy, Sendable {
     private let nativeOpener: @Sendable (URL) -> Bool
     private let browserOpener: @Sendable (URL, Browser) -> Void
+    private let postMessage: @Sendable (AppMessage) -> Void
 
     init(
         nativeOpener: @escaping @Sendable (URL) -> Bool = {
-            $0.openInDefaultBrowser()
+            NSWorkspace.shared.open($0)
         },
         browserOpener: @escaping @Sendable (URL, Browser) -> Void = {
             $0.openIn(browser: $1)
-        }
+        },
+        postMessage: @escaping @Sendable (AppMessage) -> Void = { AppMessageCenter.shared.post($0) }
     ) {
         self.nativeOpener = nativeOpener
         self.browserOpener = browserOpener
+        self.postMessage = postMessage
     }
 
     func open(
@@ -473,7 +476,7 @@ struct TupleOpenStrategy: MeetingOpenStrategy, Sendable {
         }
 
         guard nativeOpener(nativeURL) else {
-            AppMessageCenter.shared.post(.meetingAppUnavailable(name: "Tuple"))
+            postMessage(.meetingAppUnavailable(name: "Tuple"))
             browserOpener(url, opening.browser)
             return
         }
