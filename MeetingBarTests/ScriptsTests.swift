@@ -3,6 +3,47 @@ import Carbon
 import XCTest
 
 final class ScriptsTests: XCTestCase {
+    @MainActor
+    func testSampleScriptUsesNextEventWithoutLinkBeforeLaterMeeting() {
+        let now = Calendar.current.startOfDay(for: Date()).addingTimeInterval(12 * 3600)
+        let noLink = makeFakeEvent(id: "no-link", start: now.addingTimeInterval(300), end: now.addingTimeInterval(600))
+        let linked = makeFakeEvent(id: "linked", start: now.addingTimeInterval(900), end: now.addingTimeInterval(1800), withLink: true)
+        var executedIDs: [String] = []
+        var messages: [AppMessage] = []
+
+        runAppleScriptForNextEvent(
+            events: [linked, noLink], settings: EventSelectionSettings(AppSettings.empty.events), now: now,
+            runScript: { event, type in
+                executedIDs.append(event.id)
+                XCTAssertEqual(type.rawValue, ScriptType.meetingStart.rawValue)
+                let parameters = createAppleScriptParametersForEvent(event: event)
+                XCTAssertEqual(parameters.atIndex(9)?.stringValue, "EMPTY")
+                XCTAssertEqual(parameters.atIndex(10)?.stringValue, "EMPTY")
+            },
+            postMessage: { messages.append($0) }
+        )
+
+        XCTAssertEqual(executedIDs, ["no-link"])
+        XCTAssertTrue(messages.isEmpty)
+    }
+
+    @MainActor
+    func testSampleScriptRespectsSelectionFiltersAndReportsNoEligibleEvent() {
+        let now = Calendar.current.startOfDay(for: Date()).addingTimeInterval(12 * 3600)
+        let noLink = makeFakeEvent(id: "no-link", start: now.addingTimeInterval(300), end: now.addingTimeInterval(600))
+        var settings = AppSettings.empty.events
+        settings.nonAllDayEvents = .hide_without_meeting_link
+        var messages: [AppMessage] = []
+
+        runAppleScriptForNextEvent(
+            events: [noLink], settings: EventSelectionSettings(settings), now: now,
+            runScript: { _, _ in XCTFail("A filtered event must not run the script") },
+            postMessage: { messages.append($0) }
+        )
+
+        XCTAssertEqual(messages, [.nextMeetingMissing])
+    }
+
     func testCreateAppleScriptParametersForEvent() {
         // Given: Create a test event with calendar information
         let calendar = MBCalendar(title: "Work Calendar", id: "x", source: "iCloud", email: nil, color: .black)

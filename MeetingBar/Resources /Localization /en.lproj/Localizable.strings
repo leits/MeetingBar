@@ -416,3 +416,5 @@
 "link_url_cant_open_title" = "Oops! Unable to open the link in %@";
 "link_url_cant_open_message" = "Ensure you have %@ installed, or open such links in a web browser from the preferences instead.";
 
+
+"preferences_advanced_script_hooks_help" = "Event-start scripts also run for events without meeting links. Join scripts run only when joining a meeting.";
