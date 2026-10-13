@@ -46,6 +46,8 @@ a safer foundation for calendar providers and future integrations.
 
 ### Meeting reliability
 
+* Add an opt-in Tuple app opener with browser fallback when the app is unavailable.
+
 * Run event-start scripts for eligible events without a meeting link, passing `EMPTY` as the URL.
   The Preferences test button also supports these events and explains both script hooks.
 
