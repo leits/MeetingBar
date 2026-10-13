@@ -46,6 +46,8 @@ a safer foundation for calendar providers and future integrations.
 
 ### Meeting reliability
 
+* Add an opt-in Tuple app opener with browser fallback when the app is unavailable.
+
 * The time-under-title status bar layout uses a dedicated two-line view to
   avoid clipped text, with native button clicks and accessible title/time.
 * Google Meet selects the base account for personal Gmail `+tag` aliases,
