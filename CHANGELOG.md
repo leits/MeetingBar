@@ -46,6 +46,8 @@ a safer foundation for calendar providers and future integrations.
 
 ### Meeting reliability
 
+* Add an opt-in Tuple app opener with browser fallback when the app is unavailable.
+
 * Add an option to hide “now” in ongoing-event menu bar times; the default is unchanged.
 
 * Google Meet selects the base account for personal Gmail `+tag` aliases,
