@@ -19,10 +19,27 @@ final class ClariCopilotCleanupTests: XCTestCase {
         // rewrite would point at the wrong meeting.
         for slug in [
             "abc-defg-hijk", "abc-defg-hij1", "abc-defg-hij_x", "abc-defg-hijX",
-            "abc-defg-hij/notes"
+            "abc-defg-hij/notes", "abc-defg-hij+suffix", "abc-defg-hij;extra",
+            "abc-defg-hij=value", "abc-defg-hij:extra", "abc-defg-hij@extra",
+            "abc-defg-hij!extra", "abc-defg-hij$extra", "abc-defg-hij&extra",
+            "abc-defg-hijé", "abc-defg-hij/+suffix", "abc-defg-hij/;extra"
         ] {
             let text = "https://go.copilot.clari.com/hangout/\(slug)"
             XCTAssertEqual(cleanupClariCopilotLinks(rawText: text), text)
+            XCTAssertNil(detectMeetingLink(text))
+        }
+    }
+
+    func testAcceptsOnlyCompletePathsBeforeURLOrTextDelimiters() {
+        for slash in ["", "/"] {
+            for suffix in ["?source=calendar", "#details", " next", "\nnext", "\"", "'", ">"] {
+                let wrapper = "https://go.copilot.clari.com/hangout/abc-defg-hij\(slash)\(suffix)"
+                XCTAssertEqual(
+                    cleanupClariCopilotLinks(rawText: wrapper),
+                    "https://meet.google.com/abc-defg-hij\(suffix)"
+                )
+                XCTAssertEqual(detectMeetingLink(wrapper)?.service, .meet)
+            }
         }
     }
 

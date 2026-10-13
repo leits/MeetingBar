@@ -319,12 +319,12 @@ private let googleRedirectRegex = try? NSRegularExpression(
 /// `go.copilot.clari.com/hangout/<meet code>`, where the slug is the
 /// meeting's own Meet code. Only the exact `xxx-xxxx-xxx` shape matches,
 /// and the wrapper must end there (bar an optional trailing slash): any
-/// character that could continue the slug or the path blocks the rewrite,
+/// continuation outside a query, fragment or text delimiter blocks the rewrite,
 /// so a longer slug or a deeper path is never partially rewritten into a
 /// link for the wrong meeting. Other Clari paths — e.g. Zoom wrappers,
 /// which carry no reconstructible target — are left untouched.
 private let clariCopilotRegex = try? NSRegularExpression(
-    pattern: #"https?://go\.copilot\.clari\.com/hangout/([a-z]{3}-[a-z]{4}-[a-z]{3})/?(?![A-Za-z0-9._~%/-])"#)
+    pattern: #"https?://go\.copilot\.clari\.com/hangout/([a-z]{3}-[a-z]{4}-[a-z]{3})/?(?=$|[?#\s\"'<>])"#)
 
 func regex(for service: MeetingServices) -> NSRegularExpression? {
     meetingLinkRegexes[service]
