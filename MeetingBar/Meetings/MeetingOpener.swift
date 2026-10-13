@@ -456,7 +456,7 @@ struct TupleOpenStrategy: MeetingOpenStrategy, Sendable {
         browserOpener: @escaping @Sendable (URL, Browser) -> Void = {
             $0.openIn(browser: $1)
         },
-        postMessage: @escaping @Sendable (AppMessage) -> Void = { AppMessageCenter.shared.post($0) }
+        postMessage: @escaping @Sendable (AppMessage) -> Void = AppMessageCenter.shared.post
     ) {
         self.nativeOpener = nativeOpener
         self.browserOpener = browserOpener
