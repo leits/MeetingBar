@@ -173,6 +173,7 @@
 "preferences_meeting_opening_mode_jitsi_app" = "Jitsi App";
 "preferences_meeting_opening_mode_slack_app" = "Slack App";
 "preferences_meeting_opening_mode_riverside_app" = "Riverside App";
+"preferences_meeting_opening_mode_tuple_app" = "Tuple App";
 "preferences_services_create_meeting_title" = "Create meetings via";
 "preferences_services_create_meeting_custom_url_value" = "Custom URL";
 "preferences_services_create_meeting_custom_url_placeholder" = "Please enter a valid URL (with http:// or https://)";
