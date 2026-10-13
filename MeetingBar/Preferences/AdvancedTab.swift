@@ -107,7 +107,7 @@ struct ScriptSection: View {
             .padding(.leading, 16)
         }
 
-        Text("preferences_advanced_script_link_only_help".loco())
+        Text("preferences_advanced_script_hooks_help".loco())
             .font(.caption)
             .foregroundStyle(.secondary)
     }

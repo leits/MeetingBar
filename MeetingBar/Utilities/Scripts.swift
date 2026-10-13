@@ -129,14 +129,18 @@ func createAppleScriptEvent(
     }
 }
 
-/**
- * runs the apple script with a sample event for enduser testing from the preferences dialog.
- * This method will create an in memory event and use the parameter to execute the apple script.
- */
-@MainActor func runAppleScriptForNextEvent(events: [MBEvent]) {
-    if let nextEvent = events.nextEvent(settings: .current, linkRequired: true, now: Date()) {
-        runMeetingStartsScript(event: nextEvent, type: .meetingStart)
+/// Tests the event-start hook with the next eligible calendar event, including
+/// events without meeting links. Uses the current selection preferences.
+@MainActor func runAppleScriptForNextEvent(
+    events: [MBEvent],
+    settings: EventSelectionSettings = .current,
+    now: Date = Date(),
+    runScript: (MBEvent, ScriptType) -> Void = { runMeetingStartsScript(event: $0, type: $1) },
+    postMessage: (AppMessage) -> Void = { AppMessageCenter.shared.post($0) }
+) {
+    if let nextEvent = events.nextEvent(settings: settings, linkRequired: false, now: now) {
+        runScript(nextEvent, .meetingStart)
     } else {
-        AppMessageCenter.shared.post(.nextMeetingMissing)
+        postMessage(.nextMeetingMissing)
     }
 }

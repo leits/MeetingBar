@@ -14,23 +14,38 @@ This is a candidate integration, not a published or signed release. Review and m
 
 | Change | PR | Reviewed integration input |
 | --- | --- | --- |
-| Stacked status title | [#1004](https://github.com/leits/MeetingBar/pull/1004) | `fe4361c700d54785795bcac3adc0e3c784951f68` |
-| Clari | [#1005](https://github.com/leits/MeetingBar/pull/1005) | `abc7eaaf42daefc7e5575416ae2bcbb7978baa69` |
+| Stacked status title | [#1004](https://github.com/leits/MeetingBar/pull/1004) | `4ee7c0c6a5c91349e2292c58955528a36c134283` |
+| Clari | [#1005](https://github.com/leits/MeetingBar/pull/1005) | `4c6e92688ca9b6af101922f06056cc27fd100a06` |
 | Tuple | [#1001](https://github.com/leits/MeetingBar/pull/1001) | `308e33dcbead276c1ed1975f85f8009d484aeed8` |
-| Hide now | [#1006](https://github.com/leits/MeetingBar/pull/1006) | `9b6607d5ca886727315d2f750a7ea2a3fb6ccdee` |
-| Event-start scripts | [#1007](https://github.com/leits/MeetingBar/pull/1007) | `565a78cf5c89d435bf0d0c59831a60cfe48fe5ec` |
-| Translations | [#1008](https://github.com/leits/MeetingBar/pull/1008) | `980f61036a17a3805a08f9ae8dd53416cc660197` |
+| Hide now | [#1006](https://github.com/leits/MeetingBar/pull/1006) | `5e0019118dbbebba0a0057f72f7d099e2eaa7a5b` |
+| Event-start scripts | [#1007](https://github.com/leits/MeetingBar/pull/1007) | `4349384d93fa75562a8c24e49a617968f50b2ce0` |
+| Translations | [#1008](https://github.com/leits/MeetingBar/pull/1008) | `a71a878ddfcca1cf44c303c92e0c5418174e1388` |
+| Tuple fallback message | [#1011](https://github.com/leits/MeetingBar/pull/1011) | `b1efd3e692ebb2aad5124397c500e58d876792db` |
 
-The integration is based on master `c6b3b6fedb69dd049cadcbbf60349c1c96838be6`. Rejected PR #1003 is excluded.
+The integration includes master `fdd799b60ad8bb307b592f368ee5c318c3fc9da3` after the Tuple merge. Rejected PR #1003 is excluded.
+
+## Contributor history
+
+The focused adaptations now retain the original commits as ancestors, with their exact SHAs, author identities and dates. The history-only merges retain the already reviewed adaptations; subsequent master merges resolve the shared changelog and localization additions.
+
+| Original PR | Adaptation | Preserved contribution |
+| --- | --- | --- |
+| #982 | #1004 | Both Trevor Sayre commits |
+| #972 | #1005 | Both Jeremy Friedel commits |
+| #979 | #1006 | Anand Hegde's original commit |
+| #970 | #1008 | All 14 Weblate commits, including the five translation contributors |
+| #1001 | master / #1011 | Existing Tuple commits remain intact through the master merge |
+
+Use merge commits for the focused PRs to preserve these original SHAs; squash/rebase would replace them. This candidate also retains all updated focused heads as parents.
 
 ## Draft RC3 release notes
 
 This release candidate includes the current v5 reliability fixes and the following final additions:
 
 - Fix clipped two-line menu bar titles while preserving native button interaction.
-- Recognize Clari Copilot Google Meet wrappers and apply the selected Google account.
-- Offer an optional Tuple app opener with fallback to the selected browser.
-- Run configured event-start AppleScripts for eligible events without meeting URLs. The existing handler receives `EMPTY` for the URL and service.
+- Recognize complete Clari Copilot Google Meet wrapper paths and apply the selected Google account; reject partial-code/path suffixes.
+- Offer an optional Tuple app opener with fallback to the selected browser and no misleading browser error when Tuple is unavailable.
+- Run configured event-start AppleScripts for eligible events without meeting URLs. The existing handler receives `EMPTY` for the URL and service. The Preferences test button supports these events and the help distinguishes event-start and join hooks.
 - Let users hide “now” in ongoing-event times; the default appearance is unchanged.
 - Refresh Czech, Dutch, Japanese and Simplified Chinese translations.
 
