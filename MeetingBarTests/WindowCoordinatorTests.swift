@@ -77,6 +77,39 @@ final class WindowCoordinatorTests: XCTestCase {
         XCTAssertFalse(FullscreenNotificationKeyboardPolicy.shouldDismiss(keyCode: 36))
     }
 
+    func testClosedFullscreenNotificationWindowIsReleased() throws {
+        let coordinator = WindowCoordinator()
+        weak var weakWindow: NSWindow?
+        weak var weakContentView: NSView?
+
+        autoreleasepool {
+            let now = Date()
+            coordinator.openFullscreenNotificationWindow(
+                event: makeFakeEvent(
+                    id: "fullscreen-leak",
+                    start: now.addingTimeInterval(60),
+                    end: now.addingTimeInterval(1800),
+                    withLink: true
+                )
+            )
+            let window = NSApp.windows.last { $0 is FullscreenNotificationWindow }
+            weakWindow = window
+            weakContentView = window?.contentView
+        }
+
+        // The alert must stay on screen without the coordinator holding it strongly.
+        RunLoop.current.run(until: Date().addingTimeInterval(0.1))
+        try autoreleasepool {
+            let window = try XCTUnwrap(weakWindow)
+            XCTAssertTrue(window.isVisible)
+            window.close()
+        }
+        RunLoop.current.run(until: Date().addingTimeInterval(0.2))
+
+        XCTAssertNil(weakWindow)
+        XCTAssertNil(weakContentView)
+    }
+
     func testOnboardingWindowPolicyAllowsNormalMovableResizableWindow() {
         XCTAssertEqual(OnboardingWindowPresentationPolicy.level, .normal)
         XCTAssertTrue(OnboardingWindowPresentationPolicy.styleMask.contains(.resizable))

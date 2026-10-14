@@ -406,7 +406,10 @@ struct MenuBuilder {
             keyEquivalent: ""
         )
         createEventItem.target = target
-        createEventItem.setShortcut(for: .createMeetingShortcut)
+        // Use the non-observing overload: `setShortcut(for:)` registers a
+        // NotificationCenter observer that retains the item forever, and this menu
+        // is rebuilt every minute, so a newly recorded shortcut still shows up.
+        createEventItem.setShortcut(KeyboardShortcuts.getShortcut(for: .createMeetingShortcut))
         items.append(createEventItem)
 
         // MENU ITEM: Quick actions menu
@@ -451,7 +454,7 @@ struct MenuBuilder {
             keyEquivalent: ""
         )
         openLinkFromClipboardItem.target = target
-        openLinkFromClipboardItem.setShortcut(for: .openClipboardShortcut)
+        openLinkFromClipboardItem.setShortcut(KeyboardShortcuts.getShortcut(for: .openClipboardShortcut))
 
         // MENU ITEM: QUICK ACTIONS: Toggle meeting name visibility
         if state.statusBar.eventTitleFormat == .show
@@ -466,7 +469,7 @@ struct MenuBuilder {
                 action: #selector(StatusBarItemController.toggleMeetingTitleVisibility),
                 keyEquivalent: ""
             )
-            toggleMeetingTitleVisibilityItem.setShortcut(for: .toggleMeetingTitleVisibilityShortcut)
+            toggleMeetingTitleVisibilityItem.setShortcut(KeyboardShortcuts.getShortcut(for: .toggleMeetingTitleVisibilityShortcut))
             toggleMeetingTitleVisibilityItem.target = target
         }
 

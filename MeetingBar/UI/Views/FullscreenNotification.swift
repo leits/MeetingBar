@@ -26,7 +26,9 @@ struct FullscreenNotificationPresentation: Equatable {
 
 struct FullscreenNotification: View {
     var event: MBEvent
-    var window: NSWindow?
+    /// Weak: the window owns this view through its NSHostingView, so a strong
+    /// back-reference kept every closed alert (and its backing store) alive.
+    weak var window: NSWindow?
 
     var body: some View {
         let presentation = FullscreenNotificationPresentation.make(for: event)

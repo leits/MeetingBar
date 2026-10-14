@@ -48,6 +48,9 @@ a safer foundation for calendar providers and future integrations.
 
 * Add an opt-in Tuple app opener with browser fallback when the app is unavailable.
 
+* Closed fullscreen meeting alerts and rebuilt menu items are released
+  instead of accumulating for the lifetime of the app, which made the
+  menu and later alerts increasingly sluggish over days of uptime.
 * Google Meet selects the base account for personal Gmail `+tag` aliases,
   while preserving account addresses on other domains.
 * Outlook SafeLinks unwrap every valid link despite malformed neighbors,
