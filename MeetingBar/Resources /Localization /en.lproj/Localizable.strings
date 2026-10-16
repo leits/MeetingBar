@@ -133,6 +133,7 @@
 "preferences_appearance_status_bar_time_show_value" = "show";
 "preferences_appearance_status_bar_time_show_under_title_value" = "show under title";
 "preferences_appearance_status_bar_time_hide_value" = "hide";
+"preferences_appearance_status_bar_time_show_now_toggle" = "Show \"now\" for ongoing events";
 "preferences_appearance_status_bar_ongoing_title" = "Ongoing event visibility:";
 "preferences_appearance_status_bar_ongoing_time_immediate_value" = "hide after start";
 "preferences_appearance_status_bar_ongoing_time_ten_after_value" = "hide 10 min  after start";
@@ -221,7 +222,7 @@
 "preferences_advanced_setting_warning" = "These settings are intended for advanced users.";
 "preferences_advanced_apple_script_checkmark" = "Run AppleScript when joining";
 "preferences_advanced_apple_script_placeholder" = "# write your script here\ntell application \"Music\" to pause";
-"preferences_advanced_run_script_on_event_start" = "Run AppleScript before joinable meetings";
+"preferences_advanced_run_script_before_event_start" = "Run AppleScript before events";
 "preferences_advanced_script_link_only_help" = "Runs only for events with meeting links.";
 "preferences_advanced_test_script_on_next_event" = "Test on next event";
 "preferences_advanced_edit_script" = "Edit script";
@@ -310,6 +311,7 @@
 "status_bar_quit" = "Quit MeetingBar";
 "status_bar_no_title" = "No title";
 "status_bar_event_status_now" = "now (%@ left)";
+"status_bar_event_status_left" = "(%@ left)";
 "status_bar_event_status_in" = "in %@";
 "status_bar_error_apple_script_title" = "AppleScript error";
 "status_bar_error_link_missed_title" = "Ouch! Can't join the %@";
@@ -417,3 +419,5 @@
 "link_url_cant_open_title" = "Oops! Unable to open the link in %@";
 "link_url_cant_open_message" = "Ensure you have %@ installed, or open such links in a web browser from the preferences instead.";
 
+
+"preferences_advanced_script_hooks_help" = "Event-start scripts also run for events without meeting links. Join scripts run only when joining a meeting.";

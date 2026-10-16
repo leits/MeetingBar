@@ -1348,31 +1348,15 @@ final class MenuBuilderQuickActionsTests: BaseTestCase {
 @MainActor
 final class StatusBarTitleRendererTests: BaseTestCase {
 
-    func test_stackedTitleCentersBothLinesAndUsesCompactFonts() {
+    func test_stackedLayoutRendersEmptyAttributedTitle() {
+        // The stacked (time-under-title) layout is drawn by
+        // `StatusBarStackedTitleView` in an NSHostingView, so the attributed
+        // title is intentionally empty for this layout.
         let title = StatusBarTitleRenderer.attributedTitle(
             for: makePresentation(layout: .stacked)
         )
 
-        XCTAssertEqual(title.string, "Weekly sync\nnow")
-
-        let paragraphStyle =
-            title.attribute(
-                .paragraphStyle,
-                at: 0,
-                effectiveRange: nil
-            ) as? NSParagraphStyle
-        XCTAssertEqual(paragraphStyle?.alignment, .center)
-        XCTAssertEqual(paragraphStyle?.lineHeightMultiple ?? 0, 0.7, accuracy: 0.001)
-
-        let titleFont = title.attribute(.font, at: 0, effectiveRange: nil) as? NSFont
-        let timeFont =
-            title.attribute(
-                .font,
-                at: title.length - 1,
-                effectiveRange: nil
-            ) as? NSFont
-        XCTAssertEqual(titleFont?.pointSize ?? 0, 12, accuracy: 0.001)
-        XCTAssertEqual(timeFont?.pointSize ?? 0, 9, accuracy: 0.001)
+        XCTAssertEqual(title.string, "")
     }
 
     func test_inlineTitleIncludesTimeAndUnderlineStyle() {
@@ -1531,7 +1515,7 @@ final class StatusBarItemControllerPresentationTests: BaseTestCase {
         XCTAssertNotNil(button.image)
     }
 
-    func test_updateTitleUsesCenteredStackedTimeUnderTitle() throws {
+    func test_updateTitleUsesHostingViewForStackedTimeUnderTitle() throws {
         configureStatusBarDefaults()
         Defaults[.eventTimeFormat] = .show_under_title
 
@@ -1541,16 +1525,125 @@ final class StatusBarItemControllerPresentationTests: BaseTestCase {
         controller.updateTitle()
 
         let button = try XCTUnwrap(controller.statusItem.button)
-        XCTAssertTrue(button.attributedTitle.string.contains("\n"))
+        // The stacked layout is drawn by a SwiftUI hosting view, so the
+        // button's own title is empty and its image is an empty (zero-size)
+        // placeholder that keeps the button in its normal drawing mode (so the
+        // item dims with the menu bar); the item is sized from the hosting
+        // view's intrinsic width.
+        XCTAssertEqual(button.attributedTitle.string, "")
+        XCTAssertEqual(button.image?.size, NSSize.zero)
 
-        let paragraphStyle =
-            button.attributedTitle.attribute(
-                .paragraphStyle,
-                at: 0,
-                effectiveRange: nil
-            ) as? NSParagraphStyle
-        XCTAssertEqual(paragraphStyle?.alignment, .center)
-        XCTAssertEqual(paragraphStyle?.lineHeightMultiple ?? 0, 0.7, accuracy: 0.001)
+        let hostingView = try XCTUnwrap(controller.stackedHostingView)
+        XCTAssertFalse(hostingView.rootView.title.isEmpty)
+        XCTAssertFalse(hostingView.rootView.time.isEmpty)
+        XCTAssertGreaterThan(controller.statusItem.length, 0)
+    }
+
+    func test_updateTitleRemovesHostingViewWhenLeavingStackedLayout() throws {
+        configureStatusBarDefaults()
+        Defaults[.eventTimeFormat] = .show_under_title
+
+        let controller = StatusBarItemController()
+        defer { NSStatusBar.system.removeStatusItem(controller.statusItem) }
+        controller.events = [makeStatusEvent()]
+        controller.updateTitle()
+        XCTAssertNotNil(controller.stackedHostingView)
+
+        // Switch to an inline layout: the hosting view must be torn down and
+        // the status item returned to its automatic (variable) width.
+        Defaults[.eventTimeFormat] = .show
+        controller.updateTitle()
+
+        XCTAssertNil(controller.stackedHostingView)
+        XCTAssertEqual(controller.statusItem.length, NSStatusItem.variableLength)
+        let button = try XCTUnwrap(controller.statusItem.button)
+        XCTAssertFalse(button.attributedTitle.string.isEmpty)
+    }
+
+    func test_stackedViewReusesItsHostAndLeavesClicksOnTheNativeButton() throws {
+        let controller = StatusBarItemController()
+        defer { NSStatusBar.system.removeStatusItem(controller.statusItem) }
+        let button = try XCTUnwrap(controller.statusItem.button)
+        let action = button.action
+
+        controller.renderStatusBar(makePresentation(title: "First", time: "in 5m", layout: .stacked))
+        let host = try XCTUnwrap(controller.stackedHostingView)
+        let subviewCount = button.subviews.count
+        XCTAssertNil(host.hitTest(NSPoint(x: 1, y: 1)))
+        XCTAssertTrue(button.target === controller)
+        XCTAssertEqual(button.action, action)
+
+        controller.renderStatusBar(makePresentation(title: "Second", time: "in 4m", layout: .stacked))
+        XCTAssertTrue(controller.stackedHostingView === host)
+        XCTAssertEqual(host.rootView.title, "Second")
+        XCTAssertEqual(button.subviews.count, subviewCount)
+    }
+
+    func test_stackedViewExposesFullTitleAndTimeForAccessibility() throws {
+        let controller = StatusBarItemController()
+        defer { NSStatusBar.system.removeStatusItem(controller.statusItem) }
+        controller.renderStatusBar(makePresentation(
+            title: "Short title", time: "in 5m", tooltip: "Full untruncated meeting title", layout: .stacked
+        ))
+        let button = try XCTUnwrap(controller.statusItem.button)
+        XCTAssertEqual(button.accessibilityLabel(), "Full untruncated meeting title")
+        XCTAssertEqual(button.accessibilityValue() as? String, "in 5m")
+
+        controller.renderStatusBar(makePresentation(title: "Another", layout: .inline(showTime: false)))
+        XCTAssertNotEqual(button.accessibilityLabel(), "Full untruncated meeting title")
+        XCTAssertNotEqual(button.accessibilityValue() as? String, "in 5m")
+    }
+
+    func test_stackedViewIsRemovedForNonEventStates() throws {
+        let controller = StatusBarItemController()
+        defer { NSStatusBar.system.removeStatusItem(controller.statusItem) }
+        for mode in [StatusBarTitleMode.idle, .noUpcoming, .afterThreshold] {
+            controller.renderStatusBar(makePresentation(title: "Meeting", time: "now", layout: .stacked))
+            XCTAssertNotNil(controller.stackedHostingView)
+            controller.renderStatusBar(makePresentation(mode: mode))
+            XCTAssertNil(controller.stackedHostingView)
+            XCTAssertEqual(controller.statusItem.length, NSStatusItem.variableLength)
+            XCTAssertNotNil(controller.statusItem.button?.image)
+        }
+    }
+
+    func test_emptyStackedPresentationKeepsTheVisibleFallback() throws {
+        let controller = StatusBarItemController()
+        defer { NSStatusBar.system.removeStatusItem(controller.statusItem) }
+        controller.renderStatusBar(makePresentation(layout: .stacked))
+        XCTAssertNil(controller.stackedHostingView)
+        XCTAssertNotNil(controller.statusItem.button?.image)
+        XCTAssertEqual(controller.statusItem.button?.imagePosition, .imageLeft)
+    }
+
+    func test_stackedLayoutFitsTheMenuBarWithTemplateAndServiceIcons() throws {
+        let controller = StatusBarItemController()
+        defer { NSStatusBar.system.removeStatusItem(controller.statusItem) }
+        for icon in [StatusBarIcon.asset(MenuStyleConstants.calendarIconName), .meetingService(.zoom), .meetingService(nil)] {
+            for style in [StatusBarTitleStyle.normal, .inactive, .underlined] {
+                controller.renderStatusBar(makePresentation(
+                    title: "Meeting", time: "in 5m", icon: icon, layout: .stacked, titleStyle: style
+                ))
+                let host = try XCTUnwrap(controller.stackedHostingView)
+                XCTAssertGreaterThan(host.intrinsicContentSize.width, 0)
+                XCTAssertLessThanOrEqual(host.intrinsicContentSize.height, NSStatusBar.system.thickness)
+                XCTAssertEqual(controller.statusItem.button?.imagePosition, .imageLeft)
+            }
+        }
+    }
+
+    func test_stackedLongTitleKeepsTruncationAndFullAccessibilityLabel() throws {
+        configureStatusBarDefaults()
+        Defaults[.eventTimeFormat] = .show_under_title
+        let controller = StatusBarItemController()
+        defer { NSStatusBar.system.removeStatusItem(controller.statusItem) }
+        let fullTitle = String(repeating: "Very long meeting title ", count: 5)
+        controller.events = [makeStatusEvent(title: fullTitle)]
+        controller.updateTitle()
+        let host = try XCTUnwrap(controller.stackedHostingView)
+        XCTAssertLessThan(host.rootView.title.count, fullTitle.count)
+        XCTAssertEqual(controller.statusItem.button?.accessibilityLabel(), fullTitle)
+        XCTAssertGreaterThan(controller.statusItem.length, 0)
     }
 
     func test_actionsUseInjectedAppActionSender() {
@@ -1630,6 +1723,45 @@ final class StatusBarItemControllerPresentationTests: BaseTestCase {
         XCTAssertTrue(didQuit)
     }
 
+    func test_showNowPreferenceRedrawsActiveEventWithoutManualUpdate() async throws {
+        configureStatusBarDefaults()
+        Defaults[.showNowForOngoingEvent] = true
+        let controller = StatusBarItemController()
+        defer { NSStatusBar.system.removeStatusItem(controller.statusItem) }
+        controller.events = [makeStatusEvent()]
+        controller.updateTitle()
+        let button = try XCTUnwrap(controller.statusItem.button)
+        let originalTitle = button.attributedTitle.string
+        XCTAssertFalse(originalTitle.isEmpty)
+
+        Defaults[.showNowForOngoingEvent] = false
+        let deadline = Date().addingTimeInterval(2)
+        while button.attributedTitle.string == originalTitle && Date() < deadline {
+            try await Task.sleep(nanoseconds: 20_000_000)
+        }
+
+        let expected = StatusBarTitlePolicy.text(
+            eventTitle: controller.events[0].title,
+            startDate: controller.events[0].startDate,
+            endDate: controller.events[0].endDate,
+            settings: .current,
+            now: Date(),
+            calendar: Calendar.current
+        )
+        XCTAssertNotEqual(button.attributedTitle.string, originalTitle)
+        XCTAssertTrue(button.attributedTitle.string.contains(expected.time))
+    }
+
+    func test_showNowPreferenceUpdatesSettingsAndTitleAdapter() {
+        Defaults[.showNowForOngoingEvent] = true
+        XCTAssertTrue(AppSettings.current.statusBar.showNowForOngoingEvent)
+        XCTAssertTrue(StatusBarTitleSettings.current.showNowForActiveEvent)
+
+        Defaults[.showNowForOngoingEvent] = false
+        XCTAssertFalse(AppSettings.current.statusBar.showNowForOngoingEvent)
+        XCTAssertFalse(StatusBarTitleSettings.current.showNowForActiveEvent)
+    }
+
     private func configureStatusBarDefaults() {
         Defaults[.selectedCalendarIDs] = [Self.calendarID]
         Defaults[.showEventsForPeriod] = .today_n_tomorrow
@@ -1660,17 +1792,20 @@ final class StatusBarItemControllerPresentationTests: BaseTestCase {
     private func makePresentation(
         mode: StatusBarTitleMode = .nextEvent,
         title: String = "",
+        time: String = "",
+        tooltip: String? = nil,
         icon: StatusBarIcon = .none,
-        layout: StatusBarTitleLayout = .none
+        layout: StatusBarTitleLayout = .none,
+        titleStyle: StatusBarTitleStyle = .normal
     ) -> StatusBarPresentation {
         StatusBarPresentation(
             mode: mode,
             title: title,
-            time: "",
-            tooltip: nil,
+            time: time,
+            tooltip: tooltip,
             icon: icon,
             layout: layout,
-            titleStyle: .normal
+            titleStyle: titleStyle
         )
     }
 

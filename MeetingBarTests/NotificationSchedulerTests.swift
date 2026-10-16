@@ -756,7 +756,7 @@ final class NotificationSchedulerTests: BaseTestCase {
         XCTAssertEqual(Defaults[.processedEventsForAutoJoin].map(\.id), [evt.id])
     }
 
-    func testScriptActionWithoutMeetingLinkDoesNotRunOrMarkProcessed() async {
+    func testScriptActionWithoutMeetingLinkRunsOnceAcrossReconcile() async {
         let requestSink = FakeNotificationRequestSink()
         let actionSink = FakeNotificationActionSink()
         let scheduler = NotificationScheduler(sink: requestSink, actionSink: actionSink)
@@ -769,10 +769,50 @@ final class NotificationSchedulerTests: BaseTestCase {
             now: scheduledNow
         )
 
-        try? await Task.sleep(nanoseconds: 300_000_000)
+        await waitUntil { actionSink.actions.count == 1 }
+        XCTAssertEqual(actionSink.actions.map(\.eventID), [evt.id])
+        XCTAssertEqual(actionSink.actions.map(\.kind), [.scriptOnStart])
+        XCTAssertEqual(Defaults[.processedEventsForRunScriptOnEventStart].map(\.id), [evt.id])
 
-        XCTAssertTrue(actionSink.actions.isEmpty)
+        await scheduler.reconcile(
+            events: [evt],
+            settings: actionOnlySettings(kind: .scriptOnStart, offset: 0.25),
+            now: Date()
+        )
+        XCTAssertEqual(actionSink.actions.count, 1)
+        scheduler.stop()
+    }
+
+    func testNoLinkScriptDueOnReconcileRunsOnce() async {
+        let sink = FakeNotificationActionSink()
+        let scheduler = NotificationScheduler(sink: FakeNotificationRequestSink(), actionSink: sink)
+        let evt = makeFakeEvent(
+            id: "due-script", start: now.addingTimeInterval(30),
+            end: now.addingTimeInterval(1800), withLink: false
+        )
+        let settings = actionOnlySettings(kind: .scriptOnStart, offset: 60)
+        await scheduler.reconcile(events: [evt], settings: settings, now: now)
+        await scheduler.reconcile(events: [evt], settings: settings, now: now)
+        XCTAssertEqual(sink.actions.map(\.eventID), [evt.id])
+        XCTAssertEqual(sink.actions.map(\.kind), [.scriptOnStart])
+        scheduler.stop()
+    }
+
+    func testDismissedNoLinkEventDoesNotRunStartScript() async {
+        let sink = FakeNotificationActionSink()
+        let scheduler = NotificationScheduler(sink: FakeNotificationRequestSink(), actionSink: sink)
+        let evt = makeFakeEvent(
+            id: "dismissed-script", start: now.addingTimeInterval(30),
+            end: now.addingTimeInterval(1800), withLink: false
+        )
+        await scheduler.reconcile(
+            events: [evt],
+            settings: actionOnlySettings(kind: .scriptOnStart, offset: 60, dismissedEventIDs: [evt.id]),
+            now: now
+        )
+        XCTAssertTrue(sink.attempts.isEmpty)
         XCTAssertTrue(Defaults[.processedEventsForRunScriptOnEventStart].isEmpty)
+        scheduler.stop()
     }
 
     func testCurrentForSchedulerMapsDefaultsForMigratedActions() {
