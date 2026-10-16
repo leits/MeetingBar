@@ -51,6 +51,8 @@ a safer foundation for calendar providers and future integrations.
 
 * Google Meet selects the base account for personal Gmail `+tag` aliases,
   while preserving account addresses on other domains.
+* Deleting a configured browser removes only that entry, not every
+  browser with the same name (e.g. an installer disk image's copy).
 * Outlook SafeLinks unwrap every valid link despite malformed neighbors,
   preserve meeting passcodes, and resolve mixed Google/Outlook redirect nesting.
 * Dismissing or restoring meetings updates the menu and notification plans
