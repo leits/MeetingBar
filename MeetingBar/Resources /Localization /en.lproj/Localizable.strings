@@ -133,6 +133,7 @@
 "preferences_appearance_status_bar_time_show_value" = "show";
 "preferences_appearance_status_bar_time_show_under_title_value" = "show under title";
 "preferences_appearance_status_bar_time_hide_value" = "hide";
+"preferences_appearance_status_bar_time_show_now_toggle" = "Show \"now\" for ongoing events";
 "preferences_appearance_status_bar_ongoing_title" = "Ongoing event visibility:";
 "preferences_appearance_status_bar_ongoing_time_immediate_value" = "hide after start";
 "preferences_appearance_status_bar_ongoing_time_ten_after_value" = "hide 10 min  after start";
@@ -173,7 +174,6 @@
 "preferences_meeting_opening_mode_jitsi_app" = "Jitsi App";
 "preferences_meeting_opening_mode_slack_app" = "Slack App";
 "preferences_meeting_opening_mode_riverside_app" = "Riverside App";
-"preferences_meeting_opening_mode_tuple_app" = "Tuple App";
 "preferences_services_create_meeting_title" = "Create meetings via";
 "preferences_services_create_meeting_custom_url_value" = "Custom URL";
 "preferences_services_create_meeting_custom_url_placeholder" = "Please enter a valid URL (with http:// or https://)";
@@ -310,6 +310,7 @@
 "status_bar_quit" = "Quit MeetingBar";
 "status_bar_no_title" = "No title";
 "status_bar_event_status_now" = "now (%@ left)";
+"status_bar_event_status_left" = "(%@ left)";
 "status_bar_event_status_in" = "in %@";
 "status_bar_error_apple_script_title" = "AppleScript error";
 "status_bar_error_link_missed_title" = "Ouch! Can't join the %@";
@@ -417,3 +418,5 @@
 "link_url_cant_open_title" = "Oops! Unable to open the link in %@";
 "link_url_cant_open_message" = "Ensure you have %@ installed, or open such links in a web browser from the preferences instead.";
 
+
+"preferences_meeting_opening_mode_tuple_app" = "Tuple App";
