@@ -54,7 +54,7 @@ struct ScriptSection: View {
 
     var body: some View {
         Toggle(
-            "preferences_advanced_run_script_on_event_start".loco(),
+            "preferences_advanced_run_script_before_event_start".loco(),
             isOn: $runEventStartScript
         )
         .sheet(isPresented: $showingRunEventStartScriptModal) {
@@ -107,7 +107,7 @@ struct ScriptSection: View {
             .padding(.leading, 16)
         }
 
-        Text("preferences_advanced_script_link_only_help".loco())
+        Text("preferences_advanced_script_hooks_help".loco())
             .font(.caption)
             .foregroundStyle(.secondary)
     }

@@ -34,7 +34,6 @@ final class NotificationActionHandler: NotificationActionSink {
         case .autoJoin:
             send(.joinMeeting(eventID: event.id))
         case .scriptOnStart:
-            guard event.meetingLink != nil else { return false }
             runEventStartScript(event)
         case .eventStart, .eventEnd:
             return false
