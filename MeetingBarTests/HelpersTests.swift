@@ -497,6 +497,7 @@ final class ProviderOpeningPolicyTests: BaseTestCase {
         var browserOpens: [(URL, Browser)] = []
         var defaultURLs: [URL] = []
         var pwaLaunchResults: [Bool] = []
+        var messages: [AppMessage] = []
     }
 
     func test_workplaceNativeURLPercentEncodesOriginalURL() {
@@ -583,7 +584,8 @@ final class ProviderOpeningPolicyTests: BaseTestCase {
             },
             browserOpener: {
                 spy.browserOpens.append(($0, $1))
-            }
+            },
+            postMessage: { spy.messages.append($0) }
         )
 
         strategy.open(
@@ -595,6 +597,8 @@ final class ProviderOpeningPolicyTests: BaseTestCase {
         XCTAssertEqual(spy.nativeURLs.map(\.absoluteString), ["tuple://c/abc123"])
         XCTAssertEqual(spy.browserOpens.first?.0, original)
         XCTAssertEqual(spy.browserOpens.first?.1, browser)
+        XCTAssertEqual(spy.browserOpens.count, 1)
+        XCTAssertEqual(spy.messages, [.meetingAppUnavailable(name: "Tuple")])
     }
 
     func test_tupleBrowserModeDoesNotTryNativeApp() {
@@ -606,7 +610,8 @@ final class ProviderOpeningPolicyTests: BaseTestCase {
                 spy.nativeURLs.append($0)
                 return true
             },
-            browserOpener: { spy.browserOpens.append(($0, $1)) }
+            browserOpener: { spy.browserOpens.append(($0, $1)) },
+            postMessage: { spy.messages.append($0) }
         )
 
         strategy.open(
@@ -615,6 +620,7 @@ final class ProviderOpeningPolicyTests: BaseTestCase {
             defaultBrowser: systemDefaultBrowser
         )
 
+        XCTAssertTrue(spy.messages.isEmpty)
         XCTAssertTrue(spy.nativeURLs.isEmpty)
         XCTAssertEqual(spy.browserOpens.first?.0, original)
         XCTAssertEqual(spy.browserOpens.first?.1, browser)
@@ -630,7 +636,8 @@ final class ProviderOpeningPolicyTests: BaseTestCase {
             },
             browserOpener: {
                 spy.browserOpens.append(($0, $1))
-            }
+            },
+            postMessage: { spy.messages.append($0) }
         )
 
         strategy.open(
@@ -643,6 +650,7 @@ final class ProviderOpeningPolicyTests: BaseTestCase {
         )
 
         XCTAssertEqual(spy.nativeURLs.map(\.absoluteString), ["tuple://c/abc123"])
+        XCTAssertTrue(spy.messages.isEmpty)
         XCTAssertTrue(spy.browserOpens.isEmpty)
     }
 

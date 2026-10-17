@@ -47,6 +47,7 @@ a safer foundation for calendar providers and future integrations.
 ### Meeting reliability
 
 * Add an opt-in Tuple app opener with browser fallback when the app is unavailable.
+  Report unavailable Tuple without a spurious browser error before falling back.
 
 * Resolve Clari Copilot Google Meet wrappers to the direct meeting URL.
 
