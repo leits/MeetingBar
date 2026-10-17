@@ -67,7 +67,6 @@
 "preferences_advanced_regex_title" = "Egendefinerte regulære uttrykk for møtelenke";
 "preferences_advanced_wrong_location_message" = "Velg Bruker → Bibliotek → Programskript → leits.MeetingBar-mappen";
 "preferences_advanced_apple_script_placeholder" = "# skriv ditt skript her\ntell application \"Music\" to pause";
-"preferences_advanced_run_script_on_event_start" = "Run AppleScript automatically";
 "preferences_advanced_test_script_on_next_event" = "Test on next event";
 "preferences_advanced_edit_script" = "Edit script";
 "preferences_advanced_apple_script_checkmark" = "Kjør AppleScript når du tar del i møtet";

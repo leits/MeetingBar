@@ -157,7 +157,6 @@
 "preferences_advanced_setting_warning" = "⚠️ これらの設定は、内容をご理解の上でご利用ください。";
 "preferences_advanced_apple_script_checkmark" = "参加時にAppleScriptを実行する";
 "preferences_advanced_apple_script_placeholder" = "# ここにスクリプトを書いてください\ntell application \"Music\" to pause";
-"preferences_advanced_run_script_on_event_start" = "参加可能な会議の前にAppleScriptを実行";
 "preferences_advanced_test_script_on_next_event" = "次のイベントをテストする";
 "preferences_advanced_edit_script" = "スクリプトを編集";
 "preferences_advanced_save_script_button" = "保存";

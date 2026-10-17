@@ -224,7 +224,6 @@
 
 "preferences_advanced_setting_warning" = "⚠️ Sadece ne yaptğınızı biliyorsanız, bu ayarları kullanın";
 "preferences_advanced_apple_script_placeholder" = "# scriptinizi buraya yazın\ntell application \"Music\" to pause";
-"preferences_advanced_run_script_on_event_start" = "AppleScript'i otomatik olarak çalıştır";
 "preferences_advanced_test_script_on_next_event" = "Bir sonraki etkinlikte test edin";
 "preferences_advanced_edit_script" = "Komut dosyasını düzenle";
 "preferences_advanced_regex_title" = "Toplantı bağlantıları için özel regex betikleri";

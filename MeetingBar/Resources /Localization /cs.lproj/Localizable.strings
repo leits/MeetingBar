@@ -126,7 +126,6 @@
 "preferences_advanced_wrong_location_title" = "Nesprávné umístění";
 "preferences_advanced_save_script_button" = "Uložit skript";
 "preferences_advanced_apple_script_placeholder" = "# sem napište svůj skript\ntell application \"Music\" to pause";
-"preferences_advanced_run_script_on_event_start" = "Spouštět AppleScript před schůzkami s odkazem";
 "preferences_advanced_test_script_on_next_event" = "Vyzkoušet na příští události";
 "preferences_advanced_edit_script" = "Upravit skript";
 "preferences_advanced_apple_script_checkmark" = "Spustit AppleScript při připojení ke schůzce";
