@@ -56,6 +56,8 @@ a safer foundation for calendar providers and future integrations.
 
 * Updated Czech, Dutch, Japanese and Simplified Chinese translations.
 
+* The time-under-title status bar layout uses a dedicated two-line view to
+  avoid clipped text, with native button clicks and accessible title/time.
 * Google Meet selects the base account for personal Gmail `+tag` aliases,
   while preserving account addresses on other domains.
 * Outlook SafeLinks unwrap every valid link despite malformed neighbors,
