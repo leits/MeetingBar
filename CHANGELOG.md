@@ -54,6 +54,8 @@ a safer foundation for calendar providers and future integrations.
 * Run event-start scripts for eligible events without a meeting link, passing `EMPTY` as the URL.
   The Preferences test button also supports these events and explains both script hooks.
 
+* Updated Czech, Dutch, Japanese and Simplified Chinese translations.
+
 * Google Meet selects the base account for personal Gmail `+tag` aliases,
   while preserving account addresses on other domains.
 * Outlook SafeLinks unwrap every valid link despite malformed neighbors,
