@@ -2,6 +2,11 @@
 
 For next releases info look here: <https://github.com/leits/MeetingBar/releases>
 
+## Unreleased
+
+* Fixed the status-bar title and time alignment when time is displayed below
+  the title, including inactive menu bars on secondary displays.
+
 ## 5.0.0 (2026-06-19)
 
 MeetingBar 5 is an architecture and product refresh. It improves the
