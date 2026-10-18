@@ -1,0 +1,13 @@
+# Project coverage can vary slightly between equivalent macOS CI runs,
+# especially for asynchronous AppKit/Combine paths. Keep new-code coverage strict
+# while allowing 0.1 percentage points of measurement drift in the whole app.
+coverage:
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 0.1%
+    patch:
+      default:
+        target: auto
+        threshold: 0%
