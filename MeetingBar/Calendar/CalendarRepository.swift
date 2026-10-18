@@ -57,6 +57,8 @@ public final class CalendarRepository {
     private let storeFactory: (EventStoreProvider) -> EventStore
     private let observesSystemStoreChanges: Bool
     private var pendingProvider: EventStore?
+    /// Invalidates older asynchronous sign-in/fetch completions.
+    private var switchGeneration = 0
 
     /// Fires when the EKEventStore changes (macOS Calendar App only).
     let storeChanged = PassthroughSubject<Void, Never>()
@@ -82,8 +84,12 @@ public final class CalendarRepository {
         let previousProvider = activeProvider
         let candidate = storeFactory(providerName)
         let reauthorizingCurrentProvider = candidate === previousProvider
+        switchGeneration += 1
+        let generation = switchGeneration
         pendingProvider = candidate
-        defer { pendingProvider = nil }
+        defer {
+            if generation == switchGeneration { pendingProvider = nil }
+        }
 
         if signOutCurrent, reauthorizingCurrentProvider {
             await (previousProvider as? AuthenticatedEventStore)?.signOut()
@@ -91,12 +97,22 @@ public final class CalendarRepository {
 
         try await (candidate as? AuthenticatedEventStore)?.signIn(forcePrompt: false)
         let calendars = try await candidate.fetchAllCalendars()
+        // An older sign-in may finish after the user selects another provider.
+        // It must never replace that provider or clear its selections.
+        guard generation == switchGeneration, !Task.isCancelled else {
+            if candidate !== activeProvider { candidate.cancelPendingOperations() }
+            throw CancellationError()
+        }
         if providerName == .googleCalendar, calendars.isEmpty {
             throw CalendarRepositoryError.noCalendars(providerName)
         }
 
         if signOutCurrent, !reauthorizingCurrentProvider {
             await (previousProvider as? AuthenticatedEventStore)?.signOut()
+            guard generation == switchGeneration, !Task.isCancelled else {
+                if candidate !== activeProvider { candidate.cancelPendingOperations() }
+                throw CancellationError()
+            }
         } else if !reauthorizingCurrentProvider {
             previousProvider.cancelPendingOperations()
         }
@@ -111,6 +127,7 @@ public final class CalendarRepository {
     }
 
     public func stop() {
+        switchGeneration += 1
         storeChangeCancellable?.cancel()
         storeChangeCancellable = nil
         if let pendingProvider, pendingProvider !== activeProvider {

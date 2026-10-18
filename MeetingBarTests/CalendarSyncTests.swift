@@ -896,3 +896,110 @@ final class ProviderHealthTests: BaseTestCase {
         XCTAssertTrue(manager.providerHealth.authRequired)
     }
 }
+
+@MainActor
+final class ConcurrentProviderSwitchTests: BaseTestCase {
+    func testSupersededSignInDoesNotReplaceSelectedProviderOrMarkStale() async throws {
+        let gate = ProviderSignInGate()
+        let currentStore = FakeEventStore(calendars: [
+            MBCalendar(title: "Local", id: "local", source: nil, email: nil, color: .black)
+        ])
+        let pendingStore = SuspendedSignInEventStore(gate: gate)
+        Defaults[.eventStoreProvider] = .macOSEventKit
+        Defaults[.selectedCalendarIDs] = ["local"]
+
+        let repository = CalendarRepository(providerName: .macOSEventKit) { name in
+            name == .googleCalendar ? pendingStore : currentStore
+        }
+        let sync = CalendarSync(repository: repository, refreshInterval: 0)
+        let outdatedSwitch = Task { await sync.changeEventStoreProvider(.googleCalendar) }
+        await gate.waitUntilEntered()
+
+        // A newer provider choice wins, even if the earlier OAuth callback
+        // completes later, after the second selection has committed.
+        let currentChoice = await sync.changeEventStoreProvider(.macOSEventKit)
+        XCTAssertEqual(currentChoice, .success)
+        await gate.release()
+        let superseded = await outdatedSwitch.value
+
+        XCTAssertEqual(superseded, .cancelled)
+        XCTAssertEqual(repository.activeProviderName, .macOSEventKit)
+        XCTAssertEqual(Defaults[.eventStoreProvider], .macOSEventKit)
+        XCTAssertEqual(Defaults[.selectedCalendarIDs], ["local"])
+        XCTAssertFalse(sync.providerHealth.authRequired)
+        XCTAssertFalse(sync.providerHealth.isStale)
+        sync.stop()
+    }
+
+    func testStoppingDuringPendingProviderSignInDoesNotCommitLateResult() async {
+        let gate = ProviderSignInGate()
+        let currentStore = FakeEventStore()
+        let pendingStore = SuspendedSignInEventStore(gate: gate)
+        let repository = CalendarRepository(providerName: .macOSEventKit) { name in
+            name == .googleCalendar ? pendingStore : currentStore
+        }
+        let sync = CalendarSync(repository: repository, refreshInterval: 0)
+        let change = Task { await sync.changeEventStoreProvider(.googleCalendar) }
+        await gate.waitUntilEntered()
+        sync.stop()
+        await gate.release()
+
+        XCTAssertEqual(await change.value, .cancelled)
+        XCTAssertEqual(repository.activeProviderName, .macOSEventKit)
+    }
+}
+
+private actor ProviderSignInGate {
+    private var entered = false
+    private var released = false
+    private var startWaiters: [CheckedContinuation<Void, Never>] = []
+    private var releaseWaiters: [CheckedContinuation<Void, Never>] = []
+
+    func holdSignIn() async {
+        entered = true
+        startWaiters.forEach { $0.resume() }
+        startWaiters.removeAll()
+        if !released {
+            await withCheckedContinuation { releaseWaiters.append($0) }
+        }
+    }
+
+    func waitUntilEntered() async {
+        guard !entered else { return }
+        await withCheckedContinuation { startWaiters.append($0) }
+    }
+
+    func release() {
+        released = true
+        releaseWaiters.forEach { $0.resume() }
+        releaseWaiters.removeAll()
+    }
+}
+
+private final class SuspendedSignInEventStore: AuthenticatedEventStore, @unchecked Sendable {
+    private let gate: ProviderSignInGate
+
+    init(gate: ProviderSignInGate) {
+        self.gate = gate
+    }
+
+    func signIn(forcePrompt _: Bool) async throws {
+        await gate.holdSignIn()
+    }
+
+    func signOut() async {}
+    func refreshSources() async {}
+
+    func fetchAllCalendars() async throws -> [MBCalendar] {
+        [MBCalendar(title: "Google", id: "google", source: nil, email: nil, color: .black)]
+    }
+
+    func fetchEventsForDateRange(
+        for _: [MBCalendar], from _: Date, to _: Date
+    ) async throws -> [MBEvent] {
+        []
+    }
+
+    @MainActor
+    func cancelPendingOperations() {}
+}

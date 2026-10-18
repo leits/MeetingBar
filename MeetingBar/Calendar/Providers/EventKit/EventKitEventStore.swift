@@ -122,10 +122,30 @@ extension EKEventStore: AuthenticatedEventStore {
         }
         // events(matching:) blocks while EventKit walks the store. For users
         // with thousands of events this hung the menu bar. Push it off main.
-        return await Task.detached(priority: .userInitiated) {
-            fetchEventsOffMain(knownCalendars: calendars, dateFrom: dateFrom, dateTo: dateTo)
+        return try await Task.detached(priority: .userInitiated) {
+            try fetchEventsOffMain(knownCalendars: calendars, dateFrom: dateFrom, dateTo: dateTo)
         }.value
     }
+}
+
+/// Selected EventKit calendars disappeared from the current system store.
+/// A successful empty fetch would otherwise erase the last known meetings.
+enum EventKitCalendarSelectionError: LocalizedError, Equatable {
+    case selectedCalendarsUnavailable
+
+    var errorDescription: String? {
+        "Previously selected macOS calendars are no longer available"
+    }
+}
+
+func requireAvailableEventKitSelection(
+    selectedIDs: [String],
+    availableIDs: [String]
+) throws {
+    guard !selectedIDs.isEmpty,
+          Set(selectedIDs).isDisjoint(with: availableIDs)
+    else { return }
+    throw EventKitCalendarSelectionError.selectedCalendarsUnavailable
 }
 
 /// One EventKit occurrence as returned by the provider's query.
@@ -166,18 +186,23 @@ private func fetchEventsOffMain(
     knownCalendars: [MBCalendar],
     dateFrom: Date,
     dateTo: Date
-) -> [MBEvent] {
-    mapEventKitRead(
+) throws -> [MBEvent] {
+    guard !knownCalendars.isEmpty else { return [] }
+    let selectedIDs = knownCalendars.map(\.id)
+    let selectedIDSet = Set(selectedIDs)
+    let selectedCalendars = EKEventStore.shared.calendars(for: .event).filter {
+        selectedIDSet.contains($0.calendarIdentifier)
+    }
+    try requireAvailableEventKitSelection(
+        selectedIDs: selectedIDs,
+        availableIDs: selectedCalendars.map(\.calendarIdentifier)
+    )
+    return mapEventKitRead(
         knownCalendars: knownCalendars,
         dateFrom: dateFrom,
         dateTo: dateTo,
         customRegexes: Defaults[.customRegexes]
-    ) { calendarIDs, from, to in
-        let selectedIDs = Set(calendarIDs)
-        let selectedCalendars = EKEventStore.shared.calendars(for: .event).filter {
-            selectedIDs.contains($0.calendarIdentifier)
-        }
-        guard !selectedCalendars.isEmpty else { return [] }
+    ) { _, from, to in
         let predicate = EKEventStore.shared.predicateForEvents(
             withStart: from, end: to, calendars: selectedCalendars
         )

@@ -90,6 +90,28 @@ final class EventKitReadContractTests: XCTestCase {
         XCTAssertEqual(results.first?.scriptIdentifier, raw.calendarItemIdentifier)
     }
 
+    func testUnavailableSelectedCalendarIsNotMistakenForEmptyEvents() {
+        XCTAssertThrowsError(
+            try requireAvailableEventKitSelection(
+                selectedIDs: ["removed-calendar"],
+                availableIDs: ["different-calendar"]
+            )
+        ) { error in
+            XCTAssertEqual(
+                error as? EventKitCalendarSelectionError,
+                .selectedCalendarsUnavailable
+            )
+        }
+    }
+
+    func testEmptySelectionAndPartiallyAvailableSelectionStayValid() throws {
+        XCTAssertNoThrow(try requireAvailableEventKitSelection(selectedIDs: [], availableIDs: []))
+        XCTAssertNoThrow(try requireAvailableEventKitSelection(
+            selectedIDs: ["selected", "missing"],
+            availableIDs: ["selected"]
+        ))
+    }
+
     func testEmptySelectionSkipsEventKitQuery() {
         var readWasCalled = false
         let results = mapEventKitRead(
