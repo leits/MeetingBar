@@ -295,11 +295,13 @@ public class CalendarSync: ObservableObject {
                                 )))
                                 return
                             }
+                            var fetchedCalendars: [MBCalendar]?
                             do {
                                 let cals = try await self.withRefreshTimeout {
                                     try await self.repository.fetchAllCalendars()
                                 }
                                 try Task.checkCancellation()
+                                fetchedCalendars = cals
                                 let evts = try await self.withRefreshTimeout {
                                     try await self.fetchEvents(fromCalendars: cals)
                                 }
@@ -320,8 +322,21 @@ public class CalendarSync: ObservableObject {
                                     attempted: attempted,
                                     error: error
                                 )
+                                // Keep the last good meetings on a missing
+                                // EventKit selection, but expose the latest
+                                // calendar inventory so Preferences can remove
+                                // the unavailable saved IDs. Other failures
+                                // retain the previous full snapshot.
+                                let visibleCalendars: [MBCalendar]
+                                if case .eventFetchFailed(let cause) = error as? CalendarSyncError,
+                                   cause is EventKitCalendarSelectionError,
+                                   let fetchedCalendars {
+                                    visibleCalendars = fetchedCalendars
+                                } else {
+                                    visibleCalendars = preservedCalendars
+                                }
                                 promise(.success(RefreshResult(
-                                    calendars: preservedCalendars,
+                                    calendars: visibleCalendars,
                                     events: preservedEvents,
                                     health: health,
                                     providerGeneration: providerGeneration

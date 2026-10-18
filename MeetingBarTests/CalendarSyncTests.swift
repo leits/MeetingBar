@@ -1142,6 +1142,7 @@ final class MissingSelectedEventKitCalendarsTests: BaseTestCase {
         await fulfillment(of: [stale], timeout: 2.0)
 
         XCTAssertEqual(sync.events, [event])
+        XCTAssertTrue(sync.calendars.isEmpty, "Expose new inventory while retaining last good events")
         XCTAssertTrue(sync.providerHealth.isStale)
         XCTAssertTrue(sync.providerHealth.lastErrorDescription?.contains(
             "Previously selected macOS calendars are no longer available"

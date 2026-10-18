@@ -502,3 +502,67 @@ final class PreferencesPresentationTests: XCTestCase {
         )
     }
 }
+
+@MainActor
+final class MissingCalendarPreferencesRecoveryTests: XCTestCase {
+    func testMissingSavedCalendarVisibleEvenWhenFreshInventoryIsEmpty() {
+        let health = ProviderHealth.failure(
+            previous: ProviderHealth(),
+            attempted: Date(),
+            error: CalendarSyncError.eventFetchFailed(
+                EventKitCalendarSelectionError.selectedCalendarsUnavailable
+            )
+        )
+        XCTAssertEqual(
+            unavailableSelectedCalendarIDs(
+                selectedIDs: ["removed-calendar"],
+                calendars: [],
+                provider: .macOSEventKit,
+                health: health
+            ),
+            ["removed-calendar"]
+        )
+    }
+
+    func testPartiallyMissingSelectionOffersOnlyRemovedCalendar() {
+        let health = ProviderHealth.failure(
+            previous: ProviderHealth(),
+            attempted: Date(),
+            error: CalendarSyncError.eventFetchFailed(
+                EventKitCalendarSelectionError.selectedCalendarsUnavailable
+            )
+        )
+        XCTAssertEqual(
+            unavailableSelectedCalendarIDs(
+                selectedIDs: ["available", "lost"],
+                calendars: [makeFakeCalendar(id: "available")],
+                provider: .macOSEventKit,
+                health: health
+            ),
+            ["lost"]
+        )
+    }
+
+    func testHealthyOrGoogleCalendarsNeverShowMissingSelectionRecovery() {
+        let health = ProviderHealth.success(attempted: Date())
+        XCTAssertTrue(unavailableSelectedCalendarIDs(
+            selectedIDs: ["old"],
+            calendars: [],
+            provider: .macOSEventKit,
+            health: health
+        ).isEmpty)
+        let stale = ProviderHealth.failure(
+            previous: health,
+            attempted: Date(),
+            error: CalendarSyncError.eventFetchFailed(
+                EventKitCalendarSelectionError.selectedCalendarsUnavailable
+            )
+        )
+        XCTAssertTrue(unavailableSelectedCalendarIDs(
+            selectedIDs: ["old"],
+            calendars: [],
+            provider: .googleCalendar,
+            health: stale
+        ).isEmpty)
+    }
+}
