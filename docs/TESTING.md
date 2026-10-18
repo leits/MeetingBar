@@ -5,8 +5,11 @@
 - make test-logic-quiet: SwiftPM pure-logic and policy tests.
 - make test-app-quiet: macOS app-hosted tests, provider contracts, NSMenu/status-bar layout and application flows.
 - make lint: SwiftLint.
-- CI runs both targets and uploads SwiftPM LCOV plus app-hosted Cobertura coverage. Coverage is a diagnostic signal, not a substitute for meaningful regression tests.
-- codecov.yml retains strict patch coverage while allowing 0.1 percentage points of whole-project noise from asynchronous runtime paths; do not add artificial test coverage just to improve the aggregate percentage.
+- CI runs both targets, uploading SwiftPM LCOV as `swiftpm_logic` and app-hosted Cobertura as `app_hosted` (separate Codecov flags, combined overall report).
+- `codecov/project/swiftpm_logic` is blocking against the base commit: the headless logic suite is deterministic and should not lose coverage.
+- `codecov/patch` is blocking with an 85% floor for changed production lines; review uncovered changes rather than testing only to raise a number.
+- Aggregate `codecov/project` coverage stays visible but informational: AppKit/Combine execution paths make tiny coverage changes noisy on test-only PRs. A large aggregate drop still deserves manual investigation.
+- Both suites run on each PR and master commit; carryforward is disabled to prevent stale data from making coverage look better. Coverage never replaces behavioral regression tests.
 
 Provider tests should cover external input -> production parser/adapter -> domain result and error/recovery. They do not contact real Google, require OAuth credentials, or read a user's EventKit calendars. App flow tests replace outward side effects and verify meeting selection, freshness, join target and notifications.
 
