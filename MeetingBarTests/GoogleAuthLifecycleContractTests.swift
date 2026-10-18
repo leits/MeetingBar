@@ -54,6 +54,47 @@ final class GoogleAuthLifecycleContractTests: XCTestCase {
         }
     }
 
+    func testNewAuthorizationCompletesOldWaiterAndKeepsNewOneAlive() {
+        let slot = GoogleAuthorizationFlowSlot()
+        let firstGeneration = slot.begin()
+        var firstCompleted = 0
+        var firstCancelled = false
+        slot.register(firstGeneration) { result in
+            firstCompleted += 1
+            if case .failure(AuthError.cancelled) = result { firstCancelled = true }
+        }
+
+        let secondGeneration = slot.begin()
+        XCTAssertTrue(firstCancelled)
+        XCTAssertEqual(firstCompleted, 1)
+        XCTAssertFalse(slot.isPending(firstGeneration))
+
+        var secondCompleted = 0
+        slot.register(secondGeneration) { result in
+            if case .success = result { secondCompleted += 1 }
+        }
+        slot.finish(firstGeneration, result: .success(()))
+        XCTAssertTrue(slot.isPending(secondGeneration))
+        XCTAssertEqual(secondCompleted, 0)
+        slot.finish(secondGeneration, result: .success(()))
+        slot.finish(secondGeneration, result: .success(()))
+        XCTAssertEqual(secondCompleted, 1)
+        XCTAssertEqual(firstCompleted, 1)
+    }
+
+    func testCancellingCurrentAuthorizationSettlesAwaiterWithoutAppAuthCallback() {
+        let slot = GoogleAuthorizationFlowSlot()
+        let attempt = slot.begin()
+        var cancellations = 0
+        slot.register(attempt) { result in
+            if case .failure(AuthError.cancelled) = result { cancellations += 1 }
+        }
+        slot.cancel()
+        slot.finish(attempt, result: .success(()))
+        XCTAssertEqual(cancellations, 1)
+        XCTAssertFalse(slot.isPending(attempt))
+    }
+
     func testLateAuthorizationCallbackCannotInstallStaleSession() {
         var installedState: String?
         XCTAssertThrowsError(try GCEventStore.acceptAuthorizationResult(
