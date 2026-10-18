@@ -226,7 +226,7 @@ final class GoogleCalendarHTTPClientTests: XCTestCase {
         )
 
         let task = Task { @MainActor in
-            try await client.fetchJSON(eventsURL)
+            _ = try await client.fetchJSON(eventsURL)
         }
         do {
             _ = try await task.value
