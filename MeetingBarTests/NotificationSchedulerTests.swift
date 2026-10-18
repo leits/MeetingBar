@@ -236,10 +236,15 @@ final class NotificationSchedulerTests: BaseTestCase {
         let settings = fullscreenOnlySettings(offset: 0)
 
         await scheduler.reconcile(events: [scheduledEvent], settings: settings, now: now)
-        for _ in 0..<20 where actionSink.actions.isEmpty {
-            await Task.yield()
-            await scheduler.reconcile(events: [scheduledEvent], settings: settings, now: now)
-        }
+        // Await the actual first scheduled task: the failing sleeper must have
+        // finished and the scheduler must have cleared its pending identity.
+        await scheduler.waitForPendingActionsForTesting()
+        let failedAttempts = await sleeper.attemptCount
+        XCTAssertEqual(failedAttempts, 1)
+        XCTAssertTrue(actionSink.actions.isEmpty)
+
+        await scheduler.reconcile(events: [scheduledEvent], settings: settings, now: now)
+        await scheduler.waitForPendingActionsForTesting()
 
         let attempts = await sleeper.attemptCount
         XCTAssertEqual(attempts, 2)
