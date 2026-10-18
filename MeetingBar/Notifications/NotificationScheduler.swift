@@ -60,6 +60,9 @@ final class NotificationScheduler {
     /// keyed by notification identifier. Reconciled on every refresh — stale
     /// tasks are cancelled, missing ones are scheduled.
     private var actionTasks: [String: Task<Void, Never>] = [:]
+    /// Always use the latest provider snapshot at fire time. An unchanged
+    /// start date/identity must not keep an outdated meeting URL alive.
+    private var latestActionEvents: [String: MBEvent] = [:]
     private var systemReconcileTask: Task<Void, Never>?
     private var isStopped = false
 
@@ -91,6 +94,7 @@ final class NotificationScheduler {
         systemReconcileTask?.cancel()
         actionTasks.values.forEach { $0.cancel() }
         actionTasks.removeAll()
+        latestActionEvents.removeAll()
         runner.setActionSink(nil)
     }
 
@@ -204,11 +208,16 @@ final class NotificationScheduler {
         for id in Array(actionTasks.keys) where !desiredIDs.contains(id) {
             actionTasks[id]?.cancel()
             actionTasks[id] = nil
+            latestActionEvents[id] = nil
         }
 
         for plan in plans {
             let id = Self.identifierPrefix + plan.identity
-            guard actionTasks[id] == nil, let event = eventByID[plan.eventID] else { continue }
+            guard let event = eventByID[plan.eventID] else { continue }
+            // The plan identity intentionally ignores event-link edits. Do not
+            // carry the original event snapshot into a delayed join action.
+            latestActionEvents[id] = event
+            guard actionTasks[id] == nil else { continue }
 
             let sleep = sleepAction
             actionTasks[id] = Task { [weak self] in
@@ -217,13 +226,23 @@ final class NotificationScheduler {
                     do {
                         try await sleep(delay)
                     } catch {
+                        // A cancelled plan was already removed by reconcile or stop.
+                        // A different sleep failure must not strand the plan forever.
+                        if !Task.isCancelled {
+                            self?.actionTasks[id] = nil
+                            self?.latestActionEvents[id] = nil
+                        }
                         return
                     }
                 }
                 await MainActor.run {
-                    guard let self, !Task.isCancelled else { return }
-                    self.runner.fire(plan: plan, event: event, settings: settings, now: self.actionDate())
+                    guard let self, !Task.isCancelled,
+                          let latestEvent = self.latestActionEvents[id] else { return }
+                    self.runner.fire(
+                        plan: plan, event: latestEvent, settings: settings, now: self.actionDate()
+                    )
                     self.actionTasks[id] = nil
+                    self.latestActionEvents[id] = nil
                 }
             }
         }
