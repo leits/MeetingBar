@@ -402,3 +402,6 @@
 "preferences_advanced_script_hooks_help" = "Skripty navázané na začátek události se spouštějí i u událostí bez odkazu na schůzku. Skripty pro připojení se spouštějí pouze při připojení ke schůzce.";
 "preferences_meeting_opening_mode_tuple_app" = "Aplikace Tuple";
 "changelog_full_release_notes" = "Kompletní poznámky k vydání na GitHubu";
+"preferences_calendars_unavailable_title" = "Vybrané kalendáře nejsou dostupné";
+"preferences_calendars_unavailable_help" = "Tyto uložené kalendáře nejsou dostupné. Zkontrolujte přístup ke kalendáři v macOS nebo z výběru odeberte nedostupné kalendáře, aby se schůzky mohly znovu aktualizovat.";
+"preferences_calendars_remove_missing" = "Odebrat";
