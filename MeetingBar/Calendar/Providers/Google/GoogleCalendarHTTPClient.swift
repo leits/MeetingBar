@@ -43,6 +43,7 @@ struct GoogleCalendarHTTPClient {
                 break
             case .retryWithForcedTokenRefresh:
                 _ = try await accessToken(true)
+                try Task.checkCancellation()
                 return try await fetchJSONPage(url, calendarID: calendarID, retrying: true)
             case .throwAuthRequired:
                 // A Calendar API rejection must not delete the persisted grant.
