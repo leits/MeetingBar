@@ -72,6 +72,27 @@ Both coverage flags use `carryforward: false`; a missing current report should n
 
 The first CI run against an older `master` cannot compare the new `swiftpm_logic` flag to a baseline. Only enforce that comparison after a `master` upload has established the same flag. When aggregate coverage drops, compare changes in covered files, flags, and timing-sensitive tests rather than adding artificial assertions to raise the percentage.
 
+### Reviewing system-boundary patch coverage
+
+The 85% `codecov/patch` check is a default guard, not a substitute for
+test-design review. When a reliability fix touches macOS framework or external
+authorization callbacks that cannot be exercised deterministically in ordinary
+CI, distinguish untested *policy* from untested *platform integration*.
+
+For any requested exception, the PR must record the **final** coverage report
+(after both uploads), the uncovered production branches by subsystem, which
+failure/recovery contracts are already tested, and what still requires a signed
+macOS release smoke. The maintainer must explicitly accept the residual risk.
+Keep `codecov/project/swiftpm_logic` blocking; do not lower the global patch
+target, hide whole files, or add assertions that only increase coverage counts.
+A failed required check stays failed unless an authorized branch-protection
+exception is applied: documenting one does not make CI green.
+
+The follow-up design for component/layer-aware checks is tracked in
+[#1028](https://github.com/leits/MeetingBar/issues/1028). Until that is
+implemented, system-boundary exceptions are exceptional and release smoke is
+still required.
+
 ### Optional performance measurements
 
 Run `make test-performance` on macOS with the pinned toolchain. `PerformanceBaselineTests` is skipped by default in the normal SwiftPM suite. Synthetic workloads cover:
@@ -85,6 +106,18 @@ Run on the **same** hardware to compare results, recording Xcode/Swift version, 
 ### Shareable diagnostics
 
 `DiagnosticsReport` redacts HTTP, iCal and file URLs copied from provider errors (including calendar paths and query credentials), while keeping error types and status codes. The rest of a diagnostics report is **not** guaranteed to be free of private information; review it and any logs before pasting into a public issue.
+
+### Release-only Google authorization smoke (real macOS + test Google account)
+
+Run this **manually before v5 release**, not in normal automated CI. Use a non-production Google account/calendar and a signed/release-configured MeetingBar build. Record the build, macOS version, account type (no address), actions, observed behavior, and pass/fail; do not attach OAuth redirects, tokens, Keychain dumps, or unredacted calendar diagnostics.
+
+1. **Normal authorization and persistence.** Connect Google Calendar, grant consent and select a test calendar with an upcoming event. Confirm its event/link appears; quit and reopen MeetingBar and confirm it remains connected and refreshes without a browser prompt. Reconnect when prompted and confirm new events load.
+2. **Browser cancellation and abandoned callback.** From a disconnected or reconnect-required state, start Google sign-in and cancel/close the browser authorization flow before the redirect. Switch to macOS Calendar, then initiate Google sign-in again. Confirm the first attempt cannot overwrite the later selected provider, dismiss or replace the new session, or block subsequent user actions. Also try returning a redirect from the abandoned browser tab after selecting another provider; it must not change the current choice. **Record whether the original sign-in task ever settles:** generation checks prevent stale state writes but do not themselves ensure a completion callback exists.
+3. **No-completion / connectivity failure.** Begin sign-in on a test network, then disconnect before Google/AppAuth returns. Confirm Calendar and menu interactions still work, switching provider remains possible, and a new explicit authorization attempt works after reconnecting. If the pending sign-in never resolves, record it as an **unresolved lifecycle failure**, not a pass. This is a manual failure probe, not a guaranteed simulation of a callback that never returns.
+4. **Sign-out racing with reauthorization.** Connect the test account; start switching away from Google with sign-out and initiate a new Google connection before old token revocations finish (network throttling may help). Confirm the newer local connection is still selected and usable after the earlier sign-out settles. Quit/relaunch, refresh the test calendar and verify that Google does not unexpectedly require consent.
+5. **Repeat with genuine account changes if available.** Reauthorize using a different test account. Verify a late callback or revocation from the old account does not replace the current account or erase its local state. Recheck event freshness, stale/error messaging, and the meeting URL.
+
+**Release decision:** Any hanging authorization that blocks provider switching, unexpectedly lost new Google session, stale callback replacing a newer provider, or silent loss of last-known-good meetings is a failed smoke. Capture reproduction steps and sanitized diagnostics. Remote revocation is irreversible: a smoke run **cannot prove** safety if Google reuses an identical refresh token across separate authorizations. Treat that as a documented residual risk, not as a claim the race is fully eliminated.
 
 Before submitting a PR, record the exact test commands and results, and distinguish tests you **ran** from tests merely recommended. If the change touches entitlements, Xcode configuration, localization, URL schemes or release signing, follow the additional checks in [ARCHITECTURE.md](ARCHITECTURE.md).
 

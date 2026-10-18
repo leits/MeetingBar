@@ -214,6 +214,9 @@
 
 "preferences_calendars_select_calendars_title" = "Select calendars to show meetings in the menu bar";
 "preferences_calendars_provider_gcalendar_change_account" = "Change Google Account";
+"preferences_calendars_unavailable_title" = "Unavailable selected calendars";
+"preferences_calendars_unavailable_help" = "These saved calendars are not available. Check macOS Calendar access, or remove unavailable selections to resume updating meetings.";
+"preferences_calendars_remove_missing" = "Remove";
 
 // MARK: - Preferences Advanced
 

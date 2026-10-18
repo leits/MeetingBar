@@ -29,7 +29,7 @@ public enum CalendarSyncError: LocalizedError {
     }
 }
 
-public enum ProviderSelectionResult: Equatable {
+public enum ProviderSelectionResult: Equatable, Sendable {
     case success
     case cancelled
     case authRequired(String)
@@ -52,6 +52,7 @@ public class CalendarSync: ObservableObject {
     private var storeChangeRefreshTask: Task<Void, Never>?
     private var refreshCycleTask: Task<Void, Never>?
     private var providerGeneration = 0
+    private var providerSwitchGeneration = 0
     let refreshSubject = PassthroughSubject<Void, Never>()
 
     /// Upper bound on a single refresh cycle.
@@ -79,11 +80,14 @@ public class CalendarSync: ObservableObject {
         _ newProvider: EventStoreProvider,
         withSignOut: Bool = false
     ) async -> ProviderSelectionResult {
+        providerSwitchGeneration += 1
+        let switchGeneration = providerSwitchGeneration
         do {
             let newCalendars = try await repository.switchProvider(
                 to: newProvider,
                 signOutCurrent: withSignOut
             )
+            guard switchGeneration == providerSwitchGeneration else { return .cancelled }
             refreshCycleTask?.cancel()
             refreshCycleTask = nil
             AppSettings.setEventStoreProvider(newProvider)
@@ -95,6 +99,10 @@ public class CalendarSync: ObservableObject {
             refreshSubject.send()
             return .success
         } catch {
+            // A superseded switch is not a provider failure and must not
+            // replace the currently selected provider's health state.
+            guard switchGeneration == providerSwitchGeneration else { return .cancelled }
+            if error is CancellationError { return .cancelled }
             let attempted = Date()
             let errorDescription = String(describing: error)
             MeetingBarLogger.calendar.error(
@@ -153,6 +161,7 @@ public class CalendarSync: ObservableObject {
     }
 
     public func stop() {
+        providerSwitchGeneration += 1
         storeChangeRefreshTask?.cancel()
         storeChangeRefreshTask = nil
         refreshCycleTask?.cancel()
@@ -286,11 +295,13 @@ public class CalendarSync: ObservableObject {
                                 )))
                                 return
                             }
+                            var fetchedCalendars: [MBCalendar]?
                             do {
                                 let cals = try await self.withRefreshTimeout {
                                     try await self.repository.fetchAllCalendars()
                                 }
                                 try Task.checkCancellation()
+                                fetchedCalendars = cals
                                 let evts = try await self.withRefreshTimeout {
                                     try await self.fetchEvents(fromCalendars: cals)
                                 }
@@ -311,8 +322,21 @@ public class CalendarSync: ObservableObject {
                                     attempted: attempted,
                                     error: error
                                 )
+                                // Keep the last good meetings on a missing
+                                // EventKit selection, but expose the latest
+                                // calendar inventory so Preferences can remove
+                                // the unavailable saved IDs. Other failures
+                                // retain the previous full snapshot.
+                                let visibleCalendars: [MBCalendar]
+                                if case .eventFetchFailed(let cause) = error as? CalendarSyncError,
+                                   cause is EventKitCalendarSelectionError,
+                                   let fetchedCalendars {
+                                    visibleCalendars = fetchedCalendars
+                                } else {
+                                    visibleCalendars = preservedCalendars
+                                }
                                 promise(.success(RefreshResult(
-                                    calendars: preservedCalendars,
+                                    calendars: visibleCalendars,
                                     events: preservedEvents,
                                     health: health,
                                     providerGeneration: providerGeneration

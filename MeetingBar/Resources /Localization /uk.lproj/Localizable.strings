@@ -143,6 +143,9 @@
 // MARK: - Preferences Calendars
 
 "preferences_calendars_select_calendars_title" = "Виберіть календарі, щоб показати події у смузі меню";
+"preferences_calendars_unavailable_title" = "Недоступні вибрані календарі";
+"preferences_calendars_unavailable_help" = "Ці збережені календарі недоступні. Перевірте доступ до Календаря macOS або приберіть недоступні календарі з вибору, щоб відновити оновлення зустрічей.";
+"preferences_calendars_remove_missing" = "Прибрати";
 "preferences_calendars_provider_gcalendar_change_account" = "Змінити об. запис Google";
 
 // MARK: - Preferences Advanced

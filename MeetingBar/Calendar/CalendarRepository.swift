@@ -57,6 +57,8 @@ public final class CalendarRepository {
     private let storeFactory: (EventStoreProvider) -> EventStore
     private let observesSystemStoreChanges: Bool
     private var pendingProvider: EventStore?
+    /// Invalidates older asynchronous sign-in/fetch completions.
+    private var switchGeneration = 0
 
     /// Fires when the EKEventStore changes (macOS Calendar App only).
     let storeChanged = PassthroughSubject<Void, Never>()
@@ -81,22 +83,53 @@ public final class CalendarRepository {
     ) async throws -> [MBCalendar] {
         let previousProvider = activeProvider
         let candidate = storeFactory(providerName)
+        // Cancel a superseded interactive sign-in immediately. Waiting for
+        // its callback to finish before invalidating the old candidate would
+        // let that callback persist an authorization state after the user
+        // already picked a different provider.
+        if let pendingProvider, pendingProvider !== candidate,
+           pendingProvider !== activeProvider {
+            pendingProvider.cancelPendingOperations()
+        }
         let reauthorizingCurrentProvider = candidate === previousProvider
+        switchGeneration += 1
+        let generation = switchGeneration
         pendingProvider = candidate
-        defer { pendingProvider = nil }
+        defer {
+            if generation == switchGeneration { pendingProvider = nil }
+        }
 
         if signOutCurrent, reauthorizingCurrentProvider {
             await (previousProvider as? AuthenticatedEventStore)?.signOut()
+            // Sign-out suspends during token revocation. Do not start another
+            // sign-in if the user changed providers in the meantime.
+            guard generation == switchGeneration, !Task.isCancelled else {
+                throw CancellationError()
+            }
         }
 
         try await (candidate as? AuthenticatedEventStore)?.signIn(forcePrompt: false)
         let calendars = try await candidate.fetchAllCalendars()
+        // An older sign-in may finish after the user selects another provider.
+        // It must never replace that provider or clear its selections.
+        guard generation == switchGeneration, !Task.isCancelled else {
+            if candidate !== activeProvider, candidate !== pendingProvider {
+                candidate.cancelPendingOperations()
+            }
+            throw CancellationError()
+        }
         if providerName == .googleCalendar, calendars.isEmpty {
             throw CalendarRepositoryError.noCalendars(providerName)
         }
 
         if signOutCurrent, !reauthorizingCurrentProvider {
             await (previousProvider as? AuthenticatedEventStore)?.signOut()
+            guard generation == switchGeneration, !Task.isCancelled else {
+                if candidate !== activeProvider, candidate !== pendingProvider {
+                candidate.cancelPendingOperations()
+            }
+                throw CancellationError()
+            }
         } else if !reauthorizingCurrentProvider {
             previousProvider.cancelPendingOperations()
         }
@@ -111,6 +144,7 @@ public final class CalendarRepository {
     }
 
     public func stop() {
+        switchGeneration += 1
         storeChangeCancellable?.cancel()
         storeChangeCancellable = nil
         if let pendingProvider, pendingProvider !== activeProvider {
@@ -143,6 +177,14 @@ public final class CalendarRepository {
         let selectedCalendarIDs = AppSettings.selectedCalendarIDs(for: activeProviderName)
         let selectedCalendars = allCalendars.filter {
             selectedCalendarIDs.contains($0.id)
+        }
+        if activeProviderName == .macOSEventKit {
+            // An empty selection is intentional. A nonempty selection that no
+            // longer resolves is not an empty day: preserve the last snapshot.
+            try requireAvailableEventKitSelection(
+                selectedIDs: selectedCalendarIDs,
+                availableIDs: selectedCalendars.map(\.id)
+            )
         }
         let (dateFrom, dateTo) = calendarDateRange(for: Defaults[.showEventsForPeriod])
         return try await activeProvider.fetchEventsForDateRange(

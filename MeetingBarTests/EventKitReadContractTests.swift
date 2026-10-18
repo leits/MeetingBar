@@ -16,7 +16,7 @@ final class EventKitReadContractTests: XCTestCase {
         return event
     }
 
-    func testReadPassesSelectedIDsAndDateRangeThenMapsOccurrences() {
+    func testReadPassesSelectedIDsAndDateRangeThenMapsOccurrences() throws {
         let from = Date(timeIntervalSince1970: 1_790_000_000)
         let to = from.addingTimeInterval(24 * 3600)
         let raw = rawEvent(id: "Standup", date: from.addingTimeInterval(3600))
@@ -24,7 +24,7 @@ final class EventKitReadContractTests: XCTestCase {
         var requestedFrom: Date?
         var requestedTo: Date?
 
-        let results = mapEventKitRead(
+        let results = try mapEventKitRead(
             knownCalendars: [calendar],
             dateFrom: from,
             dateTo: to,
@@ -33,7 +33,10 @@ final class EventKitReadContractTests: XCTestCase {
             requestedIDs = calendarIDs
             requestedFrom = start
             requestedTo = end
-            return [EventKitRawOccurrence(calendarID: "cal-a", event: raw)]
+            return EventKitReadSnapshot(
+                availableCalendarIDs: ["cal-a"],
+                occurrences: [EventKitRawOccurrence(calendarID: "cal-a", event: raw)]
+            )
         }
 
         XCTAssertEqual(requestedIDs, ["cal-a"])
@@ -45,22 +48,25 @@ final class EventKitReadContractTests: XCTestCase {
         XCTAssertEqual(results.first?.scriptIdentifier, raw.calendarItemIdentifier)
     }
 
-    func testUnknownCalendarOccurrenceIsExcludedEvenWithDistinctEventID() {
+    func testUnknownCalendarOccurrenceIsExcludedEvenWithDistinctEventID() throws {
         let from = Date(timeIntervalSince1970: 1_790_000_000)
         let allowed = rawEvent(id: "Allowed meeting", date: from)
         // A different start guarantees a different composed event ID even if
         // EventKit gives unsaved test events identical calendarItemIdentifiers.
         let unknown = rawEvent(id: "Must not appear", date: from.addingTimeInterval(3600))
-        let results = mapEventKitRead(
+        let results = try mapEventKitRead(
             knownCalendars: [calendar],
             dateFrom: from,
             dateTo: from.addingTimeInterval(86_400),
             customRegexes: []
         ) { _, _, _ in
-            [
-                EventKitRawOccurrence(calendarID: "cal-a", event: allowed),
-                EventKitRawOccurrence(calendarID: "not-selected", event: unknown)
-            ]
+            EventKitReadSnapshot(
+                availableCalendarIDs: ["cal-a"],
+                occurrences: [
+                    EventKitRawOccurrence(calendarID: "cal-a", event: allowed),
+                    EventKitRawOccurrence(calendarID: "not-selected", event: unknown)
+                ]
+            )
         }
 
         XCTAssertEqual(results.count, 1)
@@ -70,19 +76,22 @@ final class EventKitReadContractTests: XCTestCase {
         XCTAssertFalse(results.contains { $0.title == "Must not appear" })
     }
 
-    func testDuplicateOccurrencesOfSameEventCollapseToOne() {
+    func testDuplicateOccurrencesOfSameEventCollapseToOne() throws {
         let from = Date(timeIntervalSince1970: 1_790_000_000)
         let raw = rawEvent(id: "One meeting", date: from)
-        let results = mapEventKitRead(
+        let results = try mapEventKitRead(
             knownCalendars: [calendar],
             dateFrom: from,
             dateTo: from.addingTimeInterval(86_400),
             customRegexes: []
         ) { _, _, _ in
-            [
-                EventKitRawOccurrence(calendarID: "cal-a", event: raw),
-                EventKitRawOccurrence(calendarID: "cal-a", event: raw)
-            ]
+            EventKitReadSnapshot(
+                availableCalendarIDs: ["cal-a"],
+                occurrences: [
+                    EventKitRawOccurrence(calendarID: "cal-a", event: raw),
+                    EventKitRawOccurrence(calendarID: "cal-a", event: raw)
+                ]
+            )
         }
 
         XCTAssertEqual(results.count, 1)
@@ -90,16 +99,90 @@ final class EventKitReadContractTests: XCTestCase {
         XCTAssertEqual(results.first?.scriptIdentifier, raw.calendarItemIdentifier)
     }
 
-    func testEmptySelectionSkipsEventKitQuery() {
+    func testUnavailableSelectedCalendarIsNotMistakenForEmptyEvents() {
+        XCTAssertThrowsError(
+            try requireAvailableEventKitSelection(
+                selectedIDs: ["removed-calendar"],
+                availableIDs: ["different-calendar"]
+            )
+        ) { error in
+            XCTAssertEqual(
+                error as? EventKitCalendarSelectionError,
+                .selectedCalendarsUnavailable
+            )
+        }
+    }
+
+    func testEmptySelectionAndFullyAvailableSelectionStayValid() throws {
+        XCTAssertNoThrow(try requireAvailableEventKitSelection(selectedIDs: [], availableIDs: []))
+        XCTAssertNoThrow(try requireAvailableEventKitSelection(
+            selectedIDs: ["selected", "other"],
+            availableIDs: ["selected", "other"]
+        ))
+    }
+
+    func testPartiallyMissingSelectionFailsRatherThanPublishingPartialEvents() {
+        XCTAssertThrowsError(try requireAvailableEventKitSelection(
+            selectedIDs: ["available", "lost"],
+            availableIDs: ["available"]
+        )) { error in
+            XCTAssertEqual(
+                error as? EventKitCalendarSelectionError,
+                .selectedCalendarsUnavailable
+            )
+        }
+    }
+
+    func testCalendarDisappearingBetweenEnumerationAndQueryThrows() {
+        let from = Date(timeIntervalSince1970: 1_790_000_000)
         var readWasCalled = false
-        let results = mapEventKitRead(
+        XCTAssertThrowsError(try mapEventKitRead(
+            knownCalendars: [calendar],
+            dateFrom: from,
+            dateTo: from.addingTimeInterval(86_400),
+            customRegexes: []
+        ) { requestedIDs, _, _ in
+            readWasCalled = true
+            XCTAssertEqual(requestedIDs, ["cal-a"])
+            // Calendar was present at the initial enumeration (above),
+            // but EventKit returns no matching calendar just before query.
+            return EventKitReadSnapshot(availableCalendarIDs: [], occurrences: [])
+        }) { error in
+            XCTAssertEqual(
+                error as? EventKitCalendarSelectionError,
+                .selectedCalendarsUnavailable
+            )
+        }
+        XCTAssertTrue(readWasCalled)
+    }
+
+    func testSecondEnumerationPartiallyMissingCalendarAlsoThrows() {
+        let from = Date(timeIntervalSince1970: 1_790_000_000)
+        let other = MBCalendar(
+            title: "Other", id: "cal-b", source: nil, email: nil, color: .black
+        )
+        XCTAssertThrowsError(try mapEventKitRead(
+            knownCalendars: [calendar, other],
+            dateFrom: from,
+            dateTo: from.addingTimeInterval(86_400),
+            customRegexes: []
+        ) { _, _, _ in
+            EventKitReadSnapshot(availableCalendarIDs: ["cal-a"], occurrences: [])
+        }) { error in
+            XCTAssertEqual(error as? EventKitCalendarSelectionError, .selectedCalendarsUnavailable)
+        }
+    }
+
+    func testEmptySelectionSkipsEventKitQuery() throws {
+        var readWasCalled = false
+        let results = try mapEventKitRead(
             knownCalendars: [],
             dateFrom: Date(timeIntervalSince1970: 0),
             dateTo: Date(timeIntervalSince1970: 100),
             customRegexes: []
         ) { _, _, _ in
             readWasCalled = true
-            return []
+            return EventKitReadSnapshot(availableCalendarIDs: [], occurrences: [])
         }
         XCTAssertTrue(results.isEmpty)
         XCTAssertFalse(readWasCalled)

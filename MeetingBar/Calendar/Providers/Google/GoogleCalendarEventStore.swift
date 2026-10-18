@@ -36,6 +36,65 @@ extension OIDAuthState {
     }
 }
 
+/// Owns one interactive AppAuth attempt and guarantees its awaiting caller is
+/// released when a newer attempt supersedes it. Keep the session and its
+/// completion together so an old callback cannot clear the new session.
+@MainActor
+final class GoogleAuthorizationFlowSlot {
+    private(set) var generation = 0
+    private(set) var session: OIDExternalUserAgentSession?
+    private var finishWait: ((Result<Void, Error>) -> Void)?
+
+    func begin() -> Int {
+        cancel()
+        return generation
+    }
+
+    func isCurrent(_ attempt: Int) -> Bool { attempt == generation }
+
+    func isPending(_ attempt: Int) -> Bool {
+        isCurrent(attempt) && finishWait != nil
+    }
+
+    func register(_ attempt: Int, finish: @escaping (Result<Void, Error>) -> Void) {
+        guard isCurrent(attempt) else {
+            finish(.failure(AuthError.cancelled))
+            return
+        }
+        finishWait = finish
+    }
+
+    func setSession(_ session: OIDExternalUserAgentSession?, for attempt: Int) {
+        guard isCurrent(attempt) else {
+            session?.cancel()
+            return
+        }
+        // AppAuth could invoke the completion synchronously before returning
+        // the session. A completed *current* attempt needs no cancellation.
+        guard isPending(attempt) else { return }
+        self.session = session
+    }
+
+    func finish(_ attempt: Int, result: Result<Void, Error>) {
+        guard isPending(attempt) else { return }
+        let completion = finishWait
+        finishWait = nil
+        session = nil
+        completion?(result)
+    }
+
+    func cancel() {
+        generation += 1
+        let completion = finishWait
+        let previousSession = session
+        finishWait = nil
+        session = nil
+        // Settle first; AppAuth may synchronously call back from cancel().
+        completion?(.failure(AuthError.cancelled))
+        previousSession?.cancel()
+    }
+}
+
 // MARK: - GCEventStore
 @MainActor
 final class GCEventStore: NSObject,
@@ -52,7 +111,10 @@ final class GCEventStore: NSObject,
     private static let kKeychainName = googleAuthKeychainName
 
     // MARK: Stored properties
-    @MainActor var currentAuthorizationFlow: OIDExternalUserAgentSession?
+    @MainActor var currentAuthorizationFlow: OIDExternalUserAgentSession? {
+        authorizationFlow.session
+    }
+    private let authorizationFlow = GoogleAuthorizationFlowSlot()
     private(set) var userEmail: String?
 
     private var authState: OIDAuthState? {
@@ -144,11 +206,21 @@ final class GCEventStore: NSObject,
     }
 
     private func performAuthorization(forcePrompt: Bool) async throws {
+        // This also completes the previous sign-in awaiter if it was still
+        // waiting for a browser callback.
+        let generation = authorizationFlow.begin()
+
         // discover configuration for Google issuer
         let config = try await withCheckedThrowingContinuation { cont in
             OIDAuthorizationService.discoverConfiguration(forIssuer: URL(string: Self.kIssuer)!) { cfg, err in
                 if let cfg { cont.resume(returning: cfg) } else { cont.resume(throwing: err ?? NSError(domain: "GoogleSignIn", code: -1)) }
             }
+        }
+
+        // Discovery is asynchronous. A newer provider selection may have
+        // cancelled this attempt before AppAuth even presents its browser.
+        guard authorizationFlow.isCurrent(generation), !Task.isCancelled else {
+            throw AuthError.cancelled
         }
 
         // request scopes we need
@@ -176,22 +248,52 @@ final class GCEventStore: NSObject,
             additionalParameters: extra
         )
 
-        try await withCheckedThrowingContinuation { cont in
-            self.currentAuthorizationFlow = OIDAuthState.authState(byPresenting: request,
-                                                                   externalUserAgent: self) { [weak self] state, error in
-                guard let self else { return }
-                if let state {
-                    self.authState = state    // didSet handles persistence & delegates
-                    self.userEmail = state.userEmail
-                    AppMessageCenter.shared.post(
-                        .googleAccountConnected(email: self.userEmail ?? "")
-                    )
-                    cont.resume()
-                } else {
-                    cont.resume(throwing: Self.authorizationError(error))
+        try await withCheckedThrowingContinuation { (cont: CheckedContinuation<Void, Error>) in
+            authorizationFlow.register(generation) { result in
+                cont.resume(with: result)
+            }
+            let session = OIDAuthState.authState(
+                byPresenting: request, externalUserAgent: self
+            ) { [weak self] state, error in
+                guard let self, self.authorizationFlow.isPending(generation) else { return }
+                do {
+                    try Self.acceptAuthorizationResult(
+                        issuedGeneration: generation,
+                        currentGeneration: self.authorizationFlow.generation,
+                        state: state,
+                        error: error
+                    ) { accepted in
+                        self.authState = accepted // persistence and delegates
+                        self.userEmail = accepted.userEmail
+                        AppMessageCenter.shared.post(
+                            .googleAccountConnected(email: self.userEmail ?? "")
+                        )
+                    }
+                    self.authorizationFlow.finish(generation, result: .success(()))
+                } catch {
+                    self.authorizationFlow.finish(generation, result: .failure(error))
                 }
             }
+            authorizationFlow.setSession(session, for: generation)
         }
+    }
+
+    /// The AppAuth callback must not install a session belonging to a
+    /// cancelled/superseded sign-in, even if its browser response arrives late.
+    /// This accepts generic state data so the callback ordering is testable
+    /// without an actual Google account, browser, or Keychain.
+    static func acceptAuthorizationResult<State>(
+        issuedGeneration: Int,
+        currentGeneration: Int,
+        state: State?,
+        error: Error?,
+        install: (State) -> Void
+    ) throws {
+        guard issuedGeneration == currentGeneration else {
+            throw AuthError.cancelled
+        }
+        guard let state else { throw authorizationError(error) }
+        install(state)
     }
 
     private static func authorizationError(_ error: Error?) -> Error {
@@ -212,24 +314,37 @@ final class GCEventStore: NSObject,
         cancelPendingOperations()
         guard let state = authState else { return }
 
-        // Revoke tokens in parallel
-        let access  = state.lastTokenResponse?.accessToken
+        let access = state.lastTokenResponse?.accessToken
         let refresh = state.refreshToken
-        await withTaskGroup(of: Void.self) { grp in
-            if let acc = access { grp.addTask { try? await self.revoke(token: acc) } }
-            if let ref = refresh { grp.addTask { try? await self.revoke(token: ref) } }
-        }
+        await Self.revokeTokensAfterClearingSession(
+            accessToken: access,
+            refreshToken: refresh,
+            clearSession: { [self] in clearAuthState() },
+            revoke: { [self] token in try? await revoke(token: token) }
+        )
+    }
 
-        clearAuthState()
+    /// Clear the *old* local session before any network suspension. Revocation
+    /// can take arbitrarily long; a newer provider selection may sign in while
+    /// the old token request is still pending. A late sign-out must never clear
+    /// that newer session (or its persisted state).
+    static func revokeTokensAfterClearingSession(
+        accessToken: String?,
+        refreshToken: String?,
+        clearSession: () -> Void,
+        revoke: @escaping @Sendable (String) async -> Void
+    ) async {
+        clearSession()
+        await withTaskGroup(of: Void.self) { group in
+            if let accessToken { group.addTask { await revoke(accessToken) } }
+            if let refreshToken { group.addTask { await revoke(refreshToken) } }
+        }
     }
 
     func cancelPendingOperations() {
+        authorizationFlow.cancel()
         pendingRefresh?.task.cancel()
         pendingRefresh = nil
-
-        let flow = currentAuthorizationFlow
-        currentAuthorizationFlow = nil
-        flow?.cancel()
     }
 
     func refreshSources() async {}
