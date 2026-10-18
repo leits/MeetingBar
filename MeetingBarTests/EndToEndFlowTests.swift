@@ -42,6 +42,7 @@ private final class EndToEndHarness {
     private(set) var model: AppModel!
 
     private(set) var openedMeetingIDs: [String] = []
+    private(set) var openedMeetingURLs: [String] = []
     private(set) var snoozedEvents: [(eventID: String, action: NotificationEventTimeAction)] = []
     private(set) var providerChanges: [(provider: EventStoreProvider, signOut: Bool)] = []
     private(set) var openPreferencesCallCount = 0
@@ -92,6 +93,7 @@ private final class EndToEndHarness {
             },
             openMeeting: { [weak self] event in
                 self?.openedMeetingIDs.append(event.id)
+                self?.openedMeetingURLs.append(event.meetingLink?.url.absoluteString ?? "")
             },
             dismissEvent: { AppSettings.dismissEvent($0) },
             undismissEvent: { AppSettings.undismissEvent(id: $0) },
@@ -1064,6 +1066,7 @@ final class CalendarSettingsEndToEndFlowTests: EndToEndFlowTestCase {
     func testRescheduledMeetingUpdatesMenuJoinTargetAndPendingNotifications() async throws {
         configureDisplayDefaults()
         Defaults[.joinEventNotification] = true
+        Defaults[.endOfEventNotification] = true
         let now = Date()
         let original = makeEvent(id: "MOVE", startingIn: 300, now: now)
         let following = makeEvent(id: "FOLLOW", startingIn: 1200, now: now)
@@ -1076,7 +1079,15 @@ final class CalendarSettingsEndToEndFlowTests: EndToEndFlowTestCase {
         try await waitUntil("notifications for both initial events") {
             self.scheduledEventIDs(harness) == ["FOLLOW", "MOVE"]
         }
-        let previousIDs = Set(harness.notificationSink.currentPendingIdentifiers())
+        let oldRequests = harness.notificationSink.currentPendingRequests()
+        let oldMoveIDs = Set(oldRequests.filter {
+            ($0.content.userInfo["eventID"] as? String) == "MOVE"
+        }.map(\.identifier))
+        let oldFollowingIDs = Set(oldRequests.filter {
+            ($0.content.userInfo["eventID"] as? String) == "FOLLOW"
+        }.map(\.identifier))
+        XCTAssertEqual(oldMoveIDs.count, 2)
+        XCTAssertEqual(oldFollowingIDs.count, 2)
         XCTAssertTrue(try renderTitle(harness).attributedTitle.string.hasPrefix("Event MOVE"))
 
         harness.store.stubbedEvents = [
@@ -1089,16 +1100,24 @@ final class CalendarSettingsEndToEndFlowTests: EndToEndFlowTestCase {
         await waitForState(of: harness, description: "reschedule changes next meeting") {
             $0.events.map(\.id) == ["FOLLOW", "MOVE"]
         }
-        try await waitUntil("outdated notification plans removed") {
-            Set(harness.notificationSink.currentPendingIdentifiers()) != previousIDs
+        try await waitUntil("only the rescheduled meeting's notification IDs change") {
+            let requests = harness.notificationSink.currentPendingRequests()
+            let moveIDs = Set(requests.filter {
+                ($0.content.userInfo["eventID"] as? String) == "MOVE"
+            }.map(\.identifier))
+            let followingIDs = Set(requests.filter {
+                ($0.content.userInfo["eventID"] as? String) == "FOLLOW"
+            }.map(\.identifier))
+            return moveIDs.count == oldMoveIDs.count
+                && moveIDs.isDisjoint(with: oldMoveIDs)
+                && followingIDs == oldFollowingIDs
+                && requests.count == oldRequests.count
         }
         XCTAssertTrue(try renderTitle(harness).attributedTitle.string.hasPrefix("Event FOLLOW"))
         XCTAssertEqual(scheduledEventIDs(harness), ["FOLLOW", "MOVE"])
-        XCTAssertTrue(
-            harness.notificationSink.removedBatches.flatMap { $0 }.contains {
-                $0.contains("MOVE|")
-            }
-        )
+        let removedIDs = Set(harness.notificationSink.removedBatches.flatMap { $0 })
+        XCTAssertTrue(oldMoveIDs.isSubset(of: removedIDs))
+        XCTAssertTrue(oldFollowingIDs.isDisjoint(with: removedIDs))
         harness.model.send(.joinNearestMeeting)
         XCTAssertEqual(harness.openedMeetingIDs, ["FOLLOW"])
     }
@@ -1171,16 +1190,22 @@ final class CalendarSettingsEndToEndFlowTests: EndToEndFlowTestCase {
             $0.events.first?.id == "google-conference"
         }
 
-        let summary = flatten(rebuildMenu(harness)).first {
+        let summary = try XCTUnwrap(flatten(rebuildMenu(harness)).first {
             $0.identifier == MenuBuilder.meetingSummaryItemIdentifier
-        }
-        XCTAssertEqual((summary?.representedObject as? MBEvent)?.id, "google-conference")
+        })
+        XCTAssertEqual((summary.representedObject as? MBEvent)?.id, "google-conference")
         XCTAssertEqual(
             harness.model.state.events.first?.meetingLink?.url.absoluteString,
             "https://meet.google.com/abc-defg-hij?authuser=owner@example.com"
         )
-        harness.model.send(.joinNearestMeeting)
+        let hosting = try XCTUnwrap(summary.view as? NSHostingView<MeetingSummaryView>)
+        let onJoin = try XCTUnwrap(hosting.rootView.onJoin)
+        onJoin()
         XCTAssertEqual(harness.openedMeetingIDs, ["google-conference"])
+        XCTAssertEqual(
+            harness.openedMeetingURLs,
+            ["https://meet.google.com/abc-defg-hij?authuser=owner@example.com"]
+        )
     }
 
     func testSelectingCalendarLoadsItsEventsIntoMenu() async throws {
