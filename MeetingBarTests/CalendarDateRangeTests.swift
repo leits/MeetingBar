@@ -55,8 +55,8 @@ final class CalendarDateRangeTests: XCTestCase {
 
     func testSameInstantUsesInjectedTimezoneForCalendarBoundaries() {
         let now = date("2026-10-18T23:30:00Z")
-        let kyiv = calendarDateRange(for: .today, now: now, calendar: testCalendaralendar("Europe/Kyiv"))
-        let losAngeles = calendarDateRange(for: .today, now: now, calendar: testCalendaralendar("America/Los_Angeles"))
+        let kyiv = calendarDateRange(for: .today, now: now, calendar: calendar("Europe/Kyiv"))
+        let losAngeles = calendarDateRange(for: .today, now: now, calendar: calendar("America/Los_Angeles"))
 
         XCTAssertNotEqual(kyiv.from, losAngeles.from)
         XCTAssertTrue(kyiv.from <= now && now < kyiv.to)
