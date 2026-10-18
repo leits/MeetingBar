@@ -18,7 +18,13 @@ func calendarDateRange(
     calendar: Calendar = .current
 ) -> (from: Date, to: Date) {
     let dateFrom = calendar.startOfDay(for: now)
-    let days = period == .today ? 1 : 2
+    let days: Int
+    switch period {
+    case .today:
+        days = 1
+    case .today_n_tomorrow:
+        days = 2
+    }
     let dateTo = calendar.date(byAdding: .day, value: days, to: dateFrom)!
     return (dateFrom, dateTo)
 }
