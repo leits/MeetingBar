@@ -908,8 +908,9 @@ final class ConcurrentProviderSwitchTests: BaseTestCase {
         Defaults[.eventStoreProvider] = .macOSEventKit
         Defaults[.selectedCalendarIDs] = ["local"]
 
-        let repository = CalendarRepository(providerName: .macOSEventKit) { name in
-            name == .googleCalendar ? pendingStore : currentStore
+        let repository = CalendarRepository(providerName: .macOSEventKit) { name -> EventStore in
+            if name == .googleCalendar { return pendingStore }
+            return currentStore
         }
         let sync = CalendarSync(repository: repository, refreshInterval: 0)
         let outdatedSwitch = Task { await sync.changeEventStoreProvider(.googleCalendar) }
@@ -935,8 +936,9 @@ final class ConcurrentProviderSwitchTests: BaseTestCase {
         let gate = ProviderSignInGate()
         let currentStore = FakeEventStore()
         let pendingStore = SuspendedSignInEventStore(gate: gate)
-        let repository = CalendarRepository(providerName: .macOSEventKit) { name in
-            name == .googleCalendar ? pendingStore : currentStore
+        let repository = CalendarRepository(providerName: .macOSEventKit) { name -> EventStore in
+            if name == .googleCalendar { return pendingStore }
+            return currentStore
         }
         let sync = CalendarSync(repository: repository, refreshInterval: 0)
         let change = Task { await sync.changeEventStoreProvider(.googleCalendar) }
