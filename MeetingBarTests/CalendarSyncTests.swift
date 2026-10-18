@@ -944,7 +944,8 @@ final class ConcurrentProviderSwitchTests: BaseTestCase {
         sync.stop()
         await gate.release()
 
-        XCTAssertEqual(await change.value, .cancelled)
+        let result = await change.value
+        XCTAssertEqual(result, .cancelled)
         XCTAssertEqual(repository.activeProviderName, .macOSEventKit)
     }
 }
