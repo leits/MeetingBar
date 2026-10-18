@@ -101,6 +101,11 @@ public final class CalendarRepository {
 
         if signOutCurrent, reauthorizingCurrentProvider {
             await (previousProvider as? AuthenticatedEventStore)?.signOut()
+            // Sign-out suspends during token revocation. Do not start another
+            // sign-in if the user changed providers in the meantime.
+            guard generation == switchGeneration, !Task.isCancelled else {
+                throw CancellationError()
+            }
         }
 
         try await (candidate as? AuthenticatedEventStore)?.signIn(forcePrompt: false)
@@ -108,7 +113,9 @@ public final class CalendarRepository {
         // An older sign-in may finish after the user selects another provider.
         // It must never replace that provider or clear its selections.
         guard generation == switchGeneration, !Task.isCancelled else {
-            if candidate !== activeProvider { candidate.cancelPendingOperations() }
+            if candidate !== activeProvider, candidate !== pendingProvider {
+                candidate.cancelPendingOperations()
+            }
             throw CancellationError()
         }
         if providerName == .googleCalendar, calendars.isEmpty {
@@ -118,7 +125,9 @@ public final class CalendarRepository {
         if signOutCurrent, !reauthorizingCurrentProvider {
             await (previousProvider as? AuthenticatedEventStore)?.signOut()
             guard generation == switchGeneration, !Task.isCancelled else {
-                if candidate !== activeProvider { candidate.cancelPendingOperations() }
+                if candidate !== activeProvider, candidate !== pendingProvider {
+                candidate.cancelPendingOperations()
+            }
                 throw CancellationError()
             }
         } else if !reauthorizingCurrentProvider {
