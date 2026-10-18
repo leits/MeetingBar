@@ -98,8 +98,14 @@ enum GoogleHTTPStatusPolicy {
         statusCode: Int,
         url: URL,
         calendarID: String?,
-        retrying: Bool
+        retrying: Bool,
+        responseData: Data? = nil
     ) -> GoogleHTTPDecision {
+        // Google's Calendar API reports quota/rate failures as either 403 or 429.
+        // These are not permissions errors and must not discard a calendar's events.
+        if statusCode == 429 || (statusCode == 403 && isQuotaError(responseData)) {
+            return .throwError(.httpStatus(statusCode, url: url))
+        }
         switch statusCode {
         case 200...299:
             return .proceed
@@ -111,6 +117,20 @@ enum GoogleHTTPStatusPolicy {
                 : .retryWithForcedTokenRefresh
         default:
             return .throwError(.httpStatus(statusCode, url: url))
+        }
+    }
+
+    private static func isQuotaError(_ data: Data?) -> Bool {
+        guard let data,
+              let root = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let error = root["error"] as? [String: Any],
+              let details = error["errors"] as? [[String: Any]] else { return false }
+        let quotaReasons: Set<String> = [
+            "rateLimitExceeded", "userRateLimitExceeded", "quotaExceeded"
+        ]
+        return details.contains { detail in
+            guard let reason = detail["reason"] as? String else { return false }
+            return quotaReasons.contains(reason)
         }
     }
 }

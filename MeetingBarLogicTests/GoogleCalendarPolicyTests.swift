@@ -87,6 +87,50 @@ final class GoogleCalendarPolicyTests: XCTestCase {
         )
     }
 
+    func testQuota403IsNotMistakenForForbiddenCalendar() {
+        for reason in ["rateLimitExceeded", "userRateLimitExceeded", "quotaExceeded"] {
+            let body = Data("""
+            {"error":{"code":403,"errors":[{"domain":"usageLimits","reason":"\(reason)"}]}}
+            """.utf8)
+            for retrying in [false, true] {
+                let decision = GoogleHTTPStatusPolicy.classify(
+                    statusCode: 403,
+                    url: calendarEventsURL,
+                    calendarID: "work",
+                    retrying: retrying,
+                    responseData: body
+                )
+                XCTAssertEqual(decision, .throwError(.httpStatus(403, url: calendarEventsURL)))
+            }
+        }
+    }
+
+    func testHTTP429NeverTriggersTokenRefresh() {
+        let decision = GoogleHTTPStatusPolicy.classify(
+            statusCode: 429,
+            url: calendarEventsURL,
+            calendarID: "work",
+            retrying: false
+        )
+        XCTAssertEqual(decision, .throwError(.httpStatus(429, url: calendarEventsURL)))
+    }
+
+    func testTrueForbidden403KeepsExistingBehavior() {
+        let body = Data("""
+        {"error":{"code":403,"errors":[{"reason":"forbidden"}]}}
+        """.utf8)
+        XCTAssertEqual(
+            GoogleHTTPStatusPolicy.classify(
+                statusCode: 403,
+                url: calendarEventsURL,
+                calendarID: "work",
+                retrying: true,
+                responseData: body
+            ),
+            .throwError(.forbiddenCalendar(calendarID: "work", url: calendarEventsURL))
+        )
+    }
+
     func testHTTP500ThrowsStatusError() {
         let decision = GoogleHTTPStatusPolicy.classify(
             statusCode: 500,
