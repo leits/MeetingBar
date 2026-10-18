@@ -65,10 +65,13 @@ final class GoogleAuthorizationFlowSlot {
     }
 
     func setSession(_ session: OIDExternalUserAgentSession?, for attempt: Int) {
-        guard isPending(attempt) else {
+        guard isCurrent(attempt) else {
             session?.cancel()
             return
         }
+        // AppAuth could invoke the completion synchronously before returning
+        // the session. A completed *current* attempt needs no cancellation.
+        guard isPending(attempt) else { return }
         self.session = session
     }
 
