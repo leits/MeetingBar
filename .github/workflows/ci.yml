@@ -88,11 +88,16 @@ jobs:
         if: ${{ !cancelled() && steps.app_tests.outcome == 'success' && env.CODECOV_TOKEN != '' }}
         run: make coverage-codecov
 
+      - name: Export SwiftPM coverage for Codecov
+        if: ${{ !cancelled() && steps.app_tests.outcome == 'success' && env.CODECOV_TOKEN != '' }}
+        run: make coverage-codecov-logic
+
       - name: Upload coverage to Codecov
         if: ${{ !cancelled() && steps.app_tests.outcome == 'success' && env.CODECOV_TOKEN != '' }}
         uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
         with:
-          files: build/coverage/cobertura.xml
+          # Slather covers app-hosted tests; llvm-cov covers the separate SwiftPM target.
+          files: build/coverage/cobertura.xml,build/coverage/swiftpm.lcov
           fail_ci_if_error: true
           token: ${{ secrets.CODECOV_TOKEN }}
 
