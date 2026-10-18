@@ -161,6 +161,14 @@ public final class CalendarRepository {
         let selectedCalendars = allCalendars.filter {
             selectedCalendarIDs.contains($0.id)
         }
+        if activeProviderName == .macOSEventKit {
+            // An empty selection is intentional. A nonempty selection that no
+            // longer resolves is not an empty day: preserve the last snapshot.
+            try requireAvailableEventKitSelection(
+                selectedIDs: selectedCalendarIDs,
+                availableIDs: selectedCalendars.map(\.id)
+            )
+        }
         let (dateFrom, dateTo) = calendarDateRange(for: Defaults[.showEventsForPeriod])
         return try await activeProvider.fetchEventsForDateRange(
             for: selectedCalendars, from: dateFrom, to: dateTo)
