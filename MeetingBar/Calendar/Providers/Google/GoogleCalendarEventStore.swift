@@ -236,37 +236,7 @@ final class GCEventStore: NSObject,
 
     func fetchAllCalendars() async throws -> [MBCalendar] {
         try requireReusableSession()
-
-        let url = URL(string: "https://www.googleapis.com/calendar/v3/users/me/calendarList?maxResults=250&showHidden=true")!
-        let items = try await fetchJSON(url)
-
-        return items.compactMap { item -> MBCalendar? in
-            guard let title = item["summary"] as? String,
-                  let calendarID = item["id"] as? String,
-                  let backgroundColor = item["backgroundColor"] as? String else { return nil }
-
-            return MBCalendar(title: title,
-                              id: calendarID,
-                              source: userEmail,
-                              email: userEmail,
-                              color: hexStringToUIColor(hex: backgroundColor))
-        }
-    }
-
-    private func getCalendarEventsForDateRange(calendar: MBCalendar,
-                                               dateFrom: Date,
-                                               dateTo: Date) async throws -> [MBEvent] {
-        let iso = ISO8601DateFormatter()
-        let timeMin = iso.string(from: dateFrom)
-        let timeMax = iso.string(from: dateTo)
-        let url = try Self.eventsURL(
-            calendarID: calendar.id,
-            timeMin: timeMin,
-            timeMax: timeMax
-        )
-
-        let items = try await fetchJSON(url, calendarID: calendar.id)
-        return items.compactMap { GCParser.event(from: $0, calendar: calendar) }
+        return try await makeDataReader().fetchCalendars()
     }
 
     static func eventsURL(calendarID: String, timeMin: String, timeMax: String) throws -> URL {
@@ -292,37 +262,19 @@ final class GCEventStore: NSObject,
         return url
     }
 
-    func fetchEventsForDateRange(for calendars: [MBCalendar],
-                                 from: Date,
-                                 to: Date) async throws -> [MBEvent] {
+    func fetchEventsForDateRange(
+        for calendars: [MBCalendar],
+        from: Date,
+        to: Date
+    ) async throws -> [MBEvent] {
         try requireReusableSession()
-        var result: [MBEvent] = []
-        var forbiddenErrors: [Error] = []
-        var successfulCalendars = 0
-        for cal in calendars {
-            do {
-                let ev = try await getCalendarEventsForDateRange(calendar: cal, dateFrom: from, dateTo: to)
-                successfulCalendars += 1
-                result.append(contentsOf: ev)
-            } catch let error as GoogleCalendarError {
-                switch error {
-                case .forbiddenCalendar:
-                    MeetingBarLogger.calendar.warning(
-                        "Skipping inaccessible Google calendar \(cal.id, privacy: .private): \(error.localizedDescription, privacy: .private)"
-                    )
-                    forbiddenErrors.append(error)
-                default:
-                    throw error
-                }
-            } catch {
-                throw error
-            }
+        return try await makeDataReader().fetchEvents(for: calendars, from: from, to: to)
+    }
+
+    private func makeDataReader() -> GoogleCalendarDataReader {
+        GoogleCalendarDataReader(userEmail: userEmail) { [self] url, calendarID in
+            try await fetchJSON(url, calendarID: calendarID)
         }
-        return try GoogleCalendarBatchPolicy.finish(
-            events: result.deduplicatedPreferringResolvedAttendee(),
-            successfulCalendars: successfulCalendars,
-            forbiddenErrors: forbiddenErrors
-        )
     }
 
     // MARK: - Private helpers
