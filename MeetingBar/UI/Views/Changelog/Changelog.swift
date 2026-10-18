@@ -191,16 +191,19 @@ struct ChangelogView: View {
                     }
                     if compareVersions("5.0.0", lastRevisedVersionInChangelog) {
                         Section(header: Text("Version 5.0")) {
-                            Text("• Architecture and product refresh with clearer onboarding, meeting controls, and provider status")
-                            Text("• Added Proton Meet link detection")
-                            Text("• Added optional Workplace native app opening")
-                            Text("• Added optional Zoom Web App opening")
-                            Text("• Added optional Google Meet PWA opening for Chrome users")
-                            Text("• Existing meeting opening defaults remain unchanged")
+                            Text("• Redesigned onboarding, Preferences, and meeting controls")
+                            Text("• More reliable calendar refresh, provider status, and event selection")
+                            Text("• Improved meeting links, joining options, and notifications")
+                            Text("• Better status bar and menu presentation")
                         }
                     }
                 }
             }.listStyle(SidebarListStyle())
+            if let releasesURL = URL(string: "https://github.com/leits/MeetingBar/releases") {
+                Link(destination: releasesURL) {
+                    Text("changelog_full_release_notes".loco())
+                }
+            }
             Button("general_close".loco(), action: close)
         }.padding()
     }
