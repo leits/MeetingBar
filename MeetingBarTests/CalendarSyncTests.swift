@@ -1015,13 +1015,25 @@ final class MissingSelectedEventKitCalendarsTests: BaseTestCase {
         let calendar = MBCalendar(
             title: "Local", id: "old-calendar", source: nil, email: nil, color: .black
         )
-        let event = makeFakeEvent(
+        let now = Date()
+        let event = MBEvent(
             id: "known-meeting",
-            start: Date().addingTimeInterval(600),
-            end: Date().addingTimeInterval(1800)
+            lastModifiedDate: now,
+            title: "Known meeting",
+            status: .confirmed,
+            notes: nil,
+            location: nil,
+            url: URL(string: "https://meet.google.com/abc-defg-hij"),
+            organizer: nil,
+            startDate: now.addingTimeInterval(600),
+            endDate: now.addingTimeInterval(1800),
+            isAllDay: false,
+            recurrent: false,
+            calendar: calendar
         )
         Defaults[.selectedCalendarIDs] = [calendar.id]
         let store = FakeEventStore(calendars: [calendar], events: [event])
+        store.respectsCalendarFilter = true
         let sync = CalendarSync(provider: store, refreshInterval: 0)
         defer { sync.stop() }
 
