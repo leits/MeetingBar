@@ -29,7 +29,7 @@ public enum CalendarSyncError: LocalizedError {
     }
 }
 
-public enum ProviderSelectionResult: Equatable {
+public enum ProviderSelectionResult: Equatable, Sendable {
     case success
     case cancelled
     case authRequired(String)
