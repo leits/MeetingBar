@@ -81,6 +81,40 @@ final class AppSettingsTests: BaseTestCase {
         XCTAssertTrue(Defaults[.selectedCalendarIDsByProviderMigrated])
     }
 
+    func testProviderCalendarMigrationIsIdempotentAndPreservesExistingSelections() {
+        Defaults[.eventStoreProvider] = .macOSEventKit
+        Defaults[.selectedCalendarIDs] = ["legacy-eventkit"]
+        Defaults[.selectedCalendarIDsByProvider] = [
+            EventStoreProvider.googleCalendar.rawValue: ["google-shared"]
+        ]
+        Defaults[.selectedCalendarIDsByProviderMigrated] = false
+
+        AppSettings.migrateSelectedCalendarsByProviderIfNeeded()
+        let first = Defaults[.selectedCalendarIDsByProvider]
+        AppSettings.migrateSelectedCalendarsByProviderIfNeeded()
+
+        XCTAssertEqual(Defaults[.selectedCalendarIDsByProvider], first)
+        XCTAssertEqual(first[EventStoreProvider.macOSEventKit.rawValue], ["legacy-eventkit"])
+        XCTAssertEqual(first[EventStoreProvider.googleCalendar.rawValue], ["google-shared"])
+        XCTAssertTrue(Defaults[.selectedCalendarIDsByProviderMigrated])
+    }
+
+    func testProviderCalendarMigrationDoesNotOverwriteExistingActiveProviderSelection() {
+        Defaults[.eventStoreProvider] = .googleCalendar
+        Defaults[.selectedCalendarIDs] = ["obsolete"]
+        Defaults[.selectedCalendarIDsByProvider] = [
+            EventStoreProvider.googleCalendar.rawValue: ["selected-google"]
+        ]
+        Defaults[.selectedCalendarIDsByProviderMigrated] = false
+
+        AppSettings.migrateSelectedCalendarsByProviderIfNeeded()
+
+        XCTAssertEqual(
+            AppSettings.selectedCalendarIDs(for: .googleCalendar),
+            ["selected-google"]
+        )
+    }
+
     func testCompleteOnboardingWriteHelper() {
         AppSettings.completeOnboarding()
 
