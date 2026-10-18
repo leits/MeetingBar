@@ -187,7 +187,7 @@ final class GCEventStore: NSObject,
             additionalParameters: extra
         )
 
-        try await withCheckedThrowingContinuation { cont in
+        try await withCheckedThrowingContinuation { (cont: CheckedContinuation<Void, Error>) in
             self.currentAuthorizationFlow = OIDAuthState.authState(byPresenting: request,
                                                                    externalUserAgent: self) { [weak self] state, error in
                 guard let self else {
