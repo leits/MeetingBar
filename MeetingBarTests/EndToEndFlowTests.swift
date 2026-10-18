@@ -1061,6 +1061,48 @@ final class CalendarSettingsEndToEndFlowTests: EndToEndFlowTestCase {
         XCTAssertTrue(try renderTitle(harness).attributedTitle.string.hasPrefix("Event E1"))
     }
 
+    func testRescheduledMeetingUpdatesMenuJoinTargetAndPendingNotifications() async throws {
+        configureDisplayDefaults()
+        Defaults[.joinEventNotification] = true
+        let now = Date()
+        let original = makeEvent(id: "MOVE", startingIn: 300, now: now)
+        let following = makeEvent(id: "FOLLOW", startingIn: 1200, now: now)
+        let harness = makeHarness(events: [original, following])
+        defer { harness.stop() }
+
+        await waitForState(of: harness, description: "original meeting order") {
+            $0.events.map(\.id) == ["MOVE", "FOLLOW"]
+        }
+        try await waitUntil("notifications for both initial events") {
+            self.scheduledEventIDs(harness) == ["FOLLOW", "MOVE"]
+        }
+        let previousIDs = Set(harness.notificationSink.currentPendingIdentifiers())
+        XCTAssertTrue(try renderTitle(harness).attributedTitle.string.hasPrefix("Event MOVE"))
+
+        harness.store.stubbedEvents = [
+            makeEvent(id: "MOVE", startingIn: 3600, now: now),
+            following
+        ]
+        try await settleRefreshWindow(harness)
+        harness.model.send(.refreshCalendars)
+
+        await waitForState(of: harness, description: "reschedule changes next meeting") {
+            $0.events.map(\.id) == ["FOLLOW", "MOVE"]
+        }
+        try await waitUntil("outdated notification plans removed") {
+            Set(harness.notificationSink.currentPendingIdentifiers()) != previousIDs
+        }
+        XCTAssertTrue(try renderTitle(harness).attributedTitle.string.hasPrefix("Event FOLLOW"))
+        XCTAssertEqual(scheduledEventIDs(harness), ["FOLLOW", "MOVE"])
+        XCTAssertTrue(
+            harness.notificationSink.removedBatches.flatMap { $0 }.contains {
+                $0.contains("MOVE|")
+            }
+        )
+        harness.model.send(.joinNearestMeeting)
+        XCTAssertEqual(harness.openedMeetingIDs, ["FOLLOW"])
+    }
+
     func testProviderRecoveryReplacesStaleMeetingAndUpdatesJoinTarget() async throws {
         configureDisplayDefaults()
         let now = Date()
