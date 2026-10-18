@@ -181,6 +181,72 @@ final class NotificationSchedulerTests: BaseTestCase {
         scheduler.stop()
     }
 
+    func testPendingAutoJoinUsesUpdatedMeetingURLWithoutReschedulingStart() async {
+        let sleeper = ManualNotificationActionSleep()
+        let requestSink = FakeNotificationRequestSink()
+        let actionSink = URLCapturingNotificationActionSink()
+        let original = event(id: "changed-link", startsIn: 120)
+        let updated = MBEvent(
+            id: original.id,
+            lastModifiedDate: original.lastModifiedDate,
+            title: original.title,
+            status: original.status,
+            notes: nil,
+            location: nil,
+            url: URL(string: "https://zoom.us/j/9998887777"),
+            organizer: nil,
+            startDate: original.startDate,
+            endDate: original.endDate,
+            isAllDay: original.isAllDay,
+            recurrent: false,
+            calendar: original.calendar
+        )
+        let scheduler = NotificationScheduler(
+            sink: requestSink,
+            actionSink: actionSink,
+            sleepAction: { _ in await sleeper.sleep() },
+            actionDate: { self.now.addingTimeInterval(120) }
+        )
+        let settings = actionOnlySettings(kind: .autoJoin, offset: 0)
+
+        await scheduler.reconcile(events: [original], settings: settings, now: now)
+        await sleeper.waitUntilSleeping()
+        await scheduler.reconcile(events: [updated], settings: settings, now: now)
+        await sleeper.wakeAll()
+        await waitUntil { !actionSink.urls.isEmpty }
+
+        XCTAssertEqual(
+            actionSink.urls.map(\.absoluteString),
+            ["https://zoom.us/j/9998887777"]
+        )
+        scheduler.stop()
+    }
+
+    func testFailedDelayedSleepDoesNotPreventRetryOnNextRefresh() async {
+        let sleeper = FailOnceNotificationActionSleep()
+        let requestSink = FakeNotificationRequestSink()
+        let actionSink = FakeNotificationActionSink()
+        let scheduler = NotificationScheduler(
+            sink: requestSink,
+            actionSink: actionSink,
+            sleepAction: { _ in try await sleeper.sleep() },
+            actionDate: { self.now.addingTimeInterval(120) }
+        )
+        let scheduledEvent = event(id: "retry-sleep", startsIn: 120)
+        let settings = fullscreenOnlySettings(offset: 0)
+
+        await scheduler.reconcile(events: [scheduledEvent], settings: settings, now: now)
+        for _ in 0..<20 where actionSink.actions.isEmpty {
+            await Task.yield()
+            await scheduler.reconcile(events: [scheduledEvent], settings: settings, now: now)
+        }
+
+        let attempts = await sleeper.attemptCount
+        XCTAssertEqual(attempts, 2)
+        XCTAssertEqual(actionSink.actions.map(\.eventID), ["retry-sleep"])
+        scheduler.stop()
+    }
+
     func testReconcileSchedulesStartAndEndForFutureEvent() async {
         let sink = FakeNotificationRequestSink()
         let scheduler = NotificationScheduler(sink: sink)
@@ -926,5 +992,28 @@ private actor ManualNotificationActionSleep {
         let sleepers = pending
         pending.removeAll()
         sleepers.forEach { $0.resume() }
+    }
+}
+
+@MainActor
+private final class URLCapturingNotificationActionSink: NotificationActionSink {
+    private(set) var urls: [URL] = []
+
+    func performNotificationAction(_ kind: NotificationKind, event: MBEvent) -> Bool {
+        if kind == .autoJoin, let url = event.meetingLink?.url {
+            urls.append(url)
+        }
+        return true
+    }
+}
+
+private actor FailOnceNotificationActionSleep {
+    private(set) var attemptCount = 0
+
+    func sleep() throws {
+        attemptCount += 1
+        if attemptCount == 1 {
+            throw URLError(.timedOut)
+        }
     }
 }
