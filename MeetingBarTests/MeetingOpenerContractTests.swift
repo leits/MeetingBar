@@ -169,6 +169,58 @@ final class MeetingOpenerContractTests: XCTestCase {
         XCTAssertEqual(recorder.browserNames, ["Google Chrome"])
     }
 
+    func testTupleNativeFailureFallsBackToOriginalBrowserURL() {
+        let native = ThreadSafeURLRecorder()
+        let fallback = ThreadSafeURLRecorder()
+        let url = URL(string: "https://tuple.app/c/room-123")!
+        let strategy = TupleOpenStrategy(
+            nativeOpener: { nativeURL in
+                native.record(nativeURL, browser: Browser(name: "System", path: ""))
+                return false
+            },
+            browserOpener: { openedURL, browser in
+                fallback.record(openedURL, browser: browser)
+            },
+            postMessage: { _ in }
+        )
+
+        strategy.open(
+            url: url,
+            opening: ResolvedMeetingOpening(mode: .tupleApp, browser: alternateBrowser),
+            defaultBrowser: defaultBrowser
+        )
+
+        XCTAssertEqual(native.openedURLs.first?.scheme, "tuple")
+        XCTAssertEqual(native.openedURLs.first?.host, "c")
+        XCTAssertEqual(fallback.openedURLs, [url])
+        XCTAssertEqual(fallback.browserNames, ["Google Chrome"])
+    }
+
+    func testTupleNativeSuccessDoesNotAlsoOpenBrowser() {
+        let native = ThreadSafeURLRecorder()
+        let fallback = ThreadSafeURLRecorder()
+        let url = URL(string: "https://tuple.app/c/room-123")!
+        let strategy = TupleOpenStrategy(
+            nativeOpener: { nativeURL in
+                native.record(nativeURL, browser: Browser(name: "System", path: ""))
+                return true
+            },
+            browserOpener: { openedURL, browser in
+                fallback.record(openedURL, browser: browser)
+            },
+            postMessage: { _ in }
+        )
+
+        strategy.open(
+            url: url,
+            opening: ResolvedMeetingOpening(mode: .tupleApp, browser: alternateBrowser),
+            defaultBrowser: defaultBrowser
+        )
+
+        XCTAssertEqual(native.openedURLs.count, 1)
+        XCTAssertTrue(fallback.openedURLs.isEmpty)
+    }
+
     func testProviderOpeningModeKeepsSelectedBrowserForFallback() {
         let selected = MeetingOpenSettings(
             defaultBrowser: defaultBrowser,
