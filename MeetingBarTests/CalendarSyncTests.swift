@@ -932,6 +932,29 @@ final class ConcurrentProviderSwitchTests: BaseTestCase {
         sync.stop()
     }
 
+    func testSwitchWithSignOutRetiresOldProviderOnlyAfterNewOneLoads() async throws {
+        let old = FakeEventStore(calendars: [
+            MBCalendar(title: "Local", id: "local", source: nil, email: nil, color: .black)
+        ])
+        let next = FakeEventStore(calendars: [
+            MBCalendar(title: "Google", id: "google", source: nil, email: nil, color: .black)
+        ])
+        let repository = CalendarRepository(providerName: .macOSEventKit) { provider in
+            provider == .macOSEventKit ? old : next
+        }
+
+        let calendars = try await repository.switchProvider(
+            to: .googleCalendar, signOutCurrent: true
+        )
+
+        XCTAssertEqual(calendars.map(\.id), ["google"])
+        XCTAssertEqual(repository.activeProviderName, .googleCalendar)
+        XCTAssertEqual(old.signOutCallCount, 1)
+        XCTAssertEqual(next.signInCallCount, 1)
+        XCTAssertEqual(next.cancelPendingOperationsCallCount, 0)
+        repository.stop()
+    }
+
     func testStoppingDuringPendingProviderSignInDoesNotCommitLateResult() async {
         let gate = ProviderSignInGate()
         let currentStore = FakeEventStore()
