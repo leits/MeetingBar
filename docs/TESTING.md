@@ -6,6 +6,7 @@
 - make test-app-quiet: macOS app-hosted tests, provider contracts, NSMenu/status-bar layout and application flows.
 - make lint: SwiftLint.
 - CI runs both targets and uploads SwiftPM LCOV plus app-hosted Cobertura coverage. Coverage is a diagnostic signal, not a substitute for meaningful regression tests.
+- codecov.yml retains strict patch coverage while allowing 0.1 percentage points of whole-project noise from asynchronous runtime paths; do not add artificial test coverage just to improve the aggregate percentage.
 
 Provider tests should cover external input -> production parser/adapter -> domain result and error/recovery. They do not contact real Google, require OAuth credentials, or read a user's EventKit calendars. App flow tests replace outward side effects and verify meeting selection, freshness, join target and notifications.
 
