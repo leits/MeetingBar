@@ -4,6 +4,7 @@ import XCTest
 
 @testable import MeetingBar
 
+@MainActor
 final class GoogleAuthLifecycleContractTests: XCTestCase {
     func testRefreshCallbackSuccessReturnsNewToken() throws {
         XCTAssertEqual(
