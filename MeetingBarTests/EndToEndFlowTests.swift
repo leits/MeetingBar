@@ -1073,7 +1073,7 @@ final class CalendarSettingsEndToEndFlowTests: EndToEndFlowTestCase {
         }
         harness.store.stubbedError = URLError(.notConnectedToInternet)
         try await settleRefreshWindow(harness)
-        harness.model.send(.refresh)
+        harness.model.send(.refreshCalendars)
         await waitForState(of: harness, description: "offline error preserves cached meeting") {
             $0.providerHealth.isStale && $0.events.map(\.id) == ["OLD"]
         }
@@ -1081,7 +1081,7 @@ final class CalendarSettingsEndToEndFlowTests: EndToEndFlowTestCase {
         harness.store.stubbedError = nil
         harness.store.stubbedEvents = [makeEvent(id: "NEW", startingIn: 600, now: now)]
         try await settleRefreshWindow(harness)
-        harness.model.send(.refresh)
+        harness.model.send(.refreshCalendars)
         await waitForState(of: harness, description: "recovery publishes fresh meeting") {
             !$0.providerHealth.isStale
                 && $0.providerHealth.lastErrorDescription == nil
