@@ -13,7 +13,7 @@ final class GoogleCalendarHTTPClientTests: XCTestCase {
         HTTPURLResponse(url: request.url!, statusCode: status, httpVersion: nil, headerFields: nil)!
     }
 
-    private static func pageToken(in request: URLRequest) -> String? {
+    nonisolated private static func pageToken(in request: URLRequest) -> String? {
         URLComponents(url: request.url!, resolvingAgainstBaseURL: false)?
             .queryItems?.first(where: { $0.name == "pageToken" })?.value
     }
