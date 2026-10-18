@@ -172,7 +172,7 @@ final class MeetingOpenerContractTests: XCTestCase {
     func testProviderOpeningModeKeepsSelectedBrowserForFallback() {
         let selected = MeetingOpenSettings(
             defaultBrowser: defaultBrowser,
-            providerBrowsers: [.meet.rawValue: alternateBrowser],
+            providerBrowsers: [MeetingServices.meet.rawValue: alternateBrowser],
             providerOpeningModes: [
                 MeetingServices.meet.rawValue: MeetingOpeningMode.googleMeetPWA.rawValue
             ],
