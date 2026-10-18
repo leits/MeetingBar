@@ -1076,8 +1076,13 @@ final class CalendarSettingsEndToEndFlowTests: EndToEndFlowTestCase {
         await waitForState(of: harness, description: "original meeting order") {
             $0.events.map(\.id) == ["MOVE", "FOLLOW"]
         }
-        try await waitUntil("notifications for both initial events") {
-            self.scheduledEventIDs(harness) == ["FOLLOW", "MOVE"]
+        try await waitUntil("two pending notifications per initial meeting") {
+            let requests = harness.notificationSink.currentPendingRequests()
+            guard requests.count == 4 else { return false }
+            let counts = Dictionary(grouping: requests) {
+                $0.content.userInfo["eventID"] as? String ?? ""
+            }
+            return counts["MOVE"]?.count == 2 && counts["FOLLOW"]?.count == 2
         }
         let oldRequests = harness.notificationSink.currentPendingRequests()
         let oldMoveIDs = Set(oldRequests.filter {
