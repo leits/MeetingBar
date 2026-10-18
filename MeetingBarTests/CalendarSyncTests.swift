@@ -1006,3 +1006,59 @@ private final class SuspendedSignInEventStore: AuthenticatedEventStore, @uncheck
     @MainActor
     func cancelPendingOperations() {}
 }
+
+@MainActor
+final class MissingSelectedEventKitCalendarsTests: BaseTestCase {
+    private var cancellables = Set<AnyCancellable>()
+
+    func testLostSelectedCalendarsPreserveLastKnownGoodEventsAndMarkStale() async throws {
+        let calendar = MBCalendar(
+            title: "Local", id: "old-calendar", source: nil, email: nil, color: .black
+        )
+        let event = makeFakeEvent(
+            id: "known-meeting",
+            start: Date().addingTimeInterval(600),
+            end: Date().addingTimeInterval(1800)
+        )
+        Defaults[.selectedCalendarIDs] = [calendar.id]
+        let store = FakeEventStore(calendars: [calendar], events: [event])
+        let sync = CalendarSync(provider: store, refreshInterval: 0)
+        defer { sync.stop() }
+
+        let loaded = expectation(description: "initial successful event fetch")
+        sync.$events.filter { $0 == [event] }.first()
+            .sink { _ in loaded.fulfill() }
+            .store(in: &cancellables)
+        await fulfillment(of: [loaded], timeout: 2.0)
+
+        store.stubbedCalendars = []
+        let stale = expectation(description: "lost selected calendars mark provider stale")
+        sync.$providerHealth.filter(\.isStale).first()
+            .sink { _ in stale.fulfill() }
+            .store(in: &cancellables)
+
+        try await sync.refreshSources()
+        await fulfillment(of: [stale], timeout: 2.0)
+
+        XCTAssertEqual(sync.events, [event])
+        XCTAssertTrue(sync.providerHealth.isStale)
+        XCTAssertTrue(sync.providerHealth.lastErrorDescription?.contains(
+            "Previously selected macOS calendars are no longer available"
+        ) == true)
+        XCTAssertFalse(sync.providerHealth.authRequired)
+    }
+
+    func testUserClearingAllSelectionsCanPublishEmptyEvents() async throws {
+        let calendar = MBCalendar(
+            title: "Local", id: "old-calendar", source: nil, email: nil, color: .black
+        )
+        let store = FakeEventStore(calendars: [calendar])
+        Defaults[.selectedCalendarIDs] = []
+        let repository = CalendarRepository(store: store)
+
+        let events = try await repository.fetchCurrentPeriodEvents(fromAllCalendars: [])
+
+        XCTAssertTrue(events.isEmpty)
+    }
+}
+
