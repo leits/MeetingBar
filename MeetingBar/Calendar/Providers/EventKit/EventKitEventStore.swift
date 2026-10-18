@@ -128,28 +128,63 @@ extension EKEventStore: AuthenticatedEventStore {
     }
 }
 
-private func fetchEventsOffMain(knownCalendars: [MBCalendar], dateFrom: Date, dateTo: Date) -> [MBEvent] {
-    let selectedCalendars = EKEventStore.shared.calendars(for: .event).filter { knownCalendars.map(\.id).contains($0.calendarIdentifier) }
+/// One EventKit occurrence as returned by the provider's query.
+/// Keeping the calendar identity alongside EKEvent makes query filtering and
+/// occurrence mapping testable without accessing a user's Calendar database.
+struct EventKitRawOccurrence {
+    let calendarID: String
+    let event: EKEvent
+}
 
-    if selectedCalendars.isEmpty {
-        return []
-    }
+func mapEventKitRead(
+    knownCalendars: [MBCalendar],
+    dateFrom: Date,
+    dateTo: Date,
+    customRegexes: [String],
+    read: (_ ids: [String], _ from: Date, _ to: Date) -> [EventKitRawOccurrence]
+) -> [MBEvent] {
+    let byID = Dictionary(knownCalendars.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+    let calendarIDs = knownCalendars.map(\.id)
+    guard !calendarIDs.isEmpty else { return [] }
 
-    let predicate = EKEventStore.shared.predicateForEvents(withStart: dateFrom, end: dateTo, calendars: selectedCalendars)
-    let customRegexes = Defaults[.customRegexes]
-
+    let occurrences = read(calendarIDs, dateFrom, dateTo)
     var events: [MBEvent] = []
-    for rawEvent in EKEventStore.shared.events(matching: predicate) {
-        guard let calendar = knownCalendars.first(where: { $0.id == rawEvent.calendar.calendarIdentifier }) else {
+    for occurrence in occurrences {
+        guard let calendar = byID[occurrence.calendarID] else {
             MeetingBarLogger.calendar.warning(
-                "Skipping EventKit event from unknown calendar \(rawEvent.calendar.calendarIdentifier, privacy: .private)"
+                "Skipping EventKit event from unknown calendar \(occurrence.calendarID, privacy: .private)"
             )
             continue
         }
-        events.append(mbEvent(from: rawEvent, calendar: calendar, customRegexes: customRegexes))
+        events.append(mbEvent(from: occurrence.event, calendar: calendar, customRegexes: customRegexes))
     }
     let deduplicated = Dictionary(events.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first }).values
     return Array(deduplicated)
+}
+
+private func fetchEventsOffMain(
+    knownCalendars: [MBCalendar],
+    dateFrom: Date,
+    dateTo: Date
+) -> [MBEvent] {
+    mapEventKitRead(
+        knownCalendars: knownCalendars,
+        dateFrom: dateFrom,
+        dateTo: dateTo,
+        customRegexes: Defaults[.customRegexes]
+    ) { calendarIDs, from, to in
+        let selectedIDs = Set(calendarIDs)
+        let selectedCalendars = EKEventStore.shared.calendars(for: .event).filter {
+            selectedIDs.contains($0.calendarIdentifier)
+        }
+        guard !selectedCalendars.isEmpty else { return [] }
+        let predicate = EKEventStore.shared.predicateForEvents(
+            withStart: from, end: to, calendars: selectedCalendars
+        )
+        return EKEventStore.shared.events(matching: predicate).map {
+            EventKitRawOccurrence(calendarID: $0.calendar.calendarIdentifier, event: $0)
+        }
+    }
 }
 
 func mbEvent(from rawEvent: EKEvent, calendar: MBCalendar, customRegexes: [String]) -> MBEvent {
