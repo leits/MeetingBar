@@ -122,9 +122,31 @@ extension EKEventStore: AuthenticatedEventStore {
         }
         // events(matching:) blocks while EventKit walks the store. For users
         // with thousands of events this hung the menu bar. Push it off main.
-        return await Task.detached(priority: .userInitiated) {
-            fetchEventsOffMain(knownCalendars: calendars, dateFrom: dateFrom, dateTo: dateTo)
+        return try await Task.detached(priority: .userInitiated) {
+            try fetchEventsOffMain(knownCalendars: calendars, dateFrom: dateFrom, dateTo: dateTo)
         }.value
+    }
+}
+
+/// Selected EventKit calendars disappeared from the current system store.
+/// A successful empty fetch would otherwise erase the last known meetings.
+enum EventKitCalendarSelectionError: LocalizedError, Equatable {
+    case selectedCalendarsUnavailable
+
+    var errorDescription: String? {
+        "Previously selected macOS calendars are no longer available"
+    }
+}
+
+func requireAvailableEventKitSelection(
+    selectedIDs: [String],
+    availableIDs: [String]
+) throws {
+    guard !selectedIDs.isEmpty else { return }
+    // A partially missing selection is also incomplete calendar data, not a
+    // healthy snapshot that can safely replace the last known good meetings.
+    guard Set(selectedIDs).isSubset(of: Set(availableIDs)) else {
+        throw EventKitCalendarSelectionError.selectedCalendarsUnavailable
     }
 }
 
@@ -136,20 +158,32 @@ struct EventKitRawOccurrence {
     let event: EKEvent
 }
 
+/// Calendar IDs are resolved again immediately before EventKit's query.
+/// Pass both resolution and occurrences through the same read seam so a
+/// disappearing calendar cannot be mistaken for a successful empty day.
+struct EventKitReadSnapshot {
+    let availableCalendarIDs: [String]
+    let occurrences: [EventKitRawOccurrence]
+}
+
 func mapEventKitRead(
     knownCalendars: [MBCalendar],
     dateFrom: Date,
     dateTo: Date,
     customRegexes: [String],
-    read: (_ ids: [String], _ from: Date, _ to: Date) -> [EventKitRawOccurrence]
-) -> [MBEvent] {
+    read: (_ ids: [String], _ from: Date, _ to: Date) throws -> EventKitReadSnapshot
+) throws -> [MBEvent] {
     let byID = Dictionary(knownCalendars.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
     let calendarIDs = knownCalendars.map(\.id)
     guard !calendarIDs.isEmpty else { return [] }
 
-    let occurrences = read(calendarIDs, dateFrom, dateTo)
+    let snapshot = try read(calendarIDs, dateFrom, dateTo)
+    try requireAvailableEventKitSelection(
+        selectedIDs: calendarIDs,
+        availableIDs: snapshot.availableCalendarIDs
+    )
     var events: [MBEvent] = []
-    for occurrence in occurrences {
+    for occurrence in snapshot.occurrences {
         guard let calendar = byID[occurrence.calendarID] else {
             MeetingBarLogger.calendar.warning(
                 "Skipping EventKit event from unknown calendar \(occurrence.calendarID, privacy: .private)"
@@ -166,8 +200,8 @@ private func fetchEventsOffMain(
     knownCalendars: [MBCalendar],
     dateFrom: Date,
     dateTo: Date
-) -> [MBEvent] {
-    mapEventKitRead(
+) throws -> [MBEvent] {
+    try mapEventKitRead(
         knownCalendars: knownCalendars,
         dateFrom: dateFrom,
         dateTo: dateTo,
@@ -177,13 +211,21 @@ private func fetchEventsOffMain(
         let selectedCalendars = EKEventStore.shared.calendars(for: .event).filter {
             selectedIDs.contains($0.calendarIdentifier)
         }
-        guard !selectedCalendars.isEmpty else { return [] }
+        // mapEventKitRead validates the second enumeration even if no events
+        // can be fetched. Never create a successful empty result in that case.
+        guard !selectedCalendars.isEmpty else {
+            return EventKitReadSnapshot(availableCalendarIDs: [], occurrences: [])
+        }
         let predicate = EKEventStore.shared.predicateForEvents(
             withStart: from, end: to, calendars: selectedCalendars
         )
-        return EKEventStore.shared.events(matching: predicate).map {
+        let occurrences = EKEventStore.shared.events(matching: predicate).map {
             EventKitRawOccurrence(calendarID: $0.calendar.calendarIdentifier, event: $0)
         }
+        return EventKitReadSnapshot(
+            availableCalendarIDs: selectedCalendars.map(\.calendarIdentifier),
+            occurrences: occurrences
+        )
     }
 }
 

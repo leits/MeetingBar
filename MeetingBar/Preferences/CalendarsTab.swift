@@ -14,6 +14,12 @@ struct CalendarsTab: View {
 
     var body: some View {
         let presentation = PreferencesCalendarPresentation.make(from: appModel.state)
+        let missingIDs = unavailableSelectedCalendarIDs(
+            selectedIDs: appModel.state.selectedCalendarIDs,
+            calendars: appModel.state.calendars,
+            provider: appModel.state.activeProvider,
+            health: appModel.state.providerHealth
+        )
 
         PreferencesGroupedForm {
             Section(header: Text("preferences_calendar_source_title".loco())) {
@@ -75,6 +81,28 @@ struct CalendarsTab: View {
                 }
             }
 
+            if !missingIDs.isEmpty {
+                Section(header: Text("preferences_calendars_unavailable_title".loco())) {
+                    Text("preferences_calendars_unavailable_help".loco())
+                        .foregroundStyle(.secondary)
+                        .font(.caption)
+                    ForEach(missingIDs, id: \.self) { id in
+                        HStack {
+                            Image(systemName: "exclamationmark.triangle")
+                                .foregroundStyle(.orange)
+                            Text(id)
+                                .lineLimit(1)
+                                .textSelection(.enabled)
+                            Spacer()
+                            Button("preferences_calendars_remove_missing".loco()) {
+                                appModel.toggleCalendarSelection(id: id, selected: false)
+                            }
+                            .disabled(appModel.state.providerChangeInProgress)
+                        }
+                    }
+                }
+            }
+
             if appModel.state.calendars.isEmpty {
                 Section(header: Text("preferences_calendars_select_calendars_title".loco())) {
                     CalendarPreferencesEmptyState(presentation: presentation)
@@ -85,6 +113,23 @@ struct CalendarsTab: View {
         }
     }
 
+}
+
+/// An unavailable saved calendar must remain removable even when a failed
+/// refresh has left Preferences with no visible calendar rows.
+func unavailableSelectedCalendarIDs(
+    selectedIDs: [String],
+    calendars: [MBCalendar],
+    provider: EventStoreProvider,
+    health: ProviderHealth
+) -> [String] {
+    guard provider == .macOSEventKit,
+          health.isStale,
+          health.lastErrorDescription?.contains(
+              EventKitCalendarSelectionError.selectedCalendarsUnavailable.localizedDescription
+          ) == true else { return [] }
+    let availableIDs = Set(calendars.map(\.id))
+    return selectedIDs.filter { !availableIDs.contains($0) }
 }
 
 private struct CalendarPreferencesEmptyState: View {
