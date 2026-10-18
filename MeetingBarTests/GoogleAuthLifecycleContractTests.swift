@@ -53,6 +53,34 @@ final class GoogleAuthLifecycleContractTests: XCTestCase {
         }
     }
 
+    func testLateAuthorizationCallbackCannotInstallStaleSession() {
+        var installedState: String?
+        XCTAssertThrowsError(try GCEventStore.acceptAuthorizationResult(
+            issuedGeneration: 4,
+            currentGeneration: 5,
+            state: "obsolete-oauth-state",
+            error: nil,
+            install: { installedState = $0 }
+        )) { error in
+            guard case AuthError.cancelled = error else {
+                return XCTFail("Expected cancelled flow; got \(error)")
+            }
+        }
+        XCTAssertNil(installedState)
+    }
+
+    func testCurrentAuthorizationCallbackInstallsSessionExactlyOnce() throws {
+        var installed: [String] = []
+        try GCEventStore.acceptAuthorizationResult(
+            issuedGeneration: 5,
+            currentGeneration: 5,
+            state: "new-oauth-state",
+            error: nil,
+            install: { installed.append($0) }
+        )
+        XCTAssertEqual(installed, ["new-oauth-state"])
+    }
+
     func testMissingSessionCannotSkipSignInEvenWithoutForcedPrompt() {
         XCTAssertFalse(GCEventStore.shouldSkipSignIn(forcePrompt: false, state: nil))
         XCTAssertFalse(GCEventStore.shouldSkipSignIn(forcePrompt: true, state: nil))

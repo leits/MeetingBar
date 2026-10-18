@@ -81,6 +81,8 @@ final class GCEventStore: NSObject,
 
     private var pendingRefresh: PendingRefresh?
     private var refreshGeneration = 0
+    /// Invalidates callbacks for abandoned interactive authorization flows.
+    private var authorizationGeneration = 0
     /// Upper bound on one AppAuth token refresh.
     ///
     /// AppAuth issues token requests on `OIDURLSessionProvider.session`, which
@@ -144,11 +146,20 @@ final class GCEventStore: NSObject,
     }
 
     private func performAuthorization(forcePrompt: Bool) async throws {
+        authorizationGeneration += 1
+        let generation = authorizationGeneration
+
         // discover configuration for Google issuer
         let config = try await withCheckedThrowingContinuation { cont in
             OIDAuthorizationService.discoverConfiguration(forIssuer: URL(string: Self.kIssuer)!) { cfg, err in
                 if let cfg { cont.resume(returning: cfg) } else { cont.resume(throwing: err ?? NSError(domain: "GoogleSignIn", code: -1)) }
             }
+        }
+
+        // Discovery is asynchronous. A newer provider selection may have
+        // cancelled this attempt before AppAuth even presents its browser.
+        guard generation == authorizationGeneration, !Task.isCancelled else {
+            throw AuthError.cancelled
         }
 
         // request scopes we need
@@ -179,19 +190,48 @@ final class GCEventStore: NSObject,
         try await withCheckedThrowingContinuation { cont in
             self.currentAuthorizationFlow = OIDAuthState.authState(byPresenting: request,
                                                                    externalUserAgent: self) { [weak self] state, error in
-                guard let self else { return }
-                if let state {
-                    self.authState = state    // didSet handles persistence & delegates
-                    self.userEmail = state.userEmail
-                    AppMessageCenter.shared.post(
-                        .googleAccountConnected(email: self.userEmail ?? "")
-                    )
+                guard let self else {
+                    cont.resume(throwing: AuthError.cancelled)
+                    return
+                }
+                do {
+                    try Self.acceptAuthorizationResult(
+                        issuedGeneration: generation,
+                        currentGeneration: self.authorizationGeneration,
+                        state: state,
+                        error: error
+                    ) { accepted in
+                        self.authState = accepted // persistence and delegates
+                        self.userEmail = accepted.userEmail
+                        AppMessageCenter.shared.post(
+                            .googleAccountConnected(email: self.userEmail ?? "")
+                        )
+                    }
+                    self.currentAuthorizationFlow = nil
                     cont.resume()
-                } else {
-                    cont.resume(throwing: Self.authorizationError(error))
+                } catch {
+                    cont.resume(throwing: error)
                 }
             }
         }
+    }
+
+    /// The AppAuth callback must not install a session belonging to a
+    /// cancelled/superseded sign-in, even if its browser response arrives late.
+    /// This accepts generic state data so the callback ordering is testable
+    /// without an actual Google account, browser, or Keychain.
+    static func acceptAuthorizationResult<State>(
+        issuedGeneration: Int,
+        currentGeneration: Int,
+        state: State?,
+        error: Error?,
+        install: (State) -> Void
+    ) throws {
+        guard issuedGeneration == currentGeneration else {
+            throw AuthError.cancelled
+        }
+        guard let state else { throw authorizationError(error) }
+        install(state)
     }
 
     private static func authorizationError(_ error: Error?) -> Error {
@@ -240,6 +280,7 @@ final class GCEventStore: NSObject,
     }
 
     func cancelPendingOperations() {
+        authorizationGeneration += 1
         pendingRefresh?.task.cancel()
         pendingRefresh = nil
 

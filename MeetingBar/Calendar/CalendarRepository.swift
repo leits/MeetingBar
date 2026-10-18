@@ -83,6 +83,14 @@ public final class CalendarRepository {
     ) async throws -> [MBCalendar] {
         let previousProvider = activeProvider
         let candidate = storeFactory(providerName)
+        // Cancel a superseded interactive sign-in immediately. Waiting for
+        // its callback to finish before invalidating the old candidate would
+        // let that callback persist an authorization state after the user
+        // already picked a different provider.
+        if let pendingProvider, pendingProvider !== candidate,
+           pendingProvider !== activeProvider {
+            pendingProvider.cancelPendingOperations()
+        }
         let reauthorizingCurrentProvider = candidate === previousProvider
         switchGeneration += 1
         let generation = switchGeneration

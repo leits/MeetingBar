@@ -920,6 +920,7 @@ final class ConcurrentProviderSwitchTests: BaseTestCase {
         // completes later, after the second selection has committed.
         let currentChoice = await sync.changeEventStoreProvider(.macOSEventKit)
         XCTAssertEqual(currentChoice, .success)
+        XCTAssertEqual(pendingStore.cancelPendingOperationsCallCount, 1)
         await gate.release()
         let superseded = await outdatedSwitch.value
 
@@ -1004,6 +1005,7 @@ private actor ProviderSignInGate {
 
 private final class SuspendedSignInEventStore: AuthenticatedEventStore, @unchecked Sendable {
     private let gate: ProviderSignInGate
+    @MainActor private(set) var cancelPendingOperationsCallCount = 0
 
     init(gate: ProviderSignInGate) {
         self.gate = gate
@@ -1027,7 +1029,9 @@ private final class SuspendedSignInEventStore: AuthenticatedEventStore, @uncheck
     }
 
     @MainActor
-    func cancelPendingOperations() {}
+    func cancelPendingOperations() {
+        cancelPendingOperationsCallCount += 1
+    }
 }
 
 @MainActor
