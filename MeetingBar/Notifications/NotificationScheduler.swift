@@ -60,6 +60,15 @@ final class NotificationScheduler {
     /// keyed by notification identifier. Reconciled on every refresh — stale
     /// tasks are cancelled, missing ones are scheduled.
     private var actionTasks: [String: Task<Void, Never>] = [:]
+
+    /// Test-only synchronization for delayed action completion. Production
+    /// callers must never wait for future scheduled actions to finish.
+    func waitForPendingActionsForTesting() async {
+        let tasks = Array(actionTasks.values)
+        for task in tasks {
+            await task.value
+        }
+    }
     /// Always use the latest provider snapshot at fire time. An unchanged
     /// start date/identity must not keep an outdated meeting URL alive.
     private var latestActionEvents: [String: MBEvent] = [:]
