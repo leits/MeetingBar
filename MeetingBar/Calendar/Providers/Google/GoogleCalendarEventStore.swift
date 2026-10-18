@@ -529,44 +529,14 @@ final class GCEventStore: NSObject,
 
     // MARK: Networking helper
     private func fetchJSON(_ url: URL, calendarID: String? = nil) async throws -> [[String: Any]] {
-        try await GoogleCalendarPagination.fetchAll(from: url) { pageURL in
-            try await self.fetchJSONPage(pageURL, calendarID: calendarID)
-        }
-    }
-
-    private func fetchJSONPage(_ url: URL, calendarID: String?, retrying: Bool = false) async throws -> GoogleCalendarPage {
-        let token = try await validAccessToken()
-
-        var req = URLRequest(url: url)
-        req.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-
-        let (data, response) = try await urlSession.data(for: req)
-
-        if let http = response as? HTTPURLResponse {
-            switch GoogleHTTPStatusPolicy.classify(
-                statusCode: http.statusCode,
-                url: url,
-                calendarID: calendarID,
-                retrying: retrying
-            ) {
-            case .proceed:
-                break
-            case .retryWithForcedTokenRefresh:
-                _ = try await validAccessToken(forceRefresh: true)
-                return try await fetchJSONPage(url, calendarID: calendarID, retrying: true)
-            case .throwAuthRequired:
-                // Deliberately keeps the stored session. A 401 from the
-                // Calendar API only proves this access token was refused, and
-                // a proxy or captive portal can produce one against a healthy
-                // grant. The session is discarded only when the token endpoint
-                // rejects the refresh token, via the errorDelegate below.
-                throw AuthError.notSignedIn
-            case let .throwError(error):
-                throw error
+        let session = urlSession
+        let client = GoogleCalendarHTTPClient(
+            transport: { request in try await session.data(for: request) },
+            accessToken: { [self] forceRefresh in
+                try await validAccessToken(forceRefresh: forceRefresh)
             }
-        }
-
-        return try GoogleCalendarPage(data: data, url: url)
+        )
+        return try await client.fetchJSON(url, calendarID: calendarID)
     }
 
     private func revoke(token: String) async throws {

@@ -90,6 +90,26 @@ final class NextEventTests: XCTestCase {
         )
     }
 
+    func testSelectionIsInvariantToProviderArrivalOrderForDistinctStartTimes() {
+        let events = [
+            event(id: "later", startsIn: 1800, sourceIndex: 2),
+            event(id: "soonest", startsIn: 300, sourceIndex: 0),
+            event(id: "middle", startsIn: 900, sourceIndex: 1)
+        ]
+        for shift in events.indices {
+            let rotated = Array(events[shift...]) + Array(events[..<shift])
+            XCTAssertEqual(nextEvent(rotated)?.id, "soonest")
+            XCTAssertEqual(nextEvent(rotated.reversed())?.id, "soonest")
+        }
+    }
+
+    func testEqualStartTimeUsesSourceIndexRegardlessOfArrivalOrder() {
+        let first = event(id: "primary", startsIn: 300, sourceIndex: 0)
+        let second = event(id: "shared", startsIn: 300, sourceIndex: 1)
+        XCTAssertEqual(nextEvent([second, first])?.id, "primary")
+        XCTAssertEqual(nextEvent([first, second])?.id, "primary")
+    }
+
     func testPicksSoonestFutureEvent() {
         let e1 = event(id: "1", startsIn: 300)
         let e2 = event(id: "2", startsIn: 100)

@@ -53,6 +53,8 @@ final class NotificationScheduler {
 
     private let sink: NotificationRequestSink
     private let runner: NotificationActionRunner
+    private let sleepAction: @Sendable (TimeInterval) async throws -> Void
+    private let actionDate: @MainActor () -> Date
 
     /// Delayed `Task`s for in-app actions (fullscreen / autoJoin / scriptOnStart),
     /// keyed by notification identifier. Reconciled on every refresh — stale
@@ -63,10 +65,16 @@ final class NotificationScheduler {
 
     init(
         sink: NotificationRequestSink = UNUserNotificationCenter.current(),
-        actionSink: NotificationActionSink? = nil
+        actionSink: NotificationActionSink? = nil,
+        sleepAction: @escaping @Sendable (TimeInterval) async throws -> Void = { seconds in
+            try await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
+        },
+        actionDate: @escaping @MainActor () -> Date = { Date() }
     ) {
         self.sink = sink
         self.runner = NotificationActionRunner(actionSink: actionSink)
+        self.sleepAction = sleepAction
+        self.actionDate = actionDate
     }
 
     func setActionSink(_ actionSink: NotificationActionSink?) {
@@ -202,14 +210,19 @@ final class NotificationScheduler {
             let id = Self.identifierPrefix + plan.identity
             guard actionTasks[id] == nil, let event = eventByID[plan.eventID] else { continue }
 
+            let sleep = sleepAction
             actionTasks[id] = Task { [weak self] in
                 let delay = max(plan.fireDate.timeIntervalSince(now), 0)
                 if delay > 0 {
-                    try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+                    do {
+                        try await sleep(delay)
+                    } catch {
+                        return
+                    }
                 }
                 await MainActor.run {
                     guard let self, !Task.isCancelled else { return }
-                    self.runner.fire(plan: plan, event: event, settings: settings, now: Date())
+                    self.runner.fire(plan: plan, event: event, settings: settings, now: self.actionDate())
                     self.actionTasks[id] = nil
                 }
             }

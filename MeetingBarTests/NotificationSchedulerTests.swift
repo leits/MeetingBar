@@ -134,6 +134,53 @@ final class NotificationSchedulerTests: BaseTestCase {
         }
     }
 
+    func testManualClockFiresDelayedFullscreenWithoutWallClockWait() async {
+        let sleeper = ManualNotificationActionSleep()
+        let sink = FakeNotificationRequestSink()
+        let actionSink = FakeNotificationActionSink()
+        let event = event(id: "virtual-clock", startsIn: 120)
+        let scheduler = NotificationScheduler(
+            sink: sink,
+            actionSink: actionSink,
+            sleepAction: { _ in await sleeper.sleep() },
+            actionDate: { self.now.addingTimeInterval(120) }
+        )
+        await scheduler.reconcile(
+            events: [event], settings: fullscreenOnlySettings(offset: 0), now: now
+        )
+        await sleeper.waitUntilSleeping()
+        await sleeper.wakeAll()
+        await waitUntil { !actionSink.actions.isEmpty }
+
+        XCTAssertEqual(actionSink.actions.count, 1)
+        XCTAssertEqual(actionSink.actions.first?.eventID, "virtual-clock")
+        scheduler.stop()
+    }
+
+    func testCancelledManualSleeperCannotFireDismissedAction() async {
+        let sleeper = ManualNotificationActionSleep()
+        let sink = FakeNotificationRequestSink()
+        let actionSink = FakeNotificationActionSink()
+        let scheduler = NotificationScheduler(
+            sink: sink,
+            actionSink: actionSink,
+            sleepAction: { _ in await sleeper.sleep() },
+            actionDate: { self.now.addingTimeInterval(120) }
+        )
+        await scheduler.reconcile(
+            events: [event(id: "dismissed", startsIn: 120)],
+            settings: fullscreenOnlySettings(offset: 0),
+            now: now
+        )
+        await sleeper.waitUntilSleeping()
+        await scheduler.reconcile(events: [], settings: fullscreenOnlySettings(offset: 0), now: now)
+        await sleeper.wakeAll()
+        await Task.yield()
+
+        XCTAssertTrue(actionSink.actions.isEmpty)
+        scheduler.stop()
+    }
+
     func testReconcileSchedulesStartAndEndForFutureEvent() async {
         let sink = FakeNotificationRequestSink()
         let scheduler = NotificationScheduler(sink: sink)
@@ -853,5 +900,31 @@ final class NotificationSchedulerTests: BaseTestCase {
         let settings = NotificationPlanningSettings.currentForScheduler
 
         XCTAssertEqual(settings.scriptOnStart, .init(enabled: false, offset: 5))
+    }
+}
+
+private actor ManualNotificationActionSleep {
+    private var pending: [CheckedContinuation<Void, Never>] = []
+    private var observers: [CheckedContinuation<Void, Never>] = []
+
+    func sleep() async {
+        await withCheckedContinuation { continuation in
+            pending.append(continuation)
+            observers.forEach { $0.resume() }
+            observers.removeAll()
+        }
+    }
+
+    func waitUntilSleeping() async {
+        guard pending.isEmpty else { return }
+        await withCheckedContinuation { continuation in
+            observers.append(continuation)
+        }
+    }
+
+    func wakeAll() {
+        let sleepers = pending
+        pending.removeAll()
+        sleepers.forEach { $0.resume() }
     }
 }
