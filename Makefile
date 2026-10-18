@@ -123,13 +123,13 @@ test-summary:
 # Slather report does not include the separate MeetingBarLogic test binary.
 coverage-codecov-logic:
 	@mkdir -p $(COVERAGE_DIR)
-	@PROFILE="$(ls -d .build/*/debug/codecov/default.profdata .build/debug/codecov/default.profdata 2>/dev/null | head -n 1)" ; \
-	TEST_BINARY="$(ls -d .build/*/debug/MeetingBarLogicPackageTests.xctest/Contents/MacOS/MeetingBarLogicPackageTests .build/debug/MeetingBarLogicPackageTests.xctest/Contents/MacOS/MeetingBarLogicPackageTests 2>/dev/null | head -n 1)" ; \
-	if [ ! -f "$PROFILE" ] || [ ! -x "$TEST_BINARY" ]; then \
+	@PROFILE="$$(ls -d .build/*/debug/codecov/default.profdata .build/debug/codecov/default.profdata 2>/dev/null | head -n 1)" ; \
+	TEST_BINARY="$$(ls -d .build/*/debug/MeetingBarLogicPackageTests.xctest/Contents/MacOS/MeetingBarLogicPackageTests .build/debug/MeetingBarLogicPackageTests.xctest/Contents/MacOS/MeetingBarLogicPackageTests 2>/dev/null | head -n 1)" ; \
+	if [ ! -f "$$PROFILE" ] || [ ! -x "$$TEST_BINARY" ]; then \
 		echo "SwiftPM coverage data not found. Run 'make test-logic' first."; \
 		exit 1; \
 	fi ; \
-	xcrun llvm-cov export "$TEST_BINARY" -instr-profile "$PROFILE" -format=lcov $(LOGIC_COVERAGE_SOURCES) > "$(COVERAGE_DIR)/swiftpm.lcov"
+	xcrun llvm-cov export "$$TEST_BINARY" -instr-profile "$$PROFILE" -format=lcov $(LOGIC_COVERAGE_SOURCES) > "$(COVERAGE_DIR)/swiftpm.lcov"
 
 # Generate a Cobertura coverage report from the app-hosted test build for
 # Codecov. Uses slather against our custom derived-data path; skips cleanly
