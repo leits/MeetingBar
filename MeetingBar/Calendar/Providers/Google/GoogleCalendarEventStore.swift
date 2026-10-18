@@ -36,6 +36,62 @@ extension OIDAuthState {
     }
 }
 
+/// Owns one interactive AppAuth attempt and guarantees its awaiting caller is
+/// released when a newer attempt supersedes it. Keep the session and its
+/// completion together so an old callback cannot clear the new session.
+@MainActor
+final class GoogleAuthorizationFlowSlot {
+    private(set) var generation = 0
+    private(set) var session: OIDExternalUserAgentSession?
+    private var finishWait: ((Result<Void, Error>) -> Void)?
+
+    func begin() -> Int {
+        cancel()
+        return generation
+    }
+
+    func isCurrent(_ attempt: Int) -> Bool { attempt == generation }
+
+    func isPending(_ attempt: Int) -> Bool {
+        isCurrent(attempt) && finishWait != nil
+    }
+
+    func register(_ attempt: Int, finish: @escaping (Result<Void, Error>) -> Void) {
+        guard isCurrent(attempt) else {
+            finish(.failure(AuthError.cancelled))
+            return
+        }
+        finishWait = finish
+    }
+
+    func setSession(_ session: OIDExternalUserAgentSession?, for attempt: Int) {
+        guard isPending(attempt) else {
+            session?.cancel()
+            return
+        }
+        self.session = session
+    }
+
+    func finish(_ attempt: Int, result: Result<Void, Error>) {
+        guard isPending(attempt) else { return }
+        let completion = finishWait
+        finishWait = nil
+        session = nil
+        completion?(result)
+    }
+
+    func cancel() {
+        generation += 1
+        let completion = finishWait
+        let previousSession = session
+        finishWait = nil
+        session = nil
+        // Settle first; AppAuth may synchronously call back from cancel().
+        completion?(.failure(AuthError.cancelled))
+        previousSession?.cancel()
+    }
+}
+
 // MARK: - GCEventStore
 @MainActor
 final class GCEventStore: NSObject,
@@ -52,7 +108,10 @@ final class GCEventStore: NSObject,
     private static let kKeychainName = googleAuthKeychainName
 
     // MARK: Stored properties
-    @MainActor var currentAuthorizationFlow: OIDExternalUserAgentSession?
+    @MainActor var currentAuthorizationFlow: OIDExternalUserAgentSession? {
+        authorizationFlow.session
+    }
+    private let authorizationFlow = GoogleAuthorizationFlowSlot()
     private(set) var userEmail: String?
 
     private var authState: OIDAuthState? {
@@ -81,8 +140,6 @@ final class GCEventStore: NSObject,
 
     private var pendingRefresh: PendingRefresh?
     private var refreshGeneration = 0
-    /// Invalidates callbacks for abandoned interactive authorization flows.
-    private var authorizationGeneration = 0
     /// Upper bound on one AppAuth token refresh.
     ///
     /// AppAuth issues token requests on `OIDURLSessionProvider.session`, which
@@ -146,8 +203,9 @@ final class GCEventStore: NSObject,
     }
 
     private func performAuthorization(forcePrompt: Bool) async throws {
-        authorizationGeneration += 1
-        let generation = authorizationGeneration
+        // This also completes the previous sign-in awaiter if it was still
+        // waiting for a browser callback.
+        let generation = authorizationFlow.begin()
 
         // discover configuration for Google issuer
         let config = try await withCheckedThrowingContinuation { cont in
@@ -158,7 +216,7 @@ final class GCEventStore: NSObject,
 
         // Discovery is asynchronous. A newer provider selection may have
         // cancelled this attempt before AppAuth even presents its browser.
-        guard generation == authorizationGeneration, !Task.isCancelled else {
+        guard authorizationFlow.isCurrent(generation), !Task.isCancelled else {
             throw AuthError.cancelled
         }
 
@@ -188,16 +246,17 @@ final class GCEventStore: NSObject,
         )
 
         try await withCheckedThrowingContinuation { (cont: CheckedContinuation<Void, Error>) in
-            self.currentAuthorizationFlow = OIDAuthState.authState(byPresenting: request,
-                                                                   externalUserAgent: self) { [weak self] state, error in
-                guard let self else {
-                    cont.resume(throwing: AuthError.cancelled)
-                    return
-                }
+            authorizationFlow.register(generation) { result in
+                cont.resume(with: result)
+            }
+            let session = OIDAuthState.authState(
+                byPresenting: request, externalUserAgent: self
+            ) { [weak self] state, error in
+                guard let self, self.authorizationFlow.isPending(generation) else { return }
                 do {
                     try Self.acceptAuthorizationResult(
                         issuedGeneration: generation,
-                        currentGeneration: self.authorizationGeneration,
+                        currentGeneration: self.authorizationFlow.generation,
                         state: state,
                         error: error
                     ) { accepted in
@@ -207,12 +266,12 @@ final class GCEventStore: NSObject,
                             .googleAccountConnected(email: self.userEmail ?? "")
                         )
                     }
-                    self.currentAuthorizationFlow = nil
-                    cont.resume()
+                    self.authorizationFlow.finish(generation, result: .success(()))
                 } catch {
-                    cont.resume(throwing: error)
+                    self.authorizationFlow.finish(generation, result: .failure(error))
                 }
             }
+            authorizationFlow.setSession(session, for: generation)
         }
     }
 
@@ -280,13 +339,9 @@ final class GCEventStore: NSObject,
     }
 
     func cancelPendingOperations() {
-        authorizationGeneration += 1
+        authorizationFlow.cancel()
         pendingRefresh?.task.cancel()
         pendingRefresh = nil
-
-        let flow = currentAuthorizationFlow
-        currentAuthorizationFlow = nil
-        flow?.cancel()
     }
 
     func refreshSources() async {}
