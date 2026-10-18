@@ -156,7 +156,6 @@
 "preferences_advanced_setting_warning" = "⚠️ Използвай тези настройки само ако е ясно какво правят";
 "preferences_advanced_apple_script_checkmark" = "Изпълнявай AppleScript при влизане в среща";
 "preferences_advanced_apple_script_placeholder" = "# въведи скрипта тук\ntell application \"Music\" to pause";
-"preferences_advanced_run_script_on_event_start" = "Изпълнявай AppleScript автоматично";
 "preferences_advanced_test_script_on_next_event" = "Тествай при следващото събитие";
 "preferences_advanced_edit_script" = "Редактирай скрипта";
 "preferences_advanced_save_script_button" = "Запази скрипта";

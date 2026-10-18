@@ -181,7 +181,6 @@
 // MARK: - Preferences Calendars
 
 "preferences_calendars_select_calendars_title" = "Kies agenda's die meetings laten zien in de menubalk";
-"preferences_advanced_run_script_on_event_start" = "Voer AppleScript uit voor vergaderingen waaraan kan worden deelgenomen";
 "preferences_advanced_wrong_location_button" = "Begrepen!";
 "preferences_advanced_regex_edit_button" = "bewerken";
 "status_bar_section_join_current_meeting" = "Direct deelnemen aan huidige meeting";

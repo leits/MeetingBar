@@ -95,7 +95,6 @@
 "preferences_bookmarks_new_bookmark_error_title" = "אי אפשר להוסיף סימניה";
 "preferences_advanced_apple_script_checkmark" = "להפעיל AppleScript בעת הצטרפות לפגישה";
 "preferences_advanced_apple_script_placeholder" = "# כאן ניתן לכתוב את הסקריפט שלך\ntell application \"Music\" to pause";
-"preferences_advanced_run_script_on_event_start" = "הרצת AppleScript אוטומטית";
 "preferences_advanced_test_script_on_next_event" = "בדיקה באירוע הבא";
 "preferences_advanced_edit_script" = "עריכת סקריפט";
 "preferences_advanced_save_script_button" = "שמירת הסקריפט";

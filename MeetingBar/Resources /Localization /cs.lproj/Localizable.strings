@@ -126,7 +126,6 @@
 "preferences_advanced_wrong_location_title" = "Nesprávné umístění";
 "preferences_advanced_save_script_button" = "Uložit skript";
 "preferences_advanced_apple_script_placeholder" = "# sem napište svůj skript\ntell application \"Music\" to pause";
-"preferences_advanced_run_script_on_event_start" = "Spouštět AppleScript před schůzkami s odkazem";
 "preferences_advanced_test_script_on_next_event" = "Vyzkoušet na příští události";
 "preferences_advanced_edit_script" = "Upravit skript";
 "preferences_advanced_apple_script_checkmark" = "Spustit AppleScript při připojení ke schůzce";
@@ -397,3 +396,8 @@
 "onboarding_essentials_description" = "Zvolte základní nastavení otevírání schůzek a dodržování času.";
 "onboarding_essentials_hint" = "Všechny podrobnosti můžete později upravit v Předvolbách.";
 "onboarding_start_using" = "Začít používat MeetingBar";
+"preferences_advanced_run_script_before_event_start" = "Spouštět AppleScript před událostmi";
+"preferences_advanced_script_save_failed_title" = "AppleScript nelze uložit";
+"preferences_advanced_script_save_failed_message" = "Vaše změny byly zachovány. Zkontrolujte přístup ke složce Application Scripts a zkuste to znovu. %@";
+"preferences_advanced_script_hooks_help" = "Skripty navázané na začátek události se spouštějí i u událostí bez odkazu na schůzku. Skripty pro připojení se spouštějí pouze při připojení ke schůzce.";
+"preferences_meeting_opening_mode_tuple_app" = "Aplikace Tuple";
