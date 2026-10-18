@@ -1240,7 +1240,9 @@ private final class DelayedSignOutEventStore: AuthenticatedEventStore, @unchecke
     @MainActor private(set) var signInCount = 0
 
     init(gate: ProviderSignOutGate) { self.gate = gate }
-    func signIn(forcePrompt _: Bool) async throws { signInCount += 1 }
+    func signIn(forcePrompt _: Bool) async throws {
+        await MainActor.run { signInCount += 1 }
+    }
     func signOut() async { await gate.signOut() }
     func refreshSources() async {}
     func fetchAllCalendars() async throws -> [MBCalendar] {
