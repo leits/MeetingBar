@@ -119,7 +119,7 @@ struct BrowserConfigView: View {
      * allows to remove the bookmark
      */
     func removeBrowser(_ browser: Browser) {
-        browserConfigs.removeAll { $0.name == browser.name }
+        browserConfigs.removeAll { $0 == browser }
     }
 
     struct EditBrowserModal: View {
