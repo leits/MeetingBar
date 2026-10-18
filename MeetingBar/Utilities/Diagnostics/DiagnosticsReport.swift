@@ -115,6 +115,11 @@ enum DiagnosticsReport {
     /// Keep the human-readable failure type when sharing diagnostics.
     private static func sanitizedErrorDescription(_ message: String?) -> String {
         guard let message else { return "none" }
+        // GoogleCalendarError.forbiddenCalendar renders a bare calendar ID,
+        // not a URL. Preserve the failure while hiding the calendar identity.
+        if message.hasPrefix("Google Calendar is not accessible: ") {
+            return "Google Calendar is not accessible: [calendar ID redacted]"
+        }
         guard let expression = try? NSRegularExpression(
             pattern: #"(?i)(?:https?|ical|file)://[^\s<>]+"#
         ) else { return message }
