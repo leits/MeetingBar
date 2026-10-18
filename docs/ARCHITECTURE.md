@@ -505,7 +505,7 @@ Then manually smoke-test first launch/onboarding for EventKit and Google Calenda
 
 - Project overview and installation: [`README.md`](../README.md)
 - Contributor workflow: [`CONTRIBUTING.md`](../CONTRIBUTING.md)
-- Unreleased user-visible changes: [`CHANGELOG.md`](../CHANGELOG.md)
+- Published release notes and change history: [GitHub Releases](https://github.com/leits/MeetingBar/releases)
 - Security and contact: [`SECURITY.md`](../SECURITY.md), [`CONTACT.md`](../CONTACT.md)
 - Localization: `MeetingBar/Resources /Localization /` (note the spaces in the path — historical)
 - Meeting service URL patterns: [`MeetingBar/Meetings/MeetingServices.swift`](../MeetingBar/Meetings/MeetingServices.swift)
