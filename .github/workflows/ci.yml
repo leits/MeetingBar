@@ -67,6 +67,16 @@ jobs:
         if: ${{ env.CODECOV_TOKEN != '' }}
         run: make coverage-codecov-logic
 
+      - name: Upload SwiftPM logic coverage to Codecov
+        if: ${{ env.CODECOV_TOKEN != '' }}
+        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
+        with:
+          files: build/coverage/swiftpm.lcov
+          flags: swiftpm_logic
+          disable_search: true
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+
       - name: Run app-hosted tests
         id: app_tests
         run: make test-app-quiet
@@ -93,12 +103,12 @@ jobs:
         if: ${{ !cancelled() && steps.app_tests.outcome == 'success' && env.CODECOV_TOKEN != '' }}
         run: make coverage-codecov
 
-      - name: Upload coverage to Codecov
+      - name: Upload app-hosted coverage to Codecov
         if: ${{ !cancelled() && steps.app_tests.outcome == 'success' && env.CODECOV_TOKEN != '' }}
         uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
         with:
-          # Slather covers app-hosted tests; llvm-cov covers the separate SwiftPM target.
-          files: build/coverage/cobertura.xml,build/coverage/swiftpm.lcov
+          files: build/coverage/cobertura.xml
+          flags: app_hosted
           disable_search: true
           fail_ci_if_error: true
           token: ${{ secrets.CODECOV_TOKEN }}

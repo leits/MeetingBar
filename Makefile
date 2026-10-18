@@ -19,7 +19,7 @@ XCFILTER := $(shell command -v xcbeautify >/dev/null 2>&1 && echo 'xcbeautify --
 # Append a JUnit report to app-hosted test runs when xcbeautify is available.
 JUNIT_REPORT := $(shell command -v xcbeautify >/dev/null 2>&1 && echo '--report junit --report-path $(BUILD_DIR)/test-results')
 
-.PHONY: build build-quiet build-release test test-quiet test-app test-app-quiet test-logic test-logic-quiet coverage coverage-report coverage-logic-report coverage-app-report coverage-gate test-summary coverage-codecov coverage-codecov-logic lint lint-fix open validate-strings
+.PHONY: build build-quiet build-release test test-quiet test-app test-app-quiet test-logic test-logic-quiet test-performance coverage coverage-report coverage-logic-report coverage-app-report coverage-gate test-summary coverage-codecov coverage-codecov-logic lint lint-fix open validate-strings
 
 build:
 	@mkdir -p $(BUILD_DIR)
@@ -56,6 +56,10 @@ test-logic:
 test-logic-quiet:
 	$(SWIFT) test --enable-code-coverage --quiet
 	@$(MAKE) --no-print-directory coverage-logic-report
+
+# Opt-in reproducible workload baselines. These are not CI gates.
+test-performance:
+	MEETINGBAR_PERF_TESTS=1 $(SWIFT) test --filter PerformanceBaselineTests
 
 coverage: test
 
