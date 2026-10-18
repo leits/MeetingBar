@@ -995,6 +995,35 @@ final class ConcurrentProviderSwitchTests: BaseTestCase {
         repository.stop()
     }
 
+    func testStaleSwitchCannotCommitAfterPreviousProviderSignOutCompletes() async throws {
+        let gate = ProviderSignOutGate()
+        let google = DelayedSignOutEventStore(gate: gate)
+        let local = FakeEventStore(calendars: [
+            MBCalendar(title: "Local", id: "local", source: nil, email: nil, color: .black)
+        ])
+        let repository = CalendarRepository(providerName: .googleCalendar) { provider in
+            provider == .googleCalendar ? google : local
+        }
+
+        let outdated = Task {
+            try await repository.switchProvider(to: .macOSEventKit, signOutCurrent: true)
+        }
+        await gate.waitUntilStarted()
+        let current = try await repository.switchProvider(to: .googleCalendar)
+        XCTAssertEqual(current.map(\.id), ["google"])
+        await gate.release()
+
+        do {
+            _ = try await outdated.value
+            XCTFail("A superseded switch must not commit after sign-out finishes")
+        } catch is CancellationError {
+            // The new selection remains authoritative.
+        }
+        XCTAssertEqual(repository.activeProviderName, .googleCalendar)
+        XCTAssertEqual(local.cancelPendingOperationsCallCount, 1)
+        repository.stop()
+    }
+
     func testSwitchWithSignOutRetiresOldProviderOnlyAfterNewOneLoads() async throws {
         let old = FakeEventStore(calendars: [
             MBCalendar(title: "Local", id: "local", source: nil, email: nil, color: .black)
