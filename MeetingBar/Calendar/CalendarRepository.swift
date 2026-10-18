@@ -12,15 +12,14 @@ import Foundation
 
 // MARK: - Date range helpers
 
-func calendarDateRange(for period: ShowEventsForPeriod) -> (from: Date, to: Date) {
-    let dateFrom = Calendar.current.startOfDay(for: Date())
-    let dateTo: Date
-    switch period {
-    case .today:
-        dateTo = Calendar.current.date(byAdding: .day, value: 1, to: dateFrom)!
-    case .today_n_tomorrow:
-        dateTo = Calendar.current.date(byAdding: .day, value: 2, to: dateFrom)!
-    }
+func calendarDateRange(
+    for period: ShowEventsForPeriod,
+    now: Date = Date(),
+    calendar: Calendar = .current
+) -> (from: Date, to: Date) {
+    let dateFrom = calendar.startOfDay(for: now)
+    let days = period == .today ? 1 : 2
+    let dateTo = calendar.date(byAdding: .day, value: days, to: dateFrom)!
     return (dateFrom, dateTo)
 }
 
