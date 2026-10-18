@@ -37,7 +37,8 @@ struct GoogleCalendarHTTPClient {
                 statusCode: http.statusCode,
                 url: url,
                 calendarID: calendarID,
-                retrying: retrying
+                retrying: retrying,
+                responseData: data
             ) {
             case .proceed:
                 break

@@ -117,6 +117,33 @@ final class GoogleCalendarHTTPClientTests: XCTestCase {
         XCTAssertEqual(forcedRefreshCount, 1)
     }
 
+    func testQuota403PreservesRateLimitErrorWithoutRefreshingToken() async {
+        var requestCount = 0
+        var forcedRefreshCount = 0
+        let client = GoogleCalendarHTTPClient(
+            transport: { request in
+                requestCount += 1
+                return (
+                    Data(#"{"error":{"code":403,"errors":[{"reason":"rateLimitExceeded"}]}}"#.utf8),
+                    Self.response(for: request, status: 403)
+                )
+            },
+            accessToken: { force in
+                if force { forcedRefreshCount += 1 }
+                return "test-token"
+            }
+        )
+
+        do {
+            _ = try await client.fetchJSON(eventsURL, calendarID: "team@example.com")
+            XCTFail("A rate-limited calendar must not appear as an empty or forbidden calendar")
+        } catch {
+            XCTAssertEqual(error as? GoogleCalendarError, .httpStatus(403, url: eventsURL))
+        }
+        XCTAssertEqual(requestCount, 1)
+        XCTAssertEqual(forcedRefreshCount, 0)
+    }
+
     func test403AfterForcedRefreshReportsForbiddenCalendar() async {
         var activeToken = "previous-token"
         var forcedRefreshCount = 0
