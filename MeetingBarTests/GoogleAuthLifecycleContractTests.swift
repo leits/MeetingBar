@@ -123,6 +123,47 @@ final class GoogleAuthLifecycleContractTests: XCTestCase {
         XCTAssertEqual(installed, ["new-oauth-state"])
     }
 
+    func testSupersededAttemptCannotRegisterOrFinishNewAuthorization() {
+        let slot = GoogleAuthorizationFlowSlot()
+        let obsolete = slot.begin()
+        let current = slot.begin()
+        var obsoleteWasCancelled = false
+        slot.register(obsolete) { result in
+            if case .failure(AuthError.cancelled) = result {
+                obsoleteWasCancelled = true
+            }
+        }
+        XCTAssertTrue(obsoleteWasCancelled)
+        XCTAssertFalse(slot.isPending(obsolete))
+
+        var currentCompletions = 0
+        slot.register(current) { result in
+            if case .success = result { currentCompletions += 1 }
+        }
+        slot.finish(obsolete, result: .success(()))
+        XCTAssertTrue(slot.isPending(current))
+        XCTAssertEqual(currentCompletions, 0)
+        slot.finish(current, result: .success(()))
+        XCTAssertEqual(currentCompletions, 1)
+    }
+
+    func testCancelledAppAuthResponseCannotInstallSession() {
+        let cancelled = NSError(domain: OIDGeneralErrorDomain, code: -3)
+        var installed = false
+        XCTAssertThrowsError(try GCEventStore.acceptAuthorizationResult(
+            issuedGeneration: 7,
+            currentGeneration: 7,
+            state: Optional<String>.none,
+            error: cancelled,
+            install: { _ in installed = true }
+        )) { error in
+            guard case AuthError.cancelled = error else {
+                return XCTFail("Expected cancelled AppAuth response, got \(error)")
+            }
+        }
+        XCTAssertFalse(installed)
+    }
+
     func testMissingSessionCannotSkipSignInEvenWithoutForcedPrompt() {
         XCTAssertFalse(GCEventStore.shouldSkipSignIn(forcePrompt: false, state: nil))
         XCTAssertFalse(GCEventStore.shouldSkipSignIn(forcePrompt: true, state: nil))
