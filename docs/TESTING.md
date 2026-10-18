@@ -72,6 +72,27 @@ Both coverage flags use `carryforward: false`; a missing current report should n
 
 The first CI run against an older `master` cannot compare the new `swiftpm_logic` flag to a baseline. Only enforce that comparison after a `master` upload has established the same flag. When aggregate coverage drops, compare changes in covered files, flags, and timing-sensitive tests rather than adding artificial assertions to raise the percentage.
 
+### Reviewing system-boundary patch coverage
+
+The 85% `codecov/patch` check is a default guard, not a substitute for
+test-design review. When a reliability fix touches macOS framework or external
+authorization callbacks that cannot be exercised deterministically in ordinary
+CI, distinguish untested *policy* from untested *platform integration*.
+
+For any requested exception, the PR must record the **final** coverage report
+(after both uploads), the uncovered production branches by subsystem, which
+failure/recovery contracts are already tested, and what still requires a signed
+macOS release smoke. The maintainer must explicitly accept the residual risk.
+Keep `codecov/project/swiftpm_logic` blocking; do not lower the global patch
+target, hide whole files, or add assertions that only increase coverage counts.
+A failed required check stays failed unless an authorized branch-protection
+exception is applied: documenting one does not make CI green.
+
+The follow-up design for component/layer-aware checks is tracked in
+[#1028](https://github.com/leits/MeetingBar/issues/1028). Until that is
+implemented, system-boundary exceptions are exceptional and release smoke is
+still required.
+
 ### Optional performance measurements
 
 Run `make test-performance` on macOS with the pinned toolchain. `PerformanceBaselineTests` is skipped by default in the normal SwiftPM suite. Synthetic workloads cover:
