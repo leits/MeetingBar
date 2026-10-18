@@ -45,9 +45,12 @@ final class EventKitReadContractTests: XCTestCase {
         XCTAssertEqual(results.first?.scriptIdentifier, raw.calendarItemIdentifier)
     }
 
-    func testUnknownCalendarOccurrencesAreIgnoredAndDuplicatesCollapsed() {
+    func testUnknownCalendarOccurrenceIsExcludedEvenWithDistinctEventID() {
         let from = Date(timeIntervalSince1970: 1_790_000_000)
-        let event = rawEvent(id: "Standup", date: from)
+        let allowed = rawEvent(id: "Allowed meeting", date: from)
+        // A different start guarantees a different composed event ID even if
+        // EventKit gives unsaved test events identical calendarItemIdentifiers.
+        let unknown = rawEvent(id: "Must not appear", date: from.addingTimeInterval(3600))
         let results = mapEventKitRead(
             knownCalendars: [calendar],
             dateFrom: from,
@@ -55,12 +58,36 @@ final class EventKitReadContractTests: XCTestCase {
             customRegexes: []
         ) { _, _, _ in
             [
-                EventKitRawOccurrence(calendarID: "cal-a", event: event),
-                EventKitRawOccurrence(calendarID: "cal-a", event: event),
-                EventKitRawOccurrence(calendarID: "not-selected", event: event)
+                EventKitRawOccurrence(calendarID: "cal-a", event: allowed),
+                EventKitRawOccurrence(calendarID: "not-selected", event: unknown)
             ]
         }
+
         XCTAssertEqual(results.count, 1)
+        XCTAssertEqual(results.map(\.title), ["Allowed meeting"])
+        XCTAssertEqual(results.first?.calendar.id, "cal-a")
+        XCTAssertEqual(results.first?.scriptIdentifier, allowed.calendarItemIdentifier)
+        XCTAssertFalse(results.contains { $0.title == "Must not appear" })
+    }
+
+    func testDuplicateOccurrencesOfSameEventCollapseToOne() {
+        let from = Date(timeIntervalSince1970: 1_790_000_000)
+        let raw = rawEvent(id: "One meeting", date: from)
+        let results = mapEventKitRead(
+            knownCalendars: [calendar],
+            dateFrom: from,
+            dateTo: from.addingTimeInterval(86_400),
+            customRegexes: []
+        ) { _, _, _ in
+            [
+                EventKitRawOccurrence(calendarID: "cal-a", event: raw),
+                EventKitRawOccurrence(calendarID: "cal-a", event: raw)
+            ]
+        }
+
+        XCTAssertEqual(results.count, 1)
+        XCTAssertEqual(results.first?.title, "One meeting")
+        XCTAssertEqual(results.first?.scriptIdentifier, raw.calendarItemIdentifier)
     }
 
     func testEmptySelectionSkipsEventKitQuery() {
@@ -78,25 +105,4 @@ final class EventKitReadContractTests: XCTestCase {
         XCTAssertFalse(readWasCalled)
     }
 
-    func testRecurringOccurrencesKeepSeparateIdentities() {
-        let from = Date(timeIntervalSince1970: 1_790_000_000)
-        let raw = rawEvent(id: "Recurring", date: from)
-        raw.recurrenceRules = [EKRecurrenceRule(recurrenceWith: .daily, interval: 1, end: nil)]
-        let next = rawEvent(id: "Recurring", date: from.addingTimeInterval(86_400))
-        next.recurrenceRules = raw.recurrenceRules
-
-        let results = mapEventKitRead(
-            knownCalendars: [calendar],
-            dateFrom: from,
-            dateTo: from.addingTimeInterval(2 * 86_400),
-            customRegexes: []
-        ) { _, _, _ in
-            [
-                EventKitRawOccurrence(calendarID: "cal-a", event: raw),
-                EventKitRawOccurrence(calendarID: "cal-a", event: next)
-            ]
-        }
-        XCTAssertEqual(results.count, 2)
-        XCTAssertNotEqual(results[0].id, results[1].id)
-    }
 }

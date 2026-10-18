@@ -5,8 +5,8 @@ import Foundation
 
 @MainActor
 final class GoogleCalendarDataReaderTests: BaseTestCase {
-    private let start = Date(timeIntervalSince1970: 1_790_000_000)
-    private let end = Date(timeIntervalSince1970: 1_790_086_400)
+    private let start = ISO8601DateFormatter().date(from: "2026-10-18T00:00:00Z")!
+    private let end = ISO8601DateFormatter().date(from: "2026-10-19T00:00:00Z")!
 
     private func makeClient(
         respond: @escaping @MainActor (URLRequest) async throws -> (Int, String)
@@ -27,10 +27,10 @@ final class GoogleCalendarDataReaderTests: BaseTestCase {
     }
 
     func testCalendarListAndPaginatedEventResponseProduceMeetingWithJoinLink() async throws {
-        var requestedPaths: [String] = []
+        var observedRequests: [URLRequest] = []
         let reader = makeClient { request in
             let url = request.url!
-            requestedPaths.append(url.path)
+            observedRequests.append(request)
             if url.path.contains("calendarList") {
                 return (200, #"""
                 {"items":[{"id":"work@example.com","summary":"Engineering","backgroundColor":"#ff0000"},
@@ -66,7 +66,35 @@ final class GoogleCalendarDataReaderTests: BaseTestCase {
             events.first?.meetingLink?.url.absoluteString,
             "https://meet.google.com/abc-defg-hij?authuser=owner@example.com"
         )
-        XCTAssertEqual(requestedPaths.count, 4)
+        XCTAssertEqual(observedRequests.count, 4)
+        let eventRequests = observedRequests.filter {
+            $0.url?.path.contains("/events") == true
+        }
+        XCTAssertEqual(eventRequests.count, 3)
+        let formatter = ISO8601DateFormatter()
+        for request in eventRequests {
+            let components = try XCTUnwrap(URLComponents(url: request.url!, resolvingAgainstBaseURL: false))
+            let parameters = Dictionary(
+                (components.queryItems ?? []).compactMap { item -> (String, String)? in
+                    guard let value = item.value else { return nil }
+                    return (item.name, value)
+                },
+                uniquingKeysWith: { first, _ in first }
+            )
+            XCTAssertEqual(parameters["timeMin"], formatter.string(from: start))
+            XCTAssertEqual(parameters["timeMax"], formatter.string(from: end))
+            XCTAssertEqual(parameters["singleEvents"], "true")
+            XCTAssertEqual(parameters["orderBy"], "startTime")
+            XCTAssertEqual(parameters["eventTypes"], "default")
+            XCTAssertEqual(request.httpMethod, "GET")
+        }
+        XCTAssertEqual(
+            eventRequests.compactMap {
+                URLComponents(url: $0.url!, resolvingAgainstBaseURL: false)?
+                    .queryItems?.first { $0.name == "pageToken" }?.value
+            },
+            ["last"]
+        )
     }
 
     func testForbiddenCalendarDoesNotHideEventsFromAccessibleCalendar() async throws {
@@ -91,6 +119,34 @@ final class GoogleCalendarDataReaderTests: BaseTestCase {
         let events = try await reader.fetchEvents(for: calendars, from: start, to: end)
         XCTAssertEqual(events.map(\.id), ["valid"])
         XCTAssertEqual(restrictedRequests, 2)
+    }
+
+    func testAllCalendarsForbiddenThrowsInsteadOfReturningEmptySuccess() async {
+        var requestedCalendarIDs: [String] = []
+        let reader = makeClient { request in
+            let path = request.url!.path
+            if path.contains("restricted-one") { requestedCalendarIDs.append("restricted-one") }
+            if path.contains("restricted-two") { requestedCalendarIDs.append("restricted-two") }
+            return (403, #"{"error":{"code":403,"errors":[{"reason":"forbidden"}]}}"#)
+        }
+        let calendars = [
+            MBCalendar(title: "One", id: "restricted-one", source: nil, email: nil, color: .black),
+            MBCalendar(title: "Two", id: "restricted-two", source: nil, email: nil, color: .black)
+        ]
+
+        do {
+            _ = try await reader.fetchEvents(for: calendars, from: start, to: end)
+            XCTFail("All inaccessible calendars must fail rather than publish an empty snapshot")
+        } catch {
+            guard case let GoogleCalendarError.forbiddenCalendar(calendarID, _) = error else {
+                return XCTFail("Expected forbidden calendar, got \(error)")
+            }
+            XCTAssertEqual(calendarID, "restricted-one")
+        }
+        // Each calendar is retried once after forced token refresh.
+        XCTAssertEqual(requestedCalendarIDs, [
+            "restricted-one", "restricted-one", "restricted-two", "restricted-two"
+        ])
     }
 
     func testQuotaFailureDiscardsPreviouslyFetchedCalendarEvents() async {
