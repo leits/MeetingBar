@@ -48,6 +48,36 @@ final class NotificationPlannerTests: XCTestCase {
         dismissedEventIDs: []
     )
 
+    func testPlanMembershipDoesNotDependOnProviderEventOrdering() {
+        let inputs = [
+            event(id: "later", startsIn: 1800),
+            event(id: "early", startsIn: 600),
+            event(id: "middle", startsIn: 1200)
+        ]
+        let forward = NotificationPlanner.plan(events: inputs, settings: allEnabled, now: now)
+        let reverse = NotificationPlanner.plan(events: inputs.reversed(), settings: allEnabled, now: now)
+
+        XCTAssertEqual(Set(forward.map(\.identity)), Set(reverse.map(\.identity)))
+        XCTAssertEqual(forward.count, reverse.count)
+    }
+
+    func testReschedulingOneMeetingKeepsOtherMeetingsNotificationIdentities() {
+        let stable = event(id: "stable", startsIn: 600)
+        let moving = event(id: "moving", startsIn: 1200)
+        let updated = event(id: "moving", startsIn: 1500)
+        let before = NotificationPlanner.plan(events: [stable, moving], settings: allEnabled, now: now)
+        let after = NotificationPlanner.plan(events: [stable, updated], settings: allEnabled, now: now)
+
+        XCTAssertEqual(
+            Set(before.filter { $0.eventID == "stable" }.map(\.identity)),
+            Set(after.filter { $0.eventID == "stable" }.map(\.identity))
+        )
+        XCTAssertNotEqual(
+            Set(before.filter { $0.eventID == "moving" }.map(\.identity)),
+            Set(after.filter { $0.eventID == "moving" }.map(\.identity))
+        )
+    }
+
     func testEmptyEventListProducesNothing() {
         XCTAssertEqual(
             NotificationPlanner.plan(events: [], settings: allEnabled, now: now),
