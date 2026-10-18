@@ -114,6 +114,32 @@ final class DiagnosticsReportTests: XCTestCase {
         XCTAssertFalse(report.contains("www.googleapis.com"))
     }
 
+    func testPublicDiagnosticsRedactsGoogleForbiddenCalendarIdentifier() {
+        // Match the actual errorDescription from GoogleCalendarError.forbiddenCalendar.
+        let health = DiagnosticsHealth(
+            lastErrorDescription: "Google Calendar is not accessible: private@example.com",
+            isStale: true
+        )
+        let report = DiagnosticsReport.text(from: context(health: health))
+
+        XCTAssertTrue(report.contains(
+            "Last error: Google Calendar is not accessible: [calendar ID redacted]"
+        ))
+        XCTAssertFalse(report.contains("private@example.com"))
+        XCTAssertTrue(report.contains("Provider health: error"))
+    }
+
+    func testPublicDiagnosticsRedactsOpaqueGoogleCalendarIdentifier() {
+        let health = DiagnosticsHealth(
+            lastErrorDescription: "Google Calendar is not accessible: opaque-calendar-id-12345",
+            isStale: true
+        )
+        let report = DiagnosticsReport.text(from: context(health: health))
+
+        XCTAssertTrue(report.contains("[calendar ID redacted]"))
+        XCTAssertFalse(report.contains("opaque-calendar-id-12345"))
+    }
+
     func testPublicDiagnosticsRedactsOtherOSURLSchemes() {
         let health = DiagnosticsHealth(
             lastErrorDescription: "Cannot open ical://ekevent/private-id or file:///Users/private/Library/Calendars",
