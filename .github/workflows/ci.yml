@@ -77,6 +77,12 @@ jobs:
           fail_ci_if_error: true
           token: ${{ secrets.CODECOV_TOKEN }}
 
+      # Temporary pre-merge validation on the Phase E PR only; remove after
+      # confirming the opt-in XCTest measure() implementations execute on macOS.
+      - name: Validate opt-in performance benchmarks
+        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.number == 1024 }}
+        run: make test-performance
+
       - name: Run app-hosted tests
         id: app_tests
         run: make test-app-quiet
