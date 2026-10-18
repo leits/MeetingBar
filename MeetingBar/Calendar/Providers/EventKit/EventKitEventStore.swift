@@ -122,8 +122,8 @@ extension EKEventStore: AuthenticatedEventStore {
         }
         // events(matching:) blocks while EventKit walks the store. For users
         // with thousands of events this hung the menu bar. Push it off main.
-        return try await Task.detached(priority: .userInitiated) {
-            try fetchEventsOffMain(knownCalendars: calendars, dateFrom: dateFrom, dateTo: dateTo)
+        return await Task.detached(priority: .userInitiated) {
+            fetchEventsOffMain(knownCalendars: calendars, dateFrom: dateFrom, dateTo: dateTo)
         }.value
     }
 }
@@ -186,23 +186,18 @@ private func fetchEventsOffMain(
     knownCalendars: [MBCalendar],
     dateFrom: Date,
     dateTo: Date
-) throws -> [MBEvent] {
-    guard !knownCalendars.isEmpty else { return [] }
-    let selectedIDs = knownCalendars.map(\.id)
-    let selectedIDSet = Set(selectedIDs)
-    let selectedCalendars = EKEventStore.shared.calendars(for: .event).filter {
-        selectedIDSet.contains($0.calendarIdentifier)
-    }
-    try requireAvailableEventKitSelection(
-        selectedIDs: selectedIDs,
-        availableIDs: selectedCalendars.map(\.calendarIdentifier)
-    )
-    return mapEventKitRead(
+) -> [MBEvent] {
+    mapEventKitRead(
         knownCalendars: knownCalendars,
         dateFrom: dateFrom,
         dateTo: dateTo,
         customRegexes: Defaults[.customRegexes]
-    ) { _, from, to in
+    ) { calendarIDs, from, to in
+        let selectedIDs = Set(calendarIDs)
+        let selectedCalendars = EKEventStore.shared.calendars(for: .event).filter {
+            selectedIDs.contains($0.calendarIdentifier)
+        }
+        guard !selectedCalendars.isEmpty else { return [] }
         let predicate = EKEventStore.shared.predicateForEvents(
             withStart: from, end: to, calendars: selectedCalendars
         )
