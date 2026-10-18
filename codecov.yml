@@ -1,0 +1,31 @@
+# Keep high-signal coverage checks blocking while preserving the whole-project
+# trend without failing on execution-path variation in the AppKit/Combine suite.
+#
+# App-hosted and SwiftPM reports are separately flagged; both are uploaded
+# on every CI run. Do not carry forward coverage from stale test runs.
+flags:
+  swiftpm_logic:
+    carryforward: false
+  app_hosted:
+    carryforward: false
+
+coverage:
+  status:
+    project:
+      # The aggregate coverage remains visible in checks and PR reports, but
+      # can vary slightly between otherwise identical asynchronous UI runs.
+      default:
+        target: auto
+        informational: true
+      # Deterministic, headless logic tests provide a reliable regression gate.
+      swiftpm_logic:
+        flags:
+          - swiftpm_logic
+        target: auto
+        threshold: 0%
+    patch:
+      # Require meaningful tests for newly added/changed production code.
+      # A fixed floor is clearer than auto (which can inherit a low baseline).
+      default:
+        target: 85%
+        threshold: 0%

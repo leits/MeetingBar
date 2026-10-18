@@ -59,6 +59,33 @@ make validate-strings
 
 `make coverage-gate` currently **reports** whether hostless coverage reaches 90%; it does not fail below that threshold. CI can separately enforce Codecov project/patch checks. High coverage of pure policies does not establish integration, lifecycle, layout or signed-build confidence.
 
+### Codecov coverage signals
+
+CI runs both test suites and uploads their coverage as separate Codecov flags: `swiftpm_logic` (SwiftPM LCOV) and `app_hosted` (Xcode/Slather Cobertura). The combined project coverage is still reported, but its status is **informational** because asynchronous AppKit/Combine execution can vary between runs even when production code is unchanged.
+
+The blocking checks are:
+
+- `codecov/project/swiftpm_logic`: zero-tolerance coverage comparison for deterministic headless policies.
+- `codecov/patch`: 85% coverage target for changed coverable code, subject to careful review of untested paths.
+
+Both coverage flags use `carryforward: false`; a missing current report should not be replaced by prior coverage. Upload errors fail the test workflow. A passing threshold does **not** substitute for failure/recovery and integration tests.
+
+The first CI run against an older `master` cannot compare the new `swiftpm_logic` flag to a baseline. Only enforce that comparison after a `master` upload has established the same flag. When aggregate coverage drops, compare changes in covered files, flags, and timing-sensitive tests rather than adding artificial assertions to raise the percentage.
+
+### Optional performance measurements
+
+Run `make test-performance` on macOS with the pinned toolchain. `PerformanceBaselineTests` is skipped by default in the normal SwiftPM suite. Synthetic workloads cover:
+
+- Long meeting-description link detection.
+- Next-meeting selection over 5,000 events.
+- Notification planning over 2,000 events.
+
+Run on the **same** hardware to compare results, recording Xcode/Swift version, date, CPU and elapsed time. These are descriptive baselines, not hard-coded timing gates on GitHub-hosted runners; they do not measure EventKit I/O, Google API latency, real AppKit menu rendering or idle energy.
+
+### Shareable diagnostics
+
+`DiagnosticsReport` redacts HTTP, iCal and file URLs copied from provider errors (including calendar paths and query credentials), while keeping error types and status codes. The rest of a diagnostics report is **not** guaranteed to be free of private information; review it and any logs before pasting into a public issue.
+
 Before submitting a PR, record the exact test commands and results, and distinguish tests you **ran** from tests merely recommended. If the change touches entitlements, Xcode configuration, localization, URL schemes or release signing, follow the additional checks in [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ## When to add more tests
