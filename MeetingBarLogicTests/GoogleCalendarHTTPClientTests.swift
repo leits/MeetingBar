@@ -58,11 +58,11 @@ final class GoogleCalendarHTTPClientTests: XCTestCase {
     func test401RefreshesTokenThenRetriesSameRequestWithNewToken() async throws {
         var activeToken = "expired-token"
         var forcedRefreshCount = 0
-        var observedHeaders: [String?] = []
+        var requests: [URLRequest] = []
         let client = GoogleCalendarHTTPClient(
             transport: { request in
-                observedHeaders.append(request.value(forHTTPHeaderField: "Authorization"))
-                let firstAttempt = observedHeaders.count == 1
+                requests.append(request)
+                let firstAttempt = requests.count == 1
                 return (
                     Data((firstAttempt ? #"{"error":{"code":401}}"# : #"{"items":[{"id":"recovered"}]}"#).utf8),
                     Self.response(for: request, status: firstAttempt ? 401 : 200)
@@ -81,7 +81,14 @@ final class GoogleCalendarHTTPClientTests: XCTestCase {
 
         XCTAssertEqual(items.first?["id"] as? String, "recovered")
         XCTAssertEqual(forcedRefreshCount, 1)
-        XCTAssertEqual(observedHeaders, ["Bearer expired-token", "Bearer fresh-token"])
+        XCTAssertEqual(
+            requests.map { $0.value(forHTTPHeaderField: "Authorization") },
+            ["Bearer expired-token", "Bearer fresh-token"]
+        )
+        XCTAssertEqual(requests.compactMap(\.url), [eventsURL, eventsURL])
+        XCTAssertEqual(requests.count, 2)
+        XCTAssertEqual(requests[0].httpMethod, "GET")
+        XCTAssertEqual(requests[1].httpMethod, requests[0].httpMethod)
     }
 
     func testSecond401RequiresReconnectionWithoutInfiniteRetry() async {
@@ -108,6 +115,126 @@ final class GoogleCalendarHTTPClientTests: XCTestCase {
         }
         XCTAssertEqual(attempts, 2)
         XCTAssertEqual(forcedRefreshCount, 1)
+    }
+
+    func test403AfterForcedRefreshReportsForbiddenCalendar() async {
+        var activeToken = "previous-token"
+        var forcedRefreshCount = 0
+        var requests: [URLRequest] = []
+        let client = GoogleCalendarHTTPClient(
+            transport: { request in
+                requests.append(request)
+                return (
+                    Data(#"{"error":{"code":403}}"#.utf8),
+                    Self.response(for: request, status: 403)
+                )
+            },
+            accessToken: { force in
+                if force {
+                    forcedRefreshCount += 1
+                    activeToken = "refreshed-token"
+                }
+                return activeToken
+            }
+        )
+
+        do {
+            _ = try await client.fetchJSON(eventsURL, calendarID: "team@example.com")
+            XCTFail("A persistently forbidden calendar must not appear as an empty success")
+        } catch {
+            XCTAssertEqual(
+                error as? GoogleCalendarError,
+                .forbiddenCalendar(calendarID: "team@example.com", url: eventsURL)
+            )
+        }
+        XCTAssertEqual(requests.count, 2)
+        XCTAssertEqual(forcedRefreshCount, 1)
+        XCTAssertEqual(
+            requests.map { $0.value(forHTTPHeaderField: "Authorization") },
+            ["Bearer previous-token", "Bearer refreshed-token"]
+        )
+    }
+
+    func testFailedForcedRefreshPropagatesWithoutAnotherHTTPRequest() async {
+        var requestCount = 0
+        var refreshCount = 0
+        let client = GoogleCalendarHTTPClient(
+            transport: { request in
+                requestCount += 1
+                return (
+                    Data(#"{"error":{"code":401}}"#.utf8),
+                    Self.response(for: request, status: 401)
+                )
+            },
+            accessToken: { force in
+                if force {
+                    refreshCount += 1
+                    throw AuthError.temporarilyUnavailable(underlying: URLError(.notConnectedToInternet))
+                }
+                return "expired-token"
+            }
+        )
+
+        do {
+            _ = try await client.fetchJSON(eventsURL)
+            XCTFail("Token refresh error must propagate")
+        } catch {
+            guard case AuthError.temporarilyUnavailable = error else {
+                return XCTFail("Expected transient auth error, got \(error)")
+            }
+        }
+        XCTAssertEqual(requestCount, 1)
+        XCTAssertEqual(refreshCount, 1)
+    }
+
+    func testTransportFailurePropagatesRatherThanReturningNoEvents() async {
+        var requestCount = 0
+        let client = GoogleCalendarHTTPClient(
+            transport: { _ in
+                requestCount += 1
+                throw URLError(.notConnectedToInternet)
+            },
+            accessToken: { _ in "token" }
+        )
+
+        do {
+            _ = try await client.fetchJSON(eventsURL)
+            XCTFail("Network errors must not become empty calendar results")
+        } catch {
+            XCTAssertEqual((error as? URLError)?.code, .notConnectedToInternet)
+        }
+        XCTAssertEqual(requestCount, 1)
+    }
+
+    func testCancellationDuringForcedRefreshPreventsAnotherHTTPRequest() async {
+        var requestCount = 0
+        let client = GoogleCalendarHTTPClient(
+            transport: { request in
+                requestCount += 1
+                return (
+                    Data(#"{"error":{"code":401}}"#.utf8),
+                    Self.response(for: request, status: 401)
+                )
+            },
+            accessToken: { force in
+                if force {
+                    withUnsafeCurrentTask { $0?.cancel() }
+                    return "refreshed-token"
+                }
+                return "expired-token"
+            }
+        )
+
+        let task = Task { @MainActor in
+            try await client.fetchJSON(eventsURL)
+        }
+        do {
+            _ = try await task.value
+            XCTFail("Cancelled retries must not issue another request")
+        } catch {
+            XCTAssertTrue(error is CancellationError)
+        }
+        XCTAssertEqual(requestCount, 1)
     }
 
     func testLaterPageServerFailureDoesNotReturnEarlierEvents() async {
