@@ -420,3 +420,7 @@
 "preferences_advanced_script_hooks_help" = "Event-start scripts also run for events without meeting links. Join scripts run only when joining a meeting.";
 
 "preferences_meeting_opening_mode_tuple_app" = "Tuple App";
+
+// MARK: - What's New
+
+"changelog_full_release_notes" = "Full release notes on GitHub";
