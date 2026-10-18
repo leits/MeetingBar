@@ -1061,6 +1061,86 @@ final class CalendarSettingsEndToEndFlowTests: EndToEndFlowTestCase {
         XCTAssertTrue(try renderTitle(harness).attributedTitle.string.hasPrefix("Event E1"))
     }
 
+    func testProviderRecoveryReplacesStaleMeetingAndUpdatesJoinTarget() async throws {
+        configureDisplayDefaults()
+        let now = Date()
+        let harness = makeHarness(events: [makeEvent(id: "OLD", startingIn: 300, now: now)])
+        defer { harness.stop() }
+
+        await waitForState(of: harness, description: "initial meeting is visible") {
+            $0.events.map(\.id) == ["OLD"] && !$0.providerHealth.isStale
+                && $0.providerHealth.lastSuccessfulRefresh != nil
+        }
+        harness.store.stubbedError = URLError(.notConnectedToInternet)
+        try await settleRefreshWindow(harness)
+        harness.model.send(.refresh)
+        await waitForState(of: harness, description: "offline error preserves cached meeting") {
+            $0.providerHealth.isStale && $0.events.map(\.id) == ["OLD"]
+        }
+
+        harness.store.stubbedError = nil
+        harness.store.stubbedEvents = [makeEvent(id: "NEW", startingIn: 600, now: now)]
+        try await settleRefreshWindow(harness)
+        harness.model.send(.refresh)
+        await waitForState(of: harness, description: "recovery publishes fresh meeting") {
+            !$0.providerHealth.isStale
+                && $0.providerHealth.lastErrorDescription == nil
+                && $0.events.map(\.id) == ["NEW"]
+        }
+        let titles = menuTitles(harness)
+        XCTAssertFalse(titles.contains { $0.contains("status_bar_control_stale".loco()) })
+        XCTAssertFalse(titles.contains { $0.contains("Event OLD") })
+        XCTAssertTrue(titles.contains { $0.contains("Event NEW") })
+        XCTAssertTrue(try renderTitle(harness).attributedTitle.string.hasPrefix("Event NEW"))
+        harness.model.send(.joinNearestMeeting)
+        XCTAssertEqual(harness.openedMeetingIDs, ["NEW"])
+    }
+
+    func testGoogleConferenceDataTakesPrecedenceThroughAppModelAndMenu() async throws {
+        configureDisplayDefaults()
+        let formatter = ISO8601DateFormatter()
+        let start = formatter.string(from: Date().addingTimeInterval(600))
+        let end = formatter.string(from: Date().addingTimeInterval(2400))
+        let calendar = MBCalendar(
+            title: "Google", id: sharedCalendar.id,
+            source: "owner@example.com", email: "owner@example.com", color: .black
+        )
+        let payload: [String: Any] = [
+            "id": "google-conference",
+            "summary": "Project review",
+            "status": "confirmed",
+            "start": ["dateTime": start],
+            "end": ["dateTime": end],
+            "description": "Old link https://zoom.us/j/1112223333",
+            "attendees": [["email": "owner@example.com", "responseStatus": "accepted", "self": true]],
+            "conferenceData": [
+                "entryPoints": [[
+                    "entryPointType": "video",
+                    "uri": "https://meet.google.com/abc-defg-hij"
+                ]]
+            ]
+        ]
+        let parsed = try XCTUnwrap(GCEventStore.GCParser.event(from: payload, calendar: calendar))
+        XCTAssertEqual(parsed.meetingLink?.service, .meet)
+
+        let harness = makeHarness(events: [parsed])
+        defer { harness.stop() }
+        await waitForState(of: harness, description: "parsed provider event reaches UI") {
+            $0.events.first?.id == "google-conference"
+        }
+
+        let summary = flatten(rebuildMenu(harness)).first {
+            $0.identifier == MenuBuilder.meetingSummaryItemIdentifier
+        }
+        XCTAssertEqual((summary?.representedObject as? MBEvent)?.id, "google-conference")
+        XCTAssertEqual(
+            harness.model.state.events.first?.meetingLink?.url.absoluteString,
+            "https://meet.google.com/abc-defg-hij?authuser=owner@example.com"
+        )
+        harness.model.send(.joinNearestMeeting)
+        XCTAssertEqual(harness.openedMeetingIDs, ["google-conference"])
+    }
+
     func testSelectingCalendarLoadsItsEventsIntoMenu() async throws {
         configureDisplayDefaults()
         let calendarA = MBCalendar(
