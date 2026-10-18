@@ -58,3 +58,62 @@ final class GoogleAuthLifecycleContractTests: XCTestCase {
         XCTAssertFalse(GCEventStore.shouldSkipSignIn(forcePrompt: true, state: nil))
     }
 }
+
+@MainActor
+final class GoogleSignOutConcurrencyTests: XCTestCase {
+    func testLateRevocationCannotClearNewlyAuthorizedSession() async {
+        let gate = TokenRevocationGate()
+        var activeSession: String? = "original-auth-state"
+        let oldAccessToken = "old-access"
+        let oldRefreshToken = "old-refresh"
+
+        let oldSignOut = Task {
+            await GCEventStore.revokeTokensAfterClearingSession(
+                accessToken: oldAccessToken,
+                refreshToken: oldRefreshToken,
+                clearSession: { activeSession = nil },
+                revoke: { token in await gate.revoke(token: token) }
+            )
+        }
+        await gate.waitForCount(2)
+        XCTAssertNil(activeSession, "Sign-out must clear the old session before revocation suspends")
+
+        // A newer Google selection obtains a distinct state while the old
+        // network revocations are still waiting to finish.
+        activeSession = "new-auth-state"
+        await gate.finish()
+        await oldSignOut.value
+
+        XCTAssertEqual(activeSession, "new-auth-state")
+        let revoked = await gate.revokedTokens
+        XCTAssertEqual(Set(revoked), [oldAccessToken, oldRefreshToken])
+    }
+}
+
+private actor TokenRevocationGate {
+    private var pending: [CheckedContinuation<Void, Never>] = []
+    private var waiters: [CheckedContinuation<Void, Never>] = []
+    private(set) var revokedTokens: [String] = []
+
+    func revoke(token: String) async {
+        revokedTokens.append(token)
+        await withCheckedContinuation { continuation in
+            pending.append(continuation)
+            if pending.count == 2 {
+                waiters.forEach { $0.resume() }
+                waiters.removeAll()
+            }
+        }
+    }
+
+    func waitForCount(_ count: Int) async {
+        guard pending.count < count else { return }
+        await withCheckedContinuation { waiters.append($0) }
+    }
+
+    func finish() {
+        let continuations = pending
+        pending.removeAll()
+        continuations.forEach { $0.resume() }
+    }
+}

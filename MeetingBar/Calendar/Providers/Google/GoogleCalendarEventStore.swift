@@ -212,15 +212,31 @@ final class GCEventStore: NSObject,
         cancelPendingOperations()
         guard let state = authState else { return }
 
-        // Revoke tokens in parallel
-        let access  = state.lastTokenResponse?.accessToken
+        let access = state.lastTokenResponse?.accessToken
         let refresh = state.refreshToken
-        await withTaskGroup(of: Void.self) { grp in
-            if let acc = access { grp.addTask { try? await self.revoke(token: acc) } }
-            if let ref = refresh { grp.addTask { try? await self.revoke(token: ref) } }
-        }
+        await Self.revokeTokensAfterClearingSession(
+            accessToken: access,
+            refreshToken: refresh,
+            clearSession: { [self] in clearAuthState() },
+            revoke: { [self] token in try? await revoke(token: token) }
+        )
+    }
 
-        clearAuthState()
+    /// Clear the *old* local session before any network suspension. Revocation
+    /// can take arbitrarily long; a newer provider selection may sign in while
+    /// the old token request is still pending. A late sign-out must never clear
+    /// that newer session (or its persisted state).
+    static func revokeTokensAfterClearingSession(
+        accessToken: String?,
+        refreshToken: String?,
+        clearSession: () -> Void,
+        revoke: @escaping @Sendable (String) async -> Void
+    ) async {
+        clearSession()
+        await withTaskGroup(of: Void.self) { group in
+            if let accessToken { group.addTask { await revoke(accessToken) } }
+            if let refreshToken { group.addTask { await revoke(refreshToken) } }
+        }
     }
 
     func cancelPendingOperations() {
