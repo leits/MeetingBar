@@ -101,6 +101,31 @@ final class DiagnosticsReportTests: XCTestCase {
         XCTAssertTrue(report.contains("Last error: The Internet connection appears to be offline."))
     }
 
+    func testPublicDiagnosticsRedactsProviderURLsAndQueryCredentials() {
+        let health = DiagnosticsHealth(
+            lastErrorDescription: "Google Calendar HTTP 403 at https://www.googleapis.com/calendar/v3/calendars/private@example.com/events?access_token=topsecret",
+            isStale: true
+        )
+        let report = DiagnosticsReport.text(from: context(health: health))
+
+        XCTAssertTrue(report.contains("Google Calendar HTTP 403 at [URL redacted]"))
+        XCTAssertFalse(report.contains("private@example.com"))
+        XCTAssertFalse(report.contains("topsecret"))
+        XCTAssertFalse(report.contains("www.googleapis.com"))
+    }
+
+    func testPublicDiagnosticsRedactsOtherOSURLSchemes() {
+        let health = DiagnosticsHealth(
+            lastErrorDescription: "Cannot open ical://ekevent/private-id or file:///Users/private/Library/Calendars",
+            isStale: true
+        )
+        let report = DiagnosticsReport.text(from: context(health: health))
+
+        XCTAssertFalse(report.contains("private-id"))
+        XCTAssertFalse(report.contains("/Users/private"))
+        XCTAssertTrue(report.contains("Cannot open [URL redacted]"))
+    }
+
     func testReportShowsAuthRequiredState() {
         let health = DiagnosticsHealth(
             lastSuccessfulRefresh: knownDate.addingTimeInterval(-3600),

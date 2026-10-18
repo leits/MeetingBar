@@ -89,7 +89,7 @@ enum DiagnosticsReport {
         let formatter = ISO8601DateFormatter()
         let lastSuccess = context.health.lastSuccessfulRefresh.map(formatter.string) ?? "never"
         let lastAttempt = context.health.lastAttemptedRefresh.map(formatter.string) ?? "never"
-        let lastError = context.health.lastErrorDescription ?? "none"
+        let lastError = sanitizedErrorDescription(context.health.lastErrorDescription)
         let staleData = context.health.isStale ? "yes" : "no"
         let authRequired = context.health.authRequired ? "yes" : "no"
         var lines = """
@@ -109,6 +109,20 @@ enum DiagnosticsReport {
             lines += "\n" + permissionsLines(perms)
         }
         return lines
+    }
+
+    /// Error URLs can include calendar identities and query credentials.
+    /// Keep the human-readable failure type when sharing diagnostics.
+    private static func sanitizedErrorDescription(_ message: String?) -> String {
+        guard let message else { return "none" }
+        guard let expression = try? NSRegularExpression(
+            pattern: #"(?i)(?:https?|ical|file)://[^\s<>]+"#
+        ) else { return message }
+        return expression.stringByReplacingMatches(
+            in: message,
+            range: NSRange(message.startIndex..., in: message),
+            withTemplate: "[URL redacted]"
+        )
     }
 
     private static func permissionsLines(_ perms: PermissionSnapshot) -> String {
