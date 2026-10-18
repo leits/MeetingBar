@@ -19,7 +19,7 @@ XCFILTER := $(shell command -v xcbeautify >/dev/null 2>&1 && echo 'xcbeautify --
 # Append a JUnit report to app-hosted test runs when xcbeautify is available.
 JUNIT_REPORT := $(shell command -v xcbeautify >/dev/null 2>&1 && echo '--report junit --report-path $(BUILD_DIR)/test-results')
 
-.PHONY: build build-quiet build-release test test-quiet test-app test-app-quiet test-logic test-logic-quiet coverage coverage-report coverage-logic-report coverage-app-report coverage-gate test-summary coverage-codecov lint lint-fix open validate-strings
+.PHONY: build build-quiet build-release test test-quiet test-app test-app-quiet test-logic test-logic-quiet coverage coverage-report coverage-logic-report coverage-app-report coverage-gate test-summary coverage-codecov coverage-codecov-logic lint lint-fix open validate-strings
 
 build:
 	@mkdir -p $(BUILD_DIR)
@@ -118,6 +118,18 @@ validate-strings:
 
 test-summary:
 	@bash Scripts/test_summary.sh $(XCODE_RESULT_BUNDLE)
+
+# Export SwiftPM logic-test coverage in LCOV format for Codecov. The app-hosted
+# Slather report does not include the separate MeetingBarLogic test binary.
+coverage-codecov-logic:
+	@mkdir -p $(COVERAGE_DIR)
+	@PROFILE="$(ls -d .build/*/debug/codecov/default.profdata .build/debug/codecov/default.profdata 2>/dev/null | head -n 1)" ; \
+	TEST_BINARY="$(ls -d .build/*/debug/MeetingBarLogicPackageTests.xctest/Contents/MacOS/MeetingBarLogicPackageTests .build/debug/MeetingBarLogicPackageTests.xctest/Contents/MacOS/MeetingBarLogicPackageTests 2>/dev/null | head -n 1)" ; \
+	if [ ! -f "$PROFILE" ] || [ ! -x "$TEST_BINARY" ]; then \
+		echo "SwiftPM coverage data not found. Run 'make test-logic' first."; \
+		exit 1; \
+	fi ; \
+	xcrun llvm-cov export "$TEST_BINARY" -instr-profile "$PROFILE" -format=lcov $(LOGIC_COVERAGE_SOURCES) > "$(COVERAGE_DIR)/swiftpm.lcov"
 
 # Generate a Cobertura coverage report from the app-hosted test build for
 # Codecov. Uses slather against our custom derived-data path; skips cleanly
