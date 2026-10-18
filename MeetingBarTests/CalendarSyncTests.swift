@@ -1001,7 +1001,7 @@ final class ConcurrentProviderSwitchTests: BaseTestCase {
         let local = FakeEventStore(calendars: [
             MBCalendar(title: "Local", id: "local", source: nil, email: nil, color: .black)
         ])
-        let repository = CalendarRepository(providerName: .googleCalendar) { provider in
+        let repository = CalendarRepository(providerName: .googleCalendar) { provider -> EventStore in
             provider == .googleCalendar ? google : local
         }
 
