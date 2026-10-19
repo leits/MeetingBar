@@ -59,8 +59,11 @@ jobs:
       - name: Validate localizations
         run: make validate-strings
 
-      - name: Verify coverage-check failure contracts
-        run: bash Scripts/test_verify_coverage_reports.sh
+      - name: Verify coverage reports and policy contracts
+        run: python3 -m unittest discover -s Scripts/tests -p 'test_coverage_reports.py'
+
+      - name: Clear previous coverage exports
+        run: rm -f build/coverage/swiftpm.lcov build/coverage/cobertura.xml
 
       - name: Run SwiftPM logic tests
         run: make test-logic-quiet
@@ -104,13 +107,15 @@ jobs:
       - name: Verify both coverage reports before uploading
         if: ${{ !cancelled() && steps.app_tests.outcome == 'success' }}
         run: |
-          bash Scripts/verify_coverage_reports.sh \
+          python3 Scripts/validate_coverage_reports.py \
             build/coverage/swiftpm.lcov build/coverage/cobertura.xml
 
-      # Upload only after both suites and the report validation succeed.
+      # Upload only after both suites and report validation succeed.
       # codecov.notify.after_n_builds: 2 prevents provisional status checks.
+      # Fork PRs upload tokenlessly; the trusted-build guard above requires
+      # CODECOV_TOKEN for master and same-repository branches.
       - name: Upload SwiftPM logic coverage to Codecov
-        if: ${{ !cancelled() && steps.app_tests.outcome == 'success' && env.CODECOV_TOKEN != '' }}
+        if: ${{ !cancelled() && steps.app_tests.outcome == 'success' }}
         uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
         with:
           files: build/coverage/swiftpm.lcov
@@ -120,7 +125,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Upload app-hosted coverage to Codecov
-        if: ${{ !cancelled() && steps.app_tests.outcome == 'success' && env.CODECOV_TOKEN != '' }}
+        if: ${{ !cancelled() && steps.app_tests.outcome == 'success' }}
         uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
         with:
           files: build/coverage/cobertura.xml
