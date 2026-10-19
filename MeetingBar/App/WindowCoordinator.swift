@@ -204,16 +204,22 @@ final class WindowCoordinator {
     /// Presents the borderless fullscreen alert for an event on the preferred
     /// screen, and tracks it so it can be moved if the display layout changes
     /// while it is showing.
-    func openFullscreenNotificationWindow(event: MBEvent, overlappingEvents: [MBEvent] = []) {
+    func openFullscreenNotificationWindow(event: MBEvent, overlaps: (MBEvent) -> [MBEvent] = { _ in [] }) {
         // Overlapping meetings each fire their own alert. Fold any open alert
-        // that shares a meeting into this one, so a single alert lists every
-        // meeting from both, using the latest data for this trigger's events.
-        var overlappingEvents = overlappingEvents
-        let ids = Set(([event] + overlappingEvents).map(\.id))
+        // that shares a meeting into this one. A meeting from the old alert is
+        // kept only if the current `overlaps` lookup still returns it for a
+        // meeting shown here, so dismissed or removed meetings are not revived.
+        var overlappingEvents = overlaps(event)
+        let shown = [event] + overlappingEvents
+        let shownIDs = Set(shown.map(\.id))
         for old in fullscreenNotificationWindows.allObjects.compactMap({ $0 as? FullscreenNotificationWindow })
-        where old.isVisible && old.presentedEvents.contains(where: { ids.contains($0.id) }) {
-            let known = ids.union(overlappingEvents.map(\.id))
-            overlappingEvents += old.presentedEvents.filter { !known.contains($0.id) }
+        where old.isVisible && old.presentedEvents.contains(where: { shownIDs.contains($0.id) }) {
+            let oldIDs = Set(old.presentedEvents.map(\.id))
+            for other in shown.flatMap(overlaps)
+            where oldIDs.contains(other.id) && !shownIDs.contains(other.id)
+                && !overlappingEvents.contains(where: { $0.id == other.id }) {
+                overlappingEvents.append(other)
+            }
             old.close()
         }
         overlappingEvents.sort { $0.startDate < $1.startDate }

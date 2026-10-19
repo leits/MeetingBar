@@ -168,11 +168,19 @@ final class WindowCoordinatorTests: XCTestCase {
         }
         defer { visibleAlerts().forEach { $0.close() } }
 
-        coordinator.openFullscreenNotificationWindow(event: first, overlappingEvents: [second])
-        // third overlaps first but not second: second must stay in the merged alert.
-        coordinator.openFullscreenNotificationWindow(event: third, overlappingEvents: [first])
+        var table: [String: [MBEvent]] = ["a": [second], "b": [first], "c": [first]]
+        func overlaps(_ event: MBEvent) -> [MBEvent] { table[event.id] ?? [] }
 
+        coordinator.openFullscreenNotificationWindow(event: first, overlaps: overlaps)
+        // third overlaps first but not second: second must stay in the merged alert.
+        table["a"] = [second, third]
+        coordinator.openFullscreenNotificationWindow(event: third, overlaps: overlaps)
         XCTAssertEqual(visibleAlerts().map { $0.presentedEvents.map(\.id) }, [["c", "a", "b"]])
+
+        // second was dismissed meanwhile: it must not come back from the old alert.
+        table["a"] = [third]
+        coordinator.openFullscreenNotificationWindow(event: third, overlaps: overlaps)
+        XCTAssertEqual(visibleAlerts().map { $0.presentedEvents.map(\.id) }, [["c", "a"]])
 
         visibleAlerts().forEach { $0.close() }
         coordinator.openFullscreenNotificationWindow(event: second)
