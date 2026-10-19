@@ -81,9 +81,9 @@ run does not imply that Codecov processed both uploads.
 | `codecov/project/swiftpm_logic` | No decrease from base | Blocking | SwiftPM logic baseline |
 | `codecov/patch/domain_logic` | 85% | Blocking | Every source compiled into the `MeetingBarLogic` target from `Package.swift` |
 | `codecov/patch/app_workflows` | 75% | Blocking | Explicit app-hosted policy/orchestration files listed under `paths` in `codecov.yml` |
-| `codecov/patch/default` | 85% reference | Informational | All changed coverable production code, including system boundaries |
+| `codecov/patch` | 85% reference | Informational | All changed coverable production code, including system boundaries |
 | `codecov/patch/app_integration` | 85% reference | Informational | All app-hosted sources; useful for examining external-framework gaps |
-| `codecov/project/default` | Comparison to base | Informational | Combined project trend |
+| `codecov/project` | Comparison to base | Informational | Combined project trend |
 
 The app-workflow list currently includes `AppModel`, `CalendarRepository`,
 `CalendarSync`, `GoogleCalendarDataReader`, `MeetingOpener`,
@@ -112,7 +112,7 @@ PR for uncovered critical branches outside these two enforceable sets.
 `codecov/patch` if it was previously required. Check names must be confirmed
 from a complete two-upload run before changing the required status list.
 GitHub App access may not allow updating branch rules; a maintainer must
-perform and verify this step. Do not assume `codecov/patch/default` is blocking:
+perform and verify this step. Do not assume `codecov/patch` is blocking:
 it is an explicitly informational diagnostic.
 
 If a blocking logic or app-workflow patch fails, add meaningful tests or review
