@@ -44,9 +44,9 @@ enum FullscreenNotificationRepositionPolicy {
 }
 
 final class FullscreenNotificationWindow: NSWindow {
-    /// IDs of the events this alert presents (the triggering event plus any
-    /// overlapping ones), so a second trigger for the same meeting reuses it.
-    var presentedEventIDs: Set<String> = []
+    /// Events this alert presents (the triggering event plus its overlaps),
+    /// so a later alert that shares a meeting can fold them in.
+    var presentedEvents: [MBEvent] = []
 
     override var canBecomeKey: Bool { true }
     override var canBecomeMain: Bool { true }
@@ -205,14 +205,18 @@ final class WindowCoordinator {
     /// screen, and tracks it so it can be moved if the display layout changes
     /// while it is showing.
     func openFullscreenNotificationWindow(event: MBEvent, overlappingEvents: [MBEvent] = []) {
-        // Overlapping meetings each fire their own alert. Replace any open
-        // alert that shares a meeting with this one, so a single alert with
-        // the latest event data stays up.
+        // Overlapping meetings each fire their own alert. Fold any open alert
+        // that shares a meeting into this one, so a single alert lists every
+        // meeting from both, using the latest data for this trigger's events.
+        var overlappingEvents = overlappingEvents
         let ids = Set(([event] + overlappingEvents).map(\.id))
-        fullscreenNotificationWindows.allObjects
-            .compactMap { $0 as? FullscreenNotificationWindow }
-            .filter { $0.isVisible && !$0.presentedEventIDs.isDisjoint(with: ids) }
-            .forEach { $0.close() }
+        for old in fullscreenNotificationWindows.allObjects.compactMap({ $0 as? FullscreenNotificationWindow })
+        where old.isVisible && old.presentedEvents.contains(where: { ids.contains($0.id) }) {
+            let known = ids.union(overlappingEvents.map(\.id))
+            overlappingEvents += old.presentedEvents.filter { !known.contains($0.id) }
+            old.close()
+        }
+        overlappingEvents.sort { $0.startDate < $1.startDate }
 
         let screenFrame = preferredFullscreenScreen()?.frame
             ?? NSRect(x: 0, y: 0, width: 800, height: 600)
@@ -224,7 +228,7 @@ final class WindowCoordinator {
             defer: false
         )
 
-        window.presentedEventIDs = ids
+        window.presentedEvents = [event] + overlappingEvents
         window.contentView = NSHostingView(
             rootView: FullscreenNotification(
                 event: event, overlappingEvents: overlappingEvents, window: window))

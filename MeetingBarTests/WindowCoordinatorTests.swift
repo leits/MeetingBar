@@ -156,23 +156,27 @@ final class WindowCoordinatorTests: XCTestCase {
         )
     }
 
-    func testOverlappingAlertsShareOneWindowUntilDismissed() {
+    func testAlertsSharingAMeetingMergeIntoOneWindowWithoutDroppingMeetings() {
         let coordinator = WindowCoordinator()
         let start = Date()
-        let first = makeFakeEvent(id: "first", start: start, end: start.addingTimeInterval(1800), withLink: true)
-        let second = makeFakeEvent(id: "second", start: start.addingTimeInterval(300), end: start.addingTimeInterval(1800), withLink: true)
+        func event(_ id: String, _ minutes: Double) -> MBEvent {
+            makeFakeEvent(id: id, start: start.addingTimeInterval(minutes * 60), end: start.addingTimeInterval(1800), withLink: true)
+        }
+        let first = event("a", 0), second = event("b", 1), third = event("c", 2)
         func visibleAlerts() -> [FullscreenNotificationWindow] {
             NSApp.windows.compactMap { $0 as? FullscreenNotificationWindow }.filter(\.isVisible)
         }
         defer { visibleAlerts().forEach { $0.close() } }
 
         coordinator.openFullscreenNotificationWindow(event: first, overlappingEvents: [second])
-        coordinator.openFullscreenNotificationWindow(event: second, overlappingEvents: [first])
-        XCTAssertEqual(visibleAlerts().map(\.presentedEventIDs), [["first", "second"]])
+        // third overlaps first but not second: second must stay in the merged alert.
+        coordinator.openFullscreenNotificationWindow(event: third, overlappingEvents: [first])
+
+        XCTAssertEqual(visibleAlerts().map { $0.presentedEvents.map(\.id) }, [["c", "a", "b"]])
 
         visibleAlerts().forEach { $0.close() }
         coordinator.openFullscreenNotificationWindow(event: second)
-        XCTAssertEqual(visibleAlerts().map(\.presentedEventIDs), [["second"]])
+        XCTAssertEqual(visibleAlerts().map { $0.presentedEvents.map(\.id) }, [["b"]])
     }
 
     func testOnboardingCloseRunsIncompleteOnboardingClosureOnlyWhenNotCompleted() {
