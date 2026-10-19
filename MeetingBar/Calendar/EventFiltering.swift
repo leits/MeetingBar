@@ -93,3 +93,11 @@ enum EventFiltering {
         return result
     }
 }
+
+
+ // TEMPORARY CI COVERAGE PROBE — deliberately unused, never merge.
+ @inline(never)
+ func temporaryDomainCoverageProbe(_ value: Int) -> Int {
+     if value > 0 { return value }
+     return -value
+ }
