@@ -59,23 +59,15 @@ jobs:
       - name: Validate localizations
         run: make validate-strings
 
+      - name: Verify coverage-check failure contracts
+        run: bash Scripts/test_verify_coverage_reports.sh
+
       - name: Run SwiftPM logic tests
         run: make test-logic-quiet
 
       # Export immediately: Xcode may replace SwiftPM build artifacts during the app build.
       - name: Export SwiftPM coverage for Codecov
-        if: ${{ env.CODECOV_TOKEN != '' }}
         run: make coverage-codecov-logic
-
-      - name: Upload SwiftPM logic coverage to Codecov
-        if: ${{ env.CODECOV_TOKEN != '' }}
-        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
-        with:
-          files: build/coverage/swiftpm.lcov
-          flags: swiftpm_logic
-          disable_search: true
-          fail_ci_if_error: true
-          token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Run app-hosted tests
         id: app_tests
@@ -96,12 +88,36 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Install Slather
-        if: ${{ !cancelled() && steps.app_tests.outcome == 'success' && env.CODECOV_TOKEN != '' }}
+        if: ${{ !cancelled() && steps.app_tests.outcome == 'success' }}
         run: gem install slather -v 2.8.5 --no-document
 
       - name: Generate coverage report
-        if: ${{ !cancelled() && steps.app_tests.outcome == 'success' && env.CODECOV_TOKEN != '' }}
+        if: ${{ !cancelled() && steps.app_tests.outcome == 'success' }}
         run: make coverage-codecov
+
+      - name: Require Codecov token on trusted builds
+        if: ${{ env.CODECOV_TOKEN == '' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) }}
+        run: |
+          echo "::error::CODECOV_TOKEN is required to upload both coverage reports on trusted builds."
+          exit 1
+
+      - name: Verify both coverage reports before uploading
+        if: ${{ !cancelled() && steps.app_tests.outcome == 'success' }}
+        run: |
+          bash Scripts/verify_coverage_reports.sh \\
+            build/coverage/swiftpm.lcov build/coverage/cobertura.xml
+
+      # Upload only after both suites and the report validation succeed.
+      # codecov.notify.after_n_builds: 2 prevents provisional status checks.
+      - name: Upload SwiftPM logic coverage to Codecov
+        if: ${{ !cancelled() && steps.app_tests.outcome == 'success' && env.CODECOV_TOKEN != '' }}
+        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
+        with:
+          files: build/coverage/swiftpm.lcov
+          flags: swiftpm_logic
+          disable_search: true
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Upload app-hosted coverage to Codecov
         if: ${{ !cancelled() && steps.app_tests.outcome == 'success' && env.CODECOV_TOKEN != '' }}
