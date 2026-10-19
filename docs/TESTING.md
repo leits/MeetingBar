@@ -63,11 +63,12 @@ make validate-strings
 
 CI runs the SwiftPM logic and macOS app-hosted suites separately. Their reports
 are exported before upload, and **both are validated** by
-`Scripts/verify_coverage_reports.sh` (self-tested by
-`Scripts/test_verify_coverage_reports.sh`). Missing/empty reports fail
-`Build and Test`. On trusted builds, a missing `CODECOV_TOKEN` also fails CI.
-Fork PRs without access to this secret can still run tests but cannot publish
-Codecov reports; maintainers must verify coverage checks on a trusted revision.
+`Scripts/validate_coverage_reports.py` (tested in
+`Scripts/tests/test_coverage_reports.py`). Missing, malformed or empty
+reports fail `Build and Test`. Both Codecov uploads must succeed.
+Protected `master` and same-repository PR builds require `CODECOV_TOKEN`;
+public fork PRs use Codecov's tokenless upload support. A missing token on
+a trusted build fails the job rather than silently skipping coverage.
 
 Both coverage flags set `carryforward: false`. Uploads occur **after both test
 suites complete**, and `codecov.notify.after_n_builds: 2` prevents the misleading
@@ -88,9 +89,19 @@ run does not imply that Codecov processed both uploads.
 The app-workflow list currently includes `AppModel`, `CalendarRepository`,
 `CalendarSync`, `GoogleCalendarDataReader`, `MeetingOpener`,
 `NotificationScheduler`, `PreferencesPresentation`, and `AppSettings`.
-They have injectable seams and can be tested without real calendar accounts or
-fragile macOS UI automation. The 75% gate is a patch threshold rather than a
-claim that the whole app is 75% covered.
+These owners have injectable seams and are tested without live calendar
+accounts. The 75% gate measures changed app-workflow lines, not overall app
+coverage. CI tests assert that high-risk workflows stay in the gate and that
+raw provider/SwiftUI boundary files remain visible in informational reports.
+
+**Validation before adopting new required checks:** confirm the Codecov
+configuration is accepted and both uploads appear on #1029. Then verify one
+logic-only change yields the expected `domain_logic` status and an adapter-only
+change leaves `app_workflows` untouched while updating informational coverage.
+The missing-report negative case is exercised automatically in the Python
+preflight suite; a CI run must fail before Codecov upload if either report is
+missing. New status names must be established on `master` before adjusting
+branch protection.
 
 AppAuth browser/Keychain, EventKit queries and permissions, and SwiftUI/AppKit
 rendering remain in the **informational** patch view. This is not permission to
