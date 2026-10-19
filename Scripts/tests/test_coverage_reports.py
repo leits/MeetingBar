@@ -74,19 +74,19 @@ class CoverageReportsTests(unittest.TestCase):
 class CoverageScopeTests(unittest.TestCase):
     def test_logic_gate_tracks_swiftpm_flag(self):
         package = (ROOT / "Package.swift").read_text(encoding="utf-8")
-        source_block = re.search(r"sources:\\s*\\[(.*?)\\]", package, re.S)
+        source_block = re.search(r"sources:\s*\[(.*?)\]", package, re.S)
         self.assertIsNotNone(source_block)
-        self.assertTrue(re.findall(r'"[^"]+\\.swift"', source_block.group(1)))
+        self.assertTrue(re.findall(r'"[^"]+\.swift"', source_block.group(1)))
         config = (ROOT / "codecov.yml").read_text(encoding="utf-8")
         logic_gate = config.split("      domain_logic:", 1)[1].split("      app_workflows:", 1)[0]
-        self.assertIn("flags:\\n          - swiftpm_logic", logic_gate)
+        self.assertIn("flags:\n          - swiftpm_logic", logic_gate)
         self.assertIn("target: 85%", logic_gate)
         self.assertIn("threshold: 0%", logic_gate)
 
     def test_app_workflows_cover_testable_orchestration_not_platform_adapters(self):
         config = (ROOT / "codecov.yml").read_text(encoding="utf-8")
         scope = config.split("      app_workflows:", 1)[1].split("      app_integration:", 1)[0]
-        self.assertIn("flags:\\n          - app_hosted", scope)
+        self.assertIn("flags:\n          - app_hosted", scope)
         for path in (
             "MeetingBar/Calendar/CalendarRepository.swift",
             "MeetingBar/Calendar/CalendarSync.swift",
@@ -100,7 +100,7 @@ class CoverageScopeTests(unittest.TestCase):
             "MeetingBar/Preferences/CalendarsTab.swift",
         ):
             self.assertNotIn(system_file, scope)
-        self.assertNotIn("\\nignore:", config)
+        self.assertNotIn("\nignore:", config)
 
     def test_system_boundaries_are_in_informational_reports(self):
         config = (ROOT / "codecov.yml").read_text(encoding="utf-8")
