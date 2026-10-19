@@ -18,8 +18,8 @@ if [[ ! -s "$logic_report" ]] ||
 fi
 
 if [[ ! -s "$app_report" ]] ||
-   ! grep -q '<coverage\b' "$app_report" ||
-   ! grep -q '<class\b' "$app_report"; then
+   ! grep -Eq '<coverage([[:space:]]|>)' "$app_report" ||
+   ! grep -Eq '<class([[:space:]]|>)' "$app_report"; then
   echo "Missing, empty, or invalid app-hosted Cobertura coverage: $app_report" >&2
   exit 1
 fi
