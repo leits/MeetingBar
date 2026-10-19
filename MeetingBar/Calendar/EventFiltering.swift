@@ -93,3 +93,9 @@ enum EventFiltering {
         return result
     }
 }
+
+// Temporary coverage classification probe; this code must never be merged.
+private func _coverageGateDomainProbe1029() -> Int {
+    let value = 1029
+    return value + 1
+}
