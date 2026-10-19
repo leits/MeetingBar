@@ -210,15 +210,20 @@ final class WindowCoordinator {
         // kept only if the current `overlaps` lookup still returns it for a
         // meeting shown here, so dismissed or removed meetings are not revived.
         var overlappingEvents = overlaps(event)
-        let shown = [event] + overlappingEvents
-        let shownIDs = Set(shown.map(\.id))
+        let shownIDs = Set(([event] + overlappingEvents).map(\.id))
         for old in fullscreenNotificationWindows.allObjects.compactMap({ $0 as? FullscreenNotificationWindow })
         where old.isVisible && old.presentedEvents.contains(where: { shownIDs.contains($0.id) }) {
+            // Keep old meetings still returned by the lookup for any meeting
+            // shown (repeat until stable, so chains of overlaps survive).
             let oldIDs = Set(old.presentedEvents.map(\.id))
-            for other in shown.flatMap(overlaps)
-            where oldIDs.contains(other.id) && !shownIDs.contains(other.id)
-                && !overlappingEvents.contains(where: { $0.id == other.id }) {
-                overlappingEvents.append(other)
+            var frontier = [event] + overlappingEvents
+            while let next = frontier.popLast() {
+                for other in overlaps(next)
+                where oldIDs.contains(other.id) && other.id != event.id
+                    && !overlappingEvents.contains(where: { $0.id == other.id }) {
+                    overlappingEvents.append(other)
+                    frontier.append(other)
+                }
             }
             old.close()
         }

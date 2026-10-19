@@ -182,6 +182,15 @@ final class WindowCoordinatorTests: XCTestCase {
         coordinator.openFullscreenNotificationWindow(event: third, overlaps: overlaps)
         XCTAssertEqual(visibleAlerts().map { $0.presentedEvents.map(\.id) }, [["c", "a"]])
 
+        // A chain of overlaps (b-a-c-d) must survive a fourth alert.
+        visibleAlerts().forEach { $0.close() }
+        let fourth = event("d", 3)
+        table = ["a": [second, third], "b": [first], "c": [first]]
+        coordinator.openFullscreenNotificationWindow(event: first, overlaps: overlaps)
+        table = ["a": [second, third], "b": [first], "c": [first, fourth], "d": [third]]
+        coordinator.openFullscreenNotificationWindow(event: fourth, overlaps: overlaps)
+        XCTAssertEqual(visibleAlerts().map { $0.presentedEvents.map(\.id) }, [["d", "a", "b", "c"]])
+
         visibleAlerts().forEach { $0.close() }
         coordinator.openFullscreenNotificationWindow(event: second)
         XCTAssertEqual(visibleAlerts().map { $0.presentedEvents.map(\.id) }, [["b"]])
