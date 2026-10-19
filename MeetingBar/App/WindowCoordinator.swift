@@ -204,26 +204,22 @@ final class WindowCoordinator {
     /// Presents the borderless fullscreen alert for an event on the preferred
     /// screen, and tracks it so it can be moved if the display layout changes
     /// while it is showing.
-    func openFullscreenNotificationWindow(event: MBEvent, overlaps: (MBEvent) -> [MBEvent] = { _ in [] }) {
+    func openFullscreenNotificationWindow(
+        event: MBEvent,
+        overlaps: (MBEvent) -> [MBEvent] = { _ in [] },
+        current: (String) -> MBEvent? = { _ in nil }
+    ) {
         // Overlapping meetings each fire their own alert. Fold any open alert
-        // that shares a meeting into this one. A meeting from the old alert is
-        // kept only if the current `overlaps` lookup still returns it for a
-        // meeting shown here, so dismissed or removed meetings are not revived.
+        // that shares a meeting into this one. Meetings from the old alert are
+        // kept (as fresh copies) while `current` still returns them, so
+        // dismissed, canceled, declined or removed meetings are not revived.
         var overlappingEvents = overlaps(event)
         let shownIDs = Set(([event] + overlappingEvents).map(\.id))
         for old in fullscreenNotificationWindows.allObjects.compactMap({ $0 as? FullscreenNotificationWindow })
         where old.isVisible && old.presentedEvents.contains(where: { shownIDs.contains($0.id) }) {
-            // Keep old meetings still returned by the lookup for any meeting
-            // shown (repeat until stable, so chains of overlaps survive).
-            let oldIDs = Set(old.presentedEvents.map(\.id))
-            var frontier = [event] + overlappingEvents
-            while let next = frontier.popLast() {
-                for other in overlaps(next)
-                where oldIDs.contains(other.id) && other.id != event.id
-                    && !overlappingEvents.contains(where: { $0.id == other.id }) {
-                    overlappingEvents.append(other)
-                    frontier.append(other)
-                }
+            for carried in old.presentedEvents.compactMap({ current($0.id) })
+            where carried.id != event.id && !overlappingEvents.contains(where: { $0.id == carried.id }) {
+                overlappingEvents.append(carried)
             }
             old.close()
         }

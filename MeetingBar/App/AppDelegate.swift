@@ -163,7 +163,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             showFullscreen: { [weak self, weak model] event in
                 self?.windowCoordinator.openFullscreenNotificationWindow(
                     event: event,
-                    overlaps: { model?.overlappingEvents(with: $0) ?? [] }
+                    overlaps: { model?.overlappingEvents(with: $0) ?? [] },
+                    current: { model?.currentEvent(id: $0) }
                 )
             },
             runEventStartScript: { event in
