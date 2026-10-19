@@ -148,11 +148,12 @@ public struct MBEvent: Identifiable, Hashable, Sendable {
             eventURL: url,
             notes: notes,
             calendarEmail: calendar.email,
-            currentUserEmail: currentUser?.email,
-            calendarOwnerEmail: MeetingLinkDetector.calendarOwnerEmail(
+            // For a calendar shared into another Google account, EventKit marks
+            // that other account as the current user; the owner must win.
+            currentUserEmail: MeetingLinkDetector.calendarOwnerEmail(
                 calendarID: calendar.id,
                 calendarTitle: calendar.title
-            ),
+            ) ?? currentUser?.email,
             customRegexes: customRegexes
         )
         meetingLinkCandidate = meetingLinkCandidates.first

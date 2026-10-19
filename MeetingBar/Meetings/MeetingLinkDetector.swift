@@ -679,7 +679,6 @@ enum MeetingLinkDetector {
         notes: String?,
         calendarEmail: String?,
         currentUserEmail: String?,
-        calendarOwnerEmail: String? = nil,
         customRegexes: [String] = []
     ) -> MeetingLink? {
         guard let best = bestCandidate(
@@ -689,7 +688,6 @@ enum MeetingLinkDetector {
             notes: notes,
             calendarEmail: calendarEmail,
             currentUserEmail: currentUserEmail,
-            calendarOwnerEmail: calendarOwnerEmail,
             customRegexes: customRegexes
         ) else { return nil }
         return MeetingLink(service: best.service, url: best.url)
@@ -702,7 +700,6 @@ enum MeetingLinkDetector {
         notes: String?,
         calendarEmail: String?,
         currentUserEmail: String?,
-        calendarOwnerEmail: String? = nil,
         customRegexes: [String] = []
     ) -> MeetingLinkCandidate? {
         allCandidates(
@@ -712,7 +709,6 @@ enum MeetingLinkDetector {
             notes: notes,
             calendarEmail: calendarEmail,
             currentUserEmail: currentUserEmail,
-            calendarOwnerEmail: calendarOwnerEmail,
             customRegexes: customRegexes
         ).first
     }
@@ -724,7 +720,6 @@ enum MeetingLinkDetector {
         notes: String?,
         calendarEmail: String?,
         currentUserEmail: String?,
-        calendarOwnerEmail: String? = nil,
         customRegexes: [String] = []
     ) -> [MeetingLinkCandidate] {
         let candidates = collectCandidates(
@@ -739,8 +734,7 @@ enum MeetingLinkDetector {
                 applyMeetAuthuserIfNeeded(
                     candidate: $0,
                     calendarEmail: calendarEmail,
-                    currentUserEmail: currentUserEmail,
-                    calendarOwnerEmail: calendarOwnerEmail
+                    currentUserEmail: currentUserEmail
                 )
             }
     }
@@ -869,14 +863,10 @@ enum MeetingLinkDetector {
     private static func applyMeetAuthuserIfNeeded(
         candidate: MeetingLinkCandidate,
         calendarEmail: String?,
-        currentUserEmail: String?,
-        calendarOwnerEmail: String?
+        currentUserEmail: String?
     ) -> MeetingLinkCandidate {
-        // The calendar owner wins over the current-user attendee: for a calendar
-        // shared into another Google account, EventKit marks that other account
-        // as the current user and as the calendar's account.
         guard candidate.service == .meet,
-              let rawAccount = calendarOwnerEmail ?? currentUserEmail ?? calendarEmail,
+              let rawAccount = currentUserEmail ?? calendarEmail,
               let urlWithAuth = url(candidate.url, appendingAuthuser: canonicalMeetAuthuser(from: rawAccount))
         else { return candidate }
         return MeetingLinkCandidate(
