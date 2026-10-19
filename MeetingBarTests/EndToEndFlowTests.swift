@@ -95,6 +95,7 @@ private final class EndToEndHarness {
                 self?.openedMeetingIDs.append(event.id)
                 self?.openedMeetingURLs.append(event.meetingLink?.url.absoluteString ?? "")
             },
+            recordMeetingJoined: { NotificationRecordStore().recordJoined($0) },
             dismissEvent: { AppSettings.dismissEvent($0) },
             undismissEvent: { AppSettings.undismissEvent(id: $0) },
             clearDismissedEvents: { AppSettings.clearDismissedEvents() },
