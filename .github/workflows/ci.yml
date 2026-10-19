@@ -104,7 +104,7 @@ jobs:
       - name: Verify both coverage reports before uploading
         if: ${{ !cancelled() && steps.app_tests.outcome == 'success' }}
         run: |
-          bash Scripts/verify_coverage_reports.sh \\
+          bash Scripts/verify_coverage_reports.sh \
             build/coverage/swiftpm.lcov build/coverage/cobertura.xml
 
       # Upload only after both suites and the report validation succeed.
