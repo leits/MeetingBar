@@ -156,6 +156,25 @@ final class WindowCoordinatorTests: XCTestCase {
         )
     }
 
+    func testOverlappingAlertsShareOneWindowUntilDismissed() {
+        let coordinator = WindowCoordinator()
+        let start = Date()
+        let first = makeFakeEvent(id: "first", start: start, end: start.addingTimeInterval(1800), withLink: true)
+        let second = makeFakeEvent(id: "second", start: start.addingTimeInterval(300), end: start.addingTimeInterval(1800), withLink: true)
+        func visibleAlerts() -> [FullscreenNotificationWindow] {
+            NSApp.windows.compactMap { $0 as? FullscreenNotificationWindow }.filter(\.isVisible)
+        }
+        defer { visibleAlerts().forEach { $0.close() } }
+
+        coordinator.openFullscreenNotificationWindow(event: first, overlappingEvents: [second])
+        coordinator.openFullscreenNotificationWindow(event: second, overlappingEvents: [first])
+        XCTAssertEqual(visibleAlerts().map(\.presentedEventIDs), [["first", "second"]])
+
+        visibleAlerts().forEach { $0.close() }
+        coordinator.openFullscreenNotificationWindow(event: second)
+        XCTAssertEqual(visibleAlerts().map(\.presentedEventIDs), [["second"]])
+    }
+
     func testOnboardingCloseRunsIncompleteOnboardingClosureOnlyWhenNotCompleted() {
         let coordinator = WindowCoordinator()
         var incompleteCloseCount = 0

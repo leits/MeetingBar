@@ -431,6 +431,10 @@ final class AppModel: ObservableObject {
         )
     }
 
+    func overlappingEvents(with event: MBEvent) -> [MBEvent] {
+        state.events.overlappingEvents(with: event, settings: environment.eventSelectionSettings())
+    }
+
     /// Onboarding is an async workflow because provider authorization can
     /// prompt the user. Provider setup happens before this method; completion
     /// only succeeds for the active provider with at least one selected calendar.

@@ -81,42 +81,10 @@ enum EventSelection {
             return $0.startDate < $1.startDate
         }
 
-        if !settings.includesPersonalEvents {
-            futureEvents = futureEvents.filter(\.hasAttendees)
-        }
-
         var result: EventSelectionEvent?
 
         for event in futureEvents {
-            let dismissal = EventSelectionDismissal(
-                id: event.id,
-                lastModifiedDate: event.lastModifiedDate
-            )
-            if settings.dismissedEvents.contains(dismissal) {
-                continue
-            }
-
-            if event.isAllDay {
-                continue
-            }
-
-            if !event.hasMeetingLink, linkRequired || settings.requiresMeetingLinkForNonAllDayEvents {
-                continue
-            }
-
-            if event.participationStatus == .declined {
-                continue
-            }
-
-            if event.participationStatus == .pending, settings.hidesPendingEvents {
-                continue
-            }
-
-            if event.participationStatus == .tentative, settings.hidesTentativeEvents {
-                continue
-            }
-
-            if event.status == .canceled {
+            if isExcluded(event, linkRequired: linkRequired, settings: settings) {
                 continue
             }
 
@@ -145,5 +113,40 @@ enum EventSelection {
             }
         }
         return result
+    }
+
+    /// Other meetings running at the same time as `primary`: any event whose
+    /// time range intersects it and that the menu would show (not dismissed,
+    /// declined, canceled, all-day, or hidden by settings). Keeps input order,
+    /// which `CalendarSync` already sorts by start. An all-day `primary` has
+    /// no meaningful "same time", so it lists nothing.
+    static func overlappingEvents(
+        with primary: EventSelectionEvent,
+        from events: [EventSelectionEvent],
+        settings: EventSelectionSettings
+    ) -> [EventSelectionEvent] {
+        guard !primary.isAllDay else { return [] }
+        return events.filter {
+            $0.id != primary.id
+                && $0.startDate < primary.endDate
+                && $0.endDate > primary.startDate
+                && !isExcluded($0, linkRequired: false, settings: settings)
+        }
+    }
+
+    private static func isExcluded(
+        _ event: EventSelectionEvent,
+        linkRequired: Bool,
+        settings: EventSelectionSettings
+    ) -> Bool {
+        let dismissal = EventSelectionDismissal(id: event.id, lastModifiedDate: event.lastModifiedDate)
+        if settings.dismissedEvents.contains(dismissal) { return true }
+        if !settings.includesPersonalEvents, !event.hasAttendees { return true }
+        if event.isAllDay { return true }
+        if !event.hasMeetingLink, linkRequired || settings.requiresMeetingLinkForNonAllDayEvents { return true }
+        if event.participationStatus == .declined { return true }
+        if event.participationStatus == .pending, settings.hidesPendingEvents { return true }
+        if event.participationStatus == .tentative, settings.hidesTentativeEvents { return true }
+        return event.status == .canceled
     }
 }

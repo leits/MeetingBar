@@ -44,6 +44,10 @@ enum FullscreenNotificationRepositionPolicy {
 }
 
 final class FullscreenNotificationWindow: NSWindow {
+    /// IDs of the events this alert presents (the triggering event plus any
+    /// overlapping ones), so a second trigger for the same meeting reuses it.
+    var presentedEventIDs: Set<String> = []
+
     override var canBecomeKey: Bool { true }
     override var canBecomeMain: Bool { true }
 
@@ -200,7 +204,16 @@ final class WindowCoordinator {
     /// Presents the borderless fullscreen alert for an event on the preferred
     /// screen, and tracks it so it can be moved if the display layout changes
     /// while it is showing.
-    func openFullscreenNotificationWindow(event: MBEvent) {
+    func openFullscreenNotificationWindow(event: MBEvent, overlappingEvents: [MBEvent] = []) {
+        // Overlapping meetings each fire their own alert. Replace any open
+        // alert that shares a meeting with this one, so a single alert with
+        // the latest event data stays up.
+        let ids = Set(([event] + overlappingEvents).map(\.id))
+        fullscreenNotificationWindows.allObjects
+            .compactMap { $0 as? FullscreenNotificationWindow }
+            .filter { $0.isVisible && !$0.presentedEventIDs.isDisjoint(with: ids) }
+            .forEach { $0.close() }
+
         let screenFrame = preferredFullscreenScreen()?.frame
             ?? NSRect(x: 0, y: 0, width: 800, height: 600)
 
@@ -211,8 +224,10 @@ final class WindowCoordinator {
             defer: false
         )
 
+        window.presentedEventIDs = ids
         window.contentView = NSHostingView(
-            rootView: FullscreenNotification(event: event, window: window))
+            rootView: FullscreenNotification(
+                event: event, overlappingEvents: overlappingEvents, window: window))
         window.appearance = NSAppearance(named: .darkAqua)
         window.collectionBehavior = .moveToActiveSpace
 
