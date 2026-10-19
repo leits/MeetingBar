@@ -449,6 +449,53 @@ final class MeetingLinkDetectorTests: XCTestCase {
         )
     }
 
+    func testGoogleMeetPrefersCalendarOwnerEmailOverCurrentUserAndCalendarEmail() {
+        // A work calendar subscribed in a personal Google account: EventKit
+        // reports the personal account both as the current-user attendee and
+        // as the calendar's account, but the meeting belongs to the owner.
+        let link = MeetingLinkDetector.detect(
+            location: "https://meet.google.com/abc-defg-hij",
+            eventURL: nil,
+            notes: nil,
+            calendarEmail: "personal@gmail.com",
+            currentUserEmail: "personal@gmail.com",
+            calendarOwnerEmail: "work@example.com"
+        )
+        XCTAssertEqual(
+            link?.url.absoluteString,
+            "https://meet.google.com/abc-defg-hij?authuser=work@example.com"
+        )
+    }
+
+    func testCalendarOwnerEmailComesFromCalendarIDOrTitle() {
+        XCTAssertEqual(
+            MeetingLinkDetector.calendarOwnerEmail(calendarID: "work@example.com", calendarTitle: "Work"),
+            "work@example.com"
+        )
+        XCTAssertEqual(
+            MeetingLinkDetector.calendarOwnerEmail(
+                calendarID: "6F9619FF-8B86-D011-B42D-00C04FC964FF",
+                calendarTitle: "work@example.com"
+            ),
+            "work@example.com"
+        )
+    }
+
+    func testCalendarOwnerEmailIgnoresNonAccountCalendars() {
+        for (calendarID, calendarTitle) in [
+            ("abc123@group.calendar.google.com", "Team"),
+            ("en.usa#holiday@group.v.calendar.google.com", "Holidays"),
+            ("abc123@import.calendar.google.com", "Imported"),
+            ("6F9619FF-8B86-D011-B42D-00C04FC964FF", "Work"),
+            ("calendar-id", "Lunch @ office")
+        ] {
+            XCTAssertNil(
+                MeetingLinkDetector.calendarOwnerEmail(calendarID: calendarID, calendarTitle: calendarTitle),
+                calendarID
+            )
+        }
+    }
+
     func testGoogleMeetPrefersCurrentUserEmailOverCalendarEmail() {
         // With multiple calendars connected to one account, the current-user
         // attendee identity resolves the correct Google account better than

@@ -149,6 +149,10 @@ public struct MBEvent: Identifiable, Hashable, Sendable {
             notes: notes,
             calendarEmail: calendar.email,
             currentUserEmail: currentUser?.email,
+            calendarOwnerEmail: MeetingLinkDetector.calendarOwnerEmail(
+                calendarID: calendar.id,
+                calendarTitle: calendar.title
+            ),
             customRegexes: customRegexes
         )
         meetingLinkCandidate = meetingLinkCandidates.first
