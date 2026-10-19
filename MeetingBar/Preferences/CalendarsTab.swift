@@ -284,3 +284,11 @@ struct CalendarRow: View {
     }.listStyle(.sidebar)
         .frame(width: 300, height: 200)
 }
+
+
+ // TEMPORARY CI COVERAGE PROBE — deliberately unused, never merge.
+ @inline(never)
+ private func temporaryAdapterCoverageProbe(_ value: Int) -> Int {
+     if value > 0 { return value }
+     return -value
+ }
