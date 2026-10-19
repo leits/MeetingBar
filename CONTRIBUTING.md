@@ -33,6 +33,12 @@ For local signing, create `XCConfig/DevTeamOverride.xcconfig` with your Apple de
 DEVELOPMENT_TEAM = <your development team id>
 ```
 
+The same git-ignored override can also provide real `GOOGLE_CLIENT_NUMBER`, `GOOGLE_CLIENT_SECRET`, and `GOOGLE_AUTH_KEYCHAIN_NAME` values for local Google Calendar sign-in. Do not commit credentials. The checked-in `Project.xcconfig` values are placeholders for builds without configured Google OAuth.
+
+Xcode loads `Project-Debug.xcconfig` / `Project-Release.xcconfig` as the project's Base Configuration. Before compiling the app, the `Validate xcconfig` build phase fails if any Google OAuth build setting is missing, empty, or unresolved. Placeholder values are permitted for CI/build verification, but cannot authorize Google Calendar.
+
+Run `make test-config` to check the validator's success/failure cases.
+
 Common validation commands:
 
 ```bash
