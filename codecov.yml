@@ -1,8 +1,11 @@
-# Keep high-signal coverage checks blocking while preserving the whole-project
-# trend without failing on execution-path variation in the AppKit/Combine suite.
-#
-# App-hosted and SwiftPM reports are separately flagged; both are uploaded
-# on every CI run. Do not carry forward coverage from stale test runs.
+# Codecov receives two complete, independent coverage reports per CI build.
+# The status checks must not use SwiftPM-only partial uploads as final coverage.
+# Any change to the number of uploaded reports must update after_n_builds.
+codecov:
+  notify:
+    after_n_builds: 2
+    wait_for_ci: true
+
 flags:
   swiftpm_logic:
     carryforward: false
@@ -12,20 +15,57 @@ flags:
 coverage:
   status:
     project:
-      # The aggregate coverage remains visible in checks and PR reports, but
-      # can vary slightly between otherwise identical asynchronous UI runs.
+      # Full-project app coverage varies with AppKit/Combine execution paths.
       default:
         target: auto
         informational: true
-      # Deterministic, headless logic tests provide a reliable regression gate.
+      # Keep a zero-tolerance baseline for SwiftPM domain logic.
       swiftpm_logic:
         flags:
           - swiftpm_logic
         target: auto
         threshold: 0%
     patch:
-      # Require meaningful tests for newly added/changed production code.
-      # A fixed floor is clearer than auto (which can inherit a low baseline).
+      # All changed production lines remain visible, including platform code.
+      # This aggregate is diagnostic: the required checks below enforce the
+      # testable boundaries without making live OAuth or EventKit mandatory.
       default:
         target: 85%
+        informational: true
+
+      # SwiftPM coverage report contains only sources from Package.swift's
+      # MeetingBarLogic target. New domain files enter this gate when added to
+      # the target; no manually maintained path list or broad ignore is needed.
+      domain_logic:
+        flags:
+          - swiftpm_logic
+        target: 85%
         threshold: 0%
+
+      # App-hosted workflows can be exercised with injected fakes and contract
+      # tests. This is an explicit list of high-value orchestration/presentation
+      # owners, rather than a blanket exemption for the entire app target.
+      app_workflows:
+        flags:
+          - app_hosted
+        paths:
+          - "MeetingBar/App/AppModel.swift"
+          - "MeetingBar/Calendar/CalendarRepository.swift"
+          - "MeetingBar/Calendar/CalendarSync.swift"
+          - "MeetingBar/Calendar/Providers/Google/GoogleCalendarDataReader.swift"
+          - "MeetingBar/Meetings/MeetingOpener.swift"
+          - "MeetingBar/Notifications/NotificationScheduler.swift"
+          - "MeetingBar/Preferences/PreferencesPresentation.swift"
+          - "MeetingBar/Settings/AppSettings.swift"
+        target: 75%
+        threshold: 0%
+
+      # Remaining app-hosted code includes system adapters, UI rendering,
+      # permissions, AppAuth, EventKit, etc. Report its patch coverage, but
+      # review failure/recovery contracts and pre-release smoke instead of
+      # forcing fragile framework mocks to reach a numeric threshold.
+      app_integration:
+        flags:
+          - app_hosted
+        target: 85%
+        informational: true
