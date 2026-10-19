@@ -295,7 +295,7 @@
 "message_event_script_file_missing_text" = "הקובץ eventStartScript.scpt אינו קיים ב‑%@.";
 "message_event_script_file_missing_title" = "קובץ AppleScript לא נמצא";
 "message_google_account_connected_text" = "%@ מחובר";
-"message_google_account_connected_title" = "חשבון גוגל חובר";
+"message_google_account_connected_title" = "חשבון Google חובר";
 "onboarding_apple_calendar_description" = "קורא לוחות שנה מיישום ה‑Calendars ב‑Mac זה, כולל כל החשבונות המוגדרים.";
 "onboarding_apple_calendar_title" = "יישום Calendars של macOS";
 "onboarding_authorization_apple_description" = "אפשר ל‑MeetingBar לקרוא אירועים מיישום ה‑Calendars ב‑Mac זה.";
