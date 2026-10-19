@@ -59,39 +59,66 @@ make validate-strings
 
 `make coverage-gate` currently **reports** whether hostless coverage reaches 90%; it does not fail below that threshold. CI can separately enforce Codecov project/patch checks. High coverage of pure policies does not establish integration, lifecycle, layout or signed-build confidence.
 
-### Codecov coverage signals
+### Layer-aware Codecov coverage checks
 
-CI runs both test suites and uploads their coverage as separate Codecov flags: `swiftpm_logic` (SwiftPM LCOV) and `app_hosted` (Xcode/Slather Cobertura). The combined project coverage is still reported, but its status is **informational** because asynchronous AppKit/Combine execution can vary between runs even when production code is unchanged.
+CI runs the SwiftPM logic and macOS app-hosted suites separately. Their reports
+are exported before upload, and **both are validated** by
+`Scripts/verify_coverage_reports.sh` (self-tested by
+`Scripts/test_verify_coverage_reports.sh`). Missing/empty reports fail
+`Build and Test`. On trusted builds, a missing `CODECOV_TOKEN` also fails CI.
+Fork PRs without access to this secret can still run tests but cannot publish
+Codecov reports; maintainers must verify coverage checks on a trusted revision.
 
-The blocking checks are:
+Both coverage flags set `carryforward: false`. Uploads occur **after both test
+suites complete**, and `codecov.notify.after_n_builds: 2` prevents the misleading
+SwiftPM-only provisional statuses we previously saw. Two uploads per commit are
+expected; if the number changes, the notification count must change too.
+Code coverage and successful uploading are separate contracts: a green test
+run does not imply that Codecov processed both uploads.
 
-- `codecov/project/swiftpm_logic`: zero-tolerance coverage comparison for deterministic headless policies.
-- `codecov/patch`: 85% coverage target for changed coverable code, subject to careful review of untested paths.
+| Check | Threshold | Behavior | Ownership |
+| --- | --- | --- | --- |
+| `codecov/project/swiftpm_logic` | No decrease from base | Blocking | SwiftPM logic baseline |
+| `codecov/patch/domain_logic` | 85% | Blocking | Every source compiled into the `MeetingBarLogic` target from `Package.swift` |
+| `codecov/patch/app_workflows` | 75% | Blocking | Explicit app-hosted policy/orchestration files listed under `paths` in `codecov.yml` |
+| `codecov/patch/default` | 85% reference | Informational | All changed coverable production code, including system boundaries |
+| `codecov/patch/app_integration` | 85% reference | Informational | All app-hosted sources; useful for examining external-framework gaps |
+| `codecov/project/default` | Comparison to base | Informational | Combined project trend |
 
-Both coverage flags use `carryforward: false`; a missing current report should not be replaced by prior coverage. Upload errors fail the test workflow. A passing threshold does **not** substitute for failure/recovery and integration tests.
+The app-workflow list currently includes `AppModel`, `CalendarRepository`,
+`CalendarSync`, `GoogleCalendarDataReader`, `MeetingOpener`,
+`NotificationScheduler`, `PreferencesPresentation`, and `AppSettings`.
+They have injectable seams and can be tested without real calendar accounts or
+fragile macOS UI automation. The 75% gate is a patch threshold rather than a
+claim that the whole app is 75% covered.
 
-The first CI run against an older `master` cannot compare the new `swiftpm_logic` flag to a baseline. Only enforce that comparison after a `master` upload has established the same flag. When aggregate coverage drops, compare changes in covered files, flags, and timing-sensitive tests rather than adding artificial assertions to raise the percentage.
+AppAuth browser/Keychain, EventKit queries and permissions, and SwiftUI/AppKit
+rendering remain in the **informational** patch view. This is not permission to
+ship untested behavior: reviewer expectations still include deterministic tests
+for extractable policies and adapters, explicit failure/recovery scenarios, and
+signed macOS release smoke for platform effects. When one file mixes decision
+logic with an untestable framework boundary, prefer a small policy extraction
+and contract test over lowering a threshold or ignoring the whole file.
 
-### Reviewing system-boundary patch coverage
+**When code moves:** Add new pure logic to `Package.swift` so the SwiftPM
+patch gate covers it automatically. If a new app-layer coordinator can be tested
+with fakes, add its path to `app_workflows` in the same PR as the production
+change. Reviewers should examine the informational aggregate patch on every
+PR for uncovered critical branches outside these two enforceable sets.
 
-The 85% `codecov/patch` check is a default guard, not a substitute for
-test-design review. When a reliability fix touches macOS framework or external
-authorization callbacks that cannot be exercised deterministically in ordinary
-CI, distinguish untested *policy* from untested *platform integration*.
+**Repository protection:** Require `Build and Test`,
+`codecov/project/swiftpm_logic`, `codecov/patch/domain_logic`, and
+`codecov/patch/app_workflows` in GitHub branch protection, replacing
+`codecov/patch` if it was previously required. Check names must be confirmed
+from a complete two-upload run before changing the required status list.
+GitHub App access may not allow updating branch rules; a maintainer must
+perform and verify this step. Do not assume `codecov/patch/default` is blocking:
+it is an explicitly informational diagnostic.
 
-For any requested exception, the PR must record the **final** coverage report
-(after both uploads), the uncovered production branches by subsystem, which
-failure/recovery contracts are already tested, and what still requires a signed
-macOS release smoke. The maintainer must explicitly accept the residual risk.
-Keep `codecov/project/swiftpm_logic` blocking; do not lower the global patch
-target, hide whole files, or add assertions that only increase coverage counts.
-A failed required check stays failed unless an authorized branch-protection
-exception is applied: documenting one does not make CI green.
-
-The follow-up design for component/layer-aware checks is tracked in
-[#1028](https://github.com/leits/MeetingBar/issues/1028). Until that is
-implemented, system-boundary exceptions are exceptional and release smoke is
-still required.
+If a blocking logic or app-workflow patch fails, add meaningful tests or review
+the boundary; do not add coverage-only assertions. A narrowly documented
+exception still requires explicit maintainer approval and authorized branch
+protection handling, not a global threshold change.
 
 ### Optional performance measurements
 
