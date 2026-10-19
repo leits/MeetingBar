@@ -322,3 +322,9 @@ func getGmailAccount(_ text: String) -> String? {
     else { return nil }
     return String(text[captureRange])
 }
+
+// Temporary coverage classification probe; this code must never be merged.
+private func _coverageGateAdapterProbe1029() -> Int {
+    let value = 1029
+    return value + 1
+}
