@@ -277,6 +277,22 @@ final class AppModelTests: BaseTestCase {
         ])
     }
 
+    func testJoiningRecordsOnlyEventsWithAMeetingLink() async {
+        let harness = AppModelTestHarness()
+        let end = harness.fixedNow.addingTimeInterval(1800)
+        harness.model.send(.eventsLoaded([
+            makeFakeEvent(id: "linked", start: harness.fixedNow, end: end, withLink: true),
+            makeFakeEvent(id: "unlinked", start: harness.fixedNow, end: end)
+        ]))
+
+        harness.model.send(.joinMeeting(eventID: "linked"))
+        harness.model.send(.joinMeeting(eventID: "unlinked"))
+        await harness.flushAsyncActions()
+
+        XCTAssertEqual(harness.openedMeetingIDs, ["linked", "unlinked"])
+        XCTAssertEqual(harness.joinedMeetingIDs, ["linked"])
+    }
+
     func testNotificationResponsesRouteThroughMeetingActions() async {
         let harness = AppModelTestHarness()
         let event = makeFakeEvent(
