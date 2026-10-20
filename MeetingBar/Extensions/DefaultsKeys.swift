@@ -60,6 +60,7 @@ extension Defaults.Keys {
     // Status Bar Appearance
     static let eventTitleFormat = Key<EventTitleFormat>("eventTitleFormat", default: .show)
     static let eventTimeFormat = Key<EventTimeFormat>("eventTimeFormat", default: .show)
+    static let showNowForOngoingEvent = Key<Bool>("showNowForOngoingEvent", default: true)
 
     static let eventTitleIconFormat = Key<EventTitleIconFormat>(
         "eventTitleIconFormat", default: .none)
