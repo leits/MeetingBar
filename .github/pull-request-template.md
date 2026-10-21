@@ -1,15 +1,16 @@
-### Status
-**READY/IN DEVELOPMENT/HOLD**
+### What and why
+Describe the problem and the smallest change that solves it. Link the related issue if relevant.
 
-### Description
-A few sentences describing the overall goals of the pull request's commits.
+### User-visible behavior
+Describe what changes for users, including defaults and compatibility. Write "None" for internal-only changes.
 
+### Regression risks
+Which flows could break? In particular, consider calendar freshness, current/next selection, meeting opening, notifications, and macOS status-bar behavior.
 
-## Checklist
-- [ ] Localized
-- [ ] Added to changelog:
-  - [ ] [Changelog View](https://github.com/leits/MeetingBar/blob/master/MeetingBar/UI/Views/Changelog/Changelog.swift)
-  - [ ] [CHANGELOG.md](https://github.com/leits/MeetingBar/blob/master/CHANGELOG.md)
+### Verification
+List automated tests and manual steps you **actually ran**, with results. Note meaningful checks still outstanding.
 
-### Steps to Test or Reproduce
-Outline the steps to test or reproduce the PR here.
+### Release-sensitive changes (if any)
+Note changes to dependencies, project settings, entitlements, signing, URL schemes, scripts, workflows, and English localization keys. Describe migration or release impact where relevant.
+
+Release notes are curated in [GitHub Releases](https://github.com/leits/MeetingBar/releases) at publication; no per-PR changelog edits are required.

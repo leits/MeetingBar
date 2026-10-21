@@ -33,6 +33,12 @@ For local signing, create `XCConfig/DevTeamOverride.xcconfig` with your Apple de
 DEVELOPMENT_TEAM = <your development team id>
 ```
 
+The same git-ignored override can also provide real `GOOGLE_CLIENT_NUMBER`, `GOOGLE_CLIENT_SECRET`, and `GOOGLE_AUTH_KEYCHAIN_NAME` values for local Google Calendar sign-in. Do not commit credentials. The checked-in `Project.xcconfig` values are placeholders for builds without configured Google OAuth.
+
+Xcode loads `Project-Debug.xcconfig` / `Project-Release.xcconfig` as the project's Base Configuration. Before compiling the app, the `Validate xcconfig` build phase fails if any Google OAuth build setting is missing, empty, or unresolved. Placeholder values are permitted for CI/build verification, but cannot authorize Google Calendar.
+
+Run `make test-config` to check the validator's success/failure cases.
+
 Common validation commands:
 
 ```bash
@@ -51,7 +57,7 @@ Read [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) before changing app flow, ca
 
 Direct app dependencies are Xcode Swift Package references pinned by `MeetingBar.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved`. `Package.swift` defines the hostless `MeetingBarLogic` package used for fast policy tests. Do not update only `Package.resolved`; change the Xcode package requirement intentionally and review the resolved diff. StoreKit is a system framework, not an external package dependency.
 
-Update `CHANGELOG.md` for user-visible changes and notable architecture, dependency, or release-process changes. For new source strings, update `MeetingBar/Resources /Localization /en.lproj/Localizable.strings` and run `make validate-strings`; non-English translations are managed through Weblate.
+Describe user-visible changes in the PR so the maintainer can prepare [GitHub Release notes](https://github.com/leits/MeetingBar/releases) when publishing. Do not update an in-repository changelog for each contribution. For changes significant enough to appear in the app's What's New screen, coordinate that separately with the maintainer. Refer to [`docs/TESTING.md`](docs/TESTING.md) for choosing the appropriate test layer. For new source strings, update `MeetingBar/Resources /Localization /en.lproj/Localizable.strings` and run `make validate-strings`; non-English translations are managed through Weblate.
 
 ## License
 

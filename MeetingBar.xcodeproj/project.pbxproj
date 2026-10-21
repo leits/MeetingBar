@@ -30,6 +30,9 @@
 		144C01792462D0C3000C9FFC /* MeetingBar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MeetingBar.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		14619A1B25EC26DF00F3098F /* MeetingBarTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MeetingBarTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		40DC7053250E5E1000217DD9 /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = System/Library/Frameworks/ServiceManagement.framework; sourceTree = SDKROOT; };
+		E4DD0F0A2529D0D20029E395 /* Project-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Project-Release.xcconfig"; sourceTree = "<group>"; };
+		E4DD0F0B2529D0D20029E395 /* Project.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Project.xcconfig; sourceTree = "<group>"; };
+		E4DD0F0C2529D0D20029E395 /* Project-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Project-Debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -51,7 +54,6 @@
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		37826AE02DAEFAAD00A6BFF8 /* MeetingBar */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (37826B092DAEFAAD00A6BFF8 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = MeetingBar; sourceTree = "<group>"; };
-		37AF6E1A2DAEEEE900F38307 /* XCConfig */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = XCConfig; sourceTree = "<group>"; };
 		37AF6E582DAEEF1800F38307 /* MeetingBarTests */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (37AF6E5D2DAEEF1800F38307 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = MeetingBarTests; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
@@ -83,7 +85,7 @@
 			isa = PBXGroup;
 			children = (
 				14158D3A246C65AD0006436C /* README.md */,
-				37AF6E1A2DAEEEE900F38307 /* XCConfig */,
+				E4DD0F092529D0D20029E395 /* XCConfig */,
 				37826AE02DAEFAAD00A6BFF8 /* MeetingBar */,
 				37AF6E582DAEEF1800F38307 /* MeetingBarTests */,
 				144C017A2462D0C3000C9FFC /* Products */,
@@ -108,6 +110,16 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		E4DD0F092529D0D20029E395 /* XCConfig */ = {
+			isa = PBXGroup;
+			children = (
+				E4DD0F0B2529D0D20029E395 /* Project.xcconfig */,
+				E4DD0F0C2529D0D20029E395 /* Project-Debug.xcconfig */,
+				E4DD0F0A2529D0D20029E395 /* Project-Release.xcconfig */,
+			);
+			path = XCConfig;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -115,6 +127,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 144C018C2462D0C5000C9FFC /* Build configuration list for PBXNativeTarget "MeetingBar" */;
 			buildPhases = (
+				98BD1A012EAAFA001C0FFEED /* Validate xcconfig */,
 				144C01752462D0C3000C9FFC /* Sources */,
 				144C01762462D0C3000C9FFC /* Frameworks */,
 				144C01772462D0C3000C9FFC /* Resources */,
@@ -246,6 +259,21 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		98BD1A012EAAFA001C0FFEED /* Validate xcconfig */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Validate xcconfig";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/bin/bash \"${SRCROOT}/Scripts/validate_xcconfig.sh\"\n";
+		};
 		4616E3A829BB62F900665FE0 /* Copy “Launch at Login Helper” */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
@@ -314,8 +342,7 @@
 /* Begin XCBuildConfiguration section */
 		144C018A2462D0C5000C9FFC /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReferenceAnchor = 37AF6E1A2DAEEEE900F38307 /* XCConfig */;
-			baseConfigurationReferenceRelativePath = "Project-Debug.xcconfig";
+			baseConfigurationReference = E4DD0F0C2529D0D20029E395 /* Project-Debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -353,7 +380,6 @@
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = KGH289N6T8;
 				EMBED_ASSET_PACKS_IN_PRODUCT_BUNDLE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -384,8 +410,7 @@
 		};
 		144C018B2462D0C5000C9FFC /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReferenceAnchor = 37AF6E1A2DAEEEE900F38307 /* XCConfig */;
-			baseConfigurationReferenceRelativePath = "Project-Release.xcconfig";
+			baseConfigurationReference = E4DD0F0A2529D0D20029E395 /* Project-Release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -423,7 +448,6 @@
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = KGH289N6T8;
 				EMBED_ASSET_PACKS_IN_PRODUCT_BUNDLE = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -513,7 +537,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = KGH289N6T8;
 				INFOPLIST_FILE = MeetingBarTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -535,7 +558,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = KGH289N6T8;
 				INFOPLIST_FILE = MeetingBarTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
