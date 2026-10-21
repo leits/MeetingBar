@@ -431,6 +431,19 @@ final class AppModel: ObservableObject {
         )
     }
 
+    func overlappingEvents(with event: MBEvent) -> [MBEvent] {
+        state.events.overlappingEvents(with: event, settings: environment.eventSelectionSettings())
+    }
+
+    /// The loaded event with this id, unless it is dismissed, canceled or declined.
+    func currentEvent(id: String) -> MBEvent? {
+        let dismissed = environment.eventSelectionSettings().dismissedEvents
+        return state.events.first {
+            $0.id == id && $0.status != .canceled && $0.participationStatus != .declined
+                && !dismissed.contains(EventSelectionDismissal(id: $0.id, lastModifiedDate: $0.lastModifiedDate))
+        }
+    }
+
     /// Onboarding is an async workflow because provider authorization can
     /// prompt the user. Provider setup happens before this method; completion
     /// only succeeds for the active provider with at least one selected calendar.

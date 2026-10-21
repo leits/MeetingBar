@@ -251,6 +251,17 @@ final class AppModelTests: BaseTestCase {
         XCTAssertEqual(harness.model.nextEvent()?.id, "next")
     }
 
+    func testOverlappingEventsMapBackToLoadedEventsWithoutTheTrigger() {
+        let now = Date(timeIntervalSince1970: 1_700_000_000)
+        let harness = AppModelTestHarness(now: now)
+        let trigger = makeFakeEvent(id: "trigger", start: now.addingTimeInterval(60), end: now.addingTimeInterval(1860))
+        let conflict = makeFakeEvent(id: "conflict", start: now.addingTimeInterval(360), end: now.addingTimeInterval(1860))
+
+        harness.model.send(.eventsLoaded([trigger, conflict]))
+
+        XCTAssertEqual(harness.model.overlappingEvents(with: trigger).map(\.id), ["conflict"])
+    }
+
     func testJoinDismissAndSnoozeActionsUseEventsFromState() async {
         let harness = AppModelTestHarness()
         let event = makeFakeEvent(

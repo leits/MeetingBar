@@ -156,6 +156,54 @@ final class WindowCoordinatorTests: XCTestCase {
         )
     }
 
+    func testAlertsSharingAMeetingMergeIntoOneWindowWithoutDroppingMeetings() {
+        let coordinator = WindowCoordinator()
+        let start = Date()
+        func event(_ id: String, _ minutes: Double) -> MBEvent {
+            makeFakeEvent(id: id, start: start.addingTimeInterval(minutes * 60), end: start.addingTimeInterval(1800), withLink: true)
+        }
+        let first = event("a", 0), second = event("b", 1), third = event("c", 2)
+        func visibleAlerts() -> [FullscreenNotificationWindow] {
+            NSApp.windows.compactMap { $0 as? FullscreenNotificationWindow }.filter(\.isVisible)
+        }
+        defer { visibleAlerts().forEach { $0.close() } }
+
+        // `overlaps` is asymmetric like the real lookup (p hidden as a candidate); `gone` = dismissed/removed.
+        var table: [String: [MBEvent]] = ["a": [second], "b": [first], "c": [first]]
+        var gone: Set<String> = []
+        func overlaps(_ event: MBEvent) -> [MBEvent] { table[event.id] ?? [] }
+        func current(_ id: String) -> MBEvent? { gone.contains(id) ? nil : [first, second, third].first { $0.id == id } }
+        func open(_ event: MBEvent) {
+            coordinator.openFullscreenNotificationWindow(event: event, overlaps: overlaps, current: current)
+        }
+        func shown() -> [[String]] { visibleAlerts().map { $0.presentedEvents.map(\.id) } }
+
+        open(first)
+        // third overlaps first but not second: second must stay in the merged alert.
+        table["a"] = [second, third]
+        open(third)
+        XCTAssertEqual(shown(), [["c", "a", "b"]])
+
+        // second was dismissed meanwhile: it must not come back from the old alert.
+        table["a"] = [third]
+        gone = ["b"]
+        open(third)
+        XCTAssertEqual(shown(), [["c", "a"]])
+
+        // b is still valid but the lookup hides it for a (e.g. tentative shown inactive): it must stay.
+        visibleAlerts().forEach { $0.close() }
+        gone = []
+        table = ["a": [], "b": [first]]
+        open(second)
+        XCTAssertEqual(shown(), [["b", "a"]])
+        open(first)
+        XCTAssertEqual(shown(), [["a", "b"]])
+
+        visibleAlerts().forEach { $0.close() }
+        coordinator.openFullscreenNotificationWindow(event: second)
+        XCTAssertEqual(shown(), [["b"]])
+    }
+
     func testOnboardingCloseRunsIncompleteOnboardingClosureOnlyWhenNotCompleted() {
         let coordinator = WindowCoordinator()
         var incompleteCloseCount = 0

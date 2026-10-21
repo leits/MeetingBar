@@ -77,4 +77,16 @@ public extension Array where Element == MBEvent {
         }
         return self[selected.sourceIndex]
     }
+
+    /// Other visible meetings that run at the same time as `event`.
+    internal func overlappingEvents(with event: MBEvent, settings: EventSelectionSettings) -> [MBEvent] {
+        let candidates = enumerated().map { index, event in
+            EventSelectionEvent(event: event, sourceIndex: index)
+        }
+        return EventSelection.overlappingEvents(
+            with: EventSelectionEvent(event: event, sourceIndex: -1),
+            from: candidates,
+            settings: settings
+        ).map { self[$0.sourceIndex] }
+    }
 }
