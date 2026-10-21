@@ -83,6 +83,7 @@ final class WindowCoordinatorTests: XCTestCase {
         weak var weakContentView: NSView?
 
         autoreleasepool {
+            let existingWindows = Set(NSApp.windows.map(ObjectIdentifier.init))
             let now = Date()
             coordinator.openFullscreenNotificationWindow(
                 event: makeFakeEvent(
@@ -92,7 +93,11 @@ final class WindowCoordinatorTests: XCTestCase {
                     withLink: true
                 )
             )
-            let window = NSApp.windows.last { $0 is FullscreenNotificationWindow }
+            let createdWindows = NSApp.windows.filter {
+                $0 is FullscreenNotificationWindow && !existingWindows.contains(ObjectIdentifier($0))
+            }
+            XCTAssertEqual(createdWindows.count, 1)
+            let window = createdWindows.first
             weakWindow = window
             weakContentView = window?.contentView
         }
