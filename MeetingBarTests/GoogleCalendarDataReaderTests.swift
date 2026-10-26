@@ -62,9 +62,11 @@ final class GoogleCalendarDataReaderTests: BaseTestCase {
         XCTAssertEqual(events.first?.id, "standup")
         XCTAssertEqual(events.first?.calendar.id, "work@example.com")
         XCTAssertEqual(events.first?.meetingLink?.service, .meet)
+        // The calendar ID names the account that owns the shared calendar,
+        // which wins over the signed-in account it is listed under.
         XCTAssertEqual(
             events.first?.meetingLink?.url.absoluteString,
-            "https://meet.google.com/abc-defg-hij?authuser=owner@example.com"
+            "https://meet.google.com/abc-defg-hij?authuser=work@example.com"
         )
         XCTAssertEqual(observedRequests.count, 4)
         let eventRequests = observedRequests.filter {
