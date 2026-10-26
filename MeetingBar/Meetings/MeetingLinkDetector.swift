@@ -889,7 +889,7 @@ enum MeetingLinkDetector {
     private static func isAccountEmail(_ value: String) -> Bool {
         let parts = value.split(separator: "@", omittingEmptySubsequences: false)
         guard parts.count == 2, !parts[0].isEmpty, parts[1].contains("."),
-              !parts[1].contains(where: \.isWhitespace)
+              !value.contains(where: \.isWhitespace)
         else { return false }
         return !parts[1].lowercased().hasSuffix("calendar.google.com")
     }
