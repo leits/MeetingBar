@@ -122,7 +122,6 @@
 "preferences_advanced_setting_warning" = "⚠️ 설정을 충분히 이해한 경우에만 사용하세요.";
 "preferences_advanced_apple_script_checkmark" = "회의 참석 시 AppleScript 실행";
 "preferences_advanced_apple_script_placeholder" = "# 여기에 스크립트를 작성하세요\ntell application \"Music\" to pause";
-"preferences_advanced_run_script_on_event_start" = "AppleScript 자동 실행";
 "preferences_advanced_test_script_on_next_event" = "다음 이벤트로 테스트";
 "preferences_advanced_edit_script" = "스크립트 수정";
 "preferences_advanced_save_script_button" = "스크립트 저장";

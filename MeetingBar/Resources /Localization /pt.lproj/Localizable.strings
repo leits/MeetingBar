@@ -177,7 +177,6 @@
 "preferences_advanced_regex_test_placeholder" = "Cole texto de evento de exemplo";
 "preferences_advanced_regex_test_title" = "Testar regex de link de reunião";
 "preferences_advanced_regex_title" = "Expressões regulares personalizadas para link de reunião";
-"preferences_advanced_run_script_on_event_start" = "Executar AppleScript automaticamente";
 "preferences_advanced_save_script_button" = "Guardar script";
 "preferences_advanced_setting_warning" = "Estas definições destinam-se a utilizadores avançados.";
 "preferences_advanced_test_script_on_next_event" = "Testar no próximo evento";

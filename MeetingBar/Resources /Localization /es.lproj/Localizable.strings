@@ -152,7 +152,6 @@
 "preferences_advanced_setting_warning" = "⚠️ Solo utiliza estos ajustes si comprendes su funcionamiento";
 "preferences_advanced_apple_script_checkmark" = "Ejecutar AppleScript al iniciar una reunión";
 "preferences_advanced_apple_script_placeholder" = "# escribe tu script aquí\nindicar a la aplicación \"Música\" que se pause";
-"preferences_advanced_run_script_on_event_start" = "Ejecutar AppleScript automáticamente";
 "preferences_advanced_test_script_on_next_event" = "Probar en el próximo evento";
 "preferences_advanced_edit_script" = "Editar script";
 "preferences_advanced_save_script_button" = "Guardar script";

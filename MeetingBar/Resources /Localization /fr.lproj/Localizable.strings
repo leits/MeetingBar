@@ -127,7 +127,6 @@
 "preferences_advanced_wrong_location_title" = "Mauvais emplacement";
 "preferences_advanced_save_script_button" = "Enregistrer le script";
 "preferences_advanced_apple_script_placeholder" = "# écrire votre script ici\ntell application \"Music\" to pause";
-"preferences_advanced_run_script_on_event_start" = "Exécuter AppleScript automatiquement";
 "preferences_advanced_test_script_on_next_event" = "Essayer sur l'évènement suivant";
 "preferences_advanced_edit_script" = "Modifier le script";
 "preferences_advanced_apple_script_checkmark" = "Exécuter AppleScript lors de la participation à une réunion";

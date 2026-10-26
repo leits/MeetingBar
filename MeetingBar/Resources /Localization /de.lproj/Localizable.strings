@@ -178,7 +178,6 @@
 "preferences_advanced_wrong_location_title" = "Falscher Ort";
 "preferences_advanced_save_script_button" = "Skript speichern";
 "preferences_advanced_apple_script_placeholder" = "# Schreibe Dein Skript hier\ntell application \"Music\" to pause";
-"preferences_advanced_run_script_on_event_start" = "Starte das AppleScript vor betretbarem Meeting";
 "preferences_advanced_test_script_on_next_event" = "Teste beim nächsten Termin";
 "preferences_advanced_edit_script" = "Bearbeite das Script";
 "preferences_advanced_apple_script_checkmark" = "AppleScript beim Betreten ausführen";

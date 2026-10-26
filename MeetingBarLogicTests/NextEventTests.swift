@@ -90,6 +90,26 @@ final class NextEventTests: XCTestCase {
         )
     }
 
+    func testSelectionIsInvariantToProviderArrivalOrderForDistinctStartTimes() {
+        let events = [
+            event(id: "later", startsIn: 1800, sourceIndex: 2),
+            event(id: "soonest", startsIn: 300, sourceIndex: 0),
+            event(id: "middle", startsIn: 900, sourceIndex: 1)
+        ]
+        for shift in events.indices {
+            let rotated = Array(events[shift...]) + Array(events[..<shift])
+            XCTAssertEqual(nextEvent(rotated)?.id, "soonest")
+            XCTAssertEqual(nextEvent(rotated.reversed())?.id, "soonest")
+        }
+    }
+
+    func testEqualStartTimeUsesSourceIndexRegardlessOfArrivalOrder() {
+        let first = event(id: "primary", startsIn: 300, sourceIndex: 0)
+        let second = event(id: "shared", startsIn: 300, sourceIndex: 1)
+        XCTAssertEqual(nextEvent([second, first])?.id, "primary")
+        XCTAssertEqual(nextEvent([first, second])?.id, "primary")
+    }
+
     func testPicksSoonestFutureEvent() {
         let e1 = event(id: "1", startsIn: 300)
         let e2 = event(id: "2", startsIn: 100)
@@ -261,6 +281,40 @@ final class NextEventTests: XCTestCase {
             nextEvent([running, far], settings: settings(ongoingEventVisibility: .showTenMinBeforeNext)),
             running
         )
+    }
+
+    func testShowTenMinBeforeNextChoosesSoonestFutureMeeting() {
+        let soon = event(id: "SOON", startsIn: 120)
+        let later = event(id: "LATER", startsIn: 300)
+
+        XCTAssertEqual(nextEvent([soon, later]), soon)
+        XCTAssertEqual(nextEvent([later, soon]), soon)
+    }
+
+    func testShowTenMinBeforeNextDoesNotAdvanceBeyondFirstFutureMeeting() {
+        let running = event(id: "RUNNING", startsIn: -300)
+        let soon = event(id: "SOON", startsIn: 120)
+        let later = event(id: "LATER", startsIn: 300)
+
+        XCTAssertEqual(nextEvent([running, soon, later]), soon)
+        XCTAssertEqual(nextEvent([later, running, soon]), soon)
+    }
+
+    func testUnsortedFutureCandidatesCannotHideNearestMeeting() {
+        let far = event(id: "FAR", startsIn: 900)
+        let middle = event(id: "MIDDLE", startsIn: 720)
+        let near = event(id: "NEAR", startsIn: 120)
+
+        XCTAssertEqual(nextEvent([middle, far, near]), near)
+    }
+
+    func testOverlappingOngoingMeetingsHandOffToSoonestUpcomingMeeting() {
+        let first = event(id: "FIRST", startsIn: -300)
+        let second = event(id: "SECOND", startsIn: -120)
+        let near = event(id: "NEAR", startsIn: 120)
+        let later = event(id: "LATER", startsIn: 240)
+
+        XCTAssertEqual(nextEvent([later, second, near, first]), near)
     }
 
     func testShowTenMinBeforeNextDoesNotHideRunningEventWithoutNextEvent() {

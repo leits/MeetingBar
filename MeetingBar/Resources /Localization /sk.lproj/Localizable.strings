@@ -196,7 +196,6 @@
 "next_meeting_empty_message" = "Hurá! Čas spraviť si kakao";
 "preferences_advanced_apple_script_checkmark" = "Pri pripájaní k schôdzi spustiť AppleScript";
 "preferences_advanced_apple_script_placeholder" = "# sem napíš svoj skript\ntell application \"Music\" to pause";
-"preferences_advanced_run_script_on_event_start" = "Spustiť AppleScript automaticky";
 "preferences_advanced_test_script_on_next_event" = "Vyskúšať pri nasledujúcej udalosti";
 "preferences_advanced_edit_script" = "Upraviť skript";
 "preferences_advanced_wrong_location_title" = "Nesprávne umiestnenie";

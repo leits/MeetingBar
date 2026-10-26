@@ -12,6 +12,7 @@ protocol NotificationRequestSink: AnyObject, Sendable {
     func pendingRequests() async -> [UNNotificationRequest]
     func add(_ request: UNNotificationRequest) async throws
     func removePending(identifiers: [String])
+    func removeAllDelivered()
 }
 
 @MainActor
@@ -29,6 +30,10 @@ extension UNUserNotificationCenter: NotificationRequestSink {
 
     func removePending(identifiers: [String]) {
         removePendingNotificationRequests(withIdentifiers: identifiers)
+    }
+
+    func removeAllDelivered() {
+        removeAllDeliveredNotifications()
     }
 }
 
@@ -48,29 +53,57 @@ final class NotificationScheduler {
 
     private let sink: NotificationRequestSink
     private let runner: NotificationActionRunner
+    private let sleepAction: @Sendable (TimeInterval) async throws -> Void
+    private let actionDate: @MainActor () -> Date
 
     /// Delayed `Task`s for in-app actions (fullscreen / autoJoin / scriptOnStart),
     /// keyed by notification identifier. Reconciled on every refresh — stale
     /// tasks are cancelled, missing ones are scheduled.
     private var actionTasks: [String: Task<Void, Never>] = [:]
+
+    /// Test-only synchronization for delayed action completion. Production
+    /// callers must never wait for future scheduled actions to finish.
+    func waitForPendingActionsForTesting() async {
+        let tasks = Array(actionTasks.values)
+        for task in tasks {
+            await task.value
+        }
+    }
+    /// Always use the latest provider snapshot at fire time. An unchanged
+    /// start date/identity must not keep an outdated meeting URL alive.
+    private var latestActionEvents: [String: MBEvent] = [:]
+    private var systemReconcileTask: Task<Void, Never>?
     private var isStopped = false
 
     init(
         sink: NotificationRequestSink = UNUserNotificationCenter.current(),
-        actionSink: NotificationActionSink? = nil
+        actionSink: NotificationActionSink? = nil,
+        sleepAction: @escaping @Sendable (TimeInterval) async throws -> Void = { seconds in
+            try await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
+        },
+        actionDate: @escaping @MainActor () -> Date = { Date() }
     ) {
         self.sink = sink
         self.runner = NotificationActionRunner(actionSink: actionSink)
+        self.sleepAction = sleepAction
+        self.actionDate = actionDate
     }
 
     func setActionSink(_ actionSink: NotificationActionSink?) {
         runner.setActionSink(actionSink)
     }
 
+    func clearDeliveredNotifications() {
+        guard !isStopped else { return }
+        sink.removeAllDelivered()
+    }
+
     func stop() {
         isStopped = true
+        systemReconcileTask?.cancel()
         actionTasks.values.forEach { $0.cancel() }
         actionTasks.removeAll()
+        latestActionEvents.removeAll()
         runner.setActionSink(nil)
     }
 
@@ -79,7 +112,7 @@ final class NotificationScheduler {
         settings: NotificationPlanningSettings,
         now: Date = Date()
     ) async {
-        guard !isStopped else { return }
+        guard !isStopped, !Task.isCancelled else { return }
         let planningEvents = events.map(NotificationPlanningEvent.init(event:))
         let plans =
             NotificationPlanner
@@ -89,11 +122,34 @@ final class NotificationScheduler {
 
         reconcileActions(events: events, plans: actionPlans, settings: settings, now: now)
 
+        // OS writes may finish after cancellation. Serialize only those writes:
+        // in-app actions above must react without waiting for the notification center.
+        let previous = systemReconcileTask
+        previous?.cancel()
+        let task = Task { [weak self] in
+            await previous?.value
+            guard !Task.isCancelled, let self, !self.isStopped else { return }
+            await self.reconcileSystemRequests(events: events, plans: systemPlans, settings: settings, now: now)
+        }
+        systemReconcileTask = task
+        await withTaskCancellationHandler {
+            await task.value
+        } onCancel: {
+            task.cancel()
+        }
+    }
+
+    private func reconcileSystemRequests(
+        events: [MBEvent],
+        plans systemPlans: [PlannedNotification],
+        settings: NotificationPlanningSettings,
+        now: Date
+    ) async {
         let eventByID = Dictionary(
             events.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
 
         let pending = await sink.pendingRequests()
-        guard !isStopped else { return }
+        guard !isStopped, !Task.isCancelled else { return }
         let pendingMine =
             pending
             .filter { $0.identifier.hasPrefix(Self.identifierPrefix) }
@@ -109,7 +165,7 @@ final class NotificationScheduler {
         }
 
         for plan in systemPlans {
-            guard !isStopped else { return }
+            guard !isStopped, !Task.isCancelled else { return }
             guard let event = eventByID[plan.eventID] else { continue }
             let request = NotificationContent.request(
                 for: plan, event: event, settings: settings, now: now)
@@ -122,7 +178,7 @@ final class NotificationScheduler {
 
             do {
                 try await sink.add(request)
-                guard !isStopped else { return }
+                guard !isStopped, !Task.isCancelled else { return }
             } catch {
                 let errorDescription = String(describing: error)
                 MeetingBarLogger.notifications.error(
@@ -161,21 +217,41 @@ final class NotificationScheduler {
         for id in Array(actionTasks.keys) where !desiredIDs.contains(id) {
             actionTasks[id]?.cancel()
             actionTasks[id] = nil
+            latestActionEvents[id] = nil
         }
 
         for plan in plans {
             let id = Self.identifierPrefix + plan.identity
-            guard actionTasks[id] == nil, let event = eventByID[plan.eventID] else { continue }
+            guard let event = eventByID[plan.eventID] else { continue }
+            // The plan identity intentionally ignores event-link edits. Do not
+            // carry the original event snapshot into a delayed join action.
+            latestActionEvents[id] = event
+            guard actionTasks[id] == nil else { continue }
 
+            let sleep = sleepAction
             actionTasks[id] = Task { [weak self] in
                 let delay = max(plan.fireDate.timeIntervalSince(now), 0)
                 if delay > 0 {
-                    try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+                    do {
+                        try await sleep(delay)
+                    } catch {
+                        // A cancelled plan was already removed by reconcile or stop.
+                        // A different sleep failure must not strand the plan forever.
+                        if !Task.isCancelled {
+                            self?.actionTasks[id] = nil
+                            self?.latestActionEvents[id] = nil
+                        }
+                        return
+                    }
                 }
                 await MainActor.run {
-                    guard let self, !Task.isCancelled else { return }
-                    self.runner.fire(plan: plan, event: event, settings: settings, now: Date())
+                    guard let self, !Task.isCancelled,
+                          let latestEvent = self.latestActionEvents[id] else { return }
+                    self.runner.fire(
+                        plan: plan, event: latestEvent, settings: settings, now: self.actionDate()
+                    )
                     self.actionTasks[id] = nil
+                    self.latestActionEvents[id] = nil
                 }
             }
         }

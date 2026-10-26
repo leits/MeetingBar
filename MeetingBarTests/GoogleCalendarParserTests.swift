@@ -196,7 +196,7 @@ final class GoogleCalendarParserTests: XCTestCase {
         )
     }
 
-    func testHTTP401AfterRetryRequiresAuthClear() {
+    func testHTTP401AfterRetryRequiresAuthWithoutClearingSession() {
         let url = URL(string: "https://www.googleapis.com/calendar/v3/users/me/calendarList")!
 
         let decision = GoogleHTTPStatusPolicy.classify(
@@ -206,7 +206,7 @@ final class GoogleCalendarParserTests: XCTestCase {
             retrying: true
         )
 
-        XCTAssertEqual(decision, .clearAuthAndThrowAuthRequired)
+        XCTAssertEqual(decision, .throwAuthRequired)
     }
 
     func testHTTP403AfterRetryIsForbiddenCalendarWithoutAuthClear() {
@@ -341,6 +341,22 @@ final class GoogleAuthStateTests: XCTestCase {
         XCTAssertNil(state.refreshToken)
         XCTAssertFalse(GCEventStore.hasReusableSession(state))
         XCTAssertFalse(GCEventStore.shouldSkipSignIn(forcePrompt: false, state: state))
+    }
+
+    func testTransientRefreshErrorWinsOverReturnedStaleAccessToken() {
+        let networkError = URLError(.notConnectedToInternet)
+
+        XCTAssertThrowsError(
+            try GCEventStore.resolveTokenRefresh(
+                accessToken: "expired-access-token",
+                error: networkError
+            )
+        ) { error in
+            guard case let AuthError.temporarilyUnavailable(underlying) = error else {
+                return XCTFail("Expected temporarilyUnavailable, got \(error)")
+            }
+            XCTAssertEqual((underlying as? URLError)?.code, .notConnectedToInternet)
+        }
     }
 
     private func authorizationRequest() -> OIDAuthorizationRequest {

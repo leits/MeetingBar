@@ -3,12 +3,21 @@
 //  MeetingBar
 //
 //  Value-type snapshot of all user-configurable settings.
-//  `AppSettings.current` is the single boundary that reads `Defaults`.
-//  Feature logic should consume an `AppSettings` (or sub-struct) by value.
+//  `AppSettings.current` and feature-specific adapters read `Defaults` at
+//  workflow boundaries. Feature decisions consume their snapshots by value.
 //
 
+import Combine
 import Defaults
 import Foundation
+
+/// Changes that affect notification plans or whether a current/next meeting remains visible.
+enum NotificationSettingsChange {
+    case plan
+    case dismissals
+    case selection
+    case language(AppLanguage)
+}
 
 // MARK: - Sub-structs
 
@@ -99,6 +108,31 @@ struct AppSettings: Equatable {
     var advanced: AdvancedSettings
 }
 
+extension AppSettings {
+    /// Observed by AppModel, independently of whether a status bar controller exists.
+    static var notificationChanges: AnyPublisher<NotificationSettingsChange, Never> {
+        let plan = Defaults.publisher(
+            keys: .joinEventNotification, .joinEventNotificationTime,
+            .endOfEventNotification, .endOfEventNotificationTime,
+            .fullscreenNotification, .fullscreenNotificationTime,
+            .fullscreenNotificationsForEventsWithoutMeetingLink,
+            .automaticEventJoin, .automaticEventJoinTime,
+            .runEventStartScript, .eventStartScriptTime, .eventStartScriptLocation,
+            .eventTitleFormat,
+            options: []
+        ).map { _ in NotificationSettingsChange.plan }
+        let dismissals = Defaults.publisher(.dismissedEvents, options: [])
+            .map { _ in NotificationSettingsChange.dismissals }
+        let selection = Defaults.publisher(
+            keys: .personalEventsAppereance, .ongoingEventVisibility,
+            options: []
+        ).map { _ in NotificationSettingsChange.selection }
+        let language = Defaults.publisher(.preferredLanguage, options: [.initial])
+            .map { NotificationSettingsChange.language($0.newValue) }
+        return Publishers.Merge4(plan, dismissals, selection, language).eraseToAnyPublisher()
+    }
+}
+
 enum StatusBarTitleFormatMigration {
     @MainActor
     static func migrateDefaultsIfNeeded() {
@@ -114,7 +148,7 @@ enum StatusBarTitleFormatMigration {
 // MARK: - Defaults factory
 
 extension AppSettings {
-    /// The single boundary that reads `Defaults` for app-level feature logic.
+    /// App-wide snapshot; feature-specific adapters also read `Defaults` at boundaries.
     /// Other code should receive `AppSettings` (or sub-structs) by value.
     @MainActor
     static var current: AppSettings {

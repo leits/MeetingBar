@@ -442,6 +442,78 @@ final class FailedRefreshTests: BaseTestCase {
         await fulfillment(of: [preservedExp], timeout: 1.0)
     }
 
+    func test_timedOutRefreshPreservesEventsAndNextRefreshRecovers() async throws {
+        let previousEvent = makeFakeEvent(
+            id: "OLD",
+            start: Date().addingTimeInterval(60),
+            end: Date().addingTimeInterval(3600)
+        )
+        let recoveredEvent = makeFakeEvent(
+            id: "NEW",
+            start: Date().addingTimeInterval(120),
+            end: Date().addingTimeInterval(3600)
+        )
+        let store = FakeEventStore(calendars: [fakeCal], events: [previousEvent])
+        Defaults[.selectedCalendarIDs] = [fakeCal.id]
+        let manager = CalendarSync(
+            provider: store,
+            refreshInterval: 0,
+            refreshTimeout: 0.05
+        )
+
+        let initialExp = expectation(description: "initial events loaded")
+        manager.$events
+            .drop(while: { $0 != [previousEvent] })
+            .first()
+            .sink { _ in initialExp.fulfill() }
+            .store(in: &cancellables)
+        await fulfillment(of: [initialExp], timeout: 1.0)
+
+        store.fetchDelay = 0.2
+        let staleExp = expectation(description: "timed out refresh marks data stale")
+        manager.$providerHealth
+            .drop(while: { !$0.isStale })
+            .first()
+            .sink { health in
+                XCTAssertTrue(health.lastErrorDescription?.contains("did not finish") == true)
+                staleExp.fulfill()
+            }
+            .store(in: &cancellables)
+
+        try await manager.refreshSources()
+        await fulfillment(of: [staleExp], timeout: 1.0)
+
+        XCTAssertEqual(manager.events, [previousEvent])
+        XCTAssertTrue(manager.providerHealth.isStale)
+        let fetchCountAfterTimeout = store.fetchCallCount
+
+        // CalendarSync throttles triggers for 200 ms. Move beyond that window
+        // so this is a distinct refresh cycle, matching a later manual/network trigger.
+        try await Task.sleep(nanoseconds: 250_000_000)
+        store.fetchDelay = 0
+        store.stubbedEvents = [recoveredEvent]
+
+        let recoveredEventsExp = expectation(description: "next refresh publishes recovered events")
+        manager.$events
+            .drop(while: { $0 != [recoveredEvent] })
+            .first()
+            .sink { _ in recoveredEventsExp.fulfill() }
+            .store(in: &cancellables)
+        let healthyExp = expectation(description: "next refresh clears stale health")
+        manager.$providerHealth
+            .drop(while: { $0.isStale || $0.lastSuccessfulRefresh == nil })
+            .first()
+            .sink { _ in healthyExp.fulfill() }
+            .store(in: &cancellables)
+
+        try await manager.refreshSources()
+        await fulfillment(of: [recoveredEventsExp, healthyExp], timeout: 1.0)
+
+        XCTAssertEqual(manager.events, [recoveredEvent])
+        XCTAssertFalse(manager.providerHealth.isStale)
+        XCTAssertGreaterThan(store.fetchCallCount, fetchCountAfterTimeout)
+    }
+
     func test_failedInitialRefreshDoesNotCrash() {
         let store = FakeEventStore()
         store.stubbedError = NSError(domain: "test", code: 1)
@@ -644,6 +716,21 @@ final class ProviderHealthTests: BaseTestCase {
         XCTAssertEqual(health.lastErrorDescription, "Google Calendar authorization is required")
     }
 
+    func test_eventKitReadPermissionFailureIsNotGoogleAuth() {
+        let lastSuccess = Date(timeIntervalSince1970: 1_700_000_000)
+        let health = ProviderHealth.failure(
+            previous: ProviderHealth(lastSuccessfulRefresh: lastSuccess),
+            attempted: lastSuccess.addingTimeInterval(60),
+            error: CalendarSyncError.eventFetchFailed(EventKitReadAccessError.denied)
+        )
+        XCTAssertTrue(health.calendarPermissionRequired)
+        XCTAssertFalse(health.authRequired)
+        XCTAssertTrue(health.isStale)
+        XCTAssertEqual(health.lastSuccessfulRefresh, lastSuccess)
+        XCTAssertNotNil(health.lastErrorDescription)
+        XCTAssertFalse(ProviderHealth.success(attempted: lastSuccess).calendarPermissionRequired)
+    }
+
     func test_wrappedAuthErrorSetsAuthRequired() {
         let attempted = Date()
         let previousSuccess = attempted.addingTimeInterval(-60)
@@ -699,6 +786,23 @@ final class ProviderHealthTests: BaseTestCase {
         XCTAssertFalse(health.authRequired)
         XCTAssertTrue(health.isStale)
         XCTAssertEqual(health.lastSuccessfulRefresh, previousSuccess)
+    }
+
+    func test_invalidPaginationKeepsLastSuccessAndDoesNotRequireReconnect() {
+        let attempted = Date()
+        let previousSuccess = attempted.addingTimeInterval(-60)
+        let url = URL(string: "https://www.googleapis.com/calendar/v3/users/me/calendarList")!
+        let error = GoogleCalendarError.invalidPagination(url)
+        let health = ProviderHealth.failure(
+            previous: ProviderHealth(lastSuccessfulRefresh: previousSuccess),
+            attempted: attempted,
+            error: CalendarSyncError.eventFetchFailed(error)
+        )
+
+        XCTAssertFalse(health.authRequired)
+        XCTAssertTrue(health.isStale)
+        XCTAssertEqual(health.lastSuccessfulRefresh, previousSuccess)
+        XCTAssertEqual(health.lastErrorDescription, error.errorDescription)
     }
 
     func test_refreshFailureIsStaleButDoesNotRequireReauthorization() {
@@ -791,4 +895,391 @@ final class ProviderHealthTests: BaseTestCase {
         XCTAssertTrue(manager.providerHealth.isStale)
         XCTAssertTrue(manager.providerHealth.authRequired)
     }
+}
+
+@MainActor
+final class ConcurrentProviderSwitchTests: BaseTestCase {
+    func testSupersededSignInDoesNotReplaceSelectedProviderOrMarkStale() async throws {
+        let gate = ProviderSignInGate()
+        let currentStore = FakeEventStore(calendars: [
+            MBCalendar(title: "Local", id: "local", source: nil, email: nil, color: .black)
+        ])
+        let pendingStore = SuspendedSignInEventStore(gate: gate)
+        Defaults[.eventStoreProvider] = .macOSEventKit
+        Defaults[.selectedCalendarIDs] = ["local"]
+
+        let repository = CalendarRepository(providerName: .macOSEventKit) { name -> EventStore in
+            if name == .googleCalendar { return pendingStore }
+            return currentStore
+        }
+        let sync = CalendarSync(repository: repository, refreshInterval: 0)
+        let outdatedSwitch = Task { await sync.changeEventStoreProvider(.googleCalendar) }
+        await gate.waitUntilEntered()
+
+        // A newer provider choice wins, even if the earlier OAuth callback
+        // completes later, after the second selection has committed.
+        let currentChoice = await sync.changeEventStoreProvider(.macOSEventKit)
+        XCTAssertEqual(currentChoice, .success)
+        XCTAssertEqual(pendingStore.cancelPendingOperationsCallCount, 1)
+        await gate.release()
+        let superseded = await outdatedSwitch.value
+
+        XCTAssertEqual(superseded, .cancelled)
+        XCTAssertEqual(repository.activeProviderName, .macOSEventKit)
+        XCTAssertEqual(Defaults[.eventStoreProvider], .macOSEventKit)
+        XCTAssertEqual(Defaults[.selectedCalendarIDs], ["local"])
+        XCTAssertFalse(sync.providerHealth.authRequired)
+        XCTAssertFalse(sync.providerHealth.isStale)
+        sync.stop()
+    }
+
+    func testOlderGoogleSwitchCannotCancelNewerGoogleSignIn() async throws {
+        let gate = ProviderAttemptSequenceGate()
+        let google = SequencedSignInEventStore(gate: gate)
+        let local = FakeEventStore(calendars: [
+            MBCalendar(title: "Local", id: "local", source: nil, email: nil, color: .black)
+        ])
+        let repository = CalendarRepository(providerName: .macOSEventKit) { provider -> EventStore in
+            provider == .googleCalendar ? google : local
+        }
+
+        let first = Task { try await repository.switchProvider(to: .googleCalendar) }
+        await gate.waitForAttempt(1)
+        let second = try await repository.switchProvider(to: .macOSEventKit)
+        XCTAssertEqual(second.map(\.id), ["local"])
+        XCTAssertEqual(google.cancelCount, 1)
+
+        let third = Task { try await repository.switchProvider(to: .googleCalendar) }
+        await gate.waitForAttempt(2)
+        await gate.release(1)
+
+        do {
+            _ = try await first.value
+            XCTFail("Superseded switch must not commit")
+        } catch is CancellationError {
+            // Expected: old task may finish, but must not cancel attempt 2.
+        }
+        XCTAssertEqual(google.cancelCount, 1)
+        await gate.release(2)
+        let calendars = try await third.value
+        XCTAssertEqual(calendars.map(\.id), ["google"])
+        XCTAssertEqual(repository.activeProviderName, .googleCalendar)
+        repository.stop()
+    }
+
+    func testReauthorizationCancelledDuringSignOutNeverRestartsSignIn() async throws {
+        let signOutGate = ProviderSignOutGate()
+        let google = DelayedSignOutEventStore(gate: signOutGate)
+        let local = FakeEventStore(calendars: [
+            MBCalendar(title: "Local", id: "local", source: nil, email: nil, color: .black)
+        ])
+        let repository = CalendarRepository(providerName: .googleCalendar) { provider -> EventStore in
+            provider == .googleCalendar ? google : local
+        }
+
+        let first = Task {
+            try await repository.switchProvider(to: .googleCalendar, signOutCurrent: true)
+        }
+        await signOutGate.waitUntilStarted()
+        _ = try await repository.switchProvider(to: .macOSEventKit)
+        await signOutGate.release()
+
+        do {
+            _ = try await first.value
+            XCTFail("Superseded sign-out must not start another sign-in")
+        } catch is CancellationError {
+            // Expected.
+        }
+        XCTAssertEqual(google.signInCount, 0)
+        XCTAssertEqual(repository.activeProviderName, .macOSEventKit)
+        repository.stop()
+    }
+
+    func testStaleSwitchCannotCommitAfterPreviousProviderSignOutCompletes() async throws {
+        let gate = ProviderSignOutGate()
+        let google = DelayedSignOutEventStore(gate: gate)
+        let local = FakeEventStore(calendars: [
+            MBCalendar(title: "Local", id: "local", source: nil, email: nil, color: .black)
+        ])
+        let repository = CalendarRepository(providerName: .googleCalendar) { provider -> EventStore in
+            provider == .googleCalendar ? google : local
+        }
+
+        let outdated = Task {
+            try await repository.switchProvider(to: .macOSEventKit, signOutCurrent: true)
+        }
+        await gate.waitUntilStarted()
+        let current = try await repository.switchProvider(to: .googleCalendar)
+        XCTAssertEqual(current.map(\.id), ["google"])
+        await gate.release()
+
+        do {
+            _ = try await outdated.value
+            XCTFail("A superseded switch must not commit after sign-out finishes")
+        } catch is CancellationError {
+            // The new selection remains authoritative.
+        }
+        XCTAssertEqual(repository.activeProviderName, .googleCalendar)
+        // Cancellation may be requested both when superseding and when the old
+        // task settles; only the final selected provider is the contract.
+        repository.stop()
+    }
+
+    func testSwitchWithSignOutRetiresOldProviderOnlyAfterNewOneLoads() async throws {
+        let old = FakeEventStore(calendars: [
+            MBCalendar(title: "Local", id: "local", source: nil, email: nil, color: .black)
+        ])
+        let next = FakeEventStore(calendars: [
+            MBCalendar(title: "Google", id: "google", source: nil, email: nil, color: .black)
+        ])
+        let repository = CalendarRepository(providerName: .macOSEventKit) { provider in
+            provider == .macOSEventKit ? old : next
+        }
+
+        let calendars = try await repository.switchProvider(
+            to: .googleCalendar, signOutCurrent: true
+        )
+
+        XCTAssertEqual(calendars.map(\.id), ["google"])
+        XCTAssertEqual(repository.activeProviderName, .googleCalendar)
+        XCTAssertEqual(old.signOutCallCount, 1)
+        XCTAssertEqual(next.signInCallCount, 1)
+        XCTAssertEqual(next.cancelPendingOperationsCallCount, 0)
+        repository.stop()
+    }
+
+    func testStoppingDuringPendingProviderSignInDoesNotCommitLateResult() async {
+        let gate = ProviderSignInGate()
+        let currentStore = FakeEventStore()
+        let pendingStore = SuspendedSignInEventStore(gate: gate)
+        let repository = CalendarRepository(providerName: .macOSEventKit) { name -> EventStore in
+            if name == .googleCalendar { return pendingStore }
+            return currentStore
+        }
+        let sync = CalendarSync(repository: repository, refreshInterval: 0)
+        let change = Task { await sync.changeEventStoreProvider(.googleCalendar) }
+        await gate.waitUntilEntered()
+        sync.stop()
+        await gate.release()
+
+        let result = await change.value
+        XCTAssertEqual(result, .cancelled)
+        XCTAssertEqual(repository.activeProviderName, .macOSEventKit)
+    }
+}
+
+private actor ProviderSignInGate {
+    private var entered = false
+    private var released = false
+    private var startWaiters: [CheckedContinuation<Void, Never>] = []
+    private var releaseWaiters: [CheckedContinuation<Void, Never>] = []
+
+    func holdSignIn() async {
+        entered = true
+        startWaiters.forEach { $0.resume() }
+        startWaiters.removeAll()
+        if !released {
+            await withCheckedContinuation { releaseWaiters.append($0) }
+        }
+    }
+
+    func waitUntilEntered() async {
+        guard !entered else { return }
+        await withCheckedContinuation { startWaiters.append($0) }
+    }
+
+    func release() {
+        released = true
+        releaseWaiters.forEach { $0.resume() }
+        releaseWaiters.removeAll()
+    }
+}
+
+private final class SuspendedSignInEventStore: AuthenticatedEventStore, @unchecked Sendable {
+    private let gate: ProviderSignInGate
+    @MainActor private(set) var cancelPendingOperationsCallCount = 0
+
+    init(gate: ProviderSignInGate) {
+        self.gate = gate
+    }
+
+    func signIn(forcePrompt _: Bool) async throws {
+        await gate.holdSignIn()
+    }
+
+    func signOut() async {}
+    func refreshSources() async {}
+
+    func fetchAllCalendars() async throws -> [MBCalendar] {
+        [MBCalendar(title: "Google", id: "google", source: nil, email: nil, color: .black)]
+    }
+
+    func fetchEventsForDateRange(
+        for _: [MBCalendar], from _: Date, to _: Date
+    ) async throws -> [MBEvent] {
+        []
+    }
+
+    @MainActor
+    func cancelPendingOperations() {
+        cancelPendingOperationsCallCount += 1
+    }
+}
+
+@MainActor
+final class MissingSelectedEventKitCalendarsTests: BaseTestCase {
+    private var cancellables = Set<AnyCancellable>()
+
+    func testLostSelectedCalendarsPreserveLastKnownGoodEventsAndMarkStale() async throws {
+        let calendar = MBCalendar(
+            title: "Local", id: "old-calendar", source: nil, email: nil, color: .black
+        )
+        let now = Date()
+        let event = MBEvent(
+            id: "known-meeting",
+            lastModifiedDate: now,
+            title: "Known meeting",
+            status: .confirmed,
+            notes: nil,
+            location: nil,
+            url: URL(string: "https://meet.google.com/abc-defg-hij"),
+            organizer: nil,
+            startDate: now.addingTimeInterval(600),
+            endDate: now.addingTimeInterval(1800),
+            isAllDay: false,
+            recurrent: false,
+            calendar: calendar
+        )
+        Defaults[.selectedCalendarIDs] = [calendar.id]
+        let store = FakeEventStore(calendars: [calendar], events: [event])
+        store.respectsCalendarFilter = true
+        let sync = CalendarSync(provider: store, refreshInterval: 0)
+        defer { sync.stop() }
+
+        let loaded = expectation(description: "initial successful event fetch")
+        sync.$events.filter { $0 == [event] }.first()
+            .sink { _ in loaded.fulfill() }
+            .store(in: &cancellables)
+        await fulfillment(of: [loaded], timeout: 2.0)
+
+        store.stubbedCalendars = []
+        let stale = expectation(description: "lost selected calendars mark provider stale")
+        sync.$providerHealth.filter(\.isStale).first()
+            .sink { _ in stale.fulfill() }
+            .store(in: &cancellables)
+
+        try await sync.refreshSources()
+        await fulfillment(of: [stale], timeout: 2.0)
+
+        XCTAssertEqual(sync.events, [event])
+        XCTAssertTrue(sync.calendars.isEmpty, "Expose new inventory while retaining last good events")
+        XCTAssertTrue(sync.providerHealth.isStale)
+        XCTAssertTrue(sync.providerHealth.lastErrorDescription?.contains(
+            "Previously selected macOS calendars are no longer available"
+        ) == true)
+        XCTAssertFalse(sync.providerHealth.authRequired)
+    }
+
+    func testUserClearingAllSelectionsCanPublishEmptyEvents() async throws {
+        let calendar = MBCalendar(
+            title: "Local", id: "old-calendar", source: nil, email: nil, color: .black
+        )
+        let store = FakeEventStore(calendars: [calendar])
+        Defaults[.selectedCalendarIDs] = []
+        let repository = CalendarRepository(store: store)
+
+        let events = try await repository.fetchCurrentPeriodEvents(fromAllCalendars: [])
+
+        XCTAssertTrue(events.isEmpty)
+    }
+}
+
+
+private actor ProviderAttemptSequenceGate {
+    private var startedCount = 0
+    private var continuations: [Int: CheckedContinuation<Void, Never>] = [:]
+    private var startWaiters: [(Int, CheckedContinuation<Void, Never>)] = []
+
+    func awaitAttempt() async {
+        startedCount += 1
+        let attempt = startedCount
+        let ready = startWaiters.filter { $0.0 <= startedCount }
+        startWaiters.removeAll { $0.0 <= startedCount }
+        ready.forEach { $0.1.resume() }
+        await withCheckedContinuation { continuations[attempt] = $0 }
+    }
+
+    func waitForAttempt(_ attempt: Int) async {
+        if startedCount >= attempt { return }
+        await withCheckedContinuation { startWaiters.append((attempt, $0)) }
+    }
+
+    func release(_ attempt: Int) {
+        continuations.removeValue(forKey: attempt)?.resume()
+    }
+}
+
+private final class SequencedSignInEventStore: AuthenticatedEventStore, @unchecked Sendable {
+    private let gate: ProviderAttemptSequenceGate
+    @MainActor private(set) var cancelCount = 0
+
+    init(gate: ProviderAttemptSequenceGate) { self.gate = gate }
+
+    func signIn(forcePrompt _: Bool) async throws { await gate.awaitAttempt() }
+    func signOut() async {}
+    func refreshSources() async {}
+    func fetchAllCalendars() async throws -> [MBCalendar] {
+        [MBCalendar(title: "Google", id: "google", source: nil, email: nil, color: .black)]
+    }
+    func fetchEventsForDateRange(
+        for _: [MBCalendar], from _: Date, to _: Date
+    ) async throws -> [MBEvent] { [] }
+
+    @MainActor func cancelPendingOperations() { cancelCount += 1 }
+}
+
+private actor ProviderSignOutGate {
+    private var entered = false
+    private var startedWaiters: [CheckedContinuation<Void, Never>] = []
+    private var finishWaiters: [CheckedContinuation<Void, Never>] = []
+    private var released = false
+
+    func signOut() async {
+        entered = true
+        startedWaiters.forEach { $0.resume() }
+        startedWaiters.removeAll()
+        if !released {
+            await withCheckedContinuation { finishWaiters.append($0) }
+        }
+    }
+
+    func waitUntilStarted() async {
+        if entered { return }
+        await withCheckedContinuation { startedWaiters.append($0) }
+    }
+
+    func release() {
+        released = true
+        finishWaiters.forEach { $0.resume() }
+        finishWaiters.removeAll()
+    }
+}
+
+private final class DelayedSignOutEventStore: AuthenticatedEventStore, @unchecked Sendable {
+    private let gate: ProviderSignOutGate
+    @MainActor private(set) var signInCount = 0
+
+    init(gate: ProviderSignOutGate) { self.gate = gate }
+    func signIn(forcePrompt _: Bool) async throws {
+        await MainActor.run { signInCount += 1 }
+    }
+    func signOut() async { await gate.signOut() }
+    func refreshSources() async {}
+    func fetchAllCalendars() async throws -> [MBCalendar] {
+        [MBCalendar(title: "Google", id: "google", source: nil, email: nil, color: .black)]
+    }
+    func fetchEventsForDateRange(
+        for _: [MBCalendar], from _: Date, to _: Date
+    ) async throws -> [MBEvent] { [] }
+    @MainActor func cancelPendingOperations() {}
 }

@@ -134,7 +134,6 @@
 "preferences_advanced_regex_test_placeholder" = "粘贴示例事件文本";
 "preferences_advanced_regex_test_title" = "测试会议链接正则表达式";
 "preferences_advanced_regex_title" = "会议链接的自定义正则表达式";
-"preferences_advanced_run_script_on_event_start" = "自动运行 AppleScript";
 "preferences_advanced_save_script_button" = "保存脚本";
 "preferences_advanced_script_link_only_help" = "仅对有会议链接的事件运行。";
 "preferences_advanced_setting_warning" = "这些设置适用于高级用户。";
@@ -353,3 +352,8 @@
 "preferences_appearance_events_no_meeting_link_title" = "无会议链接的事件";
 "preferences_appearance_menu_show_event_calendar_color_value" = "日历颜色";
 "preferences_appearance_status_bar_title_generic_value" = "通用标题（会议）";
+"preferences_sidebar_advanced" = "高级";
+"onboarding_setup_title" = "MeetingBar 配置";
+"onboarding_back" = "返回";
+"onboarding_start_using" = "开始使用MeetingBar";
+"onboarding_essentials_hint" = "你可以稍后在偏好设置中微调每处细节。";

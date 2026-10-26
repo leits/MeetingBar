@@ -95,7 +95,6 @@
 "preferences_bookmarks_new_bookmark_error_title" = "אי אפשר להוסיף סימניה";
 "preferences_advanced_apple_script_checkmark" = "להפעיל AppleScript בעת הצטרפות לפגישה";
 "preferences_advanced_apple_script_placeholder" = "# כאן ניתן לכתוב את הסקריפט שלך\ntell application \"Music\" to pause";
-"preferences_advanced_run_script_on_event_start" = "הרצת AppleScript אוטומטית";
 "preferences_advanced_test_script_on_next_event" = "בדיקה באירוע הבא";
 "preferences_advanced_edit_script" = "עריכת סקריפט";
 "preferences_advanced_save_script_button" = "שמירת הסקריפט";
@@ -287,13 +286,13 @@
 "preferences_appearance_status_bar_ongoing_title" = "חשיפה של אירוע פעיל:";
 "preferences_appearance_menu_show_timeline_toggle" = "הצגת ציר זמן חזותי של היום";
 "access_screen_provider_authorization_cancelled" = "ההרשאה בוטלה. נסה שוב כדי לחבר את הלוח שנה שלך.";
-"general_end_of_event_notification_toggle" = "שלח התראה בסיום האירוע";
-"general_refresh" = "רענן";
-"general_when_event_ends" = "כאשר האירוע מסתיים";
+"general_end_of_event_notification_toggle" = "שליחת התראה בסיום האירוע";
+"general_refresh" = "ריענון";
+"general_when_event_ends" = "כאשר האירוע הסתיים";
 "message_clipboard_empty_text" = "הלוח אינו מכיל תוכן, לכן לא ניתן להפעיל את הפגישה.";
-"message_clipboard_empty_title" = "הלוח ריק";
-"message_clipboard_invalid_text" = "הלוח אינו מכיל קישור לפגישה, לכן לא ניתן להפעיל את הפגישה.";
-"message_clipboard_invalid_title" = "כתובת URL לא תקינה";
+"message_clipboard_empty_title" = "לוח העתקות ריק";
+"message_clipboard_invalid_text" = "לוח העתקות אינו מכיל קישור לפגישה, לכן לא ניתן להפעיל את הפגישה.";
+"message_clipboard_invalid_title" = "כתובת אתר לא תקינה";
 "message_event_script_execution_failed_text" = "הסקריפט ב‑%@ נכשל: %@";
 "message_event_script_execution_failed_title" = "הפעלת AppleScript נכשלה";
 "message_event_script_file_missing_text" = "הקובץ eventStartScript.scpt אינו קיים ב‑%@.";

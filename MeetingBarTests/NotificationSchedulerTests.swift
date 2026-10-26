@@ -134,6 +134,124 @@ final class NotificationSchedulerTests: BaseTestCase {
         }
     }
 
+    func testManualClockFiresDelayedFullscreenWithoutWallClockWait() async {
+        let sleeper = ManualNotificationActionSleep()
+        let sink = FakeNotificationRequestSink()
+        let actionSink = FakeNotificationActionSink()
+        let event = event(id: "virtual-clock", startsIn: 120)
+        let scheduler = NotificationScheduler(
+            sink: sink,
+            actionSink: actionSink,
+            sleepAction: { _ in await sleeper.sleep() },
+            actionDate: { self.now.addingTimeInterval(120) }
+        )
+        await scheduler.reconcile(
+            events: [event], settings: fullscreenOnlySettings(offset: 0), now: now
+        )
+        await sleeper.waitUntilSleeping()
+        await sleeper.wakeAll()
+        await waitUntil { !actionSink.actions.isEmpty }
+
+        XCTAssertEqual(actionSink.actions.count, 1)
+        XCTAssertEqual(actionSink.actions.first?.eventID, "virtual-clock")
+        scheduler.stop()
+    }
+
+    func testCancelledManualSleeperCannotFireDismissedAction() async {
+        let sleeper = ManualNotificationActionSleep()
+        let sink = FakeNotificationRequestSink()
+        let actionSink = FakeNotificationActionSink()
+        let scheduler = NotificationScheduler(
+            sink: sink,
+            actionSink: actionSink,
+            sleepAction: { _ in await sleeper.sleep() },
+            actionDate: { self.now.addingTimeInterval(120) }
+        )
+        await scheduler.reconcile(
+            events: [event(id: "dismissed", startsIn: 120)],
+            settings: fullscreenOnlySettings(offset: 0),
+            now: now
+        )
+        await sleeper.waitUntilSleeping()
+        await scheduler.reconcile(events: [], settings: fullscreenOnlySettings(offset: 0), now: now)
+        await sleeper.wakeAll()
+        await Task.yield()
+
+        XCTAssertTrue(actionSink.actions.isEmpty)
+        scheduler.stop()
+    }
+
+    func testPendingAutoJoinUsesUpdatedMeetingURLWithoutReschedulingStart() async {
+        let sleeper = ManualNotificationActionSleep()
+        let requestSink = FakeNotificationRequestSink()
+        let actionSink = URLCapturingNotificationActionSink()
+        let original = event(id: "changed-link", startsIn: 120)
+        let updated = MBEvent(
+            id: original.id,
+            lastModifiedDate: original.lastModifiedDate,
+            title: original.title,
+            status: original.status,
+            notes: nil,
+            location: nil,
+            url: URL(string: "https://zoom.us/j/9998887777"),
+            organizer: nil,
+            startDate: original.startDate,
+            endDate: original.endDate,
+            isAllDay: original.isAllDay,
+            recurrent: false,
+            calendar: original.calendar
+        )
+        let scheduler = NotificationScheduler(
+            sink: requestSink,
+            actionSink: actionSink,
+            sleepAction: { _ in await sleeper.sleep() },
+            actionDate: { self.now.addingTimeInterval(120) }
+        )
+        let settings = actionOnlySettings(kind: .autoJoin, offset: 0)
+
+        await scheduler.reconcile(events: [original], settings: settings, now: now)
+        await sleeper.waitUntilSleeping()
+        await scheduler.reconcile(events: [updated], settings: settings, now: now)
+        await sleeper.wakeAll()
+        await waitUntil { !actionSink.urls.isEmpty }
+
+        XCTAssertEqual(
+            actionSink.urls.map(\.absoluteString),
+            ["https://zoom.us/j/9998887777"]
+        )
+        scheduler.stop()
+    }
+
+    func testFailedDelayedSleepDoesNotPreventRetryOnNextRefresh() async {
+        let sleeper = FailOnceNotificationActionSleep()
+        let requestSink = FakeNotificationRequestSink()
+        let actionSink = FakeNotificationActionSink()
+        let scheduler = NotificationScheduler(
+            sink: requestSink,
+            actionSink: actionSink,
+            sleepAction: { _ in try await sleeper.sleep() },
+            actionDate: { self.now.addingTimeInterval(120) }
+        )
+        let scheduledEvent = event(id: "retry-sleep", startsIn: 120)
+        let settings = fullscreenOnlySettings(offset: 0)
+
+        await scheduler.reconcile(events: [scheduledEvent], settings: settings, now: now)
+        // Await the actual first scheduled task: the failing sleeper must have
+        // finished and the scheduler must have cleared its pending identity.
+        await scheduler.waitForPendingActionsForTesting()
+        let failedAttempts = await sleeper.attemptCount
+        XCTAssertEqual(failedAttempts, 1)
+        XCTAssertTrue(actionSink.actions.isEmpty)
+
+        await scheduler.reconcile(events: [scheduledEvent], settings: settings, now: now)
+        await scheduler.waitForPendingActionsForTesting()
+
+        let attempts = await sleeper.attemptCount
+        XCTAssertEqual(attempts, 2)
+        XCTAssertEqual(actionSink.actions.map(\.eventID), ["retry-sleep"])
+        scheduler.stop()
+    }
+
     func testReconcileSchedulesStartAndEndForFutureEvent() async {
         let sink = FakeNotificationRequestSink()
         let scheduler = NotificationScheduler(sink: sink)
@@ -756,7 +874,7 @@ final class NotificationSchedulerTests: BaseTestCase {
         XCTAssertEqual(Defaults[.processedEventsForAutoJoin].map(\.id), [evt.id])
     }
 
-    func testScriptActionWithoutMeetingLinkDoesNotRunOrMarkProcessed() async {
+    func testScriptActionWithoutMeetingLinkRunsOnceAcrossReconcile() async {
         let requestSink = FakeNotificationRequestSink()
         let actionSink = FakeNotificationActionSink()
         let scheduler = NotificationScheduler(sink: requestSink, actionSink: actionSink)
@@ -769,10 +887,50 @@ final class NotificationSchedulerTests: BaseTestCase {
             now: scheduledNow
         )
 
-        try? await Task.sleep(nanoseconds: 300_000_000)
+        await waitUntil { actionSink.actions.count == 1 }
+        XCTAssertEqual(actionSink.actions.map(\.eventID), [evt.id])
+        XCTAssertEqual(actionSink.actions.map(\.kind), [.scriptOnStart])
+        XCTAssertEqual(Defaults[.processedEventsForRunScriptOnEventStart].map(\.id), [evt.id])
 
-        XCTAssertTrue(actionSink.actions.isEmpty)
+        await scheduler.reconcile(
+            events: [evt],
+            settings: actionOnlySettings(kind: .scriptOnStart, offset: 0.25),
+            now: Date()
+        )
+        XCTAssertEqual(actionSink.actions.count, 1)
+        scheduler.stop()
+    }
+
+    func testNoLinkScriptDueOnReconcileRunsOnce() async {
+        let sink = FakeNotificationActionSink()
+        let scheduler = NotificationScheduler(sink: FakeNotificationRequestSink(), actionSink: sink)
+        let evt = makeFakeEvent(
+            id: "due-script", start: now.addingTimeInterval(30),
+            end: now.addingTimeInterval(1800), withLink: false
+        )
+        let settings = actionOnlySettings(kind: .scriptOnStart, offset: 60)
+        await scheduler.reconcile(events: [evt], settings: settings, now: now)
+        await scheduler.reconcile(events: [evt], settings: settings, now: now)
+        XCTAssertEqual(sink.actions.map(\.eventID), [evt.id])
+        XCTAssertEqual(sink.actions.map(\.kind), [.scriptOnStart])
+        scheduler.stop()
+    }
+
+    func testDismissedNoLinkEventDoesNotRunStartScript() async {
+        let sink = FakeNotificationActionSink()
+        let scheduler = NotificationScheduler(sink: FakeNotificationRequestSink(), actionSink: sink)
+        let evt = makeFakeEvent(
+            id: "dismissed-script", start: now.addingTimeInterval(30),
+            end: now.addingTimeInterval(1800), withLink: false
+        )
+        await scheduler.reconcile(
+            events: [evt],
+            settings: actionOnlySettings(kind: .scriptOnStart, offset: 60, dismissedEventIDs: [evt.id]),
+            now: now
+        )
+        XCTAssertTrue(sink.attempts.isEmpty)
         XCTAssertTrue(Defaults[.processedEventsForRunScriptOnEventStart].isEmpty)
+        scheduler.stop()
     }
 
     func testCurrentForSchedulerMapsDefaultsForMigratedActions() {
@@ -813,5 +971,54 @@ final class NotificationSchedulerTests: BaseTestCase {
         let settings = NotificationPlanningSettings.currentForScheduler
 
         XCTAssertEqual(settings.scriptOnStart, .init(enabled: false, offset: 5))
+    }
+}
+
+private actor ManualNotificationActionSleep {
+    private var pending: [CheckedContinuation<Void, Never>] = []
+    private var observers: [CheckedContinuation<Void, Never>] = []
+
+    func sleep() async {
+        await withCheckedContinuation { continuation in
+            pending.append(continuation)
+            observers.forEach { $0.resume() }
+            observers.removeAll()
+        }
+    }
+
+    func waitUntilSleeping() async {
+        guard pending.isEmpty else { return }
+        await withCheckedContinuation { continuation in
+            observers.append(continuation)
+        }
+    }
+
+    func wakeAll() {
+        let sleepers = pending
+        pending.removeAll()
+        sleepers.forEach { $0.resume() }
+    }
+}
+
+@MainActor
+private final class URLCapturingNotificationActionSink: NotificationActionSink {
+    private(set) var urls: [URL] = []
+
+    func performNotificationAction(_ kind: NotificationKind, event: MBEvent) -> Bool {
+        if kind == .autoJoin, let url = event.meetingLink?.url {
+            urls.append(url)
+        }
+        return true
+    }
+}
+
+private actor FailOnceNotificationActionSleep {
+    private(set) var attemptCount = 0
+
+    func sleep() throws {
+        attemptCount += 1
+        if attemptCount == 1 {
+            throw URLError(.timedOut)
+        }
     }
 }

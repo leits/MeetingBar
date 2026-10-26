@@ -95,6 +95,10 @@ final class MeetingProviderTests: XCTestCase {
             MeetingProvider.provider(for: .facebook_workspace)?.displayName,
             "Workplace"
         )
+        XCTAssertEqual(
+            MeetingProvider.provider(for: .tuple)?.openingModes,
+            [.tupleApp]
+        )
     }
 
     func testOpeningModeMetadataIsCompleteAndStable() {
@@ -143,7 +147,12 @@ final class MeetingProviderTests: XCTestCase {
                 titleKey: "preferences_meeting_opening_mode_riverside_app",
                 helpKey: nil,
                 legacyName: "Riverside"
-            )
+            ),
+            .tupleApp: OpeningModeMetadata(
+                titleKey: "preferences_meeting_opening_mode_tuple_app",
+                helpKey: nil,
+                legacyName: nil
+            ),
         ]
 
         XCTAssertEqual(Set(expected.keys), Set(MeetingOpeningMode.allCases))

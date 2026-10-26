@@ -216,6 +216,9 @@
 
 "preferences_calendars_select_calendars_title" = "Select calendars to show meetings in the menu bar";
 "preferences_calendars_provider_gcalendar_change_account" = "Change Google Account";
+"preferences_calendars_unavailable_title" = "Unavailable selected calendars";
+"preferences_calendars_unavailable_help" = "These saved calendars are not available. Check macOS Calendar access, or remove unavailable selections to resume updating meetings.";
+"preferences_calendars_remove_missing" = "Remove";
 "preferences_calendars_provider_microsoft_change_account" = "Change Microsoft Account";
 
 // MARK: - Preferences Advanced
@@ -223,7 +226,7 @@
 "preferences_advanced_setting_warning" = "These settings are intended for advanced users.";
 "preferences_advanced_apple_script_checkmark" = "Run AppleScript when joining";
 "preferences_advanced_apple_script_placeholder" = "# write your script here\ntell application \"Music\" to pause";
-"preferences_advanced_run_script_on_event_start" = "Run AppleScript before joinable meetings";
+"preferences_advanced_run_script_before_event_start" = "Run AppleScript before events";
 "preferences_advanced_script_link_only_help" = "Runs only for events with meeting links.";
 "preferences_advanced_test_script_on_next_event" = "Test on next event";
 "preferences_advanced_edit_script" = "Edit script";
@@ -231,6 +234,8 @@
 "preferences_advanced_wrong_location_title" = "Wrong location";
 "preferences_advanced_wrong_location_message" = "Please select the User → Library → Application Scripts → leits.MeetingBar folder";
 "preferences_advanced_wrong_location_button" = "Got it!";
+"preferences_advanced_script_save_failed_title" = "Cannot save AppleScript";
+"preferences_advanced_script_save_failed_message" = "Your changes have been kept. Please check access to the Application Scripts folder and try again. %@";
 "preferences_advanced_event_regex_title" = "Custom regexes to filter out meetings";
 "preferences_advanced_regex_title" = "Custom regexes for meeting link";
 "preferences_advanced_regex_add_button" = "Add regex";
@@ -426,3 +431,12 @@
 
 "link_url_cant_open_title" = "Oops! Unable to open the link in %@";
 "link_url_cant_open_message" = "Ensure you have %@ installed, or open such links in a web browser from the preferences instead.";
+
+
+"preferences_advanced_script_hooks_help" = "Event-start scripts also run for events without meeting links. Join scripts run only when joining a meeting.";
+
+"preferences_meeting_opening_mode_tuple_app" = "Tuple App";
+
+// MARK: - What's New
+
+"changelog_full_release_notes" = "Full release notes on GitHub";

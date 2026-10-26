@@ -58,7 +58,11 @@ final class GoogleCalendarPolicyTests: XCTestCase {
         )
     }
 
-    func testHTTP401AfterRetryClearsAuthAndThrowsAuthRequired() {
+    /// A 401 from the Calendar API proves only that this access token was
+    /// refused. Discarding the stored session here turned a proxy or captive
+    /// portal into a forced re-consent, so the decision must stay "ask the user
+    /// to reconnect" and leave the refresh token alone.
+    func testHTTP401AfterRetryAsksForAuthWithoutClearingSession() {
         let decision = GoogleHTTPStatusPolicy.classify(
             statusCode: 401,
             url: calendarListURL,
@@ -66,7 +70,7 @@ final class GoogleCalendarPolicyTests: XCTestCase {
             retrying: true
         )
 
-        XCTAssertEqual(decision, .clearAuthAndThrowAuthRequired)
+        XCTAssertEqual(decision, .throwAuthRequired)
     }
 
     func testHTTP403AfterRetryWithCalendarIDIsForbiddenCalendar() {
@@ -79,6 +83,50 @@ final class GoogleCalendarPolicyTests: XCTestCase {
 
         XCTAssertEqual(
             decision,
+            .throwError(.forbiddenCalendar(calendarID: "work", url: calendarEventsURL))
+        )
+    }
+
+    func testQuota403IsNotMistakenForForbiddenCalendar() {
+        for reason in ["rateLimitExceeded", "userRateLimitExceeded", "quotaExceeded"] {
+            let body = Data("""
+            {"error":{"code":403,"errors":[{"domain":"usageLimits","reason":"\(reason)"}]}}
+            """.utf8)
+            for retrying in [false, true] {
+                let decision = GoogleHTTPStatusPolicy.classify(
+                    statusCode: 403,
+                    url: calendarEventsURL,
+                    calendarID: "work",
+                    retrying: retrying,
+                    responseData: body
+                )
+                XCTAssertEqual(decision, .throwError(.httpStatus(403, url: calendarEventsURL)))
+            }
+        }
+    }
+
+    func testHTTP429NeverTriggersTokenRefresh() {
+        let decision = GoogleHTTPStatusPolicy.classify(
+            statusCode: 429,
+            url: calendarEventsURL,
+            calendarID: "work",
+            retrying: false
+        )
+        XCTAssertEqual(decision, .throwError(.httpStatus(429, url: calendarEventsURL)))
+    }
+
+    func testTrueForbidden403KeepsExistingBehavior() {
+        let body = Data("""
+        {"error":{"code":403,"errors":[{"reason":"forbidden"}]}}
+        """.utf8)
+        XCTAssertEqual(
+            GoogleHTTPStatusPolicy.classify(
+                statusCode: 403,
+                url: calendarEventsURL,
+                calendarID: "work",
+                retrying: true,
+                responseData: body
+            ),
             .throwError(.forbiddenCalendar(calendarID: "work", url: calendarEventsURL))
         )
     }
@@ -151,6 +199,15 @@ final class GoogleCalendarPolicyTests: XCTestCase {
         XCTAssertEqual(AuthError.refreshFailed.errorDescription, "Google Calendar token refresh failed")
     }
 
+    func testTemporarilyUnavailableDescriptionNamesTheUnderlyingFailure() {
+        let underlying = URLError(.notConnectedToInternet)
+
+        XCTAssertEqual(
+            AuthError.temporarilyUnavailable(underlying: underlying).errorDescription,
+            "Google Calendar is temporarily unreachable: \(underlying.localizedDescription)"
+        )
+    }
+
     func testGoogleCalendarErrorDescriptionsIncludeUsefulContext() {
         XCTAssertEqual(
             GoogleCalendarError.unauthorized(calendarListURL).errorDescription,
@@ -172,5 +229,34 @@ final class GoogleCalendarPolicyTests: XCTestCase {
             GoogleCalendarError.missingItems(calendarListURL).errorDescription,
             "Google Calendar response did not contain an items array: \(calendarListURL.absoluteString)"
         )
+    }
+}
+
+final class SingleResumeGuardTests: XCTestCase {
+    func testFirstClaimSucceedsAndEveryLaterClaimFails() {
+        let guardBox = SingleResumeGuard()
+
+        XCTAssertTrue(guardBox.claim())
+        XCTAssertFalse(guardBox.claim())
+        XCTAssertFalse(guardBox.claim())
+    }
+
+    /// The guard exists to arbitrate a token-refresh completion racing its
+    /// timeout, and those two callbacks are not guaranteed to share a queue.
+    /// Exactly one contender may ever resume the continuation.
+    func testExactlyOneClaimWinsUnderConcurrentContention() {
+        let contenders = 500
+        let guardBox = SingleResumeGuard()
+        let winners = NSCountedSet()
+        let winnersLock = NSLock()
+
+        DispatchQueue.concurrentPerform(iterations: contenders) { _ in
+            guard guardBox.claim() else { return }
+            winnersLock.lock()
+            winners.add("won")
+            winnersLock.unlock()
+        }
+
+        XCTAssertEqual(winners.count(for: "won"), 1)
     }
 }

@@ -109,6 +109,10 @@ Useful details for bug reports:
 * Whether manual refresh changes the behavior
 * Screenshots or logs when available
 
+## Release history
+
+Read the [GitHub Releases](https://github.com/leits/MeetingBar/releases) for version highlights, fixes and contributor credits. The app also provides a short **What's New** summary for major updates.
+
 ## Third-party integrations
 
 * [Raycast commands](https://github.com/raycast/script-commands/tree/master/commands#meetingbar)

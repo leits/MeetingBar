@@ -69,7 +69,6 @@
 "preferences_bookmarks_new_bookmark_title" = "Új könyvjelző";
 "preferences_calendars_provider_gcalendar_change_account" = "Google Fiók Váltása";
 "preferences_calendars_provider_microsoft_change_account" = "Microsoft-fiók váltása";
-"preferences_advanced_run_script_on_event_start" = "AppleScript futtatása autómatikusan";
 "preferences_advanced_wrong_location_title" = "Téves hely";
 "preferences_advanced_wrong_location_button" = "Megértettem!";
 "preferences_advanced_regex_edit_button" = "szerkesztés";

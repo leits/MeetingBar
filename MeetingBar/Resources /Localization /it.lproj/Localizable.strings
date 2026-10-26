@@ -148,7 +148,6 @@
 "preferences_advanced_setting_warning" = "⚠️ Usa queste impostazioni solo se ne capisci il senso";
 "preferences_advanced_apple_script_checkmark" = "Esegui AppleScript quando partecipi a una riunione";
 "preferences_advanced_apple_script_placeholder" = "# scrivi il tuo script qui\ntell application \"Music\" to pause";
-"preferences_advanced_run_script_on_event_start" = "Esegui automaticamente AppleScript";
 "preferences_advanced_test_script_on_next_event" = "Prova al prossimo evento";
 "preferences_advanced_edit_script" = "Modifica script";
 "preferences_advanced_save_script_button" = "Salva script";
