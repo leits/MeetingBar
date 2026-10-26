@@ -883,15 +883,23 @@ enum MeetingLinkDetector {
     /// that email by default. Secondary, imported and holiday calendars use
     /// `*.calendar.google.com` IDs, which are not sign-in accounts.
     static func calendarOwnerEmail(calendarID: String, calendarTitle: String) -> String? {
-        [calendarID, calendarTitle].first(where: isAccountEmail)
+        // A non-account Google ID rules out the calendar, even if its title looks like an email.
+        guard !isGoogleNonAccountCalendarID(calendarID) else { return nil }
+        return [calendarID, calendarTitle].first(where: isAccountEmail)
+    }
+
+    private static func isGoogleNonAccountCalendarID(_ value: String) -> Bool {
+        value.lowercased().hasSuffix("calendar.google.com")
     }
 
     private static func isAccountEmail(_ value: String) -> Bool {
         let parts = value.split(separator: "@", omittingEmptySubsequences: false)
-        guard parts.count == 2, !parts[0].isEmpty, parts[1].contains("."),
+        let domainLabels = parts.count == 2 ? parts[1].split(separator: ".", omittingEmptySubsequences: false) : []
+        guard parts.count == 2, !parts[0].isEmpty, domainLabels.count >= 2,
+              domainLabels.allSatisfy({ !$0.isEmpty }),
               !value.contains(where: \.isWhitespace)
         else { return false }
-        return !parts[1].lowercased().hasSuffix("calendar.google.com")
+        return !isGoogleNonAccountCalendarID(value)
     }
 
     /// Personal Gmail plus-addresses are delivery aliases, not separate sign-in

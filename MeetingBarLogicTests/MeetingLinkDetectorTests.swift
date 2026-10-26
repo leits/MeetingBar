@@ -471,7 +471,12 @@ final class MeetingLinkDetectorTests: XCTestCase {
             ("6F9619FF-8B86-D011-B42D-00C04FC964FF", "Work"),
             ("calendar-id", "Lunch @ office"),
             ("calendar-id", "Team lunch@example.com"),
-            ("calendar-id", "lunch@example .com")
+            ("calendar-id", "lunch@example .com"),
+            ("calendar-id", "person@.com"),
+            ("calendar-id", "person@example..com"),
+            ("calendar-id", "person@example.com."),
+            ("abc123@group.calendar.google.com", "team@example.com"),
+            ("abc123@import.calendar.google.com", "team@example.com")
         ] {
             XCTAssertNil(
                 MeetingLinkDetector.calendarOwnerEmail(calendarID: calendarID, calendarTitle: calendarTitle),
