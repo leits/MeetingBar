@@ -110,6 +110,7 @@ final class StatusBarItemController {
             .timeFormat, .bookmarks,
             .pastEventsAppereance, .declinedEventsAppereance,
             .showTimelineInMenu, .eventTitleFormat,
+            .statusbarMeetingHighlight, .statusbarMeetingHighlightTime,
             options: []
         )
         .receive(on: DispatchQueue.main)
@@ -189,6 +190,7 @@ final class StatusBarItemController {
         button.title = ""
         button.attributedTitle = NSAttributedString(string: "")
         button.toolTip = nil
+        button.contentTintColor = nil
         button.setAccessibilityLabel(nil)
         button.setAccessibilityValue(nil)
         button.alignment = .center
@@ -219,6 +221,8 @@ final class StatusBarItemController {
         if presentation.mode == .nextEvent {
             button.attributedTitle = StatusBarTitleRenderer.attributedTitle(for: presentation)
             button.toolTip = presentation.tooltip
+            // Tints template icons; full-color meeting service icons keep their artwork.
+            button.contentTintColor = presentation.highlight.color
         }
 
         ensureStatusBarButtonIsVisible(button)
@@ -233,7 +237,8 @@ final class StatusBarItemController {
             icon: stackedIcon(for: presentation.icon),
             title: presentation.title,
             time: presentation.time,
-            style: presentation.titleStyle
+            style: presentation.titleStyle,
+            highlight: presentation.highlight
         )
 
         let hostingView: NSHostingView<StatusBarStackedTitleView>
@@ -549,6 +554,7 @@ enum StatusBarTitleRenderer {
                 string: eventTitle,
                 attributes: titleAttributes(
                     style: presentation.titleStyle,
+                    highlight: presentation.highlight,
                     font: NSFont.systemFont(ofSize: MenuStyleConstants.defaultFontSize)
                 )
             )
@@ -562,6 +568,7 @@ enum StatusBarTitleRenderer {
 
     private static func titleAttributes(
         style: StatusBarTitleStyle,
+        highlight: StatusBarHighlight,
         font: NSFont
     ) -> [NSAttributedString.Key: Any] {
         var attributes: [NSAttributedString.Key: Any] = [
@@ -578,7 +585,26 @@ enum StatusBarTitleRenderer {
                 | NSUnderlineStyle.patternDot.rawValue
                 | NSUnderlineStyle.byWord.rawValue
         }
+        // The user opted in to the meeting-state color, so it wins over the
+        // inactive dimming of pending/tentative events.
+        if let color = highlight.color {
+            attributes[.foregroundColor] = color
+        }
         return attributes
+    }
+}
+
+extension StatusBarHighlight {
+    /// System colors adapt to light and dark menu bars.
+    var color: NSColor? {
+        switch self {
+        case .none:
+            return nil
+        case .startingSoon:
+            return .systemOrange
+        case .inProgress:
+            return .systemRed
+        }
     }
 }
 

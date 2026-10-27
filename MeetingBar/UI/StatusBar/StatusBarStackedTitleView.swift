@@ -21,6 +21,7 @@ struct StatusBarStackedTitleView: View {
     let title: String
     let time: String
     let style: StatusBarTitleStyle
+    var highlight: StatusBarHighlight = .none
 
     var body: some View {
         let content = HStack(spacing: 4) {
@@ -47,8 +48,11 @@ struct StatusBarStackedTitleView: View {
         // unset so the text and template icon inherit the menu bar's vibrant
         // label color, which dims on inactive displays and blends like native
         // menu bar items; forcing Color.primary here renders fully opaque and
-        // stands out against neighbors.
-        if style == .inactive {
+        // stands out against neighbors. An opted-in meeting-state color is the
+        // exception: it is meant to stand out, so it wins over inactive dimming.
+        if let color = highlight.color {
+            content.foregroundStyle(Color(nsColor: color))
+        } else if style == .inactive {
             content.foregroundStyle(.secondary)
         } else {
             content
