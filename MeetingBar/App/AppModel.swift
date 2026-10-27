@@ -176,6 +176,10 @@ struct AppEnvironment {
     /// this route; for now it lets AppModel own the action vocabulary.
     var openMeeting: @MainActor (MBEvent) -> Void
 
+    /// Record that the user joined an event's meeting, so its start-time
+    /// fullscreen alert is skipped.
+    var recordMeetingJoined: @MainActor (MBEvent) -> Void
+
     /// Dismiss an event from next-meeting workflows.
     var dismissEvent: @MainActor (MBEvent) -> Void
 
@@ -252,6 +256,9 @@ struct AppEnvironment {
             },
             openMeeting: { event in
                 MeetingOpener.open(event: event)
+            },
+            recordMeetingJoined: { event in
+                NotificationRecordStore().recordJoined(event)
             },
             dismissEvent: { event in
                 AppSettings.dismissEvent(event)
@@ -540,11 +547,11 @@ final class AppModel: ObservableObject {
             }
         case .joinMeeting(let eventID):
             performWithEvent(id: eventID) { event in
-                environment.openMeeting(event)
+                join(event)
             }
         case .joinNearestMeeting:
             if let event = nextEvent() {
-                environment.openMeeting(event)
+                join(event)
             }
         case .dismissMeeting(let eventID):
             performWithEvent(id: eventID) { event in
@@ -562,6 +569,15 @@ final class AppModel: ObservableObject {
             scheduleSnooze(eventID: eventID, action: action)
         default:
             break
+        }
+    }
+
+    /// Without a meeting link, opening falls back to the event page; that is
+    /// not a join, so the fullscreen alert still applies.
+    private func join(_ event: MBEvent) {
+        environment.openMeeting(event)
+        if event.meetingLink != nil {
+            environment.recordMeetingJoined(event)
         }
     }
 
