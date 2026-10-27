@@ -1402,9 +1402,40 @@ final class StatusBarTitleRendererTests: BaseTestCase {
         XCTAssertEqual(title.string, "")
     }
 
+    func test_highlightColorsInlineTitleAndNoneKeepsDefaultColor() {
+        func color(_ highlight: StatusBarHighlight) -> NSColor? {
+            StatusBarTitleRenderer.attributedTitle(
+                for: makePresentation(layout: .inline(showTime: true), highlight: highlight)
+            ).attribute(.foregroundColor, at: 0, effectiveRange: nil) as? NSColor
+        }
+
+        XCTAssertEqual(color(.inProgress), NSColor.systemRed)
+        XCTAssertEqual(color(.startingSoon), NSColor.systemOrange)
+        XCTAssertNil(color(.none), "no highlight leaves the button's native text color")
+    }
+
+    func test_highlightOverridesInactiveTitleColor() {
+        let inactive = StatusBarTitleRenderer.attributedTitle(
+            for: makePresentation(layout: .inline(showTime: true), titleStyle: .inactive)
+        )
+        let highlighted = StatusBarTitleRenderer.attributedTitle(
+            for: makePresentation(layout: .inline(showTime: true), titleStyle: .inactive, highlight: .inProgress)
+        )
+
+        XCTAssertEqual(
+            inactive.attribute(.foregroundColor, at: 0, effectiveRange: nil) as? NSColor,
+            NSColor.disabledControlTextColor
+        )
+        XCTAssertEqual(
+            highlighted.attribute(.foregroundColor, at: 0, effectiveRange: nil) as? NSColor,
+            NSColor.systemRed
+        )
+    }
+
     private func makePresentation(
         layout: StatusBarTitleLayout,
-        titleStyle: StatusBarTitleStyle = .normal
+        titleStyle: StatusBarTitleStyle = .normal,
+        highlight: StatusBarHighlight = .none
     ) -> StatusBarPresentation {
         StatusBarPresentation(
             mode: .nextEvent,
@@ -1413,7 +1444,8 @@ final class StatusBarTitleRendererTests: BaseTestCase {
             tooltip: "Weekly sync",
             icon: .none,
             layout: layout,
-            titleStyle: titleStyle
+            titleStyle: titleStyle,
+            highlight: highlight
         )
     }
 }
@@ -1446,6 +1478,43 @@ final class StatusBarItemControllerPresentationTests: BaseTestCase {
         let button = try XCTUnwrap(controller.statusItem.button)
         XCTAssertNil(button.image)
         XCTAssertEqual(button.attributedTitle.string, "Visible meeting")
+    }
+
+    func test_renderStatusBarTintsHighlightedInlinePresentationAndClearsItAfterwards() throws {
+        let controller = StatusBarItemController()
+        defer { NSStatusBar.system.removeStatusItem(controller.statusItem) }
+        let button = try XCTUnwrap(controller.statusItem.button)
+
+        controller.renderStatusBar(makePresentation(
+            title: "Weekly sync",
+            icon: .asset(MenuStyleConstants.calendarIconName),
+            layout: .inline(showTime: true),
+            highlight: .startingSoon
+        ))
+        XCTAssertEqual(button.contentTintColor, NSColor.systemOrange)
+
+        controller.renderStatusBar(makePresentation(
+            title: "Weekly sync",
+            icon: .asset(MenuStyleConstants.calendarIconName),
+            layout: .inline(showTime: true),
+            highlight: .inProgress
+        ))
+        XCTAssertEqual(button.contentTintColor, NSColor.systemRed)
+
+        controller.renderStatusBar(makePresentation(
+            title: "Weekly sync",
+            icon: .asset(MenuStyleConstants.calendarIconName),
+            layout: .inline(showTime: true)
+        ))
+        XCTAssertNil(button.contentTintColor, "a later non-highlighted render must not keep the old tint")
+
+        controller.renderStatusBar(makePresentation(
+            title: "Weekly sync",
+            layout: .inline(showTime: true),
+            highlight: .inProgress
+        ))
+        controller.renderStatusBar(makePresentation(mode: .noUpcoming))
+        XCTAssertNil(button.contentTintColor, "non-event modes drop the tint")
     }
 
     func test_renderStatusBarDoesNotOverrideExistingIcon() throws {
@@ -1780,7 +1849,8 @@ final class StatusBarItemControllerPresentationTests: BaseTestCase {
         tooltip: String? = nil,
         icon: StatusBarIcon = .none,
         layout: StatusBarTitleLayout = .none,
-        titleStyle: StatusBarTitleStyle = .normal
+        titleStyle: StatusBarTitleStyle = .normal,
+        highlight: StatusBarHighlight = .none
     ) -> StatusBarPresentation {
         StatusBarPresentation(
             mode: mode,
@@ -1789,7 +1859,8 @@ final class StatusBarItemControllerPresentationTests: BaseTestCase {
             tooltip: tooltip,
             icon: icon,
             layout: layout,
-            titleStyle: titleStyle
+            titleStyle: titleStyle,
+            highlight: highlight
         )
     }
 
