@@ -129,7 +129,6 @@
 "preferences_advanced_setting_warning" = "Them இந்த அமைப்புகளை அவை என்ன செய்கின்றன என்பதை நீங்கள் புரிந்து கொண்டால் மட்டுமே பயன்படுத்தவும்";
 "preferences_advanced_apple_script_checkmark" = "கூட்டத்தில் சேரும்போது ஆப்பிள்ச்கிரிப்டை இயக்கவும்";
 "preferences_advanced_apple_script_placeholder" = "# உங்கள் ச்கிரிப்டை இங்கே எழுதுங்கள்\n இடைநிறுத்த \"இசை\" பயன்பாட்டை சொல்லுங்கள்";
-"preferences_advanced_run_script_on_event_start" = "ஆப்பிள்ச்கிரிப்டை தானாக இயக்கவும்";
 "preferences_advanced_test_script_on_next_event" = "அடுத்த நிகழ்வில் சோதனை";
 "preferences_advanced_edit_script" = "ச்கிரிப்டைத் திருத்து";
 "preferences_advanced_save_script_button" = "ச்கிரிப்டைச் சேமிக்கவும்";

@@ -14,19 +14,23 @@ public struct ProviderHealth: Equatable {
     /// True when the displayed data comes from a preserved snapshot, not the latest fetch attempt.
     public var isStale: Bool
     public var authRequired: Bool
+    /// The active calendar provider lacks permission to read events.
+    public var calendarPermissionRequired: Bool
 
     public init(
         lastSuccessfulRefresh: Date? = nil,
         lastAttemptedRefresh: Date? = nil,
         lastErrorDescription: String? = nil,
         isStale: Bool = false,
-        authRequired: Bool = false
+        authRequired: Bool = false,
+        calendarPermissionRequired: Bool = false
     ) {
         self.lastSuccessfulRefresh = lastSuccessfulRefresh
         self.lastAttemptedRefresh = lastAttemptedRefresh
         self.lastErrorDescription = lastErrorDescription
         self.isStale = isStale
         self.authRequired = authRequired
+        self.calendarPermissionRequired = calendarPermissionRequired
     }
 }
 
@@ -51,7 +55,8 @@ extension ProviderHealth {
             lastAttemptedRefresh: attempted,
             lastErrorDescription: Self.errorDescription(error),
             isStale: true,
-            authRequired: Self.isAuthRequired(error)
+            authRequired: Self.isAuthRequired(error),
+            calendarPermissionRequired: Self.isCalendarPermissionRequired(error)
         )
     }
 
@@ -62,12 +67,25 @@ extension ProviderHealth {
         return error.localizedDescription
     }
 
+    private static func isCalendarPermissionRequired(_ error: Error) -> Bool {
+        if error is EventKitReadAccessError { return true }
+        switch error {
+        case let CalendarSyncError.calendarAccessFailed(underlying),
+             let CalendarSyncError.eventFetchFailed(underlying):
+            return isCalendarPermissionRequired(underlying)
+        default:
+            return false
+        }
+    }
+
     private static func isAuthRequired(_ error: Error) -> Bool {
         if let authError = error as? AuthError {
             switch authError {
             case .notSignedIn:
                 return true
-            case .cancelled, .refreshFailed:
+            // A refresh that could not reach Google says nothing about the
+            // grant, so it must not push the UI into a reconnect state.
+            case .cancelled, .refreshFailed, .temporarilyUnavailable:
                 return false
             }
         }
@@ -76,7 +94,7 @@ extension ProviderHealth {
             switch googleError {
             case .unauthorized:
                 return true
-            case .forbiddenCalendar, .httpStatus, .missingItems:
+            case .forbiddenCalendar, .httpStatus, .missingItems, .invalidPagination:
                 return false
             }
         }

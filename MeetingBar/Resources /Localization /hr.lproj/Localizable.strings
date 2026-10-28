@@ -147,7 +147,6 @@
 "preferences_advanced_setting_warning" = "⚠️ Koristi ove postavke samo ako razumiješ što rade";
 "preferences_advanced_apple_script_checkmark" = "Pokreni AppleScript kad se pridružuješ sastanku";
 "preferences_advanced_apple_script_placeholder" = "# ovdje upiši tvoja skripta\nnaredi programu „Glazba“ da zaustavi reprodukciju";
-"preferences_advanced_run_script_on_event_start" = "Pokreni AppleScript automatski";
 "preferences_advanced_test_script_on_next_event" = "Testiraj na sljedećem događaju";
 "preferences_advanced_edit_script" = "Uredi skripta";
 "preferences_advanced_save_script_button" = "Spremi skripta";

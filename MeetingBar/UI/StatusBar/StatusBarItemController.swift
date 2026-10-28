@@ -10,6 +10,7 @@ import Cocoa
 import Combine
 import Defaults
 import KeyboardShortcuts
+import SwiftUI
 
 enum MenuStyleConstants {
     static let defaultFontSize: CGFloat = 13
@@ -35,6 +36,7 @@ enum MenuStyleConstants {
 }
 
 struct StatusBarDependencies {
+    var states: AnyPublisher<AppState, Never> = Empty().eraseToAnyPublisher()
     var appState: @MainActor () -> AppState = { AppState() }
     var events: @MainActor () -> [MBEvent] = { [] }
     var send: @MainActor (AppAction) -> Void = { _ in }
@@ -60,9 +62,15 @@ final class StatusBarItemController {
 
     let installationDate = getInstallationDate()
 
+    /// Hosting view used to render the stacked (time-under-title) layout. Kept
+    /// around so successive updates reuse the same view (and its Auto Layout
+    /// constraints) instead of re-adding a subview on every refresh.
+    var stackedHostingView: NSHostingView<StatusBarStackedTitleView>?
+
     private var dependencies = StatusBarDependencies()
 
     private var cancellables = Set<AnyCancellable>()
+    private var stateCancellable: AnyCancellable?
 
     init() {
         statusItem = NSStatusBar.system.statusItem(
@@ -100,9 +108,8 @@ final class StatusBarItemController {
             .showEventEndTime, .showMeetingServiceIcon,
             .showEventCalendarColor,
             .timeFormat, .bookmarks,
-            .personalEventsAppereance, .pastEventsAppereance,
-            .declinedEventsAppereance, .ongoingEventVisibility,
-            .showTimelineInMenu,
+            .pastEventsAppereance, .declinedEventsAppereance,
+            .showTimelineInMenu, .eventTitleFormat,
             options: []
         )
         .receive(on: DispatchQueue.main)
@@ -111,52 +118,6 @@ final class StatusBarItemController {
             self?.updateMenu()
         }
         .store(in: &cancellables)
-
-        Defaults.publisher(.eventTitleFormat, options: [])
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                self?.updateMenu()
-                self?.updateTitle()
-                self?.reconcileNotifications()
-            }
-            .store(in: &cancellables)
-
-        Defaults.publisher(.preferredLanguage, options: [.initial])
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] change in
-                if I18N.instance.changeLanguage(to: change.newValue) {
-                    self?.updateMenu()
-                    self?.updateTitle()
-                    self?.reconcileNotifications()
-                }
-            }
-            .store(in: &cancellables)
-
-        Defaults.publisher(
-            keys: .joinEventNotification,
-            .joinEventNotificationTime,
-            .endOfEventNotification,
-            .endOfEventNotificationTime,
-            .fullscreenNotification,
-            .fullscreenNotificationTime,
-            .fullscreenNotificationsForEventsWithoutMeetingLink,
-            .automaticEventJoin,
-            .automaticEventJoinTime,
-            .runEventStartScript,
-            .eventStartScriptTime,
-            .eventStartScriptLocation,
-            .dismissedEvents,
-            options: []
-        )
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] _ in
-            self?.reconcileNotifications()
-        }
-        .store(in: &cancellables)
-    }
-
-    private func reconcileNotifications() {
-        dependencies.send(.reconcileNotifications)
     }
 
     private func setupKeyboardShortcuts() {
@@ -194,24 +155,29 @@ final class StatusBarItemController {
         statusItem.menu = statusItemMenu
         statusItem.button?.performClick(nil)  // ...and click
         statusItem.menu = nil
+        // Updates were intentionally deferred while the menu was tracking.
+        updateMenu()
     }
 
     func configure(dependencies: StatusBarDependencies) {
         self.dependencies = dependencies
+        stateCancellable = dependencies.states
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.updateTitle()
+                self?.updateMenu()
+            }
     }
 
     func updateTitle() {
         let now = Date()
         let presentation = StatusBarPresenter.presentation(
-            nextEvent: events.nextEvent().map(StatusBarEventPresentationInput.init),
+            nextEvent: events.nextEvent(settings: .current, now: now).map(StatusBarEventPresentationInput.init),
             settings: .current,
             now: now,
             calendar: statusBarCalendar()
         )
-
-        if presentation.removeDeliveredNotifications, Defaults[.joinEventNotification] {
-            removeDeliveredNotifications()
-        }
 
         renderStatusBar(presentation)
     }
@@ -223,8 +189,21 @@ final class StatusBarItemController {
         button.title = ""
         button.attributedTitle = NSAttributedString(string: "")
         button.toolTip = nil
+        button.setAccessibilityLabel(nil)
+        button.setAccessibilityValue(nil)
         button.alignment = .center
         button.cell?.lineBreakMode = .byTruncatingTail
+
+        // The stacked (time-under-title) layout is drawn by a SwiftUI hosting
+        // view for crisp two-line rendering; every other layout uses the
+        // button's own image + (attributed) title.
+        if presentation.mode == .nextEvent, presentation.layout == .stacked,
+           !presentation.title.isEmpty || !presentation.time.isEmpty {
+            renderStackedTitle(presentation, button: button)
+            return
+        }
+
+        removeStackedHostingView()
 
         switch presentation.icon {
         case .asset(let name):
@@ -243,6 +222,75 @@ final class StatusBarItemController {
         }
 
         ensureStatusBarButtonIsVisible(button)
+    }
+
+    /// Renders the stacked layout into an `NSHostingView` centered in the
+    /// status button. Because the hosting view carries the whole visual (icon
+    /// + both text lines), the button's own image/title are left empty and the
+    /// status item is sized from the hosting view's intrinsic width.
+    private func renderStackedTitle(_ presentation: StatusBarPresentation, button: NSStatusBarButton) {
+        let rootView = StatusBarStackedTitleView(
+            icon: stackedIcon(for: presentation.icon),
+            title: presentation.title,
+            time: presentation.time,
+            style: presentation.titleStyle
+        )
+
+        let hostingView: NSHostingView<StatusBarStackedTitleView>
+        if let existing = stackedHostingView {
+            hostingView = existing
+            hostingView.rootView = rootView
+            hostingView.isHidden = false
+        } else {
+            hostingView = StatusBarStackedHostingView(rootView: rootView)
+            hostingView.translatesAutoresizingMaskIntoConstraints = false
+            button.addSubview(hostingView)
+            NSLayoutConstraint.activate([
+                hostingView.centerXAnchor.constraint(equalTo: button.centerXAnchor),
+                hostingView.centerYAnchor.constraint(equalTo: button.centerYAnchor)
+            ])
+            stackedHostingView = hostingView
+        }
+
+        // Keep an empty (zero-size) image rather than clearing it to nil. A
+        // status button that hosts a custom subview but has a nil image does
+        // not pick up the menu bar's inactive-display dimming, so its content
+        // stays bright on secondary monitors; an empty image keeps the button
+        // in its normal image-drawing mode (matching how SpotMenu configures
+        // its hosting-view status item) so the whole item dims like native ones.
+        button.image = NSImage()
+        button.imagePosition = .imageLeft
+        button.toolTip = presentation.tooltip
+        button.setAccessibilityLabel(presentation.tooltip ?? presentation.title)
+        button.setAccessibilityValue(presentation.time)
+
+        hostingView.layoutSubtreeIfNeeded()
+        statusItem.length = hostingView.intrinsicContentSize.width
+    }
+
+    /// Resolves the icon shown alongside the stacked title. Returns `nil` for
+    /// the "no icon" case and for the hidden `no_online_session` sentinel, so
+    /// the hosting view simply omits the image.
+    private func stackedIcon(for icon: StatusBarIcon) -> NSImage? {
+        let image: NSImage?
+        switch icon {
+        case .asset(let name):
+            let asset = MenuStyleConstants.iconNamed(name)
+            asset.size = MenuStyleConstants.iconSize
+            image = asset
+        case .meetingService(let service):
+            image = getIconForMeetingService(service)
+        case .none:
+            image = nil
+        }
+        return image?.name() == "no_online_session" ? nil : image
+    }
+
+    private func removeStackedHostingView() {
+        guard stackedHostingView != nil else { return }
+        stackedHostingView?.removeFromSuperview()
+        stackedHostingView = nil
+        statusItem.length = NSStatusItem.variableLength
     }
 
     private func ensureStatusBarButtonIsVisible(_ button: NSStatusBarButton) {
@@ -333,7 +381,7 @@ final class StatusBarItemController {
 
     @objc
     func joinNextMeeting() {
-        if let nextEvent = events.nextEvent() {
+        if let nextEvent = events.nextEvent(settings: .current, now: Date()) {
             dependencies.send(.joinMeeting(eventID: nextEvent.id))
         } else {
             AppMessageCenter.shared.post(.nextMeetingMissing)
@@ -351,13 +399,9 @@ final class StatusBarItemController {
 
     @objc
     func dismissNextMeetingAction() {
-        if let nextEvent = events.nextEvent() {
+        if let nextEvent = events.nextEvent(settings: .current, now: Date()) {
             dependencies.send(.dismissMeeting(eventID: nextEvent.id))
             AppMessageCenter.shared.post(.meetingDismissed(title: nextEvent.title))
-
-            updateTitle()
-            updateMenu()
-            reconcileNotifications()
         }
     }
 
@@ -365,10 +409,6 @@ final class StatusBarItemController {
     func undismissMeetingsActions() {
         dependencies.send(.clearDismissedMeetings)
         AppMessageCenter.shared.post(.allDismissalsRemoved)
-
-        updateTitle()
-        updateMenu()
-        reconcileNotifications()
     }
 
     @objc
@@ -439,20 +479,12 @@ final class StatusBarItemController {
 
     func dismiss(event: MBEvent) {
         dependencies.send(.dismissMeeting(eventID: event.id))
-
-        updateTitle()
-        updateMenu()
-        reconcileNotifications()
     }
 
     @objc
     func undismissEvent(sender: NSMenuItem) {
         if let event: MBEvent = sender.representedObject as? MBEvent {
             dependencies.send(.undismissMeeting(eventID: event.id))
-
-            updateTitle()
-            updateMenu()
-            reconcileNotifications()
         }
     }
 
@@ -521,49 +553,20 @@ enum StatusBarTitleRenderer {
                 )
             )
         case .stacked:
-            return stackedTitle(for: presentation)
+            // The stacked layout is rendered by `StatusBarStackedTitleView`
+            // through an NSHostingView (see `StatusBarItemController`), so the
+            // attributed title is intentionally empty here.
+            return NSAttributedString(string: "")
         }
-    }
-
-    private static func stackedTitle(for presentation: StatusBarPresentation) -> NSAttributedString {
-        let title = NSMutableAttributedString(
-            string: presentation.title,
-            attributes: titleAttributes(
-                style: presentation.titleStyle,
-                font: NSFont.systemFont(ofSize: 12),
-                baselineOffset: -3
-            )
-        )
-        title.append(
-            NSAttributedString(
-                string: "\n" + presentation.time,
-                attributes: [
-                    NSAttributedString.Key.font: NSFont.systemFont(ofSize: 9),
-                    NSAttributedString.Key.foregroundColor: NSColor.lightGray
-                ]
-            ))
-
-        let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineHeightMultiple = 0.7
-        paragraphStyle.alignment = .center
-        title.addAttributes(
-            [NSAttributedString.Key.paragraphStyle: paragraphStyle],
-            range: NSRange(location: 0, length: title.length)
-        )
-        return title
     }
 
     private static func titleAttributes(
         style: StatusBarTitleStyle,
-        font: NSFont,
-        baselineOffset: CGFloat? = nil
+        font: NSFont
     ) -> [NSAttributedString.Key: Any] {
         var attributes: [NSAttributedString.Key: Any] = [
             .font: font
         ]
-        if let baselineOffset {
-            attributes[.baselineOffset] = baselineOffset
-        }
         switch style {
         case .normal:
             break

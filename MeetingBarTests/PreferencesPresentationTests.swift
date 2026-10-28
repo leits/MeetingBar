@@ -174,7 +174,8 @@ final class PreferencesPresentationTests: XCTestCase {
         state.providerHealth = ProviderHealth(
             lastAttemptedRefresh: Date(timeIntervalSince1970: 1_700_000_000),
             lastErrorDescription: "Access denied",
-            isStale: true
+            isStale: true,
+            calendarPermissionRequired: true
         )
 
         let presentation = PreferencesCalendarPresentation.make(from: state)
@@ -186,6 +187,35 @@ final class PreferencesPresentationTests: XCTestCase {
         )
         XCTAssertTrue(presentation.canOpenCalendarSettings)
         XCTAssertFalse(presentation.canReconnect)
+    }
+
+    func testEventKitPermissionFailureAfterSuccessfulRefreshIsExplicit() {
+        var state = AppState()
+        state.activeProvider = .macOSEventKit
+        state.providerHealth = ProviderHealth(
+            lastSuccessfulRefresh: Date(timeIntervalSince1970: 1_700_000_000),
+            lastErrorDescription: "Calendar access denied",
+            isStale: true,
+            calendarPermissionRequired: true
+        )
+
+        let presentation = PreferencesCalendarPresentation.make(from: state)
+        XCTAssertEqual(presentation.connectionState, .permissionRequired)
+        XCTAssertTrue(presentation.canOpenCalendarSettings)
+        XCTAssertFalse(presentation.canReconnect)
+    }
+
+    func testUnrelatedEventKitFailureDoesNotClaimMissingPermission() {
+        var state = AppState()
+        state.activeProvider = .macOSEventKit
+        state.providerHealth = ProviderHealth(
+            lastErrorDescription: "EventKit refresh failed",
+            isStale: true
+        )
+
+        let presentation = PreferencesCalendarPresentation.make(from: state)
+        XCTAssertEqual(presentation.connectionState, .stale)
+        XCTAssertFalse(presentation.canOpenCalendarSettings)
     }
 
     func testFailedRefreshWithCachedDataIsPresentedAsStale() {
@@ -470,5 +500,69 @@ final class PreferencesPresentationTests: XCTestCase {
             ),
             .browser(chrome)
         )
+    }
+}
+
+@MainActor
+final class MissingCalendarPreferencesRecoveryTests: XCTestCase {
+    func testMissingSavedCalendarVisibleEvenWhenFreshInventoryIsEmpty() {
+        let health = ProviderHealth.failure(
+            previous: ProviderHealth(),
+            attempted: Date(),
+            error: CalendarSyncError.eventFetchFailed(
+                EventKitCalendarSelectionError.selectedCalendarsUnavailable
+            )
+        )
+        XCTAssertEqual(
+            unavailableSelectedCalendarIDs(
+                selectedIDs: ["removed-calendar"],
+                calendars: [],
+                provider: .macOSEventKit,
+                health: health
+            ),
+            ["removed-calendar"]
+        )
+    }
+
+    func testPartiallyMissingSelectionOffersOnlyRemovedCalendar() {
+        let health = ProviderHealth.failure(
+            previous: ProviderHealth(),
+            attempted: Date(),
+            error: CalendarSyncError.eventFetchFailed(
+                EventKitCalendarSelectionError.selectedCalendarsUnavailable
+            )
+        )
+        XCTAssertEqual(
+            unavailableSelectedCalendarIDs(
+                selectedIDs: ["available", "lost"],
+                calendars: [makeFakeCalendar(id: "available")],
+                provider: .macOSEventKit,
+                health: health
+            ),
+            ["lost"]
+        )
+    }
+
+    func testHealthyOrGoogleCalendarsNeverShowMissingSelectionRecovery() {
+        let health = ProviderHealth.success(attempted: Date())
+        XCTAssertTrue(unavailableSelectedCalendarIDs(
+            selectedIDs: ["old"],
+            calendars: [],
+            provider: .macOSEventKit,
+            health: health
+        ).isEmpty)
+        let stale = ProviderHealth.failure(
+            previous: health,
+            attempted: Date(),
+            error: CalendarSyncError.eventFetchFailed(
+                EventKitCalendarSelectionError.selectedCalendarsUnavailable
+            )
+        )
+        XCTAssertTrue(unavailableSelectedCalendarIDs(
+            selectedIDs: ["old"],
+            calendars: [],
+            provider: .googleCalendar,
+            health: stale
+        ).isEmpty)
     }
 }

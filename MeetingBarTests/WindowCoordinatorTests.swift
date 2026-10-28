@@ -77,6 +77,44 @@ final class WindowCoordinatorTests: XCTestCase {
         XCTAssertFalse(FullscreenNotificationKeyboardPolicy.shouldDismiss(keyCode: 36))
     }
 
+    func testClosedFullscreenNotificationWindowIsReleased() throws {
+        let coordinator = WindowCoordinator()
+        weak var weakWindow: NSWindow?
+        weak var weakContentView: NSView?
+
+        autoreleasepool {
+            let existingWindows = Set(NSApp.windows.map(ObjectIdentifier.init))
+            let now = Date()
+            coordinator.openFullscreenNotificationWindow(
+                event: makeFakeEvent(
+                    id: "fullscreen-leak",
+                    start: now.addingTimeInterval(60),
+                    end: now.addingTimeInterval(1800),
+                    withLink: true
+                )
+            )
+            let createdWindows = NSApp.windows.filter {
+                $0 is FullscreenNotificationWindow && !existingWindows.contains(ObjectIdentifier($0))
+            }
+            XCTAssertEqual(createdWindows.count, 1)
+            let window = createdWindows.first
+            weakWindow = window
+            weakContentView = window?.contentView
+        }
+
+        // The alert must stay on screen without the coordinator holding it strongly.
+        RunLoop.current.run(until: Date().addingTimeInterval(0.1))
+        try autoreleasepool {
+            let window = try XCTUnwrap(weakWindow)
+            XCTAssertTrue(window.isVisible)
+            window.close()
+        }
+        RunLoop.current.run(until: Date().addingTimeInterval(0.2))
+
+        XCTAssertNil(weakWindow)
+        XCTAssertNil(weakContentView)
+    }
+
     func testOnboardingWindowPolicyAllowsNormalMovableResizableWindow() {
         XCTAssertEqual(OnboardingWindowPresentationPolicy.level, .normal)
         XCTAssertTrue(OnboardingWindowPresentationPolicy.styleMask.contains(.resizable))
@@ -89,6 +127,42 @@ final class WindowCoordinatorTests: XCTestCase {
             OnboardingWindowPresentationPolicy.minimumSize.height,
             OnboardingWindowPresentationPolicy.contentRect.height
         )
+    }
+
+    func testReopeningOnboardingRetainsTheExistingWindowAndFlow() async throws {
+        let coordinator = WindowCoordinator()
+        let harness = AppModelTestHarness()
+        var originalCompletionCount = 0
+        coordinator.openOnboardingWindow(
+            appModel: harness.model,
+            onProviderSelected: { _ in .success },
+            onComplete: { _ in
+                originalCompletionCount += 1
+                return .success
+            }
+        )
+        let originalWindow = try XCTUnwrap(coordinator.onboardingWindow)
+        let originalHandler = try XCTUnwrap(coordinator.onboardingHandler)
+        defer { originalWindow.close() }
+
+        coordinator.openOnboardingWindow(
+            appModel: harness.model,
+            onProviderSelected: { _ in
+                XCTFail("Must retain the original flow")
+                return .cancelled
+            },
+            onComplete: { _ in
+                XCTFail("Must retain the original flow")
+                return .cancelled
+            }
+        )
+
+        XCTAssertTrue(coordinator.onboardingWindow === originalWindow)
+        XCTAssertTrue(coordinator.onboardingHandler === originalHandler)
+        XCTAssertTrue(originalWindow.isVisible)
+        let result = await originalHandler.onComplete(.macOSEventKit)
+        XCTAssertEqual(result, .success)
+        XCTAssertEqual(originalCompletionCount, 1)
     }
 
     func testFullscreenPresentationShowsJoinForJoinableEvent() {
@@ -160,5 +234,61 @@ final class WindowCoordinatorTests: XCTestCase {
 
         XCTAssertEqual(incompleteCloseCount, 0)
         XCTAssertEqual(changelogCloseCount, 1)
+    }
+
+    /// An external monitor an alert was shown on is disconnected: its frame no
+    /// longer intersects any connected screen, so the alert must be moved.
+    func testRepositionNeededWhenAlertScreenDisconnected() {
+        let builtIn = CGRect(x: 0, y: 0, width: 1440, height: 900)
+        // Alert is sitting on a second display to the right that is now gone.
+        let alertOnExternal = CGRect(x: 1440, y: 0, width: 1920, height: 1080)
+
+        XCTAssertTrue(
+            FullscreenNotificationRepositionPolicy.needsReposition(
+                windowFrame: alertOnExternal,
+                screenFrames: [builtIn]
+            )
+        )
+    }
+
+    /// The alert is still fully within a connected screen, so a display change
+    /// elsewhere must not yank it to another screen.
+    func testRepositionNotNeededWhenAlertStillOnConnectedScreen() {
+        let builtIn = CGRect(x: 0, y: 0, width: 1440, height: 900)
+        let external = CGRect(x: 1440, y: 0, width: 1920, height: 1080)
+
+        XCTAssertFalse(
+            FullscreenNotificationRepositionPolicy.needsReposition(
+                windowFrame: builtIn,
+                screenFrames: [builtIn, external]
+            )
+        )
+    }
+
+    func testRepositionNotNeededForClosedAlert() {
+        let builtIn = CGRect(x: 0, y: 0, width: 1440, height: 900)
+        let alertOnDisconnectedScreen = CGRect(x: 1440, y: 0, width: 1920, height: 1080)
+
+        XCTAssertFalse(
+            FullscreenNotificationRepositionPolicy.needsReposition(
+                windowFrame: alertOnDisconnectedScreen,
+                screenFrames: [builtIn],
+                isVisible: false
+            )
+        )
+    }
+
+    /// A partially off-screen alert (overlapping a connected screen but not
+    /// fully contained) is still considered stranded and is repositioned.
+    func testRepositionNeededWhenAlertOnlyPartiallyOnScreen() {
+        let builtIn = CGRect(x: 0, y: 0, width: 1440, height: 900)
+        let halfOff = CGRect(x: 1000, y: 0, width: 1440, height: 900)
+
+        XCTAssertTrue(
+            FullscreenNotificationRepositionPolicy.needsReposition(
+                windowFrame: halfOff,
+                screenFrames: [builtIn]
+            )
+        )
     }
 }

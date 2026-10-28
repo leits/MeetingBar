@@ -1,6 +1,6 @@
 # MeetingBar Architecture
 
-This document is the contributor-facing map of the codebase. It is the canonical reference for app structure, dependency ownership, and release-sensitive configuration. [`CLAUDE.md`](../CLAUDE.md) and [`AGENTS.md`](../AGENTS.md) provide AI-agent operating instructions.
+This document is the contributor-facing map of the codebase. It is the canonical reference for app structure, dependency ownership, and release-sensitive configuration.
 
 If anything below disagrees with the actual code, the code wins — and the doc needs a fix.
 
@@ -57,7 +57,7 @@ The product principle is reliability first: **show the correct meeting, stay fre
          macOS menu bar
 ```
 
-**Read this top-down** when debugging "the menu bar shows the wrong thing": the bug is at one of these layers, not spread across them.
+**Read this top-down** when debugging "the menu bar shows the wrong thing". Also trace the settings and lifecycle triggers below: correct individual decisions still depend on the right inputs and update wiring.
 
 ---
 
@@ -72,7 +72,6 @@ MeetingBar/                         (~76 .swift files)
 │   ├── AppIntent.swift             — Shortcuts integration
 │   ├── AppRuntimeBridge.swift      — AppKit/SwiftUI bridge helpers used at the composition root
 │   ├── LifecycleObserver.swift     — screen-lock / wake / timezone / day-change notifications
-│   ├── Notifications.swift         — shared notification identifiers and data types
 │   ├── PatronageService.swift      — StoreKit 2 purchases, restore, entitlements, transaction updates
 │   ├── URLHandler.swift            — apple-event URL dispatch (oauth, preferences)
 │   └── WindowCoordinator.swift     — window lifecycle for Onboarding, Preferences, Changelog, Fullscreen
@@ -85,7 +84,7 @@ MeetingBar/                         (~76 .swift files)
 │   ├── EventFiltering+MeetingBar.swift
 │   ├── EventSelection.swift        — pick the "next" event from a list [SPM]
 │   ├── EventSelection+MeetingBar.swift
-│   ├── MBEvent.swift               — cross-provider event + filtered() / nextEvent() helpers
+│   ├── MBEvent.swift               — cross-provider event data
 │   ├── MBEvent+MeetingBar.swift    — MBEvent adapter for app-specific helpers
 │   ├── MBCalendar.swift            — cross-provider calendar
 │   ├── ProviderHealth.swift        — auth/stale/error/ok
@@ -108,20 +107,20 @@ MeetingBar/                         (~76 .swift files)
 │   ├── NotificationPlanner.swift   — desired UN requests for an event [SPM]
 │   ├── NotificationScheduler.swift — reconciles plans with UNUserNotificationCenter; owns content + action scheduling
 │   ├── NotificationActionRunner.swift    — executes fullscreen / auto-join / script; owns processed-event records
-│   ├── NotificationActionHandler.swift   — maps UNNotificationResponse to NotificationResponseAction
+│   ├── NotificationActionHandler.swift   — dispatches fullscreen, auto-join and event-start scripts
 │   ├── NotificationResponseAction.swift  — enum of possible user actions from a delivered notification
 │   ├── NotificationCenterDelegate.swift  — UNUserNotificationCenterDelegate
 │   ├── NotificationSetup.swift           — requests UN authorization
 │   └── SnoozeService.swift               — schedules and cancels event-snooze reminders
 │
 ├── Settings/
-│   └── AppSettings.swift           — value-type settings groups + AppSettings.current factory (single Defaults boundary)
+│   └── AppSettings.swift           — value-type settings groups, Defaults snapshots and writes
 │
 ├── Preferences/                    — SwiftUI Settings window tabs (General, Calendars, Meeting Opening, Menu Bar, Notifications, Advanced)
 ├── Onboarding/                     — multi-screen first-launch flow
 ├── UI/
 │   ├── StatusBar/                  — menu bar item, menu construction, presentation
-│   │   ├── StatusBarItemController.swift   — owns NSStatusItem, render only
+│   │   ├── StatusBarItemController.swift   — renders state, observes display settings, forwards user actions
 │   │   ├── MenuBuilder.swift               — builds NSMenu from StatusBarMenuState (zero Defaults reads)
 │   │   ├── StatusBarMenuState.swift        — value type + .make(from:) factory
 │   │   ├── StatusBarPresentation.swift     — Presentation + Title + Icon policies and Presenter [SPM]
@@ -223,7 +222,7 @@ Publishers.Merge3(
 Three things to internalize:
 
 1. **`throttle(200ms)` collapses bursts.** When the user flips three checkboxes in Preferences within 50 ms, we do one fetch, not three. `latest: false` lets the first trigger through immediately, which keeps manual refresh responsive.
-2. **`flatMap(maxPublishers: 1)` serializes fetches.** While a fetch is in flight, new triggers wait. There is no parallel refresh and no "most recent wins" race.
+2. **`flatMap(maxPublishers: 1)` limits concurrent refresh publishers.** Trigger admission also depends on throttle and downstream demand; do not assume every trigger during a fetch is buffered for another cycle. Provider-generation checks prevent a superseded provider's result from being published.
 3. **Failed refresh preserves last known events and calendars.** This is enforced in the publish step: we never replace a non-empty list with an empty one because of a network failure. `ProviderHealth` is the place where errors surface, not the event list.
 
 If you are tempted to "just trigger a refresh from over here" — call `calendarSync.refreshSources()` (or send to `refreshSubject`). Do not duplicate the fetch logic.
@@ -251,7 +250,15 @@ NotificationScheduler.reconcile(events:settings:now:)   ← side-effecting servi
 
 **Why "mb-plan-" identifiers matter.** They are stable per (event, kind). Reconcile is idempotent: calling it twice in a row is a no-op. Calling it after a settings change re-arms only what changed. This replaced an older "single-id" model that suppressed back-to-back events.
 
-**`NotificationActionRunner`** handles in-app actions (fullscreen, auto-join, on-start script) triggered at event start. The scheduler owns delayed `Task`s for these actions and dispatches to the runner; the runner persists processed-event records (a fileprivate `NotificationRecordStore`) to avoid re-firing on re-reconcile.
+**`NotificationActionRunner`** handles in-app actions (fullscreen, auto-join, on-start script) triggered at event start. The scheduler owns delayed `Task`s for these actions and dispatches to the runner; `NotificationRecordStore` persists processed-event records to avoid re-firing on re-reconcile.
+
+`AppModel` owns the subscription to `AppSettings.notificationChanges`. Notification preferences, dismissal writes (including calendar-refresh pruning), title privacy and language changes reconcile through that one subscription. A dismissal action writes via `AppEnvironment`; the resulting settings event invalidates presentation and reconciles notifications. Menu handlers, notification responses and AppIntents therefore use the same path, even without a status bar controller. Language is applied before notification content is regenerated. Termination cancels the subscription.
+
+`StatusBarItemController` subscribes to the model state supplied at configuration and observes display-only settings. It does not initiate notification reconciliation. The E2E tests use this same state subscription and check automatic redraws; headless settings-flow tests exercise the production `AppEnvironment.live` wiring without constructing a controller.
+
+`NotificationScheduler` serializes system-request reconciliations: a replacement cancels superseded work and awaits its completion before reading pending requests. Cancellation is checked around asynchronous sink calls. This lets the newest plan remove an obsolete OS write that could not be cancelled once started. In-app action tasks are updated before that wait, so disabling auto-join or fullscreen is not blocked by a slow notification-center response. Suspended-write regression tests cover both ordering and immediate action cancellation.
+
+Delivered-notification cleanup is also owned by `AppModel`, which observes its latest state and uses the injected clock and selection settings. It clears only when join notifications are enabled, calendars are selected, and there is no current/next event. A far-future event hidden by the title threshold is still an event; idle state does not clear. `AppDelegate` forwards the existing minute-boundary signal as `.minuteElapsed`, refreshing presentation and cleanup without fetching calendars or reconciling pending plans. Selection-setting changes also invalidate presentation. `NotificationScheduler` executes cleanup through its sink; pending requests remain untouched. No notification side effect is part of `StatusBarPresentation` or `updateTitle()`.
 
 ---
 
@@ -286,7 +293,7 @@ providerConferenceData  (Google conferenceData.entryPoints)
       > customRegex     (user-defined fallback)
 ```
 
-Within one source, longer URLs win when one is a prefix of another (Zoom truncation case). The chosen candidate becomes `MBEvent.meetingLinkCandidate`; the rest stay as `MBEvent.alternateMeetingLinkCandidates` so the menu can offer "join with another link".
+Within one source, candidates are ranked by service tier (known conferencing services beat content links like YouTube/Vimeo, which beat generic catch-alls, which beat untagged links), then by the order services first appear in the field, and finally — between links of the same service — the longer URL wins so a Zoom link keeps its `?pwd=` token. The chosen candidate becomes `MBEvent.meetingLinkCandidate`; the rest stay as `MBEvent.alternateMeetingLinkCandidates` so the menu can offer "join with another link".
 
 **Do not put link-choosing logic in `MBEvent.init`.** Models are data; the detector is a policy.
 
@@ -319,7 +326,12 @@ CI is split by responsibility:
 
 - `ci.yml` validates localization keys, runs SwiftPM logic tests, and runs the Xcode app-hosted build/test path with coverage artifacts.
 - `lint.yml` runs SwiftLint.
-- `security.yml` runs Dependency Review on pull requests, CodeQL Swift analysis on trusted refs, and the optional Codacy SARIF upload when its token is configured.
+- `dependency-review.yml` checks dependency changes on pull requests.
+- `security.yml` runs CodeQL Swift and the optional Codacy SARIF upload on master pushes, the weekly schedule, and manual dispatches.
+
+CI and lint run once per PR revision, on master pushes, or by manual dispatch. Feature-branch pushes do not also start duplicate runs. New PR revisions cancel older runs of that same workflow and PR; master, scheduled, and manual runs remain independent. Workflow run titles show the PR/ref and trigger.
+
+`Build and Test` and `SwiftLint` remain the required check names. Test failures fail the build job directly. Test details and coverage are published in the workflow summary and artifacts rather than in a second test-report check. Cancelled runs do not publish partial reports; failed test runs still retain diagnostic summaries and artifacts. Coverage conversion/upload requires successful app tests, while existing JUnit results can still be uploaded after test failures.
 
 The local unsigned Debug build may print the entitlements/code-signing warning when `CODE_SIGNING_REQUIRED=NO`; that is not a Swift warning and is expected for local verification.
 
@@ -332,7 +344,7 @@ Long-running or delayed work must have one stored owner and an explicit cancella
 | Work | Owner | Cancellation path |
 |---|---|---|
 | App launch setup and notification authorization | `AppDelegate` | `applicationWillTerminate` |
-| Minute-boundary status refresh loop | `AppDelegate` | `applicationWillTerminate` / quit |
+| Minute-boundary signal to AppModel (presentation and delivered-notification cleanup) | `AppDelegate` | `applicationWillTerminate` / quit |
 | Provider change, snooze, onboarding, notification reconcile, refresh actions | `AppModel` | `.willTerminate`; replacement cancels superseded work |
 | Calendar refresh cycle and store-change refresh | `CalendarSync` | `stop()` |
 | Active provider operations | `CalendarRepository` / `EventStore` | provider switch and `stop()` call `cancelPendingOperations()` |
@@ -368,6 +380,8 @@ extension StatusBarPresentationSettings {
 
 The policy itself takes the snapshot and never imports `Defaults`. This is what keeps the policy hostless-testable.
 
+Event selection requires explicit `EventSelectionSettings` and `now`, including the `MBEvent` array helper and `AppState.nextEvent`. `AppState` contains calendar and lifecycle state, not a cached settings snapshot. `AppModel` samples selection settings through `AppEnvironment.eventSelectionSettings` for each action; the menu uses the same supplied `AppSettings` snapshot for selection and display. UI and script boundaries sample current settings when invoked. This keeps settings changes immediate without adding another settings store.
+
 **When to add a new setting.** Add one only when the behavior is genuinely subjective, common, easy to explain, and low-risk. First try improving the default. A "fix" that adds two new toggles is usually the wrong fix.
 
 ---
@@ -399,7 +413,6 @@ Touching these requires extra care, tests around behavior, and a focused PR:
 - `Notifications/NotificationScheduler.swift`
 - `Meetings/MeetingLinkDetector.swift`
 - `Meetings/MeetingServices.swift`
-- `App/Notifications.swift`
 
 Before changing one of these, identify the workflow owner, keep the behavior change narrow, and state the validation path in the PR.
 
@@ -414,7 +427,7 @@ You want to add "do not notify for events shorter than 5 minutes".
 3. **Update the policy.** Inside `NotificationPlanner.plan(for:settings:now:)`, return `[]` when `event.duration < settings.minDurationForNotifications`.
 4. **Test it hostless.** Add a case in `MeetingBarLogicTests/NotificationPlanningPolicyTests.swift`: short event -> empty plan; long event -> plan unchanged.
 5. **Update the UI.** Add a toggle in the relevant Preferences tab. Localize the label and add the key to `en.lproj/Localizable.strings`. Run `make validate-strings`.
-6. **Reconcile triggers.** Make sure `StatusBarItemController.setupDefaultsObservers()` (or wherever the watcher list lives) listens to your new key so flipping it triggers a notification reconcile.
+6. **Reconcile triggers.** Add the key to `AppSettings.notificationChanges` so AppModel observes it. Test the Defaults change through the live wiring without manually calling `reconcile`.
 7. **Open a small PR.** Body: rule, why a default tweak alone is not enough, screenshots if UI, test names.
 
 The whole change should be ~50 lines and no changes to `CalendarSync` or `AppDelegate`.
@@ -496,8 +509,7 @@ Then manually smoke-test first launch/onboarding for EventKit and Google Calenda
 
 - Project overview and installation: [`README.md`](../README.md)
 - Contributor workflow: [`CONTRIBUTING.md`](../CONTRIBUTING.md)
-- Unreleased user-visible changes: [`CHANGELOG.md`](../CHANGELOG.md)
-- AI agent operating instructions: [`CLAUDE.md`](../CLAUDE.md), [`AGENTS.md`](../AGENTS.md)
+- Published release notes and change history: [GitHub Releases](https://github.com/leits/MeetingBar/releases)
 - Security and contact: [`SECURITY.md`](../SECURITY.md), [`CONTACT.md`](../CONTACT.md)
 - Localization: `MeetingBar/Resources /Localization /` (note the spaces in the path — historical)
 - Meeting service URL patterns: [`MeetingBar/Meetings/MeetingServices.swift`](../MeetingBar/Meetings/MeetingServices.swift)

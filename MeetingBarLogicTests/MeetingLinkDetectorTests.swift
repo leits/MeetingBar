@@ -3,6 +3,7 @@
 //  MeetingBarLogicTests
 //
 
+import Darwin.Mach
 import XCTest
 
 @testable import MeetingBarLogic
@@ -465,6 +466,138 @@ final class MeetingLinkDetectorTests: XCTestCase {
         )
     }
 
+    func testGoogleMeetStripsGmailPlusAddressSuffixFromCalendarEmail() throws {
+        let link = try XCTUnwrap(MeetingLinkDetector.detect(
+            location: "https://meet.google.com/abc-defg-hij",
+            eventURL: nil, notes: nil,
+            calendarEmail: "user+work@gmail.com", currentUserEmail: nil
+        ))
+        XCTAssertEqual(link.url.absoluteString, "https://meet.google.com/abc-defg-hij?authuser=user@gmail.com")
+    }
+
+    func testGoogleMeetStripsGmailPlusAddressSuffixFromCurrentUserEmail() throws {
+        let link = try XCTUnwrap(MeetingLinkDetector.detect(
+            location: "https://meet.google.com/abc-defg-hij",
+            eventURL: nil, notes: nil,
+            calendarEmail: nil, currentUserEmail: "user+work@gmail.com"
+        ))
+        XCTAssertEqual(link.url.absoluteString, "https://meet.google.com/abc-defg-hij?authuser=user@gmail.com")
+    }
+
+    func testGoogleMeetLeavesPlainAccountAddressesUnchanged() throws {
+        for email in ["user@gmail.com", "User.Name@GOOGLEMAIL.COM", "user@example.com"] {
+            let link = try XCTUnwrap(MeetingLinkDetector.detect(
+                location: "https://meet.google.com/abc-defg-hij",
+                eventURL: nil, notes: nil,
+                calendarEmail: email, currentUserEmail: nil
+            ))
+            let items = URLComponents(url: link.url, resolvingAgainstBaseURL: false)?.queryItems
+            XCTAssertEqual(items?.first { $0.name == "authuser" }?.value, email)
+        }
+    }
+
+    func testGoogleMeetSupportsPersonalGmailDomainsWithoutChangingDotsOrCase() throws {
+        let cases = [
+            ("User.Name+work@GMAIL.COM", "User.Name@GMAIL.COM"),
+            ("user.name+work@googlemail.com", "user.name@googlemail.com"),
+            ("user+work+calendar@GoogleMail.Com", "user@GoogleMail.Com")
+        ]
+        for (email, expected) in cases {
+            let link = try XCTUnwrap(MeetingLinkDetector.detect(
+                location: "https://meet.google.com/abc-defg-hij",
+                eventURL: nil, notes: nil,
+                calendarEmail: email, currentUserEmail: nil
+            ))
+            let items = URLComponents(url: link.url, resolvingAgainstBaseURL: false)?.queryItems
+            XCTAssertEqual(items?.first { $0.name == "authuser" }?.value, expected)
+        }
+    }
+
+    func testGoogleMeetPreservesPlusAddressesOnOtherDomainsAndInvalidAliasShapes() throws {
+        let emails = [
+            "user+work@example.com",
+            "user+work@corp.example",
+            "user+work@sub.gmail.com",
+            "user+work@gmail.com.example",
+            "user+work@notgmail.com",
+            "user+work@googlemail.com.example",
+            "user@gmail.com+work",
+            "user+work@@gmail.com",
+            "user+work",
+            "+work@gmail.com",
+            "user+@gmail.com"
+        ]
+        // Exercise both identity sources: EventKit can supply arbitrary domains.
+        for email in emails {
+            for useCurrentUser in [false, true] {
+                let link = try XCTUnwrap(MeetingLinkDetector.detect(
+                    location: "https://meet.google.com/abc-defg-hij",
+                    eventURL: nil, notes: nil,
+                    calendarEmail: useCurrentUser ? nil : email,
+                    currentUserEmail: useCurrentUser ? email : nil
+                ))
+                let items = URLComponents(url: link.url, resolvingAgainstBaseURL: false)?.queryItems
+                XCTAssertEqual(items?.first { $0.name == "authuser" }?.value, email, email)
+            }
+        }
+    }
+
+    func testGoogleMeetKeepsCurrentUserPriorityWhenNormalizingAliases() throws {
+        let cases = [
+            ("person+work@gmail.com", "calendar+tag@example.com", "person@gmail.com"),
+            ("person+work@corp.example", "calendar+tag@gmail.com", "person+work@corp.example")
+        ]
+        for (currentUser, calendar, expected) in cases {
+            let link = try XCTUnwrap(MeetingLinkDetector.detect(
+                location: "https://meet.google.com/abc-defg-hij",
+                eventURL: nil, notes: nil,
+                calendarEmail: calendar, currentUserEmail: currentUser
+            ))
+            let items = URLComponents(url: link.url, resolvingAgainstBaseURL: false)?.queryItems
+            XCTAssertEqual(items?.first { $0.name == "authuser" }?.value, expected)
+        }
+    }
+
+    func testGoogleMeetAliasReplacesAuthuserWithoutLosingQueryOrFragment() throws {
+        let link = try XCTUnwrap(MeetingLinkDetector.detect(
+            conferenceURL: URL(string: "https://meet.google.com/abc-defg-hij?pli=1&authuser=old&authuser=older#details"),
+            location: nil, eventURL: nil, notes: nil,
+            calendarEmail: "user+work@gmail.com", currentUserEmail: nil
+        ))
+        let components = try XCTUnwrap(URLComponents(url: link.url, resolvingAgainstBaseURL: false))
+        XCTAssertEqual(components.queryItems?.filter { $0.name == "authuser" }.map(\.value), ["user@gmail.com"])
+        XCTAssertEqual(components.queryItems?.first { $0.name == "pli" }?.value, "1")
+        XCTAssertEqual(components.fragment, "details")
+    }
+
+    func testGoogleMeetAliasesApplyToEveryCandidateAndPreserveOtherServices() {
+        let candidates = MeetingLinkDetector.allCandidates(
+            conferenceURL: URL(string: "https://meet.google.com/provider"),
+            location: "https://meet.google.com/location",
+            eventURL: URL(string: "https://meet.google.com/event-url"),
+            notes: "https://meet.google.com/notes https://us02web.zoom.us/j/12345?pwd=example",
+            calendarEmail: "user+work@gmail.com", currentUserEmail: nil
+        )
+        let meetCandidates = candidates.filter { $0.service == .meet }
+        XCTAssertEqual(meetCandidates.map(\.source), [.providerConferenceData, .eventURL, .location, .notes])
+        for candidate in meetCandidates {
+            let items = URLComponents(url: candidate.url, resolvingAgainstBaseURL: false)?.queryItems
+            XCTAssertEqual(items?.first { $0.name == "authuser" }?.value, "user@gmail.com")
+        }
+        XCTAssertEqual(candidates.filter { $0.service == .zoom }.map(\.url.absoluteString),
+                       ["https://us02web.zoom.us/j/12345?pwd=example"])
+    }
+
+    func testWrappedGoogleMeetAliasIsNormalizedAfterRedirectCleanup() throws {
+        let wrapped = outlookSafeLink(for: "https://meet.google.com/abc-defg-hij")
+        let link = try XCTUnwrap(MeetingLinkDetector.detect(
+            location: nil, eventURL: nil, notes: wrapped,
+            calendarEmail: "user+work@gmail.com", currentUserEmail: nil
+        ))
+        XCTAssertEqual(link.url.absoluteString, "https://meet.google.com/abc-defg-hij?authuser=user@gmail.com")
+        XCTAssertEqual(link.service, .meet)
+    }
+
     func testGoogleMeetConferenceURLPreservesExistingQueryWhenAddingAuthuser() {
         let link = MeetingLinkDetector.detect(
             conferenceURL: URL(string: "https://meet.google.com/abc-defg-hij?pli=1"),
@@ -587,6 +720,105 @@ final class MeetingLinkDetectorTests: XCTestCase {
 
         XCTAssertTrue(stripped.contains("https://meet.google.com/abc-defg-hij"))
         XCTAssertFalse(stripped.contains("<p>"))
+    }
+
+    func testHTMLStripReconnectsAmpEncodedURL() {
+        // The whole point of stripping notes for link detection: HTML-encoded
+        // query separators (&amp;) must decode so the URL regex sees one link.
+        let stripped = htmlTagsStrippedForMeetingLinks(
+            "<p>Join https://us02web.zoom.us/j/123?pwd=abc&amp;uname=sam</p>"
+        )
+
+        XCTAssertTrue(stripped.contains("https://us02web.zoom.us/j/123?pwd=abc&uname=sam"))
+        XCTAssertFalse(stripped.contains("&amp;"))
+    }
+
+    func testHTMLStripDecodesNamedAndNumericEntities() {
+        let stripped = htmlTagsStrippedForMeetingLinks(
+            "<div>A&nbsp;&amp;&nbsp;B &#64; &#x43;o&mdash;end</div>"
+        )
+
+        XCTAssertEqual(stripped, "A & B @ Co—end")
+    }
+
+    func testHTMLStripDecodesLatin1NamedEntities() {
+        // The expanded named-entity table must decode accented letters and
+        // symbols so notes like a Paris/Munich meeting render as written.
+        let stripped = htmlTagsStrippedForMeetingLinks(
+            "<p>Caf&eacute; sync in M&uuml;nchen &mdash; 5&nbsp;&euro;</p>"
+        )
+
+        XCTAssertEqual(stripped, "Café sync in München — 5 €")
+    }
+
+    func testHTMLStripConvertsBlockTagsToNewlines() {
+        let stripped = htmlTagsStrippedForMeetingLinks("<p>First line</p><p>Second line</p>")
+
+        XCTAssertEqual(stripped, "First line\nSecond line")
+    }
+
+    func testHTMLStripDropsScriptAndStyleBodies() {
+        // Only the tags were stripped before, leaking CSS/JS text into notes.
+        let stripped = htmlTagsStrippedForMeetingLinks(
+            "<style>body{color:red}</style><p>Meeting</p><script>alert(1)</script>"
+        )
+
+        XCTAssertEqual(stripped, "Meeting")
+    }
+
+    func testHTMLStripDecodesEntityNearEnd() {
+        // The bounded entity scan must still decode an entity that sits within
+        // fewer than 13 characters of the end of the string.
+        let stripped = htmlTagsStrippedForMeetingLinks("<p>5&euro;</p>")
+
+        XCTAssertEqual(stripped, "5€")
+    }
+
+    func testHTMLStripDoesNotLeakMachPorts() {
+        // Regression guard for the EXC_GUARD mach-port exhaustion crash:
+        // NSAttributedString(html:) leaked ~2 mach ports per call via TextKit's
+        // nsattributedstringagent XPC service. The pure-Foundation strip must
+        // allocate none. Reintroducing the XPC-backed parser makes the port
+        // table grow ~800 over this loop and fails the assertion.
+        let html = "<p>Join <a href=\"https://x\">https://us02web.zoom.us/j/1?a=1&amp;b=2</a></p>"
+        _ = htmlTagsStrippedForMeetingLinks(html) // warm up any one-time caches
+
+        let before = machPortCount()
+        for _ in 0..<400 {
+            _ = htmlTagsStrippedForMeetingLinks(html)
+        }
+        let after = machPortCount()
+
+        XCTAssertGreaterThanOrEqual(before, 0, "mach_port_names failed")
+        XCTAssertGreaterThanOrEqual(after, 0, "mach_port_names failed")
+        let growth = after - before
+
+        XCTAssertLessThan(
+            growth, 100,
+            "HTML stripping leaked \(growth) mach ports over 400 calls — an XPC-backed parser was reintroduced"
+        )
+    }
+
+    private func machPortCount() -> Int {
+        var names: mach_port_name_array_t?
+        var namesCount: mach_msg_type_number_t = 0
+        var types: mach_port_type_array_t?
+        var typesCount: mach_msg_type_number_t = 0
+        guard mach_port_names(task_self_trap(), &names, &namesCount, &types, &typesCount) == KERN_SUCCESS
+        else { return -1 }
+        // mach_port_names allocates out-of-line memory for both arrays; free it
+        // so this leak-detection helper doesn't itself leak.
+        defer {
+            vmDeallocate(names, count: namesCount, stride: MemoryLayout<mach_port_name_t>.stride)
+            vmDeallocate(types, count: typesCount, stride: MemoryLayout<mach_port_type_t>.stride)
+        }
+        return Int(namesCount)
+    }
+
+    private func vmDeallocate<T>(_ pointer: UnsafeMutablePointer<T>?, count: mach_msg_type_number_t, stride: Int) {
+        guard let pointer, count > 0 else { return }
+        let address = vm_address_t(UInt(bitPattern: UnsafeMutableRawPointer(pointer)))
+        _ = vm_deallocate(task_self_trap(), address, vm_size_t(Int(count) * stride))
     }
 
     func testCleanupOutlookSafeLinksUnwrapsValidLink() {

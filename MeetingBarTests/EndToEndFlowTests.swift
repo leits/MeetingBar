@@ -42,6 +42,7 @@ private final class EndToEndHarness {
     private(set) var model: AppModel!
 
     private(set) var openedMeetingIDs: [String] = []
+    private(set) var openedMeetingURLs: [String] = []
     private(set) var snoozedEvents: [(eventID: String, action: NotificationEventTimeAction)] = []
     private(set) var providerChanges: [(provider: EventStoreProvider, signOut: Bool)] = []
     private(set) var openPreferencesCallCount = 0
@@ -92,6 +93,7 @@ private final class EndToEndHarness {
             },
             openMeeting: { [weak self] event in
                 self?.openedMeetingIDs.append(event.id)
+                self?.openedMeetingURLs.append(event.meetingLink?.url.absoluteString ?? "")
             },
             dismissEvent: { AppSettings.dismissEvent($0) },
             undismissEvent: { AppSettings.undismissEvent(id: $0) },
@@ -105,11 +107,17 @@ private final class EndToEndHarness {
                 self?.openPreferencesCallCount += 1
             },
             resumeOAuthFlow: { _ in },
-            clock: .live
+            clock: .live,
+            eventSelectionSettings: { .current },
+            notificationSettingsPublisher: AppSettings.notificationChanges,
+            applyLanguage: { I18N.instance.changeLanguage(to: $0) },
+            joinNotificationsEnabled: { Defaults[.joinEventNotification] },
+            clearDeliveredNotifications: { [weak self] in self?.scheduler.clearDeliveredNotifications() }
         )
         model = AppModel(environment: environment)
 
         controller.configure(dependencies: StatusBarDependencies(
+            states: model.$state.eraseToAnyPublisher(),
             appState: { [weak self] in self?.model.state ?? AppState() },
             events: { [weak self] in self?.model.state.events ?? [] },
             send: { [weak self] action in self?.model.send(action) },
@@ -137,6 +145,7 @@ private final class EndToEndHarness {
     }
 
     func stop() {
+        model.handleWillTerminate()
         NSStatusBar.system.removeStatusItem(controller.statusItem)
         scheduler.stop()
         sync.stop()
@@ -401,20 +410,98 @@ final class StatusBarEndToEndFlowTests: EndToEndFlowTestCase {
         await waitForState(of: harness, description: "events reach AppModel") {
             $0.events.count == 2
         }
-        XCTAssertTrue(try renderTitle(harness).attributedTitle.string.hasPrefix("Event E1"))
+        try await waitUntil("initial title is rendered automatically") {
+            harness.controller.statusItem.button?.attributedTitle.string.hasPrefix("Event E1") == true
+        }
 
-        let dismissItem = try XCTUnwrap(flatten(rebuildMenu(harness)).first {
+        let dismissItem = try XCTUnwrap(flatten(harness.controller.statusItemMenu.items).first {
             $0.action == #selector(StatusBarItemController.dismissNextMeetingAction)
         })
         performClick(dismissItem)
 
         XCTAssertEqual(Defaults[.dismissedEvents].map(\.id), ["E1"])
-        XCTAssertTrue(try renderTitle(harness).attributedTitle.string.hasPrefix("Event E2"))
+        try await waitUntil("dismissal updates the title without a manual redraw") {
+            harness.controller.statusItem.button?.attributedTitle.string.hasPrefix("Event E2") == true
+        }
 
-        let summary = flatten(rebuildMenu(harness)).first {
+        let summary = flatten(harness.controller.statusItemMenu.items).first {
             $0.identifier == MenuBuilder.meetingSummaryItemIdentifier
         }
         XCTAssertEqual((summary?.representedObject as? MBEvent)?.id, "E2")
+    }
+
+    func testNotificationDismissAndRestoreAutomaticallyUpdateMenuTitleAndJoinTarget() async throws {
+        configureDisplayDefaults()
+        let harness = makeHarness(events: [
+            makeEvent(id: "E1", startingIn: 300),
+            makeEvent(id: "E2", startingIn: 1800)
+        ])
+        defer { harness.stop() }
+        try await waitUntil("initial automatic render") {
+            harness.controller.statusItem.button?.attributedTitle.string.hasPrefix("Event E1") == true
+        }
+
+        harness.model.send(.notificationResponse(.dismiss(eventID: "E1")))
+        try await waitUntil("notification dismissal updates title") {
+            harness.controller.statusItem.button?.attributedTitle.string.hasPrefix("Event E2") == true
+        }
+        let summary = flatten(harness.controller.statusItemMenu.items).first {
+            $0.identifier == MenuBuilder.meetingSummaryItemIdentifier
+        }
+        XCTAssertEqual((summary?.representedObject as? MBEvent)?.id, "E2")
+        harness.model.send(.joinNearestMeeting)
+        XCTAssertEqual(harness.openedMeetingIDs, ["E2"])
+
+        harness.model.send(.clearDismissedMeetings)
+        try await waitUntil("restoring dismissals updates title") {
+            harness.controller.statusItem.button?.attributedTitle.string.hasPrefix("Event E1") == true
+        }
+        let restoredSummary = flatten(harness.controller.statusItemMenu.items).first {
+            $0.identifier == MenuBuilder.meetingSummaryItemIdentifier
+        }
+        XCTAssertEqual((restoredSummary?.representedObject as? MBEvent)?.id, "E1")
+    }
+
+    func testDismissalFromNotificationResponseUpdatesMenuAndPendingAlerts() async throws {
+        configureDisplayDefaults()
+        Defaults[.joinEventNotification] = true
+        Defaults[.joinEventNotificationTime] = .minuteBefore
+        Defaults[.endOfEventNotification] = false
+        let harness = makeHarness(events: [
+            makeEvent(id: "E1", startingIn: 300),
+            makeEvent(id: "E2", startingIn: 1800)
+        ])
+        defer { harness.stop() }
+
+        try await waitUntil("two events loaded and pending notifications planned") {
+            harness.model.state.events.count == 2
+                && self.scheduledEventIDs(harness) == ["E1", "E2"]
+        }
+        try await waitUntil("first meeting shown automatically") {
+            harness.controller.statusItem.button?.attributedTitle.string.hasPrefix("Event E1") == true
+        }
+
+        harness.model.send(.notificationResponse(.dismiss(eventID: "E1")))
+
+        try await waitUntil("dismissal cancels only the first pending alert") {
+            self.scheduledEventIDs(harness) == ["E2"]
+        }
+        try await waitUntil("dismissal updates title without UI action") {
+            harness.controller.statusItem.button?.attributedTitle.string.hasPrefix("Event E2") == true
+        }
+        let summary = flatten(harness.controller.statusItemMenu.items).first {
+            $0.identifier == MenuBuilder.meetingSummaryItemIdentifier
+        }
+        XCTAssertEqual((summary?.representedObject as? MBEvent)?.id, "E2")
+
+        harness.model.send(.undismissMeeting(eventID: "E1"))
+
+        try await waitUntil("restoring dismissal re-plans alerts") {
+            self.scheduledEventIDs(harness) == ["E1", "E2"]
+        }
+        try await waitUntil("restoring dismissal updates title") {
+            harness.controller.statusItem.button?.attributedTitle.string.hasPrefix("Event E1") == true
+        }
     }
 
     func testToggleTitleVisibilityFromMenuSwitchesToGenericTitle() async throws {
@@ -974,6 +1061,156 @@ final class CalendarSettingsEndToEndFlowTests: EndToEndFlowTestCase {
             "E1"
         )
         XCTAssertTrue(try renderTitle(harness).attributedTitle.string.hasPrefix("Event E1"))
+    }
+
+    func testRescheduledMeetingUpdatesMenuJoinTargetAndPendingNotifications() async throws {
+        configureDisplayDefaults()
+        Defaults[.joinEventNotification] = true
+        Defaults[.endOfEventNotification] = true
+        let now = Date()
+        let original = makeEvent(id: "MOVE", startingIn: 300, now: now)
+        let following = makeEvent(id: "FOLLOW", startingIn: 1200, now: now)
+        let harness = makeHarness(events: [original, following])
+        defer { harness.stop() }
+
+        await waitForState(of: harness, description: "original meeting order") {
+            $0.events.map(\.id) == ["MOVE", "FOLLOW"]
+        }
+        try await waitUntil("two pending notifications per initial meeting") {
+            let requests = harness.notificationSink.currentPendingRequests()
+            guard requests.count == 4 else { return false }
+            let counts = Dictionary(grouping: requests) {
+                $0.content.userInfo["eventID"] as? String ?? ""
+            }
+            return counts["MOVE"]?.count == 2 && counts["FOLLOW"]?.count == 2
+        }
+        let oldRequests = harness.notificationSink.currentPendingRequests()
+        let oldMoveIDs = Set(oldRequests.filter {
+            ($0.content.userInfo["eventID"] as? String) == "MOVE"
+        }.map(\.identifier))
+        let oldFollowingIDs = Set(oldRequests.filter {
+            ($0.content.userInfo["eventID"] as? String) == "FOLLOW"
+        }.map(\.identifier))
+        XCTAssertEqual(oldMoveIDs.count, 2)
+        XCTAssertEqual(oldFollowingIDs.count, 2)
+        XCTAssertTrue(try renderTitle(harness).attributedTitle.string.hasPrefix("Event MOVE"))
+
+        harness.store.stubbedEvents = [
+            makeEvent(id: "MOVE", startingIn: 3600, now: now),
+            following
+        ]
+        try await settleRefreshWindow(harness)
+        harness.model.send(.refreshCalendars)
+
+        await waitForState(of: harness, description: "reschedule changes next meeting") {
+            $0.events.map(\.id) == ["FOLLOW", "MOVE"]
+        }
+        try await waitUntil("only the rescheduled meeting's notification IDs change") {
+            let requests = harness.notificationSink.currentPendingRequests()
+            let moveIDs = Set(requests.filter {
+                ($0.content.userInfo["eventID"] as? String) == "MOVE"
+            }.map(\.identifier))
+            let followingIDs = Set(requests.filter {
+                ($0.content.userInfo["eventID"] as? String) == "FOLLOW"
+            }.map(\.identifier))
+            return moveIDs.count == oldMoveIDs.count
+                && moveIDs.isDisjoint(with: oldMoveIDs)
+                && followingIDs == oldFollowingIDs
+                && requests.count == oldRequests.count
+        }
+        XCTAssertTrue(try renderTitle(harness).attributedTitle.string.hasPrefix("Event FOLLOW"))
+        XCTAssertEqual(scheduledEventIDs(harness), ["FOLLOW", "MOVE"])
+        let removedIDs = Set(harness.notificationSink.removedBatches.flatMap { $0 })
+        XCTAssertTrue(oldMoveIDs.isSubset(of: removedIDs))
+        XCTAssertTrue(oldFollowingIDs.isDisjoint(with: removedIDs))
+        harness.model.send(.joinNearestMeeting)
+        XCTAssertEqual(harness.openedMeetingIDs, ["FOLLOW"])
+    }
+
+    func testProviderRecoveryReplacesStaleMeetingAndUpdatesJoinTarget() async throws {
+        configureDisplayDefaults()
+        let now = Date()
+        let harness = makeHarness(events: [makeEvent(id: "OLD", startingIn: 300, now: now)])
+        defer { harness.stop() }
+
+        await waitForState(of: harness, description: "initial meeting is visible") {
+            $0.events.map(\.id) == ["OLD"] && !$0.providerHealth.isStale
+                && $0.providerHealth.lastSuccessfulRefresh != nil
+        }
+        harness.store.stubbedError = URLError(.notConnectedToInternet)
+        try await settleRefreshWindow(harness)
+        harness.model.send(.refreshCalendars)
+        await waitForState(of: harness, description: "offline error preserves cached meeting") {
+            $0.providerHealth.isStale && $0.events.map(\.id) == ["OLD"]
+        }
+
+        harness.store.stubbedError = nil
+        harness.store.stubbedEvents = [makeEvent(id: "NEW", startingIn: 600, now: now)]
+        try await settleRefreshWindow(harness)
+        harness.model.send(.refreshCalendars)
+        await waitForState(of: harness, description: "recovery publishes fresh meeting") {
+            !$0.providerHealth.isStale
+                && $0.providerHealth.lastErrorDescription == nil
+                && $0.events.map(\.id) == ["NEW"]
+        }
+        let titles = menuTitles(harness)
+        XCTAssertFalse(titles.contains { $0.contains("status_bar_control_stale".loco()) })
+        XCTAssertFalse(titles.contains { $0.contains("Event OLD") })
+        XCTAssertTrue(titles.contains { $0.contains("Event NEW") })
+        XCTAssertTrue(try renderTitle(harness).attributedTitle.string.hasPrefix("Event NEW"))
+        harness.model.send(.joinNearestMeeting)
+        XCTAssertEqual(harness.openedMeetingIDs, ["NEW"])
+    }
+
+    func testGoogleConferenceDataTakesPrecedenceThroughAppModelAndMenu() async throws {
+        configureDisplayDefaults()
+        let formatter = ISO8601DateFormatter()
+        let start = formatter.string(from: Date().addingTimeInterval(600))
+        let end = formatter.string(from: Date().addingTimeInterval(2400))
+        let calendar = MBCalendar(
+            title: "Google", id: sharedCalendar.id,
+            source: "owner@example.com", email: "owner@example.com", color: .black
+        )
+        let payload: [String: Any] = [
+            "id": "google-conference",
+            "summary": "Project review",
+            "status": "confirmed",
+            "start": ["dateTime": start],
+            "end": ["dateTime": end],
+            "description": "Old link https://zoom.us/j/1112223333",
+            "attendees": [["email": "owner@example.com", "responseStatus": "accepted", "self": true]],
+            "conferenceData": [
+                "entryPoints": [[
+                    "entryPointType": "video",
+                    "uri": "https://meet.google.com/abc-defg-hij"
+                ]]
+            ]
+        ]
+        let parsed = try XCTUnwrap(GCEventStore.GCParser.event(from: payload, calendar: calendar))
+        XCTAssertEqual(parsed.meetingLink?.service, .meet)
+
+        let harness = makeHarness(events: [parsed])
+        defer { harness.stop() }
+        await waitForState(of: harness, description: "parsed provider event reaches UI") {
+            $0.events.first?.id == "google-conference"
+        }
+
+        let summary = try XCTUnwrap(flatten(rebuildMenu(harness)).first {
+            $0.identifier == MenuBuilder.meetingSummaryItemIdentifier
+        })
+        XCTAssertEqual((summary.representedObject as? MBEvent)?.id, "google-conference")
+        XCTAssertEqual(
+            harness.model.state.events.first?.meetingLink?.url.absoluteString,
+            "https://meet.google.com/abc-defg-hij?authuser=owner@example.com"
+        )
+        let hosting = try XCTUnwrap(summary.view as? NSHostingView<MeetingSummaryView>)
+        let onJoin = try XCTUnwrap(hosting.rootView.onJoin)
+        onJoin()
+        XCTAssertEqual(harness.openedMeetingIDs, ["google-conference"])
+        XCTAssertEqual(
+            harness.openedMeetingURLs,
+            ["https://meet.google.com/abc-defg-hij?authuser=owner@example.com"]
+        )
     }
 
     func testSelectingCalendarLoadsItsEventsIntoMenu() async throws {

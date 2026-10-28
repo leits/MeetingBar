@@ -152,7 +152,6 @@
 "preferences_advanced_setting_warning" = "Essas configurações são para usuários avançados.";
 "preferences_advanced_apple_script_checkmark" = "Executar AppleScript ao entrar em uma reunião";
 "preferences_advanced_apple_script_placeholder" = "# escreva seu script aqui\ndiga à aplicação \"Música\" para pausar";
-"preferences_advanced_run_script_on_event_start" = "Executar AppleScript automaticamente";
 "preferences_advanced_test_script_on_next_event" = "Testar no próximo evento";
 "preferences_advanced_edit_script" = "Editar script";
 "preferences_advanced_save_script_button" = "Salvar script";

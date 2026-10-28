@@ -17,6 +17,7 @@ struct PermissionSnapshot: Equatable {
         case restricted
         case denied
         case authorized
+        case writeOnly
     }
 
     enum NotificationAccess: Equatable {
@@ -88,7 +89,7 @@ enum DiagnosticsReport {
         let formatter = ISO8601DateFormatter()
         let lastSuccess = context.health.lastSuccessfulRefresh.map(formatter.string) ?? "never"
         let lastAttempt = context.health.lastAttemptedRefresh.map(formatter.string) ?? "never"
-        let lastError = context.health.lastErrorDescription ?? "none"
+        let lastError = sanitizedErrorDescription(context.health.lastErrorDescription)
         let staleData = context.health.isStale ? "yes" : "no"
         let authRequired = context.health.authRequired ? "yes" : "no"
         var lines = """
@@ -110,10 +111,30 @@ enum DiagnosticsReport {
         return lines
     }
 
+    /// Error URLs can include calendar identities and query credentials.
+    /// Keep the human-readable failure type when sharing diagnostics.
+    private static func sanitizedErrorDescription(_ message: String?) -> String {
+        guard let message else { return "none" }
+        // GoogleCalendarError.forbiddenCalendar renders a bare calendar ID,
+        // not a URL. Preserve the failure while hiding the calendar identity.
+        if message.hasPrefix("Google Calendar is not accessible: ") {
+            return "Google Calendar is not accessible: [calendar ID redacted]"
+        }
+        guard let expression = try? NSRegularExpression(
+            pattern: #"(?i)(?:https?|ical|file)://[^\s<>]+"#
+        ) else { return message }
+        return expression.stringByReplacingMatches(
+            in: message,
+            range: NSRange(message.startIndex..., in: message),
+            withTemplate: "[URL redacted]"
+        )
+    }
+
     private static func permissionsLines(_ perms: PermissionSnapshot) -> String {
         let calendar: String
         switch perms.calendarAccess {
         case .authorized: calendar = "authorized"
+        case .writeOnly: calendar = "write-only (cannot read events)"
         case .denied: calendar = "denied"
         case .restricted: calendar = "restricted"
         case .notDetermined: calendar = "not determined"

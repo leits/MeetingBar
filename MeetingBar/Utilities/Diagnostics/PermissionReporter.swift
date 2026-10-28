@@ -31,20 +31,26 @@ enum PermissionReporter {
     }
 
     private static func calendarAuthStatus() -> PermissionSnapshot.CalendarAccess {
+        calendarAccess(for: EKEventStore.authorizationStatus(for: .event))
+    }
+
+    static func calendarAccess(for status: EKAuthorizationStatus) -> PermissionSnapshot.CalendarAccess {
         if #available(macOS 14, *) {
-            switch EKEventStore.authorizationStatus(for: .event) {
+            switch status {
             case .notDetermined: return .notDetermined
             case .restricted: return .restricted
             case .denied: return .denied
-            case .fullAccess, .writeOnly: return .authorized
+            case .fullAccess: return .authorized
+            case .writeOnly: return .writeOnly
             @unknown default: return .notDetermined
             }
         } else {
-            switch EKEventStore.authorizationStatus(for: .event) {
+            switch status {
             case .notDetermined: return .notDetermined
             case .restricted: return .restricted
             case .denied: return .denied
-            case .authorized, .fullAccess, .writeOnly: return .authorized
+            case .authorized, .fullAccess: return .authorized
+            case .writeOnly: return .writeOnly
             @unknown default: return .notDetermined
             }
         }

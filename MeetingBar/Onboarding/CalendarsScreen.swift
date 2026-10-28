@@ -114,11 +114,11 @@ private struct CalendarSelectionContent: View {
     }
 
     private var emptyStateText: String {
-        if appModel.state.providerHealth.authRequired {
+        let connection = PreferencesCalendarPresentation.make(from: appModel.state).connectionState
+        if connection == .authRequired {
             return "onboarding_calendar_selection_reconnect".loco()
         }
-        if appModel.state.activeProvider == .macOSEventKit,
-           appModel.state.providerHealth.lastErrorDescription != nil {
+        if connection == .permissionRequired {
             return "onboarding_calendar_selection_permission".loco()
         }
         return "onboarding_calendar_selection_empty".loco()

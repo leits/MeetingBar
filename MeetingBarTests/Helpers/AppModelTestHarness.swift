@@ -35,6 +35,11 @@ final class AppModelTestHarness {
     private var calendarSnapshot: ([MBCalendar], EventStoreProvider) = ([], .macOSEventKit)
 
     let fixedNow: Date
+    let clock: AppClock
+    var selectionSettings: EventSelectionSettings?
+    var joinNotificationsEnabled = false
+    private(set) var deliveredClearCount = 0
+    let notificationSettingsSubject = PassthroughSubject<NotificationSettingsChange, Never>()
     private let asyncOperationDelayNanoseconds: UInt64
 
     private lazy var environment = AppEnvironment(
@@ -97,16 +102,23 @@ final class AppModelTestHarness {
         resumeOAuthFlow: { [weak self] url in
             self?.resumedOAuthURLs.append(url)
         },
-        clock: .fixed(fixedNow)
+        clock: clock,
+        eventSelectionSettings: { [weak self] in self?.selectionSettings ?? .current },
+        notificationSettingsPublisher: notificationSettingsSubject.eraseToAnyPublisher(),
+        applyLanguage: { _ in true },
+        joinNotificationsEnabled: { [weak self] in self?.joinNotificationsEnabled ?? false },
+        clearDeliveredNotifications: { [weak self] in self?.deliveredClearCount += 1 }
     )
 
     lazy var model = AppModel(environment: environment)
 
     init(
         now: Date = Date(timeIntervalSince1970: 1_700_000_000),
-        asyncOperationDelayNanoseconds: UInt64 = 0
+        asyncOperationDelayNanoseconds: UInt64 = 0,
+        clock: AppClock? = nil
     ) {
         fixedNow = now
+        self.clock = clock ?? .fixed(now)
         self.asyncOperationDelayNanoseconds = asyncOperationDelayNanoseconds
     }
 

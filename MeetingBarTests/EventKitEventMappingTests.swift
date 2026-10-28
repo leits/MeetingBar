@@ -97,6 +97,18 @@ final class EventKitEventMappingTests: XCTestCase {
         )
     }
 
+    func testEventKitReadPermissionStatusMapping() {
+        XCTAssertEqual(EventKitReadAccessError.from(.notDetermined), .notDetermined)
+        XCTAssertEqual(EventKitReadAccessError.from(.denied), .denied)
+        XCTAssertEqual(EventKitReadAccessError.from(.restricted), .restricted)
+        if #available(macOS 14, *) {
+            XCTAssertNil(EventKitReadAccessError.from(.fullAccess))
+            XCTAssertEqual(EventKitReadAccessError.from(.writeOnly), .writeOnly)
+        } else {
+            XCTAssertNil(EventKitReadAccessError.from(.authorized))
+        }
+    }
+
     func testScriptIdentifierUsesRawCalendarItemIdentifier() {
         let rawEvent = makeRawEvent(start: Date(timeIntervalSince1970: 1_751_610_600))
 
