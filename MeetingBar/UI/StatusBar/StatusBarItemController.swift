@@ -223,6 +223,13 @@ final class StatusBarItemController {
             button.toolTip = presentation.tooltip
             // Tints template icons; full-color meeting service icons keep their artwork.
             button.contentTintColor = presentation.highlight.color
+            // With the title hidden and no template icon, nothing would take the
+            // tint, so show a colored dot next to the icon instead.
+            if let color = presentation.highlight.color,
+               button.attributedTitle.string.isEmpty,
+               button.image?.isTemplate != true || button.imagePosition == .noImage {
+                button.attributedTitle = StatusBarTitleRenderer.highlightDot(color: color)
+            }
         }
 
         ensureStatusBarButtonIsVisible(button)
@@ -564,6 +571,17 @@ enum StatusBarTitleRenderer {
             // attributed title is intentionally empty here.
             return NSAttributedString(string: "")
         }
+    }
+
+    /// Meeting-state indicator for presentations that have no title text to color.
+    static func highlightDot(color: NSColor) -> NSAttributedString {
+        NSAttributedString(
+            string: "•",
+            attributes: [
+                .font: NSFont.systemFont(ofSize: MenuStyleConstants.defaultFontSize),
+                .foregroundColor: color
+            ]
+        )
     }
 
     private static func titleAttributes(

@@ -1517,6 +1517,38 @@ final class StatusBarItemControllerPresentationTests: BaseTestCase {
         XCTAssertNil(button.contentTintColor, "non-event modes drop the tint")
     }
 
+    func test_renderStatusBarShowsHighlightDotWhenOnlyAFullColorIconIsVisible() throws {
+        let controller = StatusBarItemController()
+        defer { NSStatusBar.system.removeStatusItem(controller.statusItem) }
+        let button = try XCTUnwrap(controller.statusItem.button)
+
+        controller.renderStatusBar(makePresentation(
+            icon: .meetingService(.zoom),
+            layout: .inline(showTime: false),
+            highlight: .inProgress
+        ))
+        XCTAssertEqual(button.attributedTitle.string, "•")
+        XCTAssertEqual(
+            button.attributedTitle.attribute(.foregroundColor, at: 0, effectiveRange: nil) as? NSColor,
+            NSColor.systemRed
+        )
+        XCTAssertTrue(button.image === getIconForMeetingService(.zoom), "the service icon keeps its artwork")
+
+        controller.renderStatusBar(makePresentation(
+            icon: .meetingService(.zoom),
+            layout: .inline(showTime: false)
+        ))
+        XCTAssertEqual(button.attributedTitle.string, "", "no dot without a highlight")
+
+        controller.renderStatusBar(makePresentation(
+            icon: .asset(MenuStyleConstants.calendarIconName),
+            layout: .inline(showTime: false),
+            highlight: .startingSoon
+        ))
+        XCTAssertEqual(button.attributedTitle.string, "", "a template icon takes the tint itself")
+        XCTAssertEqual(button.contentTintColor, NSColor.systemOrange)
+    }
+
     func test_renderStatusBarDoesNotOverrideExistingIcon() throws {
         let controller = StatusBarItemController()
         defer { NSStatusBar.system.removeStatusItem(controller.statusItem) }
