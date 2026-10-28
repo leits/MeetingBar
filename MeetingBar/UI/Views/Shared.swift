@@ -34,6 +34,21 @@ private struct TimeBeforeEventPickerRow: View {
 /**
  * users can decide to automatically open events in the configured application
  */
+/// The app's own icon as SwiftUI content. Reads the live icon from AppKit so
+/// it always matches what Finder and the Dock show: the layered Icon Composer
+/// icon on macOS 26 and the flat render actool bakes for earlier releases.
+struct AppIconView: View {
+    var size: CGFloat
+
+    var body: some View {
+        Image(nsImage: NSApp.applicationIconImage)
+            .resizable()
+            .interpolation(.high)
+            .frame(width: size, height: size)
+            .accessibilityHidden(true)
+    }
+}
+
 struct AutomaticEventJoinPicker: View {
     @Default(.automaticEventJoin) var automaticEventJoin
     @Default(.automaticEventJoinTime) var automaticEventJoinTime

@@ -19,6 +19,7 @@ let package = Package(
                 // SPM scans the whole MeetingBar/ tree for resources; these paths
                 // prevent it from picking up .lproj bundles and asset catalogues.
                 "Resources ",
+                "AppIcon.icon",
                 "Assets.xcassets",
                 "Base.lproj",
                 "Preview Content"
