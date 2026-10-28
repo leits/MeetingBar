@@ -34,7 +34,8 @@ final class StatusBarPresentationTests: XCTestCase {
         timeDisplay: StatusBarTimeDisplay = .show,
         iconFormat: StatusBarIconFormat = .none,
         pendingDisplay: StatusBarParticipationDisplay = .normal,
-        tentativeDisplay: StatusBarParticipationDisplay = .normal
+        tentativeDisplay: StatusBarParticipationDisplay = .normal,
+        highlightLeadTime: TimeInterval? = nil
     ) -> StatusBarPresenterSettings {
         StatusBarPresenterSettings(
             presentation: settings(hasSelectedCalendars: hasSelectedCalendars),
@@ -53,7 +54,8 @@ final class StatusBarPresentationTests: XCTestCase {
             iconFormatAssetName: "no_online_session",
             iconAssets: assets,
             pendingDisplay: pendingDisplay,
-            tentativeDisplay: tentativeDisplay
+            tentativeDisplay: tentativeDisplay,
+            highlightLeadTime: highlightLeadTime
         )
     }
 
@@ -263,7 +265,8 @@ final class StatusBarPresentationTests: XCTestCase {
             iconFormatAssetName: base.iconFormatAssetName,
             iconAssets: base.iconAssets,
             pendingDisplay: base.pendingDisplay,
-            tentativeDisplay: base.tentativeDisplay
+            tentativeDisplay: base.tentativeDisplay,
+            highlightLeadTime: 7200  // would cover the 60 min event
         )
         let farEvent = StatusBarEventPresentationInput(
             title: "Far meeting",
@@ -281,6 +284,9 @@ final class StatusBarPresentationTests: XCTestCase {
 
         XCTAssertEqual(presentation.mode, .afterThreshold)
         XCTAssertEqual(presentation.title, "")
+        XCTAssertEqual(
+            presentation.highlight, .none,
+            "a lead time must not highlight an event the threshold hides")
     }
 
     // MARK: - titleStyle: tentative + underlined
@@ -324,5 +330,110 @@ final class StatusBarPresentationTests: XCTestCase {
         )
 
         XCTAssertEqual(presentation.layout, .inline(showTime: false))
+    }
+
+    // MARK: - Highlight
+
+    private func highlight(
+        starts start: TimeInterval,
+        ends end: TimeInterval = 3600,
+        leadTime: TimeInterval? = 900
+    ) -> StatusBarHighlight {
+        StatusBarHighlightPolicy.highlight(
+            startDate: now.addingTimeInterval(start),
+            endDate: now.addingTimeInterval(end),
+            leadTime: leadTime,
+            now: now
+        )
+    }
+
+    func testHighlightIsNoneWhenLeadTimeIsNil() {
+        XCTAssertEqual(highlight(starts: 300, leadTime: nil), .none, "starting soon, but the setting is off")
+        XCTAssertEqual(highlight(starts: -300, leadTime: nil), .none, "in progress, but the setting is off")
+    }
+
+    func testHighlightIsStartingSoonWithinLeadTime() {
+        XCTAssertEqual(highlight(starts: 300), .startingSoon)
+    }
+
+    func testHighlightLeadTimeBoundaryIsInclusive() {
+        XCTAssertEqual(highlight(starts: 900), .startingSoon, "exactly at the lead time")
+        XCTAssertEqual(highlight(starts: 901), .none, "one second beyond the lead time")
+    }
+
+    func testHighlightIsNoneBeyondLeadTime() {
+        XCTAssertEqual(highlight(starts: 7200, ends: 9000), .none)
+    }
+
+    func testHighlightIsInProgressBetweenStartAndEnd() {
+        XCTAssertEqual(highlight(starts: -600, ends: 600), .inProgress)
+        XCTAssertEqual(highlight(starts: 0, ends: 600), .inProgress, "starting exactly now")
+    }
+
+    func testHighlightIsNoneOnceEventHasEnded() {
+        XCTAssertEqual(highlight(starts: -1800, ends: 0), .none, "ending exactly now")
+        XCTAssertEqual(highlight(starts: -1800, ends: -60), .none)
+    }
+
+    func testPresenterHighlightFollowsPolicyForNextEvent() {
+        // event() starts in 10 min
+        let soon = StatusBarPresenter.presentation(
+            nextEvent: event(),
+            settings: presenterSettings(highlightLeadTime: 900),
+            now: now,
+            calendar: calendar()
+        )
+        let early = StatusBarPresenter.presentation(
+            nextEvent: event(),
+            settings: presenterSettings(highlightLeadTime: 300),
+            now: now,
+            calendar: calendar()
+        )
+        let off = StatusBarPresenter.presentation(
+            nextEvent: event(),
+            settings: presenterSettings(highlightLeadTime: nil),
+            now: now,
+            calendar: calendar()
+        )
+
+        XCTAssertEqual(soon.highlight, .startingSoon)
+        XCTAssertEqual(early.highlight, .none)
+        XCTAssertEqual(off.highlight, .none)
+    }
+
+    func testPresenterHighlightsInProgressEvent() {
+        let ongoing = StatusBarEventPresentationInput(
+            title: "Running meeting",
+            startDate: now.addingTimeInterval(-600),
+            endDate: now.addingTimeInterval(1200),
+            meetingService: .zoom,
+            participation: .normal
+        )
+        let presentation = StatusBarPresenter.presentation(
+            nextEvent: ongoing,
+            settings: presenterSettings(highlightLeadTime: 900),
+            now: now,
+            calendar: calendar()
+        )
+
+        XCTAssertEqual(presentation.highlight, .inProgress)
+    }
+
+    func testPresenterNeverHighlightsNonEventModes() {
+        let idle = StatusBarPresenter.presentation(
+            nextEvent: event(),
+            settings: presenterSettings(hasSelectedCalendars: false, highlightLeadTime: 900),
+            now: now,
+            calendar: calendar()
+        )
+        let noUpcoming = StatusBarPresenter.presentation(
+            nextEvent: nil,
+            settings: presenterSettings(highlightLeadTime: 900),
+            now: now,
+            calendar: calendar()
+        )
+
+        XCTAssertEqual(idle.highlight, .none)
+        XCTAssertEqual(noUpcoming.highlight, .none)
     }
 }

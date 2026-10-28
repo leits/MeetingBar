@@ -91,7 +91,10 @@ extension StatusBarPresenterSettings {
             iconFormatAssetName: Defaults[.eventTitleIconFormat].rawValue,
             iconAssets: .production,
             pendingDisplay: StatusBarParticipationDisplay(Defaults[.showPendingEvents]),
-            tentativeDisplay: StatusBarParticipationDisplay(Defaults[.showTentativeEvents])
+            tentativeDisplay: StatusBarParticipationDisplay(Defaults[.showTentativeEvents]),
+            highlightLeadTime: Defaults[.statusbarMeetingHighlight]
+                ? TimeInterval(Defaults[.statusbarMeetingHighlightTime].rawValue)
+                : nil
         )
     }
 }

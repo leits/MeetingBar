@@ -72,6 +72,11 @@ extension Defaults.Keys {
     static let ongoingEventVisibility = Key<OngoingEventVisibility>(
         "ongoingEventVisibility", default: .showTenMinBeforeNext)
 
+    // color the status bar item when a meeting is about to start or in progress
+    static let statusbarMeetingHighlight = Key<Bool>("statusbarMeetingHighlight", default: false)
+    static let statusbarMeetingHighlightTime = Key<TimeBeforeEvent>(
+        "statusbarMeetingHighlightTime", default: .fiveMinuteBefore)
+
     // Menu Appearance
     static let showTimelineInMenu = Key<Bool>("showTimelineInMenu", default: true)
     // if the event title in the menu should be shortened or not -> the length will be stored in field menuEventTitleLength
