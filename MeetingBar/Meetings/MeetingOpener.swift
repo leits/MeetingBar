@@ -638,12 +638,13 @@ enum ZoomWebAppURLPolicy {
 
         var components = URLComponents()
         components.scheme = "https"
-        components.host = "app.zoom.us"
-        components.path = "/wc/\(meetingID)/start"
-        components.queryItems = URLComponents(
+        components.host = host
+        components.path = "/wc/join/\(meetingID)"
+        // Keep meeting tokens encoded, notably %2B, rather than decoding query items.
+        components.percentEncodedQuery = URLComponents(
             url: url,
             resolvingAgainstBaseURL: false
-        )?.queryItems
+        )?.percentEncodedQuery
         return components.url
     }
 
