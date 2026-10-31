@@ -25,6 +25,21 @@ final class MicrosoftGraphParserTests: XCTestCase {
         )
     }
 
+    /// Five minutes before the events used by the personal-event selection tests.
+    private let selectionNow = Date(timeIntervalSince1970: 1_788_947_700)
+
+    private func selectionSettings() -> EventSelectionSettings {
+        EventSelectionSettings(
+            period: .todayAndTomorrow,
+            includesPersonalEvents: false,
+            dismissedEvents: [],
+            requiresMeetingLinkForNonAllDayEvents: false,
+            hidesPendingEvents: false,
+            hidesTentativeEvents: false,
+            ongoingEventVisibility: .showTenMinBeforeNext
+        )
+    }
+
     func testTimedEventParses() {
         let parsed = event(from: [
             "id": "event-1",
@@ -95,6 +110,38 @@ final class MicrosoftGraphParserTests: XCTestCase {
         XCTAssertNotNil(currentUser)
         XCTAssertEqual(currentUser?.status, .declined)
         XCTAssertEqual(parsed?.participationStatus, .declined)
+    }
+
+    func testPersonalEventIsNotSelectedWhenPersonalEventsAreExcluded() throws {
+        let parsed = try XCTUnwrap(event(from: [
+            "id": "personal",
+            "subject": "Focus time",
+            "start": ["dateTime": "2026-09-09T10:00:00.0000000", "timeZone": "UTC"],
+            "end": ["dateTime": "2026-09-09T10:30:00.0000000", "timeZone": "UTC"],
+            "organizer": ["emailAddress": ["address": "user@contoso.com"]],
+            "attendees": [],
+            "responseStatus": ["response": "organizer"]
+        ]))
+
+        XCTAssertTrue(parsed.attendees.isEmpty)
+        XCTAssertNil([parsed].nextEvent(settings: selectionSettings(), now: selectionNow))
+    }
+
+    func testOrganizedMeetingStaysSelectableWhenPersonalEventsAreExcluded() throws {
+        let parsed = try XCTUnwrap(event(from: [
+            "id": "meeting",
+            "subject": "Planning",
+            "start": ["dateTime": "2026-09-09T10:00:00.0000000", "timeZone": "UTC"],
+            "end": ["dateTime": "2026-09-09T10:30:00.0000000", "timeZone": "UTC"],
+            "organizer": ["emailAddress": ["address": "user@contoso.com"]],
+            "attendees": [
+                ["emailAddress": ["address": "other@contoso.com"], "status": ["response": "accepted"]]
+            ],
+            "responseStatus": ["response": "organizer"]
+        ]))
+
+        XCTAssertTrue(parsed.attendees.contains { $0.isCurrentUser })
+        XCTAssertEqual([parsed].nextEvent(settings: selectionSettings(), now: selectionNow)?.id, "meeting")
     }
 
     func testCancelledEventMapsToCanceled() {

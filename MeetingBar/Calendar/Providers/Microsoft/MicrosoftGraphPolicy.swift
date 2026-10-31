@@ -44,6 +44,37 @@ enum MicrosoftAuthError: LocalizedError, Equatable {
     }
 }
 
+// MARK: - Sign-in flow
+
+/// Silent-then-interactive sign-in control flow, independent of MSAL so a late
+/// silent failure can be driven deterministically in hostless tests.
+@MainActor
+enum MicrosoftGraphSignInFlow {
+    enum Outcome<Snapshot> {
+        case silent(Snapshot)
+        case interactive(Snapshot)
+    }
+
+    /// Tries `silent` when available and falls back to `interactive` when the
+    /// session needs user interaction. MSAL callbacks ignore task cancellation,
+    /// so a silent failure can arrive after the attempt was abandoned; that must
+    /// end the attempt rather than open a sign-in window nobody asked for.
+    static func run<Snapshot>(
+        silent: (() async throws -> Snapshot)?,
+        interactive: () async throws -> Snapshot,
+        isCurrent: () -> Bool
+    ) async throws -> Outcome<Snapshot> {
+        if let silent {
+            do {
+                return .silent(try await silent())
+            } catch let error as MicrosoftAuthError where error == .notSignedIn {
+                guard isCurrent(), !Task.isCancelled else { throw CancellationError() }
+            }
+        }
+        return .interactive(try await interactive())
+    }
+}
+
 /// HTTP-level failures from Microsoft Graph.
 enum MicrosoftGraphError: LocalizedError, Equatable {
     /// 403 or 404 for a specific calendar (shared calendar revoked, removed,

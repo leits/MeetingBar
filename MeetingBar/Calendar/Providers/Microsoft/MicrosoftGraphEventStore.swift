@@ -124,20 +124,27 @@ final class MicrosoftGraphEventStore: NSObject, AuthenticatedEventStore {
     func signIn(forcePrompt: Bool) async throws {
         let generation = operationGeneration
         let application = try makeApplication()
+        let account = forcePrompt ? nil : try existingAccount(in: application)
 
-        if !forcePrompt, let account = try existingAccount(in: application) {
-            do {
-                let snapshot = try await acquireTokenSilent(application: application, account: account, forceRefresh: false)
-                try applyIfCurrent(snapshot, generation: generation)
-                return
-            } catch let error as MicrosoftAuthError where error == .notSignedIn {
-                // Silent path exhausted; fall through to interactive sign-in.
-            }
+        let outcome = try await MicrosoftGraphSignInFlow.run(
+            silent: account.map { account in
+                { [self] in
+                    try await acquireTokenSilent(application: application, account: account, forceRefresh: false)
+                }
+            },
+            interactive: { [self] in
+                try await acquireTokenInteractive(application: application, forcePrompt: forcePrompt)
+            },
+            isCurrent: { [self] in generation == operationGeneration }
+        )
+
+        switch outcome {
+        case let .silent(snapshot):
+            try applyIfCurrent(snapshot, generation: generation)
+        case let .interactive(snapshot):
+            try applyIfCurrent(snapshot, generation: generation)
+            AppMessageCenter.shared.post(.microsoftAccountConnected(email: snapshot.username ?? ""))
         }
-
-        let snapshot = try await acquireTokenInteractive(application: application, forcePrompt: forcePrompt)
-        try applyIfCurrent(snapshot, generation: generation)
-        AppMessageCenter.shared.post(.microsoftAccountConnected(email: snapshot.username ?? ""))
     }
 
     /// Signs out of MSAL and clears the persisted account identifier.
@@ -714,8 +721,9 @@ final class MicrosoftGraphEventStore: NSObject, AuthenticatedEventStore {
         private static func parseAttendees(item: [String: Any], username: String?) -> [MBEventAttendee] {
             var attendees: [MBEventAttendee] = []
             var hasCurrentUser = false
+            let rawAttendees = item["attendees"] as? [[String: Any]] ?? []
 
-            for raw in item["attendees"] as? [[String: Any]] ?? [] {
+            for raw in rawAttendees {
                 let emailAddress = raw["emailAddress"] as? [String: Any]
                 let address = emailAddress?["address"] as? String
                 let name = emailAddress?["name"] as? String
@@ -736,8 +744,9 @@ final class MicrosoftGraphEventStore: NSObject, AuthenticatedEventStore {
             // they are the organizer). `MBEvent.participationStatus` is derived
             // from the attendee flagged `isCurrentUser`, so synthesize one from
             // the event-level responseStatus to keep declined/pending filtering
-            // working.
-            if !hasCurrentUser, let username {
+            // working. An event with no attendees stays empty: an empty list is
+            // what marks a personal event for every provider.
+            if !rawAttendees.isEmpty, !hasCurrentUser, let username {
                 let response = (item["responseStatus"] as? [String: Any])?["response"] as? String
                 attendees.append(MBEventAttendee(
                     email: username,

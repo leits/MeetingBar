@@ -377,4 +377,117 @@ final class MicrosoftGraphPolicyTests: XCTestCase {
             MicrosoftGraphError.mailboxNotAvailable(calendarsURL).errorDescription?.contains("mailbox") ?? false
         )
     }
+
+    // MARK: - Sign-in flow
+
+    @MainActor
+    func testSignInFallsBackToInteractiveWhenSilentNeedsInteraction() async throws {
+        var interactiveCalls = 0
+        let outcome = try await MicrosoftGraphSignInFlow.run(
+            silent: { () async throws -> String in throw MicrosoftAuthError.notSignedIn },
+            interactive: {
+                interactiveCalls += 1
+                return "token"
+            },
+            isCurrent: { true }
+        )
+        guard case .interactive("token") = outcome else {
+            return XCTFail("Expected interactive outcome, got \(outcome)")
+        }
+        XCTAssertEqual(interactiveCalls, 1)
+    }
+
+    @MainActor
+    func testSignInWithoutAccountGoesStraightToInteractive() async throws {
+        let outcome = try await MicrosoftGraphSignInFlow.run(
+            silent: nil,
+            interactive: { "token" },
+            isCurrent: { false }
+        )
+        guard case .interactive("token") = outcome else {
+            return XCTFail("Expected interactive outcome, got \(outcome)")
+        }
+    }
+
+    @MainActor
+    func testSilentSuccessSkipsInteractive() async throws {
+        var interactiveCalls = 0
+        let outcome = try await MicrosoftGraphSignInFlow.run(
+            silent: { "silent-token" },
+            interactive: {
+                interactiveCalls += 1
+                return "token"
+            },
+            isCurrent: { true }
+        )
+        guard case .silent("silent-token") = outcome else {
+            return XCTFail("Expected silent outcome, got \(outcome)")
+        }
+        XCTAssertEqual(interactiveCalls, 0)
+    }
+
+    @MainActor
+    func testLateSilentFailureAfterGenerationChangeDoesNotOpenInteractive() async {
+        var generation = 1
+        var interactiveCalls = 0
+        do {
+            _ = try await MicrosoftGraphSignInFlow.run(
+                silent: { () async throws -> String in
+                    // cancelPendingOperations() runs while the silent request is pending.
+                    generation += 1
+                    throw MicrosoftAuthError.notSignedIn
+                },
+                interactive: {
+                    interactiveCalls += 1
+                    return "token"
+                },
+                isCurrent: { generation == 1 }
+            )
+            XCTFail("Expected CancellationError")
+        } catch {
+            XCTAssertTrue(error is CancellationError, "Got \(error)")
+        }
+        XCTAssertEqual(interactiveCalls, 0)
+    }
+
+    @MainActor
+    func testLateSilentFailureAfterTaskCancellationDoesNotOpenInteractive() async {
+        var interactiveCalls = 0
+        do {
+            _ = try await MicrosoftGraphSignInFlow.run(
+                silent: { () async throws -> String in
+                    withUnsafeCurrentTask { $0?.cancel() }
+                    throw MicrosoftAuthError.notSignedIn
+                },
+                interactive: {
+                    interactiveCalls += 1
+                    return "token"
+                },
+                isCurrent: { true }
+            )
+            XCTFail("Expected CancellationError")
+        } catch {
+            XCTAssertTrue(error is CancellationError, "Got \(error)")
+        }
+        XCTAssertEqual(interactiveCalls, 0)
+    }
+
+    @MainActor
+    func testOtherSilentFailuresPropagateWithoutInteractive() async {
+        var interactiveCalls = 0
+        do {
+            _ = try await MicrosoftGraphSignInFlow.run(
+                silent: { () async throws -> String in throw MicrosoftAuthError.refreshFailed },
+                interactive: {
+                    interactiveCalls += 1
+                    return "token"
+                },
+                isCurrent: { true }
+            )
+            XCTFail("Expected refreshFailed")
+        } catch {
+            XCTAssertEqual(error as? MicrosoftAuthError, .refreshFailed)
+        }
+        XCTAssertEqual(interactiveCalls, 0)
+    }
 }
