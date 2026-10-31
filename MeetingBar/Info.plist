@@ -42,6 +42,8 @@
 		<string>$(GOOGLE_CLIENT_NUMBER)</string>
 		<key>GOOGLE_CLIENT_SECRET</key>
 		<string>$(GOOGLE_CLIENT_SECRET)</string>
+		<key>MICROSOFT_CLIENT_ID</key>
+		<string>$(MICROSOFT_CLIENT_ID)</string>
 		<key>LSApplicationCategoryType</key>
 		<string>public.app-category.productivity</string>
 		<key>LSMinimumSystemVersion</key>

@@ -38,6 +38,8 @@ enum CalendarRepositoryError: LocalizedError {
             return "Google Calendar did not return any calendars"
         case .noCalendars(.macOSEventKit):
             return "macOS Calendar did not return any calendars"
+        case .noCalendars(.microsoftGraph):
+            return "Microsoft 365 did not return any calendars"
         }
     }
 }
@@ -118,7 +120,7 @@ public final class CalendarRepository {
             }
             throw CancellationError()
         }
-        if providerName == .googleCalendar, calendars.isEmpty {
+        if providerName.requiresAccountSignIn, calendars.isEmpty {
             throw CalendarRepositoryError.noCalendars(providerName)
         }
 
@@ -207,7 +209,10 @@ public final class CalendarRepository {
 
     /// Forwards an OAuth callback URL to the active provider if it supports it.
     ///
-    /// Returns `true` if the URL was consumed by the active provider.
+    /// Returns `true` if the URL was consumed by the active provider. Only the
+    /// Google store uses an external-browser redirect; the Microsoft store
+    /// authenticates through ASWebAuthenticationSession (MSAL) and never
+    /// receives URL callbacks, so it intentionally falls through to `false`.
     @discardableResult
     public func resumeAuthorizationFlow(with url: URL) -> Bool {
         guard let store = (pendingProvider ?? activeProvider) as? GCEventStore else {
@@ -244,6 +249,7 @@ public final class CalendarRepository {
         switch providerName {
         case .macOSEventKit: return EKEventStore.shared
         case .googleCalendar: return GCEventStore.shared
+        case .microsoftGraph: return MicrosoftGraphEventStore.shared
         }
     }
 

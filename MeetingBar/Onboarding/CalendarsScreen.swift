@@ -116,7 +116,9 @@ private struct CalendarSelectionContent: View {
     private var emptyStateText: String {
         let connection = PreferencesCalendarPresentation.make(from: appModel.state).connectionState
         if connection == .authRequired {
-            return "onboarding_calendar_selection_reconnect".loco()
+            return PreferencesCalendarPresentation
+                .reconnectTextKey(for: appModel.state.activeProvider)
+                .loco()
         }
         if connection == .permissionRequired {
             return "onboarding_calendar_selection_permission".loco()

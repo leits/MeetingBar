@@ -13,6 +13,8 @@ extension DiagnosticsProvider {
             self = .macOSEventKit
         case .googleCalendar:
             self = .googleCalendar
+        case .microsoftGraph:
+            self = .microsoftGraph
         }
     }
 }
