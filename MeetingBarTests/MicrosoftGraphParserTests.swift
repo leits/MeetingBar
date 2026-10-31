@@ -90,7 +90,13 @@ final class MicrosoftGraphParserTests: XCTestCase {
         ])
 
         XCTAssertTrue(parsed?.isAllDay ?? false)
-        XCTAssertEqual(parsed?.startDate, Calendar.current.startOfDay(for: parsed!.startDate))
+        let days = [parsed?.startDate, parsed?.endDate].compactMap { $0 }.map {
+            Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: $0)
+        }
+        XCTAssertEqual(days, [
+            DateComponents(year: 2026, month: 9, day: 9, hour: 0, minute: 0),
+            DateComponents(year: 2026, month: 9, day: 10, hour: 0, minute: 0)
+        ])
     }
 
     func testSelfAttendeeSynthesizedFromResponseStatus() {

@@ -262,6 +262,7 @@ final class MicrosoftGraphEventStore: NSObject, AuthenticatedEventStore {
 
     /// Fetches every page of a Graph collection through the shared HTTP policy.
     private func fetchItems(_ url: URL, calendarID: String? = nil) async throws -> [[String: Any]] {
+        let generation = operationGeneration
         let session = Self.session
         let client = MicrosoftGraphHTTPClient(
             transport: { request in try await session.data(for: request) },
@@ -272,7 +273,7 @@ final class MicrosoftGraphEventStore: NSObject, AuthenticatedEventStore {
         do {
             return try await client.fetchItems(url, calendarID: calendarID)
         } catch let error as MicrosoftAuthError where error == .notSignedIn {
-            markNeedsInteraction()
+            try markNeedsInteractionIfCurrent(generation: generation)
             throw error
         }
     }
@@ -307,7 +308,7 @@ final class MicrosoftGraphEventStore: NSObject, AuthenticatedEventStore {
         let task = Task<String, Error> { [self] in
             let application = try makeApplication()
             guard let account = try existingAccount(in: application) else {
-                markNeedsInteraction()
+                try markNeedsInteractionIfCurrent(generation: generation)
                 throw MicrosoftAuthError.notSignedIn
             }
             do {
@@ -318,7 +319,7 @@ final class MicrosoftGraphEventStore: NSObject, AuthenticatedEventStore {
                 // Silent refresh needs interaction (refresh token revoked or
                 // expired): record it so `isAuthorized` agrees with the
                 // Reconnect UI.
-                markNeedsInteraction()
+                try markNeedsInteractionIfCurrent(generation: generation)
                 throw error
             }
         }
@@ -476,6 +477,15 @@ final class MicrosoftGraphEventStore: NSObject, AuthenticatedEventStore {
     private func markNeedsInteraction() {
         needsInteraction = true
         cachedToken = nil
+    }
+
+    /// Records that interaction is needed unless the failing operation was
+    /// superseded. MSAL callbacks ignore cancellation, so a failure for a
+    /// signed-out account can arrive after a newer sign-in; like a late success
+    /// (`applyIfCurrent`), it must not touch the newer session.
+    private func markNeedsInteractionIfCurrent(generation: Int) throws {
+        guard generation == operationGeneration else { throw CancellationError() }
+        markNeedsInteraction()
     }
 
     // MARK: - Configuration
