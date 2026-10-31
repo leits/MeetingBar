@@ -75,6 +75,66 @@ enum MicrosoftGraphSignInFlow {
     }
 }
 
+/// Sign-out ordering. The local session is cleared before any suspension, so a
+/// sign-out that finishes late cannot delete a newer sign-in.
+@MainActor
+enum MicrosoftGraphSignOutFlow {
+    static func run(
+        clearLocalSession: () -> Void,
+        finishSignOut: () async -> Void
+    ) async {
+        clearLocalSession()
+        await finishSignOut()
+    }
+}
+
+/// Bridges a single MSAL completion callback into async/await.
+@MainActor
+enum MicrosoftGraphCallbackWait {
+    /// MSAL may call back more than once (after
+    /// `cancelCurrentWebAuthSession()` it reports the cancellation and the web
+    /// session then fires again) or, in principle, never. Only the first result
+    /// counts, and a non-nil `timeout` settles the wait with `timeoutError` if no
+    /// callback arrives in time.
+    static func wait<Value: Sendable>(
+        timeout: TimeInterval?,
+        timeoutError: Error,
+        start: (@escaping @Sendable (Result<Value, Error>) -> Void) -> Void
+    ) async throws -> Value {
+        try await withCheckedThrowingContinuation { continuation in
+            let once = ResumeOnce(continuation)
+            let deadline = timeout.map { timeout in
+                Task {
+                    try await Task.sleep(nanoseconds: UInt64(timeout * 1_000_000_000))
+                    once.resume(.failure(timeoutError))
+                }
+            }
+            start { result in
+                deadline?.cancel()
+                once.resume(result)
+            }
+        }
+    }
+}
+
+/// Resumes a `CheckedContinuation` at most once; a second resume would trap.
+private final class ResumeOnce<Value: Sendable>: @unchecked Sendable {
+    private let lock = NSLock()
+    private var continuation: CheckedContinuation<Value, Error>?
+
+    init(_ continuation: CheckedContinuation<Value, Error>) {
+        self.continuation = continuation
+    }
+
+    func resume(_ result: Result<Value, Error>) {
+        lock.lock()
+        let pending = continuation
+        continuation = nil
+        lock.unlock()
+        pending?.resume(with: result)
+    }
+}
+
 /// HTTP-level failures from Microsoft Graph.
 enum MicrosoftGraphError: LocalizedError, Equatable {
     /// 403 or 404 for a specific calendar (shared calendar revoked, removed,
@@ -87,6 +147,8 @@ enum MicrosoftGraphError: LocalizedError, Equatable {
     case rateLimited(retryAfter: TimeInterval, url: URL)
     case httpStatus(Int, code: String?, url: URL)
     case malformedResponse(URL)
+    /// `@odata.nextLink` is unusable or repeats, so the list cannot be completed.
+    case invalidPagination(URL)
 
     var errorDescription: String? {
         switch self {
@@ -106,6 +168,8 @@ enum MicrosoftGraphError: LocalizedError, Equatable {
             return "Microsoft 365 request failed with HTTP \(statusCode): \(url.absoluteString)"
         case let .malformedResponse(url):
             return "Microsoft 365 response did not contain a value array: \(url.absoluteString)"
+        case let .invalidPagination(url):
+            return "Microsoft 365 returned an invalid or repeated next page link: \(url.absoluteString)"
         }
     }
 }

@@ -51,8 +51,11 @@ final class MicrosoftGraphEventStore: NSObject, AuthenticatedEventStore {
     /// Access token is treated as stale this many seconds before its real
     /// expiry so an in-flight request never races the deadline.
     private static let tokenFreshnessWindow: TimeInterval = 300
-    /// Safety cap on `@odata.nextLink` following, per resource.
-    private static let maxPages = 10
+    /// How long to wait for MSAL's silent-token callback. MSAL offers no way to
+    /// cancel the request and the continuation ignores task cancellation, so a
+    /// callback that never arrives would otherwise strand the serialized refresh
+    /// pipeline. This sits below `CalendarSync`'s refresh timeout.
+    private static let silentTokenTimeout: TimeInterval = 90
 
     private static let session: URLSession = {
         let configuration = URLSessionConfiguration.default
@@ -151,22 +154,26 @@ final class MicrosoftGraphEventStore: NSObject, AuthenticatedEventStore {
     func signOut() async {
         cancelPendingOperations()
 
-        if let application = try? makeApplication(),
-           let account = try? existingAccount(in: application) {
-            await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
-                let parameters = MSALSignoutParameters()
-                parameters.signoutFromBrowser = false
-                application.signout(with: account, signoutParameters: parameters) { _, _ in
-                    continuation.resume()
+        let application = try? makeApplication()
+        let account = application.flatMap { try? existingAccount(in: $0) }
+
+        await MicrosoftGraphSignOutFlow.run(
+            clearLocalSession: {
+                if let account { try? application?.remove(account) }
+                clearAccountState()
+                forceAccountSelectionOnNextInteractive = true
+            },
+            finishSignOut: {
+                guard let application, let account else { return }
+                await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+                    let parameters = MSALSignoutParameters()
+                    parameters.signoutFromBrowser = false
+                    application.signout(with: account, signoutParameters: parameters) { _, _ in
+                        continuation.resume()
+                    }
                 }
             }
-            // Belt and suspenders: drop the local cache entry even if signout
-            // reported an error.
-            try? application.remove(account)
-        }
-
-        clearAccountState()
-        forceAccountSelectionOnNextInteractive = true
+        )
     }
 
     /// Cancels in-flight refresh and interactive sign-in work and dismisses the sign-in window.
@@ -190,16 +197,7 @@ final class MicrosoftGraphEventStore: NSObject, AuthenticatedEventStore {
         try await ensureSignedIn()
 
         let email = userEmail
-        var items: [[String: Any]] = []
-        var url: URL? = try MicrosoftGraphURLBuilder.calendarsURL()
-        var page = 0
-
-        while let currentURL = url, page < Self.maxPages {
-            let root = try await fetchJSON(currentURL)
-            items.append(contentsOf: root["value"] as? [[String: Any]] ?? [])
-            url = MicrosoftGraphURLBuilder.nextLink(from: root)
-            page += 1
-        }
+        let items = try await fetchItems(try MicrosoftGraphURLBuilder.calendarsURL())
 
         return items.compactMap { item -> MBCalendar? in
             guard let id = item["id"] as? String,
@@ -242,9 +240,8 @@ final class MicrosoftGraphEventStore: NSObject, AuthenticatedEventStore {
             }
         }
 
-        let deduplicated = Dictionary(result.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first }).values
         return try MicrosoftGraphBatchPolicy.finish(
-            events: Array(deduplicated),
+            events: result.deduplicatedPreferringResolvedAttendee(),
             successfulCalendars: successfulCalendars,
             forbiddenErrors: forbiddenErrors
         )
@@ -255,86 +252,29 @@ final class MicrosoftGraphEventStore: NSObject, AuthenticatedEventStore {
     /// Fetches a single calendar's events for the range, following Graph pagination.
     private func fetchEvents(for calendar: MBCalendar, from: Date, to: Date) async throws -> [MBEvent] {
         let username = userEmail
-        var events: [MBEvent] = []
-        var url: URL? = try MicrosoftGraphURLBuilder.calendarViewURL(
-            calendarID: calendar.id,
-            start: from,
-            end: to
-        )
-        var page = 0
-
-        while let currentURL = url, page < Self.maxPages {
-            let root = try await fetchJSON(currentURL, calendarID: calendar.id)
-            let items = root["value"] as? [[String: Any]] ?? []
-            events.append(contentsOf: items.compactMap {
-                MSGraphParser.event(from: $0, calendar: calendar, username: username)
-            })
-            url = MicrosoftGraphURLBuilder.nextLink(from: root)
-            page += 1
+        let url = try MicrosoftGraphURLBuilder.calendarViewURL(calendarID: calendar.id, start: from, end: to)
+        return try await fetchItems(url, calendarID: calendar.id).compactMap {
+            MSGraphParser.event(from: $0, calendar: calendar, username: username)
         }
-
-        return events
     }
 
     // MARK: - Networking
 
-    /// Performs an authorized Graph GET and applies the HTTP status policy (token refresh, throttling, per-calendar errors).
-    private func fetchJSON(
-        _ url: URL,
-        calendarID: String? = nil,
-        retrying: Bool = false,
-        rateLimitRetries: Int = 0
-    ) async throws -> [String: Any] {
-        let token = try await validAccessToken()
-
-        var request = URLRequest(url: url)
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        request.setValue(
-            #"outlook.timezone="UTC", outlook.body-content-type="text""#,
-            forHTTPHeaderField: "Prefer"
+    /// Fetches every page of a Graph collection through the shared HTTP policy.
+    private func fetchItems(_ url: URL, calendarID: String? = nil) async throws -> [[String: Any]] {
+        let session = Self.session
+        let client = MicrosoftGraphHTTPClient(
+            transport: { request in try await session.data(for: request) },
+            accessToken: { [self] forceRefresh in
+                try await validAccessToken(forceRefresh: forceRefresh)
+            }
         )
-
-        let (data, response) = try await Self.session.data(for: request)
-
-        guard let http = response as? HTTPURLResponse else {
-            throw MicrosoftGraphError.malformedResponse(url)
-        }
-
-        let root = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any]
-        let graphErrorCode = (root?["error"] as? [String: Any])?["code"] as? String
-        let retryAfter = http.value(forHTTPHeaderField: "Retry-After")
-
-        let classified = MicrosoftGraphHTTPStatusPolicy.classify(
-            MicrosoftGraphResponse(
-                statusCode: http.statusCode,
-                url: url,
-                calendarID: calendarID,
-                graphErrorCode: graphErrorCode,
-                retryAfterHeader: retryAfter
-            ),
-            retrying: retrying,
-            rateLimitRetries: rateLimitRetries
-        )
-        switch classified {
-        case .proceed:
-            break
-        case .retryWithForcedTokenRefresh:
-            _ = try await validAccessToken(forceRefresh: true)
-            return try await fetchJSON(url, calendarID: calendarID, retrying: true, rateLimitRetries: rateLimitRetries)
-        case .clearAuthAndThrowAuthRequired:
+        do {
+            return try await client.fetchItems(url, calendarID: calendarID)
+        } catch let error as MicrosoftAuthError where error == .notSignedIn {
             markNeedsInteraction()
-            throw MicrosoftAuthError.notSignedIn
-        case let .retryAfterDelay(delay):
-            try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
-            return try await fetchJSON(url, calendarID: calendarID, retrying: retrying, rateLimitRetries: rateLimitRetries + 1)
-        case let .throwError(error):
             throw error
         }
-
-        guard let root else {
-            throw MicrosoftGraphError.malformedResponse(url)
-        }
-        return root
     }
 
     // MARK: - Sign-in helpers
@@ -404,15 +344,17 @@ final class MicrosoftGraphEventStore: NSObject, AuthenticatedEventStore {
         account: MSALAccount,
         forceRefresh: Bool
     ) async throws -> MicrosoftTokenSnapshot {
-        try await withCheckedThrowingContinuation { continuation in
-            let once = ResumeOnce(continuation)
+        try await MicrosoftGraphCallbackWait.wait(
+            timeout: Self.silentTokenTimeout,
+            timeoutError: MicrosoftAuthError.refreshFailed
+        ) { complete in
             let parameters = MSALSilentTokenParameters(scopes: Self.scopes, account: account)
             parameters.forceRefresh = forceRefresh
             application.acquireTokenSilent(with: parameters) { result, error in
                 if let result {
-                    once.resume(.success(Self.snapshot(from: result)))
+                    complete(.success(Self.snapshot(from: result)))
                 } else {
-                    once.resume(.failure(Self.silentError(error)))
+                    complete(.failure(Self.silentError(error)))
                 }
             }
         }
@@ -444,12 +386,11 @@ final class MicrosoftGraphEventStore: NSObject, AuthenticatedEventStore {
         let loginHint = userEmail
         let selectAccount = forcePrompt || forceAccountSelectionOnNextInteractive
         forceAccountSelectionOnNextInteractive = false
-        return try await withCheckedThrowingContinuation { continuation in
-            // MSAL can invoke this completion more than once: after
-            // `cancelCurrentWebAuthSession()` it reports the cancellation
-            // immediately and the ASWebAuthenticationSession callback fires
-            // again afterwards. Resuming a CheckedContinuation twice traps.
-            let once = ResumeOnce(continuation)
+        // No deadline: this waits on the user, and Cancel ends the web session.
+        return try await MicrosoftGraphCallbackWait.wait(
+            timeout: nil,
+            timeoutError: MicrosoftAuthError.cancelled
+        ) { complete in
             let webParameters = MSALWebviewParameters(authPresentationViewController: viewController)
             webParameters.webviewType = .authenticationSession
             let parameters = MSALInteractiveTokenParameters(scopes: Self.scopes, webviewParameters: webParameters)
@@ -457,9 +398,9 @@ final class MicrosoftGraphEventStore: NSObject, AuthenticatedEventStore {
             parameters.loginHint = selectAccount ? nil : loginHint
             application.acquireToken(with: parameters) { result, error in
                 if let result {
-                    once.resume(.success(Self.snapshot(from: result)))
+                    complete(.success(Self.snapshot(from: result)))
                 } else {
-                    once.resume(.failure(Self.interactiveError(error)))
+                    complete(.failure(Self.interactiveError(error)))
                 }
             }
         }
@@ -788,25 +729,5 @@ final class MicrosoftGraphEventStore: NSObject, AuthenticatedEventStore {
             case .unknown: return .unknown
             }
         }
-    }
-}
-
-/// Resumes a `CheckedContinuation` at most once. MSAL completion blocks are
-/// not guaranteed to fire exactly once (see `acquireTokenInteractive`), and a
-/// second resume would trap the process.
-private final class ResumeOnce<Value: Sendable>: @unchecked Sendable {
-    private let lock = NSLock()
-    private var continuation: CheckedContinuation<Value, Error>?
-
-    init(_ continuation: CheckedContinuation<Value, Error>) {
-        self.continuation = continuation
-    }
-
-    func resume(_ result: Result<Value, Error>) {
-        lock.lock()
-        let pending = continuation
-        continuation = nil
-        lock.unlock()
-        pending?.resume(with: result)
     }
 }

@@ -6,7 +6,7 @@ This document provides long-lived product and engineering context for people and
 
 ## Product
 
-[MeetingBar](https://github.com/leits/MeetingBar) is a free, open-source macOS menu-bar app that shows a user's current or next calendar meeting and provides quick ways to join, inspect, or prepare for it. It reads Apple Calendar through EventKit and Google Calendar through a direct integration. The app also supports meeting-service links, reminders, shortcuts, and automation.
+[MeetingBar](https://github.com/leits/MeetingBar) is a free, open-source macOS menu-bar app that shows a user's current or next calendar meeting and provides quick ways to join, inspect, or prepare for it. It reads Apple Calendar through EventKit, and Google Calendar and Microsoft 365 through direct integrations. The app also supports meeting-service links, reminders, shortcuts, and automation.
 
 ### Core promise: a trustworthy meeting entrypoint
 
@@ -31,7 +31,7 @@ The primary maintainer is Andrii Leitsius. Development and review time are limit
 
 ## Engineering map
 
-MeetingBar uses Swift, AppKit for the macOS status bar, SwiftUI for application screens, EventKit, and a direct Google Calendar integration. The main app is built with Xcode. `Package.swift` defines a separate hostless `MeetingBarLogic` testable module for pure policies.
+MeetingBar uses Swift, AppKit for the macOS status bar, SwiftUI for application screens, EventKit, and direct Google Calendar and Microsoft Graph integrations. The main app is built with Xcode. `Package.swift` defines a separate hostless `MeetingBarLogic` testable module for pure policies.
 
 The following is an orientation map, **not** a substitute for reading the current code:
 
@@ -39,7 +39,7 @@ The following is an orientation map, **not** a substitute for reading the curren
 | --- | --- | --- |
 | Lifecycle and OS wiring | `MeetingBar/App/AppDelegate.swift`, `LifecycleObserver.swift`, `WindowCoordinator.swift` | App initialization, lifecycle, system events and windows. |
 | Application state and action routing | `MeetingBar/App/AppModel.swift` (`AppState`, `AppAction`, `AppEnvironment`) | UI actions, observable state, injected side-effect boundaries and workflow coordination. |
-| Calendar providers | `MeetingBar/Calendar/EventStore.swift`, `CalendarRepository.swift`, `Providers/` | Provider-neutral calendar access with EventKit and Google-specific adapters. |
+| Calendar providers | `MeetingBar/Calendar/EventStore.swift`, `CalendarRepository.swift`, `Providers/` | Provider-neutral calendar access with EventKit, Google and Microsoft 365 adapters. |
 | Refresh and health | `MeetingBar/Calendar/CalendarSync.swift`, `ProviderHealth.swift` | Refresh orchestration, provider switching, cancellation, last-good data and error/permission state. |
 | Event selection/filtering | `MeetingBar/Calendar/EventSelection.swift`, `EventFiltering.swift`, `+MeetingBar` adapters | Pure choices about which events are eligible and which one to display/join. |
 | Event representation | `MeetingBar/Calendar/MBEvent.swift`, `MBEvent+MeetingBar.swift`, `MBCalendar.swift` | Normalized data from different providers and app-specific mappings. |
@@ -52,7 +52,7 @@ The following is an orientation map, **not** a substitute for reading the curren
 
 - **UI triggers actions; `AppModel` coordinates; feature owners manage workflows; pure policies decide; adapters perform OS and network effects.**
 - Preserve the existing *policy + `+MeetingBar` adapter* pattern where it is useful: decisions depend on explicit inputs such as `settings` and `now`, while app-specific mappings and `Defaults` reads live at boundaries.
-- Keep policies free of direct dependencies on AppKit, EventKit, UserNotifications, Google networking, Keychain, AppleScript, and persistent settings.
+- Keep policies free of direct dependencies on AppKit, EventKit, UserNotifications, provider SDKs and networking, Keychain, AppleScript, and persistent settings.
 - Avoid treating `Defaults` as implicit dependency injection or a general-purpose event bus. Do not add a broad settings abstraction where the existing snapshot pattern suffices.
 - Every recurring/delayed asynchronous workflow needs a clear owner and cancellation path. Check stale-result protection when providers or settings change.
 - Do not introduce a new abstraction or coordinator merely to follow a pattern; it must isolate a decision, an integration, or an owned workflow.

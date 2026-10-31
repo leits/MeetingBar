@@ -97,6 +97,7 @@ MeetingBar/                         (~76 .swift files)
 │       └── Microsoft/
 │           ├── MicrosoftGraphEventStore.swift  — Microsoft 365 via MSAL + Graph REST
 │           ├── MicrosoftGraphPolicy.swift      — HTTP classification, mapping, dates, config [SPM]
+│           ├── MicrosoftGraphHTTPClient.swift  — authenticated, complete paginated requests [SPM]
 │           └── MicrosoftAuthPresentation.swift — anchor window for the MSAL sign-in sheet
 │
 ├── Meetings/                       — meeting URL detection, opening, services catalog
