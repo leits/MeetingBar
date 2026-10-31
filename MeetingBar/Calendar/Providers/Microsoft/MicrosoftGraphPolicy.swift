@@ -59,9 +59,9 @@ enum MicrosoftGraphSignInFlow {
     /// session needs user interaction. MSAL callbacks ignore task cancellation,
     /// so a silent failure can arrive after the attempt was abandoned; that must
     /// end the attempt rather than open a sign-in window nobody asked for.
-    static func run<Snapshot>(
-        silent: (() async throws -> Snapshot)?,
-        interactive: () async throws -> Snapshot,
+    static func run<Snapshot: Sendable>(
+        silent: (@MainActor () async throws -> Snapshot)?,
+        interactive: @MainActor () async throws -> Snapshot,
         isCurrent: () -> Bool
     ) async throws -> Outcome<Snapshot> {
         if let silent {
