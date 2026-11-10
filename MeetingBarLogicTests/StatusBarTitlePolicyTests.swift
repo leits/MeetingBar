@@ -12,18 +12,15 @@ final class StatusBarTitlePolicyTests: XCTestCase {
 
     private func settings(
         titleFormat: StatusBarEventTitleFormat = .show,
-        titleLength: Int = 55,
-        showNowForActiveEvent: Bool = true
+        titleLength: Int = 55
     ) -> StatusBarTitleSettings {
         StatusBarTitleSettings(
             titleFormat: titleFormat,
             titleLength: titleLength,
-            showNowForActiveEvent: showNowForActiveEvent,
             labels: StatusBarTitleLabels(
                 genericMeetingTitle: "Meeting",
                 noTitle: "No title",
                 activeEventTimeFormat: "now (%@ left)",
-                activeEventTimeLeftFormat: "(%@ left)",
                 upcomingEventTimeFormat: "in %@"
             )
         )
@@ -103,22 +100,6 @@ final class StatusBarTitlePolicyTests: XCTestCase {
         XCTAssertTrue(result.isActiveEvent)
         XCTAssertTrue(result.time.hasPrefix("now ("))
         XCTAssertTrue(result.time.hasSuffix(" left)"))
-    }
-
-    func testActiveEventWithoutNowUsesTimeLeftText() {
-        let result = text(startOffset: -300, endOffset: 900, settings: settings(showNowForActiveEvent: false))
-
-        XCTAssertTrue(result.isActiveEvent)
-        XCTAssertTrue(result.time.hasPrefix("("))
-        XCTAssertTrue(result.time.hasSuffix(" left)"))
-        XCTAssertFalse(result.time.contains("now"))
-    }
-
-    func testFutureEventIgnoresShowNowSetting() {
-        let result = text(startOffset: 600, endOffset: 2400, settings: settings(showNowForActiveEvent: false))
-
-        XCTAssertFalse(result.isActiveEvent)
-        XCTAssertTrue(result.time.hasPrefix("in "))
     }
 
     func testShortenTitleWithZeroLimitReturnsEllipsis() {

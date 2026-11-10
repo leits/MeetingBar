@@ -144,7 +144,6 @@ struct StatusBarSection: View {
     @Default(.eventTitleIconFormat) var eventTitleIconFormat
     @Default(.eventTitleFormat) var eventTitleFormat
     @Default(.eventTimeFormat) var eventTimeFormat
-    @Default(.showNowForOngoingEvent) var showNowForOngoingEvent
     @Default(.statusbarEventTitleLength) var statusbarEventTitleLength
     @Default(.showEventMaxTimeUntilEventThreshold) var showEventMaxTimeUntilEventThreshold
     @Default(.showEventMaxTimeUntilEventEnabled) var showEventMaxTimeUntilEventEnabled
@@ -225,12 +224,6 @@ struct StatusBarSection: View {
                     Text(option.titleKey.loco()).tag(option.format)
                 }
             }
-
-            Toggle(
-                preferenceLabel("preferences_appearance_status_bar_time_show_now_toggle"),
-                isOn: $showNowForOngoingEvent
-            )
-            .disabled(eventTimeFormat == .hide)
         }
 
         Section {

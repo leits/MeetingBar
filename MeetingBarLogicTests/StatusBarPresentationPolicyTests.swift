@@ -41,12 +41,10 @@ final class StatusBarPresentationTests: XCTestCase {
             title: StatusBarTitleSettings(
                 titleFormat: titleFormat,
                 titleLength: titleLength,
-                showNowForActiveEvent: true,
                 labels: StatusBarTitleLabels(
                     genericMeetingTitle: "Meeting",
                     noTitle: "No title",
                     activeEventTimeFormat: "now (%@ left)",
-                    activeEventTimeLeftFormat: "(%@ left)",
                     upcomingEventTimeFormat: "in %@"
                 )
             ),

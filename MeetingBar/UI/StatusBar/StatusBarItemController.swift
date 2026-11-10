@@ -93,7 +93,7 @@ final class StatusBarItemController {
     private func setupDefaultsObservers() {
         // For all these keys, just redraw:
         Defaults.publisher(
-            keys: .statusbarEventTitleLength, .eventTimeFormat, .showNowForOngoingEvent,
+            keys: .statusbarEventTitleLength, .eventTimeFormat,
             .eventTitleIconFormat, .showEventMaxTimeUntilEventThreshold,
             .showEventMaxTimeUntilEventEnabled, .showEventDetails,
             .shortenEventTitle, .menuEventTitleLength,
