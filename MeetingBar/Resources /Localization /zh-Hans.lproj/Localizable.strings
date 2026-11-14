@@ -347,3 +347,4 @@
 "preferences_calendars_unavailable_title" = "所选日历不可用";
 "preferences_calendars_remove_missing" = "移除";
 "preferences_advanced_script_save_failed_title" = "不能保存AppleScript";
+"onboarding_essentials_title" = "选择日常行为";
