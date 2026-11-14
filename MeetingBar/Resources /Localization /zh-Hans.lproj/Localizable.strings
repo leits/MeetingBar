@@ -344,3 +344,6 @@
 "onboarding_back" = "返回";
 "onboarding_start_using" = "开始使用MeetingBar";
 "onboarding_essentials_hint" = "你可以稍后在偏好设置中微调每处细节。";
+"preferences_calendars_unavailable_title" = "所选日历不可用";
+"preferences_calendars_remove_missing" = "移除";
+"preferences_advanced_script_save_failed_title" = "不能保存AppleScript";
