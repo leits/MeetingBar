@@ -237,7 +237,7 @@
 "preferences_services_link_meeting_title" = "会议链接的默认浏览器";
 "preferences_services_link_modes_help" = "应用、网页应用和 PWA 选项是可选的。在您选择之前，现有的浏览器行为保持不变。";
 "preferences_services_link_overrides_help" = "这些选择会覆盖每个会议服务的默认浏览器。";
-"preferences_services_link_overrides_title" = "提供商覆盖";
+"preferences_services_link_overrides_title" = "特定服务商开放";
 "preferences_services_link_service_title" = "%@";
 "preferences_sidebar_experience" = "体验";
 "preferences_sidebar_setup" = "设置";
@@ -272,7 +272,7 @@
 "status_bar_control_reconnect" = "重新连接 Google 日历";
 "status_bar_control_refresh_failed" = "日历刷新失败";
 "status_bar_control_select_calendars" = "在偏好设置中选择日历";
-"status_bar_control_stale" = "日历刷新失败 — 显示最后已知数据";
+"status_bar_control_stale" = "日历刷新失败 — 显示最新的已知数据";
 "status_bar_error_app_link_message" = "请确保已安装 %@ 应用，或在偏好设置中选择用浏览器打开此类链接。";
 "status_bar_error_app_link_title" = "哎呀！无法在 %@ 中打开链接";
 "status_bar_error_apple_script_title" = "AppleScript 错误";
