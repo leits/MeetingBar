@@ -239,6 +239,18 @@ final class NotificationRecordStore {
             break
         }
     }
+
+    /// Record a meeting the user joined as already handled for its fullscreen
+    /// alert, so joining early does not bring the alert up at start time.
+    func recordJoined(_ event: MBEvent) {
+        var records = processedRecords(for: .fullscreen).filter { $0.id != event.id }
+        records.append(EventActionProcessedEvent(
+            id: event.id,
+            lastModifiedDate: event.lastModifiedDate,
+            eventEndDate: event.endDate
+        ))
+        setProcessedRecords(records, for: .fullscreen)
+    }
 }
 
 // MARK: - ProcessedEvent bridging

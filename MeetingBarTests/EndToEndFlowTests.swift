@@ -95,6 +95,7 @@ private final class EndToEndHarness {
                 self?.openedMeetingIDs.append(event.id)
                 self?.openedMeetingURLs.append(event.meetingLink?.url.absoluteString ?? "")
             },
+            recordMeetingJoined: { NotificationRecordStore().recordJoined($0) },
             dismissEvent: { AppSettings.dismissEvent($0) },
             undismissEvent: { AppSettings.undismissEvent(id: $0) },
             clearDismissedEvents: { AppSettings.clearDismissedEvents() },
@@ -785,6 +786,33 @@ final class NotificationEndToEndFlowTests: EndToEndFlowTestCase {
         try await waitUntil("fullscreen presented for due event") {
             fullscreenEventIDs == ["E1"]
         }
+    }
+
+    func testFullscreenNotificationSkipsEventJoinedEarly() async throws {
+        configureDisplayDefaults()
+        Defaults[.fullscreenNotification] = true
+        let harness = makeHarness(events: [
+            makeEvent(id: "E1", startingIn: 3),
+            makeEvent(id: "E2", startingIn: 3)
+        ])
+        defer { harness.stop() }
+
+        await waitForState(of: harness, description: "due events reach AppModel") {
+            $0.events.count == 2
+        }
+
+        harness.model.send(.joinMeeting(eventID: "E1"))
+        XCTAssertEqual(harness.openedMeetingIDs, ["E1"])
+
+        var fullscreenEventIDs: [String] = []
+        harness.installActionSink(showFullscreen: { fullscreenEventIDs.append($0.id) })
+        harness.model.reconcileNotifications()
+
+        // E2 was not joined, so its alert proves the fullscreen path ran.
+        try await waitUntil("fullscreen presented for the event not joined") {
+            fullscreenEventIDs.contains("E2")
+        }
+        XCTAssertEqual(fullscreenEventIDs, ["E2"])
     }
 
     func testInAppActionSuppressedWhileScreenLockedThenFiresAfterUnlock() async throws {

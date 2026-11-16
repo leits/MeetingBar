@@ -20,6 +20,7 @@ final class AppModelTestHarness {
     private(set) var providerChanges: [(provider: EventStoreProvider, signOut: Bool)] = []
     private(set) var calendarSelections: [(id: String, selected: Bool)] = []
     private(set) var openedMeetingIDs: [String] = []
+    private(set) var joinedMeetingIDs: [String] = []
     private(set) var dismissedEventIDs: [String] = []
     private(set) var undismissedEventIDs: [String] = []
     private(set) var clearDismissedEventsCallCount = 0
@@ -72,6 +73,9 @@ final class AppModelTestHarness {
         },
         openMeeting: { [weak self] event in
             self?.openedMeetingIDs.append(event.id)
+        },
+        recordMeetingJoined: { [weak self] event in
+            self?.joinedMeetingIDs.append(event.id)
         },
         dismissEvent: { [weak self] event in
             self?.dismissedEventIDs.append(event.id)
