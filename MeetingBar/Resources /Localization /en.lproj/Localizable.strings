@@ -311,7 +311,7 @@
 "status_bar_preferences" = "Preferences";
 "status_bar_quit" = "Quit MeetingBar";
 "status_bar_no_title" = "No title";
-"status_bar_event_status_now" = "now (%@ left)";
+"status_bar_event_status_now" = "(%@ left)";
 "status_bar_event_status_in" = "in %@";
 "status_bar_error_apple_script_title" = "AppleScript error";
 "status_bar_error_link_missed_title" = "Ouch! Can't join the %@";
