@@ -654,14 +654,14 @@ final class ProviderOpeningPolicyTests: BaseTestCase {
         XCTAssertTrue(spy.browserOpens.isEmpty)
     }
 
-    func test_zoomWebAppTransformsMeetingURLAndPreservesQuery() {
+    func test_zoomWebAppUsesAttendeeRouteAndPreservesEncodedQuery() {
         let transformed = ZoomWebAppURLPolicy.webAppURL(
-            for: URL(string: "https://company.zoom.us/j/123456789?pwd=abc&uname=Sam")!
+            for: URL(string: "https://us06web.zoom.us/j/12345678901?pwd=synthetic%2Bpass+code%3D&uname=Guest%20Name#success")!
         )
 
         XCTAssertEqual(
             transformed?.absoluteString,
-            "https://app.zoom.us/wc/123456789/start?pwd=abc&uname=Sam"
+            "https://us06web.zoom.us/wc/join/12345678901?pwd=synthetic%2Bpass+code%3D&uname=Guest%20Name"
         )
     }
 
