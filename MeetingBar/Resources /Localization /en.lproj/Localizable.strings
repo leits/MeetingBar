@@ -139,6 +139,7 @@
 "preferences_appearance_status_bar_ongoing_time_ten_before_next_value" = "hide 10 min before next event";
 "preferences_appearance_status_bar_next_event_toggle" = "Show only events starting within";
 "preferences_appearance_status_bar_next_event_stepper" = "%d minutes";
+"preferences_appearance_status_bar_meeting_highlight_toggle" = "Color the status bar when a meeting is about to start or in progress";
 "preferences_appearance_menu_title" = "Menu";
 "preferences_appearance_menu_show_timeline_toggle" = "Show visual timeline of the day";
 "preferences_appearance_menu_shorten_event_title_toggle" = "Shorten event title to";

@@ -15,7 +15,7 @@ import UserNotifications
 /// A nested, indented picker row for a "time before event" choice that
 /// belongs to the toggle row above it. Matches the dependent-row treatment
 /// used across the preferences forms.
-private struct TimeBeforeEventPickerRow: View {
+struct TimeBeforeEventPickerRow: View {
     @Binding var selection: TimeBeforeEvent
 
     var body: some View {

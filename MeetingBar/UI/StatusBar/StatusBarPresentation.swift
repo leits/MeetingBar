@@ -62,6 +62,16 @@ enum StatusBarTitleStyle: Equatable {
     case underlined
 }
 
+/// Optional meeting-state color for the status item, so an imminent or
+/// ongoing meeting stays visible after its notifications are gone.
+enum StatusBarHighlight: Equatable {
+    case none
+    /// The next meeting starts within the configured lead time.
+    case startingSoon
+    /// The displayed meeting is in progress.
+    case inProgress
+}
+
 struct StatusBarEventPresentationInput: Equatable {
     let title: String?
     let startDate: Date
@@ -79,6 +89,9 @@ struct StatusBarPresenterSettings: Equatable {
     let iconAssets: StatusBarIconAssets
     let pendingDisplay: StatusBarParticipationDisplay
     let tentativeDisplay: StatusBarParticipationDisplay
+    /// Seconds before a meeting starts at which the status item is highlighted
+    /// as starting soon; `nil` turns the meeting-state highlight off.
+    let highlightLeadTime: TimeInterval?
 }
 
 struct StatusBarPresentation: Equatable {
@@ -89,6 +102,7 @@ struct StatusBarPresentation: Equatable {
     let icon: StatusBarIcon
     let layout: StatusBarTitleLayout
     let titleStyle: StatusBarTitleStyle
+    let highlight: StatusBarHighlight
 }
 
 /// Picks the status bar mode for the current next-event candidate.
@@ -132,7 +146,8 @@ enum StatusBarPresenter {
                 tooltip: nil,
                 icon: nonEventIcon(mode: mode, settings: settings),
                 layout: .none,
-                titleStyle: .normal
+                titleStyle: .normal,
+                highlight: .none
             )
         }
 
@@ -165,6 +180,12 @@ enum StatusBarPresenter {
                 layout: titleLayout(timeDisplay: settings.timeDisplay, titleFormat: settings.title.titleFormat),
                 pendingDisplay: settings.pendingDisplay,
                 tentativeDisplay: settings.tentativeDisplay
+            ),
+            highlight: StatusBarHighlightPolicy.highlight(
+                startDate: nextEvent.startDate,
+                endDate: nextEvent.endDate,
+                leadTime: settings.highlightLeadTime,
+                now: now
             )
         )
     }
@@ -223,6 +244,31 @@ enum StatusBarPresenter {
         case .underlined:
             return .underlined
         }
+    }
+}
+
+// MARK: - Highlight policy
+
+/// Decides the meeting-state highlight for the displayed event.
+///
+/// | highlight lead time | event                                   | highlight    |
+/// | ------------------- | --------------------------------------- | ------------ |
+/// | nil                 | (any)                                   | none         |
+/// | set                 | started, not ended                      | inProgress   |
+/// | set                 | starts within the lead time (inclusive) | startingSoon |
+/// | set                 | starts later, or already ended          | none         |
+enum StatusBarHighlightPolicy {
+    static func highlight(
+        startDate: Date,
+        endDate: Date,
+        leadTime: TimeInterval?,
+        now: Date
+    ) -> StatusBarHighlight {
+        guard let leadTime else { return .none }
+        if startDate <= now {
+            return endDate > now ? .inProgress : .none
+        }
+        return startDate.timeIntervalSince(now) <= leadTime ? .startingSoon : .none
     }
 }
 

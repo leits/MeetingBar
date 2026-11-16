@@ -70,6 +70,24 @@ final class StackedStatusBarLayoutTests: BaseTestCase {
         }
     }
 
+    func test_highlightedContentStillFitsAndKeepsNativeSizing() throws {
+        let controller = StatusBarItemController()
+        defer { NSStatusBar.system.removeStatusItem(controller.statusItem) }
+        let icons: [StatusBarIcon] = [.none, .asset(MenuStyleConstants.calendarIconName), .meetingService(.zoom)]
+
+        for highlight in [StatusBarHighlight.startingSoon, .inProgress] {
+            for icon in icons {
+                for style in [StatusBarTitleStyle.normal, .inactive] {
+                    controller.renderStatusBar(presentation(
+                        title: "Weekly sync", time: "now (45m left)", icon: icon, style: style, highlight: highlight
+                    ))
+                    let host = try layout(controller)
+                    assertFitsButton(controller, host: host, context: "\(highlight), \(icon), \(style)")
+                }
+            }
+        }
+    }
+
     func test_layoutTransitionsDetachOldHostsAndRestoreNativeSizing() throws {
         let controller = StatusBarItemController()
         defer { NSStatusBar.system.removeStatusItem(controller.statusItem) }
@@ -77,11 +95,12 @@ final class StackedStatusBarLayoutTests: BaseTestCase {
         let nativeSubviewCount = button.subviews.count
         let transitions = [
             StatusBarPresentation(mode: .nextEvent, title: "Inline", time: "in 5m", tooltip: nil,
-                                  icon: .none, layout: .inline(showTime: true), titleStyle: .normal),
+                                  icon: .none, layout: .inline(showTime: true), titleStyle: .normal, highlight: .none),
             StatusBarPresentation(mode: .nextEvent, title: "", time: "", tooltip: nil,
-                                  icon: .asset(MenuStyleConstants.calendarIconName), layout: .none, titleStyle: .normal),
+                                  icon: .asset(MenuStyleConstants.calendarIconName), layout: .none, titleStyle: .normal, highlight: .none),
             StatusBarPresentation(mode: .noUpcoming, title: "", time: "", tooltip: nil,
-                                  icon: .asset(MenuStyleConstants.calendarCheckmarkIconName), layout: .none, titleStyle: .normal)
+                                  icon: .asset(MenuStyleConstants.calendarCheckmarkIconName), layout: .none, titleStyle: .normal,
+                                  highlight: .none)
         ]
 
         for next in transitions {
@@ -169,9 +188,10 @@ final class StackedStatusBarLayoutTests: BaseTestCase {
         title: String,
         time: String,
         icon: StatusBarIcon = .none,
-        style: StatusBarTitleStyle = .normal
+        style: StatusBarTitleStyle = .normal,
+        highlight: StatusBarHighlight = .none
     ) -> StatusBarPresentation {
         StatusBarPresentation(mode: .nextEvent, title: title, time: time, tooltip: title,
-                              icon: icon, layout: .stacked, titleStyle: style)
+                              icon: icon, layout: .stacked, titleStyle: style, highlight: highlight)
     }
 }

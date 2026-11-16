@@ -148,6 +148,8 @@ struct StatusBarSection: View {
     @Default(.showEventMaxTimeUntilEventThreshold) var showEventMaxTimeUntilEventThreshold
     @Default(.showEventMaxTimeUntilEventEnabled) var showEventMaxTimeUntilEventEnabled
     @Default(.ongoingEventVisibility) var ongoingEventVisibility
+    @Default(.statusbarMeetingHighlight) var statusbarMeetingHighlight
+    @Default(.statusbarMeetingHighlightTime) var statusbarMeetingHighlightTime
 
     var body: some View {
         Section(header: Text("preferences_appearance_status_bar_title".loco())) {
@@ -261,6 +263,14 @@ struct StatusBarSection: View {
                 Text("preferences_appearance_status_bar_ongoing_time_ten_before_next_value".loco())
                     .tag(OngoingEventVisibility.showTenMinBeforeNext)
             }
+
+            Toggle(
+                preferenceLabel("preferences_appearance_status_bar_meeting_highlight_toggle"),
+                isOn: $statusbarMeetingHighlight
+            )
+
+            TimeBeforeEventPickerRow(selection: $statusbarMeetingHighlightTime)
+                .disabled(!statusbarMeetingHighlight)
         }
     }
 
