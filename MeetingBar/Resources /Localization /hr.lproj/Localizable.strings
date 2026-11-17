@@ -40,7 +40,7 @@
 "preferences_general_shortcut_join_next" = "Pridruži se sljedećem sastanku:";
 "preferences_general_shortcut_join_from_clipboard" = "Pridruži se sastanku iz međuspremnika:";
 "preferences_general_shortcut_toggle_meeting_name_visibility" = "Uključi/isključi prikaz naslova u traci stanja:";
-"preferences_general_meeting_bar_description" = "MeetingBar je program otvorenog koda\na autor programa je Andrii Leitsius 🇺🇦\nZa jednostavnije održavanje sastanaka online";
+"preferences_general_meeting_bar_description" = "MeetingBar je aplikacija otvorenog koda\na autor aplikacije je Andrii Leitsius 🇺🇦\nZa jednostavnije održavanje sastanaka online";
 "preferences_general_external_contact" = "Kontakt";
 "preferences_general_patron_title" = "Postani pokrovitelj";
 "preferences_general_patron_three_months" = "3 mjeseca – 2,99 USD";
@@ -120,7 +120,7 @@
 "preferences_configure_browsers_modal_add_browser_path" = "Staza";
 "preferences_configure_browsers_modal_add_browser_choose_browser_button_title" = "Odaberi web-preglednik";
 "preferences_configure_browsers_modal_alert_title" = "Nije moguće dodati konfiguraciju preglednika";
-"preferences_configure_browsers_choose_browser_panel_title" = "Odaberi program web-preglednika";
+"preferences_configure_browsers_choose_browser_panel_title" = "Odaberi aplikaciju web-preglednika";
 "preferences_configure_browsers_choose_browser_panel_prompt" = "Odaberi web-preglednik";
 "preferences_configure_browsers_choose_browser_panel_message" = "Odaberi otkuda pokrenuti web-preglednik.";
 
@@ -192,13 +192,13 @@
 "status_bar_submenu_dismiss_meeting" = "Raspusti sastanak";
 "status_bar_submenu_undismiss_meeting" = "Ukloni raspuštanje";
 "status_bar_submenu_email_attendees" = "Pošalji e -mail sudionicima";
-"status_bar_submenu_open_in_calendar" = "Otvori u programu Kalendar";
+"status_bar_submenu_open_in_calendar" = "Otvori u aplikaciji „Kalendar”";
 "status_bar_submenu_open_in_fantastical" = "Otvori u Fantastical";
 "status_bar_quick_actions" = "Brze radnje";
 "status_bar_show_meeting_names" = "Prikaži naslov sastanka";
 "status_bar_hide_meeting_names" = "Sakrij naslov sastanka";
 "status_bar_whats_new" = "Što je novoga?";
-"status_bar_rate_app" = "Ocijeni program";
+"status_bar_rate_app" = "Ocijeni aplikaciju";
 "status_bar_preferences" = "Postavke";
 "status_bar_quit" = "Zatvori MeetingBar";
 "status_bar_no_title" = "Bez naslova";
@@ -207,17 +207,17 @@
 "status_bar_error_apple_script_title" = "AppleScript greška";
 "status_bar_error_link_missed_title" = "Joj! Nije moguće pridružiti se sastanku %@";
 "status_bar_error_link_missed_message" = "Poveznica nije pronađena ili usluga za sastanke još nije podržana";
-"status_bar_error_app_link_title" = "Ups! Nije moguće otvoriti poveznicu u programu %@";
-"status_bar_error_app_link_message" = "Program %@ mora biti instaliran ili umjesto toga otvori poveznice u jednom od u postavkama određenom web-pregledniku.";
+"status_bar_error_app_link_title" = "Ups! Nije moguće otvoriti poveznicu u %@";
+"status_bar_error_app_link_message" = "Provjeri je li je aplikacija %@ instalirana ili umjesto toga otvori takve poveznice u jednom od u postavkama određenom web-pregledniku.";
 
 // MARK: - Calendars screen
 
 "calendars_screen_select_calendar_title" = "Odaberi barem jedan kalendar";
 "access_screen_access_screen_access_denied_go_to_title" = "Idi na";
 "access_screen_access_denied_system_preferences_button" = "Postavke sustava";
-"access_screen_access_denied_relaunch_title" = "Zatim pokreni program ručno za daljnje postavljanje programa.";
+"access_screen_access_denied_relaunch_title" = "Zatim pokreni aplikaciju ručno za nastavljanje postavljanja.";
 "access_screen_provider_picker_label" = "Odaberi pružatelja kalendara";
-"access_screen_provider_macos_data_source" = "Preuzmi podatke iz MacOS programa Kalendar";
+"access_screen_provider_macos_data_source" = "Koristi macOS aplikaciju „Kalendar” kao izvor podataka";
 "access_screen_provider_macos_number_of_accounts" = "Bilo koji broj bilo kojih povezanih računa";
 "access_screen_provider_gcalendar_data_source" = "Preuzmi podatke izravno iz Google Kalendar";
 "access_screen_provider_gcalendar_number_of_accounts" = "Samo jedan Google račun";
@@ -234,7 +234,7 @@
 "shared_send_notification_no_alert_style_tip" = "Napomena: Obavijesti su postavljene na „Natpisi” koje se kratko prikazuju prije nego nestanu. Ako ih želiš zadržati na ekranu sve dok ih ne ukloniš, promijeni opcije u postavci „Obavijesti” na macOS-u.";
 "shared_send_notification_disabled_tip" = "⚠️ Tvoje macOS postavke obavještavanja za MeetingBar su trenutačno isključene. Za praćenje sastanaka uključi obavijesti u postavkama macOS sustava.";
 "shared_automatic_event_join_toggle" = "Automatski se pridruži sljedećem sastanku";
-"shared_automatic_event_join_tip" = "Ova postavka automatski otvara tvoj sljedeći sastanak u konfiguriranon programu ili pregledniku";
+"shared_automatic_event_join_tip" = "Ova će postavka automatski otvoriti tvoj sljedeći sastanak u konfiguriranoj aplikaciji ili pregledniku";
 
 // MARK: - Constants
 "constants_create_meeting_service_url" = "Prilagođeni URL";
@@ -298,7 +298,7 @@
 "message_clipboard_invalid_text" = "Međuspremnik ne sadrži veza na sastanak, pa se sastanak ne može pokrenuti.";
 "message_clipboard_invalid_title" = "Nevažeći URL";
 "message_event_script_execution_failed_text" = "Skripta u %@ nije uspjela: %@";
-"message_event_script_execution_failed_title" = "Izvršavanje AppleScript-a nije uspjelo";
+"message_event_script_execution_failed_title" = "Izvršavanje AppleScripta nije uspjelo";
 "message_event_script_file_missing_text" = "Datoteka eventStartScript.scpt ne postoji u %@.";
 "message_event_script_file_missing_title" = "AppleScript datoteka nije pronađena";
 "message_google_account_connected_text" = "%@ je povezan";
@@ -320,12 +320,12 @@
 "onboarding_continue" = "Nastavi";
 "onboarding_done" = "Gotovo";
 "onboarding_google_calendar_description" = "Povezuje MeetingBar izravno s Google Kalendarom bez korištenja macOS aplikacije Kalendar.";
-"onboarding_google_calendar_title" = "Google Calendar API";
+"onboarding_google_calendar_title" = "Google Kalendar API";
 "onboarding_progress" = "Korak %@ od %@";
 "onboarding_success_description" = "Sljedeći sastanak pojavit će se u traci izbornika.";
 "onboarding_success_title" = "Spremni ste";
 "onboarding_welcome_description" = "MeetingBar ti pomaže vidjeti i pridružiti se sljedećem sastanku izravno iz trake izbornika.";
-"onboarding_welcome_title" = "Dobrodošli u MeetingBar";
+"onboarding_welcome_title" = "MeetingBar dobrodošlica";
 "preferences_advanced_regex_duplicate_error" = "Ovaj regularni izraz već postoji.";
 "preferences_advanced_regex_test_button" = "Testiraj regex";
 "preferences_advanced_regex_test_match" = "Pronađeno %@";
