@@ -33,6 +33,7 @@ enum AppMessage: Equatable, Sendable {
     case eventScriptExecutionFailed(path: String, description: String)
     case eventScriptFileMissing(path: String)
     case googleAccountConnected(email: String)
+    case microsoftAccountConnected(email: String)
     case patronagePurchaseSucceeded
     case patronageRestoreSucceeded
     case patronageRestoreEmpty
@@ -115,6 +116,11 @@ enum AppMessage: Equatable, Sendable {
             notification(
                 title: "message_google_account_connected_title".loco(),
                 text: "message_google_account_connected_text".loco(email)
+            )
+        case .microsoftAccountConnected(let email):
+            notification(
+                title: "message_microsoft_account_connected_title".loco(),
+                text: "message_microsoft_account_connected_text".loco(email)
             )
         case .patronagePurchaseSucceeded:
             patronage("store_patronage_purchase_success_message")

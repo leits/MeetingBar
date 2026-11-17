@@ -62,6 +62,8 @@
 "access_screen_provider_macos_number_of_accounts" = "Všechny nastavené účty: iCloud, Google, Exchange, CalDAV a další";
 "access_screen_provider_gcalendar_data_source" = "Připojuje se přímo přes rozhraní API Kalendáře Google";
 "access_screen_provider_gcalendar_number_of_accounts" = "Vždy jeden účet Google";
+"access_screen_provider_microsoft_data_source" = "Připojuje se přímo přes Microsoft Graph API";
+"access_screen_provider_microsoft_number_of_accounts" = "Vždy jeden účet Microsoft (pracovní, školní nebo osobní)";
 "access_screen_try_again" = "Zkuste znovu";
 
 // MARK: - Calendars screen
@@ -136,6 +138,7 @@
 
 "preferences_advanced_setting_warning" = "Tato nastavení jsou určena pokročilým uživatelům.";
 "preferences_calendars_provider_gcalendar_change_account" = "Změnit účet Google";
+"preferences_calendars_provider_microsoft_change_account" = "Změnit účet Microsoft";
 
 // MARK: - Preferences Calendars
 
@@ -304,13 +307,21 @@
 "onboarding_calendar_selection_permission" = "MeetingBar potřebuje oprávnění ke kalendáři. Udělte mu přístup v Nastavení systému a potom seznam obnovte.";
 "onboarding_calendar_selection_reconnect" = "Kalendář Google je nutné znovu připojit.";
 "onboarding_calendar_selection_title" = "Vyberte kalendáře";
-"onboarding_calendar_source_description" = "Zvolte, jak má MeetingBar číst data kalendářů. Obě možnosti podporují také kalendáře Google.";
+"onboarding_calendar_source_description" = "Zvolte, jak má MeetingBar číst data kalendářů.";
 "onboarding_calendar_source_title" = "Vyberte zdroj kalendářů";
 "onboarding_choose_different_source" = "Vybrat jiný zdroj";
 "onboarding_continue" = "Pokračovat";
 "onboarding_done" = "Hotovo";
 "onboarding_google_calendar_description" = "Připojí MeetingBar přímo ke Kalendáři Google bez použití aplikace Kalendář v macOS.";
 "onboarding_google_calendar_title" = "Rozhraní API Kalendáře Google";
+"message_microsoft_account_connected_text" = "Připojený účet: %@";
+"message_microsoft_account_connected_title" = "Účet Microsoft byl připojen";
+"onboarding_authorization_microsoft_description" = "Dokončete v prohlížeči přihlášení k Microsoftu a potom se vraťte do MeetingBaru.";
+"onboarding_authorization_microsoft_waiting" = "Pokračujte v přihlášení k Microsoftu v prohlížeči…";
+"onboarding_authorization_microsoft_window_title" = "Přihlášení k Microsoftu";
+"onboarding_calendar_selection_reconnect_microsoft" = "Microsoft 365 je třeba znovu připojit.";
+"onboarding_microsoft_calendar_description" = "Připojí MeetingBar přímo ke kalendářům Outlooku a Exchange Online přes Microsoft Graph bez použití aplikace Kalendář v macOS.";
+"onboarding_microsoft_calendar_title" = "Microsoft 365";
 "onboarding_progress" = "Krok %@ z %@";
 "onboarding_success_description" = "Příští schůzka se zobrazí v řádku nabídek.";
 "onboarding_success_title" = "Vše je připraveno";
@@ -355,6 +366,8 @@
 "status_bar_control_permission_required" = "Je vyžadováno oprávnění ke kalendáři";
 "status_bar_control_reconnect" = "Znovu připojit Kalendář Google";
 "status_bar_control_refresh_failed" = "Obnovení kalendáře se nezdařilo";
+"status_bar_control_auth_required_microsoft" = "Microsoft 365 je třeba znovu připojit";
+"status_bar_control_reconnect_microsoft" = "Znovu připojit Microsoft 365";
 "status_bar_control_select_calendars" = "Vybrat kalendáře v Předvolbách";
 "status_bar_control_stale" = "Obnovení kalendáře se nezdařilo — zobrazují se poslední známá data";
 "status_bar_join_with_other_link" = "Připojit se pomocí jiného odkazu";

@@ -186,6 +186,15 @@ struct Browser: Defaults.Serializable, Codable, Hashable, Sendable {
     var deletable = true
 }
 
+/// Static metadata about the running app.
+enum AppInfo {
+    /// The app's bundle identifier. A real `.app` always has one (from
+    /// `CFBundleIdentifier`); the fallback only covers non-bundled contexts
+    /// such as command-line test runners, so no bundle identifier is
+    /// hard-coded anywhere else.
+    static let bundleIdentifier = Bundle.main.bundleIdentifier ?? "leits.MeetingBar"
+}
+
 enum WindowTitles {
     static let onboarding = "window_title_onboarding".loco()
     static let preferences = "window_title_preferences".loco()

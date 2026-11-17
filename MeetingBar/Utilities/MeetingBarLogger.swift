@@ -7,8 +7,7 @@ import Foundation
 import OSLog
 
 enum MeetingBarLogger {
-    private static let subsystem =
-        Bundle.main.bundleIdentifier ?? "leits.MeetingBar"
+    private static let subsystem = AppInfo.bundleIdentifier
 
     static let calendar = Logger(subsystem: subsystem, category: "calendar-provider")
     static let meetingOpening = Logger(subsystem: subsystem, category: "meeting-opening")

@@ -16,15 +16,23 @@ enum PermissionReporter {
     static func current(provider: EventStoreProvider) async -> PermissionSnapshot {
         let calendarAccess = calendarAuthStatus()
         let notificationAccess = await notificationAuthStatus()
-        let googleAuthStatus: PermissionSnapshot.GoogleAuthStatus = provider == .googleCalendar
+        let googleAuthStatus: PermissionSnapshot.OAuthStatus = provider == .googleCalendar
             ? (GCEventStore.shared.isAuthorized ? .authorized : .notAuthorized)
             : .notActive
+        let microsoftAuthStatus: PermissionSnapshot.OAuthStatus = provider == .microsoftGraph
+            ? (MicrosoftGraphEventStore.shared.isAuthorized ? .authorized : .notAuthorized)
+            : .notActive
+        let microsoftConfigurationSource: String? = provider == .microsoftGraph
+            ? MicrosoftGraphEventStore.shared.configurationSourceLabel
+            : nil
         let scriptFileExists = scriptExists()
         let isAppStoreBuild = AppSourceDetector.isAppStoreBuild()
         return PermissionSnapshot(
             calendarAccess: calendarAccess,
             notificationAccess: notificationAccess,
             googleAuthStatus: googleAuthStatus,
+            microsoftAuthStatus: microsoftAuthStatus,
+            microsoftConfigurationSource: microsoftConfigurationSource,
             scriptFileExists: scriptFileExists,
             isAppStoreBuild: isAppStoreBuild
         )

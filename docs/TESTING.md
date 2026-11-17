@@ -10,7 +10,7 @@ MeetingBar is trusted precisely when a meeting is about to start. Protect correc
 | --- | --- | --- |
 | **Hostless logic** | `MeetingBarLogicTests/` via `make test-logic` | Event eligibility/selection, link candidate detection, URL cleanup, notification plans, Google policies, status-bar title/icon/presentation decisions |
 | **App-hosted** | `MeetingBarTests/` via `make test-app` | Provider adapters and calendar refresh, `AppModel` actions, settings propagation, `MenuBuilder`, notification reconciliation, AppKit layout and native interaction |
-| **Manual macOS verification** | Real, preferably release-configured app | EventKit permission prompts, Google OAuth, installed meeting apps, screen/notch/VoiceOver behavior, signed distributions and upgrades |
+| **Manual macOS verification** | Real, preferably release-configured app | EventKit permission prompts, Google OAuth, Microsoft sign-in, installed meeting apps, screen/notch/VoiceOver behavior, signed distributions and upgrades |
 
 `make test` runs both automated suites. The app-hosted suite needs Xcode/macOS; SwiftPM logic tests are intentionally independent of a launched app. These are complementary layers, not three copies of the same test matrix.
 
@@ -31,7 +31,7 @@ MeetingBar is trusted precisely when a meeting is about to start. Protect correc
 | --- | --- |
 | Selection/filtering | Which event wins among overlapping, ongoing, dismissed, declined, pending or soonest-future events? What happens at day/time thresholds? |
 | Calendar freshness | Does a failed refresh preserve the last usable events and surface the right stale/auth/permission state? Can a previous provider publish late results after switching? |
-| Google/EventKit | Are pages read completely? Are per-calendar forbidden errors distinguished from account auth failures? Are malformed/missing fields handled without a crash? |
+| Google/Microsoft/EventKit | Are pages read completely? Are per-calendar forbidden errors distinguished from account auth failures? Are malformed/missing fields handled without a crash? |
 | Link detection/opening | Does native conference data win over unrelated notes? Are SafeLinks and meeting passwords preserved? Does fallback open only once? |
 | Notifications | Does repeated reconcile change nothing? Are obsolete requests removed, new ones added, and delayed actions cancelled when settings/dismissals change? |
 | Status bar | Does the policy choose the right title/icon/fallback? Does the actual stacked view fit, resize and preserve native hit testing and accessibility? |
@@ -44,7 +44,7 @@ MeetingBar is trusted precisely when a meeting is about to start. Protect correc
 - Exercise real app-target mapping where it is the source of risk: a perfect hostless detector test cannot catch a broken `MBEvent` adapter, for example.
 - Integration tests with `NSMenu`, `NSStatusBarButton`, fake notification sinks or laid-out `NSView` hierarchies are valuable when those interfaces are the behavior under test. A presentation-model assertion alone does **not** prove visual geometry, native click routing or View accessibility.
 - Geometry/hit-test assertions still cannot substitute for real active/inactive displays, notched menu bars, VoiceOver and mouse behavior. Capture those manual gaps explicitly in PR notes.
-- Avoid routine tests against real Google accounts, EventKit databases, network availability, wall-clock scheduling or screenshots rendered across arbitrary macOS environments.
+- Avoid routine tests against real Google or Microsoft accounts, EventKit databases, network availability, wall-clock scheduling or screenshots rendered across arbitrary macOS environments.
 
 ## Running and interpreting checks
 
@@ -120,6 +120,19 @@ Run this **manually before v5 release**, not in normal automated CI. Use a non-p
 **Release decision:** Any hanging authorization that blocks provider switching, unexpectedly lost new Google session, stale callback replacing a newer provider, or silent loss of last-known-good meetings is a failed smoke. Capture reproduction steps and sanitized diagnostics. Remote revocation is irreversible: a smoke run **cannot prove** safety if Google reuses an identical refresh token across separate authorizations. Treat that as a documented residual risk, not as a claim the race is fully eliminated.
 
 Before submitting a PR, record the exact test commands and results, and distinguish tests you **ran** from tests merely recommended. If the change touches entitlements, Xcode configuration, localization, URL schemes or release signing, follow the additional checks in [ARCHITECTURE.md](ARCHITECTURE.md).
+
+### Release-only Microsoft 365 authorization smoke (real macOS + test Microsoft account)
+
+Run this **manually before release**, not in normal automated CI. Use a test tenant or account and a signed/release-configured build with a real `MICROSOFT_CLIENT_ID`; ad-hoc builds cannot persist the MSAL token cache. Record the same details as the Google smoke above, and do not attach tokens, Keychain dumps, or unredacted diagnostics.
+
+1. **Normal authorization and persistence.** Connect Microsoft 365, consent, and select a calendar with an upcoming event. Quit and reopen MeetingBar; it must stay connected and refresh without a browser prompt.
+2. **Cancellation.** Start sign-in, then use Cancel in the waiting window. The sheet must close, provider switching must stay usable, and no sign-in window may open afterwards. Switch to another provider while a silent sign-in is pending and confirm the same.
+3. **Connectivity failure.** Refresh with no network, including with an expired access token. The last usable meetings must stay visible with a stale state, not "reconnect required", and recover once the network returns.
+4. **Sign-out racing with reauthorization.** Use **Change Microsoft Account**, including choosing the same account again. The newer session must remain connected after relaunch.
+5. **Revocation.** Revoke the session in Entra. The menu must offer **Reconnect Microsoft 365**, and Reconnect must work with no window open.
+6. **Account types.** Repeat step 1 with a personal Outlook.com account and, where available, an MDM-managed Mac using the Enterprise SSO plug-in.
+
+**Release decision:** A hanging sign-in that blocks provider switching, a lost new session, a stale callback replacing a newer provider, or silently missing meetings is a failed smoke.
 
 ## When to add more tests
 

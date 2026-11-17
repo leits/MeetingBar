@@ -121,8 +121,8 @@ struct MenuBuilder {
 
         switch warning {
         case .authRequired:
-            title = "status_bar_control_auth_required".loco()
-            actionTitle = "status_bar_control_reconnect".loco()
+            title = authRequiredTitle()
+            actionTitle = reconnectActionTitle()
             action = #selector(StatusBarItemController.reconnectProviderAction)
         case .permissionRequired:
             title = "status_bar_control_permission_required".loco()
@@ -160,6 +160,20 @@ struct MenuBuilder {
         return item
     }
 
+    /// Reconnect copy names the account provider. Google keeps the historical
+    /// keys so existing translations stay valid.
+    private func authRequiredTitle() -> String {
+        state.activeProvider == .microsoftGraph
+            ? "status_bar_control_auth_required_microsoft".loco()
+            : "status_bar_control_auth_required".loco()
+    }
+
+    private func reconnectActionTitle() -> String {
+        state.activeProvider == .microsoftGraph
+            ? "status_bar_control_reconnect_microsoft".loco()
+            : "status_bar_control_reconnect".loco()
+    }
+
     private func buildEmptyMeetingControlSection() -> [NSMenuItem] {
         let reason = state.emptyStateReason ?? .noUpcomingMeetings
         let title: String
@@ -168,8 +182,8 @@ struct MenuBuilder {
 
         switch reason {
         case .authRequired:
-            title = "status_bar_control_auth_required".loco()
-            actionTitle = "status_bar_control_reconnect".loco()
+            title = authRequiredTitle()
+            actionTitle = reconnectActionTitle()
             action = #selector(StatusBarItemController.reconnectProviderAction)
         case .permissionRequired:
             title = "status_bar_control_permission_required".loco()
