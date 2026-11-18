@@ -1724,6 +1724,33 @@ final class StatusBarItemControllerPresentationTests: BaseTestCase {
         XCTAssertTrue(didToggleTitle)
     }
 
+    func test_grantPermissionRequestsAccessWhenNotDeterminedAndOpensSettingsOtherwise() {
+        let controller = StatusBarItemController()
+        defer { NSStatusBar.system.removeStatusItem(controller.statusItem) }
+        var accessError: EventKitReadAccessError? = .notDetermined
+        var reconnectSignOuts: [Bool] = []
+        var settingsOpenCount = 0
+
+        controller.configure(dependencies: StatusBarDependencies(
+            send: { action in
+                if case .changeProvider(_, let signOut) = action {
+                    reconnectSignOuts.append(signOut)
+                }
+            },
+            calendarAccessError: { accessError },
+            openCalendarSettings: { settingsOpenCount += 1 }
+        ))
+
+        controller.openCalendarPermissionsAction()
+        XCTAssertEqual(reconnectSignOuts, [true])
+        XCTAssertEqual(settingsOpenCount, 0)
+
+        accessError = .denied
+        controller.openCalendarPermissionsAction()
+        XCTAssertEqual(reconnectSignOuts, [true])
+        XCTAssertEqual(settingsOpenCount, 1)
+    }
+
     func test_windowActionsUseInjectedClosures() {
         let controller = StatusBarItemController()
         defer { NSStatusBar.system.removeStatusItem(controller.statusItem) }
