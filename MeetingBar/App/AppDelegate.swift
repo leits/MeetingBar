@@ -29,6 +29,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     private var launchTask: Task<Void, Never>?
     private var reopenRequestedDuringLaunch = false
+    private var pendingReopenTask: Task<Void, Never>?
+    /// Non-nil for one settle window after a notification response.
+    private var notificationResponseWindowTask: Task<Void, Never>?
+    /// Clicking a notification makes macOS send a reopen event alongside the
+    /// notification response, in either order. Reopens within this window of a
+    /// response belong to that click and must not open Preferences.
+    var reopenSettleDelay: TimeInterval = 0.5
     private var notificationSetupTask: Task<Void, Never>?
     private var statusLoopTask: Task<Void, Never>?
 
@@ -89,7 +96,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             guard let self, !Task.isCancelled else { return }
             if reopenRequestedDuringLaunch {
                 reopenRequestedDuringLaunch = false
-                handleReopen()
+                scheduleReopen()
             }
             launchTask = nil
         }
@@ -101,9 +108,38 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if launchTask != nil {
             reopenRequestedDuringLaunch = true
         } else {
-            handleReopen()
+            scheduleReopen()
         }
         return false // WindowCoordinator handled presentation; skip AppKit's default.
+    }
+
+    func notificationResponseReceived() {
+        pendingReopenTask?.cancel()
+        pendingReopenTask = nil
+        notificationResponseWindowTask?.cancel()
+        notificationResponseWindowTask = afterSettleDelay { [weak self] in
+            self?.notificationResponseWindowTask = nil
+        }
+    }
+
+    private func scheduleReopen() {
+        guard notificationResponseWindowTask == nil else { return }
+        pendingReopenTask?.cancel()
+        pendingReopenTask = afterSettleDelay { [weak self] in
+            self?.pendingReopenTask = nil
+            self?.handleReopen()
+        }
+    }
+
+    // A sleeping task instead of timestamps: no clock reads, so wall-clock
+    // changes can't stretch the window and no required-reason API is used.
+    private func afterSettleDelay(_ action: @escaping @MainActor () -> Void) -> Task<Void, Never> {
+        let delay = reopenSettleDelay
+        return Task {
+            try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+            guard !Task.isCancelled else { return }
+            action()
+        }
     }
 
     private func handleReopen() {
@@ -180,7 +216,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             quit: { [weak self] in self?.quit(nil) }
         ))
 
-        let ncDelegate = NotificationCenterDelegate { [weak model] response in
+        let ncDelegate = NotificationCenterDelegate { [weak self, weak model] response in
+            self?.notificationResponseReceived()
             model?.send(.notificationResponse(response))
         }
         notificationCenterDelegate = ncDelegate
@@ -335,6 +372,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationWillTerminate(_: Notification) {
         launchTask?.cancel()
         launchTask = nil
+        pendingReopenTask?.cancel()
+        pendingReopenTask = nil
+        notificationResponseWindowTask?.cancel()
+        notificationResponseWindowTask = nil
         notificationSetupTask?.cancel()
         notificationSetupTask = nil
         statusLoopTask?.cancel()
