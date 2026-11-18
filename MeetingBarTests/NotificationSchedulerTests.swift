@@ -182,6 +182,7 @@ final class NotificationSchedulerTests: BaseTestCase {
         }
         XCTAssertEqual(count, 2, "After wake the delay must be recomputed")
         scheduler.stop()
+        await sleeper.wakeAll()
     }
 
     func testCancelledManualSleeperCannotFireDismissedAction() async {
