@@ -132,7 +132,7 @@ final class SnoozeServiceTests: BaseTestCase {
 
     func testServiceReplacesPendingRequestUsingInjectedDependencies() async throws {
         let existing = UNNotificationRequest(
-            identifier: notificationIDs.event_starts,
+            identifier: "\(notificationIDs.event_starts)-event",
             content: UNMutableNotificationContent(),
             trigger: nil
         )
@@ -150,11 +150,28 @@ final class SnoozeServiceTests: BaseTestCase {
 
         await service.snooze(event: event, action: .tenMinuteLater)
 
-        XCTAssertEqual(sink.removedBatches, [[notificationIDs.event_starts]])
-        XCTAssertEqual(sink.addedIdentifiers, [notificationIDs.event_starts])
+        XCTAssertEqual(sink.removedBatches, [["\(notificationIDs.event_starts)-event"]])
+        XCTAssertEqual(sink.addedIdentifiers, ["\(notificationIDs.event_starts)-event"])
         let request = try XCTUnwrap(sink.currentPendingRequests().first)
         XCTAssertEqual(request.content.title, "general_meeting".loco())
         XCTAssertEqual(request.content.userInfo["eventID"] as? String, event.id)
+    }
+
+    func testSnoozingTwoEventsKeepsBothPendingRequests() async {
+        let sink = FakeNotificationRequestSink()
+        let service = SnoozeService(sink: sink, clock: .fixed(now), hideMeetingTitle: { false })
+        let first = makeFakeEvent(
+            id: "A", start: now.addingTimeInterval(900), end: now.addingTimeInterval(1800))
+        let second = makeFakeEvent(
+            id: "B", start: now.addingTimeInterval(1200), end: now.addingTimeInterval(2100))
+
+        await service.snooze(event: first, action: .tenMinuteLater)
+        await service.snooze(event: second, action: .tenMinuteLater)
+
+        XCTAssertEqual(
+            Set(sink.currentPendingIdentifiers()),
+            ["\(notificationIDs.event_starts)-A", "\(notificationIDs.event_starts)-B"]
+        )
     }
 }
 

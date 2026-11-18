@@ -53,7 +53,7 @@ enum SnoozeNotificationRequestFactory {
             repeats: false
         )
         return UNNotificationRequest(
-            identifier: notificationIDs.event_starts,
+            identifier: "\(notificationIDs.event_starts)-\(event.id)",
             content: content,
             trigger: trigger
         )
@@ -83,7 +83,8 @@ final class SnoozeService {
         event: MBEvent,
         action: NotificationEventTimeAction
     ) async {
-        sink.removePending(identifiers: [notificationIDs.event_starts])
+        // Per-event id: snoozing one meeting must not replace another meeting's snooze.
+        sink.removePending(identifiers: ["\(notificationIDs.event_starts)-\(event.id)"])
 
         let request = SnoozeNotificationRequestFactory.request(
             event: event,

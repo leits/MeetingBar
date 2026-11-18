@@ -974,7 +974,7 @@ final class SnoozeNotificationRequestFactoryTests: BaseTestCase {
         )
 
         let trigger = try XCTUnwrap(request.trigger as? UNTimeIntervalNotificationTrigger)
-        XCTAssertEqual(request.identifier, notificationIDs.event_starts)
+        XCTAssertEqual(request.identifier, "\(notificationIDs.event_starts)-\(event.id)")
         XCTAssertEqual(request.content.categoryIdentifier, "SNOOZE_EVENT")
         XCTAssertEqual(request.content.title, event.title)
         XCTAssertEqual(request.content.body, "notifications_event_started_body".loco())
