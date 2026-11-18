@@ -278,6 +278,7 @@ struct MenuSection: View {
     @Default(.menuEventTitleLength) var menuEventTitleLength
     @Default(.showEventEndTime) var showEventEndTime
     @Default(.showEventDetails) var showEventDetails
+    @Default(.showEventDocuments) var showEventDocuments
     @Default(.showMeetingServiceIcon) var showMeetingServiceIcon
     @Default(.showEventCalendarColor) var showEventCalendarColor
     @Default(.showTimelineInMenu) var showTimelineInMenu
@@ -306,6 +307,10 @@ struct MenuSection: View {
             Toggle(
                 preferenceLabel("preferences_appearance_menu_show_event_details_value"),
                 isOn: $showEventDetails
+            )
+            Toggle(
+                preferenceLabel("preferences_appearance_menu_show_event_documents_value"),
+                isOn: $showEventDocuments
             )
         }
 

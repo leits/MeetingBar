@@ -511,6 +511,137 @@ final class MenuBuilderTests: BaseTestCase {
         })
     }
 
+    // MARK: Documents / attachments (#917)
+
+    private func documentTitles(in items: [NSMenuItem]) -> [String] {
+        // Titles may lead with an inline icon attachment; compare the text.
+        items.filter { $0.action == #selector(StatusBarItemController.openEventDocument) }
+            .map { $0.title.trimmingCharacters(in: CharacterSet(charactersIn: "\u{FFFC}").union(.whitespaces)) }
+    }
+
+    private func makeEventWithDocuments(id: String, start: Date, count: Int) -> MBEvent {
+        var event = makeFakeEvent(id: id, start: start, end: start + 1800, withLink: true)
+        event.documents = (1...count).map { index in
+            EventDocumentDetector.documents(
+                attachments: [EventAttachmentInput(
+                    url: URL(string: "https://docs.google.com/document/d/doc\(index)/edit")!,
+                    title: "Doc \(index)",
+                    mimeType: "application/vnd.google-apps.document"
+                )],
+                notes: nil, location: nil, eventURL: nil, excludedURLs: []
+            )[0]
+        }
+        return event
+    }
+
+    private func documentsState(enabled: Bool, nextEvent: MBEvent? = nil) -> StatusBarMenuState {
+        var state = StatusBarMenuState()
+        state.settings = .empty
+        state.settings.menu.showEventDocuments = enabled
+        state.nextEvent = nextEvent
+        return state
+    }
+
+    func testEventDetectsDocumentsFromNotesButNotTheMeetingLink() {
+        let calendar = MBCalendar(title: "C", id: "c", source: nil, email: nil, color: .black)
+        let event = MBEvent(
+            id: "e",
+            lastModifiedDate: nil,
+            title: "Review",
+            status: .confirmed,
+            notes: "Join https://zoom.us/j/5551112222 and read https://docs.google.com/document/d/abc/edit",
+            location: nil,
+            url: nil,
+            organizer: nil,
+            startDate: Date(),
+            endDate: Date() + 1800,
+            isAllDay: false,
+            recurrent: false,
+            calendar: calendar
+        )
+
+        XCTAssertEqual(event.documents.map(\.url.absoluteString), ["https://docs.google.com/document/d/abc/edit"])
+        XCTAssertEqual(event.meetingLink?.url.absoluteString, "https://zoom.us/j/5551112222")
+    }
+
+    func testFeaturedMeetingShowsDocumentsInlineWhenEnabled() {
+        let now = Date(timeIntervalSinceReferenceDate: 800_000_000)
+        let event = makeEventWithDocuments(id: "f", start: now + 600, count: 2)
+
+        let items = MenuBuilder(target: Dummy(), state: documentsState(enabled: true, nextEvent: event), now: now)
+            .buildMeetingControlSection()
+
+        XCTAssertEqual(documentTitles(in: items), ["Doc 1", "Doc 2"])
+    }
+
+    func testFeaturedMeetingCollapsesManyDocumentsIntoAttachmentsSubmenu() throws {
+        let now = Date(timeIntervalSinceReferenceDate: 800_000_000)
+        let count = MenuBuilder.maxInlineFeaturedDocuments + 1
+        let event = makeEventWithDocuments(id: "f", start: now + 600, count: count)
+
+        let items = MenuBuilder(target: Dummy(), state: documentsState(enabled: true, nextEvent: event), now: now)
+            .buildMeetingControlSection()
+
+        XCTAssertTrue(documentTitles(in: items).isEmpty)
+        let attachments = try XCTUnwrap(items.first {
+            $0.title == "\("status_bar_submenu_attachments".loco()) (\(count))"
+        })
+        XCTAssertEqual(documentTitles(in: attachments.submenu?.items ?? []).count, count)
+    }
+
+    func testDocumentsAreHiddenWhenDisabled() {
+        let now = Date(timeIntervalSinceReferenceDate: 800_000_000)
+        let featured = makeEventWithDocuments(id: "f", start: now + 600, count: 2)
+        let upcoming = makeEventWithDocuments(id: "u", start: now + 3600, count: 1)
+        var state = documentsState(enabled: false, nextEvent: featured)
+        state.settings.menu.showEventDetails = true
+        let builder = MenuBuilder(target: Dummy(), state: state, now: now)
+
+        let control = builder.buildMeetingControlSection()
+        let section = builder.buildDateSection(date: now, title: "Today", events: [featured, upcoming])
+        let submenus = section.flatMap { $0.submenu?.items ?? [] }
+
+        XCTAssertTrue(documentTitles(in: control + section + submenus).isEmpty)
+        XCTAssertFalse((control + section + submenus).contains {
+            $0.title.hasPrefix("status_bar_submenu_attachments".loco())
+        })
+    }
+
+    func testUpcomingRowsShowDocumentsButNotForTheFeaturedOrPastMeetings() {
+        let now = Date(timeIntervalSinceReferenceDate: 800_000_000)
+        var featured = makeEventWithDocuments(id: "f", start: now + 600, count: 1)
+        featured.documents = featured.documents.map { $0.resolved(title: "Featured doc", iconURL: nil) }
+        let past = makeEventWithDocuments(id: "p", start: now - 7200, count: 1)
+        let upcoming = makeEventWithDocuments(id: "u", start: now + 3600, count: 1)
+
+        let items = MenuBuilder(target: Dummy(), state: documentsState(enabled: true, nextEvent: featured), now: now)
+            .buildDateSection(date: now, title: "Today", events: [past, featured, upcoming])
+        let documentItems = items.filter { $0.action == #selector(StatusBarItemController.openEventDocument) }
+
+        XCTAssertEqual(documentItems.count, 1)
+        XCTAssertEqual(documentItems.first?.indentationLevel, 1)
+        XCTAssertEqual(
+            (documentItems.first?.representedObject as? URL)?.absoluteString,
+            "https://docs.google.com/document/d/doc1/edit"
+        )
+    }
+
+    func testEventDetailsSubmenuListsAttachmentsWhenEnabled() throws {
+        let now = Date(timeIntervalSinceReferenceDate: 800_000_000)
+        let event = makeEventWithDocuments(id: "u", start: now + 3600, count: 2)
+        var state = documentsState(enabled: true)
+        state.settings.menu.showEventDetails = true
+
+        let items = MenuBuilder(target: Dummy(), state: state, isFantasticalInstalled: false, now: now)
+            .buildDateSection(date: now, title: "Today", events: [event])
+        let submenu = try XCTUnwrap(items.first { $0.submenu != nil }?.submenu)
+        let attachments = try XCTUnwrap(submenu.items.first {
+            $0.title == "\("status_bar_submenu_attachments".loco()) (2)"
+        })
+
+        XCTAssertEqual(documentTitles(in: attachments.submenu?.items ?? []), ["Doc 1", "Doc 2"])
+    }
+
     func testDateSectionBuildsExpectedItems() {
         let builder = MenuBuilder(target: Dummy())
 

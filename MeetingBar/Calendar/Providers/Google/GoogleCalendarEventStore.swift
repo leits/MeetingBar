@@ -236,7 +236,9 @@ final class GCEventStore: NSObject,
         let scopes = [
             "email",
             "https://www.googleapis.com/auth/calendar.calendarlist.readonly",
-            "https://www.googleapis.com/auth/calendar.events.readonly"
+            "https://www.googleapis.com/auth/calendar.events.readonly",
+            // File names/icons of Drive links in invites (#917); never contents.
+            GoogleDriveMetadataResolver.scope
         ]
 
         // additional parameters to be sure we get refresh_token
@@ -392,8 +394,23 @@ final class GCEventStore: NSObject,
         to: Date
     ) async throws -> [MBEvent] {
         try requireReusableSession()
-        return try await makeDataReader().fetchEvents(for: calendars, from: from, to: to)
+        let events = try await makeDataReader().fetchEvents(for: calendars, from: from, to: to)
+        // Sessions granted before the Drive scope existed keep working; their
+        // documents just keep fallback titles until the user reconnects.
+        guard Defaults[.showEventDocuments],
+              authState?.scope?.contains(GoogleDriveMetadataResolver.scope) == true else {
+            return events
+        }
+        return await driveMetadataResolver.resolveDocuments(in: events)
     }
+
+    private lazy var driveMetadataResolver: GoogleDriveMetadataResolver = {
+        let session = urlSession
+        return GoogleDriveMetadataResolver(
+            transport: { request in try await session.data(for: request) },
+            accessToken: { [unowned self] in try await validAccessToken() }
+        )
+    }()
 
     private func makeDataReader() -> GoogleCalendarDataReader {
         GoogleCalendarDataReader(userEmail: userEmail) { [self] url, calendarID in
@@ -777,6 +794,13 @@ final class GCEventStore: NSObject,
             // Calendar" since `ical://ekevent/<google-id>` is not valid.
             let calendarOpenURL = (item["htmlLink"] as? String).flatMap(URL.init(string:))
 
+            // Drive attachments added to the invite. Only the metadata the
+            // events API already returns is used.
+            let attachments: [EventAttachmentInput] = (item["attachments"] as? [[String: Any]] ?? []).compactMap { raw in
+                guard let url = (raw["fileUrl"] as? String).flatMap(URL.init(string:)) else { return nil }
+                return EventAttachmentInput(url: url, title: raw["title"] as? String, mimeType: raw["mimeType"] as? String)
+            }
+
             return MBEvent(
                 id: eventID,
                 lastModifiedDate: lastModifiedDate,
@@ -794,6 +818,7 @@ final class GCEventStore: NSObject,
                 isAllDay: isAllDay,
                 recurrent: recurrent,
                 calendar: calendar,
+                attachments: attachments,
                 customRegexes: Defaults[.customRegexes]
             )
         }

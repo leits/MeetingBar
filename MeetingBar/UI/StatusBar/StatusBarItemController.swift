@@ -103,7 +103,7 @@ final class StatusBarItemController {
         Defaults.publisher(
             keys: .statusbarEventTitleLength, .eventTimeFormat,
             .eventTitleIconFormat, .showEventMaxTimeUntilEventThreshold,
-            .showEventMaxTimeUntilEventEnabled, .showEventDetails,
+            .showEventMaxTimeUntilEventEnabled, .showEventDetails, .showEventDocuments,
             .shortenEventTitle, .menuEventTitleLength,
             .showEventEndTime, .showMeetingServiceIcon,
             .showEventCalendarColor,
@@ -453,6 +453,14 @@ final class StatusBarItemController {
     func openEventInCalendar(sender: NSMenuItem) {
         // The menu attaches the provider-specific calendar URL directly
         // (ical://ekevent/… for EventKit, htmlLink for Google).
+        if let url = sender.representedObject as? URL {
+            url.openInDefaultBrowser()
+        }
+    }
+
+    @objc
+    func openEventDocument(sender: NSMenuItem) {
+        // Documents open in the default browser/app, never the meeting browser.
         if let url = sender.representedObject as? URL {
             url.openInDefaultBrowser()
         }

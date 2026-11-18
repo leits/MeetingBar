@@ -61,6 +61,7 @@ struct MenuBuilder {
     private func buildMeetingControlSection(event: MBEvent) -> [NSMenuItem] {
         var items: [NSMenuItem] = []
         items.append(makeMeetingSummaryItem(for: event))
+        items.append(contentsOf: makeFeaturedDocumentItems(for: event))
         items.append(makeMeetingActionsItem(for: event))
         items.append(contentsOf: buildProviderWarningItems())
         return items
@@ -362,6 +363,7 @@ struct MenuBuilder {
         for event in sortedEvents {
             if let item = makeEventItem(event) {
                 items.append(item)
+                items.append(contentsOf: makeExpandedDocumentItems(for: event))
             }
         }
 
@@ -1039,7 +1041,72 @@ struct MenuBuilder {
         addEventOrganizer(to: menu, event: event)
         addEventNotes(to: menu, event: event)
         addEventAttendees(to: menu, event: event)
+        if let attachmentsItem = makeAttachmentsMenuItem(for: event) {
+            menu.addItem(.separator())
+            menu.addItem(attachmentsItem)
+        }
         addEventActions(to: menu, event: event)
+    }
+
+    // MARK: Documents / attachments (#917) -----------------------------------
+
+    /// How many documents the featured meeting shows inline before collapsing
+    /// them into an "Attachments" submenu, keeping the dropdown compact.
+    static let maxInlineFeaturedDocuments = 3
+
+    /// The documents to show for an event, or none when the user turned
+    /// documents off.
+    private func visibleDocuments(of event: MBEvent) -> [EventDocument] {
+        state.menu.showEventDocuments ? event.documents : []
+    }
+
+    /// Upcoming (or running) meetings in the event list show their documents
+    /// indented right below their row. The featured meeting already shows
+    /// them in the top section, and past meetings stay collapsed.
+    private func makeExpandedDocumentItems(for event: MBEvent) -> [NSMenuItem] {
+        guard event.endDate > now, event.id != state.nextEvent?.id else { return [] }
+        let items = makeFeaturedDocumentItems(for: event)
+        for item in items {
+            item.indentationLevel = 1
+        }
+        return items
+    }
+
+    private func makeFeaturedDocumentItems(for event: MBEvent) -> [NSMenuItem] {
+        let documents = visibleDocuments(of: event)
+        guard !documents.isEmpty else { return [] }
+        if documents.count > Self.maxInlineFeaturedDocuments,
+           let attachmentsItem = makeAttachmentsMenuItem(for: event) {
+            return [attachmentsItem]
+        }
+        return documents.map(makeDocumentItem)
+    }
+
+    private func makeAttachmentsMenuItem(for event: MBEvent) -> NSMenuItem? {
+        let documents = visibleDocuments(of: event)
+        guard !documents.isEmpty else { return nil }
+        let title = "status_bar_submenu_attachments".loco()
+        let item = NSMenuItem(title: "\(title) (\(documents.count))", action: nil, keyEquivalent: "")
+        item.image = NSImage(systemSymbolName: "paperclip", accessibilityDescription: title)
+        let menu = NSMenu(title: title)
+        for document in documents {
+            menu.addItem(makeDocumentItem(document))
+        }
+        item.submenu = menu
+        return item
+    }
+
+    private func makeDocumentItem(_ document: EventDocument) -> NSMenuItem {
+        let item = NSMenuItem(
+            title: document.title,
+            action: #selector(StatusBarItemController.openEventDocument),
+            keyEquivalent: ""
+        )
+        item.target = target
+        item.representedObject = document.url
+        item.toolTip = document.url.absoluteString
+        DocumentIconProvider.shared.applyIcon(for: document, to: item)
+        return item
     }
 
     private func addEventTitle(to menu: NSMenu, event: MBEvent) {

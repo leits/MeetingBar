@@ -89,6 +89,9 @@ public struct MBEvent: Identifiable, Hashable, Sendable {
     public var isAllDay: Bool
     public let recurrent: Bool
     public var attendees: [MBEventAttendee] = []
+    /// Documents attached to or linked from the invite (#917). Conference
+    /// links are excluded; they live in `meetingLink` and its alternates.
+    public var documents: [EventDocument] = []
 
     init(id: String,
          scriptIdentifier: String? = nil,
@@ -107,6 +110,7 @@ public struct MBEvent: Identifiable, Hashable, Sendable {
          isAllDay: Bool,
          recurrent: Bool,
          calendar: MBCalendar,
+         attachments: [EventAttachmentInput] = [],
          customRegexes: [String] = []) {
         self.calendar = calendar
         self.id = id
@@ -156,6 +160,14 @@ public struct MBEvent: Identifiable, Hashable, Sendable {
         if let meetingLinkCandidate {
             meetingLink = MeetingLink(service: meetingLinkCandidate.service, url: meetingLinkCandidate.url)
         }
+
+        documents = EventDocumentDetector.documents(
+            attachments: attachments,
+            notes: notes,
+            location: location,
+            eventURL: url,
+            excludedURLs: meetingLinkCandidates.map(\.url) + [conferenceURL, calendarOpenURL].compactMap { $0 }
+        )
     }
 
 }
