@@ -70,7 +70,7 @@ coverage-report: coverage-logic-report coverage-app-report
 
 coverage-logic-report:
 	@PROFILE="$$(ls -d .build/*/debug/codecov/default.profdata .build/debug/codecov/default.profdata 2>/dev/null | head -n 1)" ; \
-	TEST_BINARY="$$(ls -d .build/*/debug/MeetingBarLogicTests.xctest/Contents/MacOS/MeetingBarLogicTests .build/debug/MeetingBarLogicTests.xctest/Contents/MacOS/MeetingBarLogicTests .build/*/debug/MeetingBarLogicPackageTests.xctest/Contents/MacOS/MeetingBarLogicPackageTests .build/debug/MeetingBarLogicPackageTests.xctest/Contents/MacOS/MeetingBarLogicPackageTests 2>/dev/null | head -n 1)" ; \
+	TEST_BINARY="$$(ls -dt .build/*/debug/MeetingBarLogicTests.xctest/Contents/MacOS/MeetingBarLogicTests .build/debug/MeetingBarLogicTests.xctest/Contents/MacOS/MeetingBarLogicTests .build/*/debug/MeetingBarLogicPackageTests.xctest/Contents/MacOS/MeetingBarLogicPackageTests .build/debug/MeetingBarLogicPackageTests.xctest/Contents/MacOS/MeetingBarLogicPackageTests 2>/dev/null | head -n 1)" ; \
 	if [ ! -f "$$PROFILE" ] || [ ! -x "$$TEST_BINARY" ]; then \
 		echo "SwiftPM coverage is unavailable. Run 'make test-logic' first."; \
 		exit 1; \
@@ -81,7 +81,7 @@ coverage-logic-report:
 
 coverage-gate:
 	@PROFILE="$$(ls -d .build/*/debug/codecov/default.profdata .build/debug/codecov/default.profdata 2>/dev/null | head -n 1)" ; \
-	TEST_BINARY="$$(ls -d .build/*/debug/MeetingBarLogicTests.xctest/Contents/MacOS/MeetingBarLogicTests .build/debug/MeetingBarLogicTests.xctest/Contents/MacOS/MeetingBarLogicTests .build/*/debug/MeetingBarLogicPackageTests.xctest/Contents/MacOS/MeetingBarLogicPackageTests .build/debug/MeetingBarLogicPackageTests.xctest/Contents/MacOS/MeetingBarLogicPackageTests 2>/dev/null | head -n 1)" ; \
+	TEST_BINARY="$$(ls -dt .build/*/debug/MeetingBarLogicTests.xctest/Contents/MacOS/MeetingBarLogicTests .build/debug/MeetingBarLogicTests.xctest/Contents/MacOS/MeetingBarLogicTests .build/*/debug/MeetingBarLogicPackageTests.xctest/Contents/MacOS/MeetingBarLogicPackageTests .build/debug/MeetingBarLogicPackageTests.xctest/Contents/MacOS/MeetingBarLogicPackageTests 2>/dev/null | head -n 1)" ; \
 	if [ ! -f "$$PROFILE" ] || [ ! -x "$$TEST_BINARY" ]; then \
 		echo "SwiftPM coverage data not found. Run 'make test-logic' first."; \
 		exit 1; \
@@ -131,7 +131,7 @@ test-summary:
 coverage-codecov-logic:
 	@mkdir -p $(COVERAGE_DIR)
 	@PROFILE="$$(ls -d .build/*/debug/codecov/default.profdata .build/debug/codecov/default.profdata 2>/dev/null | head -n 1)" ; \
-	TEST_BINARY="$$(ls -d .build/*/debug/MeetingBarLogicTests.xctest/Contents/MacOS/MeetingBarLogicTests .build/debug/MeetingBarLogicTests.xctest/Contents/MacOS/MeetingBarLogicTests .build/*/debug/MeetingBarLogicPackageTests.xctest/Contents/MacOS/MeetingBarLogicPackageTests .build/debug/MeetingBarLogicPackageTests.xctest/Contents/MacOS/MeetingBarLogicPackageTests 2>/dev/null | head -n 1)" ; \
+	TEST_BINARY="$$(ls -dt .build/*/debug/MeetingBarLogicTests.xctest/Contents/MacOS/MeetingBarLogicTests .build/debug/MeetingBarLogicTests.xctest/Contents/MacOS/MeetingBarLogicTests .build/*/debug/MeetingBarLogicPackageTests.xctest/Contents/MacOS/MeetingBarLogicPackageTests .build/debug/MeetingBarLogicPackageTests.xctest/Contents/MacOS/MeetingBarLogicPackageTests 2>/dev/null | head -n 1)" ; \
 	if [ ! -f "$$PROFILE" ] || [ ! -x "$$TEST_BINARY" ]; then \
 		echo "SwiftPM coverage data not found. Run 'make test-logic' first."; \
 		exit 1; \
