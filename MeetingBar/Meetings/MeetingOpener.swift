@@ -133,10 +133,17 @@ struct SystemMeetingOpeningPerformer: MeetingOpeningPerforming {
         // event-start hooks.
         let appleEvent = createAppleScriptEvent(event: event, type: .meetingStart)
         task.execute(withAppleEvent: appleEvent) { _, error in
-            if let error {
-                AppMessageCenter.shared.post(
-                    .joinScriptFailed(description: error.localizedDescription)
-                )
+            guard let error else { return }
+            // Scripts written before the payload contract have no meetingStart handler; run them as before.
+            // A task can only execute once (a second execute raises), so the fallback needs a new one.
+            guard isMissingScriptHandler(error), let fallback = try? NSUserAppleScriptTask(url: scriptURL) else {
+                AppMessageCenter.shared.post(.joinScriptFailed(description: error.localizedDescription))
+                return
+            }
+            fallback.execute { error in
+                if let error {
+                    AppMessageCenter.shared.post(.joinScriptFailed(description: error.localizedDescription))
+                }
             }
         }
     }
