@@ -852,7 +852,7 @@ final class NotificationSchedulerTests: BaseTestCase {
         XCTAssertEqual(Defaults[.processedEventsForAutoJoin].map(\.id), ["AllDay"])
     }
 
-    func testAutoJoinWithoutMeetingLinkMarksProcessedWithoutOpening() async {
+    func testAutoJoinWithoutMeetingLinkDoesNotOpenOrMarkProcessed() async {
         let requestSink = FakeNotificationRequestSink()
         let actionSink = FakeNotificationActionSink()
         let scheduler = NotificationScheduler(sink: requestSink, actionSink: actionSink)
@@ -865,13 +865,11 @@ final class NotificationSchedulerTests: BaseTestCase {
             now: scheduledNow
         )
 
-        await waitUntil {
-            Defaults[.processedEventsForAutoJoin].contains { $0.id == evt.id }
-        }
+        await scheduler.waitForPendingActionsForTesting()
 
         XCTAssertTrue(actionSink.attempts.isEmpty)
         XCTAssertTrue(actionSink.actions.isEmpty)
-        XCTAssertEqual(Defaults[.processedEventsForAutoJoin].map(\.id), [evt.id])
+        XCTAssertTrue(Defaults[.processedEventsForAutoJoin].isEmpty)
     }
 
     func testScriptActionWithoutMeetingLinkRunsOnceAcrossReconcile() async {

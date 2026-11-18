@@ -184,12 +184,28 @@ final class EventActionPolicyTests: XCTestCase {
         XCTAssertNil(decision)
     }
 
+    func testEvaluateSkipsEventWhenOnlyLastModifiedDateChanged() {
+        let event = eventStartingIn(30)
+        let processed = [
+            EventActionProcessedEvent(
+                id: event.id,
+                lastModifiedDate: event.lastModifiedDate?.addingTimeInterval(-3600),
+                eventEndDate: event.endDate,
+                eventStartDate: event.startDate
+            )
+        ]
+        XCTAssertNil(EventActionPolicy.evaluate(
+            event: event, config: fullscreenLikeConfig, processed: processed, now: now
+        ))
+    }
+
     func testEvaluateReprocessesAfterReschedule() {
         let event = eventStartingIn(30)
         let stale = EventActionProcessedEvent(
             id: event.id,
             lastModifiedDate: event.lastModifiedDate?.addingTimeInterval(-3600),
-            eventEndDate: event.endDate
+            eventEndDate: event.endDate.addingTimeInterval(-900),
+            eventStartDate: event.startDate.addingTimeInterval(-900)
         )
         let decision = EventActionPolicy.evaluate(
             event: event, config: fullscreenLikeConfig, processed: [stale], now: now
@@ -199,14 +215,14 @@ final class EventActionPolicyTests: XCTestCase {
         XCTAssertEqual(decision?.updatedProcessed.first?.lastModifiedDate, event.lastModifiedDate)
     }
 
-    func testEvaluateUpdatesProcessedEvenWhenLinkMissing() {
+    func testEvaluateDoesNotRecordSkippedActionWhenLinkMissing() {
         let event = eventStartingIn(30, withLink: false)
         let decision = EventActionPolicy.evaluate(
             event: event, config: fullscreenLikeConfig, processed: [], now: now
         )
         XCTAssertNotNil(decision)
         XCTAssertFalse(decision?.shouldFireSideEffect ?? true)
-        XCTAssertEqual(decision?.updatedProcessed.map(\.id), ["evt-1"])
+        XCTAssertEqual(decision?.updatedProcessed, [])
     }
 
     func testEvaluateScriptConfigDoesNotFireWithoutLink() {
