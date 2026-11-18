@@ -209,6 +209,7 @@ struct AppEnvironment {
     var applyLanguage: @MainActor (AppLanguage) -> Bool
     var joinNotificationsEnabled: @MainActor () -> Bool
     var clearDeliveredNotifications: @MainActor () -> Void
+    var resetPendingNotificationActions: @MainActor () -> Void = {}
 
     @MainActor
     static func live(
@@ -285,7 +286,8 @@ struct AppEnvironment {
             notificationSettingsPublisher: AppSettings.notificationChanges,
             applyLanguage: { I18N.instance.changeLanguage(to: $0) },
             joinNotificationsEnabled: { Defaults[.joinEventNotification] },
-            clearDeliveredNotifications: { notificationScheduler.clearDeliveredNotifications() }
+            clearDeliveredNotifications: { notificationScheduler.clearDeliveredNotifications() },
+            resetPendingNotificationActions: { notificationScheduler.resetPendingActions() }
         )
     }
 }
@@ -481,7 +483,11 @@ final class AppModel: ObservableObject {
             state.timeContextRevision += 1
             reconcileNotificationsFromState()
             scheduleRefresh()
-        case .didWake, .dayChanged, .networkBecameReachable:
+        case .didWake:
+            environment.resetPendingNotificationActions()
+            reconcileNotificationsFromState()
+            scheduleRefresh()
+        case .dayChanged, .networkBecameReachable:
             scheduleRefresh()
         default:
             break

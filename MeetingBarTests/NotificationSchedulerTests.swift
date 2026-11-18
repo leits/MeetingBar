@@ -157,6 +157,34 @@ final class NotificationSchedulerTests: BaseTestCase {
         scheduler.stop()
     }
 
+    func testResetPendingActionsRecreatesSleepingTasksOnNextReconcile() async {
+        let sleeper = ManualNotificationActionSleep()
+        let scheduler = NotificationScheduler(
+            sink: FakeNotificationRequestSink(),
+            actionSink: FakeNotificationActionSink(),
+            sleepAction: { _ in await sleeper.sleep() },
+            actionDate: { self.now }
+        )
+        let events = [event(id: "slept-through", startsIn: 600)]
+        let settings = fullscreenOnlySettings(offset: 0)
+
+        await scheduler.reconcile(events: events, settings: settings, now: now)
+        await sleeper.waitUntilSleeping()
+        await scheduler.reconcile(events: events, settings: settings, now: now)
+        var count = await sleeper.sleepCount
+        XCTAssertEqual(count, 1, "A repeated reconcile keeps the existing task")
+
+        scheduler.resetPendingActions()
+        await scheduler.reconcile(events: events, settings: settings, now: now)
+        for _ in 0..<1000 where count < 2 {
+            await Task.yield()
+            count = await sleeper.sleepCount
+        }
+        XCTAssertEqual(count, 2, "After wake the delay must be recomputed")
+        scheduler.stop()
+        await sleeper.wakeAll()
+    }
+
     func testCancelledManualSleeperCannotFireDismissedAction() async {
         let sleeper = ManualNotificationActionSleep()
         let sink = FakeNotificationRequestSink()
@@ -977,8 +1005,10 @@ final class NotificationSchedulerTests: BaseTestCase {
 private actor ManualNotificationActionSleep {
     private var pending: [CheckedContinuation<Void, Never>] = []
     private var observers: [CheckedContinuation<Void, Never>] = []
+    private(set) var sleepCount = 0
 
     func sleep() async {
+        sleepCount += 1
         await withCheckedContinuation { continuation in
             pending.append(continuation)
             observers.forEach { $0.resume() }

@@ -107,6 +107,13 @@ final class NotificationScheduler {
         runner.setActionSink(nil)
     }
 
+    /// Task.sleep does not advance during system sleep, so pending delays are stale after wake.
+    func resetPendingActions() {
+        actionTasks.values.forEach { $0.cancel() }
+        actionTasks.removeAll()
+        latestActionEvents.removeAll()
+    }
+
     func reconcile(
         events: [MBEvent],
         settings: NotificationPlanningSettings,
