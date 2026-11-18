@@ -122,6 +122,31 @@ final class GoogleCalendarParserTests: XCTestCase {
         XCTAssertTrue(event?.isAllDay ?? false)
     }
 
+    func testUpdatedWithFractionalSecondsParses() throws {
+        let event = GCEventStore.GCParser.event(
+            from: [
+                "id": "event-ms",
+                "updated": "2026-04-24T09:00:00.123Z",
+                "start": ["dateTime": "2026-04-24T10:00:00Z"],
+                "end": ["dateTime": "2026-04-24T10:30:00Z"]
+            ],
+            calendar: calendar
+        )
+
+        let modified = try XCTUnwrap(event?.lastModifiedDate)
+        XCTAssertEqual(modified.timeIntervalSince1970, 1_777_021_200.123, accuracy: 0.001)
+    }
+
+    func testAllDayFormatterIgnoresSystemCalendarAndLocale() throws {
+        let formatter = GCEventStore.GCParser.allDayFormatter()
+        XCTAssertEqual(formatter.calendar.identifier, .gregorian)
+        XCTAssertEqual(formatter.locale.identifier, "en_US_POSIX")
+
+        let date = try XCTUnwrap(formatter.date(from: "2026-04-24"))
+        let components = Calendar(identifier: .gregorian).dateComponents([.year, .month, .day], from: date)
+        XCTAssertEqual([components.year, components.month, components.day], [2026, 4, 24])
+    }
+
     func testCancelledRecurringEventParsesAttendeeStatuses() {
         let event = GCEventStore.GCParser.event(
             from: [
@@ -291,6 +316,38 @@ final class GoogleCalendarParserTests: XCTestCase {
 
 @MainActor
 final class GoogleAuthStateTests: XCTestCase {
+    func testUserEmailDecodesUnpaddedBase64URLIDToken() throws {
+        // "???>>>" in sub forces '-' and '_' in the base64url output.
+        func segment(_ json: [String: Any]) throws -> String {
+            try JSONSerialization.data(withJSONObject: json).base64EncodedString()
+                .replacingOccurrences(of: "+", with: "-")
+                .replacingOccurrences(of: "/", with: "_")
+                .replacingOccurrences(of: "=", with: "")
+        }
+        let payload: [String: Any] = [
+            "iss": "https://accounts.google.com", "aud": "client-id", "sub": "???>>>",
+            "exp": 4_102_444_800, "iat": 1_700_000_000, "email": "user@example.com"
+        ]
+        let payloadSegment = try segment(payload)
+        let idToken = "\(try segment(["alg": "none"])).\(payloadSegment)."
+        XCTAssertNotEqual(payloadSegment.count % 4, 0, "payload must need padding")
+        XCTAssertNil(Data(base64Encoded: payloadSegment), "payload must defeat plain base64 decoding")
+
+        let authorizationResponse = OIDAuthorizationResponse(
+            request: authorizationRequest(),
+            parameters: ["code": "authorization-code" as NSString]
+        )
+        let tokenRequest = try XCTUnwrap(authorizationResponse.tokenExchangeRequest())
+        let tokenResponse = OIDTokenResponse(request: tokenRequest, parameters: [
+            "access_token": "access" as NSString,
+            "token_type": "Bearer" as NSString,
+            "id_token": idToken as NSString
+        ])
+        let state = OIDAuthState(authorizationResponse: authorizationResponse, tokenResponse: tokenResponse)
+
+        XCTAssertEqual(state.userEmail, "user@example.com")
+    }
+
     func testLatestTokenResponseWithoutRefreshTokenKeepsReusableSession() throws {
         let authorizationResponse = OIDAuthorizationResponse(
             request: authorizationRequest(),
