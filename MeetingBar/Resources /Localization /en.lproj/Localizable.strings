@@ -151,6 +151,7 @@
 "preferences_appearance_menu_show_event_icon_value" = "icon";
 "preferences_appearance_menu_show_event_calendar_color_value" = "calendar color";
 "preferences_appearance_menu_show_event_details_value" = "details as submenu";
+"preferences_appearance_menu_show_event_documents_value" = "attachments and linked documents";
 
 // MARK: - Preferences Services
 
@@ -253,6 +254,7 @@
 "status_bar_section_join_next_meeting" = "Join next event meeting";
 "status_bar_section_join_current_meeting" = "Join current event meeting";
 "status_bar_join_with_other_link" = "Join with other link";
+"status_bar_submenu_attachments" = "Attachments";
 "status_bar_section_join_from_clipboard" = "Open meeting from clipboard";
 "status_bar_section_refresh_sources" = "Refresh sources";
 "status_bar_menu_dismiss_curent_meeting" = "Dismiss current meeting";

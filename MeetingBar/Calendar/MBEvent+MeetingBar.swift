@@ -44,7 +44,10 @@ public extension Array where Element == MBEvent {
         Array(Dictionary(map { ($0.id, $0) }, uniquingKeysWith: { first, second in
             let firstResolved = first.attendees.contains { $0.isCurrentUser }
             let secondResolved = second.attendees.contains { $0.isCurrentUser }
-            return (secondResolved && !firstResolved) ? second : first
+            var kept = (secondResolved && !firstResolved) ? second : first
+            let other = kept == first ? second : first
+            kept.documents = EventDocumentDetector.merged(kept.documents + other.documents)
+            return kept
         }).values)
     }
 

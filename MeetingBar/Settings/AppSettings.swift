@@ -56,6 +56,7 @@ struct MenuSettings: Equatable {
     var shortenEventTitle: Bool
     var menuEventTitleLength: Int
     var showEventDetails: Bool
+    var showEventDocuments: Bool
     var showMeetingServiceIcon: Bool
     var showEventCalendarColor: Bool
 }
@@ -187,6 +188,7 @@ extension AppSettings {
                 shortenEventTitle: Defaults[.shortenEventTitle],
                 menuEventTitleLength: Defaults[.menuEventTitleLength],
                 showEventDetails: Defaults[.showEventDetails],
+                showEventDocuments: Defaults[.showEventDocuments],
                 showMeetingServiceIcon: Defaults[.showMeetingServiceIcon],
                 showEventCalendarColor: Defaults[.showEventCalendarColor]
             ),
@@ -260,6 +262,7 @@ extension AppSettings {
                 shortenEventTitle: true,
                 menuEventTitleLength: 50,
                 showEventDetails: false,
+                showEventDocuments: true,
                 showMeetingServiceIcon: true,
                 showEventCalendarColor: true
             ),

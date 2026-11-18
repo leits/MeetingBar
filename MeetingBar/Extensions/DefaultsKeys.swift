@@ -79,6 +79,8 @@ extension Defaults.Keys {
     static let menuEventTitleLength = Key<Int>("menuEventTitleLength", default: 50)
 
     static let showEventDetails = Key<Bool>("showEventDetails", default: false)
+    /// Show attachments and linked documents of invites in the menu (#917).
+    static let showEventDocuments = Key<Bool>("showEventDocuments", default: true)
     static let showMeetingServiceIcon = Key<Bool>("showMeetingServiceIcon", default: true)
     static let showEventCalendarColor = Key<Bool>("showEventCalendarColor", default: true)
 
