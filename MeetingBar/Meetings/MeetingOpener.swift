@@ -191,15 +191,13 @@ enum MeetingOpener {
 
     static func emailAttendees(for event: MBEvent) {
         let service = NSSharingService(named: NSSharingService.Name.composeEmail)!
-        var recipients: [String] = []
-        for attendee in event.attendees {
-            if let email = attendee.email {
-                recipients.append(email)
-            }
-        }
-        service.recipients = recipients
+        service.recipients = attendeeEmails(for: event)
         service.subject = event.title
         service.perform(withItems: [])
+    }
+
+    static func attendeeEmails(for event: MBEvent) -> [String] {
+        event.attendees.compactMap(\.email)
     }
 
     static func perform(

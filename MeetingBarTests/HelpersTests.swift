@@ -324,9 +324,8 @@ final class MeetingOpenerTests: BaseTestCase {
             withLink: false,
             attendees: attendees
         )
-        // emailAttendees opens an NSSharingService, but we can at least verify it does not crash
-        // with a mix of nil and non-nil emails. (Real sending is not testable headlessly.)
-        MeetingOpener.emailAttendees(for: event)
+        // Calling emailAttendees itself would open a real compose window in the default mail app.
+        XCTAssertEqual(MeetingOpener.attendeeEmails(for: event), ["alice@example.com", "bob@example.com"])
     }
 }
 
