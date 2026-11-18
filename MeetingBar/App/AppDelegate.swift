@@ -29,6 +29,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     private var launchTask: Task<Void, Never>?
     private var reopenRequestedDuringLaunch = false
+    private var pendingReopenTask: Task<Void, Never>?
+    private var lastNotificationResponseAt: Date?
+    /// Clicking a notification makes macOS send a reopen event alongside the
+    /// notification response, in either order. Reopens within this window of a
+    /// response belong to that click and must not open Preferences.
+    var reopenSettleDelay: TimeInterval = 0.5
     private var notificationSetupTask: Task<Void, Never>?
     private var statusLoopTask: Task<Void, Never>?
 
@@ -101,9 +107,29 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if launchTask != nil {
             reopenRequestedDuringLaunch = true
         } else {
-            handleReopen()
+            scheduleReopen()
         }
         return false // WindowCoordinator handled presentation; skip AppKit's default.
+    }
+
+    func notificationResponseReceived() {
+        lastNotificationResponseAt = Date()
+        pendingReopenTask?.cancel()
+        pendingReopenTask = nil
+    }
+
+    private func scheduleReopen() {
+        if let lastNotificationResponseAt, Date().timeIntervalSince(lastNotificationResponseAt) < reopenSettleDelay {
+            return
+        }
+        pendingReopenTask?.cancel()
+        let delay = reopenSettleDelay
+        pendingReopenTask = Task { [weak self] in
+            try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+            guard let self, !Task.isCancelled else { return }
+            pendingReopenTask = nil
+            handleReopen()
+        }
     }
 
     private func handleReopen() {
@@ -180,7 +206,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             quit: { [weak self] in self?.quit(nil) }
         ))
 
-        let ncDelegate = NotificationCenterDelegate { [weak model] response in
+        let ncDelegate = NotificationCenterDelegate { [weak self, weak model] response in
+            self?.notificationResponseReceived()
             model?.send(.notificationResponse(response))
         }
         notificationCenterDelegate = ncDelegate
@@ -335,6 +362,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationWillTerminate(_: Notification) {
         launchTask?.cancel()
         launchTask = nil
+        pendingReopenTask?.cancel()
+        pendingReopenTask = nil
         notificationSetupTask?.cancel()
         notificationSetupTask = nil
         statusLoopTask?.cancel()
