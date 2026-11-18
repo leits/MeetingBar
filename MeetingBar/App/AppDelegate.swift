@@ -30,7 +30,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private var launchTask: Task<Void, Never>?
     private var reopenRequestedDuringLaunch = false
     private var pendingReopenTask: Task<Void, Never>?
-    private var lastNotificationResponseAt: Date?
+    // Monotonic uptime, so wall-clock changes can't stretch the window.
+    private var lastNotificationResponseAt: TimeInterval?
     /// Clicking a notification makes macOS send a reopen event alongside the
     /// notification response, in either order. Reopens within this window of a
     /// response belong to that click and must not open Preferences.
@@ -95,7 +96,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             guard let self, !Task.isCancelled else { return }
             if reopenRequestedDuringLaunch {
                 reopenRequestedDuringLaunch = false
-                handleReopen()
+                scheduleReopen()
             }
             launchTask = nil
         }
@@ -113,13 +114,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func notificationResponseReceived() {
-        lastNotificationResponseAt = Date()
+        lastNotificationResponseAt = ProcessInfo.processInfo.systemUptime
         pendingReopenTask?.cancel()
         pendingReopenTask = nil
     }
 
     private func scheduleReopen() {
-        if let lastNotificationResponseAt, Date().timeIntervalSince(lastNotificationResponseAt) < reopenSettleDelay {
+        if let lastNotificationResponseAt,
+           ProcessInfo.processInfo.systemUptime - lastNotificationResponseAt < reopenSettleDelay {
             return
         }
         pendingReopenTask?.cancel()
