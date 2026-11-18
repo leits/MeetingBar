@@ -128,12 +128,10 @@ func hexStringToUIColor(hex: String) -> NSColor {
     return paddingView
 }
 
+// The sandbox container's home folder is created at first install; unlike ~/Documents,
+// reading it never triggers a TCC prompt in unsandboxed development builds.
 func getInstallationDate() -> Date? {
-    let urlToDocumentsFolder: URL? = FileManager.default.urls(
-        for: .documentDirectory, in: .userDomainMask
-    ).last
-    return try? FileManager.default.attributesOfItem(atPath: (urlToDocumentsFolder?.path)!)[
-        .creationDate] as? Date
+    try? FileManager.default.attributesOfItem(atPath: NSHomeDirectory())[.creationDate] as? Date
 }
 
 /*
