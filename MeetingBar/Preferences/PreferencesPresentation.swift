@@ -236,8 +236,10 @@ struct PreferencesCalendarPresentation: Equatable {
             statusTone: statusTone,
             selectedCalendarCount: selectedCalendarCount,
             availableCalendarCount: availableCalendarCount,
-            canReconnect: state.activeProvider == .googleCalendar
-                && connectionState == .authRequired,
+            // Reconnect re-runs provider sign-in; for EventKit that re-requests
+            // calendar access (e.g. after a permission reset).
+            canReconnect: (state.activeProvider == .googleCalendar && connectionState == .authRequired)
+                || (state.activeProvider == .macOSEventKit && connectionState == .permissionRequired),
             canOpenCalendarSettings: state.activeProvider == .macOSEventKit
                 && connectionState == .permissionRequired,
             providerTitleKey: calendarSource.titleKey,
