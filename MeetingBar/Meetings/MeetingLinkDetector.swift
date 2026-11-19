@@ -877,6 +877,31 @@ enum MeetingLinkDetector {
         )
     }
 
+    /// Email of the Google account that owns a calendar, when it can be told
+    /// from the calendar itself. A Google calendar ID is the owner's email for
+    /// primary calendars, and EventKit titles a subscribed primary calendar with
+    /// that email by default. Secondary, imported and holiday calendars use
+    /// `*.calendar.google.com` IDs, which are not sign-in accounts.
+    static func calendarOwnerEmail(calendarID: String, calendarTitle: String) -> String? {
+        // A non-account Google ID rules out the calendar, even if its title looks like an email.
+        guard !isGoogleNonAccountCalendarID(calendarID) else { return nil }
+        return [calendarID, calendarTitle].first(where: isAccountEmail)
+    }
+
+    private static func isGoogleNonAccountCalendarID(_ value: String) -> Bool {
+        value.lowercased().hasSuffix("calendar.google.com")
+    }
+
+    private static func isAccountEmail(_ value: String) -> Bool {
+        let parts = value.split(separator: "@", omittingEmptySubsequences: false)
+        let domainLabels = parts.count == 2 ? parts[1].split(separator: ".", omittingEmptySubsequences: false) : []
+        guard parts.count == 2, !parts[0].isEmpty, domainLabels.count >= 2,
+              domainLabels.allSatisfy({ !$0.isEmpty }),
+              !value.contains(where: \.isWhitespace)
+        else { return false }
+        return !isGoogleNonAccountCalendarID(value)
+    }
+
     /// Personal Gmail plus-addresses are delivery aliases, not separate sign-in
     /// accounts. Preserve other domains: an address alone cannot establish
     /// whether a custom domain uses Google Workspace or supports these aliases.
