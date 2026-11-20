@@ -27,6 +27,8 @@ Good bug reports include:
 
 MeetingBar is a macOS app built with Xcode, Swift 6, AppKit, SwiftUI, and Xcode-managed Swift Package dependencies.
 
+Xcode 26 or later is required. The app icon is an Icon Composer bundle (`MeetingBar/AppIcon.icon`); older Xcode versions cannot compile it and produce an app without an icon.
+
 For local signing, create `XCConfig/DevTeamOverride.xcconfig` with your Apple development team. This file is git-ignored, so you do not need to change the Xcode project:
 
 ```xcconfig
