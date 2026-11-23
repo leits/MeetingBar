@@ -182,11 +182,38 @@ struct CalendarSectionsView: View {
 
     var body: some View {
         ForEach(sources, id: \.self) { source in
-            Section(header: Text(source)) {
+            Section(header: CalendarSourceHeader(source: source, calendars: grouped[source]!)) {
                 ForEach(grouped[source]!, id: \.id) { cal in
                     CalendarRow(calendar: cal)
                 }
             }
+        }
+    }
+}
+
+struct CalendarSourceHeader: View {
+    let source: String
+    let calendars: [MBCalendar]
+    @EnvironmentObject var appModel: AppModel
+
+    var body: some View {
+        HStack {
+            Text(source)
+            Spacer()
+            Toggle(
+                source,
+                isOn: Binding(
+                    get: { calendars.allSatisfy { appModel.state.selectedCalendarIDs.contains($0.id) } },
+                    set: { selected in
+                        for calendar in calendars {
+                            appModel.toggleCalendarSelection(id: calendar.id, selected: selected)
+                        }
+                    }
+                )
+            )
+            .labelsHidden()
+            .toggleStyle(.switch)
+            .controlSize(.mini)
         }
     }
 }
