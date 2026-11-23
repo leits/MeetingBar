@@ -214,6 +214,8 @@ final class WindowCoordinator {
         window.contentView = NSHostingView(
             rootView: FullscreenNotification(event: event, window: window))
         window.appearance = NSAppearance(named: .darkAqua)
+        window.isOpaque = false
+        window.backgroundColor = .clear
         window.collectionBehavior = .moveToActiveSpace
 
         window.titlebarAppearsTransparent = true

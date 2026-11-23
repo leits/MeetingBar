@@ -27,6 +27,7 @@ final class AppModelTestHarness {
     private(set) var snoozedEvents: [(id: String, action: NotificationEventTimeAction)] = []
     private(set) var completedOnboardingProviders: [EventStoreProvider] = []
     private(set) var openPreferencesCallCount = 0
+    private(set) var fullscreenNotificationEventIDs: [String] = []
     private(set) var resumedOAuthURLs: [URL] = []
     private(set) var startedAsyncOperationCount = 0
     private(set) var cancelledAsyncOperationCount = 0
@@ -107,7 +108,10 @@ final class AppModelTestHarness {
         notificationSettingsPublisher: notificationSettingsSubject.eraseToAnyPublisher(),
         applyLanguage: { _ in true },
         joinNotificationsEnabled: { [weak self] in self?.joinNotificationsEnabled ?? false },
-        clearDeliveredNotifications: { [weak self] in self?.deliveredClearCount += 1 }
+        clearDeliveredNotifications: { [weak self] in self?.deliveredClearCount += 1 },
+        showFullscreenNotification: { [weak self] event in
+            self?.fullscreenNotificationEventIDs.append(event.id)
+        }
     )
 
     lazy var model = AppModel(environment: environment)
