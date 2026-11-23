@@ -151,6 +151,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             resumeOAuthFlow: { [weak self] url in
                 guard let calendarSync = self?.calendarSync else { return }
                 calendarSync.repository.resumeAuthorizationFlow(with: url)
+            },
+            showFullscreenNotification: { [weak self] event in
+                self?.windowCoordinator.openFullscreenNotificationWindow(event: event)
             }
         )
         let model = AppModel(environment: env)

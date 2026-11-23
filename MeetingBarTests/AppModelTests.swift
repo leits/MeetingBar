@@ -316,6 +316,25 @@ final class AppModelTests: BaseTestCase {
         XCTAssertEqual(harness.dismissedEventIDs, ["next"])
     }
 
+    func testFullscreenPreviewShowsNearestEvent() {
+        let now = Date(timeIntervalSince1970: 1_700_000_000)
+        let harness = AppModelTestHarness(now: now)
+
+        harness.model.send(.previewFullscreenNotification)
+        XCTAssertEqual(harness.fullscreenNotificationEventIDs, [])
+
+        let event = makeFakeEvent(
+            id: "next",
+            start: now.addingTimeInterval(60),
+            end: now.addingTimeInterval(1800)
+        )
+        harness.model.send(.eventsLoaded([event]))
+        harness.model.send(.previewFullscreenNotification)
+
+        XCTAssertEqual(harness.fullscreenNotificationEventIDs, ["next"])
+        XCTAssertTrue(harness.openedMeetingIDs.isEmpty)
+    }
+
     func testJoinNearestPrefersOngoingMeetingWhenNextIsMoreThanTenMinutesAway() {
         let now = Date(timeIntervalSince1970: 1_700_000_000)
         let harness = AppModelTestHarness(now: now)

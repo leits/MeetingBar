@@ -121,6 +121,7 @@ enum AppAction {
     case joinNearestMeeting
     case dismissMeeting(eventID: String)
     case dismissNearestMeeting
+    case previewFullscreenNotification
     case undismissMeeting(eventID: String)
     case clearDismissedMeetings
     case snoozeMeeting(eventID: String, action: NotificationEventTimeAction)
@@ -210,13 +211,17 @@ struct AppEnvironment {
     var joinNotificationsEnabled: @MainActor () -> Bool
     var clearDeliveredNotifications: @MainActor () -> Void
 
+    /// Present the fullscreen alert for an event outside the notification schedule.
+    var showFullscreenNotification: @MainActor (MBEvent) -> Void = { _ in }
+
     @MainActor
     static func live(
         calendarSync: CalendarSync,
         notificationScheduler: NotificationScheduler,
         snoozeService: SnoozeService,
         openPreferences: @escaping @MainActor () -> Void = {},
-        resumeOAuthFlow: @escaping @MainActor (URL) -> Void = { _ in }
+        resumeOAuthFlow: @escaping @MainActor (URL) -> Void = { _ in },
+        showFullscreenNotification: @escaping @MainActor (MBEvent) -> Void = { _ in }
     ) -> AppEnvironment {
         AppEnvironment(
             eventsPublisher: calendarSync.$events.eraseToAnyPublisher(),
@@ -285,7 +290,8 @@ struct AppEnvironment {
             notificationSettingsPublisher: AppSettings.notificationChanges,
             applyLanguage: { I18N.instance.changeLanguage(to: $0) },
             joinNotificationsEnabled: { Defaults[.joinEventNotification] },
-            clearDeliveredNotifications: { notificationScheduler.clearDeliveredNotifications() }
+            clearDeliveredNotifications: { notificationScheduler.clearDeliveredNotifications() },
+            showFullscreenNotification: showFullscreenNotification
         )
     }
 }
@@ -375,7 +381,7 @@ final class AppModel: ObservableObject {
             handleCalendarAction(action)
         case .notificationResponse, .joinMeeting, .joinNearestMeeting, .dismissMeeting,
              .dismissNearestMeeting, .undismissMeeting, .clearDismissedMeetings,
-             .snoozeMeeting:
+             .snoozeMeeting, .previewFullscreenNotification:
             handleMeetingAction(action)
         case .onboardingCompleted, .openRoute:
             handleExternalAction(action)
@@ -545,6 +551,10 @@ final class AppModel: ObservableObject {
         case .joinNearestMeeting:
             if let event = nextEvent() {
                 environment.openMeeting(event)
+            }
+        case .previewFullscreenNotification:
+            if let event = nextEvent() {
+                environment.showFullscreenNotification(event)
             }
         case .dismissMeeting(let eventID):
             performWithEvent(id: eventID) { event in
