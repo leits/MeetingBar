@@ -770,6 +770,14 @@ struct MenuBuilder {
         )
         item.target = target
         item.image = eventRowIcon(for: event)
+        // macOS 27 hides even non-symbol menu images by default. Use the
+        // public property's Objective-C setter so builds with older SDKs
+        // (including CI's Xcode 16.2) can still request visibility at runtime.
+        if item.image != nil,
+           item.responds(to: NSSelectorFromString("setPreferredImageVisibility:")) {
+            // NSMenuItem.ImageVisibility.visible has raw value 1.
+            item.setValue(NSNumber(value: 1), forKey: "preferredImageVisibility")
+        }
         return item
     }
 

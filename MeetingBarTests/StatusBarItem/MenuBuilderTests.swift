@@ -1263,6 +1263,29 @@ final class MenuBuilderEventItemTests: BaseTestCase {
         XCTAssertNotNil(serviceIcon.name(), "plain service icon should be the named asset")
     }
 
+    func test_eventRowImagesRequestVisibilityAcrossSettingsAndEventStates() throws {
+        let now = Date(timeIntervalSinceReferenceDate: 800_000_000)
+        Defaults[.pastEventsAppereance] = .show_inactive
+        for withLink in [false, true] {
+            for offset: TimeInterval in [-1200, -300, 600] {
+                let event = makeFakeEvent(
+                    id: "VISIBLE", start: now.addingTimeInterval(offset),
+                    end: now.addingTimeInterval(offset + 900), withLink: withLink
+                )
+                for (icon, color) in [(true, true), (true, false), (false, true), (false, false)] {
+                    Defaults[.showMeetingServiceIcon] = icon
+                    Defaults[.showEventCalendarColor] = color
+                    let item = try XCTUnwrap(buildItem(event: event, now: now))
+                    XCTAssertEqual(item.image != nil, icon || color)
+                    if item.responds(to: NSSelectorFromString("setPreferredImageVisibility:")) {
+                        let visibility = item.value(forKey: "preferredImageVisibility") as? NSNumber
+                        XCTAssertEqual(visibility?.intValue, icon || color ? 1 : 0)
+                    }
+                }
+            }
+        }
+    }
+
     func test_pastEventUsesOnState() throws {
         let now = Date(timeIntervalSinceReferenceDate: 800_000_000)
         let event = makeFakeEvent(
