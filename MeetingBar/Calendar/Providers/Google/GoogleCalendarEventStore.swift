@@ -657,6 +657,8 @@ final class GCEventStore: NSObject,
 
     // MARK: - Google JSON ➜ MBEvent converter
     enum GCParser {
+        // nonisolated(unsafe): ISO8601DateFormatter is not Sendable but is documented thread-safe.
+        // Both formatters are configured once here and must only be read (date(from:)) afterwards.
         nonisolated(unsafe) private static let fractionalISO8601: ISO8601DateFormatter = {
             let formatter = ISO8601DateFormatter()
             formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
