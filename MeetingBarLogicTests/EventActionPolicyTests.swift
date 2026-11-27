@@ -215,6 +215,21 @@ final class EventActionPolicyTests: XCTestCase {
         XCTAssertEqual(decision?.updatedProcessed.first?.lastModifiedDate, event.lastModifiedDate)
     }
 
+    func testEvaluateReprocessesWhenOnlyStartDateChanged() {
+        let event = eventStartingIn(30)
+        let stale = EventActionProcessedEvent(
+            id: event.id,
+            lastModifiedDate: event.lastModifiedDate,
+            eventEndDate: event.endDate,
+            eventStartDate: event.startDate.addingTimeInterval(-900)
+        )
+        let decision = EventActionPolicy.evaluate(
+            event: event, config: fullscreenLikeConfig, processed: [stale], now: now
+        )
+        XCTAssertEqual(decision?.shouldFireSideEffect, true)
+        XCTAssertEqual(decision?.updatedProcessed.map(\.eventStartDate), [event.startDate])
+    }
+
     func testEvaluateDoesNotRecordSkippedActionWhenLinkMissing() {
         let event = eventStartingIn(30, withLink: false)
         let decision = EventActionPolicy.evaluate(
