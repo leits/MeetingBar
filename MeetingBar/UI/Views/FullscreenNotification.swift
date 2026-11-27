@@ -29,7 +29,9 @@ struct FullscreenNotification: View {
     /// Other meetings running at the same time. When non-empty the alert shows
     /// every meeting with its own Join button so the user can pick one.
     var overlappingEvents: [MBEvent] = []
-    var window: NSWindow?
+    /// Weak: the window owns this view through its NSHostingView, so a strong
+    /// back-reference kept every closed alert (and its backing store) alive.
+    weak var window: NSWindow?
 
     var body: some View {
         ZStack {

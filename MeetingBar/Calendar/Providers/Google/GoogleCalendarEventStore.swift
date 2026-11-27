@@ -106,7 +106,8 @@ final class GCEventStore: NSObject,
     // MARK: Static constants
     private static let kIssuer       = "https://accounts.google.com"
     private static let kClientID     = "\(googleClientNumber).apps.googleusercontent.com"
-    private static let kClientSecret = googleClientSecret
+    // iOS-type OAuth clients are public and have no secret; Validate xcconfig rejects blanks, so NONE means none
+    private static let kClientSecret: String? = ["", "NONE"].contains(googleClientSecret) ? nil : googleClientSecret
     private static let kRedirectURI  = "com.googleusercontent.apps.\(googleClientNumber):/oauthredirect"
     private static let kKeychainName = googleAuthKeychainName
 
@@ -206,6 +207,14 @@ final class GCEventStore: NSObject,
     }
 
     private func performAuthorization(forcePrompt: Bool) async throws {
+        // Placeholder GOOGLE_CLIENT_NUMBER (local builds) yields an invalid redirect URL
+        guard let redirectURL = URL(string: Self.kRedirectURI) else {
+            MeetingBarLogger.calendar.error("Google OAuth client is not configured in this build")
+            throw NSError(domain: "GoogleSignIn", code: -2, userInfo: [
+                NSLocalizedDescriptionKey: "Google sign-in is not configured in this build (GOOGLE_CLIENT_NUMBER)."
+            ])
+        }
+
         // This also completes the previous sign-in awaiter if it was still
         // waiting for a browser callback.
         let generation = authorizationFlow.begin()
@@ -243,7 +252,7 @@ final class GCEventStore: NSObject,
             clientId: Self.kClientID,
             clientSecret: Self.kClientSecret,
             scopes: scopes,
-            redirectURL: URL(string: Self.kRedirectURI)!,
+            redirectURL: redirectURL,
             responseType: OIDResponseTypeCode,
             additionalParameters: extra
         )

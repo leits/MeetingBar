@@ -570,6 +570,29 @@ final class MenuBuilderTests: BaseTestCase {
             items.contains { $0.action == #selector(StatusBarItemController.createMeetingAction) })
     }
 
+    func test_joinSectionItemsAreReleasedAfterRebuild() {
+        // The status menu is rebuilt every minute; items with keyboard shortcuts
+        // used to be retained forever by KeyboardShortcuts' NotificationCenter observer.
+        var weakItems: [() -> NSMenuItem?] = []
+        autoreleasepool {
+            let next = makeFakeEvent(
+                id: "R",
+                start: Date(), end: Date().addingTimeInterval(60), withLink: true)
+            let items = MenuBuilder(target: Dummy())
+                .buildJoinSection(nextEvent: next)
+            let allItems = items + items.compactMap { $0.submenu?.items }.flatMap { $0 }
+            XCTAssertTrue(allItems.contains {
+                $0.action == #selector(StatusBarItemController.createMeetingAction)
+            })
+            XCTAssertTrue(allItems.contains {
+                $0.action == #selector(StatusBarItemController.openLinkFromClipboardAction)
+            })
+            weakItems = allItems.map { item in { [weak item] in item } }
+        }
+
+        XCTAssertTrue(weakItems.allSatisfy { $0() == nil })
+    }
+
     func test_joinSectionOffersAlternateMeetingLinks() {
         let calendar = MBCalendar(
             title: "Test Calendar",
