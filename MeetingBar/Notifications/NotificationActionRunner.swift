@@ -248,7 +248,8 @@ extension EventActionProcessedEvent {
         self.init(
             id: processedEvent.id,
             lastModifiedDate: processedEvent.lastModifiedDate,
-            eventEndDate: processedEvent.eventEndDate
+            eventEndDate: processedEvent.eventEndDate,
+            eventStartDate: processedEvent.eventStartDate
         )
     }
 
@@ -256,7 +257,8 @@ extension EventActionProcessedEvent {
         ProcessedEvent(
             id: id,
             lastModifiedDate: lastModifiedDate,
-            eventEndDate: eventEndDate
+            eventEndDate: eventEndDate,
+            eventStartDate: eventStartDate
         )
     }
 }

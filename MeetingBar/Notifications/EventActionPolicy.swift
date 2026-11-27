@@ -17,9 +17,8 @@ struct EventActionConfig {
     /// runs strictly before the event starts (on-start script).
     let allowsRecentlyStarted: Bool
 
-    /// `true` if the side-effect should be skipped when the event has no
-    /// meeting link, while still updating the processed-events list to
-    /// dedup retries. Used by auto-join; fullscreen eligibility is handled by
+    /// `true` if the side-effect should be skipped (and not recorded as
+    /// processed) when the event has no meeting link. Used by auto-join; fullscreen eligibility is handled by
     /// `FullscreenNotificationEligibilityPolicy`.
     let requiresMeetingLink: Bool
 }
@@ -37,6 +36,8 @@ struct EventActionProcessedEvent: Equatable {
     let id: String
     let lastModifiedDate: Date?
     let eventEndDate: Date
+    /// `nil` for records persisted before start dates were stored.
+    var eventStartDate: Date?
 }
 
 enum FullscreenNotificationEligibilityPolicy {
@@ -60,7 +61,7 @@ enum EventActionPolicy {
 
     /// Returns `nil` when no Defaults change is needed: either the event is
     /// outside the action window, or it has already been processed at the
-    /// current `lastModifiedDate`.
+    /// same start and end dates.
     static func evaluate(
         event: EventActionEvent,
         config: EventActionConfig,
@@ -77,8 +78,16 @@ enum EventActionPolicy {
         guard withinWindow || allDayActive else { return nil }
 
         let matched = processed.first { $0.id == event.id }
-        if let matched, matched.lastModifiedDate == event.lastModifiedDate {
+        // An RSVP bumps lastModifiedDate; only a reschedule changes start/end.
+        if let matched, matched.eventEndDate == event.endDate,
+           matched.eventStartDate == nil || matched.eventStartDate == event.startDate {
             return nil
+        }
+
+        let shouldFire = !config.requiresMeetingLink || event.hasMeetingLink
+        // Don't record a skipped no-link action so a link added later still fires.
+        guard shouldFire else {
+            return Decision(updatedProcessed: processed, shouldFireSideEffect: false)
         }
 
         var updated = processed
@@ -88,11 +97,11 @@ enum EventActionPolicy {
         updated.append(EventActionProcessedEvent(
             id: event.id,
             lastModifiedDate: event.lastModifiedDate,
-            eventEndDate: event.endDate
+            eventEndDate: event.endDate,
+            eventStartDate: event.startDate
         ))
 
-        let shouldFire = !config.requiresMeetingLink || event.hasMeetingLink
-        return Decision(updatedProcessed: updated, shouldFireSideEffect: shouldFire)
+        return Decision(updatedProcessed: updated, shouldFireSideEffect: true)
     }
 
     /// Drops processed-event entries whose underlying event has already ended.

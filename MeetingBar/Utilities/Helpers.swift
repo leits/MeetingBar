@@ -24,6 +24,7 @@ struct ProcessedEvent: Codable, Defaults.Serializable, Hashable {
     var id: String
     var lastModifiedDate: Date?
     var eventEndDate: Date
+    var eventStartDate: Date?
 }
 
 func cleanUpNotes(_ notes: String) -> String {
