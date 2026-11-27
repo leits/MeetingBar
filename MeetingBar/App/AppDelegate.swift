@@ -160,8 +160,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let actionHandler = NotificationActionHandler(
             isScreenLocked: { [weak model] in model?.state.screenIsLocked ?? false },
             send: { [weak model] action in model?.send(action) },
-            showFullscreen: { [weak self] event in
-                self?.windowCoordinator.openFullscreenNotificationWindow(event: event)
+            showFullscreen: { [weak self, weak model] event in
+                self?.windowCoordinator.openFullscreenNotificationWindow(
+                    event: event,
+                    overlaps: { model?.overlappingEvents(with: $0) ?? [] },
+                    current: { model?.currentEvent(id: $0) }
+                )
             },
             runEventStartScript: { event in
                 runMeetingStartsScript(event: event, type: .meetingStart)
