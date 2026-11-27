@@ -27,12 +27,8 @@ extension OIDAuthState {
     /// convenience email extraction from ID token
     var userEmail: String? {
         guard let idToken = lastTokenResponse?.idToken else { return nil }
-        let parts = idToken.split(separator: ".")
-        guard parts.count > 1,
-              let payloadData = Data(base64Encoded: String(parts[1])),
-              let json = try? JSONSerialization.jsonObject(with: payloadData) as? [String: Any]
-        else { return nil }
-        return json["email"] as? String
+        // JWT payloads are unpadded base64url; OIDIDToken handles that.
+        return OIDIDToken(idTokenString: idToken)?.claims["email"] as? String
     }
 }
 
@@ -661,6 +657,30 @@ final class GCEventStore: NSObject,
 
     // MARK: - Google JSON ➜ MBEvent converter
     enum GCParser {
+        // nonisolated(unsafe): ISO8601DateFormatter is not Sendable but is documented thread-safe.
+        // Both formatters are configured once here and must only be read (date(from:)) afterwards.
+        nonisolated(unsafe) private static let fractionalISO8601: ISO8601DateFormatter = {
+            let formatter = ISO8601DateFormatter()
+            formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+            return formatter
+        }()
+
+        nonisolated(unsafe) private static let plainISO8601 = ISO8601DateFormatter()
+
+        /// Google sends "updated" with milliseconds but event times without them.
+        static func parseISO8601(_ string: String) -> Date? {
+            fractionalISO8601.date(from: string) ?? plainISO8601.date(from: string)
+        }
+
+        /// All-day dates are Gregorian local midnight regardless of the system calendar/locale.
+        static func allDayFormatter() -> DateFormatter {
+            let formatter = DateFormatter()
+            formatter.locale = Locale(identifier: "en_US_POSIX")
+            formatter.calendar = Calendar(identifier: .gregorian)
+            formatter.dateFormat = "yyyy-MM-dd"
+            return formatter
+        }
+
         // swiftlint:disable:next cyclomatic_complexity
         static func event(from item: [String: Any],
                           calendar: MBCalendar) -> MBEvent? {
@@ -671,8 +691,7 @@ final class GCEventStore: NSObject,
                 return nil
             }
 
-            let formatter = ISO8601DateFormatter()
-            let lastModifiedDate = formatter.date(from: item["updated"] as? String ?? "")
+            let lastModifiedDate = parseISO8601(item["updated"] as? String ?? "")
             let title = item["summary"] as? String
             var status: MBEventStatus
             switch item["status"] as? String {
@@ -743,9 +762,8 @@ final class GCEventStore: NSObject,
             }
 
             if let startDateTime = itemStart["dateTime"], let endDateTime = itemEnd["dateTime"] {
-                let formatter = ISO8601DateFormatter()
-                guard let parsedStartDate = formatter.date(from: startDateTime),
-                      let parsedEndDate = formatter.date(from: endDateTime) else {
+                guard let parsedStartDate = parseISO8601(startDateTime),
+                      let parsedEndDate = parseISO8601(endDateTime) else {
                     MeetingBarLogger.calendar.warning(
                         "Skipping Google event \(eventID, privacy: .private) with invalid dateTime values"
                     )
@@ -755,8 +773,7 @@ final class GCEventStore: NSObject,
                 endDate = parsedEndDate
                 isAllDay = false
             } else {
-                let formatter = DateFormatter()
-                formatter.dateFormat = "yyyy-MM-dd"
+                let formatter = allDayFormatter()
                 guard let startDateString = itemStart["date"],
                       let endDateString = itemEnd["date"],
                       let parsedStartDate = formatter.date(from: startDateString),
