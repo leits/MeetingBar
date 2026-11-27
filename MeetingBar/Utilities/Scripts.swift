@@ -144,3 +144,13 @@ func createAppleScriptEvent(
         postMessage(.nextMeetingMissing)
     }
 }
+
+/// True when a script rejected the meetingStart event because it defines no such handler (errAEEventNotHandled).
+func isMissingScriptHandler(_ error: Error) -> Bool {
+    let error = error as NSError
+    if error.userInfo[NSAppleScript.errorNumber] as? Int == errAEEventNotHandled { return true }
+    // shortcut: NSUserAppleScriptTask reports this as NSPOSIXErrorDomain code 2 and only carries
+    // the AppleScript code in the failure reason ("… execution error: … (-1708)"); match that text
+    // until the API exposes the script error number.
+    return error.localizedFailureReason?.contains("(\(errAEEventNotHandled))") == true
+}

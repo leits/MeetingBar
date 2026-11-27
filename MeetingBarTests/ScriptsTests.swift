@@ -223,4 +223,81 @@ final class ScriptsTests: XCTestCase {
         XCTAssertEqual(parameters.atIndex(9)?.stringValue, event.meetingLink?.url.absoluteString)
         XCTAssertEqual(parameters.atIndex(10)?.stringValue, "EMPTY")
     }
+
+    func testMissingMeetingStartHandlerIsRecognized() throws {
+        // Run a top-level script (like the default join-script placeholder) through the same
+        // NSUserAppleScriptTask path the app uses; it rejects the meetingStart event.
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let scriptURL = dir.appendingPathComponent("noHandler.scpt")
+        let compile = Process()
+        compile.executableURL = URL(fileURLWithPath: "/usr/bin/osacompile")
+        compile.arguments = ["-o", scriptURL.path, "-e", "return 1"]
+        try compile.run()
+        compile.waitUntilExit()
+
+        let finished = expectation(description: "script finished")
+        var taskError: Error?
+        try NSUserAppleScriptTask(url: scriptURL).execute(withAppleEvent: makeMeetingStartEvent()) { _, error in
+            taskError = error
+            finished.fulfill()
+        }
+        wait(for: [finished], timeout: 10)
+
+        let error = try XCTUnwrap(taskError) as NSError
+        XCTAssertTrue(isMissingScriptHandler(error), "\(error.domain) \(error.code) \(error.userInfo)")
+    }
+
+    func testJoinScriptWithoutHandlerStillRuns() throws {
+        // End to end through the app's join path: a handler-less script must fall back to plain execution.
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let marker = dir.appendingPathComponent("ran")
+        let compile = Process()
+        compile.executableURL = URL(fileURLWithPath: "/usr/bin/osacompile")
+        compile.arguments = [
+            "-o", dir.appendingPathComponent("joinEventScript.scpt").path,
+            "-e", "do shell script \"touch '\(marker.path)'\""
+        ]
+        try compile.run()
+        compile.waitUntilExit()
+
+        let performer = SystemMeetingOpeningPerformer(settings: MeetingOpenSettings(
+            defaultBrowser: systemDefaultBrowser,
+            providerBrowsers: [:],
+            runJoinEventScript: true,
+            joinEventScriptLocation: dir
+        ))
+        performer.runJoinEventScriptIfConfigured(
+            event: makeFakeEvent(id: "join", start: Date(), end: Date().addingTimeInterval(600), withLink: true)
+        )
+
+        let ran = expectation(for: NSPredicate { _, _ in FileManager.default.fileExists(atPath: marker.path) },
+                              evaluatedWith: nil)
+        wait(for: [ran], timeout: 10)
+    }
+
+    func testOtherScriptErrorsAreNotTreatedAsMissingHandler() {
+        var errorInfo: NSDictionary?
+        let script = NSAppleScript(source: "on meetingStart()\nerror \"boom\" number 42\nend meetingStart")!
+        _ = script.executeAppleEvent(makeMeetingStartEvent(), error: &errorInfo)
+        let info = errorInfo as? [String: Any]
+        XCTAssertEqual(info?[NSAppleScript.errorNumber] as? Int, 42)
+        XCTAssertFalse(isMissingScriptHandler(NSError(domain: NSCocoaErrorDomain, code: 0, userInfo: info)))
+    }
+
+    private func makeMeetingStartEvent() -> NSAppleEventDescriptor {
+        let event = NSAppleEventDescriptor.appleEvent(
+            withEventClass: AEEventClass(kASAppleScriptSuite),
+            eventID: AEEventID(kASSubroutineEvent),
+            targetDescriptor: .null(),
+            returnID: AEReturnID(kAutoGenerateReturnID),
+            transactionID: AETransactionID(kAnyTransactionID)
+        )
+        event.setParam(NSAppleEventDescriptor(string: "meetingstart"), forKeyword: AEKeyword(keyASSubroutineName))
+        event.setParam(NSAppleEventDescriptor.list(), forKeyword: keyDirectObject)
+        return event
+    }
 }
