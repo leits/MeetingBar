@@ -40,6 +40,8 @@ struct StatusBarDependencies {
     var appState: @MainActor () -> AppState = { AppState() }
     var events: @MainActor () -> [MBEvent] = { [] }
     var send: @MainActor (AppAction) -> Void = { _ in }
+    var calendarAccessError: @MainActor () -> EventKitReadAccessError? = { EventKitReadAccessError.current() }
+    var openCalendarSettings: @MainActor () -> Void = { NSWorkspace.shared.open(Links.calendarPreferences) }
     var openPreferences: @MainActor () -> Void = {}
     var openChangelog: @MainActor () -> Void = {}
     var quit: @MainActor () -> Void = {}
@@ -467,7 +469,13 @@ final class StatusBarItemController {
     }
 
     @objc func openCalendarPermissionsAction() {
-        NSWorkspace.shared.open(Links.calendarPreferences)
+        // After a permission reset macOS hasn't asked yet, so MeetingBar isn't listed in
+        // System Settings; re-running sign-in shows the system prompt instead.
+        if dependencies.calendarAccessError() == .notDetermined {
+            reconnectProviderAction()
+        } else {
+            dependencies.openCalendarSettings()
+        }
     }
 
     @objc

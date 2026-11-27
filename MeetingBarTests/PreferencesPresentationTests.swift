@@ -186,7 +186,7 @@ final class PreferencesPresentationTests: XCTestCase {
             "preferences_status_state_permission_required"
         )
         XCTAssertTrue(presentation.canOpenCalendarSettings)
-        XCTAssertFalse(presentation.canReconnect)
+        XCTAssertTrue(presentation.canReconnect)
     }
 
     func testEventKitPermissionFailureAfterSuccessfulRefreshIsExplicit() {
@@ -202,7 +202,7 @@ final class PreferencesPresentationTests: XCTestCase {
         let presentation = PreferencesCalendarPresentation.make(from: state)
         XCTAssertEqual(presentation.connectionState, .permissionRequired)
         XCTAssertTrue(presentation.canOpenCalendarSettings)
-        XCTAssertFalse(presentation.canReconnect)
+        XCTAssertTrue(presentation.canReconnect)
     }
 
     func testUnrelatedEventKitFailureDoesNotClaimMissingPermission() {
@@ -216,6 +216,7 @@ final class PreferencesPresentationTests: XCTestCase {
         let presentation = PreferencesCalendarPresentation.make(from: state)
         XCTAssertEqual(presentation.connectionState, .stale)
         XCTAssertFalse(presentation.canOpenCalendarSettings)
+        XCTAssertFalse(presentation.canReconnect)
     }
 
     func testFailedRefreshWithCachedDataIsPresentedAsStale() {
